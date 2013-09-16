@@ -13,6 +13,6 @@
         }
     ],
     "require": {
-
+        "symfony/framework-standard-edition": "~2.3.4"
     }
 }
