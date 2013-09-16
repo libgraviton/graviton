@@ -1,0 +1,14 @@
+{
+    "name": "graviton/graviton",
+    "description": "The base package for graviton",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Lucas Bickel",
+            "email": "lucas.bickel@swisscom.com"
+        }
+    ],
+    "require": {
+
+    }
+}
