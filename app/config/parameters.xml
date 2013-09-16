@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+  <parameters>
+    <parameter key="database_driver">pdo_mysql</parameter>
+    <parameter key="database_host">127.0.0.1</parameter>
+    <parameter key="database_port">null</parameter>
+    <parameter key="database_name">symfony</parameter>
+    <parameter key="database_user">root</parameter>
+    <parameter key="database_password">null</parameter>
+    <parameter key="mailer_transport">smtp</parameter>
+    <parameter key="mailer_host">127.0.0.1</parameter>
+    <parameter key="mailer_user">null</parameter>
+    <parameter key="mailer_password">null</parameter>
+    <parameter key="locale">en</parameter>
+    <parameter key="secret">ThisTokenIsNotSoSecretChangeIt</parameter>
+  </parameters>
+
+</container>
