@@ -10,6 +10,10 @@
         {
             "name": "Markus Dessler",
             "email": "markus.dessler@swisscom.com"
+        },
+        {
+            "name": "Beat Luginbühl",
+            "email": "beat.luginbuehl@swisscom.com"
         }
     ],
     "require": {
