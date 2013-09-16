@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:twig="http://symfony.com/schema/dic/twig"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <imports>
     <import resource="parameters.xml"/>
     <import resource="security.xml"/>
   </imports>
+
+  <framework:config>
+    <framework:secret>%secret%</framework:secret>
+    <framework:router resource="%kernel.root_dir%/config/routing.xml"/>
+    <framework:templating>
+      <framework:engine>twig</framework:engine>
+    </framework:templating>
+  </framework:config>
+
+  <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
 
 </container>
