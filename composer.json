@@ -16,6 +16,9 @@
             "email": "beat.luginbuehl@swisscom.com"
         }
     ],
+    "autoload": {
+            "psr-0": { "": "src/", "Graviton": "src/"}
+    },
     "require": {
         "symfony/framework-standard-edition": "~2.3.4"
     }
