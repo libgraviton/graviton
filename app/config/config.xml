@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:framework="http://symfony.com/schema/dic/symfony"
     xmlns:twig="http://symfony.com/schema/dic/twig"
-    xmlns:doctrine="http://symfony.com/schema/dic/doctrine
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <imports>
