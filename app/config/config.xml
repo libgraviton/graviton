@@ -3,6 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:framework="http://symfony.com/schema/dic/symfony"
     xmlns:twig="http://symfony.com/schema/dic/twig"
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <imports>
@@ -17,6 +18,20 @@
       <framework:engine>twig</framework:engine>
     </framework:templating>
   </framework:config>
+
+  <doctrine:config>
+    <doctrine:dbal>
+      <doctrine:driver>%database_driver%</doctrine:driver>
+      <doctrine:host>%database_host%</doctrine:host>
+      <doctrine:dbname>%database_name%</doctrine:dbname>
+      <doctrine:user>%database_user%</doctrine:user>
+      <doctrine:password>%database_password%</doctrine:password>
+    </doctrine:dbal>
+    <doctrine:orm>
+      <doctrine:auto_generate_proxy_classes>%kernel.debug%</doctrine:auto_generate_proxy_classes>
+      <doctrine:auto_mapping>true</doctrine:auto_mapping>
+    </doctrine:orm>
+  </doctrine:config>
 
   <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
 

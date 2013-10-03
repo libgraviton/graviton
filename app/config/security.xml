@@ -9,6 +9,12 @@
              algorithm="bcrypt"
              cost="15"/>
 
+    <acl>
+      <dbal>
+        <connection>default</connection>
+      </dbal>
+    </acl>
+
     
     <role id="ROLE_ADMIN">ROLE_USER</role>
     <role id="ROLE_SUPER_ADMIN">ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH</role>

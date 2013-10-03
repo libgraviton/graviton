@@ -7,4 +7,8 @@
     <import resource="config.xml"/>
   </imports>
 
+  <parameters>
+    <parameter key="kernel.debug">true</parameter>
+  </parameters>
+
 </container>
