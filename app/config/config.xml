@@ -4,6 +4,8 @@
     xmlns:framework="http://symfony.com/schema/dic/symfony"
     xmlns:twig="http://symfony.com/schema/dic/twig"
     xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
+    xmlns:sensio-framework-extra="http://symfony.com/schema/dic/symfony_extra"
+    xmlns:fos_rest="fos_rest"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <imports>
@@ -34,5 +36,13 @@
   </doctrine:config>
 
   <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
+  
+  <sensio-framework-extra:config>
+    <view annotations="false" />
+  </sensio-framework-extra:config>
+
+  <fos_rest:config>
+    <view view_response_listener="true" />
+  </fos_rest:config>
 
 </container>
