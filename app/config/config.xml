@@ -19,6 +19,10 @@
     <framework:templating>
       <framework:engine>twig</framework:engine>
     </framework:templating>
+    <framework:session>
+      <framework:name>graviton</framework:name>
+    </framework:session>
+    <framework:form>true</framework:form>
   </framework:config>
 
   <doctrine:config>
