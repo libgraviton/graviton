@@ -46,7 +46,8 @@
         "sensio/framework-extra-bundle": "2.3.*",
         "sensio/generator-bundle": "2.3.*",
         "jms/serializer-bundle": "*",
-        "friendsofsymfony/rest-bundle": "*"
+        "friendsofsymfony/rest-bundle": "*",
+        "sensio/distribution-bundle": "~2.3.4"
     },
     "config": {
     },
