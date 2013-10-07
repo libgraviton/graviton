@@ -38,11 +38,12 @@
   <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
   
   <sensio-framework-extra:config>
-    <view annotations="false" />
+    <sensio-framework-extra:view annotations="false" />
+    <sensio-framework-extra:router annotations="true" />
   </sensio-framework-extra:config>
 
   <fos_rest:config>
-    <view view_response_listener="true" />
+    <fos_rest:view view_response_listener="force" />
   </fos_rest:config>
 
 </container>
