@@ -11,6 +11,7 @@
 
   <imports>
     <import resource="parameters.xml"/>
+    <import resource="parameters_local.xml"/>
     <import resource="security.xml"/>
   </imports>
 
@@ -27,17 +28,32 @@
   </framework:config>
 
   <doctrine:config>
-    <doctrine:dbal>
-      <doctrine:driver>%database_driver%</doctrine:driver>
-      <doctrine:host>%database_host%</doctrine:host>
-      <doctrine:dbname>%database_name%</doctrine:dbname>
-      <doctrine:user>%database_user%</doctrine:user>
-      <doctrine:password>%database_password%</doctrine:password>
-      <doctrine:charset>UTF8</doctrine:charset>
+    <doctrine:dbal default-connection="default">
+      <doctrine:connection name="default">
+        <doctrine:driver>%database_driver%</doctrine:driver>
+        <doctrine:host>%database_host%</doctrine:host>
+        <doctrine:dbname>%database_name%</doctrine:dbname>
+        <doctrine:user>%database_user%</doctrine:user>
+        <doctrine:password>%database_password%</doctrine:password>
+        <doctrine:charset>UTF8</doctrine:charset>
+      </doctrine:connection>
+      <doctrine:connection name="report">
+        <doctrine:driver>%database_driver%</doctrine:driver>
+        <doctrine:host>%database_host%</doctrine:host>
+        <doctrine:dbname>%database_name_report%</doctrine:dbname>
+        <doctrine:user>%database_user%</doctrine:user>
+        <doctrine:password>%database_password%</doctrine:password>
+        <doctrine:charset>UTF8</doctrine:charset>
+      </doctrine:connection>
     </doctrine:dbal>
-    <doctrine:orm>
+    <doctrine:orm default-entity-manager="default">
       <doctrine:auto_generate_proxy_classes>%kernel.debug%</doctrine:auto_generate_proxy_classes>
-      <doctrine:auto_mapping>true</doctrine:auto_mapping>
+      <doctrine:entity-manager name="default" connection="default">
+        <doctrine:mapping name="GravitonCoreBundle" />
+      </doctrine:entity-manager>
+      <doctrine:entity-manager name="report" connection="report">
+        <doctrine:mapping name="FinancingExpiryListBundle" />
+      </doctrine:entity-manager>
     </doctrine:orm>
   </doctrine:config>
 
@@ -51,8 +67,11 @@
 
   
   <jms_serializer:config>
-<tag name="jms_serializer.handler" type="DateTime" direction="serialization" format="json"
-                method="serializeDateTimeToJson" />
+    <tag name="jms_serializer.handler" 
+      type="DateTime"
+      direction="serialization"
+      format="json"
+      method="serializeDateTimeToJson"/>
   </jms_serializer:config>
 
   <fos_rest:config>

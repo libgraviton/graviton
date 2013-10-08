@@ -7,7 +7,8 @@
     <parameter key="database_driver">pdo_mysql</parameter>
     <parameter key="database_host">127.0.0.1</parameter>
     <parameter key="database_port">null</parameter>
-    <parameter key="database_name">graviton_report</parameter>
+    <parameter key="database_name">symfony</parameter>
+    <parameter key="database_name_report">graviton_report</parameter>
     <parameter key="database_user">root</parameter>
     <parameter key="database_password"></parameter>
     <parameter key="mailer_transport">smtp</parameter>
