@@ -67,6 +67,9 @@
 
   
   <jms_serializer:config>
+    <jms_serializer:property-naming
+      separator=""
+      lower_case="false"/>
     <tag name="jms_serializer.handler" 
       type="DateTime"
       direction="serialization"
