@@ -1,3 +1,4 @@
 app/log
 app/cache
 app/bootstrap.php.cache
+web/bundles
