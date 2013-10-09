@@ -51,9 +51,6 @@
       <doctrine:entity-manager name="default" connection="default">
         <doctrine:mapping name="GravitonCoreBundle" />
       </doctrine:entity-manager>
-      <doctrine:entity-manager name="report" connection="report">
-        <doctrine:mapping name="FinancingExpiryListBundle" />
-      </doctrine:entity-manager>
     </doctrine:orm>
   </doctrine:config>
 
