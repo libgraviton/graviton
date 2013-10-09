@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
     
     <import resource="@GravitonCoreBundle/Resources/config/routing.xml" prefix="/core"/>
-    <import resource="@GravitonWebConfigurationBundle/Resources/config/routing/webconfigurator.xml" prefix="/_configurator"/>
    
 </routes>
 
