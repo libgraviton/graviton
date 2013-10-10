@@ -34,6 +34,10 @@
     "autoload": {
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
+    "require-dev": {
+        "libgraviton/codesniffer": ">=1.0.0",
+        "phpunit/phpunit": "*"
+    },
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": "2.3.*",
