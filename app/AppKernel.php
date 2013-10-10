@@ -2,6 +2,7 @@
 
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Graviton\BundleBundle\GravitonBundleInterface;
 
 class AppKernel extends Kernel
 {
@@ -18,6 +19,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Graviton\CoreBundle\GravitonCoreBundle(),
+            new Graviton\BundleBundle\GravitonBundleBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -26,11 +28,24 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
 
+        $this->loadBundles($bundles);
+
         return $bundles;
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(__DIR__.'/config/config_'.$this->getEnvironment().'.xml');
+    }
+
+    private function loadBundles(&$bundles)
+    {
+        $newBundles = array();
+        foreach ($bundles AS $bundle) {
+            if ($bundle instanceof GravitonBundleInterface) {
+                $newBundles = array_merge($newBundles, $bundle->getBundles());
+            }
+        }
+        $bundles = array_merge($bundles, $newBundles);
     }
 }
