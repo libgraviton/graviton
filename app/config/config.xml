@@ -13,6 +13,7 @@
     <import resource="parameters.xml"/>
     <import resource="parameters_local.xml"/>
     <import resource="security.xml"/>
+    <import resource="../config-imports.xml"/>
   </imports>
 
   <framework:config>
