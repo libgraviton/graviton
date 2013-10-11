@@ -1,4 +1,7 @@
 <?php
+/**
+ * app entity
+ */
 
 namespace Graviton\CoreBundle\Entity;
 
@@ -6,6 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * App
+ *
+ * @category GravitonCoreBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
  */
 class App
 {
@@ -43,7 +52,8 @@ class App
     /**
      * Set name
      *
-     * @param string $name
+     * @param string $name name
+     *
      * @return App
      */
     public function setName($name)
@@ -66,7 +76,8 @@ class App
     /**
      * Set title
      *
-     * @param string $title
+     * @param string $title title
+     *
      * @return App
      */
     public function setTitle($title)
@@ -89,7 +100,8 @@ class App
     /**
      * Set description
      *
-     * @param string $description
+     * @param string $description description
+     *
      * @return App
      */
     public function setDescription($description)
@@ -112,7 +124,8 @@ class App
     /**
      * Set showInMenu
      *
-     * @param boolean $showInMenu
+     * @param boolean $showInMenu show in menu
+     *
      * @return App
      */
     public function setShowInMenu($showInMenu)
@@ -135,7 +148,8 @@ class App
     /**
      * Set showInDrawer
      *
-     * @param boolean $showInDrawer
+     * @param boolean $showInDrawer show in drawer
+     *
      * @return App
      */
     public function setShowInDrawer($showInDrawer)

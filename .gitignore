@@ -1,6 +1,8 @@
 app/log
 app/cache
 app/bootstrap.php.cache
+app/check.php
+app/SymfonyRequirements.php
 web/bundles
 app/config-imports.xml
 app/routing-imports.xml
