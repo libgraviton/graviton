@@ -62,7 +62,7 @@ class ScriptHandler
             $imports = "";
             foreach ($packages as $package) {
                 if (isset($package['extra']['graviton-config-import'])) {
-                    $import = $package['dir'].'/Resource/config/config.xml';
+                    $import = $package['dir'].'/'.$package['extra']['graviton-config-import'];
                     $imports .= '<import resource="'.$import.'"/>';
                 }
             }
@@ -97,7 +97,7 @@ class ScriptHandler
             $imports = "";
             foreach ($packages as $package) {
                 if (isset($package['extra']['graviton-routing-import'])) {
-                    $import = $package['dir'].'/Resource/config/routing.xml';
+                    $import = $package['dir'].'/'.$package['extra']['graviton-routing-import'];
                     $imports .= '<import resource="'.$import.'"/>';
                 }
             }
