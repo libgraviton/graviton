@@ -31,7 +31,7 @@ class ScriptHandler
         $appDir = $options['symfony-app-dir'];
 
         if (!is_dir($appDir)) {
-            echo 'The dir ('.$appDir.') was not found in '.getcwd().', can not build imports file.'.PHP_EOL;
+            echo 'The dir ('.$appDir.') was not found in '.getcwd().'.'.PHP_EOL;
 
             return;
         }
@@ -56,13 +56,15 @@ class ScriptHandler
         }
 
         $xml  = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
-        $xml .= '<container xmlns="http://symfony.com/schema/dic/services"><!-- This is a generated file. -->';
+        $xml .= '<container xmlns="http://symfony.com/schema/dic/services">';
+        $xml .= '<!-- This is a generated file. -->';
 
         if (true || !empty($packages)) {
             $imports = "";
             foreach ($packages as $package) {
                 if (isset($package['extra']['graviton-config-import'])) {
-                    $import = $package['dir'].'/'.$package['extra']['graviton-config-import'];
+                    $import = $package['dir'].'/';
+                    $import .= $package['extra']['graviton-config-import'];
                     $imports .= '<import resource="'.$import.'"/>';
                 }
             }
@@ -91,13 +93,15 @@ class ScriptHandler
         }
 
         $xml  = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
-        $xml .= '<routes xmlns="http://symfony.com/schema/routing"><!-- This is a generated file. -->';
+        $xml .= '<routes xmlns="http://symfony.com/schema/routing">';
+        $xml .= '<!-- This is a generated file. -->';
 
         if (true || !empty($packages)) {
             $imports = "";
             foreach ($packages as $package) {
                 if (isset($package['extra']['graviton-routing-import'])) {
-                    $import = $package['dir'].'/'.$package['extra']['graviton-routing-import'];
+                    $import = $package['dir'].'/';
+                    $import .= $package['extra']['graviton-routing-import'];
                     $imports .= '<import resource="'.$import.'"/>';
                 }
             }
@@ -119,15 +123,17 @@ class ScriptHandler
      */
     protected static function getOptions(CommandEvent $event)
     {
+        $composer = $event->getComposer();
+        $config = $composer->getConfig();
         $options = array_merge(
             array(
                 'symfony-app-dir' => 'app',
                 'symfony-web-dir' => 'web',
             ),
-            $event->getComposer()->getPackage()->getExtra()
+            $composer->getPackage()->getExtra()
         );
 
-        $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
+        $options['process-timeout'] = $config->get('process-timeout');
 
         $options['packages'] = self::getPackageExtraOptions($event);
 
@@ -150,10 +156,9 @@ class ScriptHandler
         $vendorDir .= $event->getComposer()->getConfig()->get('vendor-dir');
         $lockData = $event->getComposer()->getLocker()->getLockData();
         foreach ($lockData['packages'] as $package) {
+            $dir = $vendorDir.'/'.$package['name'];
             if (isset($package['target-dir'])) {
-                $dir = $vendorDir.'/'.$package['name'].'/'.$package['target-dir'];
-            } else {
-                $dir = $vendorDir.'/'.$package['name'];
+                $dir .= '/'.$package['target-dir'];
             }
             $file = $dir.'/composer.json';
             $packageJson = json_decode(file_get_contents($file), true);

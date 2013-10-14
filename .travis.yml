@@ -1,0 +1,11 @@
+language: php
+before_script:
+  - composer install --dev --no-interaction
+php:
+  - 5.4
+  - 5.3
+script:
+  - ./vendor/bin/phpcs --standard=PSR1 --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' src/ app/ web/
+  - ./vendor/bin/phpcs --standard=PSR2 --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' src/ app/ web/
+  - ./vendor/bin/phpcs --standard=ENTB --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' src/ app/ web/
+  - ./vendor/bin/phpunit -c app/

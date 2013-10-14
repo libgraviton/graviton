@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Loader;
 /**
  * GravitonBundleExtension
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
+ * To learn more see {@link http://scm.to/004w}
  *
  * @category GravitonBundleBundle
  * @package  Graviton
@@ -36,7 +36,10 @@ class GravitonBundleExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\XmlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
         $loader->load('services.xml');
     }
 }
