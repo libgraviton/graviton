@@ -18,6 +18,7 @@ use JMS\SerializerBundle\JMSSerializerBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CoreBundle\GravitonCoreBundle;
+use Graviton\RestBundle\GravitonRestBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
@@ -51,6 +52,7 @@ class AppKernel extends Kernel
             new JMSSerializerBundle(),
             new FOSRestBundle(),
             new GravitonCoreBundle(),
+        	new GravitonRestBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
