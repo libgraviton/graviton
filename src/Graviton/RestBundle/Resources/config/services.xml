@@ -9,10 +9,14 @@
         <parameter key="graviton_rest_action_read_linked.class">Graviton\RestBundle\Action\RestActionRead</parameter>
         <parameter key="graviton_rest_mapper.class">Graviton\RestBundle\Mapper\EntityService</parameter>
         <parameter key="graviton_rest_pager_standard.class">Graviton\RestBundle\Pager\Standard</parameter>
+        <parameter key="graviton_rest_parser_rql.class">Graviton\RestBundle\Parser\Rql</parameter>
     </parameters>
 
     <services>     
         <service id="graviton_rest_service_pager" class="%graviton_rest_pager_standard.class%" abstract="true">
+        </service>
+        
+        <service id="graviton_rest_service_parser" class="%graviton_rest_parser_rql.class%" abstract="true">
         </service>
            
         <service id="graviton_rest_model" abstract="true"> 

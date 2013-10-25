@@ -1,12 +1,19 @@
 <?php
 namespace Graviton\RestBundle\Parser;
 
-// dummy class
-class Rql
+use Graviton\RestBundle\Parser;
+
+class Rql implements ParserInterface
 {
-	public function applyFilter($query)
+	private $request;
+	
+	public function parse()
 	{
-		$query->setFirstResult($offset);
-		$query->setMaxResults(20);
+		
+	}
+	
+	public function setRequest($request)
+	{
+		$this->request = $request;
 	}
 }

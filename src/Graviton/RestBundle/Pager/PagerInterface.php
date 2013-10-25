@@ -41,4 +41,6 @@ interface PagerInterface
 	 * @return RestPagerInterface $this This
 	 */
 	public function setPageSize($pageSize);
+	
+	public function setRequest($request);
 }

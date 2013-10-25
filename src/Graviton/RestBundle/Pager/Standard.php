@@ -9,6 +9,8 @@ class Standard implements PagerInterface
 	
 	private $pageSize;
 	
+	private $request;
+	
 	public function __construct($page = 1, $pageSize = 20)
 	{
 		$this->page = $page;
@@ -27,6 +29,16 @@ class Standard implements PagerInterface
 	
 	public function getOffset()
 	{
+		$requestQuery = $this->request->query->all();
+
+		if (isset($requestQuery['page']) && $requestQuery['page'] > 0) {
+			$this->page = $requestQuery['page'];
+		}
+		
+		if (isset($requestQuery['pageSize'])) {
+			$this->pageSize = $requestQuery['pageSize'];
+		}
+		
 		$offset = $this->pageSize * ($this->page -1);
 
 		return $offset;
@@ -44,5 +56,10 @@ class Standard implements PagerInterface
 		$this->pageSize = $pageSize;
 		
 		return $this;
+	}
+	
+	public function setRequest($request)
+	{
+		$this->request = $request;
 	}
 }
