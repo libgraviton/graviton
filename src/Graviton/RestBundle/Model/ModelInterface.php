@@ -67,12 +67,12 @@ interface ModelInterface
 	 * 
 	 * @param RestParserInterface $parser Parser
 	 */
-	public function setParser(RestParserInterface $parser);
+	public function setParser($parser);
 	
 	/**
 	 * Set a pager
 	 * 
 	 * @param RestPagerInterface $pager Pager
 	 */
-	public function setPager(RestPagerInterface $pager);
+	public function setPager($pager);
 }

@@ -4,7 +4,7 @@ namespace Graviton\RestBundle\Model;
 use Graviton\RestBundle\Model\ModelDoctrine as Model;
 
 /**
- * MapperInterface
+ * RestModelDoctrineFactory
  *
  * @category GravitonRestBundle
  * @package  Graviton

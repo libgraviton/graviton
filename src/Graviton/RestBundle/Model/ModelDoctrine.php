@@ -2,6 +2,7 @@
 namespace Graviton\RestBundle\Model;
 
 use Graviton\RestBundle\Model\ModelInterface;
+use Graviton\RestBundle\Pager;
 
 /**
  * ModelDoctrine
@@ -51,7 +52,7 @@ class ModelDoctrine implements ModelInterface
 		
 		if ($this->pager) {
 			$query->setFirstResult($this->pager->getOffset());
-			$query->setMaxResults($pageSize->pager->getPageSize());
+			$query->setMaxResults($this->pager->getPageSize());
 		}
 		
 		$result = $query->getResult();
@@ -111,12 +112,12 @@ class ModelDoctrine implements ModelInterface
 		$this->doctrine = $mapper;
 	}
 	
-	public function setParser(RestParserInterface $parser)
+	public function setParser($parser)
 	{
 		$this->parser = $parser;
 	}
 	
-	public function setPager(RestPagerInterface $pager)
+	public function setPager($pager)
 	{
 		$this->pager = $pager;
 	}

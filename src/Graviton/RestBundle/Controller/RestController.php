@@ -23,6 +23,7 @@ abstract class RestController extends Controller
 	private $restActionRead;
 	private $restActionWrite;
 	private $model;
+	private $request;
 	
 	/**
 	 * Returns single record
@@ -33,7 +34,7 @@ abstract class RestController extends Controller
 	 */
 	public function getAction($id)
     {
-    	return $this->restActionRead->getOne($id, $this->getRequest(), $this->model);
+    	return $this->restActionRead->getOne($id, $this->request, $this->model);
     }
     
     /**
@@ -43,7 +44,7 @@ abstract class RestController extends Controller
      */
     public function allAction()
     {    	 
-    	return $this->restActionRead->getAll($this->getRequest(), $this->model);
+    	return $this->restActionRead->getAll($this->request, $this->model);
     }
     
     /**
@@ -55,7 +56,7 @@ abstract class RestController extends Controller
      */
     public function postAction()
     {    		
-		return $this->restActionWrite->create($this->getRequest(), $this->model);
+		return $this->restActionWrite->create($this->request, $this->model);
     }
     
     /**
@@ -67,7 +68,7 @@ abstract class RestController extends Controller
      */
     public function putAction($id)
     {   	
-		return $this->restActionWrite->update($id, $this->getRequest(), $this->model);
+		return $this->restActionWrite->update($id, $this->request, $this->model);
     }
     
     /**
@@ -78,6 +79,16 @@ abstract class RestController extends Controller
     public function deleteAction($id)
     {
     	return $this->restActionWrite->delete($id, $this->model);
+    }
+    
+    /**
+     * Get request
+     *
+     * @param Number $id ID of  record
+     */
+    public function getRequest()
+    {
+    	return $this->request;
     }
     
     /**
@@ -111,5 +122,10 @@ abstract class RestController extends Controller
     public function setModel($model)
     {
     	$this->model = $model;
+    }
+    
+    public function setRequest($request)
+    {
+    	$this->request = $request;
     }
 }

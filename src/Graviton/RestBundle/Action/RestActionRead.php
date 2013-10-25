@@ -19,14 +19,13 @@ class RestActionRead implements RestActionReadInterface
 	private $doctrine;
 	private $serviceMapper;
 	private $serializer;
-	private $queryParser;
 
-	public function __construct($doctrine, $serviceMapper, $serializer, $queryParser = null)
+	public function __construct($doctrine, $serviceMapper, $serializer, $request = null)
 	{
+		//var_dump($request->getContent());die;
 		$this->doctrine = $doctrine;
 		$this->serviceMapper = $serviceMapper;
 		$this->serializer = $serializer;
-		$this->queryParser = $queryParser;
 	}
 	
 	public function getOne($id, $request, $model)

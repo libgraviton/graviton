@@ -4,7 +4,7 @@ namespace Graviton\RestBundle\Response;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * ModelDoctrine
+ * ResponseFactory
  *
  * @category GravitonRestBundle
  * @package  Graviton
