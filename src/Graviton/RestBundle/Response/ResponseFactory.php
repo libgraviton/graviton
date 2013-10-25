@@ -3,9 +3,18 @@ namespace Graviton\RestBundle\Response;
 
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * ModelDoctrine
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class ResponseFactory
 {
-	public static function getResponse($statusCode, $content = array(), $headers = array())
+	public static function getResponse($statusCode, $content = '', $headers = array())
 	{
 		$response = new Response();
 		$response->setStatusCode($statusCode);

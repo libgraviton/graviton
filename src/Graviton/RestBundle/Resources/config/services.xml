@@ -11,6 +11,11 @@
     </parameters>
 
     <services>        
+        <service id="graviton_rest_model" abstract="true"> 
+            <call method="setMapper">
+                <argument type="service" id="doctrine"></argument>
+            </call>
+        </service> 
         <service id="graviton_rest_service_mapper" class="%graviton_rest_mapper.class%">
             <argument type="service" id="router"></argument>
         </service>

@@ -9,12 +9,20 @@ use FOS\RestBundle\View;
 use Doctrine\ORM\Query;
 use Graviton\RestBundle\Hydrator\DoctrineObject as DoctrineHydrator;
 
+/**
+ * RestController
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 abstract class RestController extends Controller
 {		
 	private $restActionRead;
 	private $restActionWrite;
-	private $entityClass;
-	private $connectionName = 'default';
+	private $model;
 	
 	/**
 	 * Returns single record
@@ -25,7 +33,7 @@ abstract class RestController extends Controller
 	 */
 	public function getAction($id)
     {
-    	return $this->restActionRead->getOne($id, $this->getRequest(),  'Financing\ExpiryListBundle\Entity\DataFinancingExpiry', 'report');
+    	return $this->restActionRead->getOne($id, $this->getRequest(), $this->model);
     }
     
     /**
@@ -33,9 +41,9 @@ abstract class RestController extends Controller
      * 
      * @return Object $retVal Collection of entries
      */
-    public function allAction($page, $pageSize)
+    public function allAction()
     {    	 
-    	return $this->restActionRead->getAll($page, $pageSize, $this->getRequest(),  'Financing\ExpiryListBundle\Entity\DataFinancingExpiry', 'report');
+    	return $this->restActionRead->getAll($this->getRequest(), $this->model);
     }
     
     /**
@@ -47,7 +55,7 @@ abstract class RestController extends Controller
      */
     public function postAction()
     {    		
-		return $this->restActionWrite->write(null, $this->getRequest(),  'Financing\ExpiryListBundle\Entity\DataFinancingExpiry', 'report');
+		return $this->restActionWrite->create($this->getRequest(), $this->model);
     }
     
     /**
@@ -59,7 +67,7 @@ abstract class RestController extends Controller
      */
     public function putAction($id)
     {   	
-		return $this->restActionWrite->write($id, $this->getRequest(),  'Financing\ExpiryListBundle\Entity\DataFinancingExpiry', 'report');
+		return $this->restActionWrite->update($id, $this->getRequest(), $this->model);
     }
     
     /**
@@ -69,7 +77,7 @@ abstract class RestController extends Controller
      */
     public function deleteAction($id)
     {
-    	$this->restActionWrite->delete($id);
+    	return $this->restActionWrite->delete($id, $this->model);
     }
     
     /**
@@ -99,14 +107,9 @@ abstract class RestController extends Controller
     	
     	return;
     }
-
-    public function setEnityClass($entityClass)
-    {
-    	$this->entityClass = $entityClass;
-    }
     
-    public function setConnectionName($connection)
+    public function setModel($model)
     {
-    	$this->connection = $connection;
+    	$this->model = $model;
     }
 }

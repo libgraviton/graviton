@@ -1,5 +1,7 @@
 <?php
-namespace Graviton\RestBundle\Mapper;
+namespace Graviton\RestBundle\Model;
+
+use Graviton\RestBundle\Model\ModelDoctrine as Model;
 
 /**
  * MapperInterface
@@ -10,11 +12,12 @@ namespace Graviton\RestBundle\Mapper;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-interface MapperInterface 
+class RestModelDoctrineFactory
 {
-	public function add($id, $value);
-	
-	public function remove($id);
-	
-	public function get($id);
+	function getModelDoctrine($className, $connection = "default")
+	{
+		$model = new Model($className, $connection);
+		
+		return $model;
+	}
 }
