@@ -34,7 +34,20 @@ class EntityService
 		return $this;
 	}
 	
-	public function get($id, $action, $urlParams)
+	public function match($id, $byValue = false)
+	{
+		$retVal = false;
+		
+		if (!$byValue) {
+			$retVal = $this[$id];
+		} else {
+			$retVal = array_find($id);
+		}
+		
+		return $retVal;
+	}
+	
+	public function generateUrl($entity, $urlParams)
 	{
 		$service = $this->arrMap[$id].'_'.strtolower($action);
 		$url = $this->router->generate($service, $urlParams);

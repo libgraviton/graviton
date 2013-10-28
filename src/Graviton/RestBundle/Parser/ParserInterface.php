@@ -18,4 +18,6 @@ interface ParserInterface
 	 * @return RestParserInterface $this This
 	 */
 	public function setRequest($request);
+	
+	public function append($query);
 }

@@ -19,13 +19,14 @@ class RestActionRead implements RestActionReadInterface
 	private $doctrine;
 	private $serviceMapper;
 	private $serializer;
+	private $serializerContext = null;
 
-	public function __construct($doctrine, $serviceMapper, $serializer, $request = null)
+	public function __construct($doctrine, $serviceMapper, $serializer, $serializerContext = null, $request = null)
 	{
-		//var_dump($request->getContent());die;
 		$this->doctrine = $doctrine;
 		$this->serviceMapper = $serviceMapper;
 		$this->serializer = $serializer;
+		$this->serializerContext = $serializerContext;
 	}
 	
 	public function getOne($id, $request, $model)
@@ -35,11 +36,12 @@ class RestActionRead implements RestActionReadInterface
 		$result = $model->find($id);
 		
 		if ($result) {
-			$response = Response::getResponse(201, $this->serializer->serialize($result, 'json'));
+			$response = Response::getResponse(200, $this->serializer->serialize($result, 'json', $this->serializerContext));
 		}
 		
 		//add link header for each child
 		//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+		
 
 		return $response;
 	}
@@ -51,7 +53,7 @@ class RestActionRead implements RestActionReadInterface
 		$result = $model->findAll();
 		
 		if ($result) {
-			$response = Response::getResponse(200, $this->serializer->serialize($result, 'json'));
+			$response = Response::getResponse(200, $this->serializer->serialize($result, 'json', $this->serializerContext));
 		}
 		
 		//add prev / next headers

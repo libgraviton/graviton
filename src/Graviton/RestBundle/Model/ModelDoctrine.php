@@ -47,6 +47,7 @@ class ModelDoctrine implements ModelInterface
 		$query = $queryBuilder->getQuery();
 		
 		if ($this->parser) {
+			$this->parser->parse();
 			//$query = $this->parser...
 		}
 		
@@ -87,13 +88,13 @@ class ModelDoctrine implements ModelInterface
 		$entity = $this->find($id);
 	
 		if ($entity) {
-			$em = $this->doctrine->getManager();
+			$em = $this->doctrine->getManager($this->connectionName);
 			$em->remove($entity);
 			$em->flush();
 			
 			$retVal = true;
 		}	
-		var_dump($retVal);
+
 		return $retVal;
 	}
 	

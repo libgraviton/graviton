@@ -16,5 +16,5 @@ interface MapperInterface
 	
 	public function remove($id);
 	
-	public function get($id);
+	public function match($id, $byValue = false);
 }
