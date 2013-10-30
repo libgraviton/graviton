@@ -152,7 +152,7 @@ class ScriptHandler
     private static function getPackageExtraOptions(CommandEvent $event)
     {
         $packages = array();
-        $vendorDir = __DIR__.'/../../../../';
+        $vendorDir = getcwd().'/';
         $vendorDir .= $event->getComposer()->getConfig()->get('vendor-dir');
         $lockData = $event->getComposer()->getLocker()->getLockData();
         foreach ($lockData['packages'] as $package) {
