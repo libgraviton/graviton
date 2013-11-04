@@ -5,9 +5,8 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController as Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use FOS\RestBundle\Controller\FOSRestController;
+use Graviton\CoreBundle\Repository\AppRepository;
 
 /**
  * AppController
@@ -18,7 +17,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class AppController extends Controller
+class AppController extends FOSRestController
 {
-    
+    public function __construct(AppRepository $apps)
+    {
+        $this->apps = $apps;
+    }
+
+    public function allAction()
+    {
+        return $this->apps->findAll();
+    }
 }
