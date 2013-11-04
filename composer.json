@@ -33,7 +33,7 @@
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
     "require-dev": {
-        "libgraviton/codesniffer": ">=1.0.0",
+        "libgraviton/codesniffer": "*@dev",
         "phpunit/phpunit": "*"
     },
     "require": {

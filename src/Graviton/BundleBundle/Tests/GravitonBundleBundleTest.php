@@ -34,8 +34,8 @@ class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
         $result = $sut->getBundles();
         $this->assertEquals($expectation, $result);
         $this->assertInstanceOf(
-           '\Graviton\BundleBundle\GravitonBundleInterface',
-           $result[0]
+            '\Graviton\BundleBundle\GravitonBundleInterface',
+            $result[0]
         );
     }
 }

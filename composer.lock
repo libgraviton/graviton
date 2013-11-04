@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b00214e89b9a857ac85a4ae2ebe93145",
+    "hash": "20e2a85b7a9ad468d242f89d19c4d88b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2171,16 +2171,16 @@
         },
         {
             "name": "libgraviton/codesniffer",
-            "version": "1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "9da34c873a5826da3dd899052695f6ebd9597b97"
+                "reference": "77f48f5e8eef7c0137a0dcdb7e48a271581f5190"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/9da34c873a5826da3dd899052695f6ebd9597b97",
-                "reference": "9da34c873a5826da3dd899052695f6ebd9597b97",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/77f48f5e8eef7c0137a0dcdb7e48a271581f5190",
+                "reference": "77f48f5e8eef7c0137a0dcdb7e48a271581f5190",
                 "shasum": ""
             },
             "require": {
@@ -2199,7 +2199,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2013-10-10 12:25:39"
+            "time": "2013-10-14 14:08:52"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2646,7 +2646,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "doctrine/mongodb-odm": 20,
-        "doctrine/mongodb-odm-bundle": 20
+        "doctrine/mongodb-odm-bundle": 20,
+        "libgraviton/codesniffer": 20
     },
     "platform": {
         "php": ">=5.3.3"

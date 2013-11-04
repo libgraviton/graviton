@@ -50,7 +50,7 @@ class App
     /**
      * Set name
      *
-     * @param string $name
+     * @param string $name internal name
      *
      * @return self
      */
@@ -73,7 +73,7 @@ class App
     /**
      * Set title
      *
-     * @param string $title
+     * @param string $title title used for display
      *
      * @return self
      */
@@ -96,7 +96,7 @@ class App
     /**
      * Set showInMenu
      *
-     * @param boolean $showInMenu
+     * @param boolean $showInMenu show app in menu
      *
      * @return self
      */
