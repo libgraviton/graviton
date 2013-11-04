@@ -4,7 +4,7 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Graviton\CoreBundle\Document\App">
+    <document name="Graviton\CoreBundle\Document\App" repository-class="Graviton\CoreBundle\Repository\AppRepository">
         <field fieldName="id" id="true"/>
         <field fieldName="name" type="string"/>
         <field fieldName="title" type="string"/>
