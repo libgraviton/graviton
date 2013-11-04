@@ -6,6 +6,8 @@
 namespace Graviton\BundleBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Graviton\BundleBundle\GravitonBundleInterface;
+use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
  * GravitonBundleBundle
@@ -21,10 +23,21 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
     /**
      * {@inheritDoc}
      *
+     * This serves as kickstarter by instanciating core bundle. It has not
+     * yet been decided where the remaining GravitonBundles get loaded.
+     *
+     * @todo GravitonBundle loading/disco (maybe with command support).
+     *
      * @return Array
      */
     public function getBundles()
     {
-        return array();
+        return array(
+            new GravitonCoreBundle(),
+            // ie.
+            // new GravitonRestBundle(),
+            // new GravitonMessagingBundle(),
+            // etc... but automated ;)
+        );
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "The base package for graviton",
     "license": "GPL",
     "authors": [
@@ -19,13 +19,11 @@
     ],
     "scripts": {
         "post-install-cmd": [
-            "Graviton\\BundleBundle\\Composer\\ScriptHandler::buildImportsFiles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
         ],
         "post-update-cmd": [
-            "Graviton\\BundleBundle\\Composer\\ScriptHandler::buildImportsFiles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
@@ -35,7 +33,7 @@
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
     "require-dev": {
-        "libgraviton/codesniffer": ">=1.0.0",
+        "libgraviton/codesniffer": "*@dev",
         "phpunit/phpunit": "*"
     },
     "require": {
@@ -51,7 +49,10 @@
         "sensio/generator-bundle": "2.3.*",
         "jms/serializer-bundle": "*",
         "friendsofsymfony/rest-bundle": "*",
-        "sensio/distribution-bundle": "~2.3.4"
+        "sensio/distribution-bundle": "~2.3.4",
+        "doctrine/mongodb-odm": "1.0.*@dev",
+        "doctrine/mongodb-odm-bundle": "3.0.*@dev",
+        "stof/doctrine-extensions-bundle": ">=1.1.0"
     },
     "config": {
     },

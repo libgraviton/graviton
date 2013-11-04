@@ -3,7 +3,7 @@
  * manage and load bundle config.
  */
 
-namespace Graviton\CoreBundle\DependencyInjection;
+namespace Graviton\DocumentBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonCoreExtension extends Extension implements PrependInterface
+class GravitonDocumentExtension extends Extension implements PrependInterface
 {
     /**
      * {@inheritDoc}

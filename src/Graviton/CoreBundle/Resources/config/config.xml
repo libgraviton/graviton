@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xmlns:doctrine_extensions="http://example.org/schema/dic/stof_doctrine_extensions"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <framework:config>
+        <framework:secret>%secret%</framework:secret>
+        <framework:router resource="%kernel.root_dir%/config/routing.xml"/>
+        <framework:templating>
+            <!-- move this to where it is needed -->
+            <framework:engine>twig</framework:engine>
+        </framework:templating>
+        <framework:session>
+            <framework:name>graviton</framework:name>
+        </framework:session>
+        <framework:form>true</framework:form>
+    </framework:config>
+
+    <doctrine_mongodb:config>
+        <doctrine_mongodb:document-manager id="core" database="graviton-core">
+	    <doctrine_mongodb:mapping name="GravitonCoreBundle" type="xml"/>
+        </doctrine_mongodb:document-manager>
+        <doctrine_mongodb:connection id="core" server="mongodb://localhost:27017"/>
+    </doctrine_mongodb:config>
+
+    <doctrine_extensions:config default-locale="en_US">
+        <doctrine_extensions:mongodb>
+            <doctrine_extensions:document-manager id="core" loggable="true"/>
+        </doctrine_extensions:mongodb>
+    </doctrine_extensions:config>
+
+</container>

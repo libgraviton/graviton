@@ -6,3 +6,8 @@ app/SymfonyRequirements.php
 web/bundles
 app/config-imports.xml
 app/routing-imports.xml
+vendor/
+composer.phar
+*.swp
+*.swo
+.*~

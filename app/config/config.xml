@@ -13,20 +13,7 @@
     <import resource="parameters.xml"/>
     <import resource="parameters_local.xml"/>
     <import resource="security.xml"/>
-    <import resource="../config-imports.xml"/>
   </imports>
-
-  <framework:config>
-    <framework:secret>%secret%</framework:secret>
-    <framework:router resource="%kernel.root_dir%/config/routing.xml"/>
-    <framework:templating>
-      <framework:engine>twig</framework:engine>
-    </framework:templating>
-    <framework:session>
-      <framework:name>graviton</framework:name>
-    </framework:session>
-    <framework:form>true</framework:form>
-  </framework:config>
 
   <doctrine:config>
     <doctrine:dbal default-connection="default">

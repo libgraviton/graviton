@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <doctrine_mongodb:config default-database="graviton">
+        <doctrine_mongodb:document-manager id="default">
+        </doctrine_mongodb:document-manager>
+        <doctrine_mongodb:connection id="default" server="mongodb://localhost:27017">
+            <doctrine_mongodb:options>
+                <doctrine_mongodb:connect>true</doctrine_mongodb:connect>
+            </doctrine_mongodb:options>
+        </doctrine_mongodb:connection>
+    </doctrine_mongodb:config>
+</container>
