@@ -61,5 +61,4 @@ class GravitonDocumentExtension extends Extension implements PrependExtensionInt
         );
         $loader->load('config.xml');
     }
-
 }

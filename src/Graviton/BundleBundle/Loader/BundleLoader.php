@@ -57,7 +57,7 @@ class BundleLoader
      */
     public function load()
     {
-        while(!empty($this->bundleStack)) {
+        while (!empty($this->bundleStack)) {
             $bundle = array_shift($this->bundleStack);
             $this->addBundle($bundle);
         }

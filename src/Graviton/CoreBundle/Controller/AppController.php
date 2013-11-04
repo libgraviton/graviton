@@ -22,6 +22,15 @@ use Graviton\CoreBundle\Repository\AppRepository;
  */
 class AppController extends FOSRestController
 {
+    /**
+     * create new controller
+     *
+     * @param AppRepository   $apps       app repo
+     * @param DocumentManager $dm         document manager
+     * @param Serializer      $serializer serializer
+     *
+     * @return void
+     */
     public function __construct(AppRepository $apps, DocumentManager $dm, Serializer $serializer)
     {
         $this->apps = $apps;
@@ -29,6 +38,11 @@ class AppController extends FOSRestController
         $this->serializer = $serializer;
     }
 
+    /**
+     * return all the records
+     *
+     * @return Response
+     */
     public function allAction()
     {
         $apps = $this->apps->findAll()->toArray();

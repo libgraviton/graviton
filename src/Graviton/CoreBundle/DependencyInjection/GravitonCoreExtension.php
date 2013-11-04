@@ -61,5 +61,4 @@ class GravitonCoreExtension extends Extension implements PrependExtensionInterfa
         );
         $loader->load('config.xml');
     }
-
 }

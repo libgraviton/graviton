@@ -33,10 +33,10 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
     {
         return array(
             new GravitonCoreBundle(),
-	    // ie.
-	    // new GravitonRestBundle(),
-	    // new GravitonMessagingBundle(),
-	    // etc... but automated ;)
+            // ie.
+            // new GravitonRestBundle(),
+            // new GravitonMessagingBundle(),
+            // etc... but automated ;)
         );
     }
 }
