@@ -8,6 +8,7 @@ namespace Graviton\DocumentBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
 
 /**
  * GravitonDocumentBundle
@@ -29,6 +30,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         return array(
 	    new DoctrineMongoDBBundle(),
+	    new StofDoctrineExtensionsBundle(),
         );
     }
 }

@@ -3,6 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:framework="http://symfony.com/schema/dic/symfony"
     xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xmlns:doctrine_extensions="http://example.org/schema/dic/stof_doctrine_extensions"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <framework:config>
@@ -24,5 +25,11 @@
         </doctrine_mongodb:document-manager>
         <doctrine_mongodb:connection id="core" server="mongodb://localhost:27017"/>
     </doctrine_mongodb:config>
+
+    <doctrine_extensions:config default-locale="en_US">
+        <doctrine_extensions:mongodb>
+            <doctrine_extensions:document-manager id="core" loggable="true"/>
+        </doctrine_extensions:mongodb>
+    </doctrine_extensions:config>
 
 </container>
