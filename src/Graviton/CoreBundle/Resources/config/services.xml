@@ -12,6 +12,8 @@
     <services>
         <service id="gravitoncorebundle.controller.app" class="%gravitoncorebundle.controller.app.class%">
             <argument type="service" id="gravitoncorebundle.repository.app"/>
+            <argument type="service" id="doctrine_mongodb.odm.core_document_manager"/>
+            <argument type="service" id="serializer"/>
         </service>
 
         <service id="gravitoncorebundle.repository.app"

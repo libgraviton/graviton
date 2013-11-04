@@ -6,6 +6,9 @@
 namespace Graviton\CoreBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
 use Graviton\CoreBundle\Repository\AppRepository;
 
 /**
@@ -19,13 +22,21 @@ use Graviton\CoreBundle\Repository\AppRepository;
  */
 class AppController extends FOSRestController
 {
-    public function __construct(AppRepository $apps)
+    public function __construct(AppRepository $apps, DocumentManager $dm, Serializer $serializer)
     {
         $this->apps = $apps;
+        $this->dm = $dm;
+        $this->serializer = $serializer;
     }
 
     public function allAction()
     {
-        return $this->apps->findAll();
+        $apps = $this->apps->findAll()->toArray();
+        $response = new Response(
+            $this->serializer->serialize($apps, 'json'),
+            200,
+            array('content-type' => 'application/json')
+        );
+        return $response;
     }
 }
