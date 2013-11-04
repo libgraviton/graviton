@@ -51,6 +51,7 @@ class App
      * Set name
      *
      * @param string $name
+     *
      * @return self
      */
     public function setName($name)
@@ -73,6 +74,7 @@ class App
      * Set title
      *
      * @param string $title
+     *
      * @return self
      */
     public function setTitle($title)
@@ -95,6 +97,7 @@ class App
      * Set showInMenu
      *
      * @param boolean $showInMenu
+     *
      * @return self
      */
     public function setShowInMenu($showInMenu)

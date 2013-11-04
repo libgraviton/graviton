@@ -31,8 +31,11 @@ class AppController extends FOSRestController
      *
      * @return void
      */
-    public function __construct(AppRepository $apps, DocumentManager $dm, Serializer $serializer)
-    {
+    public function __construct(
+        AppRepository $apps,
+        DocumentManager $dm,
+        Serializer $serializer
+    ) {
         $this->apps = $apps;
         $this->dm = $dm;
         $this->serializer = $serializer;

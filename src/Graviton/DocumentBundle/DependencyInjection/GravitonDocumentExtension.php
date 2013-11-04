@@ -22,7 +22,9 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonDocumentExtension extends Extension implements PrependExtensionInterface
+class GravitonDocumentExtension
+    extends Extension
+    implements PrependExtensionInterface
 {
     /**
      * {@inheritDoc}
