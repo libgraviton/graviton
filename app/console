@@ -14,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 use Graviton\AppKernel;
+use Graviton\BundleBundle\Loader\BundleLoader;
+use Graviton\BundleBundle\GravitonBundleBundle;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -24,5 +26,6 @@ if ($debug) {
 }
 
 $kernel = new AppKernel($env, $debug);
+$kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 $application = new Application($kernel);
 $application->run($input);
