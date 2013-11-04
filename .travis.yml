@@ -1,5 +1,7 @@
 language: php
 before_script:
+  - echo "extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer install --dev --no-interaction
 php:
   - 5.4
