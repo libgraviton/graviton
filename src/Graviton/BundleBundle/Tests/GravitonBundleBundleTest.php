@@ -27,15 +27,15 @@ class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
     public function testGetBundles()
     {
         $sut = new GravitonBundleBundle();
-	$expectation = array(
-	    new GravitonCoreBundle()
-	);
+        $expectation = array(
+            new GravitonCoreBundle()
+        );
 
         $result = $sut->getBundles();
-	$this->assertEquals($expectation, $result);
-	$this->assertInstanceOf(
-	  '\Graviton\BundleBundle\GravitonBundleInterface',
-	  $result[0]
-	);
+        $this->assertEquals($expectation, $result);
+        $this->assertInstanceOf(
+            '\Graviton\BundleBundle\GravitonBundleInterface',
+            $result[0]
+        );
     }
 }

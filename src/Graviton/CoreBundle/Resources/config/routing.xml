@@ -3,14 +3,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="graviton_core_app_all" pattern="/app">
-      <default key="_controller">GravitonCoreBundle:App:all</default>
-      <default key="_format">~</default>
+    <route id="graviton_corebundle_app_all" pattern="/app">
+      <default key="_controller">gravitoncorebundle.controller.app:allAction</default>
       <requirement key="_method">GET</requirement>
     </route>
-    <route id="graviton_core_app_get" pattern="/app/{id}">
-      <default key="_controller">GravitonCoreBundle:App:get</default>
-      <default key="_format">~</default>
-      <requirement key="_method">GET</requirement>
-    </route>
+
 </routes>

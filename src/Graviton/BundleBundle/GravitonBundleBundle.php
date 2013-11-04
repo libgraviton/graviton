@@ -25,6 +25,7 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
      *
      * This serves as kickstarter by instanciating core bundle. It has not
      * yet been decided where the remaining GravitonBundles get loaded.
+     *
      * @todo GravitonBundle loading/disco (maybe with command support).
      *
      * @return Array
@@ -33,10 +34,10 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
     {
         return array(
             new GravitonCoreBundle(),
-	    // ie.
-	    // new GravitonRestBundle(),
-	    // new GravitonMessagingBundle(),
-	    // etc... but automated ;)
+            // ie.
+            // new GravitonRestBundle(),
+            // new GravitonMessagingBundle(),
+            // etc... but automated ;)
         );
     }
 }

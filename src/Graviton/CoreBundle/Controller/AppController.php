@@ -5,9 +5,11 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController as Controller;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use FOS\RestBundle\Controller\FOSRestController;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
+use Graviton\CoreBundle\Repository\AppRepository;
 
 /**
  * AppController
@@ -18,7 +20,40 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class AppController extends Controller
+class AppController extends FOSRestController
 {
-    
+    /**
+     * create new controller
+     *
+     * @param AppRepository   $apps       app repo
+     * @param DocumentManager $dm         document manager
+     * @param Serializer      $serializer serializer
+     *
+     * @return void
+     */
+    public function __construct(
+        AppRepository $apps,
+        DocumentManager $dm,
+        Serializer $serializer
+    ) {
+        $this->apps = $apps;
+        $this->dm = $dm;
+        $this->serializer = $serializer;
+    }
+
+    /**
+     * return all the records
+     *
+     * @return Response
+     */
+    public function allAction()
+    {
+        $apps = $this->apps->findAll()->toArray();
+        $response = new Response(
+            $this->serializer->serialize($apps, 'json'),
+            200,
+            array('content-type' => 'application/json')
+        );
+        return $response;
+    }
 }

@@ -57,7 +57,7 @@ class BundleLoader
      */
     public function load()
     {
-        while(!empty($this->bundleStack)) {
+        while (!empty($this->bundleStack)) {
             $bundle = array_shift($this->bundleStack);
             $this->addBundle($bundle);
         }
@@ -70,6 +70,8 @@ class BundleLoader
      * adds all bundles to finalBundles.
      * adds the results of getBundles to bundleStack if GravitonBundleInterface
      * was implemented.
+     *
+     * @param Mixed $bundle various flavours of bundles
      *
      * @return void
      */
