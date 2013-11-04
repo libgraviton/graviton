@@ -5,10 +5,11 @@
 
 namespace Graviton\CoreBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -21,7 +22,7 @@ use Symfony\Component\DependencyInjection\Loader;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonCoreExtension extends Extension
+class GravitonCoreExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * {@inheritDoc}
@@ -42,4 +43,23 @@ class GravitonCoreExtension extends Extension
         );
         $loader->load('services.xml');
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Load additional config into the container.
+     *
+     * @param ContainerBuilder $container instance
+     *
+     * @return void
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $loader = new Loader\XmlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
+        $loader->load('config.xml');
+    }
+
 }

@@ -36,45 +36,7 @@ class ScriptHandler
             return;
         }
 
-        static::doBuildConfigImportsFile($appDir, $options['packages']);
         static::doBuildRoutingImportsFile($appDir, $options['packages']);
-    }
-
-    /**
-     * Build app/config-imports.xml
-     *
-     * @param String $appDir   base dir to create file in
-     * @param Array  $packages Package configs
-     *
-     * @return void
-     */
-    public static function doBuildConfigImportsFile($appDir, $packages)
-    {
-        $file = $appDir.'/config-imports.xml';
-        if (file_exists($file)) {
-            unlink($file);
-        }
-
-        $xml  = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
-        $xml .= '<container xmlns="http://symfony.com/schema/dic/services">';
-        $xml .= '<!-- This is a generated file. -->';
-
-        if (true || !empty($packages)) {
-            $imports = "";
-            foreach ($packages as $package) {
-                if (isset($package['extra']['graviton-config-import'])) {
-                    $import = $package['dir'].'/';
-                    $import .= $package['extra']['graviton-config-import'];
-                    $imports .= '<import resource="'.$import.'"/>';
-                }
-            }
-            if (!empty($imports)) {
-                $xml .= '<imports>'.$imports.'</imports>';
-            }
-        }
-        $xml .= '</container>';
-
-        file_put_contents($file, $xml);
     }
 
     /**
