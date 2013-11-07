@@ -5,12 +5,8 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="graviton_rest_action_write_linked.class">Graviton\RestBundle\Action\RestActionWrite</parameter>
-        <parameter key="graviton_rest_action_read_linked.class">Graviton\RestBundle\Action\RestActionRead</parameter>
-        <parameter key="graviton_rest_mapper.class">Graviton\RestBundle\Mapper\EntityService</parameter>
         <parameter key="graviton_rest_pager_standard.class">Graviton\RestBundle\Pager\Standard</parameter>
         <parameter key="graviton_rest_parser_rql.class">Graviton\RestBundle\Parser\Rql\DoctrineRql</parameter>
-        <parameter key="serializer_context_null.class">JMS\Serializer\SerializationContext</parameter>
     </parameters>
 
     <services>     
@@ -19,38 +15,28 @@
         
         <service id="graviton_rest_service_parser" class="%graviton_rest_parser_rql.class%" abstract="true">
         </service>
-        
-       <service id="serializer_context_null" class="%serializer_context_null.class%">
-            <call method="setSerializeNull"><argument>true</argument></call>
-        </service>
            
         <service id="graviton_rest_model" abstract="true"> 
             <call method="setMapper">
                 <argument type="service" id="doctrine"></argument>
             </call>
         </service> 
-        
-        <service id="graviton_rest_service_mapper" class="%graviton_rest_mapper.class%">
-            <argument type="service" id="router"></argument>
-        </service>
-        <service id="graviton_rest_action_read" class="%graviton_rest_action_read_linked.class%" abstract="true">
-            <argument type="service" id="doctrine"></argument>
-            <argument type="service" id="graviton_rest_service_mapper"></argument>
-            <argument type="service" id="serializer"></argument>
-            <argument type="service" id="serializer_context_null"></argument>
-        </service>
-        
-         <service id="graviton_rest_action_write" class="%graviton_rest_action_write_linked.class%" abstract="true">
-            <argument type="service" id="doctrine"></argument>
-            <argument type="service" id="serializer"></argument>
-            <argument type="service" id="validator"></argument>
-            <argument type="service" id="router"></argument>
-         </service>
 
         <service id="graviton.rest.controller" scope="request" abstract="true">
             <call method="setRequest">
                 <argument type="service" id="request"></argument>
             </call>
+            <call method="setDoctrine">
+                <argument type="service" id="doctrine"></argument>
+            </call>
+            <call method="setSerializer">
+                <argument type="service" id="serializer"></argument>
+            </call>
+            <call method="setValidator">
+                <argument type="service" id="validator"></argument>
+            </call>
+            <call method="setSerializeNull"></call>
+            <call method="setDeserializeNull"></call>
         </service> 
         
     </services>
