@@ -43,11 +43,19 @@ class CreateService extends GeneratorCommand
 			$stucture = 'yes';
 			$dialog = $this->getDialogHelper();
 			
-			$connection = $dialog->ask($output, $dialog->getQuestion('Connection Name', 'default'), 'default');
+			$arrAnswers = array();
+			$arrAnswers['namespace'] = $input->getOption('namespace');
+			$arrAnswers['connection'] = $dialog->ask($output, $dialog->getQuestion('Connection Name', 'default'), 'default');
+			$arrAnswers['entityName'] = $dialog->ask($output, $dialog->getQuestion('Name of the entity/document  (TestEntity) ', ''), '');
+			$arrAnswers['entityDir'] = $dialog->ask($output, $dialog->getQuestion('Name of the folder containing your entities/documents  (Entity/Document) ', 'Entity'), 'Entity');
+			$arrAnswers['prefix'] = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($arrAnswers['entityName'])), '/'.strtolower($arrAnswers['entityName']));
+			
+			
+			/*$connection = $dialog->ask($output, $dialog->getQuestion('Connection Name', 'default'), 'default');
 			$entityName = $dialog->ask($output, $dialog->getQuestion('Name of the entity/document  (TestEntity) ', ''), '');
 			$entityDir = $dialog->ask($output, $dialog->getQuestion('Name of the folder containing your entities/documents  (Entity/Document) ', 'Entity'), 'Entity');
-			$prefix = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($entityName)), '/'.strtolower($entityName));
-			$generateModel = $dialog->ask($output, $dialog->getQuestion('Do you want to create a doctrine entity/document after completion?', 'no'), 'no');
+			$prefix = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($arrAnswers['entityName'])), '/'.strtolower($arrAnswers['entityName']));*/
+			//$generateModel = $dialog->ask($output, $dialog->getQuestion('Do you want to create a doctrine entity/document after completion?', 'no'), 'no');
 			
 			//$_SERVER['argv'][] = '--format=xml';
 			$arguments = $_SERVER['argv'];
@@ -55,19 +63,14 @@ class CreateService extends GeneratorCommand
 			$arguments[] = '--structure';
 
 			$commandInput = new ArgvInput($arguments);
-			//$commandInput->setOption('format', 'xml');
-			
-			
+
 			$command = $this->getApplication()->find('generate:bundle');
-			$objGenerator = new BundleGenerator($this->getContainer()->get('filesystem'), $this->getContainer(), $connection, $entityName, $entityDir, $input->getOption('namespace'), $prefix);
+			$objGenerator = new BundleGenerator($this->getContainer()->get('filesystem'), $this->getContainer(), $arrAnswers);
 
 			$command->setGenerator($objGenerator);
 
 			$return = $command->run($commandInput, $output);
-			
-			if ($generateModel == 'yes') {
-				$this->runEntityGeneratorCommand($input, $output);
-			}
+
 
 			//$text = 'ggu';
 			

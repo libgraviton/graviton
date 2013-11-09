@@ -29,16 +29,13 @@ class BundleGenerator extends ParentGenerator
     private $namespace;
     private $entityDir;
     private $routingPrexif;
+    private $arrAnswers;
 
-    public function __construct(Filesystem $filesystem, $container, $connection, $entityName, $entityDir, $namespace, $routingPrexif)
+    public function __construct(Filesystem $filesystem, $container, $arrAnswers)
     {
         $this->filesystem = $filesystem;
         $this->container = $container;
-        $this->connecton = $connection;
-        $this->entityName = $entityName;
-        $this->namespace = $namespace;
-        $this->entityDir = $entityDir;
-        $this->routingPrexif = $routingPrexif;
+        $this->arrAnswers = $arrAnswers;
     }
 
     public function generate($namespace, $bundle, $dir, $format, $structure)
@@ -68,7 +65,7 @@ class BundleGenerator extends ParentGenerator
             'extension_alias' => Container::underscore($basename),
         );
         
-        $serviceId = $this->connecton.'_'.$this->entityName; 
+        $serviceId = $this->arrAnswers['connection'].'_'.$this->arrAnswers['entityName']; 
         $parameters['service_id'] = $serviceId;
         
         $pagerId = $serviceId.'_pager';
@@ -83,7 +80,7 @@ class BundleGenerator extends ParentGenerator
         $routerId = $serviceId.'_router';
         $parameters['router_id'] = $routerId;
         
-        $entityPath = $this->namespace.'\\'.$this->entityDir.'\\'.$this->entityName;
+        $entityPath = $this->arrAnswers['namespace'].'\\'.$this->arrAnswers['entityDir'].'\\'.$this->arrAnswers['entityName'];
         $parameters['entity_path'] = $entityPath;
         
         $parameters['connection_name'] = $this->connecton;
