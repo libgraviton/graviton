@@ -14,6 +14,7 @@ use Sensio\Bundle\GeneratorBundle\Command\GenerateBundleCommand as ParentCommand
 use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
 use Symfony\Component\Console\Input\ArrayInput;
 use Sensio\Bundle\GeneratorBundle\Command\GeneratorCommand;
+use Symfony\Component\Console\Input\ArgvInput;
 
 class CreateService extends GeneratorCommand
 {
@@ -46,15 +47,23 @@ class CreateService extends GeneratorCommand
 			$entityName = $dialog->ask($output, $dialog->getQuestion('Name of the entity/document  (TestEntity) ', ''), '');
 			$entityDir = $dialog->ask($output, $dialog->getQuestion('Name of the folder containing your entities/documents  (Entity/Document) ', 'Entity'), 'Entity');
 			$prefix = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($entityName)), '/'.strtolower($entityName));
-			$generateModel = $dialog->ask($output, $dialog->getQuestion('Do you want to create a doctrine entity/document after completion?', 'yes'), 'yes');
+			$generateModel = $dialog->ask($output, $dialog->getQuestion('Do you want to create a doctrine entity/document after completion?', 'no'), 'no');
+			
+			//$_SERVER['argv'][] = '--format=xml';
+			$arguments = $_SERVER['argv'];
+			$arguments[] = '--format=xml';
+			$arguments[] = '--structure';
 
+			$commandInput = new ArgvInput($arguments);
+			//$commandInput->setOption('format', 'xml');
+			
 			
 			$command = $this->getApplication()->find('generate:bundle');
 			$objGenerator = new BundleGenerator($this->getContainer()->get('filesystem'), $this->getContainer(), $connection, $entityName, $entityDir, $input->getOption('namespace'), $prefix);
 
 			$command->setGenerator($objGenerator);
 
-			$return = $command->run($input, $output);
+			$return = $command->run($commandInput, $output);
 			
 			if ($generateModel == 'yes') {
 				$this->runEntityGeneratorCommand($input, $output);

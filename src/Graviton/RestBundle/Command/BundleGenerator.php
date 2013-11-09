@@ -103,9 +103,6 @@ class BundleGenerator extends ParentGenerator
         if ('annotation' != $format) {
             $this->renderFile('bundle/routing.'.$format.'.twig', $dir.'/Resources/config/routing.'.$format, $parameters);
         }
-
-       
-
     }
     
     protected function getSkeletonDirs(BundleInterface $bundle = null)
