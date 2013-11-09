@@ -42,7 +42,7 @@ class BasicLoader implements LoaderInterface
 			$routes->add($resource.'_delete', $actionDelete);
 		}
 
-		$this->loaded = true;
+		//$this->loaded = true;
 	
 		return $routes;
 	}
