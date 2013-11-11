@@ -43,6 +43,8 @@ class CreateService extends GeneratorCommand
 			$stucture = 'yes';
 			$dialog = $this->getDialogHelper();
 			
+			$dialog->writeSection($output, 'RestBundle Generator');
+			
 			$arrAnswers = array();
 			$arrAnswers['namespace'] = $input->getOption('namespace');
 			$arrAnswers['connection'] = $dialog->ask($output, $dialog->getQuestion('Connection Name', 'default'), 'default');
@@ -50,11 +52,8 @@ class CreateService extends GeneratorCommand
 			$arrAnswers['entityDir'] = $dialog->ask($output, $dialog->getQuestion('Name of the folder containing your entities/documents  (Entity/Document) ', 'Entity'), 'Entity');
 			$arrAnswers['prefix'] = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($arrAnswers['entityName'])), '/'.strtolower($arrAnswers['entityName']));
 			
+			$dialog->writeSection($output, 'Start Symfony Bundle Generator');
 			
-			/*$connection = $dialog->ask($output, $dialog->getQuestion('Connection Name', 'default'), 'default');
-			$entityName = $dialog->ask($output, $dialog->getQuestion('Name of the entity/document  (TestEntity) ', ''), '');
-			$entityDir = $dialog->ask($output, $dialog->getQuestion('Name of the folder containing your entities/documents  (Entity/Document) ', 'Entity'), 'Entity');
-			$prefix = $dialog->ask($output, $dialog->getQuestion('Prefix for this route (/test) ', '/'.strtolower($arrAnswers['entityName'])), '/'.strtolower($arrAnswers['entityName']));*/
 			//$generateModel = $dialog->ask($output, $dialog->getQuestion('Do you want to create a doctrine entity/document after completion?', 'no'), 'no');
 			
 			//$_SERVER['argv'][] = '--format=xml';
