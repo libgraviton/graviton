@@ -27,6 +27,7 @@ class RestController
 	private $validator;
 	private $model;
 	private $serializer;
+	private $router;
 	private $serializerContext = null;
 	private $deserializerContext = null;
 	
@@ -49,6 +50,7 @@ class RestController
     		);
     	}
     	
+    	
     	//add link header for each child
     	//$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
     	
@@ -66,12 +68,13 @@ class RestController
 		$result = $this->getModel()->findAll();
 		
 		if ($result) {
+			$serviceName = $this->model->getConnectionName().'_'.basename(strtr($this->model->getEntityClass(), '\\', '/'));
+			
 			$response = Response::getResponse(
 				200, 
 				$this->getSerializer()->serialize($result, 'json', $this->serializerContext)
 			);
 		}
-		
 		//add prev / next headers
 		//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
 
@@ -99,10 +102,12 @@ class RestController
 		}
 		
 		if (!$response) {
+			$serviceName = $this->model->getConnectionName().'_'.basename(strtr($this->model->getEntityClass(), '\\', '/'));
 			$record = $this->getModel()->insertRecord($record);		
-			$response = Response::getResponse(201, $this->getSerializer()->serialize($record, 'json'));
-			$response->headers->set(
-					'Location', "abc.de/".$record->getId()
+			$response = Response::getResponse(
+				201, 
+				$this->getSerializer()->serialize($record, 'json'),
+				array('Location' => $this->getRouter()->generate($serviceName.'_get', array('id' => $record->getId())))
 			);
 		}
 		
@@ -357,6 +362,16 @@ class RestController
     	
     	return $this->validator;
     }   
+    
+    public function setRouter($router)
+    {
+    	$this->router = $router;
+    }
+    
+    public function getRouter()
+    {
+    	return $this->router;	
+    }
     
     /**
      * Litte helper to add a serializer context which add null serialization
