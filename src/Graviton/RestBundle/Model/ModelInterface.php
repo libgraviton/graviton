@@ -54,25 +54,4 @@ interface ModelInterface
 	 * Get the connection name
 	 */
 	public function getConnectionName();
-	
-	/**
-	 * Set OR Mapper
-	 * 
-	 * @param Object $mapper OR Mapper
-	 */
-	public function setMapper($mapper);
-	
-	/**
-	 * Set a parser
-	 * 
-	 * @param RestParserInterface $parser Parser
-	 */
-	public function setParser($parser);
-	
-	/**
-	 * Set a pager
-	 * 
-	 * @param RestPagerInterface $pager Pager
-	 */
-	public function setPager($pager);
 }
