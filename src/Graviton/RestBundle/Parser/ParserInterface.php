@@ -8,16 +8,12 @@ interface ParserInterface
 	 * 
 	 * @return void;
 	 */
-	public function parse();
+	public function parse($query);
 	
 	/**
-	 * Set the request object
+	 * Get the parser result
 	 * 
-	 * @param Object $request Request object
-	 * 
-	 * @return RestParserInterface $this This
+	 * @return object $parserResult $result
 	 */
-	public function setRequest($request);
-	
-	public function append($query);
+	public function getResult();
 }
