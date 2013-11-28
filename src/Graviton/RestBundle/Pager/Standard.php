@@ -9,12 +9,52 @@ class Standard implements PagerInterface
 	
 	private $pageSize;
 	
-	private $request;
+	private $totalCount;
 	
 	public function __construct($page = 1, $pageSize = 20)
 	{
 		$this->page = $page;
 		$this->pageSize = $pageSize;
+	}
+	
+	public function getOffset()
+	{
+		$offset = $this->pageSize * ($this->page -1);
+	
+		return $offset;
+	}
+	
+	public function getNextPage()
+	{
+		$ret = false;
+
+		if (($this->getOffset() + $this->pageSize) < $this->totalCount) {
+			$ret = $this->getPage() + 1;
+		}
+			
+		return $ret;
+	}
+	
+	public function getPrevPage()
+	{
+		$ret = false;
+		
+		if ($this->page > 1) {
+			$ret = $this->page -1;
+		}
+		
+		return $ret;
+	}
+	
+	public function getLastPage()
+	{
+		$lastPage = floor($this->totalCount / $this->pageSize);
+		
+		if ($this->totalCount % $this->pageSize) {
+			$lastPage += 1;
+		}
+		
+		return $lastPage;
 	}
 	
 	public function getPage()
@@ -25,23 +65,6 @@ class Standard implements PagerInterface
 	public function getPageSize()
 	{
 		return $this->pageSize;
-	}
-	
-	public function getOffset()
-	{
-		$requestQuery = $this->request->query->all();
-
-		if (isset($requestQuery['page']) && $requestQuery['page'] > 0) {
-			$this->page = $requestQuery['page'];
-		}
-		
-		if (isset($requestQuery['pageSize'])) {
-			$this->pageSize = $requestQuery['pageSize'];
-		}
-		
-		$offset = $this->pageSize * ($this->page -1);
-
-		return $offset;
 	}
 	
 	public function setPage($page)
@@ -58,8 +81,8 @@ class Standard implements PagerInterface
 		return $this;
 	}
 	
-	public function setRequest($request)
+	public function setTotalCount($totalCount)
 	{
-		$this->request = $request;
+		$this->totalCount = $totalCount;
 	}
 }

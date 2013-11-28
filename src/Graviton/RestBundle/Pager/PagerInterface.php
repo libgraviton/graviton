@@ -2,21 +2,7 @@
 namespace Graviton\RestBundle\Pager;
 
 interface PagerInterface
-{
-	/**
-	 * Get the page
-	 * 
-	 * @return Number $page Page
-	 */
-	public function getPage();
-	
-	/**
-	 * Get the page size
-	 * 
-	 * @return Number $pageSize Page size
-	 */
-	public function getPageSize();
-	
+{	
 	/**
 	 * Get calculated offset
 	 * 
@@ -24,23 +10,9 @@ interface PagerInterface
 	 */
 	public function getOffset();
 	
-	/**
-	 * Set the page
-	 * 
-	 * @param Number $page Page
-	 * 
-	 * @return RestPagerInterface $this This
-	 */
-	public function setPage($page);
+	public function getNextPage();
 	
-	/**
-	 * Set the page size
-	 * 
-	 * @param Number $pageSize The page size
-	 * 
-	 * @return RestPagerInterface $this This
-	 */
-	public function setPageSize($pageSize);
+	public function getPrevPage();
 	
-	public function setRequest($request);
+	public function getLastPage();
 }
