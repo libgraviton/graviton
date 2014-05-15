@@ -12,9 +12,9 @@ namespace Graviton\RestBundle\Action;
  */
 interface RestActionWriteInterface
 {
-	public function create($request, $model);
-	
-	public function update($id, $request, $model);
-	
-	public function delete($id, $model);
+    public function create($request, $model);
+    
+    public function update($id, $request, $model);
+    
+    public function delete($id, $model);
 }

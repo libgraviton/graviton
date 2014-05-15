@@ -12,7 +12,7 @@ namespace Graviton\RestBundle\Action;
  */
 interface RestActionReadInterface
 {
-	public function getOne($id, $request, $model);
-	
-	public function getAll($request, $model);
+    public function getOne($id, $request, $model);
+    
+    public function getAll($request, $model);
 }

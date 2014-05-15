@@ -10,11 +10,11 @@ namespace Graviton\RestBundle\Mapper;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-interface MapperInterface 
+interface MapperInterface
 {
-	public function add($id, $value);
-	
-	public function remove($id);
-	
-	public function match($id, $byValue = false);
+    public function add($id, $value);
+    
+    public function remove($id);
+    
+    public function match($id, $byValue = false);
 }

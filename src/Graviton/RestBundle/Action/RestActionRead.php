@@ -16,49 +16,51 @@ use Graviton\RestBundle\Response\ResponseFactory as Response;
  */
 class RestActionRead implements RestActionReadInterface
 {
-	private $doctrine;
-	private $serviceMapper;
-	private $serializer;
-	private $serializerContext = null;
+    private $doctrine;
+    private $serviceMapper;
+    private $serializer;
+    private $serializerContext = null;
 
-	public function __construct($doctrine, $serviceMapper, $serializer, $serializerContext = null, $request = null)
-	{
-		$this->doctrine = $doctrine;
-		$this->serviceMapper = $serviceMapper;
-		$this->serializer = $serializer;
-		$this->serializerContext = $serializerContext;
-	}
-	
-	public function getOne($id, $request, $model)
-	{
-		$response = Response::getResponse(404, 'Entry with id '.$id.' not found');
+    public function __construct($doctrine, $serviceMapper, $serializer, $serializerContext = null, $request = null)
+    {
+        $this->doctrine = $doctrine;
+        $this->serviceMapper = $serviceMapper;
+        $this->serializer = $serializer;
+        $this->serializerContext = $serializerContext;
+    }
+    
+    public function getOne($id, $request, $model)
+    {
+        $response = Response::getResponse(404, 'Entry with id '.$id.' not found');
 
-		$result = $model->find($id);
-		
-		if ($result) {
-			$response = Response::getResponse(200, $this->serializer->serialize($result, 'json', $this->serializerContext));
-		}
-		
-		//add link header for each child
-		//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
-		
+        $result = $model->find($id);
+        
+        if ($result) {
+            $json = $this->serializer->serialize($result, 'json', $this->serializerContext);
+            $response = Response::getResponse(200, $json);
+        }
+        
+        //add link header for each child
+        //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+        
 
-		return $response;
-	}
-	
-	public function getAll($request, $model)
-	{
-		$response = Response::getResponse(404);
+        return $response;
+    }
+    
+    public function getAll($request, $model)
+    {
+        $response = Response::getResponse(404);
 
-		$result = $model->findAll();
-		
-		if ($result) {
-			$response = Response::getResponse(200, $this->serializer->serialize($result, 'json', $this->serializerContext));
-		}
-		
-		//add prev / next headers
-		//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+        $result = $model->findAll();
+        
+        if ($result) {
+            $json = $this->serializer->serialize($result, 'json', $this->serializerContext);
+            $response = Response::getResponse(200, $json);
+        }
+        
+        //add prev / next headers
+        //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
 
-		return $response;
-	}
+        return $response;
+    }
 }

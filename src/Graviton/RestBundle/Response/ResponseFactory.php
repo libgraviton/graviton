@@ -14,16 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ResponseFactory
 {
-	public static function getResponse($statusCode, $content = '', $headers = array())
-	{
-		$response = new Response();
-		$response->setStatusCode($statusCode);
-		$response->setContent($content);
-		
-		foreach ($headers as $type => $values) {
-			$response->headers->set($type, $values);
-		}
+    public static function getResponse($statusCode, $content = '', $headers = array())
+    {
+        $response = new Response();
+        $response->setStatusCode($statusCode);
+        $response->setContent($content);
+        
+        foreach ($headers as $type => $values) {
+            $response->headers->set($type, $values);
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 }

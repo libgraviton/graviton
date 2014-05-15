@@ -12,46 +12,46 @@ namespace Graviton\RestBundle\Model;
  */
 interface ModelInterface
 {
-	/**
-	 * Find a single record by id
-	 * 
-	 * @param Number $id Record-Id
-	 */
-	public function find($id);
-	
-	/**
-	 * Find all records
-	 */
-	public function findAll();
-	
-	/**
-	 * Insert a new Record
-	 * 
-	 * @param Object $entity Entity
-	 */
-	public function insertRecord($entity);
-	
-	/**
-	 * Update an existing entity
-	 * 
-	 * @param Object $entity Entity
-	 */
-	public function updateRecord($id, $entity);
-	
-	/**
-	 * Delete a record by id
-	 * 
-	 * @param Number $id Record-Id
-	 */
-	public function deleteRecord($id);
-	
-	/**
-	 * Get the name of entity class
-	 */
-	public function getEntityClass();
-	
-	/**
-	 * Get the connection name
-	 */
-	public function getConnectionName();
+        /**
+         * Find a single record by id
+         * 
+         * @param Number $id Record-Id
+         */
+        public function find($id);
+        
+        /**
+         * Find all records
+         */
+        public function findAll();
+        
+        /**
+         * Insert a new Record
+         * 
+         * @param Object $entity Entity
+         */
+        public function insertRecord($entity);
+        
+        /**
+         * Update an existing entity
+         * 
+         * @param Object $entity Entity
+         */
+        public function updateRecord($id, $entity);
+        
+        /**
+         * Delete a record by id
+         * 
+         * @param Number $id Record-Id
+         */
+        public function deleteRecord($id);
+        
+        /**
+         * Get the name of entity class
+         */
+        public function getEntityClass();
+        
+        /**
+         * Get the connection name
+         */
+        public function getConnectionName();
 }

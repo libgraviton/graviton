@@ -2,6 +2,9 @@
 
 namespace Graviton\RestBundle\Listener\Response;
 
-class GetListener {
-    public function onKernelResponse() {}
+class GetListener
+{
+    public function onKernelResponse()
+    {
+    }
 }

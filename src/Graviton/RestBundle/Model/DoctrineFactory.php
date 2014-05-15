@@ -14,10 +14,10 @@ use Graviton\RestBundle\Model\ModelDoctrine as Model;
  */
 class RestModelDoctrineFactory
 {
-	function getModelDoctrine($className, $connection = "default")
-	{
-		$model = new Model($className, $connection);
-		
-		return $model;
-	}
+    public function getModelDoctrine($className, $connection = "default")
+    {
+        $model = new Model($className, $connection);
+        
+        return $model;
+    }
 }

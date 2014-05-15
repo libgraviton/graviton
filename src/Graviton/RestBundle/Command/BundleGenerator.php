@@ -40,17 +40,32 @@ class BundleGenerator extends ParentGenerator
 
     public function generate($namespace, $bundle, $dir, $format, $structure)
     {
-    $dir .= '/'.strtr($namespace, '\\', '/');
+        $dir .= '/'.strtr($namespace, '\\', '/');
         if (file_exists($dir)) {
             if (!is_dir($dir)) {
-                throw new \RuntimeException(sprintf('Unable to generate the bundle as the target directory "%s" exists but is a file.', realpath($dir)));
+                throw new \RuntimeException(
+                    sprintf(
+                        'Unable to generate the bundle as the target directory "%s" exists but is a file.',
+                        realpath($dir)
+                    )
+                );
             }
             $files = scandir($dir);
             if ($files != array('.', '..')) {
-                throw new \RuntimeException(sprintf('Unable to generate the bundle as the target directory "%s" is not empty.', realpath($dir)));
+                throw new \RuntimeException(
+                    sprintf(
+                        'Unable to generate the bundle as the target directory "%s" is not empty.',
+                        realpath($dir)
+                    )
+                );
             }
             if (!is_writable($dir)) {
-                throw new \RuntimeException(sprintf('Unable to generate the bundle as the target directory "%s" is not writable.', realpath($dir)));
+                throw new \RuntimeException(
+                    sprintf(
+                        'Unable to generate the bundle as the target directory "%s" is not writable.',
+                        realpath($dir)
+                    )
+                );
             }
         }
 
@@ -65,7 +80,7 @@ class BundleGenerator extends ParentGenerator
             'extension_alias' => Container::underscore($basename),
         );
         
-        $serviceId = $this->arrAnswers['connection'].'_'.$this->arrAnswers['entityName']; 
+        $serviceId = $this->arrAnswers['connection'].'_'.$this->arrAnswers['entityName'];
         $parameters['service_id'] = $serviceId;
         
         $pagerId = $serviceId.'_pager';
@@ -80,43 +95,71 @@ class BundleGenerator extends ParentGenerator
         $routerId = $serviceId.'_router';
         $parameters['router_id'] = $routerId;
         
-        $entityPath = $this->arrAnswers['namespace'].'\\'.$this->arrAnswers['entityDir'].'\\'.$this->arrAnswers['entityName'];
+        $entityPath = implode(
+            '\\',
+            array(
+                $this->arrAnswers['namespace'],
+                $this->arrAnswers['entityDir'],
+                $this->arrAnswers['entityName']
+            )
+        );
         $parameters['entity_path'] = $entityPath;
         
         $parameters['connection_name'] = $this->connecton;
         
         $parameters['routing_prefix'] = $this->routingPrexif;
 
-        $this->renderFile('bundle/Bundle.php.twig', $dir.'/'.$bundle.'.php', $parameters);
-        $this->renderFile('bundle/Extension.php.twig', $dir.'/DependencyInjection/'.$basename.'Extension.php', $parameters);
+        $this->renderFile(
+            'bundle/Bundle.php.twig',
+            $dir.'/'.$bundle.'.php',
+            $parameters
+        );
+        $this->renderFile(
+            'bundle/Extension.php.twig',
+            $dir.'/DependencyInjection/'.$basename.'Extension.php',
+            $parameters
+        );
         $this->renderFile('bundle/Configuration.php.twig', $dir.'/DependencyInjection/Configuration.php', $parameters);
 
         if ('xml' === $format || 'annotation' === $format) {
-            $this->renderFile('bundle/services.xml.twig', $dir.'/Resources/config/services.xml', $parameters);
+            $this->renderFile(
+                'bundle/services.xml.twig',
+                $dir.'/Resources/config/services.xml',
+                $parameters
+            );
         } else {
-            $this->renderFile('bundle/services.'.$format.'.twig', $dir.'/Resources/config/services.'.$format, $parameters);
+            $this->renderFile(
+                'bundle/services.'.$format.'.twig',
+                $dir.'/Resources/config/services.'.$format,
+                $parameters
+            );
         }
 
         if ('annotation' != $format) {
-            $this->renderFile('bundle/routing.'.$format.'.twig', $dir.'/Resources/config/routing.'.$format, $parameters);
+            $this->renderFile(
+                'bundle/routing.'.$format.'.twig',
+                $dir.'/Resources/config/routing.'.$format,
+                $parameters
+            );
         }
     }
     
     protected function getSkeletonDirs(BundleInterface $bundle = null)
     {
-    	$skeletonDirs = array();
-    
-    	if (isset($bundle) && is_dir($dir = $bundle->getPath().'/Resources/SensioGeneratorBundle/skeleton')) {
-    		$skeletonDirs[] = $dir;
-    	}
-    
-    	if (is_dir($dir = $this->container->get('kernel')->getRootdir().'/Resources/SensioGeneratorBundle/skeleton')) {
-    		$skeletonDirs[] = $dir;
-    	}
-    
-    	$skeletonDirs[] = __DIR__.'/../Resources/skeleton';
-    	$skeletonDirs[] = __DIR__.'/../Resources';
-    
-    	return $skeletonDirs;
+        $skeletonDirs = array();
+
+        if (isset($bundle) && is_dir($dir = $bundle->getPath().'/Resources/SensioGeneratorBundle/skeleton')) {
+            $skeletonDirs[] = $dir;
+        }
+
+        $rootDir = $this->container->get('kernel')->getRootdir();
+        if (is_dir($dir = $rootDir.'/Resources/SensioGeneratorBundle/skeleton')) {
+            $skeletonDirs[] = $dir;
+        }
+
+        $skeletonDirs[] = __DIR__.'/../Resources/skeleton';
+        $skeletonDirs[] = __DIR__.'/../Resources';
+
+        return $skeletonDirs;
     }
 }

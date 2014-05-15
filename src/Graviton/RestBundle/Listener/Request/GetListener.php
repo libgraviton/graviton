@@ -2,6 +2,9 @@
 
 namespace Graviton\RestBundle\Listener\Request;
 
-class GetListener {
-    public function onKernelRequest() {}
+class GetListener
+{
+    public function onKernelRequest()
+    {
+    }
 }
