@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-
+use Graviton\RestBundle\Command\CreateService;
 // if you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
 //umask(0000);
@@ -28,4 +28,5 @@ if ($debug) {
 $kernel = new AppKernel($env, $debug);
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 $application = new Application($kernel);
+$application->add(new CreateService());
 $application->run($input);

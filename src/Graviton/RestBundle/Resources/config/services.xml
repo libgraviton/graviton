@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="graviton_rest_pager_standard.class">Graviton\RestBundle\Pager\Standard</parameter>
+        <parameter key="graviton_rest_parser_rql.class">Graviton\RestBundle\Parser\Rql</parameter>
+    </parameters>
+
+    <services>     
+    <service id="graviton_rest_pager" class="%graviton_rest_pager_standard.class%" scope="request">
+        </service>
+        
+        <service id="graviton_rest_parser" class="%graviton_rest_parser_rql.class%" scope="request">
+        </service>
+        
+        <service id="graviton_rest_service_pager" class="%graviton_rest_pager_standard.class%" abstract="true">
+        </service>
+        
+        <service id="graviton_rest_service_parser" class="%graviton_rest_parser_rql.class%" abstract="true">
+        </service>
+           
+        <service id="graviton_rest_model" abstract="true"> 
+            <call method="setDoctrine">
+                <argument type="service" id="doctrine"></argument>
+            </call>
+        </service> 
+         
+        <service id="kernel.listener.graviton_rest_request_get" class="Graviton\RestBundle\Listener\Request\GetListener">
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
+            <argument type="service" id="service_container"></argument>
+        </service>
+        
+        <service id="kernel.listener.graviton_rest_response_get" class="Graviton\RestBundle\Listener\Response\GetListener">
+            <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" />
+            <argument type="service" id="service_container"></argument>
+        </service>
+ 
+        <service id="graviton.rest.controller" scope="request" abstract="true">
+            <call method="setRequest">
+                <argument type="service" id="request"></argument>
+            </call>
+            <call method="setDoctrine">
+                <argument type="service" id="doctrine"></argument>
+            </call>
+            <call method="setSerializer">
+                <argument type="service" id="serializer"></argument>
+            </call>
+            <call method="setValidator">
+                <argument type="service" id="validator"></argument>
+            </call>
+            <call method="setRouter">
+                <argument type="service" id="router"></argument>
+            </call>
+            <call method="setSerializeNull"></call>
+            <call method="setDeserializeNull"></call>
+        </service> 
+        
+    </services>
+</container>
