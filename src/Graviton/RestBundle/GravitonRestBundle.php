@@ -7,6 +7,16 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use FOS\RestBundle\FOSRestBundle;
 
+/**
+ * GravitonRestBundle
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class GravitonRestBundle extends Bundle implements GravitonBundleInterface
 {
     /**
