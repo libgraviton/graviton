@@ -34,7 +34,8 @@
     },
     "require-dev": {
         "libgraviton/codesniffer": "*@dev",
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "phpmd/phpmd": "*"
     },
     "require": {
         "php": ">=5.3.3",
