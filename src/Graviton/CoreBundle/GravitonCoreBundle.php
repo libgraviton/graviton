@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
+use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 
@@ -39,6 +40,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new SecurityBundle(),
             new MonologBundle(),
             new SensioFrameworkExtraBundle(),
+            new GravitonExceptionBundle(),
             new GravitonDocumentBundle(),
             new GravitonRestBundle(),
         );
