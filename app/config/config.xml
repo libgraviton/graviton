@@ -4,9 +4,7 @@
     xmlns:framework="http://symfony.com/schema/dic/symfony"
     xmlns:twig="http://symfony.com/schema/dic/twig"
     xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
-    xmlns:sensio-framework-extra="http://symfony.com/schema/dic/symfony_extra"
-    xmlns:fos_rest="fos_rest"
-    xmlns:jms_serializer="jms_serializer"
+    xmlns:graviton-core="graviton_core"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <imports>
@@ -43,22 +41,6 @@
   </doctrine:config>
 
   <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
-  
-  <sensio-framework-extra:config>
-    <sensio-framework-extra:view annotations="false" />
-    <sensio-framework-extra:router annotations="true" />
-  </sensio-framework-extra:config>
 
-  <jms_serializer:config>
-    <tag name="jms_serializer.handler" 
-      type="DateTime"
-      direction="serialization"
-      format="json"
-      method="serializeDateTimeToJson"/>
-  </jms_serializer:config>
-
-  <fos_rest:config>
-    <fos_rest:view view_response_listener="force" />
-  </fos_rest:config>
 
 </container>
