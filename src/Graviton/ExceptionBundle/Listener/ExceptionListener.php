@@ -19,7 +19,10 @@ class ExceptionListener
         $message['file'] = new \stdClass;
         $message['file']->path = $exception->getFile();
         $message['file']->line = $exception->getLine();
-        $message['trace'] = $exception->getTrace();
+        $message['trace'] = array_map(
+                function($line) { return $this->prepareTraceLine($line); },
+                $exception->getTrace()
+        );
 
         $headers = array('Content-Type' => 'application/json');
 
@@ -38,5 +41,25 @@ class ExceptionListener
         $response->setData($message);
 
         $event->setResponse($response);
+    }
+
+    private function prepareTraceLine($line)
+    {
+        $trace = array();
+        if (array_key_exists('file', $line)) {
+            $trace['file'] = new \stdClass;
+            $trace['file']->path = $line['file'];
+            $trace['file']->line = $line['line'];
+	}
+
+        if (array_key_exists('class', $line)) {
+            $trace['call'] = $line['class'].$line['type'].$line['function'];
+        } else {
+            $trace['call'] = $line['function'];
+	}
+
+        $trace['args'] = $line['args'];
+
+        return $trace;
     }
 }
