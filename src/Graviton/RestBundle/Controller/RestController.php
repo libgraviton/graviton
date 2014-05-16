@@ -226,7 +226,7 @@ class RestController
     public function getModel()
     {
         if (!$this->model) {
-            throw new Exception('No model is set for this controller');
+            throw new \Exception('No model is set for this controller');
         }
 
         return $this->model;
