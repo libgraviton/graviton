@@ -24,7 +24,10 @@ class ExceptionListener
                 $exception->getTrace()
         );
 
-        $headers = array('Content-Type' => 'application/json');
+        $headers = array(
+            'Content-Type' => 'application/vnd.graviton.exception+json',
+            'Link' => '</core/schema/graviton.exception>; type="application/vnd.graviton.schema+json"; rel="schema"',
+        );
 
         if ($exception instanceof HttpExceptionInterface) {
                 $response->setStatusCode($exception->getStatusCode());
@@ -50,16 +53,32 @@ class ExceptionListener
             $trace['file'] = new \stdClass;
             $trace['file']->path = $line['file'];
             $trace['file']->line = $line['line'];
-	}
+        }
 
         if (array_key_exists('class', $line)) {
             $trace['call'] = $line['class'].$line['type'].$line['function'];
         } else {
             $trace['call'] = $line['function'];
-	}
+        }
 
-        $trace['args'] = $line['args'];
+        $trace['args'] = array_map(
+            function($arg) { return $this->walkArg($arg); },
+            $line['args']
+        );
 
         return $trace;
+    }
+
+    private function walkArg($arg) {
+        if (is_array($arg)) {
+            return array_map(
+                function($array) { return $this->walkArg($array); },
+                $arg
+            );
+        } else if (is_object($arg)) {
+            return 'instanceof '.get_class($arg);
+        } else {
+            return $arg;
+        }
     }
 }
