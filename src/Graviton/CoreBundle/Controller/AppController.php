@@ -48,7 +48,7 @@ class AppController extends FOSRestController
      */
     public function allAction()
     {
-        $apps = $this->apps->findAll()->toArray();
+        $apps = $this->apps->findAll();
         $apps = array_values($apps);
         $response = new Response(
             $this->serializer->serialize($apps, 'json'),
