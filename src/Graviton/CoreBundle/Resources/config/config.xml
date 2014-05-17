@@ -22,7 +22,7 @@
 
     <doctrine_mongodb:config>
         <doctrine_mongodb:document-manager id="core" database="graviton-core">
-	    <doctrine_mongodb:mapping name="GravitonCoreBundle" type="xml"/>
+            <doctrine_mongodb:mapping name="GravitonCoreBundle" type="xml"/>
         </doctrine_mongodb:document-manager>
         <doctrine_mongodb:connection id="core" server="mongodb://localhost:27017"/>
     </doctrine_mongodb:config>

@@ -6,14 +6,17 @@
 
     <parameters>
         <parameter key="gravitoncorebundle.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
-        <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
+    <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
+    <parameter key="gravitoncorebundle.model.app.class">Graviton\CoreBundle\Model\App</parameter>
     </parameters>
 
     <services>
-        <service id="gravitoncorebundle.controller.app" class="%gravitoncorebundle.controller.app.class%">
-            <argument type="service" id="gravitoncorebundle.repository.app"/>
-            <argument type="service" id="doctrine_mongodb.odm.core_document_manager"/>
-            <argument type="service" id="serializer"/>
+        <service id="gravitoncorebundle.controller.app"
+            class="%gravitoncorebundle.controller.app.class%"
+            parent="graviton.rest.controller" scope="request">
+            <call method="setModel">
+                <argument type="service" id="gravitoncorebundle.model.app"/>
+        </call>
         </service>
 
         <service id="gravitoncorebundle.repository.app"
@@ -22,6 +25,13 @@
             factory-method="getRepository">
             <argument type="string">GravitonCoreBundle:App</argument>
         </service>
+
+    <service id="gravitoncorebundle.model.app"
+        class="%gravitoncorebundle.model.app.class%"
+        parent="graviton_rest_model">
+            <argument type="service" id="gravitoncorebundle.repository.app"/>
+    </service>
+
     </services>
 
 </container>
