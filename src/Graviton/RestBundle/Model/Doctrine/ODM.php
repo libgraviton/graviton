@@ -6,9 +6,9 @@ use Graviton\RestBundle\Model\ModelInterface;
 
 class ODM implements ModelInterface
 {
-    public function find($id)
+    public function find($name)
     {
-        return $this->repository->findOneBy(array('id'=>$id));
+        return $this->repository->findOneBy(array('name'=>$name));
     }
     public function findAll()
     {
