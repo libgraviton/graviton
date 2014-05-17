@@ -6,8 +6,8 @@
 
     <parameters>
         <parameter key="gravitoncorebundle.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
-    <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
-    <parameter key="gravitoncorebundle.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+        <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
+        <parameter key="gravitoncorebundle.model.app.class">Graviton\CoreBundle\Model\App</parameter>
     </parameters>
 
     <services>
