@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\RestBundle\GravitonRestBundle;
+use Graviton\TestBundle\GravitonTestBundle;
 
 /**
  * GravitonCoreBundle
@@ -43,6 +44,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonExceptionBundle(),
             new GravitonDocumentBundle(),
             new GravitonRestBundle(),
+            new GravitonTestBundle(),
         );
     }
 }
