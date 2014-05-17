@@ -19,9 +19,11 @@ class GravitonTestCase extends WebTestCase
      * infrastucture. This isn't in the DIC since it is used to
      * bootstrap the DIC itself.
      *
+     * @param array $options array of options, default: empty, currently ignored
+     *
      * @return \Graviton\AppKernel
      */
-    public static function createKernel()
+    public static function createKernel(array $options = array())
     {
         require_once __DIR__.'/../../../../app/AppKernel.php';
 
