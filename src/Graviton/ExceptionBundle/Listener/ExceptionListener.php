@@ -20,8 +20,10 @@ class ExceptionListener
         $message['file']->path = $exception->getFile();
         $message['file']->line = $exception->getLine();
         $message['trace'] = array_map(
-                function($line) { return $this->prepareTraceLine($line); },
-                $exception->getTrace()
+            function ($line) {
+                return $this->prepareTraceLine($line);
+            },
+            $exception->getTrace()
         );
 
         $headers = array(
@@ -46,6 +48,9 @@ class ExceptionListener
         $event->setResponse($response);
     }
 
+    /**
+     * prepare a line of backtrace into a semi human readable json
+     */
     private function prepareTraceLine($line)
     {
         $trace = array();
@@ -62,20 +67,35 @@ class ExceptionListener
         }
 
         $trace['args'] = array_map(
-            function($arg) { return $this->walkArg($arg); },
+            function ($arg) {
+                return $this->walkArg($arg);
+            },
             $line['args']
         );
 
         return $trace;
     }
 
-    private function walkArg($arg) {
+    /**
+     * somehow mangle the the arguments of a trace into a somewhat jsonifiable form
+     *
+     * This is rather hacky (the whole class actually is). Since we won't be using
+     * the exception walking part on prod anyway it can stay as is for now.
+     *
+     * I would like to refactor this into something more nice later on but there
+     * are some more important things that should be up and running first for
+     * that to make sense.
+     */
+    private function walkArg($arg)
+    {
         if (is_array($arg)) {
             return array_map(
-                function($array) { return $this->walkArg($array); },
+                function ($array) {
+                    return $this->walkArg($array);
+                },
                 $arg
             );
-        } else if (is_object($arg)) {
+        } elseif (is_object($arg)) {
             return 'instanceof '.get_class($arg);
         } else {
             return $arg;

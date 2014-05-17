@@ -6,7 +6,6 @@
 namespace Graviton\ExceptionBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
 
 /**
  * GravitonExceptionBundle
