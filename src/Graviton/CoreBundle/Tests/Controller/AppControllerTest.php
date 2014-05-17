@@ -6,9 +6,9 @@ use Graviton\TestBundle\Test\RestTestCase;
 
 class AppControllerTest extends RestTestCase
 {
-    public function testFindAll()
+    public function setUp()
     {
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $this->loadFixtures(
             array(
@@ -17,9 +17,12 @@ class AppControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+    }
 
-        $client->request('GET', '/core/app');
-        $results = $this->loadJsonFromClient($client);
+    public function testFindAll()
+    {
+        $this->client->request('GET', '/core/app');
+        $results = $this->loadJsonFromClient($this->client);
 
         $this->assertEquals(
             2,
@@ -33,4 +36,15 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Administration', $results[1]->title);
         $this->assertEquals(true, $results[1]->showInMenu);
     }
+
+    public function testGetApp()
+    {
+        $this->client->request('GET', '/core/app/admin');
+        $results = $this->loadJsonFromClient($this->client);
+
+        $this->assertEquals('admin', $results->name);
+        $this->assertEquals('Administration', $results->title);
+        $this->assertEquals(true, $results->showInMenu);
+    }
+
 }
