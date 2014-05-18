@@ -7,6 +7,17 @@ use Graviton\AppKernel;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\BundleBundle\GravitonBundleBundle;
 
+/**
+ * Graviton test case
+ *
+ * Override creating a kernel with our custom bundle-bundle routine.
+ *
+ * @category GravitonTestBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class GravitonTestCase extends WebTestCase
 {
     /**
@@ -25,7 +36,7 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
-        require_once __DIR__.'/../../../../app/AppKernel.php';
+        include_once __DIR__.'/../../../../app/AppKernel.php';
 
         $env = 'test';
         $debug = true;
