@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\CoreBundle\Document\App">
+    <property name="name" type="string"/>
+    <property name="title" type="string"/>
+    <property name="showInMenu" type="boolean"/>
+  </class>
+</serializer>

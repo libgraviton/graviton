@@ -5,6 +5,7 @@
     xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
     xmlns:doctrine_extensions="http://example.org/schema/dic/stof_doctrine_extensions"
     xmlns:sensio-framework-extra="http://symfony.com/schema/dic/symfony_extra"
+    xmlns:jms-serializer="jms_serializer"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <framework:config>
@@ -37,5 +38,12 @@
     <sensio-framework-extra:view annotations="false" />
     <sensio-framework-extra:router annotations="true" />
   </sensio-framework-extra:config>
+
+  <jms-serializer:config>
+    <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
+      <jms-serializer:file-cache dir="%kernel.cache_dir%/serializer" />
+      <jms-serializer:directory namespace_prefix="Graviton\CoreBundle" path="@GravitonCoreBundle/Resources/config/serializer"/>
+    </jms-serializer:metadata>
+  </jms-serializer:config>
 
 </container>
