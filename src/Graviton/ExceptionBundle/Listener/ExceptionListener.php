@@ -14,6 +14,7 @@ class ExceptionListener
         $response = new JsonResponse();
 
         $message = array();
+        $message['class'] = get_class($exception);
         $message['message'] = $exception->getMessage();
         $message['code'] = $exception->getCode();
         $message['file'] = new \stdClass;
