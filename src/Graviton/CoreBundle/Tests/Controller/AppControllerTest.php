@@ -1,11 +1,28 @@
 <?php
+/**
+ * functional test for /core/app
+ */
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
 
+/**
+ * Basic functional test for /core/app.
+ *
+ * @category GravitonCoreBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class AppControllerTest extends RestTestCase
 {
+    /**
+     * setup client and load fixtures
+     *
+     * @return void
+     */
     public function setUp()
     {
         $this->client = static::createClient();
@@ -19,6 +36,11 @@ class AppControllerTest extends RestTestCase
         );
     }
 
+    /**
+     * check if all fixtures are returned on GET
+     *
+     * @return void
+     */
     public function testFindAll()
     {
         $this->client->request('GET', '/core/app');
@@ -43,6 +65,11 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(true, $results[1]->showInMenu);
     }
 
+    /**
+     * test if we can get an app by name
+     *
+     * @return void
+     */
     public function testGetApp()
     {
         $this->client->request('GET', '/core/app/admin');
@@ -59,6 +86,11 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(true, $results->showInMenu);
     }
 
+    /**
+     * test if we can create an app through POST
+     *
+     * @return void
+     */
     public function testPostApp()
     {
         $testApp = new \stdClass;
@@ -90,5 +122,4 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('new Test App', $results->title);
         $this->assertFalse($results->showInMenu);
     }
-
 }
