@@ -6,14 +6,22 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * This is the class that validates and merges configuration from your app/config files
+ * This validates and merges configuration from your app/config files
  *
  * To learn more see {@link http://scm.to/004v}
+ *
+ * @category GravitonExceptionBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
  */
 class Configuration implements ConfigurationInterface
 {
     /**
      * {@inheritDoc}
+     *
+     * @return TreeBuilder
      */
     public function getConfigTreeBuilder()
     {

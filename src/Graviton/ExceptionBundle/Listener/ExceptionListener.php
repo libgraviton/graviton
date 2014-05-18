@@ -6,8 +6,24 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * reformat exception into json to our REST server never returns html
+ *
+ * @category GravitonExceptionBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class ExceptionListener
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @param GetResponseForExceptionEvent $event prepraed response
+     *
+     * @return void
+     */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
@@ -27,9 +43,17 @@ class ExceptionListener
             $exception->getTrace()
         );
 
+        $schemaType = 'application/vnd.graviton.schema+json';
+        $schemaUrl = '/core/schema/graviton.exception';
+
         $headers = array(
             'Content-Type' => 'application/vnd.graviton.exception+json',
-            'Link' => '</core/schema/graviton.exception>; type="application/vnd.graviton.schema+json"; rel="schema"',
+            'Link' => sprintf(
+                '<%s>; type="%s"; rel="schema"',
+                $schemaType,
+                $schemaUrl
+            )
+
         );
 
         if ($exception instanceof HttpExceptionInterface) {
@@ -40,8 +64,8 @@ class ExceptionListener
                     $headers
                 );
         } else {
-                // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when it becomes available
-                $response->setStatusCode(500);
+            // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when available
+            $response->setStatusCode(500);
         }
         $response->headers->replace($headers);
         $response->setData($message);
@@ -51,6 +75,10 @@ class ExceptionListener
 
     /**
      * prepare a line of backtrace into a semi human readable json
+     *
+     * @param Array $line Line to format
+     *
+     * @return Array
      */
     private function prepareTraceLine($line)
     {
@@ -78,14 +106,19 @@ class ExceptionListener
     }
 
     /**
-     * somehow mangle the the arguments of a trace into a somewhat jsonifiable form
+     * somehow mangle the the arguments of a trace into a jsonifiable form
      *
-     * This is rather hacky (the whole class actually is). Since we won't be using
-     * the exception walking part on prod anyway it can stay as is for now.
+     * This is rather hacky (the whole class actually is). Since we won't be
+     * using the exception walking part on prod anyway it can stay as is for
+     * now.
      *
      * I would like to refactor this into something more nice later on but there
      * are some more important things that should be up and running first for
      * that to make sense.
+     *
+     * @param Array $arg recursive array of arguments
+     *
+     * @return Array
      */
     private function walkArg($arg)
     {
