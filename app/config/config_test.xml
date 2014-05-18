@@ -2,6 +2,7 @@
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:monolog="http://symfony.com/schema/dic/monolog"
     xmlns:liip_functional_test="liip_functional_test"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
@@ -11,6 +12,10 @@
     <!-- I'm not sure why this is needed, please remove it if you figure out how to load this properly -->
     <import resource="../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml"/>
   </imports>
+
+  <monolog:config>
+    <monolog:handler name="main" type="test"/>
+  </monolog:config>
 
   <framework:test/>
 
