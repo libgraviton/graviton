@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<routes xmlns="http://symfony.com/schema/routing"
+<routes xmlns="http://symfony.com/schema/routing">
   <route id="graviton_corebundle_App_all" pattern="/app">
     <default key="_controller">gravitoncorebundle.controller.app:allAction</default>
     <requirement key="_method">GET</requirement>
