@@ -23,6 +23,12 @@ class AppControllerTest extends RestTestCase
     {
         $this->client->request('GET', '/core/app');
         $results = $this->loadJsonFromClient($this->client);
+        $headers = $this->client->getResponse()->headers;
+
+        $this->assertEquals(
+            'application/vnd.graviton.core.app+json; charset=UTF-8',
+            $headers->get('Content-Type')
+        );
 
         $this->assertEquals(
             2,
@@ -41,6 +47,12 @@ class AppControllerTest extends RestTestCase
     {
         $this->client->request('GET', '/core/app/admin');
         $results = $this->loadJsonFromClient($this->client);
+        $headers = $this->client->getResponse()->headers;
+
+        $this->assertEquals(
+            'application/vnd.graviton.core.app+json; charset=UTF-8',
+            $headers->get('Content-Type')
+        );
 
         $this->assertEquals('admin', $results->name);
         $this->assertEquals('Administration', $results->title);
@@ -66,6 +78,12 @@ class AppControllerTest extends RestTestCase
         );
 
         $results = $this->loadJsonFromClient($this->client);
+        $headers = $this->client->getResponse()->headers;
+
+        $this->assertEquals(
+            'application/vnd.graviton.core.app+json; charset=UTF-8',
+            $headers->get('Content-Type')
+        );
 
         $this->assertNotNull($results->id);
         $this->assertEquals('new', $results->name);
