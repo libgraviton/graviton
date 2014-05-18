@@ -16,23 +16,28 @@ class ODM implements ModelInterface
     }
     public function insertRecord($entity)
     {
-        throw \BadMethodCallException;
+        $dm = $this->repository->getDocumentManager();
+        $res = $dm->persist($entity);
+        $dm->flush();
+        return $this->find($entity->getName());
     }
     public function updateRecord($id, $entity)
     {
-        throw \BadMethodCallException;
+        throw new \BadMethodCallException;
     }
     public function deleteRecord($id)
     {
-        throw \BadMethodCallException;
+        throw new \BadMethodCallException;
     }
     public function getEntityClass()
     {
-        // @todo why would we do it like this?
+        return $this->repository->getDocumentName();
     }
     public function getConnectionName()
     {
         // @todo figure out why we would need something like this
+        // currently it is being used to build the route id used for redirecting to newly made documents
+        return 'graviton_corebundle';
     }
     public function setDoctrine()
     {
