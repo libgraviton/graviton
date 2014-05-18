@@ -47,4 +47,30 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(true, $results->showInMenu);
     }
 
+    public function testPostApp()
+    {
+        $testApp = new \stdClass;
+        $testApp->name = 'new';
+        $testApp->title = 'new Test App';
+        $testShowInMenu = true;
+
+        $this->client->request(
+            'POST',
+            '/core/app',
+            array(),
+            array(),
+            array(
+                'CONTENT_TYPE' => 'application/json'
+            ),
+            json_encode($testApp)
+        );
+
+        $results = $this->loadJsonFromClient($this->client);
+
+        $this->assertNotNull($results->id);
+        $this->assertEquals('new', $results->name);
+        $this->assertEquals('new Test App', $results->title);
+        $this->assertFalse($results->showInMenu);
+    }
+
 }
