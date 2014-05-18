@@ -53,6 +53,9 @@ class RestController
         //add link header for each child
         //$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
 
+        // @todo refactor all vnd content type to come from a mapper
+        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
+
         return $response;
     }
 
@@ -77,6 +80,8 @@ class RestController
         }
         //add prev / next headers
         //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+
+        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
 
         return $response;
     }
@@ -111,6 +116,8 @@ class RestController
                 array('Location' => $this->getRouter()->generate($serviceName.'_get', array('id' => $record->getId())))
             );
         }
+
+        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
 
         return $response;
     }
@@ -176,6 +183,8 @@ class RestController
         if ($this->getModel()->deleteRecord($id)) {
             $response = Response::getResponse(200);
         }
+
+        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
 
         return $response;
     }
