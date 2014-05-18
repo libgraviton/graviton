@@ -34,7 +34,7 @@ class App
     /**
      * @var boolean $showInMenu
      */
-    protected $showInMenu;
+    protected $showInMenu = false;
 
 
     /**
