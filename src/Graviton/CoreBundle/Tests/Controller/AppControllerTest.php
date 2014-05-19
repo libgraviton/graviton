@@ -99,16 +99,7 @@ class AppControllerTest extends RestTestCase
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
-        $client->request(
-            'POST',
-            '/core/app',
-            array(),
-            array(),
-            array(
-                'CONTENT_TYPE' => 'application/json'
-            ),
-            json_encode($testApp)
-        );
+        $client->post('/core/app', $testApp);
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -128,29 +119,13 @@ class AppControllerTest extends RestTestCase
     public function testPutApp()
     {
         $client = static::createRestClient();
-        $client->request(
-            'GET',
-            '/core/app/hello',
-            array(),
-            array(),
-            array(
-                'ACCEPT' => 'application/json'
-            )
-        );
+        $client->request('GET', '/core/app/hello');
 
         $helloApp = $client->getResults();
         $helloApp->showInMenu = false;
 
-        $client->request(
-            'PUT',
-            '/core/app/hello',
-            array(),
-            array(),
-            array(
-                'CONTENT_TYPE' => 'application/json'
-            ),
-            json_encode($helloApp)
-        );
+        $client->put('/core/app/hello', $helloApp);
+
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -174,16 +149,7 @@ class AppControllerTest extends RestTestCase
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
-        $client->request(
-            'DELETE',
-            '/core/app/hello',
-            array(),
-            array(),
-            array(
-                'ACCEPT' => 'application/json'
-            ),
-            json_encode($testApp)
-        );
+        $client->request('DELETE', '/core/app/hello');
 
         $response = $client->getResponse();
         $results = $client->getResults();
