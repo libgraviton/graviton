@@ -163,6 +163,8 @@ class RestController
             }
         }
 
+        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
+
         return $response;
     }
 

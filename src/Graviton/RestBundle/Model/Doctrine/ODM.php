@@ -23,7 +23,10 @@ class ODM implements ModelInterface
     }
     public function updateRecord($id, $entity)
     {
-        throw new \BadMethodCallException;
+        $dm = $this->repository->getDocumentManager();
+        $res = $dm->persist($entity);
+        $dm->flush();
+        return $entity;
     }
     public function deleteRecord($id)
     {
