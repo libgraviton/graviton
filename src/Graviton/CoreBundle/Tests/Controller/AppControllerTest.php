@@ -165,7 +165,12 @@ class AppControllerTest extends RestTestCase
         $this->assertFalse($results->showInMenu);
     }
 
-    function testDeleteAction()
+    /**
+     * test deleting an app
+     *
+     * @return void
+     */
+    function testDeleteApp()
     {
         $testApp = new \stdClass;
         $testApp->id = 'hello';

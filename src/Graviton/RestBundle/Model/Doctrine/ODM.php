@@ -44,14 +44,33 @@ class ODM implements ModelInterface
     {
         return $this->repository->getDocumentName();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Currently this is being used to build the route id used for redirecting
+     * to newly made documents.
+     *
+     * We might use a convention based mapping here:
+     * Graviton\CoreBundle\Document\App -> mongodb://graviton_core
+     * Graviton\CoreBundle\Entity\Table -> mysql://graviton_core
+     *
+     * @todo implement this in a more convention based manner
+     */
     public function getConnectionName()
     {
-        // @todo figure out why we would need something like this
-        // currently it is being used to build the route id used for redirecting to newly made documents
         return 'graviton_corebundle';
     }
+    /**
+     * {@inheritDoc}
+     *
+     * this seems uneeded as soon as we pass in a repository that allows us to get there
+     * i think relying on $repositoy->getDocumentManager() is more than ok (ie. the repo
+     * has a clear interface.
+     *
+     * @todo figure out why we would need something like this
+     */
     public function setDoctrine()
     {
-        // @todo figure out why we would need something like this
     }
 }
