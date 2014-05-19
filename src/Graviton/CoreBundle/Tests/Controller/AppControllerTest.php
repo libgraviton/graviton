@@ -19,6 +19,11 @@ use Graviton\TestBundle\Test\RestTestCase;
 class AppControllerTest extends RestTestCase
 {
     /**
+     * @const vendorized app mime type for app data
+     */
+    const CONTENT_TYPE = 'application/vnd.graviton.core.app+json; charset=UTF-8';
+
+    /**
      * setup client and load fixtures
      *
      * @return void
@@ -45,12 +50,9 @@ class AppControllerTest extends RestTestCase
     {
         $this->client->request('GET', '/core/app');
         $results = $this->loadJsonFromClient($this->client);
-        $headers = $this->client->getResponse()->headers;
+        $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            'application/vnd.graviton.core.app+json; charset=UTF-8',
-            $headers->get('Content-Type')
-        );
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals(
             2,
@@ -74,12 +76,9 @@ class AppControllerTest extends RestTestCase
     {
         $this->client->request('GET', '/core/app/admin');
         $results = $this->loadJsonFromClient($this->client);
-        $headers = $this->client->getResponse()->headers;
+        $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            'application/vnd.graviton.core.app+json; charset=UTF-8',
-            $headers->get('Content-Type')
-        );
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('admin', $results->id);
         $this->assertEquals('Administration', $results->title);
@@ -110,12 +109,9 @@ class AppControllerTest extends RestTestCase
         );
 
         $results = $this->loadJsonFromClient($this->client);
-        $headers = $this->client->getResponse()->headers;
+        $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            'application/vnd.graviton.core.app+json; charset=UTF-8',
-            $headers->get('Content-Type')
-        );
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('new', $results->id);
         $this->assertEquals('new Test App', $results->title);
@@ -153,12 +149,9 @@ class AppControllerTest extends RestTestCase
             json_encode($helloApp)
         );
         $results = $this->loadJsonFromClient($this->client);
-        $headers = $this->client->getResponse()->headers;
+        $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            'application/vnd.graviton.core.app+json; charset=UTF-8',
-            $headers->get('Content-Type')
-        );
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('hello', $results->id);
         $this->assertEquals('Hello World!', $results->title);
@@ -189,12 +182,10 @@ class AppControllerTest extends RestTestCase
         );
 
         $results = $this->loadJsonFromClient($this->client);
-        $headers = $this->client->getResponse()->headers;
+        $response = $this->client->getResponse();
 
-        $this->assertEquals(
-            'application/vnd.graviton.core.app+json; charset=UTF-8',
-            $headers->get('Content-Type')
-        );
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 }

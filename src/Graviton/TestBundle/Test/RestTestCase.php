@@ -3,6 +3,7 @@
 namespace Graviton\TestBundle\Test;
 
 use Graviton\TestBundle\Test\GravitonTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * REST test case
@@ -31,5 +32,22 @@ class RestTestCase extends GravitonTestCase
     public function loadJsonFromClient($client)
     {
         return json_decode($client->getResponse()->getContent());
+    }
+
+    /**
+     * test for content type based on classname based mapping
+     *
+     * @param String   $contentType Expected Content-Type
+     * @param Response $response    Response from client
+     *
+     * @return void
+     */
+    public function assertResponseContentType($contentType, Response $response)
+    {
+        $this->assertEquals(
+            $contentType,
+            $response->headers->get('Content-Type'),
+            'Content-Type mismatch in response'
+        );
     }
 }
