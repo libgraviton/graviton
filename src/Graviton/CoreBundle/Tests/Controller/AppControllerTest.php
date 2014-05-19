@@ -137,6 +137,23 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test updating an inexistant document
+     *
+     * @return void
+     */
+    public function testPutInexistantApp()
+    {
+        $isnogudApp = new \stdClass;
+        $isnogudApp->id = 'isnogud';
+        $isnogudApp->title = 'I don\'t exist';
+
+        $client = static::createRestClient();
+        $client->put('/core/app/isnogud', $isnogudApp);
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    /**
      * test deleting an app
      *
      * @return void
