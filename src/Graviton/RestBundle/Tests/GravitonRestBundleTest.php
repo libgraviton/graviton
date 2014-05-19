@@ -8,6 +8,7 @@ namespace Graviton\RestBundle\Tests;
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use FOS\RestBundle\FOSRestBundle;
+use Misd\GuzzleBundle\MisdGuzzleBundle;
 
 /**
  * GravitonMessagingBundleTest
@@ -43,6 +44,7 @@ class GravitonBundleRestTest extends \PHPUnit_Framework_TestCase
         $expectation = array(
             new JMSSerializerBundle(),
             new FOSRestBundle(),
+            new MisdGuzzleBundle(),
         );
 
         $result = $sut->getBundles();
