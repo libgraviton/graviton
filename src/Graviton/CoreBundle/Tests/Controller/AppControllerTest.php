@@ -30,7 +30,7 @@ class AppControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->client = static::createClient();
+        $this->client = static::createRestClient();
 
         $this->loadFixtures(
             array(

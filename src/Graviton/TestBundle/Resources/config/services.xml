@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <imports>
+      <!-- have a look at app/config/config.xml where I explain why this is smelly -->
+      <import resource="../../../../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/services.xml"/>
+    </imports>
+
+    <parameters>
+      <parameter key="graviton.test.rest.client.class">Symfony\Bundle\FrameworkBundle\Client</parameter>
+    </parameters>
+
+    <services>
+      <service id="graviton.test.rest.client" class="%graviton.test.rest.client.class%" parent="test.client" scope="prototype">
+      </service>
+    </services>
+
+</container>
