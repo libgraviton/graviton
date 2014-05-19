@@ -175,4 +175,25 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
+
+    /**
+     * test failing validation on boolean field
+     *
+     * @return void
+     */
+    public function testFailingBooleanValidationOnAppUpdate()
+    {
+        $helloApp = new \stdClass;
+        $helloApp->id = 'hello';
+        $helloApp->title = 'Hello World!';
+        $helloApp->showInMenu = 'I am a string and not a boolean.';
+
+        $client = static::createRestClient();
+        $client->put('/core/app/hello', $helloApp);
+
+        // mark as incomplete early to shift the focus away from validation for now
+        $this->markTestIncomplete('mongodb validation needs better testing and implementing');
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
 }
