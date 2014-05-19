@@ -119,6 +119,49 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals('new', $results->id);
         $this->assertEquals('new Test App', $results->title);
+        $this->assertTrue($results->showInMenu);
+    }
+
+    /**
+     * test updating apps
+     *
+     * @return void
+     */
+    public function testPutApp()
+    {
+        $this->client->request(
+            'GET',
+            '/core/app/hello',
+            array(),
+            array(),
+            array(
+                'ACCEPT' => 'application/json'
+            )
+        );
+        $helloApp = $this->loadJsonFromClient($this->client);
+
+        $helloApp->showInMenu = false;
+
+        $this->client->request(
+            'PUT',
+            '/core/app/hello',
+            array(),
+            array(),
+            array(
+                'CONTENT_TYPE' => 'application/json'
+            ),
+            json_encode($helloApp)
+        );
+        $results = $this->loadJsonFromClient($this->client);
+        $headers = $this->client->getResponse()->headers;
+
+        $this->assertEquals(
+            'application/vnd.graviton.core.app+json; charset=UTF-8',
+            $headers->get('Content-Type')
+        );
+
+        $this->assertEquals('hello', $results->id);
+        $this->assertEquals('Hello World!', $results->title);
         $this->assertFalse($results->showInMenu);
     }
 }
