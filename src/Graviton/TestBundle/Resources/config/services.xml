@@ -9,7 +9,7 @@
     </imports>
 
     <parameters>
-      <parameter key="graviton.test.rest.client.class">Symfony\Bundle\FrameworkBundle\Client</parameter>
+      <parameter key="graviton.test.rest.client.class">Graviton\TestBundle\Client</parameter>
     </parameters>
 
     <services>

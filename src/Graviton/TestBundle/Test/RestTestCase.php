@@ -21,20 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 class RestTestCase extends GravitonTestCase
 {
     /**
-     * grab and decode reponse from client
-     *
-     * @param Object $client client
-     *
-     * @return Mixed
-     *
-     * @todo this needs to move into the client somehow
-     */
-    public function loadJsonFromClient($client)
-    {
-        return json_decode($client->getResponse()->getContent());
-    }
-
-    /**
      * Create a REST Client.
      *
      * Creates a regular client first so we can profit from the bootstrapping code

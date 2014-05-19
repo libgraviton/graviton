@@ -30,8 +30,6 @@ class AppControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->client = static::createRestClient();
-
         $this->loadFixtures(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData'
@@ -48,9 +46,11 @@ class AppControllerTest extends RestTestCase
      */
     public function testFindAll()
     {
-        $this->client->request('GET', '/core/app');
-        $results = $this->loadJsonFromClient($this->client);
-        $response = $this->client->getResponse();
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
@@ -74,9 +74,10 @@ class AppControllerTest extends RestTestCase
      */
     public function testGetApp()
     {
-        $this->client->request('GET', '/core/app/admin');
-        $results = $this->loadJsonFromClient($this->client);
-        $response = $this->client->getResponse();
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin');
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
@@ -97,7 +98,8 @@ class AppControllerTest extends RestTestCase
         $testApp->title = 'new Test App';
         $testApp->showInMenu = true;
 
-        $this->client->request(
+        $client = static::createRestClient();
+        $client->request(
             'POST',
             '/core/app',
             array(),
@@ -108,8 +110,8 @@ class AppControllerTest extends RestTestCase
             json_encode($testApp)
         );
 
-        $results = $this->loadJsonFromClient($this->client);
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
@@ -125,7 +127,8 @@ class AppControllerTest extends RestTestCase
      */
     public function testPutApp()
     {
-        $this->client->request(
+        $client = static::createRestClient();
+        $client->request(
             'GET',
             '/core/app/hello',
             array(),
@@ -134,11 +137,11 @@ class AppControllerTest extends RestTestCase
                 'ACCEPT' => 'application/json'
             )
         );
-        $helloApp = $this->loadJsonFromClient($this->client);
 
+        $helloApp = $client->getResults();
         $helloApp->showInMenu = false;
 
-        $this->client->request(
+        $client->request(
             'PUT',
             '/core/app/hello',
             array(),
@@ -148,8 +151,8 @@ class AppControllerTest extends RestTestCase
             ),
             json_encode($helloApp)
         );
-        $results = $this->loadJsonFromClient($this->client);
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
@@ -170,7 +173,8 @@ class AppControllerTest extends RestTestCase
         $testApp->title = 'Hello World!';
         $testApp->showInMenu = true;
 
-        $this->client->request(
+        $client = static::createRestClient();
+        $client->request(
             'DELETE',
             '/core/app/hello',
             array(),
@@ -181,11 +185,11 @@ class AppControllerTest extends RestTestCase
             json_encode($testApp)
         );
 
-        $results = $this->loadJsonFromClient($this->client);
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }
