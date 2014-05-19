@@ -16,4 +16,8 @@
     <default key="_controller">gravitoncorebundle.controller.app:putAction</default>
     <requirement key="_method">PUT</requirement>
   </route>
+  <route id="graviton_corebundle_App_delete" pattern="/app/{id}">
+    <default key="_controller">gravitoncorebundle.controller.app:deleteAction</default>
+    <requirement key="_method">DELETE</requirement>
+  </route>
 </routes>
