@@ -35,6 +35,27 @@ class RestTestCase extends GravitonTestCase
     }
 
     /**
+     * Create a REST Client.
+     *
+     * Creates a regular client first so we can profit from the bootstrapping code
+     * in parent::createClient and is otherwise API compatible with said method.
+     *
+     * @param array $options An array of options to pass to the createKernel class
+     * @param array $server  An array of server parameters
+     *
+     * @return Client A Client instance
+     */
+    protected static function createRestClient(array $options = array(), array $server = array())
+    {
+        parent::createClient($options, $server);
+
+        $client = static::$kernel->getContainer()->get('graviton.test.rest.client');
+        $client->setServerParameters($server);
+
+        return $client;
+    }
+
+    /**
      * test for content type based on classname based mapping
      *
      * @param String   $contentType Expected Content-Type
