@@ -164,4 +164,32 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Hello World!', $results->title);
         $this->assertFalse($results->showInMenu);
     }
+
+    function testDeleteAction()
+    {
+        $testApp = new \stdClass;
+        $testApp->id = 'hello';
+        $testApp->title = 'Hello World!';
+        $testApp->showInMenu = true;
+
+        $this->client->request(
+            'DELETE',
+            '/core/app/hello',
+            array(),
+            array(),
+            array(
+                'ACCEPT' => 'application/json'
+            ),
+            json_encode($testApp)
+        );
+
+        $results = $this->loadJsonFromClient($this->client);
+        $headers = $this->client->getResponse()->headers;
+
+        $this->assertEquals(
+            'application/vnd.graviton.core.app+json; charset=UTF-8',
+            $headers->get('Content-Type')
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+    }
 }
