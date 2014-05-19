@@ -8,8 +8,6 @@
 
   <imports>
     <import resource="config_dev.xml"/>
-    <!-- I'm not sure why this is needed, please remove it if you figure out how to load this properly -->
-    <import resource="../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml"/>
   </imports>
 
   <monolog:config>
