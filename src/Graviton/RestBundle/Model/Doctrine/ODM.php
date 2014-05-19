@@ -6,9 +6,9 @@ use Graviton\RestBundle\Model\ModelInterface;
 
 class ODM implements ModelInterface
 {
-    public function find($name)
+    public function find($id)
     {
-        return $this->repository->findOneBy(array('name'=>$name));
+        return $this->repository->find($id);
     }
     public function findAll()
     {
@@ -19,7 +19,7 @@ class ODM implements ModelInterface
         $dm = $this->repository->getDocumentManager();
         $res = $dm->persist($entity);
         $dm->flush();
-        return $this->find($entity->getName());
+        return $this->find($entity->getId());
     }
     public function updateRecord($id, $entity)
     {

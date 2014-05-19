@@ -30,14 +30,14 @@ class LoadAppData implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $helloApp = new App;
-        $helloApp->setName('hello');
+        $helloApp->setId('hello');
         $helloApp->setTitle('Hello World!');
         $helloApp->setShowInMenu(true);
 
         $manager->persist($helloApp);
 
         $adminApp = new App;
-        $adminApp->setName('admin');
+        $adminApp->setId('admin');
         $adminApp->setTitle('Administration');
         $adminApp->setShowInMenu(true);
 

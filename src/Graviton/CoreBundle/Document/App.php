@@ -22,11 +22,6 @@ class App
     protected $id;
 
     /**
-     * @var string $name
-     */
-    protected $name;
-
-    /**
      * @var string $title
      */
     protected $title;
@@ -36,6 +31,18 @@ class App
      */
     protected $showInMenu = false;
 
+    /**
+     * Set id
+     *
+     * @param String $id id for new document
+     *
+     * @return self
+     */
+    public function setId($id)
+    {
+	    $this->id = $id;
+	    return $this;
+    }
 
     /**
      * Get id
@@ -45,29 +52,6 @@ class App
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name internal name
-     *
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**

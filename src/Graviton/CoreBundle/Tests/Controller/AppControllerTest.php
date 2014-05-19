@@ -56,17 +56,17 @@ class AppControllerTest extends RestTestCase
             2,
             count($results)
         );
-        $this->assertEquals('hello', $results[0]->name);
+        $this->assertEquals('hello', $results[0]->id);
         $this->assertEquals('Hello World!', $results[0]->title);
         $this->assertEquals(true, $results[0]->showInMenu);
 
-        $this->assertEquals('admin', $results[1]->name);
+        $this->assertEquals('admin', $results[1]->id);
         $this->assertEquals('Administration', $results[1]->title);
         $this->assertEquals(true, $results[1]->showInMenu);
     }
 
     /**
-     * test if we can get an app by name
+     * test if we can get an app by id
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class AppControllerTest extends RestTestCase
             $headers->get('Content-Type')
         );
 
-        $this->assertEquals('admin', $results->name);
+        $this->assertEquals('admin', $results->id);
         $this->assertEquals('Administration', $results->title);
         $this->assertEquals(true, $results->showInMenu);
     }
@@ -94,9 +94,9 @@ class AppControllerTest extends RestTestCase
     public function testPostApp()
     {
         $testApp = new \stdClass;
-        $testApp->name = 'new';
+        $testApp->id = 'new';
         $testApp->title = 'new Test App';
-        $testShowInMenu = true;
+        $testApp->showInMenu = true;
 
         $this->client->request(
             'POST',
@@ -117,8 +117,7 @@ class AppControllerTest extends RestTestCase
             $headers->get('Content-Type')
         );
 
-        $this->assertNotNull($results->id);
-        $this->assertEquals('new', $results->name);
+        $this->assertEquals('new', $results->id);
         $this->assertEquals('new Test App', $results->title);
         $this->assertFalse($results->showInMenu);
     }
