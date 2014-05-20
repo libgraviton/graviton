@@ -54,10 +54,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals(
-            2,
-            count($results)
-        );
+        $this->assertEquals(2, count($results));
+
         $this->assertEquals('hello', $results[0]->id);
         $this->assertEquals('Hello World!', $results[0]->title);
         $this->assertEquals(true, $results[0]->showInMenu);
