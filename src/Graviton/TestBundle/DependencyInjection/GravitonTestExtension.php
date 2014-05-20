@@ -5,10 +5,7 @@
 
 namespace Graviton\TestBundle\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -21,25 +18,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonTestExtension extends Extension
+class GravitonTestExtension extends GravitonBundleExtension
 {
-    /**
-     * {@inheritDoc}
-     *
-     * @param Array            $configs   configs
-     * @param ContainerBuilder $container container builder
-     *
-     * @return void
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function getConfigDir()
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
-        $loader = new Loader\XmlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/../Resources/config')
-        );
-        $loader->load('services.xml');
+        return __DIR__.'/../Resources/config';
     }
 }
