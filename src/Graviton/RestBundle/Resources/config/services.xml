@@ -7,7 +7,7 @@
     <parameters>
         <parameter key="graviton_rest_pager_standard.class">Graviton\RestBundle\Pager\Standard</parameter>
         <parameter key="graviton_rest_parser_rql.class">Graviton\RestBundle\Parser\Rql</parameter>
-        <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\BasicLoader</parameter>
+        <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
     </parameters>
 
     <services>
