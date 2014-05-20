@@ -56,16 +56,14 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             $actionAll = ActionFactory::getRouteAll($service);
             $routes->add($resource.'.all', $actionAll);
             
-            if (!$this->readOnly) {
-                $actionPost = ActionFactory::getRoutePost($service);
-                $routes->add($resource.'.post', $actionPost);
+            $actionPost = ActionFactory::getRoutePost($service);
+            $routes->add($resource.'.post', $actionPost);
             
-                $actionPut = ActionFactory::getRoutePut($service);
-                $routes->add($resource.'.put', $actionPut);
+            $actionPut = ActionFactory::getRoutePut($service);
+            $routes->add($resource.'.put', $actionPut);
             
-                $actionDelete = ActionFactory::getRouteDelete($service);
-                $routes->add($resource.'.delete', $actionDelete);
-            }
+            $actionDelete = ActionFactory::getRouteDelete($service);
+            $routes->add($resource.'.delete', $actionDelete);
         }
 
         $this->loaded = true;
