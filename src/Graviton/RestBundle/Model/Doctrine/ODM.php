@@ -59,7 +59,7 @@ class ODM implements ModelInterface
      */
     public function getConnectionName()
     {
-        return 'graviton_corebundle';
+        return 'graviton.core';
     }
     /**
      * {@inheritDoc}

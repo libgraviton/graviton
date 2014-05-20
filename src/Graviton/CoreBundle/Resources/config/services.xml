@@ -11,12 +11,13 @@
     </parameters>
 
     <services>
-        <service id="gravitoncorebundle.controller.app"
+        <service id="graviton.core.controller.app"
             class="%gravitoncorebundle.controller.app.class%"
             parent="graviton.rest.controller" scope="request">
             <call method="setModel">
                 <argument type="service" id="gravitoncorebundle.model.app"/>
-        </call>
+            </call>
+            <tag name="graviton.rest"/>
         </service>
 
         <service id="gravitoncorebundle.repository.app"

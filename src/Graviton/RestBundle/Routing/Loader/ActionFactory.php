@@ -7,15 +7,15 @@ class ActionFactory
 {
     public static function getRouteGet($service)
     {
-        $pattern = '/{id}';
+        $pattern = '/'.static::getEntityFromService($service).'/{id}';
         $defaults = array(
                 '_controller' => $service.':getAction',
-                '_format' => '~'
+                '_format' => '~',
         );
         
         $requirements = array(
-                'id' => '\d+',
-                '_method' => 'GET'
+                'id' => '\w+',
+                '_method' => 'GET',
         );
         
         $route = new Route($pattern, $defaults, $requirements);
@@ -25,7 +25,7 @@ class ActionFactory
     
     public static function getRouteAll($service)
     {
-        $pattern = '/';
+        $pattern = '/'.static::getEntityFromService($service);
         $defaults = array(
                 '_controller' => $service.':allAction',
                 '_format' => '~'
@@ -42,7 +42,7 @@ class ActionFactory
     
     public static function getRoutePost($service)
     {
-        $pattern = '/';
+        $pattern = '/'.static::getEntityFromService($service);
         $defaults = array(
                 '_controller' => $service.':postAction',
                 '_format' => '~'
@@ -59,14 +59,14 @@ class ActionFactory
     
     public static function getRoutePut($service)
     {
-        $pattern = '/{id}';
+        $pattern = '/'.static::getEntityFromService($service).'/{id}';
         $defaults = array(
                 '_controller' => $service.':putAction',
                 '_format' => '~'
         );
         
         $requirements = array(
-                'id' => '\d+',
+                'id' => '\w+',
                 '_method' => 'PUT'
         );
         
@@ -77,19 +77,25 @@ class ActionFactory
     
     public static function getRouteDelete($service)
     {
-        $pattern = '/{id}';
+        $pattern = '/'.static::getEntityFromService($service).'/{id}';
         $defaults = array(
                 '_controller' => $service.':deleteAction',
                 '_format' => '~'
         );
         
         $requirements = array(
-                'id' => '\d+',
+                'id' => '\w+',
                 '_method' => 'DELETE'
         );
         
         $route = new Route($pattern, $defaults, $requirements);
         
         return $route;
+    }
+
+    private static function getEntityFromService($service)
+    {
+        $parts = explode('.', $service);
+        return array_pop($parts);
     }
 }

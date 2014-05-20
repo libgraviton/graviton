@@ -71,7 +71,7 @@ class RestController
 
         if ($result) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
-            $serviceName = $this->model->getConnectionName().'_'.$baseName;
+            $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
 
             $response = Response::getResponse(
                 200,
@@ -108,12 +108,12 @@ class RestController
 
         if (!$response) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
-            $serviceName = $this->model->getConnectionName().'_'.$baseName;
+            $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
             $record = $this->getModel()->insertRecord($record);
             $response = Response::getResponse(
                 201,
                 $this->getSerializer()->serialize($record, 'json'),
-                array('Location' => $this->getRouter()->generate($serviceName.'_get', array('id' => $record->getId())))
+                array('Location' => $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId())))
             );
         }
 

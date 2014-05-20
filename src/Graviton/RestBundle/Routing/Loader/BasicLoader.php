@@ -1,65 +1,102 @@
 <?php
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Loader\LoaderResolverInterface;
+use Symfony\Component\Config\Loader\Loader;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
 use Graviton\RestBundle\Routing\RouteFactory;
 use Graviton\RestBundle\Routing\Loader\ActionFactory;
+use Graviton\RestBundle\ControllerCollection;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
-class BasicLoader implements LoaderInterface
+class BasicLoader extends Loader implements ContainerAwareInterface
 {
     private $loaded = false;
-    private $readOnly;
-    
-    public function __construct($readOnly = false)
+
+    private $container;
+
+    /**
+     * set container
+     *
+     * @param ContainerInterface $container global container
+     */
+    public function setContainer(ContainerInterface $container = null)
     {
-        $this->readOnly = $readOnly;
+        $this->container = $container;
+    }
+
+    /**
+     * get the container
+     *
+     * @return ContainerInterface
+     */
+    public function getContainer() {
+        return $this->container;
     }
     
     public function load($resource, $type = null)
     {
         if (true === $this->loaded) {
-            throw new \RuntimeException('Do not add the "extra" loader twice');
+            throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
-    
+
         $routes = new RouteCollection();
 
-        $actionGet = ActionFactory::getRouteGet($resource);
-        $routes->add($resource.'_get', $actionGet);
+        $container = $this->getContainerBuilder();
+        foreach (array_keys($container->findTaggedServiceIds('graviton.rest')) AS $service) {
+            list($app, $bundle, $type, $entity) = explode('.', $service);
+            $resource = implode('.', array($app, $bundle, 'rest', $entity));
+
+            $actionGet = ActionFactory::getRouteGet($service);
+            $routes->add($resource.'.get', $actionGet);
         
-        $actionAll = ActionFactory::getRouteAll($resource);
-        $routes->add($resource.'_all', $actionAll);
+            $actionAll = ActionFactory::getRouteAll($service);
+            $routes->add($resource.'.all', $actionAll);
             
-        if (!$this->readOnly) {
-            $actionPost = ActionFactory::getRoutePost($resource);
-            $routes->add($resource.'_post', $actionPost);
+            if (!$this->readOnly) {
+                $actionPost = ActionFactory::getRoutePost($service);
+                $routes->add($resource.'.post', $actionPost);
             
-            $actionPut = ActionFactory::getRoutePut($resource);
-            $routes->add($resource.'_put', $actionPut);
+                $actionPut = ActionFactory::getRoutePut($service);
+                $routes->add($resource.'.put', $actionPut);
             
-            $actionDelete = ActionFactory::getRouteDelete($resource);
-            $routes->add($resource.'_delete', $actionDelete);
+                $actionDelete = ActionFactory::getRouteDelete($service);
+                $routes->add($resource.'.delete', $actionDelete);
+            }
         }
 
-        //$this->loaded = true;
+        $this->loaded = true;
     
         return $routes;
     }
     
     public function supports($resource, $type = null)
     {
-        return 'graviton_rest.routing_loader' === $type;
+        return 'graviton.rest.routing.loader' === $type;
     }
-    
-    public function getResolver()
+
+    /**
+     * Loads the ContainerBuilder from the cache.
+     *
+     * @return ContainerBuilder
+     *
+     * @throws \LogicException
+     */
+    protected function getContainerBuilder()
     {
-        // needed, but can be blank, unless you want to load other resources
-        // and if you do, using the Loader base class is easier (see below)
+        if (!is_file($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
+            throw new \LogicException(sprintf('Debug information about the container could not be found. Please clear the cache and try again.'));
+        }
+
+        $container = new ContainerBuilder();
+
+        $loader = new XmlFileLoader($container, new FileLocator());
+        $loader->load($cachedFile);
+
+        return $container;
     }
-    
-    public function setResolver(LoaderResolverInterface $resolver)
-    {
-        // same as above
-    }
+
 }
