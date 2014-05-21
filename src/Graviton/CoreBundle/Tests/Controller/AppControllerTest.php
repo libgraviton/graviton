@@ -22,6 +22,10 @@ class AppControllerTest extends RestTestCase
      * @const vendorized app mime type for app data
      */
     const CONTENT_TYPE = 'application/vnd.graviton.core.app+json; charset=UTF-8';
+    /**
+     * @const corresponding vendorized schema mime type
+     */
+    const SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
 
     /**
      * setup client and load fixtures
@@ -63,6 +67,15 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('admin', $results[1]->id);
         $this->assertEquals('Administration', $results[1]->title);
         $this->assertEquals(true, $results[1]->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
@@ -82,6 +95,15 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('admin', $results->id);
         $this->assertEquals('Administration', $results->title);
         $this->assertEquals(true, $results->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app/admin>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
@@ -107,6 +129,15 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('new', $results->id);
         $this->assertEquals('new Test App', $results->title);
         $this->assertTrue($results->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app/new>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
@@ -132,6 +163,15 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('hello', $results->id);
         $this->assertEquals('Hello World!', $results->title);
         $this->assertFalse($results->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app/hello>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
