@@ -6,6 +6,8 @@ use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\RestBundle\Response\ResponseFactory as Response;
 
 /**
@@ -19,7 +21,7 @@ use Graviton\RestBundle\Response\ResponseFactory as Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class RestController
+class RestController implements ContainerAwareInterface
 {
     private $doctrine;
     private $request;
@@ -29,6 +31,18 @@ class RestController
     private $router;
     private $serializerContext = null;
     private $deserializerContext = null;
+
+    private $container;
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param ContainerInterface $container service_container
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
 
     /**
      * Returns a single record
@@ -99,6 +113,9 @@ class RestController
             $this->getModel()->getEntityClass(),
             'json'
         );
+
+        // store id of new record so we dont need to reparse body later when needed
+        $this->container->get('request')->attributes->set('id', $record->getId());
 
         $validationErrors = $this->getValidator()->validate($record);
 

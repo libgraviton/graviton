@@ -23,12 +23,15 @@ class DocumentLinkHeadersEvent implements ContainerAwareInterface
         // extract various info from route
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
-        $routeType = array_slice($routeParts, -1, 1, true);
+        $routeType = end($routeParts);
 
         // for now we assume that everything except collections has an id
         // this is also flawed since it does not handle search actions
         $parameters = array();
-        if ($routeType != 'all') {
+        if ($routeType == 'post') {
+            $parameters = array('id' => $request->attributes->get('id'));
+            $routeName = substr($routeName, 0, -4).'get';
+        } elseif ($routeType != 'all') {
             $parameters = array('id' => $request->get('id'));
         }
 
