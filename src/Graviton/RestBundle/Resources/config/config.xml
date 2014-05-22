@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
   <jms_serializer:config>
-    <tag name="jms_serializer.handler" 
+    <tag name="jms_serializer.handler"
       type="DateTime"
       direction="serialization"
       format="json"

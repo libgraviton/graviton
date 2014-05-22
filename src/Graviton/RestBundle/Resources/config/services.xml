@@ -44,30 +44,30 @@
         </call>
         <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
       </service>
- 
+
     <service id="graviton_rest_pager" class="%graviton_rest_pager_standard.class%" scope="request">
         </service>
-        
+
         <service id="graviton_rest_parser" class="%graviton_rest_parser_rql.class%" scope="request">
         </service>
-        
+
         <service id="graviton_rest_service_pager" class="%graviton_rest_pager_standard.class%" abstract="true">
         </service>
-        
+
         <service id="graviton_rest_service_parser" class="%graviton_rest_parser_rql.class%" abstract="true">
         </service>
-           
-        <service id="graviton_rest_model" abstract="true"> 
+
+        <service id="graviton_rest_model" abstract="true">
             <call method="setDoctrine">
                 <argument type="service" id="doctrine"></argument>
             </call>
-        </service> 
-         
+        </service>
+
         <service id="kernel.listener.graviton_rest_request_get" class="Graviton\RestBundle\Listener\Request\GetListener">
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
             <argument type="service" id="service_container"></argument>
         </service>
-        
+
         <service id="kernel.listener.graviton_rest_response_get" class="Graviton\RestBundle\Listener\Response\GetListener">
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" />
             <argument type="service" id="service_container"></argument>

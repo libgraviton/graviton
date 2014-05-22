@@ -19,7 +19,7 @@ class ResponseFactory
         $response = new Response();
         $response->setStatusCode($statusCode);
         $response->setContent($content);
-        
+
         foreach ($headers as $type => $values) {
             $response->headers->set($type, $values);
         }

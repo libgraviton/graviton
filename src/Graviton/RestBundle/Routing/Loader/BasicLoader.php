@@ -7,9 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
-use Graviton\RestBundle\Routing\RouteFactory;
-use Graviton\RestBundle\Routing\Loader\ActionFactory;
-use Graviton\RestBundle\ControllerCollection;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 class BasicLoader extends Loader implements ContainerAwareInterface
@@ -33,10 +30,11 @@ class BasicLoader extends Loader implements ContainerAwareInterface
      *
      * @return ContainerInterface
      */
-    public function getContainer() {
+    public function getContainer()
+    {
         return $this->container;
     }
-    
+
     public function load($resource, $type = null)
     {
         if (true === $this->loaded) {
@@ -46,31 +44,31 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         $routes = new RouteCollection();
 
         $container = $this->getContainerBuilder();
-        foreach (array_keys($container->findTaggedServiceIds('graviton.rest')) AS $service) {
+        foreach (array_keys($container->findTaggedServiceIds('graviton.rest')) as $service) {
             list($app, $bundle, $type, $entity) = explode('.', $service);
             $resource = implode('.', array($app, $bundle, 'rest', $entity));
 
             $actionGet = ActionFactory::getRouteGet($service);
             $routes->add($resource.'.get', $actionGet);
-        
+
             $actionAll = ActionFactory::getRouteAll($service);
             $routes->add($resource.'.all', $actionAll);
-            
+
             $actionPost = ActionFactory::getRoutePost($service);
             $routes->add($resource.'.post', $actionPost);
-            
+
             $actionPut = ActionFactory::getRoutePut($service);
             $routes->add($resource.'.put', $actionPut);
-            
+
             $actionDelete = ActionFactory::getRouteDelete($service);
             $routes->add($resource.'.delete', $actionDelete);
         }
 
         $this->loaded = true;
-    
+
         return $routes;
     }
-    
+
     public function supports($resource, $type = null)
     {
         return 'graviton.rest.routing.loader' === $type;
@@ -86,7 +84,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     protected function getContainerBuilder()
     {
         if (!is_file($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
-            throw new \LogicException(sprintf('Debug information about the container could not be found. Please clear the cache and try again.'));
+            throw new \LogicException('Debug information about the container could not be found.');
         }
 
         $container = new ContainerBuilder();
@@ -96,5 +94,4 @@ class BasicLoader extends Loader implements ContainerAwareInterface
 
         return $container;
     }
-
 }

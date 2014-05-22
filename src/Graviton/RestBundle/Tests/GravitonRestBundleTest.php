@@ -12,14 +12,14 @@ use Misd\GuzzleBundle\MisdGuzzleBundle;
 
 /**
  * GravitonMessagingBundleTest
- * 
+ *
  * @category Tests
  * @package  GravitonMessagingBundle
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonBundleRestTest extends \PHPUnit_Framework_TestCase
+class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * check for implemented interfaces

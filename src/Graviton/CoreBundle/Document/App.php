@@ -40,8 +40,9 @@ class App
      */
     public function setId($id)
     {
-	    $this->id = $id;
-	    return $this;
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -64,6 +65,7 @@ class App
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -87,6 +89,7 @@ class App
     public function setShowInMenu($showInMenu)
     {
         $this->showInMenu = $showInMenu;
+
         return $this;
     }
 

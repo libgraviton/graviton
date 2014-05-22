@@ -2,7 +2,6 @@
 
 namespace Graviton\TestBundle\Test;
 
-use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

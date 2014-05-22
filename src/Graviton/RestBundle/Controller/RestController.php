@@ -63,7 +63,6 @@ class RestController implements ContainerAwareInterface
             );
         }
 
-
         //add link header for each child
         //$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
 
@@ -293,7 +292,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Set the serializer
      *
-     * @param Serializer $serializer  JMS serializer instance
+     * @param Serializer $serializer JMS serializer instance
      *
      * @return \Graviton\RestBundle\Controller\RestController
      */

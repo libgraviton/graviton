@@ -24,39 +24,37 @@ class Client extends FrameworkClient
     /**
      * POSTs to an URI.
      *
-     * @param string  $uri           The URI to fetch
-     * @param string  $content       The raw body data
-     * @param array   $parameters    The Request parameters
-     * @param array   $files         The files
-     * @param array   $server        The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
-     * @param bool    $changeHistory Whether to update the history or not (only used internally for back(), forward(), and reload())
+     * @param string $uri        The URI to fetch
+     * @param string $content    The raw body data
+     * @param array  $parameters The Request parameters
+     * @param array  $files      The files
+     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
      *
      * @return Crawler
      *
      * @api
      */
-    public function post($uri, $content, array $parameters = array(), array $files = array(), array $server = array(), $changeHistory = true)
+    public function post($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
     {
-        return $this->request('POST', $uri, $parameters, $files, $server, json_encode($content), $changeHistory);
+        return $this->request('POST', $uri, $parameters, $files, $server, json_encode($content));
     }
 
     /**
      * PUTs to an URI.
      *
-     * @param string  $uri           The URI to fetch
-     * @param string  $content       The raw body data
-     * @param array   $parameters    The Request parameters
-     * @param array   $files         The files
-     * @param array   $server        The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
-     * @param bool    $changeHistory Whether to update the history or not (only used internally for back(), forward(), and reload())
+     * @param string $uri        The URI to fetch
+     * @param string $content    The raw body data
+     * @param array  $parameters The Request parameters
+     * @param array  $files      The files
+     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
      *
      * @return Crawler
      *
      * @api
      */
-    public function put($uri, $content, array $parameters = array(), array $files = array(), array $server = array(), $changeHistory = true)
+    public function put($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
     {
-        return $this->request('PUT', $uri, $parameters, $files, $server, json_encode($content), $changeHistory);
+        return $this->request('PUT', $uri, $parameters, $files, $server, json_encode($content));
     }
 
     /**
@@ -71,6 +69,7 @@ class Client extends FrameworkClient
     protected function filterResponse($response)
     {
         $this->results = json_decode($response->getContent());
+
         return parent::filterResponse($response);
     }
 

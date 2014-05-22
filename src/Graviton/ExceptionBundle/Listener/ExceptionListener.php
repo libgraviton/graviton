@@ -56,17 +56,18 @@ class ExceptionListener
 
         );
 
+        // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when available
+        $response->setStatusCode(500);
+
         if ($exception instanceof HttpExceptionInterface) {
-                $response->setStatusCode($exception->getStatusCode());
-                // add headers from exception if any exist
-                $headers = array_merge(
-                    $exception->getHeaders(),
-                    $headers
-                );
-        } else {
-            // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when available
-            $response->setStatusCode(500);
+            $response->setStatusCode($exception->getStatusCode());
+            // add headers from exception if any exist
+            $headers = array_merge(
+                $exception->getHeaders(),
+                $headers
+            );
         }
+
         $response->headers->replace($headers);
         $response->setData($message);
 

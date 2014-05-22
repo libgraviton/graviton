@@ -12,12 +12,12 @@ use Graviton\RestBundle\Model\ModelDoctrine as Model;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class RestModelDoctrineFactory
+class DoctrineFactory
 {
     public function getModelDoctrine($className, $connection = "default")
     {
         $model = new Model($className, $connection);
-        
+
         return $model;
     }
 }

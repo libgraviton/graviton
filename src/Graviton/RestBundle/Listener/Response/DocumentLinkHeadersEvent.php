@@ -29,7 +29,8 @@ class DocumentLinkHeadersEvent implements ContainerAwareInterface
         // this is also flawed since it does not handle search actions
         $parameters = array();
         if ($routeType == 'post') {
-            $parameters = array('id' => $request->attributes->get('id'));
+            // handle post request by rewriting self link to newly created resource
+            $parameters = array('id' => $request->get('id'));
             $routeName = substr($routeName, 0, -4).'get';
         } elseif ($routeType != 'all') {
             $parameters = array('id' => $request->get('id'));

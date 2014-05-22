@@ -196,7 +196,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    function testDeleteApp()
+    public function testDeleteApp()
     {
         $testApp = new \stdClass;
         $testApp->id = 'hello';

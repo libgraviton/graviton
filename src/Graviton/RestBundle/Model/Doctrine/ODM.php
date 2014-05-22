@@ -19,6 +19,7 @@ class ODM implements ModelInterface
         $dm = $this->repository->getDocumentManager();
         $res = $dm->persist($entity);
         $dm->flush();
+
         return $this->find($entity->getId());
     }
     public function updateRecord($id, $entity)
@@ -26,6 +27,7 @@ class ODM implements ModelInterface
         $dm = $this->repository->getDocumentManager();
         $dm->persist($entity);
         $dm->flush();
+
         return $entity;
     }
     public function deleteRecord($id)
@@ -38,6 +40,7 @@ class ODM implements ModelInterface
             $dm->remove($entity);
             $return = true;
         }
+
         return $return;
     }
     public function getEntityClass()

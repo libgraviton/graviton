@@ -70,7 +70,7 @@ class BundleGenerator extends ParentGenerator
         }
 
         $this->setSkeletonDirs($this->getSkeletonDirs());
-        
+
         $basename = substr($bundle, 0, -6);
         $parameters = array(
             'namespace' => $namespace,
@@ -79,22 +79,22 @@ class BundleGenerator extends ParentGenerator
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
-        
+
         $serviceId = $this->arrAnswers['connection'].'_'.$this->arrAnswers['entityName'];
         $parameters['service_id'] = $serviceId;
-        
+
         $pagerId = $serviceId.'_pager';
         $parameters['pager_id'] = $pagerId;
-        
+
         $parserId = $serviceId.'_parser';
         $parameters['parser_id'] = $parserId;
-        
+
         $modelId = $serviceId.'_model';
         $parameters['model_id'] = $modelId;
-        
+
         $routerId = $serviceId.'_router';
         $parameters['router_id'] = $routerId;
-        
+
         $entityPath = implode(
             '\\',
             array(
@@ -104,9 +104,9 @@ class BundleGenerator extends ParentGenerator
             )
         );
         $parameters['entity_path'] = $entityPath;
-        
+
         $parameters['connection_name'] = $this->connecton;
-        
+
         $parameters['routing_prefix'] = $this->routingPrexif;
 
         $this->renderFile(
@@ -143,7 +143,7 @@ class BundleGenerator extends ParentGenerator
             );
         }
     }
-    
+
     protected function getSkeletonDirs(BundleInterface $bundle = null)
     {
         $skeletonDirs = array();
