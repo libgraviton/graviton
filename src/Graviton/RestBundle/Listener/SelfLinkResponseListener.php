@@ -1,19 +1,47 @@
 <?php
 
-namespace Graviton\RestBundle\Listener\Response;
+namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-class DocumentLinkHeadersEvent implements ContainerAwareInterface
+/**
+ * FilterResponseListener for adding a rel=self Link header to a response.
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
+class SelfLinkResponseListener implements ContainerAwareInterface
 {
+    /**
+     * @private reference to service_container
+     */
     private $container;
+
+    /**
+     * @{inheritDocs}
+     *
+     * @param ContainerInterface $container service_container
+     *
+     * @return void
+     */
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
 
+    /**
+     * add a rel=self Link header to the response
+     *
+     * @param FilterResponseEvent $event response listener event
+     *
+     * @return void
+     */
     public function onKernelResponse(FilterResponseEvent $event)
     {
         $response = $event->getResponse();

@@ -8,7 +8,7 @@
       <parameter key="graviton_rest_pager_standard.class">Graviton\RestBundle\Pager\Standard</parameter>
       <parameter key="graviton_rest_parser_rql.class">Graviton\RestBundle\Parser\Rql</parameter>
       <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
-      <parameter key="graviton.rest.response.filter.documentlinkheaders.class">Graviton\RestBundle\Listener\Response\DocumentLinkHeadersEvent</parameter>
+      <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
     </parameters>
 
     <services>
@@ -38,7 +38,7 @@
         <call method="setSerializeNull"></call>
         <call method="setDeserializeNull"></call>
       </service>
-      <service id="graviton.rest.response.filter.documentlinkheaders" class="%graviton.rest.response.filter.documentlinkheaders.class%">
+      <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
         <call method="setContainer">
           <argument type="service" id="service_container"></argument>
         </call>
@@ -63,14 +63,5 @@
             </call>
         </service>
 
-        <service id="kernel.listener.graviton_rest_request_get" class="Graviton\RestBundle\Listener\Request\GetListener">
-            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
-            <argument type="service" id="service_container"></argument>
-        </service>
-
-        <service id="kernel.listener.graviton_rest_response_get" class="Graviton\RestBundle\Listener\Response\GetListener">
-            <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" />
-            <argument type="service" id="service_container"></argument>
-        </service>
     </services>
 </container>
