@@ -1,12 +1,15 @@
 <?php
 
-namespace Graviton\RestBundle\Listener\Response;
+namespace Graviton\SchemaBundle\Listener;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-class DocumentLinkHeadersEvent implements ContainerAwareInterface
+/**
+ * Add a Link header to a schema endpoint to a response
+ */
+class SchemaLinkResponseListener implements ContainerAwareInterface
 {
     private $container;
     public function setContainer(ContainerInterface $container = null)
@@ -20,28 +23,27 @@ class DocumentLinkHeadersEvent implements ContainerAwareInterface
         $request = $event->getRequest();
         $router = $this->container->get('router');
 
-        // extract various info from route
+        // extract info from route
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
+        list($app, $module, $routeType, $model, $method) = $routeParts;
 
-        // for now we assume that everything except collections has an id
-        // this is also flawed since it does not handle search actions
-        $parameters = array();
-        if ($routeType == 'post') {
-            // handle post request by rewriting self link to newly created resource
-            $parameters = array('id' => $request->get('id'));
-            $routeName = substr($routeName, 0, -4).'get';
-        } elseif ($routeType != 'all') {
-            $parameters = array('id' => $request->get('id'));
+        $schemaRouteName = 'graviton.schema.get';
+        $parameters = array('routePath' => implode('/', array($module, $model)));
+
+        $schema = 'application/vnd.graviton.schema.core.app+json';
+
+        if ($method == 'all') {
+            $parameters['routePath'] = 'schema/collection';
+            $schema = 'application/vnd.graviton.schema.collection+json';
         }
 
-        $url = $router->generate($routeName, $parameters, true);
+        $url = $router->generate($schemaRouteName, $parameters, true);
 
         // append rel=self link to link headers
         $links = explode(', ', $response->headers->get('Link'));
         $links = array_filter($links);
-        $links[] = sprintf('<%s>; rel="self"', $url);
+        $links[] = sprintf('<%s>; rel="schema"; type="%s"', $url, $schema);
 
         // overwrite link headers with new headers
         $response->headers->set('Link', implode(',', $links));

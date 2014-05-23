@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing">
+  <route id="graviton.schema.get" path="/{routePath}">
+    <default key="_controller">AcmeBlogBundle:Blog:show</default>
+    <requirement key="routePath">.+</requirement>
+  </route>
+</routes>
