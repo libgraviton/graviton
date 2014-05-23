@@ -253,7 +253,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::SCHEMA_TYPE, $response);
+        $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
 
         $this->markTestIncomplete('Schema response needs extensive testing');
     }
