@@ -29,24 +29,27 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
         list($app, $module, $routeType, $model, $method) = $routeParts;
 
         $schemaRouteName = 'graviton.schema.get';
-        $parameters = array('routePath' => implode('/', array($module, $model)));
+        $parameters = array('id' => implode('/', array($module, $model)));
 
         $schema = 'application/vnd.graviton.schema.core.app+json';
 
         if ($method == 'all') {
-            $parameters['routePath'] = 'schema/collection';
+            $parameters['id'] = 'schema/collection';
             $schema = 'application/vnd.graviton.schema.collection+json';
         }
 
-        $url = $router->generate($schemaRouteName, $parameters, true);
+        if ($schemaRouteName !== $routeName) {
 
-        // append rel=self link to link headers
-        $links = explode(', ', $response->headers->get('Link'));
-        $links = array_filter($links);
-        $links[] = sprintf('<%s>; rel="schema"; type="%s"', $url, $schema);
+            $url = $router->generate($schemaRouteName, $parameters, true);
 
-        // overwrite link headers with new headers
-        $response->headers->set('Link', implode(',', $links));
+            // append rel=schema link to link headers
+            $links = explode(', ', $response->headers->get('Link'));
+            $links = array_filter($links);
+            $links[] = sprintf('<%s>; rel="schema"; type="%s"', $url, $schema);
+
+            // overwrite link headers with new headers
+            $response->headers->set('Link', implode(',', $links));
+        }
 
         $event->setResponse($response);
     }
