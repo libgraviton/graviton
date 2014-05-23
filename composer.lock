@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f0da7c1fab48bedfcdfed4d90db89365",
+    "hash": "a0531282a4362c7307bc0d3f314f970d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2599,16 +2599,16 @@
         },
         {
             "name": "libgraviton/codesniffer",
-            "version": "dev-feature/line-length-psr2-compat",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "7f75e381115eb1b06277212964a848737d18b11b"
+                "reference": "490f1ea2e58c060106f855bc2b3833cb335f5851"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/7f75e381115eb1b06277212964a848737d18b11b",
-                "reference": "7f75e381115eb1b06277212964a848737d18b11b",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/490f1ea2e58c060106f855bc2b3833cb335f5851",
+                "reference": "490f1ea2e58c060106f855bc2b3833cb335f5851",
                 "shasum": ""
             },
             "require": {
@@ -2627,7 +2627,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2014-05-23 11:25:23"
+            "time": "2013-10-14 19:16:14"
         },
         {
             "name": "liip/functional-test-bundle",

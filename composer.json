@@ -33,7 +33,7 @@
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
     "require-dev": {
-        "libgraviton/codesniffer": "dev-feature/line-length-psr2-compat@dev",
+        "libgraviton/codesniffer": "dev-develop@dev",
         "phpunit/phpunit": "*",
         "liip/functional-test-bundle": "@dev",
         "phpmd/phpmd": "@dev",
