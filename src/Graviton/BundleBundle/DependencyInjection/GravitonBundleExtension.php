@@ -25,6 +25,11 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface
  */
 class GravitonBundleExtension extends Extension implements PrependInterface
 {
+    /**
+     * get path to bundles Resources/config dir
+     *
+     * @return String
+     */
     public function getConfigDir()
     {
         return __DIR__.'/../Resources/config';

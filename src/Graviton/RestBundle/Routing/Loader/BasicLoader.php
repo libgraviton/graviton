@@ -9,6 +9,16 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
+/**
+ * Load routes for all rest services
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class BasicLoader extends Loader implements ContainerAwareInterface
 {
     private $loaded = false;
@@ -19,6 +29,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
      * set container
      *
      * @param ContainerInterface $container global container
+     *
+     * @return void
      */
     public function setContainer(ContainerInterface $container = null)
     {
@@ -35,6 +47,14 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         return $this->container;
     }
 
+    /**
+     * Load routes for all services tagged with graviton.rest
+     *
+     * @param String $resource unused
+     * @param String $type     unused
+     *
+     * @return RouteCollection
+     */
     public function load($resource, $type = null)
     {
         if (true === $this->loaded) {
@@ -69,6 +89,14 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         return $routes;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param String $resource unused
+     * @param String $type     Type to match against
+     *
+     * @return Boolean
+     */
     public function supports($resource, $type = null)
     {
         return 'graviton.rest.routing.loader' === $type;

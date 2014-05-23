@@ -20,6 +20,11 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  */
 class GravitonTestExtension extends GravitonBundleExtension
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return String
+     */
     public function getConfigDir()
     {
         return __DIR__.'/../Resources/config';
