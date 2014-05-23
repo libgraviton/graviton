@@ -12,6 +12,11 @@
     </parameters>
 
     <services>
+      <service id="graviton.rest.serializer" alias="serializer"/>
+      <service id="graviton.rest.doctrine" alias="doctrine"/>
+      <service id="graviton.rest.validator" alias="validator"/>
+      <service id="graviton.rest.router" alias="router"/>
+      <service id="graviton.rest.request" alias="request"/>
       <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
         <call method="setContainer"><argument type="service" id="service_container"/></call>
         <tag name="routing.loader"/>

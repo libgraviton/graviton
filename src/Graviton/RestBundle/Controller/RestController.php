@@ -214,7 +214,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getRequest()
     {
-        return $this->container->get('request');
+        return $this->container->get('graviton.rest.request');
     }
 
     /**
@@ -254,7 +254,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getDoctrine()
     {
-        return $this->container->get('doctrine');
+        return $this->container->get('gravtion.rest.doctrine');
     }
 
     /**
@@ -264,7 +264,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getSerializer()
     {
-        return $this->container->get('serializer');
+        return $this->container->get('graviton.rest.serializer');
     }
 
     /**
@@ -324,12 +324,12 @@ class RestController implements ContainerAwareInterface
      */
     public function getValidator()
     {
-        return $this->container->get('validator');
+        return $this->container->get('graviton.rest.validator');
     }
 
     public function getRouter()
     {
-        return $this->container->get('router');
+        return $this->container->get('graviton.rest.router');
     }
 
     /**
