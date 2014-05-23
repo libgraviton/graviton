@@ -25,7 +25,11 @@ class AppControllerTest extends RestTestCase
     /**
      * @const corresponding vendorized schema mime type
      */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
+    const SCHEMA_TYPE = 'application/vnd.graviton.schema.core.app+json';
+    /**
+     * @const corresponding vendorized schema mime type
+     */
+    const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
 
     /**
      * setup client and load fixtures
@@ -73,7 +77,7 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
+            '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -101,7 +105,7 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -135,7 +139,7 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -169,7 +173,7 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="application/vnd.graviton.schema.core.app+json"',
+            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
     }
