@@ -208,27 +208,13 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Set the request object
-     *
-     * @param Request $request Request object
-     *
-     * @return RestController $this This Controller
-     */
-    public function setRequest($request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
      * Get request
      *
      * @return Request $request Request object
      */
     public function getRequest()
     {
-        return $this->request;
+        return $this->container->get('request');
     }
 
     /**
@@ -260,20 +246,6 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Set doctrine
-     *
-     * @param Doctrine $doctrine Doctrine Object
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setDoctrine($doctrine)
-    {
-        $this->doctrine = $doctrine;
-
-        return $this;
-    }
-
-    /**
      * Get doctrine
      *
      * @throws Exception
@@ -282,25 +254,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getDoctrine()
     {
-        if (!$this->doctrine) {
-            throw new Exception('Doctrine is not set on this controller');
-        }
-
-        return $this->doctrine;
-    }
-
-    /**
-     * Set the serializer
-     *
-     * @param Serializer $serializer JMS serializer instance
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setSerializer(Serializer $serializer)
-    {
-        $this->serializer = $serializer;
-
-        return $this;
+        return $this->container->get('doctrine');
     }
 
     /**
@@ -310,7 +264,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getSerializer()
     {
-        return $this->serializer;
+        return $this->container->get('serializer');
     }
 
     /**
@@ -362,20 +316,6 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Set validator
-     *
-     * @param Validator $validator Validator instance
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setValidator($validator)
-    {
-        $this->validator = $validator;
-
-        return $this;
-    }
-
-    /**
      * Get the validator
      *
      * @throws Exception
@@ -384,21 +324,12 @@ class RestController implements ContainerAwareInterface
      */
     public function getValidator()
     {
-        if (!$this->validator) {
-            throw new Exception('No validator set on this controller');
-        }
-
-        return $this->validator;
-    }
-
-    public function setRouter($router)
-    {
-        $this->router = $router;
+        return $this->container->get('validator');
     }
 
     public function getRouter()
     {
-        return $this->router;
+        return $this->container->get('router');
     }
 
     /**
