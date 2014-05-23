@@ -238,4 +238,23 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
+
+    /**
+     * test getting schema information
+     *
+     * @return void
+     */
+    public function testGetSchemaInformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/schema/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::SCHEMA_TYPE, $response);
+
+        $this->markTestIncomplete('Schema response needs extensive testing');
+    }
 }
