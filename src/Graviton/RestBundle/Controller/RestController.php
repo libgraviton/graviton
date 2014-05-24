@@ -23,12 +23,7 @@ use Graviton\RestBundle\Response\ResponseFactory as Response;
  */
 class RestController implements ContainerAwareInterface
 {
-    private $doctrine;
-    private $request;
-    private $validator;
     private $model;
-    private $serializer;
-    private $router;
     private $serializerContext = null;
     private $deserializerContext = null;
 
