@@ -28,5 +28,4 @@ if ($debug) {
 $kernel = new AppKernel($env, $debug);
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 $application = new Application($kernel);
-$application->add(new CreateService());
 $application->run($input);
