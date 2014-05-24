@@ -58,7 +58,7 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
         $schemaRouteName = 'graviton.schema.get';
         $parameters = array('id' => implode('/', array($module, $model)));
 
-        $schema = 'application/vnd.graviton.schema.core.app+json';
+        $schema = sprintf('application/vnd.graviton.schema.%s.%s+json', $module, $model);
 
         if ($method == 'all') {
             $parameters['id'] = 'schema/collection';

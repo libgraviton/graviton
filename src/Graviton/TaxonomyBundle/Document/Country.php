@@ -19,23 +19,29 @@ class Country
     protected $id;
 
     /**
-     * @var string $name Country Name
+     * @var String $name Country Name
      */
     protected $name;
 
     /**
-     * Set id
-     *
-     * @param String $id id for new document
-     *
-     * @return self
+     * @var String $iso2Code ISO country code
      */
-    public function setId($id)
-    {
-        $this->id = $id;
+    protected $iso2Code;
 
-        return $this;
-    }
+    /**
+     * @var String $capitalCity capital city of country
+     */
+    protected $capitalCity;
+
+    /**
+     * @var String $longitude Longitude of country
+     */
+    protected $longitude;
+
+    /**
+     * @var String $latitude Latitude of country
+     */
+    protected $latitude;
 
     /**
      * Get id
@@ -48,20 +54,6 @@ class Country
     }
 
     /**
-     * Set name
-     *
-     * @param string $name name of country
-     *
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get name
      *
      * @return String
@@ -69,5 +61,35 @@ class Country
     public function getName()
     {
         return $this->name;
+    }
+
+    /** 
+     * get ISO code of country
+     *
+     * @return String
+     */
+    public function getIso2Code()
+    {
+        return $this->iso2Code;
+    }
+
+    /**
+     * get longitude
+     *
+     * @return String
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * get latitude
+     *
+     * @return String
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
     }
 }

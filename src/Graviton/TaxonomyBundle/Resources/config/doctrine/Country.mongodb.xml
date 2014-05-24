@@ -6,5 +6,9 @@
   <document name="Graviton\TaxonomyBundle\Document\Country" repository-class="Graviton\TaxonomyBundle\Repository\CountryRepository">
     <field fieldName="id" type="string" id="true"/>
     <field fieldName="name" type="string"/>
+    <field fieldName="iso2Code" type="string"/>
+    <field fieldName="capitalCity" type="string"/>
+    <field fieldName="longitude" type="string"/>
+    <field fieldName="latitude" type="string"/>
   </document>
 </doctrine-mongo-mapping>
