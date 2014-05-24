@@ -108,11 +108,7 @@ class RestController implements ContainerAwareInterface
         // store id of new record so we dont need to reparse body later when needed
         $this->container->get('request')->attributes->set('id', $record->getId());
 
-        $validationErrors = $this->getValidator()->validate($record);
-
-        if (count($validationErrors) > 0) {
-            $response = Response::getResponse(400, $this->getSerializer()->serialize($validationErrors, 'json'));
-        }
+        $response = $this->validateRecord($record);
 
         if (!$response) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
@@ -144,14 +140,7 @@ class RestController implements ContainerAwareInterface
             'json'
         );
 
-        $validationErrors = $this->getValidator()->validate($record);
-
-        if (count($validationErrors) > 0) {
-            $response = Response::getResponse(
-                400,
-                $this->getSerializer()->serialize($validationErrors, 'json')
-            );
-        }
+        $response = $this->validateRecord($record);
 
         if (!$response) {
             $existingRecord = $this->getModel()->find($id);
@@ -364,5 +353,23 @@ class RestController implements ContainerAwareInterface
         }
 
         return $this;
+    }
+
+    /**
+     * validate a record and return an approriate reponse
+     *
+     * @param Object $record record to validate
+     * 
+     * @return Response|null
+     */
+    private function validateRecord($record)
+    {
+        $validationErrors = $this->getValidator()->validate($record);
+
+        $response =  null;
+        if (count($validationErrors) > 0) {
+            $response = Response::getResponse(400, $this->getSerializer()->serialize($validationErrors, 'json'));
+        }
+        return $response;
     }
 }
