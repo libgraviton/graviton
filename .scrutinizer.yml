@@ -8,6 +8,8 @@ before_commands:
 tools:
     external_code_coverage: true
     php_mess_detector: true
+    php_pdepend: true
+    php_analyzer: true
     php_code_sniffer:
         config:
     php_sim: true
