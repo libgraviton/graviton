@@ -2195,16 +2195,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.3.13",
+            "version": "v2.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "9c4b11915d7409a9cecd155d954f2ade273f3359"
+                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/9c4b11915d7409a9cecd155d954f2ade273f3359",
-                "reference": "9c4b11915d7409a9cecd155d954f2ade273f3359",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/424a567d2c1fb918a32f302b5c2bcb67d2661e76",
+                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76",
                 "shasum": ""
             },
             "require": {
@@ -2301,7 +2301,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-04-27 08:34:33"
+            "time": "2014-05-22 17:23:49"
         },
         {
             "name": "twig/extensions",
@@ -2603,12 +2603,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "490f1ea2e58c060106f855bc2b3833cb335f5851"
+                "reference": "92bde48327ca686b6555ee4954910e2a1e02d2e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/490f1ea2e58c060106f855bc2b3833cb335f5851",
-                "reference": "490f1ea2e58c060106f855bc2b3833cb335f5851",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/92bde48327ca686b6555ee4954910e2a1e02d2e9",
+                "reference": "92bde48327ca686b6555ee4954910e2a1e02d2e9",
                 "shasum": ""
             },
             "require": {
@@ -2627,7 +2627,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2013-10-14 19:16:14"
+            "time": "2014-05-23 12:17:31"
         },
         {
             "name": "liip/functional-test-bundle",
