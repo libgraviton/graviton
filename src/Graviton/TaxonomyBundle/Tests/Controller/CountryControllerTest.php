@@ -88,9 +88,9 @@ class CountryControllerTest extends RestTestCase
         $this->assertEquals('CHE', $results->id);
         $this->assertEquals('CH', $results->iso2Code);
         $this->assertEquals('Switzerland', $results->name);
-        $this->assertEquals('Berne', $results->capitalCity);
-        $this->assertEquals(7.44821, $results->longitude);
-        $this->assertEquals(46.948, $results->latitude);
+        $this->assertEquals('Bern', $results->capitalCity);
+        $this->assertEquals('7.44821', $results->longitude);
+        $this->assertEquals('46.948', $results->latitude);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country/CHE>; rel="self"',
