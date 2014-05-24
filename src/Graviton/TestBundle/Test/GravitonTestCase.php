@@ -44,6 +44,9 @@ class GravitonTestCase extends WebTestCase
         $kernel = new AppKernel($env, $debug);
         $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 
+        //set error reporting for phpunit
+        ini_set('error_reporting', E_ALL);
+
         return $kernel;
     }
 }
