@@ -3,7 +3,7 @@
   <class name="Graviton\TaxonomyBundle\Document\Country">
     <property name="id" type="string"/>
     <property name="name" type="string"/>
-    <property name="iso2Code" type="string"/>
+    <property name="isoCode" type="string"/>
     <property name="capitalCity" type="string"/>
     <property name="longitude" type="string"/>
     <property name="latitude" type="string"/>

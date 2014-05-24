@@ -24,9 +24,9 @@ class Country
     protected $name;
 
     /**
-     * @var String $iso2Code ISO country code
+     * @var String $isoCode ISO country code
      */
-    protected $iso2Code;
+    protected $isoCode;
 
     /**
      * @var String $capitalCity capital city of country
@@ -68,9 +68,9 @@ class Country
      *
      * @return String
      */
-    public function getIso2Code()
+    public function getIsoCode()
     {
-        return $this->iso2Code;
+        return $this->isoCode;
     }
 
     /**

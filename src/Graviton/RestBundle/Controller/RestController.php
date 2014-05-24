@@ -91,7 +91,7 @@ class RestController implements ContainerAwareInterface
             );
         }
         //add prev / next headers
-	//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+        //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
 
         return $response;
     }

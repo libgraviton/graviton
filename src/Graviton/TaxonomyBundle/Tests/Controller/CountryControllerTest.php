@@ -86,7 +86,7 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('CHE', $results->id);
-        $this->assertEquals('CH', $results->iso2Code);
+        $this->assertEquals('CH', $results->isoCode);
         $this->assertEquals('Switzerland', $results->name);
         $this->assertEquals('Bern', $results->capitalCity);
         $this->assertEquals('7.44821', $results->longitude);

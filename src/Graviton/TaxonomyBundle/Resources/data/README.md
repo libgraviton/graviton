@@ -7,4 +7,4 @@ is an attempt to document them.
 
 The file ``countries.json`` is from The World Bank: Country Queries:
 
-It was downloaded through http://api.worldbank.org/countries?format=json&per_page=300
+It was downloaded through http://api.worldbank.org/countries?format=json&per_page=300 and postprocesses with a quick s/iso2Code/isoCode/g for easier importing.

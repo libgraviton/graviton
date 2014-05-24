@@ -55,13 +55,13 @@ class LoadCountryData implements FixtureInterface, ContainerAwareInterface
         $rawData = json_encode(json_decode($rawData)[1]);
 
         $data = $serializer->deserialize(
-    	    $rawData,
-    	    'array<Graviton\TaxonomyBundle\Document\Country>',
-    	    'json'
+            $rawData,
+            'array<Graviton\TaxonomyBundle\Document\Country>',
+            'json'
         );
 
         foreach ($data as $country) {
-    	    $manager->persist($country);
+            $manager->persist($country);
         }
         $manager->flush();
     }
