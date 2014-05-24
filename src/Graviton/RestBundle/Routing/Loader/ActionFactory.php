@@ -98,9 +98,14 @@ class ActionFactory
     /**
      * Get Route
      *
+     * @param String $service    name of service containing controller
+     * @param String $method     HTTP method to generate route for
+     * @param String $action     action to call for route
+     * @param Array  $parameters route parameters to append to route as pair of name and patterns
+     *
      * @return Route
      */
-    static private function getRoute($service, $method, $action, $parameters = array())
+    private static function getRoute($service, $method, $action, $parameters = array())
     {
         $pattern = '/'.static::getBaseFromService($service);
         $defaults = array(
