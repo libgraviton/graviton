@@ -22,7 +22,7 @@ class CountryControllerTest extends RestTestCase
     /**
      * @const corresponding vendorized schema mime type
      */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.taxonomy+json';
+    const SCHEMA_TYPE = 'application/vnd.graviton.schema.taxonomy.country+json';
     /**
      * @const corresponding vendorized collection schema mime type
      */

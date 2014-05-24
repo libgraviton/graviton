@@ -60,7 +60,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
         $this->assertEquals(2, count($results));
 
