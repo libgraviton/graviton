@@ -3,8 +3,25 @@ namespace Graviton\RestBundle\Routing\Loader;
 
 use Symfony\Component\Routing\Route;
 
+/**
+ * Generate routes for individual actions
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class ActionFactory
 {
+    /**
+     * Get route for GET requests
+     *
+     * @param String $service service id
+     *
+     * @return Route
+     */
     public static function getRouteGet($service)
     {
         $pattern = '/'.static::getEntityFromService($service).'/{id}';
@@ -23,6 +40,13 @@ class ActionFactory
         return $route;
     }
 
+    /**
+     * Get route for getAll requests
+     *
+     * @param String $service service id
+     *
+     * @return Route
+     */
     public static function getRouteAll($service)
     {
         $pattern = '/'.static::getEntityFromService($service);
@@ -40,6 +64,13 @@ class ActionFactory
         return $route;
     }
 
+    /**
+     * Get route for POST requests
+     *
+     * @param String $service service id
+     *
+     * @return Route
+     */
     public static function getRoutePost($service)
     {
         $pattern = '/'.static::getEntityFromService($service);
@@ -57,6 +88,13 @@ class ActionFactory
         return $route;
     }
 
+    /**
+     * Get route for PUT requests
+     *
+     * @param String $service service id
+     *
+     * @return Route
+     */
     public static function getRoutePut($service)
     {
         $pattern = '/'.static::getEntityFromService($service).'/{id}';
@@ -75,6 +113,13 @@ class ActionFactory
         return $route;
     }
 
+    /**
+     * Get route for DELETE requests
+     *
+     * @param String $service service id
+     *
+     * @return Route
+     */
     public static function getRouteDelete($service)
     {
         $pattern = '/'.static::getEntityFromService($service).'/{id}';
@@ -93,6 +138,16 @@ class ActionFactory
         return $route;
     }
 
+    /**
+     * Get entity name from service strings.
+     *
+     * By convention the last part of the service string so far
+     * makes up the entities name.
+     *
+     * @param String $service (partial) service id
+     *
+     * @return String
+     */
     private static function getEntityFromService($service)
     {
         $parts = explode('.', $service);

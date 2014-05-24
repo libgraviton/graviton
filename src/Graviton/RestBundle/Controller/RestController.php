@@ -38,6 +38,8 @@ class RestController implements ContainerAwareInterface
      * {@inheritdoc}
      *
      * @param ContainerInterface $container service_container
+     *
+     * @return void
      */
     public function setContainer(ContainerInterface $container = null)
     {
@@ -222,7 +224,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param object $model Model class
      *
-     * @return
+     * @return self
      */
     public function setModel($model)
     {
@@ -318,8 +320,6 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the validator
      *
-     * @throws Exception
-     *
      * @return Validator
      */
     public function getValidator()
@@ -327,6 +327,11 @@ class RestController implements ContainerAwareInterface
         return $this->container->get('graviton.rest.validator');
     }
 
+    /**
+     * Get the router from the dic
+     *
+     * @return object
+     */
     public function getRouter()
     {
         return $this->container->get('graviton.rest.router');
