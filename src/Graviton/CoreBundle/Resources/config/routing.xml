@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<routes xmlns="http://symfony.com/schema/routing">
-  <import resource="." type="graviton.rest.routing.loader"/>
-</routes>

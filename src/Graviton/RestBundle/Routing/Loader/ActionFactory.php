@@ -24,15 +24,15 @@ class ActionFactory
      */
     public static function getRouteGet($service)
     {
-        $pattern = '/'.static::getEntityFromService($service).'/{id}';
+        $pattern = '/'.static::getBaseFromService($service).'/{id}';
         $defaults = array(
-                '_controller' => $service.':getAction',
-                '_format' => '~',
+            '_controller' => $service.':getAction',
+            '_format' => '~',
         );
 
         $requirements = array(
-                'id' => '\w+',
-                '_method' => 'GET',
+            'id' => '\w+',
+            '_method' => 'GET',
         );
 
         $route = new Route($pattern, $defaults, $requirements);
@@ -49,14 +49,14 @@ class ActionFactory
      */
     public static function getRouteAll($service)
     {
-        $pattern = '/'.static::getEntityFromService($service);
+        $pattern = '/'.static::getBaseFromService($service);
         $defaults = array(
-                '_controller' => $service.':allAction',
-                '_format' => '~'
+            '_controller' => $service.':allAction',
+            '_format' => '~'
         );
 
         $requirements = array(
-                '_method' => 'GET'
+            '_method' => 'GET'
         );
 
         $route = new Route($pattern, $defaults, $requirements);
@@ -73,14 +73,14 @@ class ActionFactory
      */
     public static function getRoutePost($service)
     {
-        $pattern = '/'.static::getEntityFromService($service);
+        $pattern = '/'.static::getBaseFromService($service);
         $defaults = array(
-                '_controller' => $service.':postAction',
-                '_format' => '~'
+            '_controller' => $service.':postAction',
+            '_format' => '~'
         );
 
         $requirements = array(
-                '_method' => 'POST'
+            '_method' => 'POST'
         );
 
         $route = new Route($pattern, $defaults, $requirements);
@@ -97,15 +97,15 @@ class ActionFactory
      */
     public static function getRoutePut($service)
     {
-        $pattern = '/'.static::getEntityFromService($service).'/{id}';
+        $pattern = '/'.static::getBaseFromService($service).'/{id}';
         $defaults = array(
-                '_controller' => $service.':putAction',
-                '_format' => '~'
+            '_controller' => $service.':putAction',
+            '_format' => '~'
         );
 
         $requirements = array(
-                'id' => '\w+',
-                '_method' => 'PUT'
+            'id' => '\w+',
+            '_method' => 'PUT'
         );
 
         $route = new Route($pattern, $defaults, $requirements);
@@ -122,15 +122,15 @@ class ActionFactory
      */
     public static function getRouteDelete($service)
     {
-        $pattern = '/'.static::getEntityFromService($service).'/{id}';
+        $pattern = '/'.static::getBaseFromService($service).'/{id}';
         $defaults = array(
-                '_controller' => $service.':deleteAction',
-                '_format' => '~'
+            '_controller' => $service.':deleteAction',
+            '_format' => '~'
         );
 
         $requirements = array(
-                'id' => '\w+',
-                '_method' => 'DELETE'
+            'id' => '\w+',
+            '_method' => 'DELETE'
         );
 
         $route = new Route($pattern, $defaults, $requirements);
@@ -148,10 +148,13 @@ class ActionFactory
      *
      * @return String
      */
-    private static function getEntityFromService($service)
+    private static function getBaseFromService($service)
     {
         $parts = explode('.', $service);
 
-        return array_pop($parts);
+        $entity = array_pop($parts);
+        $module = $parts[1];
+
+        return '/'.$module.'/'.$entity;
     }
 }
