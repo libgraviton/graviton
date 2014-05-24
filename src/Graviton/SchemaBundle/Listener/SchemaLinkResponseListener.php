@@ -55,6 +55,7 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
         $routeParts = explode('.', $routeName);
 
         list($app, $module, $method) = $routeParts;
+        $model = 'stdClass';
         if ($routeName !== 'graviton.schema.get') {
             list($app, $module, $routeType, $model, $method) = $routeParts;
         }

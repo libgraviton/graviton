@@ -52,7 +52,12 @@ class SchemaContentTypeResponseListener implements ContainerAwareInterface
         // extract info from route
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
-        list($app, $module, $routeType, $model, $method) = $routeParts;
+
+        list($app, $module, $method) = $routeParts;
+        $model = 'stdClass';
+        if ($routeName !== 'graviton.schema.get') {
+            list($app, $module, $routeType, $model, $method) = $routeParts;
+        }
 
         // build content-type string
         $contentType = sprintf('application/vnd.%s.%s.%s+json', $app, $module, $model);
