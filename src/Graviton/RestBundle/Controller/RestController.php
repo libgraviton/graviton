@@ -3,8 +3,6 @@
 namespace Graviton\RestBundle\Controller;
 
 use JMS\Serializer\Exception\Exception;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,9 +22,10 @@ use Graviton\RestBundle\Response\ResponseFactory as Response;
 class RestController implements ContainerAwareInterface
 {
     private $model;
-    private $serializerContext = null;
-    private $deserializerContext = null;
 
+    /**
+     * @var ContainerInteface service_container
+     */
     private $container;
 
     /**
@@ -56,7 +55,7 @@ class RestController implements ContainerAwareInterface
         if ($result) {
             $response = Response::getResponse(
                 200,
-                $this->getSerializer()->serialize($result, 'json', $this->serializerContext)
+                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
             );
         }
 
@@ -82,7 +81,7 @@ class RestController implements ContainerAwareInterface
 
             $response = Response::getResponse(
                 200,
-                $this->getSerializer()->serialize($result, 'json', $this->serializerContext)
+                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
             );
         }
         //add prev / next headers
@@ -243,51 +242,13 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Set serializer context
-     *
-     * @param SerializationContext $context Context
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setSerializerContext(SerializationContext $context)
-    {
-        $this->serializerContext = $context;
-
-        return $this;
-    }
-
-    /**
      * Get the serializer context
      *
      * @return SerializationContext
      */
     public function getSerializerContext()
     {
-        return $this->serializerContext;
-    }
-
-    /**
-     * Set deserializer context
-     *
-     * @param DeserializationContext $context context
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setDeserializerContext(DeserializationContext $context)
-    {
-        $this->deserializerContext = $context;
-
-        return $this;
-    }
-
-    /**
-     * Get deserializer context
-     *
-     * @return DeserializationContext
-     */
-    public function getDeserializerContext()
-    {
-        return $this->deserializerContext;
+        return $this->container->get('graviton.rest.serializer.serializercontext');
     }
 
     /**
@@ -308,51 +269,6 @@ class RestController implements ContainerAwareInterface
     public function getRouter()
     {
         return $this->container->get('graviton.rest.router');
-    }
-
-    /**
-     * Litte helper to add a serializer context which add null serialization
-     *
-     * @param boolean $serializeNull do it or not
-     *
-     * @return \Graviton\RestBundle\Controller\RestController
-     */
-    public function setSerializeNull($serializeNull = true)
-    {
-        if (true === $serializeNull) {
-            if (!$this->getSerializerContext() instanceof SerializationContext) {
-                $context = new SerializationContext();
-                $context->setSerializeNull(true);
-                $this->setSerializerContext($context);
-            } else {
-                $this->getSerializerContext()->setSerializeNull(true);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Litte helper to add a deserialization context which add null serialization
-     * Don't know if it's necessary, but maybe it influences the validator (code one sould read...)
-     *
-     * @param boolean $deserializeNull DO it or not
-     *
-     * @return \Graviton\RestBundle\Controller\RestControlle
-     */
-    public function setDeserializeNull($deserializeNull = true)
-    {
-        if (true === $deserializeNull) {
-            if (!$this->getDeserializerContext() instanceof DeserializationContext) {
-                $context = new DeserializationContext();
-                $context->setSerializeNull(true);
-                $this->setDeserializerContext($context);
-            } else {
-                $this->getDeserializerContext()->setSerializeNull(true);
-            }
-        }
-
-        return $this;
     }
 
     /**

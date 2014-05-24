@@ -6,10 +6,29 @@
   <parameters>
     <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
     <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
+    <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
+    <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
   </parameters>
 
   <services>
-    <service id="graviton.rest.serializer" alias="serializer"/>
+    <service id="graviton.rest.serializer" alias="serializer">
+      <call method="setSerializerContext">
+        <argument type="service" id="graviton.rest.serializer.serializercontext"/>
+      </call>
+      <call method="setDeserializerContext">
+        <argument type="service" id="graviton.rest.serializer.deserializercontext"/>
+      </call>
+    </service>
+    <service id="graviton.rest.serializer.serializercontext" class="%graviton.rest.serializer.serializercontext.class%">
+      <call method="setSerializeNull">
+        <argument type="constant">true</argument>
+      </call>
+    </service>
+    <service id="graviton.rest.serializer.deserializercontext" class="%graviton.rest.serializer.deserializercontext.class%">
+      <call method="setSerializeNull">
+        <argument type="constant">true</argument>
+      </call>
+    </service>
     <service id="graviton.rest.doctrine" alias="doctrine"/>
     <service id="graviton.rest.validator" alias="validator"/>
     <service id="graviton.rest.router" alias="router"/>
@@ -22,8 +41,6 @@
       <call method="setContainer">
         <argument type="service" id="service_container"></argument>
       </call>
-      <call method="setSerializeNull"></call>
-      <call method="setDeserializeNull"></call>
     </service>
     <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
       <call method="setContainer">
