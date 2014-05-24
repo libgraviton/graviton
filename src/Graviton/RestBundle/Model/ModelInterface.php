@@ -12,46 +12,61 @@ namespace Graviton\RestBundle\Model;
  */
 interface ModelInterface
 {
-        /**
-         * Find a single record by id
-         *
-         * @param Number $id Record-Id
-         */
-        public function find($id);
+    /**
+     * Find a single record by id
+     *
+     * @param String $id Record-Id
+     *
+     * @return Object
+     */
+    public function find($id);
 
-        /**
-         * Find all records
-         */
-        public function findAll();
+    /**
+     * Find all records
+     *
+     * @return Array
+     */
+    public function findAll();
 
-        /**
-         * Insert a new Record
-         *
-         * @param Object $entity Entity
-         */
-        public function insertRecord($entity);
+    /**
+     * Insert a new Record
+     *
+     * @param Object $entity Entity
+     *
+     * @return Object
+     */
+    public function insertRecord($entity);
 
-        /**
-         * Update an existing entity
-         *
-         * @param Object $entity Entity
-         */
-        public function updateRecord($id, $entity);
+    /**
+     * Update an existing entity
+     *
+     * @param String $id     id of entity to update
+     * @param Object $entity entity with new data
+     *
+     * @return Object
+     */
+    public function updateRecord($id, $entity);
 
-        /**
-         * Delete a record by id
-         *
-         * @param Number $id Record-Id
-         */
-        public function deleteRecord($id);
+    /**
+     * Delete a record by id
+     *
+     * @param Number $id Record-Id
+     *
+     * @return Boolean
+     */
+    public function deleteRecord($id);
 
-        /**
-         * Get the name of entity class
-         */
-        public function getEntityClass();
+    /**
+     * Get the name of entity class
+     *
+     * @return String
+     */
+    public function getEntityClass();
 
-        /**
-         * Get the connection name
-         */
-        public function getConnectionName();
+    /**
+     * Get the connection name
+     *
+     * @return String
+     */
+    public function getConnectionName();
 }

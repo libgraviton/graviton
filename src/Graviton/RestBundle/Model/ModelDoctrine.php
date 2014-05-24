@@ -1,8 +1,6 @@
 <?php
 namespace Graviton\RestBundle\Model;
 
-use Graviton\RestBundle\Pager;
-
 /**
  * ModelDoctrine
  *
@@ -36,20 +34,6 @@ class ModelDoctrine implements ModelInterface
     private $doctrine;
 
     /**
-     * Pager instance
-     *
-     * @var PagerInterface
-     */
-    private $pager = false;
-
-    /**
-     * Parser instance
-     *
-     * @var ParserInterface
-     */
-    private $parser = false;
-
-    /**
      * Constructor
      *
      * @param String $entityClass    Entity class
@@ -64,8 +48,13 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
+     * @param String $id id of entity to find
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::find()
+     *
+     * @return Object
      */
     public function find($id)
     {
@@ -76,8 +65,11 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::findAll()
+     *
+     * @return Array
      */
     public function findAll()
     {
@@ -108,8 +100,13 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
+     * @param Object $entity new entity to insert
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::insertRecord()
+     *
+     * @return Object
      */
     public function insertRecord($entity)
     {
@@ -122,8 +119,14 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
+     * @param String $id     id of entity to update
+     * @param Object $entity entity with updated values
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::updateRecord()
+     *
+     * @return Object
      */
     public function updateRecord($id, $entity)
     {
@@ -137,8 +140,13 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
+     * @param String $id id of entity to delete
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::deleteRecord()
+     *
+     * @return Boolean
      */
     public function deleteRecord($id)
     {
@@ -157,8 +165,11 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::getEntityClass()
+     *
+     * @return String
      */
     public function getEntityClass()
     {
@@ -166,8 +177,11 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritDoc}
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::getConnectionName()
+     *
+     * @return String
      */
     public function getConnectionName()
     {
@@ -175,43 +189,16 @@ class ModelDoctrine implements ModelInterface
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @return \Graviton\RestBundle\Model\PagerInterface
-     */
-    public function getPager()
-    {
-        return $this->pager;
-    }
-
-    public function getParser()
-    {
-        return $this->parser;
-    }
-
-    /**
-     * (non-PHPdoc)
+     * @param Doctrine $doctrine doctrine factory
+     *
      * @see \Graviton\RestBundle\Model\ModelInterface::setMapper()
+     *
+     * @return void
      */
     public function setDoctrine($doctrine)
     {
         $this->doctrine = $doctrine;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Graviton\RestBundle\Model\ModelInterface::setParser()
-     */
-    public function setParser($parser)
-    {
-        $this->parser = $parser;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Graviton\RestBundle\Model\ModelInterface::setPager()
-     */
-    public function setPager($pager)
-    {
-        $this->pager = $pager;
     }
 }

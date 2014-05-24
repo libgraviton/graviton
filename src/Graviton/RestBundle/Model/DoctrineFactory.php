@@ -14,6 +14,14 @@ use Graviton\RestBundle\Model\ModelDoctrine as Model;
  */
 class DoctrineFactory
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @param String $className  Class name of model
+     * @param String $connection Name of connection to use
+     *
+     * @return Model
+     */
     public function getModelDoctrine($className, $connection = "default")
     {
         $model = new Model($className, $connection);

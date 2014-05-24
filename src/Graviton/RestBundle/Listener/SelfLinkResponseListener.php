@@ -24,7 +24,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
     private $container;
 
     /**
-     * @{inheritDocs}
+     * {@inheritDoc}
      *
      * @param ContainerInterface $container service_container
      *
