@@ -255,6 +255,24 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
 
-        $this->markTestIncomplete('Schema response needs extensive testing');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals('App', $results->title);
+        $this->assertEquals('A graviton based app.', $results->description);
+        $this->assertEquals('object', $results->type);
+
+        $this->assertEquals('string', $results->properties->id->type);
+        $this->assertEquals('Unique identifier for an app.', $results->properties->id->type);
+        $this->assertContains('id', $results->required);
+
+        $this->assertEquals('string', $results->properties->title->type);
+        $this->assertEquals('Display name for an app.', $results->properties->title->type);
+        $this->assertContains('title', $results->required);
+
+        $this->assertEquals('boolean', $results->properties->showInMenu->type);
+        $this->assertEquals(
+            'Define if an app should be exposed on the top level menu.',
+            $results->properties->showInMenu->type
+        );
     }
 }
