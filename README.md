@@ -1,6 +1,6 @@
 # Graviton
 
-[![Build Status](https://travis-ci.org/libgraviton/graviton.png?branch=master)](https://travis-ci.org/libgraviton/graviton)
+[![Build Status](https://travis-ci.org/libgraviton/graviton.png?branch=master)](https://travis-ci.org/libgraviton/graviton) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=master)
 
 Graviton is a symfony2 based REST server.
 
