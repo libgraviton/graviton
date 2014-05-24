@@ -68,9 +68,6 @@ class RestController implements ContainerAwareInterface
         //add link header for each child
         //$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
 
-        // @todo refactor all vnd content type to come from a mapper
-        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
-
         return $response;
     }
 
@@ -94,9 +91,7 @@ class RestController implements ContainerAwareInterface
             );
         }
         //add prev / next headers
-        //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
-
-        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
+	//$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
 
         return $response;
     }
@@ -134,8 +129,6 @@ class RestController implements ContainerAwareInterface
                 array('Location' => $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId())))
             );
         }
-
-        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
 
         return $response;
     }
@@ -181,8 +174,6 @@ class RestController implements ContainerAwareInterface
             }
         }
 
-        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
-
         return $response;
     }
 
@@ -203,8 +194,6 @@ class RestController implements ContainerAwareInterface
         if ($this->getModel()->deleteRecord($id)) {
             $response = Response::getResponse(200);
         }
-
-        $response->headers->set('Content-Type', 'application/vnd.graviton.core.app+json; charset=UTF-8');
 
         return $response;
     }
