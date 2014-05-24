@@ -45,8 +45,15 @@ class SchemaController implements ContainerAwareInterface
         $router = $this->container->get('router');
         $serializer = $this->container->get('serializer');
 
-        $match = $router->match('/'.$id);
+        // match with random id to get route
+        $route = $router->match('/'.$id.'/1234');
+        list($app, $module, $type, $model, $action) = explode('.', $route['_route']);
 
+        $model = $this->container->get(implode('.', array($app, $module, 'model', $model)));
+
+        // @todo grab schema info from model
+
+        // set content type to match schema
         $dottedModel = strtr($id, '/', '.');
         $type = sprintf('application/vnd.graviton.schema.%s+json; charset=UTF-8', $dottedModel);
         $response->headers->set('Content-Type', $type);

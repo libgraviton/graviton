@@ -6,7 +6,7 @@
     <parameters>
         <parameter key="gravitoncorebundle.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
         <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
-        <parameter key="gravitoncorebundle.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+        <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
     </parameters>
 
     <services>
@@ -14,7 +14,7 @@
             class="%gravitoncorebundle.controller.app.class%"
             parent="graviton.rest.controller" scope="request">
             <call method="setModel">
-                <argument type="service" id="gravitoncorebundle.model.app"/>
+                <argument type="service" id="graviton.core.model.app"/>
             </call>
             <tag name="graviton.rest"/>
         </service>
@@ -26,12 +26,10 @@
             <argument type="string">GravitonCoreBundle:App</argument>
         </service>
 
-    <service id="gravitoncorebundle.model.app"
-        class="%gravitoncorebundle.model.app.class%"
+    <service id="graviton.core.model.app"
+        class="%graviton.core.model.app.class%"
         parent="graviton_rest_model">
-            <argument type="service" id="gravitoncorebundle.repository.app"/>
+      <argument type="service" id="gravitoncorebundle.repository.app"/>
     </service>
-
-    </services>
-
+  </services>
 </container>
