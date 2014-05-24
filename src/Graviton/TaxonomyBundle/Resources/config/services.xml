@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <parameters>
+    <parameter key="graviton.taxonomy.fixturedata.locator.class">Symfony\Component\Config\FileLocator</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.resolver.class">Symfony\Component\Config\Loader\LoaderResolver</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.loader.class">Symfony\Component\Config\Loader\DelegatingLoader</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.loader.json.class">Graviton\TaxonomyBundle\DataFixtures\Loader\JsonFileLoader</parameter>
+  </parameters>
+  <services>
+    <service id="graviton.taxonomy.serializer" alias="serializer"/>
+    <service id="graviton.taxonomy.fixturedata.locator" class="%graviton.taxonomy.fixturedata.locator.class%"/>
+    <service id="graviton.taxonomy.fixturedata.loader.json" class="%graviton.taxonomy.fixturedata.loader.json.class%">
+      <argument type="service" id="graviton.taxonomy.fixturedata.locator"/>
+    </service>
+    <service id="graviton.taxonomy.fixturedata.resolver" class="%graviton.taxonomy.fixturedata.resolver.class%">
+      <argument type="collection">
+        <argument type="service" id="graviton.taxonomy.fixturedata.loader.json"/>
+      </argument>
+    </service>
+    <service id="graviton.taxonomy.fixturedata.loader" class="%graviton.taxonomy.fixturedata.loader.class%">
+      <argument type="service" id="graviton.taxonomy.fixturedata.resolver"/>
+    </service>
+  </services>
+</container>

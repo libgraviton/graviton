@@ -1,5 +1,4 @@
 <?xml version="1.0" ?>
-
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
@@ -22,7 +21,7 @@
 
         <service id="gravitoncorebundle.repository.app"
             class="%gravitoncorebundle.repository.app.class%"
-            factory-service="doctrine_mongodb.odm.core_document_manager"
+            factory-service="doctrine_mongodb.odm.default_document_manager"
             factory-method="getRepository">
             <argument type="string">GravitonCoreBundle:App</argument>
         </service>

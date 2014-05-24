@@ -16,6 +16,7 @@ use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\TestBundle\GravitonTestBundle;
+use Graviton\TaxonomyBundle\GravitonTaxonomyBundle;
 
 /**
  * GravitonCoreBundle
@@ -47,6 +48,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonSchemaBundle(),
             new GravitonRestBundle(),
             new GravitonTestBundle(),
+            new GravitonTaxonomyBundle(),
         );
     }
 }
