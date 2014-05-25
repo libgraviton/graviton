@@ -45,9 +45,6 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
         $loader = new Loader\XmlFileLoader(
             $container,
             new FileLocator($this->getConfigDir())
