@@ -137,7 +137,7 @@ class CountryControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testGetSchemaInformation()
+    public function testGetCountrySchemaInformation()
     {
         $client = static::createRestClient();
 
@@ -159,8 +159,8 @@ class CountryControllerTest extends RestTestCase
             'name' => array('description' => 'Country name.'),
             'isoCode' => array('description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'),
             'capitalCity' => array('description' => 'Capital city.'),
-            'longitude' => array('description' => 'N/S geographic coordinate.'),
-            'latitude' => array('description' => 'W/O geographic coordinate.')
+            'longitude' => array('description' => 'W/O geographic coordinate.'),
+            'latitude' => array('description' => 'N/S geographic coordinate.')
         );
         foreach ($fieldAssertions as $field => $values) {
             $this->assertEquals('string', $results->properties->$field->type);
