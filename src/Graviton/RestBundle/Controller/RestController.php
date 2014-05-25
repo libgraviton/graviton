@@ -61,7 +61,6 @@ class RestController implements ContainerAwareInterface
 
         //add link header for each child
         //$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
-
         return $response;
     }
 
@@ -86,7 +85,6 @@ class RestController implements ContainerAwareInterface
         }
         //add prev / next headers
         //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
-
         return $response;
     }
 
@@ -275,7 +273,7 @@ class RestController implements ContainerAwareInterface
      * validate a record and return an approriate reponse
      *
      * @param Object $record record to validate
-     * 
+     *
      * @return Response|null
      */
     private function validateRecord($record)
@@ -286,6 +284,7 @@ class RestController implements ContainerAwareInterface
         if (count($validationErrors) > 0) {
             $response = Response::getResponse(400, $this->getSerializer()->serialize($validationErrors, 'json'));
         }
+
         return $response;
     }
 }

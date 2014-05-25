@@ -27,7 +27,7 @@ class App
     protected $title;
 
     /**
-     * @var boolean $showInMenu show app in menu 
+     * @var boolean $showInMenu show app in menu
      */
     protected $showInMenu = false;
 

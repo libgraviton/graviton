@@ -55,7 +55,7 @@ class ODM implements ModelInterface
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param String $id     id of entity to update
      * @param Object $entity new enetity
      *

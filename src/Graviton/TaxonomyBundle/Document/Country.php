@@ -63,7 +63,7 @@ class Country
         return $this->name;
     }
 
-    /** 
+    /**
      * get ISO code of country
      *
      * @return String
