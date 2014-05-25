@@ -33,7 +33,7 @@
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
     "require-dev": {
-        "libgraviton/codesniffer": "dev-develop@dev",
+        "libgraviton/codesniffer": "dev-master@dev",
         "phpunit/phpunit": "*",
         "liip/functional-test-bundle": "@dev",
         "phpmd/phpmd": "@dev",
