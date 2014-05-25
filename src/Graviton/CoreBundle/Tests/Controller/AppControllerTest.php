@@ -244,7 +244,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testGetSchemaInformation()
+    public function testGetAppSchemaInformation()
     {
         $client = static::createRestClient();
 
@@ -262,17 +262,17 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('object', $results->type);
 
         $this->assertEquals('string', $results->properties->id->type);
-        $this->assertEquals('Unique identifier for an app.', $results->properties->id->type);
+        $this->assertEquals('Unique identifier for an app.', $results->properties->id->description);
         $this->assertContains('id', $results->required);
 
         $this->assertEquals('string', $results->properties->title->type);
-        $this->assertEquals('Display name for an app.', $results->properties->title->type);
+        $this->assertEquals('Display name for an app.', $results->properties->title->description);
         $this->assertContains('title', $results->required);
 
         $this->assertEquals('boolean', $results->properties->showInMenu->type);
         $this->assertEquals(
             'Define if an app should be exposed on the top level menu.',
-            $results->properties->showInMenu->type
+            $results->properties->showInMenu->description
         );
     }
 }
