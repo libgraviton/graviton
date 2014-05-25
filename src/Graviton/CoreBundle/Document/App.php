@@ -17,17 +17,17 @@ namespace Graviton\CoreBundle\Document;
 class App
 {
     /**
-     * @var MongoId $id
+     * @var MongoId $id document/app id
      */
     protected $id;
 
     /**
-     * @var string $title
+     * @var string $title app title
      */
     protected $title;
 
     /**
-     * @var boolean $showInMenu
+     * @var boolean $showInMenu show app in menu 
      */
     protected $showInMenu = false;
 
