@@ -40,7 +40,7 @@ class SchemaController implements ContainerAwareInterface
      */
     public function getAction($id)
     {
-        $response = Response::getResponse(404, 'Schema for /'.$id.' not found');
+        $response = Response::getResponse(200);
 
         $router = $this->container->get('router');
         $serializer = $this->container->get('serializer');
@@ -49,9 +49,28 @@ class SchemaController implements ContainerAwareInterface
         $route = $router->match('/'.$id.'/1234');
         list($app, $module, $type, $model, $action) = explode('.', $route['_route']);
 
+        // build up schema data
+        $schema = new \stdClass;
+        $schema->title = ucfirst($model);
+        $schema->description = 'A graviton based app.';
+        $schema->type = 'object';
+        $schema->properties = new \stdClass;
+        $schema->required = array();
+
         $model = $this->container->get(implode('.', array($app, $module, 'model', $model)));
 
-        // @todo grab schema info from model
+        // grab schema info from model
+        $repo = $model->getRepository();
+        $meta = $repo->getClassMetadata();
+
+        foreach ($meta->getFieldNames() as $field) {
+            $schema->properties->$field = new \stdClass;
+            $schema->properties->$field->type = $meta->getTypeOfField($field);
+            $schema->properties->$field->description = $model->getDescriptionOfField($field);
+            $schema->required[] = $field;
+        }
+
+        $response->setContent(json_encode($schema));
 
         // set content type to match schema
         $dottedModel = strtr($id, '/', '.');

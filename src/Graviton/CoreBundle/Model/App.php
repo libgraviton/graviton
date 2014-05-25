@@ -34,4 +34,48 @@ class App extends Model
     {
         $this->repository = $apps;
     }
+
+    /**
+     * get repository instance
+     *
+     * @return AppRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * get the description of the model
+     *
+     * @return String
+     */
+    public function getDescription()
+    {
+        return 'A graviton based app.';
+    }
+
+    /**
+     * get description of a given field
+     *
+     * @param String $field field name
+     *
+     * @return String
+     */
+    public function getDescriptionOfField($field)
+    {
+        $description = '';
+        switch ($field) {
+            case 'id':
+                $description = 'Unique identifier for an app.';
+                break;
+            case 'title':
+                $description = 'Display name for an app.';
+                break;
+            case 'showInMenu':
+                $description = 'Define if an app should be exposed on the top level menu.';
+                break;
+        }
+        return $description;
+    }
 }
