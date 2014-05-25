@@ -4,6 +4,19 @@
 
 Graviton is a symfony2 based REST server.
 
+## Features
+
+While this project is still in its infancy it already implements some REST resources.
+
+* ``/core/app`` exposes app objects and supports rw operation
+* ``/taxonomy/country`` exposes a list of countries from The World Bank, it only supports ro operation
+
+The implemented resources are mainly for validating the server and we will be adding
+more services as soon as that has been done.
+
+The data available in the services are loaded with DataFixtures to ease development but will also
+be populated by external means when we get nearer to production.
+
 ## Developing
 
 Clone the Repo and install composer dependencies to start.
@@ -21,3 +34,9 @@ php app/console server:run
 ````
 
 Please run ``./vendor/bin/phpunit -c app/`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
+
+## Quality Control
+
+Graviton uses [travis-ci](http;//travis-ci.org) and [scrutinizer-ci](http://scrutinizer-ci.com).
+
+You will need to log in to scrutinizer once using you github account so you may be added to the project as admin or moderator as needed.
