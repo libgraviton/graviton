@@ -148,6 +148,31 @@ class CountryControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
 
-        $this->markTestIncomplete('Schema response needs extensive testing');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals('Country', $results->title);
+        $this->assertEquals('A country record.', $results->description);
+        $this->assertEquals('object', $results->type);
+
+        $fieldAssertions = array(
+            'id' => array('description' => 'ISO 3166-1 alpha-3 code.'),
+            'name' => array('description' => 'Country name.'),
+            'isoCode' => array('description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'),
+            'capitalCity' => array('description' => 'Capital city.'),
+            'longitude' => array('description' => 'N/S geographic coordinate.'),
+            'latitude' => array('description' => 'W/O geographic coordinate.')
+        );
+        foreach ($fieldAssertions as $field => $values) {
+            $this->assertEquals('string', $results->properties->$field->type);
+            $this->assertEquals($values['description'], $results->properties->$field->description);
+        }
+
+        $this->assertContains('id', $results->required);
+        $this->assertContains('name', $results->required);
+        $this->assertContains('isoCode', $results->required);
+        $this->assertNotContains('capitalCity', $results->required);
+        $this->assertNotContains('latitude', $results->required);
+        $this->assertNotContains('longitude', $results->required);
+
     }
 }
