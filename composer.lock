@@ -2603,12 +2603,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "77f48f5e8eef7c0137a0dcdb7e48a271581f5190"
+                "reference": "dcce020e576d327c4cdbeab13503384958fda84c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/77f48f5e8eef7c0137a0dcdb7e48a271581f5190",
-                "reference": "77f48f5e8eef7c0137a0dcdb7e48a271581f5190",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/dcce020e576d327c4cdbeab13503384958fda84c",
+                "reference": "dcce020e576d327c4cdbeab13503384958fda84c",
                 "shasum": ""
             },
             "require": {
@@ -2627,7 +2627,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2013-10-14 14:08:52"
+            "time": "2014-05-25 14:59:59"
         },
         {
             "name": "liip/functional-test-bundle",
