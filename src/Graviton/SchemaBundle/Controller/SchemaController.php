@@ -49,15 +49,15 @@ class SchemaController implements ContainerAwareInterface
         $route = $router->match('/'.$id.'/1234');
         list($app, $module, $type, $model, $action) = explode('.', $route['_route']);
 
+        $modelName = $model;
+        $model = $this->container->get(implode('.', array($app, $module, 'model', $model)));
+
         // build up schema data
         $schema = new \stdClass;
-        $schema->title = ucfirst($model);
-        $schema->description = 'A graviton based app.';
+        $schema->title = ucfirst($modelName);
+        $schema->description = $model->getDescription();
         $schema->type = 'object';
         $schema->properties = new \stdClass;
-        $schema->required = array();
-
-        $model = $this->container->get(implode('.', array($app, $module, 'model', $model)));
 
         // grab schema info from model
         $repo = $model->getRepository();
@@ -67,8 +67,8 @@ class SchemaController implements ContainerAwareInterface
             $schema->properties->$field = new \stdClass;
             $schema->properties->$field->type = $meta->getTypeOfField($field);
             $schema->properties->$field->description = $model->getDescriptionOfField($field);
-            $schema->required[] = $field;
         }
+        $schema->required = $model->getRequiredFields();
 
         $response->setContent(json_encode($schema));
 

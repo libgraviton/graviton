@@ -76,6 +76,17 @@ class App extends Model
                 $description = 'Define if an app should be exposed on the top level menu.';
                 break;
         }
+
         return $description;
+    }
+
+    /**
+     * get required fields for this object
+     *
+     * @return Array
+     */
+    public function getRequiredFields()
+    {
+        return array('id', 'title', 'showInMenu');
     }
 }
