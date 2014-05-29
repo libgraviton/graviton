@@ -9,7 +9,18 @@ tools:
     external_code_coverage: true
     php_mess_detector: true
     php_pdepend: true
-    php_analyzer: true
+    php_analyzer:
+      config:
+        metrics_coupling:
+          enabled: true
+        metrics_lack_of_cohesion_methods:
+          enabled: true
+        phpunit_checks:
+          enabled: true
+        doctrine_entity_manager_injection:
+          enabled: true
+        checkstyle:
+          enabled: true
     php_code_sniffer:
         config:
     php_sim: true
