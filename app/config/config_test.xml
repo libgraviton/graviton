@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:monolog="http://symfony.com/schema/dic/monolog"
+    xmlns:liip_functional_test="liip_functional_test"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <imports>
+    <import resource="config_dev.xml"/>
+  </imports>
+  <monolog:config>
+    <monolog:handler name="main" type="test"/>
+  </monolog:config>
+  <framework:test/>
+  <liip_functional_test:config/>
+</container>

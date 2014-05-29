@@ -11,3 +11,4 @@ composer.phar
 *.swp
 *.swo
 .*~
+web/.htaccess

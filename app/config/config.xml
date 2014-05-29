@@ -1,64 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:framework="http://symfony.com/schema/dic/symfony"
-    xmlns:twig="http://symfony.com/schema/dic/twig"
-    xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
-    xmlns:sensio-framework-extra="http://symfony.com/schema/dic/symfony_extra"
-    xmlns:fos_rest="fos_rest"
-    xmlns:jms_serializer="jms_serializer"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
   <imports>
     <import resource="parameters.xml"/>
     <import resource="parameters_local.xml"/>
     <import resource="security.xml"/>
+    <!-- I'm not sure why this is needed, please remove it if you figure out how to load this properly -->
+    <!-- This originally came from config_test.xml but it is now here to make php app/console not fail in all cases -->
+    <!-- Feel free to clean this mess up ;) -->
+    <import resource="../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml"/>
   </imports>
-
-  <doctrine:config>
-    <doctrine:dbal default-connection="default">
-      <doctrine:connection name="default">
-        <doctrine:driver>%database_driver%</doctrine:driver>
-        <doctrine:host>%database_host%</doctrine:host>
-        <doctrine:dbname>%database_name%</doctrine:dbname>
-        <doctrine:user>%database_user%</doctrine:user>
-        <doctrine:password>%database_password%</doctrine:password>
-        <doctrine:charset>UTF8</doctrine:charset>
-      </doctrine:connection>
-      <doctrine:connection name="report">
-        <doctrine:driver>%database_driver%</doctrine:driver>
-        <doctrine:host>%database_host%</doctrine:host>
-        <doctrine:dbname>%database_name_report%</doctrine:dbname>
-        <doctrine:user>%database_user%</doctrine:user>
-        <doctrine:password>%database_password%</doctrine:password>
-        <doctrine:charset>UTF8</doctrine:charset>
-      </doctrine:connection>
-    </doctrine:dbal>
-    <doctrine:orm default-entity-manager="default">
-      <doctrine:auto_generate_proxy_classes>%kernel.debug%</doctrine:auto_generate_proxy_classes>
-      <doctrine:entity-manager name="default" connection="default">
-        <doctrine:mapping name="GravitonCoreBundle" />
-      </doctrine:entity-manager>
-    </doctrine:orm>
-  </doctrine:config>
-
-  <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%"/>
-  
-  <sensio-framework-extra:config>
-    <sensio-framework-extra:view annotations="false" />
-    <sensio-framework-extra:router annotations="true" />
-  </sensio-framework-extra:config>
-
-  <jms_serializer:config>
-    <tag name="jms_serializer.handler" 
-      type="DateTime"
-      direction="serialization"
-      format="json"
-      method="serializeDateTimeToJson"/>
-  </jms_serializer:config>
-
-  <fos_rest:config>
-    <fos_rest:view view_response_listener="force" />
-  </fos_rest:config>
-
 </container>

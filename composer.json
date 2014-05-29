@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "The base package for graviton",
     "license": "GPL",
     "authors": [
@@ -15,6 +15,10 @@
         {
             "name": "Beat Luginbühl",
             "email": "beat.luginbuehl@swisscom.com"
+        },
+        {
+            "name": "Manuel Kipfer",
+            "email": "manuel.kipfer@swisscom.com"
         }
     ],
     "scripts": {
@@ -33,8 +37,11 @@
             "psr-0": { "": "src/", "Graviton": "src/"}
     },
     "require-dev": {
-        "libgraviton/codesniffer": "*@dev",
-        "phpunit/phpunit": "*"
+        "libgraviton/codesniffer": "dev-master@dev",
+        "phpunit/phpunit": "*",
+        "liip/functional-test-bundle": "@dev",
+        "phpmd/phpmd": "@dev",
+        "fabpot/php-cs-fixer": "0.4.*@dev"
     },
     "require": {
         "php": ">=5.3.3",
@@ -52,7 +59,9 @@
         "sensio/distribution-bundle": "~2.3.4",
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
-        "stof/doctrine-extensions-bundle": ">=1.1.0"
+        "stof/doctrine-extensions-bundle": ">=1.1.0",
+        "doctrine/doctrine-fixtures-bundle": "2.2.*",
+        "misd/guzzle-bundle": "~1.0"
     },
     "config": {
     },

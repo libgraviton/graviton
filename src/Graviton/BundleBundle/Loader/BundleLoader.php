@@ -11,7 +11,7 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 /**
  * BundleLoader
  *
- * This class loads additional bundles if a module implements 
+ * This class loads additional bundles if a module implements
  * GravitonBundleInterface.
  * It does not check for circularity so we need to take care of only loading
  * GravitonBundles through this in the rare exception case.
@@ -61,6 +61,7 @@ class BundleLoader
             $bundle = array_shift($this->bundleStack);
             $this->addBundle($bundle);
         }
+
         return $this->finalBundles;
     }
 

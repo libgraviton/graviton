@@ -17,25 +17,33 @@ namespace Graviton\CoreBundle\Document;
 class App
 {
     /**
-     * @var MongoId $id
+     * @var MongoId $id document/app id
      */
     protected $id;
 
     /**
-     * @var string $name
-     */
-    protected $name;
-
-    /**
-     * @var string $title
+     * @var string $title app title
      */
     protected $title;
 
     /**
-     * @var boolean $showInMenu
+     * @var boolean $showInMenu show app in menu
      */
-    protected $showInMenu;
+    protected $showInMenu = false;
 
+    /**
+     * Set id
+     *
+     * @param String $id id for new document
+     *
+     * @return self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Get id
@@ -48,29 +56,6 @@ class App
     }
 
     /**
-     * Set name
-     *
-     * @param string $name internal name
-     *
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Set title
      *
      * @param string $title title used for display
@@ -80,6 +65,7 @@ class App
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -103,6 +89,7 @@ class App
     public function setShowInMenu($showInMenu)
     {
         $this->showInMenu = $showInMenu;
+
         return $this;
     }
 
