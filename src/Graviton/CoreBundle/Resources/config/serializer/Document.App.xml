@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
   <class name="Graviton\CoreBundle\Document\App">
-    <property name="id" type="string"/>
-    <property name="title" type="string"/>
-    <property name="showInMenu" type="boolean"/>
+    <property name="id" type="string" accessor-getter="getId" accessor-setter="setId"/>
+    <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle"/>
+    <property name="showInMenu" type="boolean" accessor-getter="getShowInMenu" accessor-setter="setShowInMenu"/>
   </class>
 </serializer>

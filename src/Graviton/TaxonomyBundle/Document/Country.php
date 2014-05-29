@@ -74,6 +74,16 @@ class Country
     }
 
     /**
+     * get name of capital city
+     *
+     * @return String
+     */
+    public function getCapitalCity()
+    {
+        return $this->capitalCity;
+    }
+
+    /**
      * get longitude
      *
      * @return String
