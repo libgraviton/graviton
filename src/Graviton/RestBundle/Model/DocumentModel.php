@@ -146,19 +146,4 @@ class DocumentModel implements ModelInterface
     {
         return 'graviton.core';
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * this seems uneeded as soon as we pass in a repository that allows us to get there
-     * i think relying on $repositoy->getDocumentManager() is more than ok (ie. the repo
-     * has a clear interface.
-     *
-     * @todo figure out why we would need something like this
-     *
-     * @return void
-     */
-    public function setDoctrine()
-    {
-    }
 }
