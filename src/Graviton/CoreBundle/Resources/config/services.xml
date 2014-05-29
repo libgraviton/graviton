@@ -1,27 +1,33 @@
-<?xml version="1.0" ?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
-    <parameters>
-        <parameter key="gravitoncorebundle.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
-        <parameter key="gravitoncorebundle.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
-    </parameters>
-
-    <services>
-        <service id="gravitoncorebundle.controller.app" class="%gravitoncorebundle.controller.app.class%">
-            <argument type="service" id="gravitoncorebundle.repository.app"/>
-            <argument type="service" id="doctrine_mongodb.odm.core_document_manager"/>
-            <argument type="service" id="serializer"/>
-        </service>
-
-        <service id="gravitoncorebundle.repository.app"
-            class="%gravitoncorebundle.repository.app.class%"
-            factory-service="doctrine_mongodb.odm.core_document_manager"
-            factory-method="getRepository">
-            <argument type="string">GravitonCoreBundle:App</argument>
-        </service>
-    </services>
-
+  <parameters>
+    <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
+    <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
+    <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+  </parameters>
+  <services>
+    <service id="graviton.core.controller.app"
+             class="%graviton.core.controller.app.class%"
+             parent="graviton.rest.controller" scope="request">
+      <call method="setModel">
+        <argument type="service" id="graviton.core.model.app"/>
+      </call>
+      <tag name="graviton.rest"/>
+    </service>
+    <service id="graviton.core.repository.app"
+             class="%graviton.core.repository.app.class%"
+             factory-service="doctrine_mongodb.odm.default_document_manager"
+             factory-method="getRepository">
+      <argument type="string">GravitonCoreBundle:App</argument>
+    </service>
+    <service id="graviton.core.model.app"
+        class="%graviton.core.model.app.class%"
+        parent="graviton.rest.model">
+      <call method="setRepository">
+        <argument type="service" id="graviton.core.repository.app"/>
+      </call>
+    </service>
+  </services>
 </container>

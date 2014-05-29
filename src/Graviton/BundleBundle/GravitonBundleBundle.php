@@ -6,7 +6,6 @@
 namespace Graviton\BundleBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**

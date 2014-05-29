@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface
+    as PrependInterface;
 
 /**
  * GravitonBundleExtension
@@ -21,8 +23,18 @@ use Symfony\Component\DependencyInjection\Loader;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonBundleExtension extends Extension
+class GravitonBundleExtension extends Extension implements PrependInterface
 {
+    /**
+     * get path to bundles Resources/config dir
+     *
+     * @return String
+     */
+    public function getConfigDir()
+    {
+        return __DIR__.'/../Resources/config';
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -33,13 +45,28 @@ class GravitonBundleExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
         $loader = new Loader\XmlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../Resources/config')
+            new FileLocator($this->getConfigDir())
         );
         $loader->load('services.xml');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Load additional config into the container.
+     *
+     * @param ContainerBuilder $container instance
+     *
+     * @return void
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $loader = new Loader\XmlFileLoader(
+            $container,
+            new FileLocator($this->getConfigDir())
+        );
+        $loader->load('config.xml');
     }
 }

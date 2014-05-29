@@ -10,11 +10,10 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use JMS\SerializerBundle\JMSSerializerBundle;
-use FOS\RestBundle\FOSRestBundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\CoreBundle\GravitonCoreBundle;
+use Graviton\RestBundle\GravitonRestBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
@@ -62,9 +61,8 @@ class AppKernel extends Kernel
         // @todo move these into their own Bundles or remove completely
         $bundles[] = new SwiftmailerBundle();
         $bundles[] = new DoctrineBundle();
-        $bundles[] = new JMSSerializerBundle();
         $bundles[] = new TwigBundle();
-        $bundles[] = new FOSRestBundle();
+
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new WebProfilerBundle();
             $bundles[] = new SensioDistributionBundle();

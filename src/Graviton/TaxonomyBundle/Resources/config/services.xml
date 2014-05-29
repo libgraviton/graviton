@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <parameters>
+    <parameter key="graviton.taxonomy.fixturedata.locator.class">Symfony\Component\Config\FileLocator</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.resolver.class">Symfony\Component\Config\Loader\LoaderResolver</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.loader.class">Symfony\Component\Config\Loader\DelegatingLoader</parameter>
+    <parameter key="graviton.taxonomy.fixturedata.loader.json.class">Graviton\TaxonomyBundle\DataFixtures\Loader\JsonFileLoader</parameter>
+    <parameter key="graviton.taxonomy.controller.country.class">Graviton\TaxonomyBundle\Controller\CountryController</parameter>
+    <parameter key="graviton.taxonomy.model.country.class">Graviton\TaxonomyBundle\Model\Country</parameter>
+    <parameter key="graviton.taxonomy.repository.country.class">Graviton\TaxonomyBundle\Repository\CountryRepository</parameter>
+  </parameters>
+  <services>
+    <service id="graviton.taxonomy.serializer" alias="serializer"/>
+    <service id="graviton.taxonomy.fixturedata.locator" class="%graviton.taxonomy.fixturedata.locator.class%"/>
+    <service id="graviton.taxonomy.fixturedata.loader.json" class="%graviton.taxonomy.fixturedata.loader.json.class%">
+      <argument type="service" id="graviton.taxonomy.fixturedata.locator"/>
+    </service>
+    <service id="graviton.taxonomy.fixturedata.resolver" class="%graviton.taxonomy.fixturedata.resolver.class%">
+      <argument type="collection">
+        <argument type="service" id="graviton.taxonomy.fixturedata.loader.json"/>
+      </argument>
+    </service>
+    <service id="graviton.taxonomy.fixturedata.loader" class="%graviton.taxonomy.fixturedata.loader.class%">
+      <argument type="service" id="graviton.taxonomy.fixturedata.resolver"/>
+    </service>
+    <service id="graviton.taxonomy.controller.country"
+             class="%graviton.taxonomy.controller.country.class%"
+             parent="graviton.rest.controller"
+             scope="request">
+      <call method="setModel">
+        <argument type="service" id="graviton.taxonomy.model.country"/>
+      </call>
+      <tag name="graviton.rest" read-only="true"/>
+    </service>
+    <service id="graviton.taxonomy.repository.country"
+             class="%graviton.taxonomy.repository.country.class%"
+             factory-service="doctrine_mongodb.odm.default_document_manager"
+             factory-method="getRepository">
+      <argument type="string">GravitonTaxonomyBundle:Country</argument>
+    </service>
+    <service id="graviton.taxonomy.model.country"
+             class="%graviton.taxonomy.model.country.class%"
+             parent="graviton.rest.model">
+      <call method="setRepository">
+        <argument type="service" id="graviton.taxonomy.repository.country"/>
+      </call>
+    </service>
+  </services>
+</container>

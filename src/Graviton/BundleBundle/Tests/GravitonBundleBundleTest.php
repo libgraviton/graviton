@@ -10,7 +10,7 @@ use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
  * GravitonMessagingBundleTest
- * 
+ *
  * @category Tests
  * @package  GravitonMessagingBundle
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
