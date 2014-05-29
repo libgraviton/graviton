@@ -1,8 +1,6 @@
 <?php
 
-namespace Graviton\RestBundle\Model\Doctrine;
-
-use Graviton\RestBundle\Model\ModelInterface;
+namespace Graviton\RestBundle\Model;
 
 /**
  * Use doctrine odm as backend
@@ -13,7 +11,7 @@ use Graviton\RestBundle\Model\ModelInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ODM implements ModelInterface
+class DocumentModel implements ModelInterface
 {
     /**
      * {@inheritDoc}

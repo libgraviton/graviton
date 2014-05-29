@@ -5,7 +5,7 @@
 
 namespace Graviton\CoreBundle\Model;
 
-use Graviton\RestBundle\Model\Doctrine\ODM as Model;
+use Graviton\RestBundle\Model\DocumentModel as Model;
 use Graviton\CoreBundle\Repository\AppRepository;
 
 /**

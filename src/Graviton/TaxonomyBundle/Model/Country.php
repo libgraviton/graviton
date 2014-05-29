@@ -1,11 +1,12 @@
 <?php
+
 /**
  * basic app model
  */
 
 namespace Graviton\TaxonomyBundle\Model;
 
-use Graviton\RestBundle\Model\Doctrine\ODM as Model;
+use Graviton\RestBundle\Model\DocumentModel as Model;
 use Graviton\TaxonomyBundle\Repository\CountryRepository;
 
 /**
