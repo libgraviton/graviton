@@ -5,15 +5,10 @@
 
 namespace Graviton\CoreBundle\Model;
 
-use Graviton\RestBundle\Model\DocumentModel as Model;
-use Graviton\CoreBundle\Repository\AppRepository;
+use Graviton\RestBundle\Model\DocumentModel;
 
 /**
- * Model based on Graviton\RestBundle\Model\Doctrine\ODM.
- *
- * For now this gets an apprepository through constructor
- * injection. This needs to be changed properly according
- * to what we end up doing with the rest of Graviton\RestBundle\Model.
+ * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
  * @category GravitonCoreBundle
  * @package  Graviton
@@ -21,30 +16,8 @@ use Graviton\CoreBundle\Repository\AppRepository;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class App extends Model
+class App extends DocumentModel
 {
-    /**
-     * create new app model
-     *
-     * @param AppRepository $apps Repository for constructor injection
-     *
-     * @return void
-     */
-    public function __construct(AppRepository $apps)
-    {
-        $this->repository = $apps;
-    }
-
-    /**
-     * get repository instance
-     *
-     * @return AppRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
     /**
      * get the description of the model
      *

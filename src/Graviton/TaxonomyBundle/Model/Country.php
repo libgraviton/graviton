@@ -6,15 +6,10 @@
 
 namespace Graviton\TaxonomyBundle\Model;
 
-use Graviton\RestBundle\Model\DocumentModel as Model;
-use Graviton\TaxonomyBundle\Repository\CountryRepository;
+use Graviton\RestBundle\Model\DocumentModel;
 
 /**
- * Model based on Graviton\RestBundle\Model\Doctrine\ODM.
- *
- * For now this gets a repository through constructor
- * injection. This needs to be changed properly according
- * to what we end up doing with the rest of Graviton\RestBundle\Model.
+ * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
  * @category GravitonTaxonomyBundle
  * @package  Graviton
@@ -22,30 +17,8 @@ use Graviton\TaxonomyBundle\Repository\CountryRepository;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Country extends Model
+class Country extends DocumentModel
 {
-    /**
-     * create new app model
-     *
-     * @param CountryRepository $countries Repository for constructor injection
-     *
-     * @return void
-     */
-    public function __construct(CountryRepository $countries)
-    {
-        $this->repository = $countries;
-    }
-
-    /**
-     * get repository instance
-     *
-     * @return AppRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
     /**
      * get the description of the model
      *

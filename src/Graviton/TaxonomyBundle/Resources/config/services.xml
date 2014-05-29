@@ -43,7 +43,9 @@
     <service id="graviton.taxonomy.model.country"
              class="%graviton.taxonomy.model.country.class%"
              parent="graviton.rest.model">
-      <argument type="service" id="graviton.taxonomy.repository.country"/>
+      <call method="setRepository">
+        <argument type="service" id="graviton.taxonomy.repository.country"/>
+      </call>
     </service>
   </services>
 </container>

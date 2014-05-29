@@ -2,6 +2,8 @@
 
 namespace Graviton\RestBundle\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+
 /**
  * ModelInterface
  *
@@ -13,6 +15,22 @@ namespace Graviton\RestBundle\Model;
  */
 interface ModelInterface
 {
+    /**
+     * Set document repository
+     *
+     * @param ObjectRepository $repository document repo
+     *
+     * @return void
+     */
+    public function setRepository(ObjectRepository $repository);
+
+    /**
+     * get repository instance
+     *
+     * @return ObjectRepository
+     */
+    public function getRepository();
+
     /**
      * Find a single record by id
      *

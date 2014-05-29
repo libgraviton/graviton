@@ -2,6 +2,8 @@
 
 namespace Graviton\RestBundle\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+
 /**
  * Use doctrine odm as backend
  *
@@ -13,6 +15,33 @@ namespace Graviton\RestBundle\Model;
  */
 class DocumentModel implements ModelInterface
 {
+    /**
+     * @var ObjectRepository
+     */
+    private $repository;
+
+    /**
+     * create new app model
+     *
+     * @param ObjectRepository $countries Repository of countries
+     *
+     * @return void
+     */
+    public function setRepository(ObjectRepository $countries)
+    {
+        $this->repository = $countries;
+    }
+
+    /**
+     * get repository instance
+     *
+     * @return ObjectRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
     /**
      * {@inheritDoc}
      *
