@@ -15,6 +15,10 @@
         {
             "name": "Beat Luginbühl",
             "email": "beat.luginbuehl@swisscom.com"
+        },
+        {
+            "name": "Manuel Kipfer",
+            "email": "manuel.kipfer@swisscom.com"
         }
     ],
     "scripts": {
