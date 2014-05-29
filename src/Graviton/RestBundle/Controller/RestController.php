@@ -271,7 +271,8 @@ class RestController implements ContainerAwareInterface
             $setterMethod = 'set'.ucfirst($key);
             $record->$setterMethod($value);
         }
-        $validationErrors = $this->getValidator()->validate($record);//, array(get_class($record)));
+
+        $validationErrors = $this->getValidator()->validate($record);
 
         $response =  null;
         if (count($validationErrors) > 0) {

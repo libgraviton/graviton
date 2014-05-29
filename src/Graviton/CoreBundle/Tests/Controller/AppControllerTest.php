@@ -237,8 +237,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        // mark as incomplete early to shift the focus away from validation for now
-        $this->markTestIncomplete('mongodb validation needs better testing and implementing');
+        $this->assertEquals('showInMenu', $results[0]->property_path);
+        $this->assertEquals('This value should be of type bool.', $results[0]->message);
     }
 
     /**
