@@ -218,18 +218,6 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Get doctrine
-     *
-     * @throws Exception
-     *
-     * @return Doctrine
-     */
-    public function getDoctrine()
-    {
-        return $this->container->get('gravtion.rest.doctrine');
-    }
-
-    /**
      * Get the serializer
      *
      * @return Serializer
