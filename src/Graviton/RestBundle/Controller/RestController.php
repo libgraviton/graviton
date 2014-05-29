@@ -266,7 +266,12 @@ class RestController implements ContainerAwareInterface
      */
     private function validateRecord($record)
     {
-        $validationErrors = $this->getValidator()->validate($record);
+        // override values from serializer with real ones from request to get originals validated
+        foreach (json_decode($this->getRequest()->getContent()) as $key => $value) {
+            $setterMethod = 'set'.ucfirst($key);
+            $record->$setterMethod($value);
+        }
+        $validationErrors = $this->getValidator()->validate($record);//, array(get_class($record)));
 
         $response =  null;
         if (count($validationErrors) > 0) {

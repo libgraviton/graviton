@@ -233,10 +233,12 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/hello', $helloApp);
 
-        // mark as incomplete early to shift the focus away from validation for now
-        $this->markTestIncomplete('mongodb validation needs better testing and implementing');
+        $results = $client->getResults();
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        // mark as incomplete early to shift the focus away from validation for now
+        $this->markTestIncomplete('mongodb validation needs better testing and implementing');
     }
 
     /**
