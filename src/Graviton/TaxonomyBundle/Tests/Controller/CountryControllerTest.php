@@ -109,7 +109,22 @@ class CountryControllerTest extends RestTestCase
      */
     public function testPostApp()
     {
-        $this->markTestIncomplete();
+        $testCountry = new \stdClass;
+        $testCountry->id = 'LSB';
+        $testCountry->name = 'Independent Federation of Lucas';
+        $testCountry->isoCode = 'LB';
+        $testCountry->capitalCity = 'Muesmatt';
+        $testCountry->longitude = 1;
+        $testCountry->latitude = 1;
+
+        $client = static::createRestClient();
+        $client->post('/taxonomy/country', $testCountry);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
     }
 
     /**
@@ -119,7 +134,19 @@ class CountryControllerTest extends RestTestCase
      */
     public function testPutApp()
     {
-        $this->markTestIncomplete();
+        $client = static::createRestClient();
+        $client->request('GET', '/taxonomy/country/CHE');
+
+        $response = $client->getResponse();
+        $country = $client->getResults();
+
+        $client->put('/taxonomy/country/CHE', $country);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
     }
 
     /**
@@ -129,7 +156,14 @@ class CountryControllerTest extends RestTestCase
      */
     public function testDeleteApp()
     {
-        $this->markTestIncomplete();
+        $client = static::createRestClient();
+        $client->request('DELETE', '/taxonomy/country/CHE');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
     }
 
     /**

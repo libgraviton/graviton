@@ -32,7 +32,7 @@
       <call method="setModel">
         <argument type="service" id="graviton.taxonomy.model.country"/>
       </call>
-      <tag name="graviton.rest"/>
+      <tag name="graviton.rest" read-only="true"/>
     </service>
     <service id="graviton.taxonomy.repository.country"
              class="%graviton.taxonomy.repository.country.class%"

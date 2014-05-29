@@ -64,7 +64,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         $routes = new RouteCollection();
 
         $container = $this->getContainerBuilder();
-        foreach (array_keys($container->findTaggedServiceIds('graviton.rest')) as $service) {
+        foreach ($container->findTaggedServiceIds('graviton.rest') as $service => $serviceConfig) {
             list($app, $bundle, $type, $entity) = explode('.', $service);
             $resource = implode('.', array($app, $bundle, 'rest', $entity));
 
@@ -73,6 +73,10 @@ class BasicLoader extends Loader implements ContainerAwareInterface
 
             $actionAll = ActionFactory::getRouteAll($service);
             $routes->add($resource.'.all', $actionAll);
+
+            if ($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0])) {
+                continue;
+            }
 
             $actionPost = ActionFactory::getRoutePost($service);
             $routes->add($resource.'.post', $actionPost);
