@@ -48,10 +48,6 @@
       </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
-    <service id="graviton_rest_model" abstract="true">
-      <call method="setDoctrine">
-        <argument type="service" id="doctrine"></argument>
-      </call>
-    </service>
+    <service id="graviton.rest.model" abstract="true"/>
   </services>
 </container>

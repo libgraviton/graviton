@@ -42,7 +42,7 @@
     </service>
     <service id="graviton.taxonomy.model.country"
              class="%graviton.taxonomy.model.country.class%"
-             parent="graviton_rest_model">
+             parent="graviton.rest.model">
       <argument type="service" id="graviton.taxonomy.repository.country"/>
     </service>
   </services>
