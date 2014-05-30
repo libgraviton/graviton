@@ -63,20 +63,16 @@ class PagingLinkResponseListener implements ContainerAwareInterface
             $numPages = $request->attributes->get('numPages');
 
             if ($page > 2) {
-                $url = $router->generate($routeName, array('page' => 1), true);
-                $links[] = sprintf('<%s>; rel="first"', $url);
+                $links[] = $this->generateLink($router, $routeName, 1, 'first');
             }
             if ($page > 1) {
-                $url = $router->generate($routeName, array('page' => $page - 1), true);
-                $links[] = sprintf('<%s>; rel="prev"', $url);
+                $links[] = $this->generateLink($router, $routeName, $page - 1, 'prev');
             }
             if ($page < $numPages) {
-                $url = $router->generate($routeName, array('page' => $page + 1), true);
-                $links[] = sprintf('<%s>; rel="next"', $url);
+                $links[] = $this->generateLink($router, $routeName, $page + 1, 'next');
             }
             if ($page != $numPages) {
-                $url = $router->generate($routeName, array('page' => $numPages), true);
-                $links[] = sprintf('<%s>; rel="last"', $url);
+                $links[] = $this->generateLink($router, $routeName, $numPages, 'last');
             }
 
             // overwrite link headers with new headers
@@ -84,5 +80,22 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         }
 
         $event->setResponse($response);
+    }
+
+    /**
+     * generate link header pased on params and type
+     *
+     * @param Router $router    router used to generate urls
+     * @param String $routeName use with router to generate urls
+     * @param Array  $page      page to link to
+     * @param String $type      rel type of link to generate
+     *
+     * @return String
+     */
+    private function generateLink($router, $routeName, $page, $type)
+    {
+        $url = $router->generate($routeName, array('page' => $page), true);
+
+        return sprintf('<%s>; rel="%s"', $url, $type);
     }
 }
