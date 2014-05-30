@@ -56,7 +56,7 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         // only collections have paging
         $parameters = array();
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $links = explode(', ', $response->headers->get('Link'));
+            $links = explode(',', $response->headers->get('Link'));
             $links = array_filter($links);
 
             $page = $request->get('page', 1);
