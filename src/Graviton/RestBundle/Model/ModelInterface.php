@@ -43,9 +43,11 @@ interface ModelInterface
     /**
      * Find all records
      *
+     * @param Request $request Request object
+     *
      * @return Array
      */
-    public function findAll();
+    public function findAll($request);
 
     /**
      * Insert a new Record

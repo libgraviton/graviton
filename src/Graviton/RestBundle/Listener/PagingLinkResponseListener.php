@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class SelfLinkResponseListener implements ContainerAwareInterface
+class PagingLinkResponseListener implements ContainerAwareInterface
 {
     /**
      * @private reference to service_container
@@ -53,28 +53,35 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
-        // for now we assume that everything except collections has an id
-        // this is also flawed since it does not handle search actions
+        // only collections have paging
         $parameters = array();
-        if ($routeType == 'post') {
-            // handle post request by rewriting self link to newly created resource
-            $parameters = array('id' => $request->get('id'));
-            $routeName = substr($routeName, 0, -4).'get';
-        } elseif ($routeType != 'all') {
-            $parameters = array('id' => $request->get('id'));
-        } elseif ($request->attributes->get('paging')) {
-            $parameters = array('page' => $request->get('page', 1));
+        if ($routeType == 'all' && $request->attributes->get('paging')) {
+            $links = explode(', ', $response->headers->get('Link'));
+            $links = array_filter($links);
+
+            $page = $request->get('page', 1);
+            $numPages = $request->attributes->get('numPages');
+
+            if ($page > 2) {
+                $url = $router->generate($routeName, array('page' => 1), true);
+                $links[] = sprintf('<%s>; rel="first"', $url);
+            }
+            if ($page > 1) {
+                $url = $router->generate($routeName, array('page' => $page - 1), true);
+                $links[] = sprintf('<%s>; rel="prev"', $url);
+            }
+            if ($page < $numPages) {
+                $url = $router->generate($routeName, array('page' => $page + 1), true);
+                $links[] = sprintf('<%s>; rel="next"', $url);
+            }
+            if ($page != $numPages) {
+                $url = $router->generate($routeName, array('page' => $numPages), true);
+                $links[] = sprintf('<%s>; rel="last"', $url);
+            }
+
+            // overwrite link headers with new headers
+            $response->headers->set('Link', implode(',', $links));
         }
-
-        $url = $router->generate($routeName, $parameters, true);
-
-        // append rel=self link to link headers
-        $links = explode(', ', $response->headers->get('Link'));
-        $links = array_filter($links);
-        $links[] = sprintf('<%s>; rel="self"', $url);
-
-        // overwrite link headers with new headers
-        $response->headers->set('Link', implode(',', $links));
 
         $event->setResponse($response);
     }

@@ -3,6 +3,7 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Knp\Component\Pager\Paginator;
 
 /**
  * Use doctrine odm as backend
@@ -19,6 +20,11 @@ class DocumentModel implements ModelInterface
      * @var ObjectRepository
      */
     private $repository;
+
+    /**
+     * @var Paginator
+     */
+    private $paginator;
 
     /**
      * create new app model
@@ -43,6 +49,18 @@ class DocumentModel implements ModelInterface
     }
 
     /**
+     * set paginator
+     *
+     * @param Paginator $paginator paginator used in collection
+     *
+     * @return void
+     */
+    public function setPaginator(Paginator $paginator)
+    {
+        $this->paginator = $paginator;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param String $id id of entity to find
@@ -57,11 +75,25 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
+     * @param Request $request Request object
+     *
      * @return Array
      */
-    public function findAll()
+    public function findAll($request)
     {
-        return $this->repository->findAll();
+        $pagination = $this->paginator->paginate(
+            $this->repository->findAll(),
+            $request->query->get('page', 1),
+            10
+        );
+
+        $numPages = (int) ceil($pagination->getTotalItemCount() / $pagination->getItemNumberPerPage());
+        if ($numPages > 1) {
+            $request->attributes->set('paging', true);
+            $request->attributes->set('numPages', $numPages);
+        }
+
+        return $pagination->getItems();
     }
 
     /**

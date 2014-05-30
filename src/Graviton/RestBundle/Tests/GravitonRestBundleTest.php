@@ -9,6 +9,7 @@ use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
+use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 
 /**
  * GravitonMessagingBundleTest
@@ -45,6 +46,7 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             new JMSSerializerBundle(),
             new FOSRestBundle(),
             new MisdGuzzleBundle(),
+            new KnpPaginatorBundle(),
         );
 
         $result = $sut->getBundles();

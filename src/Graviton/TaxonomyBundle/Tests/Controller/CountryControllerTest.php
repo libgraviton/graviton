@@ -60,15 +60,57 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country>; rel="self"',
+            '<http://localhost/taxonomy/country?page=1>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
             '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=2>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=26>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
 
-        $this->markTestIncomplete('add link headers for paging and test paging');
+        $client->request('GET', '/taxonomy/country?page=2');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=2>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=1>; rel="prev"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=3>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $client->request('GET', '/taxonomy/country?page=26');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=26>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=1>; rel="first"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
