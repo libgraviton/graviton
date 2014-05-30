@@ -7,6 +7,7 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
+use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 
 /**
  * GravitonRestBundle
@@ -33,6 +34,7 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
             new JMSSerializerBundle(),
             new FOSRestBundle(),
             new MisdGuzzleBundle(),
+            new KnpPaginatorBundle(),
         );
     }
 }

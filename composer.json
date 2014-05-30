@@ -61,7 +61,8 @@
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
         "stof/doctrine-extensions-bundle": ">=1.1.0",
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
-        "misd/guzzle-bundle": "~1.0"
+        "misd/guzzle-bundle": "~1.0",
+        "knplabs/knp-paginator-bundle": "~2.4"
     },
     "config": {
     },

@@ -62,6 +62,8 @@ class SelfLinkResponseListener implements ContainerAwareInterface
             $routeName = substr($routeName, 0, -4).'get';
         } elseif ($routeType != 'all') {
             $parameters = array('id' => $request->get('id'));
+        } elseif ($request->attributes->get('paging')) {
+            $parameters = array('page' => $request->get('page', 1));
         }
 
         $url = $router->generate($routeName, $parameters, true);

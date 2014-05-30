@@ -72,7 +72,7 @@ class RestController implements ContainerAwareInterface
     public function allAction()
     {
         $response = Response::getResponse(404);
-        $result = $this->getModel()->findAll();
+        $result = $this->getModel()->findAll($this->container->get('request'));
 
         if ($result) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
