@@ -93,7 +93,7 @@ class PagingLinkResponseListener implements ContainerAwareInterface
      * @param LinkHeader &$linkHeader link header api
      * @param Router     $router      router used to generate urls
      * @param string     $routeName   use with router to generate urls
-     * @param array      $page        page to link to
+     * @param integer    $page        page to link to
      * @param string     $type        rel type of link to generate
      *
      * @return string

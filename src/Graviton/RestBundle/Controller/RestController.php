@@ -73,8 +73,6 @@ class RestController implements ContainerAwareInterface
         $result = $this->getModel()->findAll($this->container->get('request'));
 
         if ($result) {
-            $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
-
             $response = Response::getResponse(
                 200,
                 $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
