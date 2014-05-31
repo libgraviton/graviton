@@ -66,7 +66,7 @@ class Country extends DocumentModel
     /**
      * get required fields for this model
      *
-     * @return array
+     * @return string[]
      */
     public function getRequiredFields()
     {

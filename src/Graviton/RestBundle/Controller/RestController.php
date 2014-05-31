@@ -45,7 +45,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param Number $id ID of record
      *
-     * @return Response $response Response with result or error
+     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
     public function getAction($id)
     {
@@ -67,7 +67,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Returns all records
      *
-     * @return Response $response Response with result or error
+     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
     public function allAction()
     {
@@ -91,7 +91,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Writes a new Entry to the database
      *
-     * @return Response $response Result of action with data (if successful)
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
      */
     public function postAction()
     {
@@ -126,7 +126,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param Number $id ID of record
      *
-     * @return Response $response Result of action with data (if successful)
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
      */
     public function putAction($id)
     {
@@ -163,7 +163,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param Number $id ID of record
      *
-     * @return Response $response Result of the action
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
     public function deleteAction($id)
     {
@@ -230,7 +230,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the serializer context
      *
-     * @return SerializationContext
+     * @return null|\JMS\Serializer\SerializationContext
      */
     public function getSerializerContext()
     {
@@ -262,7 +262,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param Object $record record to validate
      *
-     * @return Response|null
+     * @return \Symfony\Component\HttpFoundation\Response|null
      */
     private function validateRecord($record)
     {

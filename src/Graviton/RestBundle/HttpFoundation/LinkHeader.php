@@ -23,7 +23,7 @@ class LinkHeader
      *
      * @param LinkHeaderItem[] $items link header items
      *
-     * @return void
+     * @return LinkHeaderItem
      */
     public function __construct(array $items)
     {
@@ -54,7 +54,7 @@ class LinkHeader
     /**
      * get all items
      *
-     * @return array
+     * @return LinkHeaderItem[]
      */
     public function all()
     {

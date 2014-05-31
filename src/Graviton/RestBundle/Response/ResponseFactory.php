@@ -18,9 +18,9 @@ class ResponseFactory
     /**
      * instanciate a new Response object
      *
-     * @param Integers $statusCode HTTP status code for response
-     * @param string   $content    response string
-     * @param array    $headers    Array of headers
+     * @param integer $statusCode HTTP status code for response
+     * @param string  $content    response string
+     * @param array   $headers    Array of headers
      *
      * @return Response
      */

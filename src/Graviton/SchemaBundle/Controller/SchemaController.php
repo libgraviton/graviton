@@ -36,7 +36,7 @@ class SchemaController implements ContainerAwareInterface
      *
      * @param string $id path to the route (called id for consistency with other modules)
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getAction($id)
     {
