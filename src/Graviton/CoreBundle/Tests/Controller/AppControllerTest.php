@@ -211,11 +211,10 @@ class AppControllerTest extends RestTestCase
         $client->request('DELETE', '/core/app/hello');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**
