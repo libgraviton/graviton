@@ -51,22 +51,18 @@ class LinkHeaderItem
      */
     public static function fromString($itemValue)
     {
-        $bits = preg_split('/\s*(?:;*("[^"]+");*|;*(\'[^\']+\');*|;+)\s*/', $itemValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $bits = preg_split('/(".+?"|[^;]+)(?:;|$)/', $itemValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $value = array_shift($bits);
         $attributes = array();
 
-        $lastNullAttribute = null;
         foreach ($bits as $bit) {
-            if (($start = substr($bit, 0, 1)) === ($end = substr($bit, -1)) && ($start === '"' || $start === '\'')) {
-                $attributes[$lastNullAttribute] = substr($bit, 1, -1);
-            } elseif ('=' === $end) {
-                $lastNullAttribute = $bit = substr($bit, 0, -1);
-                $attributes[$bit] = null;
-            } else {
-                $parts = explode('=', $bit);
-                $attributes[$parts[0]] = isset($parts[1]) && strlen($parts[1]) > 0 ? $parts[1] : '';
+            list($bitName, $bitValue) = explode('=', trim($bit));
+
+            if (substr($bitValue, 0, 1) == '"') {
+                $bitValue = substr($bitValue, 1, -1);
             }
-        }
+            $attributes[$bitName] = $bitValue;
+	}
 
         $url = $value;
         if (substr($value, 0, 1) == '<') {
