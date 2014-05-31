@@ -59,8 +59,6 @@ class RestController implements ContainerAwareInterface
             );
         }
 
-        //add link header for each child
-        //$url = $this->router->get($entityClass, 'get', array('id' => $record->getId()));
         return $response;
     }
 
@@ -76,15 +74,13 @@ class RestController implements ContainerAwareInterface
 
         if ($result) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
-            $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
 
             $response = Response::getResponse(
                 200,
                 $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
             );
         }
-        //add prev / next headers
-        //$url = $this->serviceMapper->get($entityClass, 'get', array('id' => $record->getId()));
+
         return $response;
     }
 
@@ -95,7 +91,6 @@ class RestController implements ContainerAwareInterface
      */
     public function postAction()
     {
-        $response = false;
         $record = $this->getSerializer()->deserialize(
             $this->getRequest()->getContent(),
             $this->getModel()->getEntityClass(),
@@ -130,7 +125,6 @@ class RestController implements ContainerAwareInterface
      */
     public function putAction($id)
     {
-        $response = false;
         $record = $this->getSerializer()->deserialize(
             $this->getRequest()->getContent(),
             $this->getModel()->getEntityClass(),

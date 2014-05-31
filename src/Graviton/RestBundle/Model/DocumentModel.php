@@ -106,7 +106,7 @@ class DocumentModel implements ModelInterface
     public function insertRecord($entity)
     {
         $dm = $this->repository->getDocumentManager();
-        $res = $dm->persist($entity);
+        $dm->persist($entity);
         $dm->flush();
 
         return $this->find($entity->getId());

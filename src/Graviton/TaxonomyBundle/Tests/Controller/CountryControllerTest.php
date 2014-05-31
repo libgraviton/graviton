@@ -175,7 +175,6 @@ class CountryControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/taxonomy/country/CHE');
 
-        $response = $client->getResponse();
         $country = $client->getResults();
 
         $client->put('/taxonomy/country/CHE', $country);

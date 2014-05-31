@@ -43,11 +43,10 @@ class SchemaController implements ContainerAwareInterface
         $response = Response::getResponse(200);
 
         $router = $this->container->get('router');
-        $serializer = $this->container->get('serializer');
 
         // match with random id to get route
         $route = $router->match('/'.$id.'/1234');
-        list($app, $module, $type, $model, $action) = explode('.', $route['_route']);
+        list($app, $module, , $model, ) = explode('.', $route['_route']);
 
         $modelName = $model;
         $model = $this->container->get(implode('.', array($app, $module, 'model', $model)));
