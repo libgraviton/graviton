@@ -49,6 +49,10 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $response = $event->getResponse();
         $request = $event->getRequest();
         $router = $this->container->get('router');
+        $header = $response->headers->get('Link');
+        if (is_array($header)) {
+            implode(',', $header);
+        }
         $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
 
         // extract various info from route

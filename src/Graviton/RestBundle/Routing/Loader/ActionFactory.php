@@ -107,7 +107,7 @@ class ActionFactory
      */
     private static function getRoute($service, $method, $action, $parameters = array())
     {
-        $pattern = '/'.static::getBaseFromService($service);
+        $pattern = '/'.self::getBaseFromService($service);
         $defaults = array(
             '_controller' => $service.':'.$action,
             '_format' => '~',

@@ -74,7 +74,11 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
 
         if ($schemaRouteName !== $routeName) {
 
-            $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
+            $header = $response->headers->get('Link');
+            if (is_array($header)) {
+                $header = implode(',', $header);
+            }
+            $linkHeader = LinkHeader::fromString($header);
             $url = $router->generate($schemaRouteName, $parameters, true);
 
             // append rel=schema link to link headers

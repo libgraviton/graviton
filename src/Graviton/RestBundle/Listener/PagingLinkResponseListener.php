@@ -59,6 +59,10 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         $parameters = array();
         if ($routeType == 'all' && $request->attributes->get('paging')) {
 
+            $header = $response->headers->get('Link');
+            if (is_array($header)) {
+                implode(',', $header);
+            }
             $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
 
             $page = $request->get('page', 1);
