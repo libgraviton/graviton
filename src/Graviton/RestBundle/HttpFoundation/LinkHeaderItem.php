@@ -58,16 +58,12 @@ class LinkHeaderItem
         foreach ($bits as $bit) {
             list($bitName, $bitValue) = explode('=', trim($bit));
 
-            if (substr($bitValue, 0, 1) == '"') {
-                $bitValue = substr($bitValue, 1, -1);
-            }
+            $bitValue = self::trimEdge($bitValue, '"');
+
             $attributes[$bitName] = $bitValue;
         }
 
-        $url = $value;
-        if (substr($value, 0, 1) == '<') {
-            $url = substr($value, 1, -1);
-        }
+        $url = self::trimEdge($value, '<');
 
         return new self($url, $attributes);
     }
@@ -147,5 +143,22 @@ class LinkHeaderItem
     public function getAttribute($name)
     {
         return $this->attributes[$name];
+    }
+
+    /**
+     * trim edge of string if char maches
+     *
+     * @param string $string string
+     * @param char   $char   char
+     *
+     * @return string
+     */
+    private static function trimEdge($string, $char)
+    {
+        if (substr($string, 0, 1) == $char) {
+            $string = substr($string, 1, -1);
+        }
+
+        return $string;
     }
 }
