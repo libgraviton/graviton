@@ -77,5 +77,20 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('parent', $linkHeaderItem->getRel());
     }
-}
 
+    /**
+     * test string conversion.
+     *
+     * @return void
+     */
+    public function testToString()
+    {
+        $item = new LinkHeaderItem('http://localhost');
+
+        $this->assertEquals('<http://localhost>', (string) $item);
+
+        $item =  new LinkHeaderItem('http://localhost', array('rel' => 'self'));
+
+        $this->assertEquals('<http://localhost>; rel="self"', (string) $item);
+    }
+}

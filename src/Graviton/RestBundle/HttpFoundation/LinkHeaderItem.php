@@ -77,6 +77,22 @@ class LinkHeaderItem
     }
 
     /**
+     * cast item to string
+     *
+     * @return String
+     */
+    public function __toString()
+    {
+            $values = array('<'.$this->uri.'>');
+
+            foreach ($this->attributes as $name => $value) {
+                    $values[] = sprintf('%s="%s"', $name, $value);
+            }
+
+            return implode('; ', $values);
+    }
+
+    /**
      * Get URI.
      *
      * @return String
@@ -137,4 +153,3 @@ class LinkHeaderItem
         return $this->attributes[$name];
     }
 }
-

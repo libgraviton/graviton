@@ -55,4 +55,28 @@ class LinkHeader
     {
         return $this->items;
     }
+
+    /**
+     * add a LinkHeaderItem.
+     *
+     * @param LinkHeaderItem $item item to add
+     *
+     * @return LinkHeader
+     */
+    public function add(LinkHeaderItem $item)
+    {
+        $this->items[] = $item;
+
+        return $this;
+    }
+
+    /**
+     * Cast contents to string.
+     *
+     * @return String
+     */
+    public function __toString()
+    {
+        return implode(',', $this->items);
+    }
 }

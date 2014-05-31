@@ -3,6 +3,7 @@
 namespace Graviton\RestBundle\Tests\HttpFoundation;
 
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
+use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 
 /**
  * Tests LinkHeader.
@@ -44,5 +45,33 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($uri2, $linkHeaders[1]->getUri());
         }
     }
-}
 
+    /**
+     * test building of strings
+     *
+     * @return void
+     */
+    public function testToString()
+    {
+        $uri = 'http://localhost/test/resource';
+        $headers = "<${uri}>,<${uri}>";
+        $this->assertEquals($headers, (string) LinkHeader::fromString($headers));
+    }
+
+    /**
+     * test adding an item
+     *
+     * @return void
+     */
+    public function testAddItem()
+    {
+        $header = new LinkHeader(array());
+        $item = new LinkHeaderItem('urn:uri');
+
+        $header->add($item);
+        $links = $header->all();
+
+        $this->assertSame($item, $links[0]);
+    }
+
+}
