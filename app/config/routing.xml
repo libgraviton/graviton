@@ -5,4 +5,3 @@
   <import resource="@GravitonRestBundle/Resources/config/routing.xml" prefix="/"/>
   <import resource="@GravitonSchemaBundle/Resources/config/routing.xml" prefix="/schema"/>
 </routes>
-
