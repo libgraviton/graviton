@@ -30,7 +30,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
             array("<${uri}>; rel=self", array('rel' => 'self')),
             array("<${uri}>; rel='self'", array('rel' => 'self')),
         );
-        foreach ($tests AS $test) {
+        foreach ($tests as $test) {
             $itemValue = $test[0];
 
             $linkHeaderItem = LinkHeaderItem::fromString($itemValue);

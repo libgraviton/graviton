@@ -24,17 +24,17 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
     public function testFromString()
     {
         $uri = 'http://localhost/test/resource';
-        $uri2 = 'http://localhost/test/alternate';
+        $altUri = 'http://localhost/test/alternate';
         $tests = array(
-            array("${uri}, ${uri2}"),
-            array("<${uri}>, <${uri2}>"),
-            array("<${uri}>,<${uri2}>"),
-            array("<${uri}>; rel=self, <${uri2}>"),
-            array("<${uri}>; rel=\"self\", <${uri2}>"),
-            array("<${uri}>; rel='self', <${uri2}>"),
-            array("<${uri}>; rel=\"schema\"; type=\"urn:uri\",<${uri2}>"),
+            array("${uri}, ${altUri}"),
+            array("<${uri}>, <${altUri}>"),
+            array("<${uri}>,<${altUri}>"),
+            array("<${uri}>; rel=self, <${altUri}>"),
+            array("<${uri}>; rel=\"self\", <${altUri}>"),
+            array("<${uri}>; rel='self', <${altUri}>"),
+            array("<${uri}>; rel=\"schema\"; type=\"urn:uri\",<${altUri}>"),
         );
-        foreach ($tests AS $test) {
+        foreach ($tests as $test) {
             $headerValue = $test[0];
 
             $linkHeaders = LinkHeader::fromString($headerValue)->all();
@@ -42,7 +42,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
             $this->assertCount(2, $linkHeaders);
 
             $this->assertEquals($uri, $linkHeaders[0]->getUri());
-            $this->assertEquals($uri2, $linkHeaders[1]->getUri());
+            $this->assertEquals($altUri, $linkHeaders[1]->getUri());
         }
     }
 
@@ -73,5 +73,4 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($item, $links[0]);
     }
-
 }

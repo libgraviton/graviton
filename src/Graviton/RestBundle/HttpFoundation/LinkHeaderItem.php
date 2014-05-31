@@ -29,7 +29,7 @@ class LinkHeaderItem
      * Constructor.
      *
      * @param String $uri        uri value of item
-     * @param Array  $attributes
+     * @param Array  $attributes array of attributes
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class LinkHeaderItem
                 $bitValue = substr($bitValue, 1, -1);
             }
             $attributes[$bitName] = $bitValue;
-	}
+        }
 
         $url = $value;
         if (substr($value, 0, 1) == '<') {
@@ -79,13 +79,13 @@ class LinkHeaderItem
      */
     public function __toString()
     {
-            $values = array('<'.$this->uri.'>');
+        $values = array('<'.$this->uri.'>');
 
-            foreach ($this->attributes as $name => $value) {
-                    $values[] = sprintf('%s="%s"', $name, $value);
-            }
+        foreach ($this->attributes as $name => $value) {
+            $values[] = sprintf('%s="%s"', $name, $value);
+        }
 
-            return implode('; ', $values);
+        return implode('; ', $values);
     }
 
     /**

@@ -39,11 +39,16 @@ class LinkHeader
      */
     public static function fromString($headerValue)
     {
-        return new self(array_map(function ($itemValue) use (&$index) {
-            $item = LinkHeaderItem::fromString(trim($itemValue));
+        return new self(
+            array_map(
+                function ($itemValue) use (&$index) {
+                    $item = LinkHeaderItem::fromString(trim($itemValue));
 
-            return $item;
-        }, preg_split('/(".+?"|[^,]+)(?:,|$)/', $headerValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)));
+                    return $item;
+                },
+                preg_split('/(".+?"|[^,]+)(?:,|$)/', $headerValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)
+            )
+        );
     }
 
     /**
