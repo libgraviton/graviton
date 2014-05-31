@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
 class Client extends FrameworkClient
 {
     /**
-     * @var String
+     * @var string
      */
     private $results;
 

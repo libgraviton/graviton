@@ -19,7 +19,7 @@ class GravitonTaxonomyBundle extends Bundle implements GravitonBundleInterface
     /**
      * {@inheritDoc}
      *
-     * @return Array
+     * @return array
      */
     public function getBundles()
     {

@@ -34,7 +34,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
      *
      * set up a bare bones symfony2 context
      *
-     * @return Array
+     * @return Bundle[]
      */
     public function getBundles()
     {

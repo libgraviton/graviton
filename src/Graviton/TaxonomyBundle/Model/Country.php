@@ -22,7 +22,7 @@ class Country extends DocumentModel
     /**
      * get the description of the model
      *
-     * @return String
+     * @return string
      */
     public function getDescription()
     {
@@ -32,9 +32,9 @@ class Country extends DocumentModel
     /**
      * get description of a given field
      *
-     * @param String $field field name
+     * @param string $field field name
      *
-     * @return String
+     * @return string
      */
     public function getDescriptionOfField($field)
     {
@@ -66,7 +66,7 @@ class Country extends DocumentModel
     /**
      * get required fields for this model
      *
-     * @return Array
+     * @return array
      */
     public function getRequiredFields()
     {

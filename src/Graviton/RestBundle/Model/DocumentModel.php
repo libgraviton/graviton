@@ -63,7 +63,7 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param String $id id of entity to find
+     * @param string $id id of entity to find
      *
      * @return Object
      */
@@ -77,7 +77,7 @@ class DocumentModel implements ModelInterface
      *
      * @param Request $request Request object
      *
-     * @return Array
+     * @return array
      */
     public function findAll($request)
     {
@@ -115,7 +115,7 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param String $id     id of entity to update
+     * @param string $id     id of entity to update
      * @param Object $entity new enetity
      *
      * @return Object
@@ -132,7 +132,7 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param String $id id of entity to delete
+     * @param string $id id of entity to delete
      *
      * @return Boolean
      */
@@ -153,7 +153,7 @@ class DocumentModel implements ModelInterface
     /**
      * get classname of entity
      *
-     * @return String
+     * @return string
      */
     public function getEntityClass()
     {
@@ -172,7 +172,7 @@ class DocumentModel implements ModelInterface
      *
      * @todo implement this in a more convention based manner
      *
-     * @return String
+     * @return string
      */
     public function getConnectionName()
     {

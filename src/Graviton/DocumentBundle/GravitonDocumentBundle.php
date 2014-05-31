@@ -25,7 +25,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     /**
      * {@inheritDoc}
      *
-     * @return Array
+     * @return Bundle[]
      */
     public function getBundles()
     {

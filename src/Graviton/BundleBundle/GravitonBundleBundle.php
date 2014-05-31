@@ -27,7 +27,7 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
      *
      * @todo GravitonBundle loading/disco (maybe with command support).
      *
-     * @return Array
+     * @return Bundle[]
      */
     public function getBundles()
     {

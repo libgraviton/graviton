@@ -34,7 +34,7 @@ class App
     /**
      * Set id
      *
-     * @param String $id id for new document
+     * @param string $id id for new document
      *
      * @return self
      */

@@ -18,10 +18,10 @@ class JsonFileLoader extends FileLoader
     /**
      * {@inheritDoc}
      *
-     * @param String $resource path to file we want to load
-     * @param String $type     type of file should be json in all cases
+     * @param string $resource path to file we want to load
+     * @param string $type     type of file should be json in all cases
      *
-     * @return String
+     * @return string
      */
     public function load($resource, $type = null)
     {
@@ -31,8 +31,8 @@ class JsonFileLoader extends FileLoader
     /**
      * {@inheritDoc}
      *
-     * @param String $resource path to a file
-     * @param String $type     unused
+     * @param string $resource path to a file
+     * @param string $type     unused
      *
      * @return Boolean
      */

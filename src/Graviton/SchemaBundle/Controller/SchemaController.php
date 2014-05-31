@@ -34,7 +34,7 @@ class SchemaController implements ContainerAwareInterface
     /**
      * return the schema for a given route
      *
-     * @param String $id path to the route (called id for consistency with other modules)
+     * @param string $id path to the route (called id for consistency with other modules)
      *
      * @return Response
      */

@@ -18,7 +18,7 @@ class ActionFactory
     /**
      * Get route for GET requests
      *
-     * @param String $service service id
+     * @param string $service service id
      *
      * @return Route
      */
@@ -30,7 +30,7 @@ class ActionFactory
     /**
      * Get route for getAll requests
      *
-     * @param String $service service id
+     * @param string $service service id
      *
      * @return Route
      */
@@ -42,7 +42,7 @@ class ActionFactory
     /**
      * Get route for POST requests
      *
-     * @param String $service service id
+     * @param string $service service id
      *
      * @return Route
      */
@@ -54,7 +54,7 @@ class ActionFactory
     /**
      * Get route for PUT requests
      *
-     * @param String $service service id
+     * @param string $service service id
      *
      * @return Route
      */
@@ -66,7 +66,7 @@ class ActionFactory
     /**
      * Get route for DELETE requests
      *
-     * @param String $service service id
+     * @param string $service service id
      *
      * @return Route
      */
@@ -81,9 +81,9 @@ class ActionFactory
      * By convention the last part of the service string so far
      * makes up the entities name.
      *
-     * @param String $service (partial) service id
+     * @param string $service (partial) service id
      *
-     * @return String
+     * @return string
      */
     private static function getBaseFromService($service)
     {
@@ -98,10 +98,10 @@ class ActionFactory
     /**
      * Get Route
      *
-     * @param String $service    name of service containing controller
-     * @param String $method     HTTP method to generate route for
-     * @param String $action     action to call for route
-     * @param Array  $parameters route parameters to append to route as pair of name and patterns
+     * @param string $service    name of service containing controller
+     * @param string $method     HTTP method to generate route for
+     * @param string $action     action to call for route
+     * @param array  $parameters route parameters to append to route as pair of name and patterns
      *
      * @return Route
      */

@@ -16,20 +16,20 @@ namespace Graviton\RestBundle\HttpFoundation;
 class LinkHeaderItem
 {
     /**
-     * @var String
+     * @var string
      */
     private $uri;
 
     /**
-     * @var Array
+     * @var array
      */
     private $attributes = array();
 
     /**
      * Constructor.
      *
-     * @param String $uri        uri value of item
-     * @param Array  $attributes array of attributes
+     * @param string $uri        uri value of item
+     * @param array  $attributes array of attributes
      *
      * @return void
      */
@@ -45,7 +45,7 @@ class LinkHeaderItem
     /**
      * Builds a LinkHeaderItem instance from a string.
      *
-     * @param String $itemValue value of a single link header
+     * @param string $itemValue value of a single link header
      *
      * @return LinkHeaderItem
      */
@@ -75,7 +75,7 @@ class LinkHeaderItem
     /**
      * cast item to string
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {
@@ -91,7 +91,7 @@ class LinkHeaderItem
     /**
      * Get URI.
      *
-     * @return String
+     * @return string
      */
     public function getUri()
     {
@@ -101,7 +101,7 @@ class LinkHeaderItem
     /**
      * Set a new URI.
      *
-     * @param String $uri new URI value
+     * @param string $uri new URI value
      *
      * @return LinkHeaderItem
      */
@@ -115,7 +115,7 @@ class LinkHeaderItem
     /**
      * Get rel attribute
      *
-     * @return String
+     * @return string
      */
     public function getRel()
     {
@@ -125,8 +125,8 @@ class LinkHeaderItem
     /**
      * Set attribute
      *
-     * @param String $name  attribute name
-     * @param String $value attribute value
+     * @param string $name  attribute name
+     * @param string $value attribute value
      *
      * @return LinkHeaderItem
      */
@@ -140,9 +140,9 @@ class LinkHeaderItem
     /**
      * Get an attribute.
      *
-     * @param String $name attirbute name
+     * @param string $name attirbute name
      *
-     * @return String
+     * @return string
      */
     public function getAttribute($name)
     {

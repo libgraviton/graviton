@@ -23,7 +23,7 @@ class GravitonCoreExtension extends GravitonBundleExtension
     /**
      * {@inheritDoc}
      *
-     * @return String
+     * @return string
      */
     public function getConfigDir()
     {

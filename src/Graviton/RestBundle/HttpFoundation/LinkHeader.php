@@ -33,7 +33,7 @@ class LinkHeader
     /**
      * Builds a LinkHeader instance from a string.
      *
-     * @param String $headerValue value of complete header
+     * @param string $headerValue value of complete header
      *
      * @return LinkHeader
      */
@@ -54,7 +54,7 @@ class LinkHeader
     /**
      * get all items
      *
-     * @return Array
+     * @return array
      */
     public function all()
     {
@@ -78,7 +78,7 @@ class LinkHeader
     /**
      * Cast contents to string.
      *
-     * @return String
+     * @return string
      */
     public function __toString()
     {

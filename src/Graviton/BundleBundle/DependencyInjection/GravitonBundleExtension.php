@@ -28,7 +28,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
     /**
      * get path to bundles Resources/config dir
      *
-     * @return String
+     * @return string
      */
     public function getConfigDir()
     {
@@ -38,7 +38,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
     /**
      * {@inheritDoc}
      *
-     * @param Array            $configs   configs to process
+     * @param array            $configs   configs to process
      * @param ContainerBuilder $container container to use
      *
      * @return void

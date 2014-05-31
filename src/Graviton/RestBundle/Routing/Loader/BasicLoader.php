@@ -50,8 +50,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     /**
      * Load routes for all services tagged with graviton.rest
      *
-     * @param String $resource unused
-     * @param String $type     unused
+     * @param string $resource unused
+     * @param string $type     unused
      *
      * @return RouteCollection
      */
@@ -96,8 +96,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     /**
      * {@inheritDoc}
      *
-     * @param String $resource unused
-     * @param String $type     Type to match against
+     * @param string $resource unused
+     * @param string $type     Type to match against
      *
      * @return Boolean
      */
