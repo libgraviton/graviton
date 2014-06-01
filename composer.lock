@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "dc4730329a028c0c5e5034db61fa432868e8b3df"
+                "reference": "468fd990cbb857ebfd232d8ee4c4bb9a118e11a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/dc4730329a028c0c5e5034db61fa432868e8b3df",
-                "reference": "dc4730329a028c0c5e5034db61fa432868e8b3df",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/468fd990cbb857ebfd232d8ee4c4bb9a118e11a9",
+                "reference": "468fd990cbb857ebfd232d8ee4c4bb9a118e11a9",
                 "shasum": ""
             },
             "require": {
@@ -810,7 +810,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2014-05-16 15:45:24"
+            "time": "2014-05-30 20:01:26"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -2315,16 +2315,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.3.15",
+            "version": "v2.3.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76"
+                "reference": "069683a14eb361f892c9bdc9d10d4f5dac3c0ee3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/424a567d2c1fb918a32f302b5c2bcb67d2661e76",
-                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/069683a14eb361f892c9bdc9d10d4f5dac3c0ee3",
+                "reference": "069683a14eb361f892c9bdc9d10d4f5dac3c0ee3",
                 "shasum": ""
             },
             "require": {
@@ -2421,7 +2421,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-05-22 17:23:49"
+            "time": "2014-05-31 02:04:21"
         },
         {
             "name": "twig/extensions",
