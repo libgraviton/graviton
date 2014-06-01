@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Route;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ActionFactory
+class ActionUtils
 {
     /**
      * Get route for GET requests
