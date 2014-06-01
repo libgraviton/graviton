@@ -42,23 +42,15 @@ class RestController implements ContainerAwareInterface
     /**
      * Returns a single record
      *
-     * @param Number $id ID of record
+     * @param string $id ID of record
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
     public function getAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.404');
-        $result = $this->getModel()->find($id);
-
-        if ($result) {
-            $response = $this->container->get('graviton.rest.response.200');
-            $response->setContent(
-                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
-            );
-        }
-
-        return $response;
+        return $this->getReponse(
+            $this->getModel()->find($id)
+        );
     }
 
     /**
@@ -68,17 +60,9 @@ class RestController implements ContainerAwareInterface
      */
     public function allAction()
     {
-        $response = $this->container->get('graviton.rest.response.404');
-        $result = $this->getModel()->findAll($this->container->get('request'));
-
-        if ($result) {
-            $response = $this->container->get('graviton.rest.response.200');
-            $response->setContent(
-                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
-            );
-        }
-
-        return $response;
+        return $this->getResponse(
+            $this->getModel()->findAll($this->container->get('request'))
+        );
     }
 
     /**
@@ -270,6 +254,26 @@ class RestController implements ContainerAwareInterface
         if (count($validationErrors) > 0) {
             $response = $this->container->get('graviton.rest.response.400');
             $response->setContent($this->getSerializer()->serialize($validationErrors, 'json'));
+        }
+
+        return $response;
+    }
+
+    /**
+     * create responses for simple get cases
+     *
+     * @param Object|Object[] $result result to base response on
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getReponse($result)
+    {
+        $response = $this->container->get('graviton.rest.response.404');
+        if ($result) {
+            $response = $this->container->get('graviton.rest.response.200');
+            $response->setContent(
+                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
+            );
         }
 
         return $response;
