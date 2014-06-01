@@ -4,6 +4,7 @@ namespace Graviton\RestBundle\Controller;
 
 use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -88,9 +89,7 @@ class RestController implements ContainerAwareInterface
             $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
             $record = $this->getModel()->insertRecord($record);
             $response = $this->container->get('graviton.rest.response.201');
-            $response->setContent(
-                $this->getSerializer()->serialize($record, 'json')
-            );
+            $response = $this->setContent($response, $record);
             $response->headers->set(
                 'Location',
                 $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId()))
@@ -124,9 +123,7 @@ class RestController implements ContainerAwareInterface
             } else {
                 $record = $this->getModel()->updateRecord($id, $record);
                 $response = $this->container->get('graviton.rest.response.200');
-                $response->setContent(
-                    $this->getSerializer()->serialize($record, 'json', $this->getSerializerContext())
-                );
+                $response = $this->setContent($response, $record);
             }
         }
 
@@ -266,16 +263,34 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getResponse($result)
+    private function getResponse($result)
     {
         $response = $this->container->get('graviton.rest.response.404');
         if ($result) {
             $response = $this->container->get('graviton.rest.response.200');
-            $response->setContent(
-                $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
-            );
+            $response = $this->setContent($response, $result);
         }
 
+        return $response;
+    }
+
+    /**
+     * set content on response
+     *
+     * @param \Symfony\Component\HttpFoundation\Response $response reponse to edit
+     * @param Object                                     $content  object to serialize into content
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function setContent(Response $response, $content)
+    {
+        $response->setContent(
+            $this->getSerializer()->serialize(
+                $content,
+                'json',
+                $this->getSerializerContext()
+            )
+        );
         return $response;
     }
 }
