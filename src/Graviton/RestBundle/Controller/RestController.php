@@ -258,8 +258,12 @@ class RestController implements ContainerAwareInterface
      */
     private function validateRecord($record)
     {
+        $content = $this->getRequest()->getContent();
+        if (is_resource($content)) {
+            throw new \LogicException('unexpected resource in validation');
+        }
         // override values from serializer with real ones from request to get originals validated
-        foreach (json_decode($this->getRequest()->getContent()) as $key => $value) {
+        foreach (json_decode($content) as $key => $value) {
             $setterMethod = 'set'.ucfirst($key);
             $record->$setterMethod($value);
         }
