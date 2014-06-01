@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\CoreBundle\Model\App;
 
 /**
  * AppController

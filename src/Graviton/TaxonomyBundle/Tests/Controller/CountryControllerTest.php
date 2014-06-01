@@ -55,20 +55,59 @@ class CountryControllerTest extends RestTestCase
         $client->request('GET', '/taxonomy/country');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country>; rel="self"',
+            '<http://localhost/taxonomy/country?page=1>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
             '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=2>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=26>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
 
-        $this->markTestIncomplete('add link headers for paging and test paging');
+        $client->request('GET', '/taxonomy/country?page=2');
+
+        $response = $client->getResponse();
+
+        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=2>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=1>; rel="prev"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=3>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $client->request('GET', '/taxonomy/country?page=26');
+
+        $response = $client->getResponse();
+
+        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=26>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/taxonomy/country?page=1>; rel="first"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**
@@ -121,7 +160,6 @@ class CountryControllerTest extends RestTestCase
         $client->post('/taxonomy/country', $testCountry);
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
@@ -137,13 +175,11 @@ class CountryControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/taxonomy/country/CHE');
 
-        $response = $client->getResponse();
         $country = $client->getResults();
 
         $client->put('/taxonomy/country/CHE', $country);
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
@@ -160,7 +196,6 @@ class CountryControllerTest extends RestTestCase
         $client->request('DELETE', '/taxonomy/country/CHE');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));

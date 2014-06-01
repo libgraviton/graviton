@@ -4,9 +4,12 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
     <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
+    <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
     <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
     <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
+    <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
+    <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
   </parameters>
   <services>
     <service id="graviton.rest.serializer" alias="serializer">
@@ -31,7 +34,10 @@
     <service id="graviton.rest.validator" alias="validator"/>
     <service id="graviton.rest.router" alias="router"/>
     <service id="graviton.rest.request" alias="request"/>
+    <service id="graviton.rest.paginator" alias="knp_paginator"/>
+    <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
     <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
+      <argument type="service" id="graviton.rest.routing.collection"/>
       <call method="setContainer"><argument type="service" id="service_container"/></call>
       <tag name="routing.loader"/>
     </service>
@@ -46,6 +52,31 @@
       </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
-    <service id="graviton.rest.model" abstract="true"/>
+    <service id="graviton.rest.listener.paginglinkresponselistener" class="%graviton.rest.listener.paginglinkresponselistener.class%">
+      <call method="setContainer">
+        <argument type="service" id="service_container"></argument>
+      </call>
+      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
+    </service>
+    <service id="graviton.rest.model" abstract="true">
+      <call method="setPaginator">
+        <argument type="service" id="graviton.rest.paginator"/>
+      </call>
+    </service>
+    <service id="graviton.rest.response" class="%graviton.rest.response.class%" abstract="true">
+    </service>
+    <service id="graviton.rest.response.200" parent="graviton.rest.response">
+      <call method="setStatusCode"><argument>200</argument></call>
+    </service>
+    <service id="graviton.rest.response.201" parent="graviton.rest.response">
+      <call method="setStatusCode"><argument>201</argument></call>
+    </service>
+    <service id="graviton.rest.response.400" parent="graviton.rest.response">
+      <call method="setStatusCode"><argument>400</argument></call>
+    </service>
+    <service id="graviton.rest.response.404" parent="graviton.rest.response">
+      <call method="setStatusCode"><argument>404</argument></call>
+      <call method="setContent"><argument>Not Found</argument></call>
+    </service>
   </services>
 </container>

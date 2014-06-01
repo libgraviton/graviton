@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
 class Client extends FrameworkClient
 {
     /**
-     * @var String
+     * @var string
      */
     private $results;
 
@@ -41,7 +41,7 @@ class Client extends FrameworkClient
      * @param array  $files      The files
      * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
      *
-     * @return Crawler
+     * @return \Symfony\Component\DomCrawler\Crawler|null
      *
      * @api
      */
@@ -59,7 +59,7 @@ class Client extends FrameworkClient
      * @param array  $files      The files
      * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
      *
-     * @return Crawler
+     * @return \Symfony\Component\DomCrawler\Crawler|null
      *
      * @api
      */
@@ -73,7 +73,7 @@ class Client extends FrameworkClient
      *
      * @param object $response Response containing our return value as raw json
      *
-     * @return object response
+     * @return \Symfony\Component\BrowserKit\Response response
      *
      * @todo use JMSSerializer for additional JSON validation
      */
@@ -92,7 +92,7 @@ class Client extends FrameworkClient
      *
      * @param object $request Request object
      *
-     * @return object request
+     * @return \Symfony\Component\HttpFoundation\Response request
      */
     protected function doRequest($request)
     {

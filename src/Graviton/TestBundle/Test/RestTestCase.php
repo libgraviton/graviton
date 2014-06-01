@@ -43,7 +43,7 @@ class RestTestCase extends GravitonTestCase
     /**
      * test for content type based on classname based mapping
      *
-     * @param String   $contentType Expected Content-Type
+     * @param string   $contentType Expected Content-Type
      * @param Response $response    Response from client
      *
      * @return void

@@ -34,7 +34,7 @@ interface ModelInterface
     /**
      * Find a single record by id
      *
-     * @param String $id Record-Id
+     * @param string $id Record-Id
      *
      * @return Object
      */
@@ -43,9 +43,11 @@ interface ModelInterface
     /**
      * Find all records
      *
-     * @return Array
+     * @param Request $request Request object
+     *
+     * @return Object[]
      */
-    public function findAll();
+    public function findAll($request);
 
     /**
      * Insert a new Record
@@ -59,7 +61,7 @@ interface ModelInterface
     /**
      * Update an existing entity
      *
-     * @param String $id     id of entity to update
+     * @param string $id     id of entity to update
      * @param Object $entity entity with new data
      *
      * @return Object
@@ -71,21 +73,21 @@ interface ModelInterface
      *
      * @param Number $id Record-Id
      *
-     * @return Boolean
+     * @return null|Object
      */
     public function deleteRecord($id);
 
     /**
      * Get the name of entity class
      *
-     * @return String
+     * @return string
      */
     public function getEntityClass();
 
     /**
      * Get the connection name
      *
-     * @return String
+     * @return string
      */
     public function getConnectionName();
 }

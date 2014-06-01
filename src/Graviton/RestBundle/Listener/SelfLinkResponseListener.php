@@ -5,6 +5,8 @@ namespace Graviton\RestBundle\Listener;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Graviton\RestBundle\HttpFoundation\LinkHeader;
+use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -47,6 +49,11 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $response = $event->getResponse();
         $request = $event->getRequest();
         $router = $this->container->get('router');
+        $header = $response->headers->get('Link');
+        if (is_array($header)) {
+            implode(',', $header);
+        }
+        $linkHeader = LinkHeader::fromString($header);
 
         // extract various info from route
         $routeName = $request->get('_route');
@@ -62,17 +69,17 @@ class SelfLinkResponseListener implements ContainerAwareInterface
             $routeName = substr($routeName, 0, -4).'get';
         } elseif ($routeType != 'all') {
             $parameters = array('id' => $request->get('id'));
+        } elseif ($request->attributes->get('paging')) {
+            $parameters = array('page' => $request->get('page', 1));
         }
 
         $url = $router->generate($routeName, $parameters, true);
 
         // append rel=self link to link headers
-        $links = explode(', ', $response->headers->get('Link'));
-        $links = array_filter($links);
-        $links[] = sprintf('<%s>; rel="self"', $url);
+        $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
 
         // overwrite link headers with new headers
-        $response->headers->set('Link', implode(',', $links));
+        $response->headers->set('Link', (string) $linkHeader);
 
         $event->setResponse($response);
     }

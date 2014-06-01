@@ -17,24 +17,24 @@ namespace Graviton\CoreBundle\Document;
 class App
 {
     /**
-     * @var MongoId $id document/app id
+     * @var string app id
      */
     protected $id;
 
     /**
-     * @var string $title app title
+     * @var string app title
      */
     protected $title;
 
     /**
-     * @var boolean $showInMenu show app in menu
+     * @var boolean show app in menu
      */
     protected $showInMenu = false;
 
     /**
      * Set id
      *
-     * @param String $id id for new document
+     * @param string $id id for new document
      *
      * @return self
      */
@@ -48,7 +48,7 @@ class App
     /**
      * Get id
      *
-     * @return id $id
+     * @return string $id
      */
     public function getId()
     {

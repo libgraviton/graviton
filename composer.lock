@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5cf3348a0c9b57faaf585b4806011880",
+    "hash": "8133db657437639b98b8193dbee8900f",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -740,12 +740,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "dc4730329a028c0c5e5034db61fa432868e8b3df"
+                "reference": "468fd990cbb857ebfd232d8ee4c4bb9a118e11a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/dc4730329a028c0c5e5034db61fa432868e8b3df",
-                "reference": "dc4730329a028c0c5e5034db61fa432868e8b3df",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/468fd990cbb857ebfd232d8ee4c4bb9a118e11a9",
+                "reference": "468fd990cbb857ebfd232d8ee4c4bb9a118e11a9",
                 "shasum": ""
             },
             "require": {
@@ -810,7 +810,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2014-05-16 15:45:24"
+            "time": "2014-05-30 20:01:26"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1485,6 +1485,126 @@
                 "xml"
             ],
             "time": "2013-12-05 14:36:11"
+        },
+        {
+            "name": "knplabs/knp-components",
+            "version": "1.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KnpLabs/knp-components.git",
+                "reference": "8803fdaa18bd24bd158143e3d9099f4b243a31dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KnpLabs/knp-components/zipball/8803fdaa18bd24bd158143e3d9099f4b243a31dd",
+                "reference": "8803fdaa18bd24bd158143e3d9099f4b243a31dd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "suggest": {
+                "doctrine/common": "to allow usage pagination with Doctrine ArrayCollection",
+                "doctrine/mongodb-odm": "to allow usage pagination with Doctrine ODM MongoDB",
+                "doctrine/orm": "to allow usage pagination with Doctrine ORM",
+                "propel/propel1": "to allow usage pagination with Propel ORM",
+                "ruflin/Elastica": "to allow usage pagination with ElasticSearch Client",
+                "solarium/solarium": "to allow usage pagination with Solarium Client"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Knp\\Component": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KnpLabs Team",
+                    "homepage": "http://knplabs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://github.com/KnpLabs/knp-components/contributors"
+                }
+            ],
+            "description": "Knplabs component library",
+            "homepage": "http://github.com/KnpLabs/knp-components",
+            "keywords": [
+                "components",
+                "knp",
+                "knplabs",
+                "pager",
+                "paginator"
+            ],
+            "time": "2014-01-09 16:23:31"
+        },
+        {
+            "name": "knplabs/knp-paginator-bundle",
+            "version": "2.4.0",
+            "target-dir": "Knp/Bundle/PaginatorBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KnpLabs/KnpPaginatorBundle.git",
+                "reference": "4202329b4d639c1a03d0007e31a52049d31c591e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KnpLabs/KnpPaginatorBundle/zipball/4202329b4d639c1a03d0007e31a52049d31c591e",
+                "reference": "4202329b4d639c1a03d0007e31a52049d31c591e",
+                "shasum": ""
+            },
+            "require": {
+                "knplabs/knp-components": "~1.2",
+                "php": ">=5.3.3",
+                "symfony/framework-bundle": "~2.0",
+                "twig/twig": "~1.5"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Knp\\Bundle\\PaginatorBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KnpLabs Team",
+                    "homepage": "http://knplabs.com"
+                },
+                {
+                    "name": "Symfony2 Community",
+                    "homepage": "http://github.com/KnpLabs/KnpPaginatorBundle/contributors"
+                }
+            ],
+            "description": "Paginator bundle for Symfony2 to automate pagination and simplify sorting and other features",
+            "homepage": "http://github.com/KnpLabs/KnpPaginatorBundle",
+            "keywords": [
+                "Symfony2",
+                "bundle",
+                "knp",
+                "knplabs",
+                "pager",
+                "pagination",
+                "paginator"
+            ],
+            "time": "2014-01-21 07:26:00"
         },
         {
             "name": "misd/guzzle-bundle",
@@ -2195,16 +2315,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.3.15",
+            "version": "v2.3.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76"
+                "reference": "069683a14eb361f892c9bdc9d10d4f5dac3c0ee3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/424a567d2c1fb918a32f302b5c2bcb67d2661e76",
-                "reference": "424a567d2c1fb918a32f302b5c2bcb67d2661e76",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/069683a14eb361f892c9bdc9d10d4f5dac3c0ee3",
+                "reference": "069683a14eb361f892c9bdc9d10d4f5dac3c0ee3",
                 "shasum": ""
             },
             "require": {
@@ -2301,7 +2421,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-05-22 17:23:49"
+            "time": "2014-05-31 02:04:21"
         },
         {
             "name": "twig/extensions",
