@@ -164,7 +164,7 @@ class RestController implements ContainerAwareInterface
             $this->getSerializer()->serialize(array('errors' => 'Entry with id '.$id.' not found'), 'json')
         );
 
-        if ($this->getModel()->deleteRecord($id)) {
+        if (is_null($this->getModel()->deleteRecord($id))) {
             $response = Response::getResponse(200);
         }
 

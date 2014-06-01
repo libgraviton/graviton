@@ -134,17 +134,17 @@ class DocumentModel implements ModelInterface
      *
      * @param string $id id of entity to delete
      *
-     * @return Boolean
+     * @return null|Object
      */
     public function deleteRecord($id)
     {
         $dm = $this->repository->getDocumentManager();
         $entity = $this->find($id);
 
-        $return = false;
+        $return = $entity;
         if ($entity) {
             $dm->remove($entity);
-            $return = true;
+            $return = null;
         }
 
         return $return;

@@ -45,7 +45,7 @@ interface ModelInterface
      *
      * @param Request $request Request object
      *
-     * @return array
+     * @return Object[]
      */
     public function findAll($request);
 
@@ -73,7 +73,7 @@ interface ModelInterface
      *
      * @param Number $id Record-Id
      *
-     * @return Boolean
+     * @return null|Object
      */
     public function deleteRecord($id);
 
