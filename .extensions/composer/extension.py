@@ -34,4 +34,6 @@ def compile(install):
     os.system('curl -sS %s | /tmp/staged/app/php/bin/php -d "extension=openssl.so" > /dev/null' % DEFAULTS['COMPOSER_URL'])
     print "Running composer install"
     os.system('cd /tmp/staged/app/htdocs/ && /tmp/staged/app/php/bin/php -d "extension=openssl.so" -d "extension=mongo.so" -d "extension=curl.so" /tmp/staged/composer.phar install --no-interaction --quiet')
+    print "Set up MongoDB fixtures"
+    os.system('cd /tmp/staged/app/htdocs/ && /tmp/staged/app/php/bin/php -d "extension=openssl.so" -d "extension=mongo.so" -d "extension=curl.so" app/console doctrine:mongodb:fixtures:load 2> /dev/null')
     return 0
