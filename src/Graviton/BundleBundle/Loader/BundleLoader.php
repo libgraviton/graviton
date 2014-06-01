@@ -27,14 +27,14 @@ class BundleLoader
     /**
      * stack used during loading of bundles
      *
-     * @var Bundle[]
+     * @var \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     protected $bundleStack = array();
 
     /**
      * final compilation of bundles
      *
-     * @var Bundle[]
+     * @var \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     protected $finalBundles = array();
 
@@ -53,7 +53,7 @@ class BundleLoader
     /**
      * load bundles from kickstarter bundle
      *
-     * @return Bundle[]
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function load()
     {
