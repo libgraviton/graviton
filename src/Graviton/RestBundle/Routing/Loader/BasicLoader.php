@@ -21,9 +21,20 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  */
 class BasicLoader extends Loader implements ContainerAwareInterface
 {
+    /**
+     * @var boolean
+     */
     private $loaded = false;
 
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
     private $container;
+
+    /**
+     * @var \Symfony\Component\Routing\RouteCollection
+     */
+    private $routes;
 
     /**
      * Constructor.
@@ -127,7 +138,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
      */
     private function loadService($service, $serviceConfig)
     {
-        list($app, $bundle, $type, $entity) = explode('.', $service);
+        list($app, $bundle, , $entity) = explode('.', $service);
         $resource = implode('.', array($app, $bundle, 'rest', $entity));
 
         $this->loadReadOnlyRoutes($service, $resource);
