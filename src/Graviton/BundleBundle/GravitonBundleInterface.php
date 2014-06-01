@@ -21,7 +21,7 @@ interface GravitonBundleInterface
     /**
      * return array of new bunde instances
      *
-     * @return Bundle[]
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles();
 }

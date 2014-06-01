@@ -27,7 +27,7 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
      *
      * @todo GravitonBundle loading/disco (maybe with command support).
      *
-     * @return Bundle[]
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {

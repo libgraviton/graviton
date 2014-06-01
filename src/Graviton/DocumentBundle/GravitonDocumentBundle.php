@@ -25,7 +25,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     /**
      * {@inheritDoc}
      *
-     * @return Bundle[]
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {

@@ -14,39 +14,39 @@ namespace Graviton\TaxonomyBundle\Document;
 class Country
 {
     /**
-     * @var MongoId $id document/country id
+     * @var string document/country id
      */
     protected $id;
 
     /**
-     * @var string $name Country Name
+     * @var string Country Name
      */
     protected $name;
 
     /**
-     * @var string $isoCode ISO country code
+     * @var string ISO country code
      */
     protected $isoCode;
 
     /**
-     * @var string $capitalCity capital city of country
+     * @var string capital city of country
      */
     protected $capitalCity;
 
     /**
-     * @var string $longitude Longitude of country
+     * @var string Longitude of country
      */
     protected $longitude;
 
     /**
-     * @var string $latitude Latitude of country
+     * @var string Latitude of country
      */
     protected $latitude;
 
     /**
      * Get id
      *
-     * @return id $id
+     * @return string $id
      */
     public function getId()
     {

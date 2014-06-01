@@ -24,14 +24,14 @@ class RestController implements ContainerAwareInterface
     private $model;
 
     /**
-     * @var ContainerInteface service_container
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
      */
     private $container;
 
     /**
      * {@inheritdoc}
      *
-     * @param ContainerInterface $container service_container
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
      *
      * @return void
      */
@@ -174,7 +174,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get request
      *
-     * @return Request $request Request object
+     * @return \Symfony\Component\HttpFoundation\Request $request Request object
      */
     public function getRequest()
     {
@@ -212,7 +212,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the serializer
      *
-     * @return Serializer
+     * @return \JMS\Serializer\Serializer\Serializer
      */
     public function getSerializer()
     {
@@ -232,7 +232,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the validator
      *
-     * @return Validator
+     * @return \Symfony\Component\Validator\Validator
      */
     public function getValidator()
     {
@@ -242,7 +242,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the router from the dic
      *
-     * @return object
+     * @return \Symfony\Bundle\FrameworkBundle\Routing\Router
      */
     public function getRouter()
     {

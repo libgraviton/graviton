@@ -149,7 +149,7 @@ class LinkHeaderItem
      * trim edge of string if char maches
      *
      * @param string $string string
-     * @param char   $char   char
+     * @param string $char   char
      *
      * @return string
      */

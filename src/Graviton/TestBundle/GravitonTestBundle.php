@@ -25,7 +25,7 @@ class GravitonTestBundle extends Bundle implements GravitonBundleInterface
      *
      * set up a bare bones symfony2 context
      *
-     * @return Bundle[]
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {
