@@ -80,6 +80,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -108,6 +109,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -176,6 +178,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -215,6 +218,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -275,5 +279,6 @@ class AppControllerTest extends RestTestCase
             'Define if an app should be exposed on the top level menu.',
             $results->properties->showInMenu->description
         );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 }
