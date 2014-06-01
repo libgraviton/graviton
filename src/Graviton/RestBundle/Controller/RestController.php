@@ -250,7 +250,7 @@ class RestController implements ContainerAwareInterface
         $response =  null;
         if (count($validationErrors) > 0) {
             $response = $this->container->get('graviton.rest.response.400');
-            $response->setContent($this->getSerializer()->serialize($validationErrors, 'json'));
+            $response = $this->setContent($response, $validationErrors);
         }
 
         return $response;
@@ -278,7 +278,7 @@ class RestController implements ContainerAwareInterface
      * set content on response
      *
      * @param \Symfony\Component\HttpFoundation\Response $response reponse to edit
-     * @param Object                                     $content  object to serialize into content
+     * @param Object|Object[]                            $content  object to serialize into content
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
