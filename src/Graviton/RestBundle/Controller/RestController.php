@@ -48,7 +48,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getAction($id)
     {
-        return $this->getReponse(
+        return $this->getResponse(
             $this->getModel()->find($id)
         );
     }
@@ -266,7 +266,7 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getReponse($result)
+    public function getResponse($result)
     {
         $response = $this->container->get('graviton.rest.response.404');
         if ($result) {
