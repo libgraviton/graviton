@@ -40,3 +40,12 @@ Please run ``./vendor/bin/phpunit -c app/`` and ``./vendor/bin/php-cs-fixer fix 
 Graviton uses [travis-ci](http;//travis-ci.org) and [scrutinizer-ci](http://scrutinizer-ci.com).
 
 You will need to log in to scrutinizer once using you github account so you may be added to the project as admin or moderator as needed.
+
+## Deploying
+
+Graviton supports Cloudfoundry out of the box. You need to define a mongodb service called ``graviton-dev-mongo``. Pushing to the cloud
+will only push the bare code an run ``composer install`` on the target.
+
+``bash
+cf push graviton-dev
+``
