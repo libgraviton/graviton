@@ -34,6 +34,20 @@ class AppKernel extends Kernel
     protected $bundleLoader;
 
     /**
+     * {@inheritDoc}
+     *
+     * @param string $environment The environment
+     * @param bool   $debug       Whether to enable debugging or not
+     *
+     * @return AppKernel
+     */
+    public function __construct($environment, $debug)
+    {
+        date_default_timezone_set('UTC');
+        parent::__construct($environment, $debug);
+    }
+
+    /**
      * set bundle loader
      *
      * @param BundleLoader $bundleLoader bundle loader

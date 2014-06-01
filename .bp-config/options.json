@@ -1,0 +1,8 @@
+{
+  "ADMIN_EMAIL": "lucas.bickel@swisscom.com",
+  "WEB_SERVER": "nginx",
+  "PHP_VERSION": "{PHP_55_LATEST}",
+  "PHP_MODULES": ["cli", "fpm"],
+  "PHP_EXTENSIONS": ["bz2", "zlib", "curl", "mcrypt", "mongo", "openssl"],
+  "ZEND_EXTENSIONS": ["xdebug"]
+}
