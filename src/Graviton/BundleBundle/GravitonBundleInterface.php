@@ -5,6 +5,8 @@
 
 namespace Graviton\BundleBundle;
 
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
 /**
  * GravitonBundleInterface
  *
@@ -19,7 +21,7 @@ interface GravitonBundleInterface
     /**
      * return array of new bunde instances
      *
-     * @return Array
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles();
 }

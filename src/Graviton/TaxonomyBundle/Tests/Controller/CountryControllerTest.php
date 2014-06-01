@@ -55,7 +55,6 @@ class CountryControllerTest extends RestTestCase
         $client->request('GET', '/taxonomy/country');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
@@ -79,7 +78,6 @@ class CountryControllerTest extends RestTestCase
         $client->request('GET', '/taxonomy/country?page=2');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
@@ -99,7 +97,6 @@ class CountryControllerTest extends RestTestCase
         $client->request('GET', '/taxonomy/country?page=26');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
 
@@ -163,7 +160,6 @@ class CountryControllerTest extends RestTestCase
         $client->post('/taxonomy/country', $testCountry);
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
@@ -179,13 +175,11 @@ class CountryControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/taxonomy/country/CHE');
 
-        $response = $client->getResponse();
         $country = $client->getResults();
 
         $client->put('/taxonomy/country/CHE', $country);
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
@@ -202,7 +196,6 @@ class CountryControllerTest extends RestTestCase
         $client->request('DELETE', '/taxonomy/country/CHE');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));

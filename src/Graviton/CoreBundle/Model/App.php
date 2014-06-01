@@ -21,7 +21,7 @@ class App extends DocumentModel
     /**
      * get the description of the model
      *
-     * @return String
+     * @return string
      */
     public function getDescription()
     {
@@ -31,9 +31,9 @@ class App extends DocumentModel
     /**
      * get description of a given field
      *
-     * @param String $field field name
+     * @param string $field field name
      *
-     * @return String
+     * @return string
      */
     public function getDescriptionOfField($field)
     {
@@ -56,7 +56,7 @@ class App extends DocumentModel
     /**
      * get required fields for this object
      *
-     * @return Array
+     * @return string[]
      */
     public function getRequiredFields()
     {

@@ -77,9 +77,9 @@ class ExceptionListener
     /**
      * prepare a line of backtrace into a semi human readable json
      *
-     * @param Array $line Line to format
+     * @param array $line Line to format
      *
-     * @return Array
+     * @return array
      */
     private function prepareTraceLine($line)
     {
@@ -117,9 +117,9 @@ class ExceptionListener
      * are some more important things that should be up and running first for
      * that to make sense.
      *
-     * @param Array $arg recursive array of arguments
+     * @param array $arg recursive array of arguments
      *
-     * @return Array
+     * @return array
      */
     private function walkArg($arg)
     {

@@ -27,14 +27,14 @@ class BundleLoader
     /**
      * stack used during loading of bundles
      *
-     * @var Array
+     * @var Bundle[]
      */
     protected $bundleStack = array();
 
     /**
      * final compilation of bundles
      *
-     * @var Array
+     * @var Bundle[]
      */
     protected $finalBundles = array();
 
@@ -53,7 +53,7 @@ class BundleLoader
     /**
      * load bundles from kickstarter bundle
      *
-     * @return Array
+     * @return Bundle[]
      */
     public function load()
     {

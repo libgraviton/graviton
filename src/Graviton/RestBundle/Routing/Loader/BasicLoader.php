@@ -50,8 +50,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     /**
      * Load routes for all services tagged with graviton.rest
      *
-     * @param String $resource unused
-     * @param String $type     unused
+     * @param string $resource unused
+     * @param string $type     unused
      *
      * @return RouteCollection
      */
@@ -68,23 +68,23 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             list($app, $bundle, $type, $entity) = explode('.', $service);
             $resource = implode('.', array($app, $bundle, 'rest', $entity));
 
-            $actionGet = ActionFactory::getRouteGet($service);
+            $actionGet = ActionUtils::getRouteGet($service);
             $routes->add($resource.'.get', $actionGet);
 
-            $actionAll = ActionFactory::getRouteAll($service);
+            $actionAll = ActionUtils::getRouteAll($service);
             $routes->add($resource.'.all', $actionAll);
 
             if ($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0])) {
                 continue;
             }
 
-            $actionPost = ActionFactory::getRoutePost($service);
+            $actionPost = ActionUtils::getRoutePost($service);
             $routes->add($resource.'.post', $actionPost);
 
-            $actionPut = ActionFactory::getRoutePut($service);
+            $actionPut = ActionUtils::getRoutePut($service);
             $routes->add($resource.'.put', $actionPut);
 
-            $actionDelete = ActionFactory::getRouteDelete($service);
+            $actionDelete = ActionUtils::getRouteDelete($service);
             $routes->add($resource.'.delete', $actionDelete);
         }
 
@@ -96,8 +96,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     /**
      * {@inheritDoc}
      *
-     * @param String $resource unused
-     * @param String $type     Type to match against
+     * @param string $resource unused
+     * @param string $type     Type to match against
      *
      * @return Boolean
      */

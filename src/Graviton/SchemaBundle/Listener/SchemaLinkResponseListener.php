@@ -5,6 +5,8 @@ namespace Graviton\SchemaBundle\Listener;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Graviton\RestBundle\HttpFoundation\LinkHeader;
+use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 
 /**
  * Add a Link header to a schema endpoint to a response
@@ -54,10 +56,10 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
 
-        list($app, $module, $method) = $routeParts;
+        list(, $module, $method) = $routeParts;
         $model = 'stdClass';
         if ($routeName !== 'graviton.schema.get') {
-            list($app, $module, $routeType, $model, $method) = $routeParts;
+            list(, $module, , $model, $method) = $routeParts;
         }
 
         $schemaRouteName = 'graviton.schema.get';
@@ -72,15 +74,18 @@ class SchemaLinkResponseListener implements ContainerAwareInterface
 
         if ($schemaRouteName !== $routeName) {
 
+            $header = $response->headers->get('Link');
+            if (is_array($header)) {
+                $header = implode(',', $header);
+            }
+            $linkHeader = LinkHeader::fromString($header);
             $url = $router->generate($schemaRouteName, $parameters, true);
 
             // append rel=schema link to link headers
-            $links = explode(', ', $response->headers->get('Link'));
-            $links = array_filter($links);
-            $links[] = sprintf('<%s>; rel="schema"; type="%s"', $url, $schema);
+            $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'schema', 'type' => $schema)));
 
             // overwrite link headers with new headers
-            $response->headers->set('Link', implode(',', $links));
+            $response->headers->set('Link', (string) $linkHeader);
         }
 
         $event->setResponse($response);

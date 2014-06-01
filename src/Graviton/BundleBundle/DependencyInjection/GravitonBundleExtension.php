@@ -9,8 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface
-    as PrependInterface;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface as PrependInterface;
 
 /**
  * GravitonBundleExtension
@@ -28,7 +27,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
     /**
      * get path to bundles Resources/config dir
      *
-     * @return String
+     * @return string
      */
     public function getConfigDir()
     {
@@ -38,7 +37,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
     /**
      * {@inheritDoc}
      *
-     * @param Array            $configs   configs to process
+     * @param array            $configs   configs to process
      * @param ContainerBuilder $container container to use
      *
      * @return void

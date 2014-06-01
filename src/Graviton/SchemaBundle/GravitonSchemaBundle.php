@@ -21,7 +21,7 @@ class GravitonSchemaBundle extends Bundle implements GravitonBundleInterface
      *
      * set up basic bundles needed for being RESTful
      *
-     * @return Array
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {
