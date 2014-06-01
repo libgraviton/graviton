@@ -4,7 +4,6 @@ namespace Graviton\SchemaBundle\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Graviton\RestBundle\Response\ResponseFactory as Response;
 
 /**
  * Controller for acccessing schema information
@@ -40,8 +39,7 @@ class SchemaController implements ContainerAwareInterface
      */
     public function getAction($id)
     {
-        $response = Response::getResponse(200);
-
+        $response = $this->container->get('graviton.rest.response.200');
         $router = $this->container->get('router');
 
         // match with random id to get route

@@ -6,7 +6,6 @@ use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\Serializer;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Graviton\RestBundle\Response\ResponseFactory as Response;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -49,12 +48,12 @@ class RestController implements ContainerAwareInterface
      */
     public function getAction($id)
     {
-        $response = Response::getResponse(404, 'Entry with id '.$id.' not found');
+        $response = $this->container->get('graviton.rest.response.404');
         $result = $this->getModel()->find($id);
 
         if ($result) {
-            $response = Response::getResponse(
-                200,
+            $response = $this->container->get('graviton.rest.response.200');
+            $response->setContent(
                 $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
             );
         }
@@ -69,12 +68,12 @@ class RestController implements ContainerAwareInterface
      */
     public function allAction()
     {
-        $response = Response::getResponse(404);
+        $response = $this->container->get('graviton.rest.response.404');
         $result = $this->getModel()->findAll($this->container->get('request'));
 
         if ($result) {
-            $response = Response::getResponse(
-                200,
+            $response = $this->container->get('graviton.rest.response.200');
+            $response->setContent(
                 $this->getSerializer()->serialize($result, 'json', $this->getSerializerContext())
             );
         }
@@ -104,10 +103,13 @@ class RestController implements ContainerAwareInterface
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
             $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
             $record = $this->getModel()->insertRecord($record);
-            $response = Response::getResponse(
-                201,
-                $this->getSerializer()->serialize($record, 'json'),
-                array('Location' => $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId())))
+            $response = $this->container->get('graviton.rest.response.201');
+            $response->setContent(
+                $this->getSerializer()->serialize($record, 'json')
+            );
+            $response->headers->set(
+                'Location',
+                $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId()))
             );
         }
 
@@ -134,14 +136,11 @@ class RestController implements ContainerAwareInterface
         if (!$response) {
             $existingRecord = $this->getModel()->find($id);
             if (!$existingRecord) {
-                $response = Response::getResponse(
-                    404,
-                    $this->getSerializer()->serialize(array('errors' => 'Entry with id '.$id.' not found'), 'json')
-                );
+                $response = $this->container->get('graviton.rest.response.404');
             } else {
                 $record = $this->getModel()->updateRecord($id, $record);
-                $response = Response::getResponse(
-                    200,
+                $response = $this->container->get('graviton.rest.response.200');
+                $response->setContent(
                     $this->getSerializer()->serialize($record, 'json', $this->getSerializerContext())
                 );
             }
@@ -159,13 +158,10 @@ class RestController implements ContainerAwareInterface
      */
     public function deleteAction($id)
     {
-        $response = Response::getResponse(
-            404,
-            $this->getSerializer()->serialize(array('errors' => 'Entry with id '.$id.' not found'), 'json')
-        );
+        $response = $this->container->get('graviton.rest.response.404');
 
         if (is_null($this->getModel()->deleteRecord($id))) {
-            $response = Response::getResponse(200);
+            $response = $this->container->get('graviton.rest.response.200');
         }
 
         return $response;
@@ -272,7 +268,8 @@ class RestController implements ContainerAwareInterface
 
         $response =  null;
         if (count($validationErrors) > 0) {
-            $response = Response::getResponse(400, $this->getSerializer()->serialize($validationErrors, 'json'));
+            $response = $this->container->get('graviton.rest.response.400');
+            $response->setContent($this->getSerializer()->serialize($validationErrors, 'json'));
         }
 
         return $response;
