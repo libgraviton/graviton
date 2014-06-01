@@ -49,11 +49,12 @@ class MainController
     public function indexAction()
     {
         $response = $this->container->get('graviton.rest.response.200');
+        $router = $this->container->get('router');
 
         $links = LinkHeader::fromString('');
         $links->add(
             new LinkHeaderItem(
-                'http://localhost/core/app',
+                $router->generate('graviton.core.rest.app.all', array(), true),
                 array(
                     'rel' => 'apps',
                     'type' => 'application/vnd.graviton.schema.collection.app+json'

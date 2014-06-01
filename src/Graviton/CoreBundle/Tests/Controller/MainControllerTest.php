@@ -76,7 +76,7 @@ class MainControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals(
-            'Please look at the Link headers of this reponse for further information.',
+            'Please look at the Link headers of this response for further information.',
             $results->message
         );
     }
