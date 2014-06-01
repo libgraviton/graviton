@@ -26,6 +26,18 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     private $container;
 
     /**
+     * Constructor.
+     *
+     * @param \Symfony\Component\Routing\RouteCollection $routes route collection
+     *
+     * @return BasicLoader
+     */
+    public function __construct($routes)
+    {
+        $this->routes = $routes;
+    }
+
+    /**
      * set container
      *
      * @param ContainerInterface $container global container
@@ -61,36 +73,14 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
 
-        $routes = new RouteCollection();
-
         $container = $this->getContainerBuilder();
         foreach ($container->findTaggedServiceIds('graviton.rest') as $service => $serviceConfig) {
-            list($app, $bundle, $type, $entity) = explode('.', $service);
-            $resource = implode('.', array($app, $bundle, 'rest', $entity));
-
-            $actionGet = ActionUtils::getRouteGet($service);
-            $routes->add($resource.'.get', $actionGet);
-
-            $actionAll = ActionUtils::getRouteAll($service);
-            $routes->add($resource.'.all', $actionAll);
-
-            if ($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0])) {
-                continue;
-            }
-
-            $actionPost = ActionUtils::getRoutePost($service);
-            $routes->add($resource.'.post', $actionPost);
-
-            $actionPut = ActionUtils::getRoutePut($service);
-            $routes->add($resource.'.put', $actionPut);
-
-            $actionDelete = ActionUtils::getRouteDelete($service);
-            $routes->add($resource.'.delete', $actionDelete);
+            $this->loadService($service, $serviceConfig);
         }
 
         $this->loaded = true;
 
-        return $routes;
+        return $this->routes;
     }
 
     /**
@@ -125,5 +115,61 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         $loader->load($cachedFile);
 
         return $container;
+    }
+
+    /**
+     * load routes for a single service
+     *
+     * @param string $service       service name
+     * @param array  $serviceConfig service configuration
+     *
+     * @return void
+     */
+    private function loadService($service, $serviceConfig)
+    {
+        list($app, $bundle, $type, $entity) = explode('.', $service);
+        $resource = implode('.', array($app, $bundle, 'rest', $entity));
+
+        $this->loadReadOnlyRoutes($service, $resource);
+        if (!($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0]))) {
+            $this->loadWriteRoutes($service, $resource);
+        }
+    }
+
+    /**
+     * generate ro routes
+     *
+     * @param string $service  service name
+     * @param string $resource resource name
+     *
+     * @return void
+     */
+    public function loadReadOnlyRoutes($service, $resource)
+    {
+        $actionGet = ActionUtils::getRouteGet($service);
+        $this->routes->add($resource.'.get', $actionGet);
+
+        $actionAll = ActionUtils::getRouteAll($service);
+        $this->routes->add($resource.'.all', $actionAll);
+    }
+
+    /**
+     * generate write routes
+     *
+     * @param string $service  service name
+     * @param string $resource resource name
+     *
+     * @return void
+     */
+    public function loadWriteRoutes($service, $resource)
+    {
+        $actionPost = ActionUtils::getRoutePost($service);
+        $this->routes->add($resource.'.post', $actionPost);
+
+        $actionPut = ActionUtils::getRoutePut($service);
+        $this->routes->add($resource.'.put', $actionPut);
+
+        $actionDelete = ActionUtils::getRouteDelete($service);
+        $this->routes->add($resource.'.delete', $actionDelete);
     }
 }

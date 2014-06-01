@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
     <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
+    <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
     <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
     <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
@@ -34,7 +35,9 @@
     <service id="graviton.rest.router" alias="router"/>
     <service id="graviton.rest.request" alias="request"/>
     <service id="graviton.rest.paginator" alias="knp_paginator"/>
+    <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
     <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
+      <argument type="service" id="graviton.rest.routing.collection"/>
       <call method="setContainer"><argument type="service" id="service_container"/></call>
       <tag name="routing.loader"/>
     </service>

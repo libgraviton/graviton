@@ -291,6 +291,7 @@ class RestController implements ContainerAwareInterface
                 $this->getSerializerContext()
             )
         );
+
         return $response;
     }
 }
