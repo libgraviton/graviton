@@ -1,0 +1,7 @@
+buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
+path:
+  - composer.json
+  - composer.lock
+  - app/
+  - src/
+  - web/
