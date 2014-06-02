@@ -158,8 +158,6 @@ class RestController implements ContainerAwareInterface
      */
     public function optionsAction($id = null)
     {
-        // get rid of id since everything is based on the router in {@see SchemaUtils}
-        unset($id);
         $request = $this->getRequest();
         $request->attributes->set('schemaRequest', true);
 
@@ -167,8 +165,12 @@ class RestController implements ContainerAwareInterface
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
 
         $response = $this->container->get('graviton.rest.response.200');
+        $schemaMethod = 'getModelSchema';
+        if (!$id) {
+            $schemaMethod =  'getCollectionSchema';
+        }
         $response->setContent(
-            json_encode(SchemaUtils::getModelSchema($modelName, $model))
+            json_encode(SchemaUtils::$schemaMethod($modelName, $model))
         );
 
         return $response;

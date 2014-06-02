@@ -19,7 +19,7 @@ class SchemaUtils
      * @param string $modelName name of mode to generate schema for
      * @param object $model     model to generate schema for
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \stdClass
      */
     public static function getModelSchema($modelName, $model)
     {
@@ -42,5 +42,23 @@ class SchemaUtils
         $schema->required = $model->getRequiredFields();
 
         return $schema;
+    }
+
+    /**
+     * get schema for an array of models
+     *
+     * @param string $modelName name of model
+     * @param object $model     model
+     *
+     * @return \stdClass
+     */
+    public static function getCollectionSchema($modelName, $model)
+    {
+        $collectionSchema = new \stdClass;
+        $collectionSchema->title = sprintf('Array of %s objects.', $modelName);
+        $collectionSchema->type = 'array';
+        $collectionSchema->items = self::getModelSchema($modelName, $model);
+
+        return $collectionSchema;
     }
 }
