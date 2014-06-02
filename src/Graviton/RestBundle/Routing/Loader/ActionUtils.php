@@ -76,6 +76,19 @@ class ActionUtils
     }
 
     /**
+     * Get route for OPTIONS requests
+     *
+     * @param string $service    service id
+     * @param array  $parameters service params
+     *
+     * @return Route
+     */
+    public static function getRouteOptions($service, array $parameters = array())
+    {
+        return self::getRoute($service, 'OPTIONS', 'optionsAction', $parameters);
+    }
+
+    /**
      * Get entity name from service strings.
      *
      * By convention the last part of the service string so far

@@ -20,10 +20,6 @@ class CountryControllerTest extends RestTestCase
      */
     const CONTENT_TYPE = 'application/vnd.graviton.taxonomy.country+json; charset=UTF-8';
     /**
-     * @const corresponding vendorized schema mime type
-     */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.taxonomy.country+json';
-    /**
      * @const corresponding vendorized collection schema mime type
      */
     const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
@@ -60,10 +56,6 @@ class CountryControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=1>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
@@ -135,10 +127,6 @@ class CountryControllerTest extends RestTestCase
             '<http://localhost/taxonomy/country/CHE>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/taxonomy/country>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
     }
 
     /**
@@ -162,7 +150,7 @@ class CountryControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
+        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
     }
 
     /**
@@ -182,7 +170,7 @@ class CountryControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
+        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
     }
 
     /**
@@ -198,7 +186,7 @@ class CountryControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD', $response->headers->get('Allow'));
+        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
     }
 
     /**
@@ -210,12 +198,12 @@ class CountryControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/schema/taxonomy/country');
+        $client->request('OPTIONS', '/taxonomy/country/CHE');
 
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType('application/schema+json', $response);
 
         $this->assertEquals(200, $response->getStatusCode());
 

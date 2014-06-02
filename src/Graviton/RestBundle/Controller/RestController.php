@@ -7,6 +7,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Graviton\SchemaBundle\SchemaUtils;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -144,6 +145,29 @@ class RestController implements ContainerAwareInterface
         if (is_null($this->getModel()->deleteRecord($id))) {
             $response = $this->container->get('graviton.rest.response.200');
         }
+
+        return $response;
+    }
+
+    /**
+     * Return OPTIONS results.
+     *
+     * @param string $id ID of record
+     *
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     */
+    public function optionsAction($id = null)
+    {
+        $request = $this->getRequest();
+        $request->attributes->set('schemaRequest', true);
+
+        list($app, $module, , $modelName, ) = explode('.', $request->attributes->get('_route'));
+        $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
+
+        $response = $this->container->get('graviton.rest.response.200');
+        $response->setContent(
+            json_encode(SchemaUtils::getModelSchema($modelName, $model))
+        );
 
         return $response;
     }
