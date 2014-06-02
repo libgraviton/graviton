@@ -183,8 +183,8 @@ class CountryControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('DELETE', '/taxonomy/country/CHE');
 
-        $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD, OPTIONS', $this->getResponse()->headers->get('Allow'));
+        $this->assertEquals(405, $client->getResponse()->getStatusCode());
+        $this->assertEquals('GET, HEAD, OPTIONS', $client->getResponse()->headers->get('Allow'));
     }
 
     /**
