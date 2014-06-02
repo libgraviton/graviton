@@ -158,10 +158,12 @@ class RestController implements ContainerAwareInterface
      */
     public function optionsAction($id = null)
     {
+        // get rid of id since everything is based on the router in {@see SchemaUtils}
+        unset($id);
         $request = $this->getRequest();
         $request->attributes->set('schemaRequest', true);
 
-        list($app, $module, , $modelName, ) = explode('.', $request->attributes->get('_route'));
+        list($app, $module, , $modelName,) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
 
         $response = $this->container->get('graviton.rest.response.200');
