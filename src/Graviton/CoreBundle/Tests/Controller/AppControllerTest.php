@@ -260,5 +260,6 @@ class AppControllerTest extends RestTestCase
             $results->properties->showInMenu->description
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
     }
 }

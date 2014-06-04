@@ -228,6 +228,7 @@ class CountryControllerTest extends RestTestCase
         $this->assertNotContains('capitalCity', $results->required);
         $this->assertNotContains('latitude', $results->required);
         $this->assertNotContains('longitude', $results->required);
-
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
     }
 }

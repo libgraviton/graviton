@@ -25,8 +25,14 @@ class CorsResponseListener
     public function onKernelResponse(FilterResponseEvent $event)
     {
         $response = $event->getResponse();
+        $request = $event->getRequest();
 
-	$response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+
+        $corsMethods = $request->attributes->get('corsMethods', '');
+        if (!empty($corsMethods)) {
+            $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
+        }
 
         $event->setResponse($response);
     }
