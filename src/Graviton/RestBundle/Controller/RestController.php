@@ -7,6 +7,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
 
 /**
@@ -172,6 +173,18 @@ class RestController implements ContainerAwareInterface
         $response->setContent(
             json_encode(SchemaUtils::$schemaMethod($modelName, $model))
         );
+
+        // enabled methods for CorsListener
+        $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
+        try {
+            $router = $this->getRouter();
+            // if post route is available we assume everything is readable
+            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
+        } catch (RouteNotFoundException $exception) {
+            // only allow read methods
+            $corsMethods = 'GET, OPTIONS';
+        }
+        $request->attributes->set('corsMethods', $corsMethods);
 
         return $response;
     }

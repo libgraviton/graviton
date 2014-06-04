@@ -10,6 +10,7 @@
     <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
     <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
     <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
+    <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
   </parameters>
   <services>
     <service id="graviton.rest.serializer" alias="serializer">
@@ -56,6 +57,9 @@
       <call method="setContainer">
         <argument type="service" id="service_container"></argument>
       </call>
+      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
+    </service>
+    <service id="graviton.rest.listener.corsresponselistener" class="%graviton.rest.listener.corsresponselistener.class%">
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.model" abstract="true">
