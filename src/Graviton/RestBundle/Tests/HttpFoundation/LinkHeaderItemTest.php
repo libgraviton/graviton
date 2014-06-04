@@ -38,7 +38,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Graviton\RestBundle\HttpFoundation\LinkHeaderItem', $linkHeaderItem);
             $this->assertEquals($uri, $linkHeaderItem->getUri());
 
-            if (!empty($item[1]) && array_key_exists('rel', $test[1])) {
+            if (!empty($test[1]) && array_key_exists('rel', $test[1])) {
                 $this->assertEquals($test[1]['rel'], $linkHeaderItem->getRel());
             }
         }
