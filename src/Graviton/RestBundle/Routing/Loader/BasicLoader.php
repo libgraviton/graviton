@@ -162,6 +162,12 @@ class BasicLoader extends Loader implements ContainerAwareInterface
 
         $actionAll = ActionUtils::getRouteAll($service);
         $this->routes->add($resource.'.all', $actionAll);
+
+        $actionOptions = ActionUtils::getRouteOptions($service);
+        $this->routes->add($resource.'.options', $actionOptions);
+
+        $actionOptions = ActionUtils::getRouteOptions($service, array('id' => '\w+'));
+        $this->routes->add($resource.'.idOptions', $actionOptions);
     }
 
     /**

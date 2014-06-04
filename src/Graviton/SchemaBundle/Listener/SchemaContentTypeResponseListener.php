@@ -64,10 +64,11 @@ class SchemaContentTypeResponseListener implements ContainerAwareInterface
         if ($method == 'all') {
             $contentType = 'application/vnd.graviton.schema.collection+json';
         }
-
-        if ($routeName !== 'graviton.schema.get') {
-            $response->headers->set('Content-Type', $contentType.'; charset=UTF-8');
+        $contentType .= '; charset=UTF-8';
+        if ($request->attributes->get('schemaRequest')) {
+            $contentType = 'application/schema+json';
         }
+        $response->headers->set('Content-Type', $contentType);
 
         $event->setResponse($response);
     }

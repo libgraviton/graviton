@@ -25,10 +25,6 @@ class AppControllerTest extends RestTestCase
     /**
      * @const corresponding vendorized schema mime type
      */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.core.app+json';
-    /**
-     * @const corresponding vendorized schema mime type
-     */
     const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
 
     /**
@@ -76,10 +72,6 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
@@ -103,10 +95,6 @@ class AppControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app/admin>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -140,10 +128,6 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/new>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
     }
 
     /**
@@ -172,10 +156,6 @@ class AppControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app/hello>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -253,12 +233,12 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/schema/core/app');
+        $client->request('OPTIONS', '/core/app/hello');
 
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType('application/schema+json', $response);
 
         $this->assertEquals(200, $response->getStatusCode());
 
