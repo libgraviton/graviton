@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<routes xmlns="http://symfony.com/schema/routing">
-  <route id="graviton.schema.get" path="/{id}">
-    <default key="_controller">GravitonSchemaBundle:Schema:get</default>
-    <requirement key="id">.+</requirement>
-    <requirement key="_method">GET</requirement>
-  </route>
-</routes>

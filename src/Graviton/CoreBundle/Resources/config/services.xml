@@ -3,11 +3,18 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
+    <parameter key="graviton.core.controller.main.class">Graviton\CoreBundle\Controller\MainController</parameter>
     <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
     <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
     <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
   </parameters>
   <services>
+    <service id="graviton.core.controller.main"
+             class="%graviton.core.controller.main.class%">
+      <call method="setContainer">
+        <argument type="service" id="service_container"/>
+      </call>
+    </service>
     <service id="graviton.core.controller.app"
              class="%graviton.core.controller.app.class%"
              parent="graviton.rest.controller" scope="request">

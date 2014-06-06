@@ -1,0 +1,6 @@
+vendor/
+app/cache/
+app/log
+*.phar
+mongodata
+.git

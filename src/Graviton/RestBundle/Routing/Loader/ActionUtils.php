@@ -76,6 +76,47 @@ class ActionUtils
     }
 
     /**
+     * Get route for OPTIONS requests
+     *
+     * @param string $service    service id
+     * @param array  $parameters service params
+     *
+     * @return Route
+     */
+    public static function getRouteOptions($service, array $parameters = array())
+    {
+        return self::getRoute($service, 'OPTIONS', 'optionsAction', $parameters);
+    }
+
+    /**
+     * Get canonical route for schema requests
+     *
+     * @param string $service service id
+     * @param string $type    service type (item or collection)
+     *
+     * @return Route
+     */
+    public static function getCanonicalSchemaRoute($service, $type = 'item')
+    {
+        $pattern = self::getBaseFromService($service);
+        $pattern = '/schema'.$pattern.'/'.$type;
+
+        $defaults = array(
+            '_controller' => $service.':optionsAction',
+            '_format' => '~',
+        );
+
+        $requirements = array(
+            '_method' => 'GET',
+        );
+
+        $route = new Route($pattern, $defaults, $requirements);
+
+        return $route;
+    }
+
+
+    /**
      * Get entity name from service strings.
      *
      * By convention the last part of the service string so far
@@ -107,7 +148,7 @@ class ActionUtils
      */
     private static function getRoute($service, $method, $action, $parameters = array())
     {
-        $pattern = '/'.self::getBaseFromService($service);
+        $pattern = self::getBaseFromService($service);
         $defaults = array(
             '_controller' => $service.':'.$action,
             '_format' => '~',

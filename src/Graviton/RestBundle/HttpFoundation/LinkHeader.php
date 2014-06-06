@@ -2,6 +2,8 @@
 
 namespace Graviton\RestBundle\HttpFoundation;
 
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Represents a Link header.
  *
@@ -49,6 +51,22 @@ class LinkHeader
                 preg_split('/(".+?"|[^,]+)(?:,|$)/', $headerValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)
             )
         );
+    }
+
+    /**
+     * get LinkHeader instance from response
+     *
+     * @param \Symfony\Component\HttpFoundation\Response $response response to get header from
+     *
+     * @return LinkHeader
+     */
+    public static function fromResponse(Response $response)
+    {
+        $header = $response->headers->get('Link');
+        if (is_array($header)) {
+            implode(',', $header);
+        }
+        return self::fromString($header);
     }
 
     /**

@@ -25,10 +25,6 @@ class AppControllerTest extends RestTestCase
     /**
      * @const corresponding vendorized schema mime type
      */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.core.app+json';
-    /**
-     * @const corresponding vendorized schema mime type
-     */
     const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
 
     /**
@@ -76,10 +72,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/schema/collection>; rel="schema"; type="'.self::COLLECTION_SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -104,10 +97,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/admin>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -136,10 +126,6 @@ class AppControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app/new>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -172,10 +158,7 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/hello>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertContains(
-            '<http://localhost/schema/core/app>; rel="schema"; type="'.self::SCHEMA_TYPE.'"',
-            explode(',', $response->headers->get('Link'))
-        );
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -215,6 +198,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
 
     /**
@@ -249,31 +233,80 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/schema/core/app');
+        $client->request('OPTIONS', '/core/app/hello');
 
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::SCHEMA_TYPE.'; charset=UTF-8', $response);
-
+        $this->assertResponseContentType('application/schema+json', $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('App', $results->title);
-        $this->assertEquals('A graviton based app.', $results->description);
-        $this->assertEquals('object', $results->type);
+        $this->assertIsAppSchema($results);
 
-        $this->assertEquals('string', $results->properties->id->type);
-        $this->assertEquals('Unique identifier for an app.', $results->properties->id->description);
-        $this->assertContains('id', $results->required);
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
 
-        $this->assertEquals('string', $results->properties->title->type);
-        $this->assertEquals('Display name for an app.', $results->properties->title->description);
-        $this->assertContains('title', $results->required);
+        $this->assertContains(
+            '<http://localhost/schema/core/app/item>; rel="canonical"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
 
-        $this->assertEquals('boolean', $results->properties->showInMenu->type);
+    /**
+     * test getting collection schema
+     *
+     * @return void
+     */
+    public function testGetAppCollectionSchemaInformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('OPTIONS', '/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType('application/schema+json', $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals('Array of app objects', $results->title);
+        $this->assertEquals('array', $results->type);
+        $this->assertIsAppSchema($results->items);
+
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+
+        $this->assertContains(
+            '<http://localhost/schema/core/app/collection>; rel="canonical"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * check if a schema is of the app type
+     *
+     * @param \stdClass $schema schema from service to validate
+     *
+     * @return void
+     */
+    private function assertIsAppSchema(\stdClass $schema)
+    {
+        $this->assertEquals('App', $schema->title);
+        $this->assertEquals('A graviton based app.', $schema->description);
+        $this->assertEquals('object', $schema->type);
+
+        $this->assertEquals('string', $schema->properties->id->type);
+        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
+        $this->assertContains('id', $schema->required);
+
+        $this->assertEquals('string', $schema->properties->title->type);
+        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
+        $this->assertContains('title', $schema->required);
+
+        $this->assertEquals('boolean', $schema->properties->showInMenu->type);
         $this->assertEquals(
             'Define if an app should be exposed on the top level menu.',
-            $results->properties->showInMenu->description
+            $schema->properties->showInMenu->description
         );
     }
 }

@@ -59,6 +59,7 @@ class LinkHeaderItem
             list($bitName, $bitValue) = explode('=', trim($bit));
 
             $bitValue = self::trimEdge($bitValue, '"');
+            $bitValue = self::trimEdge($bitValue, '\'');
 
             $attributes[$bitName] = $bitValue;
         }

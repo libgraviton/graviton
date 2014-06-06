@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "The base package for graviton",
     "license": "GPL",
     "authors": [
@@ -62,9 +62,13 @@
         "stof/doctrine-extensions-bundle": ">=1.1.0",
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "misd/guzzle-bundle": "~1.0",
-        "knplabs/knp-paginator-bundle": "~2.4"
+        "knplabs/knp-paginator-bundle": "~2.4",
+        "symfony/icu": "1.0.*"
     },
     "config": {
+      "github-oauth": {
+        "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
+      }
     },
     "minimum-stability": "stable",
     "extra": {

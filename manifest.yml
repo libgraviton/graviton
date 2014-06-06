@@ -1,0 +1,9 @@
+buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
+services:
+  - graviton-dev-mongo
+path:
+  - composer.json
+  - composer.lock
+  - app/
+  - src/
+  - web/

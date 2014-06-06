@@ -21,9 +21,14 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 class PagingLinkResponseListener implements ContainerAwareInterface
 {
     /**
-     * @private reference to service_container
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
      */
     private $container;
+
+    /**
+     * @var \Graviton\RestBundle\HttpFoundation\LinkHeader
+     */
+    private $linkHeader;
 
     /**
      * {@inheritDoc}
@@ -48,7 +53,6 @@ class PagingLinkResponseListener implements ContainerAwareInterface
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
-        $router = $this->container->get('router');
 
         // extract various info from route
         $routeName = $request->get('_route');
@@ -58,49 +62,60 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
 
-            $header = $response->headers->get('Link');
-            if (is_array($header)) {
-                implode(',', $header);
-            }
-            $linkHeader = LinkHeader::fromString($header);
+            $this->linkHeader = LinkHeader::fromResponse($response);
 
-            $page = $request->get('page', 1);
-            $numPages = $request->attributes->get('numPages');
-
-            if ($page > 2) {
-                $this->generateLink($linkHeader, $router, $routeName, 1, 'first');
-            }
-            if ($page > 1) {
-                $this->generateLink($linkHeader, $router, $routeName, $page - 1, 'prev');
-            }
-            if ($page < $numPages) {
-                $this->generateLink($linkHeader, $router, $routeName, $page + 1, 'next');
-            }
-            if ($page != $numPages) {
-                $this->generateLink($linkHeader, $router, $routeName, $numPages, 'last');
-            }
-
-            // overwrite link headers with new headers
-            $response->headers->set('Link', (string) $linkHeader);
+            $this->generateLinks(
+                $routeName,
+                $request->get('page', 1),
+                $request->attributes->get('numPages')
+            );
+            $response->headers->set(
+                'Link',
+                (string) $this->linkHeader
+            );
         }
 
         $event->setResponse($response);
     }
 
     /**
+     * generate headers for all paging links
+     *
+     * @param string  $route    name of route
+     * @param integer $page     current page
+     * @param integer $numPages number of all pages
+     *
+     * @return void
+     */
+    private function generateLinks($route, $page, $numPages)
+    {
+        if ($page > 2) {
+            $this->generateLink($route, 1, 'first');
+        }
+        if ($page > 1) {
+            $this->generateLink($route, $page - 1, 'prev');
+        }
+        if ($page < $numPages) {
+            $this->generateLink($route, $page + 1, 'next');
+        }
+        if ($page != $numPages) {
+            $this->generateLink($route, $numPages, 'last');
+        }
+    }
+
+    /**
      * generate link header pased on params and type
      *
-     * @param LinkHeader &$linkHeader link header api
-     * @param Router     $router      router used to generate urls
-     * @param string     $routeName   use with router to generate urls
-     * @param integer    $page        page to link to
-     * @param string     $type        rel type of link to generate
+     * @param string  $routeName use with router to generate urls
+     * @param integer $page      page to link to
+     * @param string  $type      rel type of link to generate
      *
      * @return string
      */
-    private function generateLink(&$linkHeader, $router, $routeName, $page, $type)
+    private function generateLink($routeName, $page, $type)
     {
+        $router = $this->container->get('router');
         $url = $router->generate($routeName, array('page' => $page), true);
-        $linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
+        $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }
 }

@@ -4,11 +4,10 @@ app/bootstrap.php.cache
 app/check.php
 app/SymfonyRequirements.php
 web/bundles
-app/config-imports.xml
-app/routing-imports.xml
 vendor/
-composer.phar
+*.phar
 *.swp
 *.swo
 .*~
 web/.htaccess
+mongodata/
