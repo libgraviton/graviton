@@ -239,27 +239,62 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType('application/schema+json', $response);
-
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('App', $results->title);
-        $this->assertEquals('A graviton based app.', $results->description);
-        $this->assertEquals('object', $results->type);
+        $this->assertIsAppSchema($results);
 
-        $this->assertEquals('string', $results->properties->id->type);
-        $this->assertEquals('Unique identifier for an app.', $results->properties->id->description);
-        $this->assertContains('id', $results->required);
-
-        $this->assertEquals('string', $results->properties->title->type);
-        $this->assertEquals('Display name for an app.', $results->properties->title->description);
-        $this->assertContains('title', $results->required);
-
-        $this->assertEquals('boolean', $results->properties->showInMenu->type);
-        $this->assertEquals(
-            'Define if an app should be exposed on the top level menu.',
-            $results->properties->showInMenu->description
-        );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+    }
+
+    /**
+     * test getting collection schema
+     *
+     * @return void
+     */
+    public function testGetAppCollectionSchemaInformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('OPTIONS', '/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType('application/schema+json', $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals('Array of app objects', $results->title);
+        $this->assertEquals('array', $results->type);
+        $this->assertIsAppSchema($results->items);
+
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+    }
+
+    /**
+     * check if a schema is of the app type
+     *
+     * @return void
+     */
+    private function assertIsAppSchema(\stdClass $schema)
+    {
+        $this->assertEquals('App', $schema->title);
+        $this->assertEquals('A graviton based app.', $schema->description);
+        $this->assertEquals('object', $schema->type);
+
+        $this->assertEquals('string', $schema->properties->id->type);
+        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
+        $this->assertContains('id', $schema->required);
+
+        $this->assertEquals('string', $schema->properties->title->type);
+        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
+        $this->assertContains('title', $schema->required);
+
+        $this->assertEquals('boolean', $schema->properties->showInMenu->type);
+        $this->assertEquals(
+            'Define if an app should be exposed on the top level menu.',
+            $schema->properties->showInMenu->description
+        );
     }
 }
