@@ -62,9 +62,8 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
 
-            $this->linkHeader = $this->createLinkHeader(
-                $response->headers->get('Link')
-            );
+            $this->linkHeader = LinkHeader::fromResponse($response);
+
             $this->generateLinks(
                 $routeName,
                 $request->get('page', 1),
@@ -77,22 +76,6 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         }
 
         $event->setResponse($response);
-    }
-
-    /**
-     * load link header
-     *
-     * @param string[]|string $header headers from response
-     *
-     * @return Graviton\RestBundle\HttpFoundation\LinkHeader
-     */
-    private function createLinkHeader($header)
-    {
-        if (is_array($header)) {
-            implode(',', $header);
-        }
-
-        return LinkHeader::fromString($header);
     }
 
     /**

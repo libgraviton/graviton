@@ -55,7 +55,7 @@ class SchemaUtils
     public static function getCollectionSchema($modelName, $model)
     {
         $collectionSchema = new \stdClass;
-        $collectionSchema->title = sprintf('Array of %s objects.', $modelName);
+        $collectionSchema->title = sprintf('Array of %s objects', $modelName);
         $collectionSchema->type = 'array';
         $collectionSchema->items = self::getModelSchema($modelName, $model);
 
