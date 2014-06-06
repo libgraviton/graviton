@@ -247,8 +247,8 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
 
         $this->assertContains(
-                '<http://localhost/schema/core/app/item>; rel="canonical"',
-                explode(',', $response->headers->get('Link'))
+            '<http://localhost/schema/core/app/item>; rel="canonical"',
+            explode(',', $response->headers->get('Link'))
         );
     }
 
@@ -284,6 +284,8 @@ class AppControllerTest extends RestTestCase
 
     /**
      * check if a schema is of the app type
+     *
+     * @param \stdClass $schema schema from service to validate
      *
      * @return void
      */
