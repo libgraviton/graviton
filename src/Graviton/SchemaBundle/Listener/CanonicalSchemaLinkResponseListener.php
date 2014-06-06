@@ -50,11 +50,7 @@ class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
 
             $response = $event->getResponse();
             $router = $this->container->get('router');
-            $header = $response->headers->get('Link');
-            if (is_array($header)) {
-                implode(',', $header);
-            }
-            $linkHeader = LinkHeader::fromString($header);
+            $linkHeader = LinkHeader::fromResponse($response);
     
             // extract various info from route
             $routeName = $request->get('_route');
