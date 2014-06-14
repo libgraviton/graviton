@@ -17,5 +17,6 @@
     <parameter key="locale">en</parameter>
     <parameter key="secret">ThisTokenIsNotSoSecretChangeIt</parameter>
     <parameter key="jms_serializer.cache_naming_strategy.class">JMS\Serializer\Naming\IdenticalPropertyNamingStrategy</parameter>
+    <parameter key="vcap.services"></parameter>
   </parameters>
 </container>

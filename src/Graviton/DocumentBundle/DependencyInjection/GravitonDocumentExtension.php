@@ -45,7 +45,7 @@ class GravitonDocumentExtension extends GravitonBundleExtension
         parent::prepend($container);
 
         // populated from cf's VCAP_SERVICES variable
-        $services = $container->getParameter('vcap.services', array());
+        $services = $container->getParameter('vcap.services');
         if (!empty($services)) {
             $services = json_decode($services, true);
             $mongo = $services['mongodb-2.2'][0]['credentials'];
