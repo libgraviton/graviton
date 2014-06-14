@@ -1,9 +1,13 @@
-buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
-services:
+---
+applications:
+- name: graviton
+  buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
+  services:
   - graviton-dev-mongo
-path:
+  paths:
   - composer.json
   - composer.lock
   - app/
   - src/
   - web/
+  memory: 256M
