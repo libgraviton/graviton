@@ -16,13 +16,14 @@ use Graviton\TestBundle\Test\RestTestCase;
 class CountryControllerTest extends RestTestCase
 {
     /**
-     * @const vendorized country mime type for countries
+     * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/vnd.graviton.taxonomy.country+json; charset=UTF-8';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/item';
+
     /**
      * @const corresponding vendorized collection schema mime type
      */
-    const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
+    const COL_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/collection';
 
     /**
      * setup client and load fixtures
@@ -52,7 +53,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=1>; rel="self"',
@@ -71,7 +72,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=2>; rel="self"',
@@ -90,7 +91,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=26>; rel="self"',

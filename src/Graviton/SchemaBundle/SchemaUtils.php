@@ -62,4 +62,25 @@ class SchemaUtils
 
         return $collectionSchema;
     }
+
+    /**
+     * get canonical route to a schema based on a route
+     *
+     * @param string $routeName route name
+     *
+     * @return string schema route name
+     */
+    public static function getSchemaRouteName($routeName)
+    {
+        $routeParts = explode('.', $routeName);
+
+        $routeType = array_pop($routeParts);
+        // check if we need to create an item or collection schema
+        $realRouteType = 'canonicalSchema';
+        if ($routeType != 'options' && $routeType != 'all') {
+            $realRouteType = 'canonicalIdSchema';
+        }
+
+        return implode('.', array_merge($routeParts, array($realRouteType)));
+    }
 }

@@ -5,6 +5,7 @@ namespace Graviton\SchemaBundle\Listener;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Graviton\SchemaBundle\SchemaUtils;
 
 /**
  * Add a Link header to a schema endpoint to a response
@@ -48,23 +49,17 @@ class SchemaContentTypeResponseListener implements ContainerAwareInterface
     {
         $request = $event->getRequest();
         $response = $event->getResponse();
-
-        // extract info from route
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-
-        list($app, $module, $method) = $routeParts;
-        $model = 'stdClass';
-        if ($routeName !== 'graviton.schema.get') {
-            list($app, $module, , $model, $method) = $routeParts;
-        }
+        $router = $this->container->get('router');
 
         // build content-type string
-        $contentType = sprintf('application/vnd.%s.%s.%s+json', $app, $module, $model);
-        if ($method == 'all') {
-            $contentType = 'application/vnd.graviton.schema.collection+json';
+        $contentType = 'application/json; charset=UTF-8';
+        if ($request->get('_route') != 'graviton.core.static.main.all') {
+
+            $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
+            $contentType .= sprintf('; profile=%s', $router->generate($schemaRoute, array(), true));
         }
-        $contentType .= '; charset=UTF-8';
+
+        // replace content-type if a schema was requested
         if ($request->attributes->get('schemaRequest')) {
             $contentType = 'application/schema+json';
         }

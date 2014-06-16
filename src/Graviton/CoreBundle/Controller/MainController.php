@@ -57,7 +57,7 @@ class MainController
                 $router->generate('graviton.core.rest.app.all', array(), true),
                 array(
                     'rel' => 'apps',
-                    'type' => 'application/vnd.graviton.schema.collection.app+json'
+                    'type' => 'application/json'
                 )
             )
         );

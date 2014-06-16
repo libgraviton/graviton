@@ -19,13 +19,14 @@ use Graviton\TestBundle\Test\RestTestCase;
 class AppControllerTest extends RestTestCase
 {
     /**
-     * @const vendorized app mime type for app data
+     * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/vnd.graviton.core.app+json; charset=UTF-8';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/item';
+
     /**
      * @const corresponding vendorized schema mime type
      */
-    const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
+    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/collection';
 
     /**
      * setup client and load fixtures
@@ -56,7 +57,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
         $this->assertEquals(2, count($results));
 
