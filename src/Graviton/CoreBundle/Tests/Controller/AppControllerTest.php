@@ -276,6 +276,10 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertContains(
+            'Link',
+            explode(',', $response->headers->get('Access-Control-Allow-Headers'))
+        );
 
         $this->assertContains(
             '<http://localhost/schema/core/app/collection>; rel="canonical"',
