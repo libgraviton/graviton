@@ -49,6 +49,7 @@ class App extends DocumentModel
                 $title = 'Show in Menu';
                 break;
         }
+
         return $title;
     }
 

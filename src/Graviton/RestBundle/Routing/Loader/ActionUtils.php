@@ -115,7 +115,6 @@ class ActionUtils
         return $route;
     }
 
-
     /**
      * Get entity name from service strings.
      *

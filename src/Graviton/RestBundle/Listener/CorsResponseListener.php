@@ -32,8 +32,8 @@ class CorsResponseListener
         $corsMethods = $request->attributes->get('corsMethods', '');
         if (!empty($corsMethods)) {
             $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
-	}
-	$response->headers->set('Access-Control-Allow-Headers', 'Link');
+        }
+        $response->headers->set('Access-Control-Allow-Headers', 'Link');
 
         $event->setResponse($response);
     }

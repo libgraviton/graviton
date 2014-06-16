@@ -58,6 +58,7 @@ class Country extends DocumentModel
                 $title = 'Latitude';
                 break;
         }
+
         return $title;
     }
 

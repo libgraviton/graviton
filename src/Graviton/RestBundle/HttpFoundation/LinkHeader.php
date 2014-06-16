@@ -66,6 +66,7 @@ class LinkHeader
         if (is_array($header)) {
             implode(',', $header);
         }
+
         return self::fromString($header);
     }
 

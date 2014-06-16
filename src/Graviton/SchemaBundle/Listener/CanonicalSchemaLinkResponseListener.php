@@ -52,16 +52,16 @@ class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
             $response = $event->getResponse();
             $router = $this->container->get('router');
             $linkHeader = LinkHeader::fromResponse($response);
-    
+
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
             $url = $router->generate($routeName, array(), true);
-   
+
             // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));
-    
+
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
-    
+
             $event->setResponse($response);
         }
     }
