@@ -37,6 +37,7 @@ class SchemaUtils
         foreach ($meta->getFieldNames() as $field) {
             $schema->properties->$field = new \stdClass;
             $schema->properties->$field->type = $meta->getTypeOfField($field);
+            $schema->properties->$field->title = $model->getTitleOfField($field);
             $schema->properties->$field->description = $model->getDescriptionOfField($field);
         }
         $schema->required = $model->getRequiredFields();

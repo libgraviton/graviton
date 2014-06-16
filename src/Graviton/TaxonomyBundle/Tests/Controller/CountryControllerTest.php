@@ -210,16 +210,35 @@ class CountryControllerTest extends RestTestCase
         $this->assertEquals('object', $results->type);
 
         $fieldAssertions = array(
-            'id' => array('description' => 'ISO 3166-1 alpha-3 code.'),
-            'name' => array('description' => 'Country name.'),
-            'isoCode' => array('description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'),
-            'capitalCity' => array('description' => 'Capital city.'),
-            'longitude' => array('description' => 'W/O geographic coordinate.'),
-            'latitude' => array('description' => 'N/S geographic coordinate.')
+            'id' => array(
+                'title' => 'ID',
+                'description' => 'ISO 3166-1 alpha-3 code.'
+            ),
+            'name' => array(
+                'title' => 'Name',
+                'description' => 'Country name.'
+            ),
+            'isoCode' => array(
+                'title' => 'ISO Code',
+                'description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'
+            ),
+            'capitalCity' => array(
+                'title' => 'Capital',
+                'description' => 'Capital city.'
+            ),
+            'longitude' => array(
+                'title' => 'Longitude',
+                'description' => 'W/O geographic coordinate.'
+            ),
+            'latitude' => array(
+                'title' => 'Latitude',
+                'description' => 'N/S geographic coordinate.'
+            )
         );
         foreach ($fieldAssertions as $field => $values) {
             $this->assertEquals('string', $results->properties->$field->type);
             $this->assertEquals($values['description'], $results->properties->$field->description);
+            $this->assertEquals($values['title'], $results->properties->$field->title);
         }
 
         $this->assertContains('id', $results->required);

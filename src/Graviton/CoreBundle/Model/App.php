@@ -29,6 +29,30 @@ class App extends DocumentModel
     }
 
     /**
+     * get the title of a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getTitleOfField($field)
+    {
+        $title = '';
+        switch ($field) {
+            case 'id':
+                $title = 'ID';
+                break;
+            case 'title':
+                $title = 'Title';
+                break;
+            case 'showInMenu':
+                $title = 'Show in Menu';
+                break;
+        }
+        return $title;
+    }
+
+    /**
      * get description of a given field
      *
      * @param string $field field name

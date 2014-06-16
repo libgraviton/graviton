@@ -28,6 +28,38 @@ class Country extends DocumentModel
     {
         return 'A country record.';
     }
+    /**
+     * get the title of a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getTitleOfField($field)
+    {
+        $title = '';
+        switch ($field) {
+            case 'id':
+                $title = 'ID';
+                break;
+            case 'name':
+                $title = 'Name';
+                break;
+            case 'isoCode':
+                $title = 'ISO Code';
+                break;
+            case 'capitalCity':
+                $title = 'Capital';
+                break;
+            case 'longitude':
+                $title = 'Longitude';
+                break;
+            case 'latitude':
+                $title = 'Latitude';
+                break;
+        }
+        return $title;
+    }
 
     /**
      * get description of a given field
