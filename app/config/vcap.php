@@ -1,5 +1,2 @@
 <?php
-$services = getenv('SYMFONY__VCAP__SERVICES');
-if ($services) {
-    $container->setParameter('vcap.services', $services);
-}
+$container->setParameter('vcap.services', getenv('SYMFONY__VCAP__SERVICES'));
