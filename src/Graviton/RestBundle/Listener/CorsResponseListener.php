@@ -50,7 +50,7 @@ class CorsResponseListener
         if (!empty($corsMethods)) {
             $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
         }
-        $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->headers));
+        $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
 
         $event->setResponse($response);
     }

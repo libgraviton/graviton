@@ -278,7 +278,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
         $this->assertContains(
             'Link',
-            explode(',', $response->headers->get('Access-Control-Allow-Headers'))
+            explode(',', $response->headers->get('Access-Control-Headers-Headers'))
         );
 
         $this->assertContains(
