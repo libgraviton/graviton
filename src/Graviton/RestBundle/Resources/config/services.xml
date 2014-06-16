@@ -60,6 +60,30 @@
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.listener.corsresponselistener" class="%graviton.rest.listener.corsresponselistener.class%">
+      <call method="addHeader">
+        <argument>Link</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Accept</argument>
+      </call>
+      <call method="addHeader">
+        <argument>X-Requested-With</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Content-Type</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Origin</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Cache-Control</argument>
+      </call>
+      <call method="addHeader">
+        <argument>ETag</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Date</argument>
+      </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.model" abstract="true">
