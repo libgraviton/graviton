@@ -2,7 +2,6 @@
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jms_serializer="jms_serializer"
-    xmlns:fos_rest="fos_rest"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <jms_serializer:config>
     <tag name="jms_serializer.handler"
@@ -11,7 +10,4 @@
          format="json"
          method="serializeDateTimeToJson"/>
   </jms_serializer:config>
-  <fos_rest:config>
-    <fos_rest:view view_response_listener="force" />
-  </fos_rest:config>
 </container>
