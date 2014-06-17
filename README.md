@@ -37,7 +37,7 @@ Please run ``./vendor/bin/phpunit -c app/`` and ``./vendor/bin/php-cs-fixer fix 
 
 ## Quality Control
 
-Graviton uses [travis-ci](http;//travis-ci.org) and [scrutinizer-ci](http://scrutinizer-ci.com).
+Graviton uses [travis-ci](http://travis-ci.org) and [scrutinizer-ci](http://scrutinizer-ci.com).
 
 You will need to log in to scrutinizer once using you github account so you may be added to the project as admin or moderator as needed.
 
