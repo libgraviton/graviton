@@ -239,9 +239,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType('application/schema+json', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-
+        $this->assertIsSchemaResponse($response);
         $this->assertIsAppSchema($results);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -251,6 +249,21 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/item>; rel="canonical"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * test getting schema information from canonical url
+     *
+     * @return void
+     */
+    public function testGetAppSchemaInformationCanonical()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/schema/core/app/item');
+
+        $this->assertIsSchemaResponse($client->getResponse());
+        $this->assertIsAppSchema($client->getResults());
     }
 
     /**
@@ -285,6 +298,19 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/collection>; rel="canonical"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * check if response looks like schema
+     *
+     * @param object $response response
+     *
+     * @return void
+     */
+    private function assertIsSchemaResponse($response)
+    {
+        $this->assertResponseContentType('application/schema+json', $response);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**

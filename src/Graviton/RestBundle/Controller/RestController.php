@@ -162,12 +162,12 @@ class RestController implements ContainerAwareInterface
         $request = $this->getRequest();
         $request->attributes->set('schemaRequest', true);
 
-        list($app, $module, , $modelName,) = explode('.', $request->attributes->get('_route'));
+        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
 
         $response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';
-        if (!$id) {
+        if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod =  'getCollectionSchema';
         }
         $response->setContent(
