@@ -307,7 +307,7 @@ class RestController implements ContainerAwareInterface
     private function getResponse($result)
     {
         $response = $this->container->get('graviton.rest.response.404');
-        if ($result) {
+        if (!is_null($result)) {
             $response = $this->container->get('graviton.rest.response.200');
             $response = $this->setContent($response, $result);
         }

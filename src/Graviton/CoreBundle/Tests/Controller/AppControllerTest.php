@@ -77,6 +77,26 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * check for empty collections when no fixtures are loaded
+     *
+     * @return void
+     */
+    public function testFindAllEmptyCollection()
+    {
+        // reset fixtures since we already have some from setUp
+        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
+
+        $this->assertEquals(array(), $results);
+    }
+
+    /**
      * test if we can get an app by id
      *
      * @return void
