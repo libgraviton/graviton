@@ -4,5 +4,6 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
   <document name="Graviton\I18nBundle\Document\Language" repository-class="Graviton\I18nBundle\Repository\LanguageRepository">
     <field fieldName="id" type="string" id="true"/>
+    <field fieldName="name" type="string"/>
   </document>
 </doctrine-mongo-mapping>

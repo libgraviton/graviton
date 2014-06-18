@@ -19,6 +19,11 @@ class Language
     protected $id;
 
     /**
+     * @var string $name
+     */
+    protected $name;
+
+    /**
      * Get id
      *
      * @return string $id
@@ -38,5 +43,27 @@ class Language
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * Get Name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set Name
+     *
+     * @param string $name name
+     *
+     * @return void
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 }

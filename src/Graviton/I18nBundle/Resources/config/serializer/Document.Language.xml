@@ -2,5 +2,6 @@
 <serializer>
   <class name="Graviton\I18nBundle\Document\Language">
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId"/>
+    <property name="name" type="string" accessor-getter="getName" accessor-setter="setName"/>
   </class>
 </serializer>

@@ -4,7 +4,6 @@ namespace Graviton\I18nBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\AcceptHeader;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 
 /**
  * GetResponseListener for parsing Accept-Language headers

@@ -31,6 +31,7 @@ class LoadLanguageData implements FixtureInterface
     {
         $enTag = new Language;
         $enTag->setId('en');
+        $enTag->setName('English');
 
         $manager->persist($enTag);
         $manager->flush();

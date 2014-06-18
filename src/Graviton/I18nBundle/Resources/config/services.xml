@@ -8,6 +8,7 @@
     <parameter key="graviton.i18n.repository.language.class">Graviton\I18nBundle\Repository\LanguageRepository</parameter>
     <parameter key="graviton.i18n.listener.contentlanguageresponse.class">Graviton\I18nBundle\Listener\ContentLanguageResponseListener</parameter>
     <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
+    <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
   </parameters>
   <services>
     <service id="graviton.i18n.repository.language"
@@ -39,6 +40,10 @@
     </service>
     <service id="graviton.i18n.listener.acceptlanguagerequest" class="%graviton.i18n.listener.acceptlanguagerequest.class%">
       <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
+    </service>
+    <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%">
+      <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onpreserialize" direction="serialization"/>
+      <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
     </service>
   </services>
 </container>

@@ -42,6 +42,8 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 
+        $this->assertEquals('English', $results[0]->name->en);
+
         $this->markTestIncomplete();
     }
 
