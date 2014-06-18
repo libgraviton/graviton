@@ -18,7 +18,6 @@ class Language
      */
     protected $id;
 
-
     /**
      * Get id
      *

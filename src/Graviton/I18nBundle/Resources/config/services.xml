@@ -7,6 +7,7 @@
     <parameter key="graviton.i18n.model.language.class">Graviton\I18nBundle\Model\Language</parameter>
     <parameter key="graviton.i18n.repository.language.class">Graviton\I18nBundle\Repository\LanguageRepository</parameter>
     <parameter key="graviton.i18n.listener.contentlanguageresponse.class">Graviton\I18nBundle\Listener\ContentLanguageResponseListener</parameter>
+    <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
   </parameters>
   <services>
     <service id="graviton.i18n.repository.language"
@@ -31,7 +32,13 @@
       <tag name="graviton.rest"/>
     </service>
     <service id="graviton.i18n.listener.contentlanguageresponse" class="%graviton.i18n.listener.contentlanguageresponse.class%">
-      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
+      <call method="setrepository">
+        <argument type="service" id="graviton.i18n.repository.language"/>
+      </call>
+      <tag name="kernel.event_listener" event="kernel.response" method="onkernelresponse"/>
+    </service>
+    <service id="graviton.i18n.listener.acceptlanguagerequest" class="%graviton.i18n.listener.acceptlanguagerequest.class%">
+      <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
     </service>
   </services>
 </container>

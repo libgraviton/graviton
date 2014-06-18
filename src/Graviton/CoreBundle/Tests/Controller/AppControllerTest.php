@@ -37,7 +37,8 @@ class AppControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData'
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'

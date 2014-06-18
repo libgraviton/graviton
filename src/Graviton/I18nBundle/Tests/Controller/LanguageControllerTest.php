@@ -21,22 +21,6 @@ class LanguageControllerTest extends RestTestCase
     const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/language/';
 
     /**
-     * load fixtures
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $this->loadFixtures(
-            array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
-            ),
-            null,
-            'doctrine_mongodb'
-        );
-    }
-
-    /**
      * check if a list of all languages can be optained
      *
      * @return void
@@ -62,7 +46,7 @@ class LanguageControllerTest extends RestTestCase
     }
 
     /**
-     * test add language and request  both languages
+     * test add language and request both languages
      *
      * @return void
      */
@@ -80,6 +64,31 @@ class LanguageControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE.'item', $response);
 
         $this->assertEquals('de', $results->id);
+
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+
+        $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals('en, de', $response->headers->get('Content-Language'));
+
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * check that we do not return unknown languages
+     *
+     * @return void
+     */
+    public function testDontReturnUnknownLanguage()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+
+        $response = $client->getResponse();
 
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 

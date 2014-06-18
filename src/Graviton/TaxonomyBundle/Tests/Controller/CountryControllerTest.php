@@ -34,7 +34,8 @@ class CountryControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData'
+                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'
