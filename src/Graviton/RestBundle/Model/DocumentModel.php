@@ -164,7 +164,8 @@ class DocumentModel implements ModelInterface
      * {@inheritDoc}
      *
      * Currently this is being used to build the route id used for redirecting
-     * to newly made documents.
+     * to newly made documents. It might benefit from having a different name
+     * for those purposes.
      *
      * We might use a convention based mapping here:
      * Graviton\CoreBundle\Document\App -> mongodb://graviton_core
@@ -176,6 +177,7 @@ class DocumentModel implements ModelInterface
      */
     public function getConnectionName()
     {
-        return 'graviton.core';
+        $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
+        return 'graviton.'.$bundle;
     }
 }

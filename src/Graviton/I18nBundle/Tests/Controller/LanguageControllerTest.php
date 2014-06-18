@@ -54,7 +54,34 @@ class LanguageControllerTest extends RestTestCase
         // we assume that initially all systems will only know of the english lang
         $this->assertcount(1, $results);
 
-        $this->assertEquals('en', $results[0]->tag);
+        $this->assertEquals('en', $results[0]->id);
+
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * test add language and request  both languages
+     *
+     * @return void
+     */
+    public function testAddAndUseNewLanguage()
+    {
+        $newLang = new \stdClass;
+        $newLang->id = 'de';
+
+        $client = static::createRestClient();
+        $client->post('/i18n/language', $newLang);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE.'item', $response);
+
+        $this->assertEquals('de', $results->id);
+
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
 
         $this->markTestIncomplete();
     }

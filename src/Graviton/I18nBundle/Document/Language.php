@@ -2,8 +2,6 @@
 
 namespace Graviton\I18nBundle\Document;
 
-
-
 /**
  * Graviton\I18nBundle\Document\Language
  *
@@ -16,30 +14,30 @@ namespace Graviton\I18nBundle\Document;
 class Language
 {
     /**
-     * @var MongoId $tag
+     * @var MongoId $id
      */
-    protected $tag;
+    protected $id;
 
 
     /**
-     * Get tag
+     * Get id
      *
-     * @return string $tag
+     * @return string $id
      */
-    public function getTag()
+    public function getId()
     {
-        return $this->tag;
+        return $this->id;
     }
 
     /**
-     * Set tag
+     * Set id
      *
-     * @param string $tag language tag value
+     * @param string $id language tag value
      *
      * @return void
      */
-    public function setTag($tag)
+    public function setId($id)
     {
-        $this->tag = $tag;
+        $this->id = $id;
     }
 }
