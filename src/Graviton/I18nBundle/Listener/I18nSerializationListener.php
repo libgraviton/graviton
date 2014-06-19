@@ -95,7 +95,7 @@ class I18nSerializationListener
     {
         return array_map(
             function ($language) use ($value) {
-                return $this->translator->trans($value);
+                return $this->translator->trans($value, array(), 'messages', $language);
             },
             $this->request->attributes->get('languages')
         );
