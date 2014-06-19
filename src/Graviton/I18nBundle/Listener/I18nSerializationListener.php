@@ -7,12 +7,21 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * translate fields during serialization
+ *
+ * @category I18nBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class I18nSerializationListener
 {
     /**
      * @var mixed[]
      */
-    protected $i18nFields = array();
+    protected $localizedFieldss = array();
 
     /**
      * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
@@ -59,7 +68,7 @@ class I18nSerializationListener
     {
         $object = $event->getObject();
         if (method_exists($object, 'setName')) {
-            $this->i18nFields['name'] = $object->getName();
+            $this->localizedFieldss['name'] = $object->getName();
             $object->setName(null);
         }
     }
@@ -75,7 +84,7 @@ class I18nSerializationListener
     {
         $object = $event->getObject();
         if (method_exists($object, 'setName')) {
-            foreach ($this->i18nFields AS $field => $value) {
+            foreach ($this->localizedFieldss as $field => $value) {
                 $event->getVisitor()->addData(
                     $field,
                     $this->getTranslatedField($value)
