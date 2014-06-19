@@ -70,7 +70,7 @@ class ActionUtils
      */
     public static function getRoutePatch($service)
     {
-    	return self::getRoute($service, 'PATCH', 'patchAction', array('id' => '\w+'));
+        return self::getRoute($service, 'PATCH', 'patchAction', array('id' => '\w+'));
     }
 
     /**
