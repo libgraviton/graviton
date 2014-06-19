@@ -194,7 +194,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
 
         $actionPatch = ActionUtils::getRoutePatch($service);
         $this->routes->add($resource.'.patch', $actionPatch);
-        
+
         $actionDelete = ActionUtils::getRouteDelete($service);
         $this->routes->add($resource.'.delete', $actionDelete);
     }

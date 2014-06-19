@@ -62,10 +62,10 @@ class ActionUtils
     {
         return self::getRoute($service, 'PUT', 'putAction', array('id' => '\w+'));
     }
-    
+
     /**
      * Get route for PATCH request
-     * 
+     *
      * @param string $service service id
      */
     public static function getRoutePatch($service)
