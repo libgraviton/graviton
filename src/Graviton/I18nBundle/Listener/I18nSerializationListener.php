@@ -5,6 +5,7 @@ namespace Graviton\I18nBundle\Listener;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Graviton\I18nBundle\Repository\LanguageRepository;
 
 class I18nSerializationListener
 {
@@ -14,9 +15,26 @@ class I18nSerializationListener
     protected $i18nFields = array();
 
     /**
+     * @var Graviton\I18nBundle\Repository\LanguageRepository;
+     */
+    private $repository;
+
+    /**
      * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
      */
     protected $translator;
+
+    /**
+     * set language repository used for getting available languages
+     *
+     * @param Graviton\I18nBundle\Repository\LanguageRepository $repository repo
+     *
+     * @return void
+     */
+    public function setRepository(LanguageRepository $repository)
+    {
+        $this->repository = $repository;
+    }
 
     /**
      * set translator
