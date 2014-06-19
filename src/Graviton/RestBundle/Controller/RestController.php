@@ -85,7 +85,7 @@ class RestController implements ContainerAwareInterface
         // store id of new record so we dont need to reparse body later when needed
         $this->container->get('request')->attributes->set('id', $record->getId());
 
-        $response = $this->validateRecord($record);
+        $response = $this->validateRecord($record, $this->getRequest()->getContent());
 
         if (!$response) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
@@ -117,7 +117,7 @@ class RestController implements ContainerAwareInterface
             'json'
         );
 
-        $response = $this->validateRecord($record);
+        $response = $this->validateRecord($record, $this->getRequest()->getContent());
 
         if (!$response) {
             $existingRecord = $this->getModel()->find($id);
@@ -155,7 +155,7 @@ class RestController implements ContainerAwareInterface
      * Patch a record (partial update)
      *
      * @param Number $id ID of record
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
     public function patchAction($id)
@@ -190,7 +190,7 @@ class RestController implements ContainerAwareInterface
             );
 
             // Validate the new object
-            $response = $this->validateRecord($record);
+            $response = $this->validateRecord($record, $patch->apply());
 
             // If everything is ok, update record and return 204 No Content
             if (!$response) {
@@ -326,9 +326,8 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
-    private function validateRecord($record)
+    private function validateRecord($record, $content)
     {
-        $content = $this->getRequest()->getContent();
         if (is_resource($content)) {
             throw new \LogicException('unexpected resource in validation');
         }
