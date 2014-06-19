@@ -69,7 +69,7 @@ class Client extends FrameworkClient
     }
 
     /**
-     * PUTs to an URI.
+     * PATCH to an URI.
      *
      * @param string $uri        The URI to fetch
      * @param string $content    The raw body data
