@@ -2,6 +2,8 @@
 
 namespace Graviton\I18nBundle\Document;
 
+use Graviton\I18nBundle\Document\TranslatableDocument;
+
 /**
  * Graviton\I18nBundle\Document\Language
  *
@@ -11,8 +13,18 @@ namespace Graviton\I18nBundle\Document;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Language
+class Language extends TranslatableDocument
 {
+    /**
+     * construct language document
+     *
+     * @return Language
+     */
+    public function returnTranslatableFields()
+    {
+	    return array('name');
+    }
+
     /**
      * @var MongoId $id
      */

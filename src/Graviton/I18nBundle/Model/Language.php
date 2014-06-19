@@ -36,8 +36,11 @@ class Language extends DocumentModel
     {
         $title = '';
         switch ($field) {
-            case 'tag':
-                $title = 'Language tag';
+            case 'id':
+                $title = 'Language Tag';
+                break;
+            case 'name':
+                $title = 'Language';
                 break;
         }
 
@@ -55,8 +58,11 @@ class Language extends DocumentModel
     {
         $description = '';
         switch ($field) {
-            case 'tag':
-                $description = 'An rfc2616 language tag.';
+            case 'id':
+                $description = 'A RFC2616 language tag.';
+                break;
+            case 'name':
+                $description = 'Common name of a language.';
                 break;
         }
 
@@ -70,6 +76,6 @@ class Language extends DocumentModel
      */
     public function getRequiredFields()
     {
-        return array('tag');
+        return array('id', 'name');
     }
 }

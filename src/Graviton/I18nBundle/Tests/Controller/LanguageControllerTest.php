@@ -91,12 +91,41 @@ class LanguageControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
         $response = $client->getResponse();
+        $results = $client->getResults();
 
         $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('English', $results->name->en);
+        $this->assertFalse(isset($results->name->de));
+    }
+
+    /**
+     * check for language schema
+     *
+     * @return void
+     */
+    public function testSchema()
+    {
+        $client = static::createRestClient();
+
+        $client->request('OPTIONS', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+
+        $results = $client->getResults();
 
         $this->markTestIncomplete();
+        $this->assertEquals('A Language available for i18n purposes.', $results->items->description->en);
+        $this->assertEquals(array('id', 'name'), $results->items->required);
+
+        $properties = $results->items->properties;
+        $this->assertEquals('string', $properties->id->type);
+        $this->assertEquals('Language Tag', $properties->id->title->en);
+        $this->assertEquals('A RFC2616 language tag.', $properties->id->description->en);
+
+        $this->assertEquals('string', $properties->name->type);
+        $this->assertEquals('Language', $properties->name->title->en);
+        $this->assertEquals('Common name of a language.', $properties->name->description->en);
+
     }
 }

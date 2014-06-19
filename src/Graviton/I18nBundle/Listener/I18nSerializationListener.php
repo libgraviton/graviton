@@ -6,6 +6,7 @@ use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
+use Graviton\I18nBundle\Document\TranslatableDocument;
 
 /**
  * translate fields during serialization
@@ -21,7 +22,7 @@ class I18nSerializationListener
     /**
      * @var mixed[]
      */
-    protected $localizedFieldss = array();
+    protected $localizedFields = array();
 
     /**
      * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
@@ -67,9 +68,16 @@ class I18nSerializationListener
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-        if (method_exists($object, 'setName')) {
-            $this->localizedFieldss['name'] = $object->getName();
-            $object->setName(null);
+        if ($object instanceof TranslatableDocument) {
+            foreach ($object->returnTranslatableFields() as $field) {
+                $setter = 'set'.ucfirst($field);
+                $getter = 'get'.ucfirst($field);
+
+                if (method_exists($object, $setter)) {
+                    $this->localizedFields[$field] = $object->$getter();
+                    $object->setName(null);
+                }
+            }
         }
     }
 
@@ -83,13 +91,11 @@ class I18nSerializationListener
     public function onPostSerialize(ObjectEvent $event)
     {
         $object = $event->getObject();
-        if (method_exists($object, 'setName')) {
-            foreach ($this->localizedFieldss as $field => $value) {
-                $event->getVisitor()->addData(
-                    $field,
-                    $this->getTranslatedField($value)
-                );
-            }
+        foreach ($this->localizedFields as $field => $value) {
+            $event->getVisitor()->addData(
+                $field,
+                $this->getTranslatedField($value)
+            );
         }
     }
 
