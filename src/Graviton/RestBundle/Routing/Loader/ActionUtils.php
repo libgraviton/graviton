@@ -67,6 +67,8 @@ class ActionUtils
      * Get route for PATCH request
      *
      * @param string $service service id
+     * 
+     * @return Route
      */
     public static function getRoutePatch($service)
     {

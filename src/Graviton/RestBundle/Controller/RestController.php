@@ -155,6 +155,8 @@ class RestController implements ContainerAwareInterface
      * Patch a record (partial update)
      *
      * @param Number $id ID of record
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
     public function patchAction($id)
     {
@@ -172,9 +174,9 @@ class RestController implements ContainerAwareInterface
         if (!is_null($record) && !empty($requestContent)) {
             // get the record as json to handle json-patch
             $jsonString = $this->getSerializer()->serialize(
-                    $record,
-                    'json',
-                    $this->getSerializerContext()
+                $record,
+                'json',
+                $this->getSerializerContext()
             );
 
             // Now replace existing values with the new ones
