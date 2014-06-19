@@ -4,6 +4,7 @@ namespace Graviton\I18nBundle\Listener;
 
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 
 class I18nSerializationListener
 {
@@ -11,6 +12,23 @@ class I18nSerializationListener
      * @var mixed[]
      */
     protected $i18nFields = array();
+
+    /**
+     * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
+     */
+    protected $translator;
+
+    /**
+     * set translator
+     *
+     * @param Symfony\Bundle\FrameworkBundle\Translation\Translator $translator translator
+     *
+     * @return void
+     */
+    public function setTranslator(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * remove translateable strings from object
