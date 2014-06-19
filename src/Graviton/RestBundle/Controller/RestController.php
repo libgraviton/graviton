@@ -322,7 +322,8 @@ class RestController implements ContainerAwareInterface
     /**
      * validate a record and return an approriate reponse
      *
-     * @param Object $record record to validate
+     * @param Object $record  record to validate
+     * @patam String $content request content 
      *
      * @return \Symfony\Component\HttpFoundation\Response|null
      */

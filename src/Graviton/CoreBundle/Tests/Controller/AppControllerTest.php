@@ -347,8 +347,8 @@ class AppControllerTest extends RestTestCase
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
-                '<http://localhost/core/app/hello>; rel="self"',
-                explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app/hello>; rel="self"',
+            explode(',', $response->headers->get('Link'))
         );
     }
 
@@ -379,8 +379,8 @@ class AppControllerTest extends RestTestCase
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
-                '<http://localhost/core/app/hello>; rel="self"',
-                explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app/hello>; rel="self"',
+            explode(',', $response->headers->get('Link'))
         );
     }
 
