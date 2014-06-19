@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
+use Rs\Json\Patch;
+use Rs\Json\Patch\InvalidJsonException;
+use Rs\Json\Patch\InvalidOperationException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -148,6 +151,55 @@ class RestController implements ContainerAwareInterface
         }
 
         return $response;
+    }
+    
+    /**
+     * Patch a record (partial update)
+     * 
+     * @param Number $id ID of record
+     */
+    public function patchAction($id)
+    {
+    	// ToDo: Find out which status code to return.
+    	// 400 for malformed patch documents
+    	// 415 for unsupported patch document
+    	// and 422 if everything is ok but the resulting document is invalid
+    	$response = $this->container->get('graviton.rest.response.400');
+    	
+    	$record = $this->getModel()->find($id);
+    	
+    	// Get the patch params from request
+    	$requestContent = $this->getRequest()->getContent();
+
+    	if (!is_null($record) && !empty($requestContent)) {
+    		// get the record as json to handle json-patch
+    		$jsonString = $this->getSerializer()->serialize(
+    				$record,
+    				'json',
+    				$this->getSerializerContext()
+    		);
+
+    		// Now replace existing values with the new ones
+    		$patch = new Patch($jsonString, $requestContent);
+
+    		// Deserialize the new json string to an object
+    		$newRecord = $this->getSerializer()->deserialize(
+    			$patch->apply(),
+    			$this->getModel()->getEntityClass(),
+    			'json'
+    		);
+    		
+    		// Validate the new object
+    		$response = $this->validateRecord($record);
+    		
+    		// If everything is ok, update record and return 204 No Content
+    		if (!$response) {
+    			$record = $this->getModel()->updateRecord($id, $newRecord);
+    			$response = $this->container->get('graviton.rest.response.204');
+    		}
+    	}
+    	
+    	return $response;
     }
 
     /**
