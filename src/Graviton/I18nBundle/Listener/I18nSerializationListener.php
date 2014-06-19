@@ -5,7 +5,7 @@ namespace Graviton\I18nBundle\Listener;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
-use Graviton\I18nBundle\Repository\LanguageRepository;
+use Symfony\Component\HttpFoundation\Request;
 
 class I18nSerializationListener
 {
@@ -15,25 +15,25 @@ class I18nSerializationListener
     protected $i18nFields = array();
 
     /**
-     * @var Graviton\I18nBundle\Repository\LanguageRepository;
-     */
-    private $repository;
-
-    /**
      * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
      */
-    protected $translator;
+    private $translator;
 
     /**
-     * set language repository used for getting available languages
+     * @var Symfony\Component\HttpFoundation\Request
+     */
+    private $request;
+
+    /**
+     * set request
      *
-     * @param Graviton\I18nBundle\Repository\LanguageRepository $repository repo
+     * @param Symfony\Component\HttpFoundation\Request $request request object
      *
      * @return void
      */
-    public function setRepository(LanguageRepository $repository)
+    public function setRequest($request)
     {
-        $this->repository = $repository;
+        $this->request = $request;
     }
 
     /**
@@ -76,8 +76,28 @@ class I18nSerializationListener
         $object = $event->getObject();
         if (method_exists($object, 'setName')) {
             foreach ($this->i18nFields AS $field => $value) {
-                $event->getVisitor()->addData($field, array('en' => $value));
+                $event->getVisitor()->addData(
+                    $field,
+                    $this->getTranslatedField($value)
+                );
             }
         }
+    }
+
+    /**
+     * build a complete translated field
+     *
+     * @param string $value value to translate
+     *
+     * @return array
+     */
+    private function getTranslatedField($value)
+    {
+        return array_map(
+            function ($language) use ($value) {
+                return $this->translator->trans($value);
+            },
+            $this->request->attributes->get('languages')
+        );
     }
 }
