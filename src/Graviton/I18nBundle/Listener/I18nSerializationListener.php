@@ -68,13 +68,16 @@ class I18nSerializationListener
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
+        $this->localizedFields[\spl_object_hash($object)] = array();
         if ($object instanceof TranslatableDocument) {
-            foreach ($object->returnTranslatableFields() as $field) {
+            foreach ($object->getTranslatableFields() as $field) {
                 $setter = 'set'.ucfirst($field);
                 $getter = 'get'.ucfirst($field);
 
+                // only allow objects that we can update during postSerialize
                 if (method_exists($object, $setter)) {
-                    $this->localizedFields[$field] = $object->$getter();
+                    $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
+                    // remove untranslated field to make space for translation struct
                     $object->$setter(null);
                 }
             }
@@ -91,7 +94,7 @@ class I18nSerializationListener
     public function onPostSerialize(ObjectEvent $event)
     {
         $object = $event->getObject();
-        foreach ($this->localizedFields as $field => $value) {
+        foreach ($this->localizedFields[\spl_object_hash($object)] as $field => $value) {
             $event->getVisitor()->addData(
                 $field,
                 $this->getTranslatedField($value)

@@ -20,7 +20,7 @@ class Language extends TranslatableDocument
      *
      * @return Language
      */
-    public function returnTranslatableFields()
+    public function getTranslatableFields()
     {
 	    return array('name');
     }

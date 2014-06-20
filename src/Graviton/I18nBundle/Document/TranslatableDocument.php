@@ -18,7 +18,7 @@ abstract class TranslatableDocument
      *
      * @return string[]
      */
-    public function returnTranslatableFields()
+    public function getTranslatableFields()
     {
         return array();
     }

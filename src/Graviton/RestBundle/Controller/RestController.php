@@ -170,8 +170,9 @@ class RestController implements ContainerAwareInterface
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod =  'getCollectionSchema';
         }
+        $schema = SchemaUtils::$schemaMethod($modelName, $model);
         $response->setContent(
-            json_encode(SchemaUtils::$schemaMethod($modelName, $model))
+            $this->getSerializer()->serialize($schema, 'json')
         );
 
         // enabled methods for CorsListener

@@ -114,7 +114,6 @@ class LanguageControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->markTestIncomplete();
         $this->assertEquals('A Language available for i18n purposes.', $results->items->description->en);
         $this->assertEquals(array('id', 'name'), $results->items->required);
 
@@ -126,6 +125,5 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('string', $properties->name->type);
         $this->assertEquals('Language', $properties->name->title->en);
         $this->assertEquals('Common name of a language.', $properties->name->description->en);
-
     }
 }

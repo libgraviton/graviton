@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\SchemaBundle\Document\Schema" exclusion-policy="ALL" accessor-order="custom" custom-accessor-order="title,description,type,items,properties,required">
+    <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle" expose="true"/>
+    <property name="description" type="string" accessor-getter="getDescription" accessor-setter="setDescription" expose="true"/>
+    <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
+    <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
+    <property name="properties" accessor-getter="getProperties" expose="true">
+      <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
+    </property>
+    <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
+      <type><![CDATA[array<string>]]></type>
+    </property>
+  </class>
+</serializer>
