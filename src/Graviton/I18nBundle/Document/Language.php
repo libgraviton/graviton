@@ -2,8 +2,6 @@
 
 namespace Graviton\I18nBundle\Document;
 
-use Graviton\I18nBundle\Document\TranslatableDocument;
-
 /**
  * Graviton\I18nBundle\Document\Language
  *
@@ -22,11 +20,11 @@ class Language extends TranslatableDocument
      */
     public function getTranslatableFields()
     {
-	    return array('name');
+        return array('name');
     }
 
     /**
-     * @var MongoId $id
+     * @var string $id
      */
     protected $id;
 

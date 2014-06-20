@@ -31,7 +31,7 @@ class Schema extends TranslatableDocument
     protected $type;
 
     /**
-     * @var items
+     * @var Schema
      */
     protected $items;
 
@@ -130,7 +130,7 @@ class Schema extends TranslatableDocument
      */
     public function setItems($items)
     {
-	    $this->items = $items;
+        $this->items = $items;
     }
 
     /**
@@ -140,7 +140,7 @@ class Schema extends TranslatableDocument
      */
     public function getItems()
     {
-	    return $this->items;
+        return $this->items;
     }
 
     /**
@@ -166,7 +166,8 @@ class Schema extends TranslatableDocument
         $properties = $this->properties;
         if (empty($properties)) {
             $properties = null;
-	}
+        }
+
         return $properties;
     }
 
@@ -193,6 +194,7 @@ class Schema extends TranslatableDocument
         if (empty($required)) {
             $required = null;
         }
+
         return $required;
     }
 }

@@ -25,19 +25,19 @@ class I18nSerializationListener
     protected $localizedFields = array();
 
     /**
-     * @var Symfony\Bundle\FrameworkBundle\Translation\Translator
+     * @var \Symfony\Bundle\FrameworkBundle\Translation\Translator
      */
     private $translator;
 
     /**
-     * @var Symfony\Component\HttpFoundation\Request
+     * @var \Symfony\Component\HttpFoundation\Request
      */
     private $request;
 
     /**
      * set request
      *
-     * @param Symfony\Component\HttpFoundation\Request $request request object
+     * @param \Symfony\Component\HttpFoundation\Request $request request object
      *
      * @return void
      */
@@ -49,7 +49,7 @@ class I18nSerializationListener
     /**
      * set translator
      *
-     * @param Symfony\Bundle\FrameworkBundle\Translation\Translator $translator translator
+     * @param \Symfony\Bundle\FrameworkBundle\Translation\Translator $translator translator
      *
      * @return void
      */

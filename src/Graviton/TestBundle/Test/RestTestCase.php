@@ -9,8 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Contains additional helpers for testing RESTful servers
  *
- * @todo refactor alot (use overridden client and whatnot)
- *
  * @category GravitonTestBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>

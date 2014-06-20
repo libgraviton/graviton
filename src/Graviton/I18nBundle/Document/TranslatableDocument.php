@@ -11,7 +11,7 @@ namespace Graviton\I18nBundle\Document;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-abstract class TranslatableDocument
+class TranslatableDocument
 {
     /**
      * return all translatable fields
