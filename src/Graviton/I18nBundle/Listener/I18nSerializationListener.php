@@ -75,7 +75,7 @@ class I18nSerializationListener
 
                 if (method_exists($object, $setter)) {
                     $this->localizedFields[$field] = $object->$getter();
-                    $object->setName(null);
+                    $object->$setter(null);
                 }
             }
         }
