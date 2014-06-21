@@ -51,5 +51,5 @@ class Translatable extends DocumentModel
     /**
      * @var string[]
      */
-    protected $requiredFields = array('id', 'domain', 'locale', 'original');
+    protected $requiredFields = array('domain', 'locale', 'original');
 }

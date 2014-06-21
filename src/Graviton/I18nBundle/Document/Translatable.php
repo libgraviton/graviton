@@ -39,28 +39,6 @@ class Translatable
     protected $translated;
 
     /**
-     * set id
-     *
-     * @param string $id
-     *
-     * @return void
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * get id
-     *
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * set domain
      *
      * @param string $domain domain
