@@ -9,6 +9,7 @@
     <parameter key="graviton.i18n.listener.contentlanguageresponse.class">Graviton\I18nBundle\Listener\ContentLanguageResponseListener</parameter>
     <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
+    <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
   </parameters>
   <services>
     <service id="graviton.i18n.repository.language"
@@ -41,12 +42,13 @@
       </call>
       <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
     </service>
+    <service id="graviton.i18n.request" class="%graviton.i18n.request.class%" factory-service="request_stack" factory-method="getCurrentRequest"/>
     <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%" scope="request">
       <call method="setTranslator">
         <argument type="service" id="translator"/>
       </call>
       <call method="setRequest">
-        <argument type="service" id="request"/>
+        <argument type="service" id="graviton.i18n.request"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onpreserialize" direction="serialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
