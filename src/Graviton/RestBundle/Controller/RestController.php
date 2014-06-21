@@ -64,7 +64,7 @@ class RestController implements ContainerAwareInterface
     public function allAction()
     {
         return $this->getResponse(
-            $this->getModel()->findAll($this->container->get('request'))
+            $this->getModel()->findAll($this->getRequest())
         );
     }
 
@@ -82,7 +82,7 @@ class RestController implements ContainerAwareInterface
         );
 
         // store id of new record so we dont need to reparse body later when needed
-        $this->container->get('request')->attributes->set('id', $record->getId());
+        $this->getRequest()->attributes->set('id', $record->getId());
 
         $response = $this->validateRecord($record);
 

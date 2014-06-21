@@ -11,6 +11,7 @@
     <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
     <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
     <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
+    <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
   </parameters>
   <services>
     <service id="graviton.rest.serializer" alias="serializer">
@@ -34,7 +35,10 @@
     <service id="graviton.rest.doctrine" alias="doctrine"/>
     <service id="graviton.rest.validator" alias="validator"/>
     <service id="graviton.rest.router" alias="router"/>
-    <service id="graviton.rest.request" alias="request"/>
+    <service id="graviton.rest.request"
+      class="%graviton.rest.request.class%"
+      factory-service="request_stack"
+      factory-method="getCurrentRequest"/>
     <service id="graviton.rest.paginator" alias="knp_paginator"/>
     <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
     <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
