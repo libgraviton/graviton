@@ -2,7 +2,7 @@
 
 namespace Graviton\SchemaBundle\Document;
 
-use Graviton\I18nBundle\Document\TranslatableDocument;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * Graviton\SchemaBundle\Document\Schema
@@ -13,7 +13,7 @@ use Graviton\I18nBundle\Document\TranslatableDocument;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Schema extends TranslatableDocument
+class Schema implements TranslatableDocumentInterface
 {
     /**
      * @var string

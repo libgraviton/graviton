@@ -11,7 +11,7 @@ namespace Graviton\I18nBundle\Document;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Language extends TranslatableDocument
+class Language implements TranslatableDocumentInterface
 {
     /**
      * construct language document

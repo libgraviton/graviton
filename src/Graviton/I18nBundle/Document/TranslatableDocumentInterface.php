@@ -11,15 +11,12 @@ namespace Graviton\I18nBundle\Document;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class TranslatableDocument
+interface TranslatableDocumentInterface
 {
     /**
      * return all translatable fields
      *
      * @return string[]
      */
-    public function getTranslatableFields()
-    {
-        return array();
-    }
+    public function getTranslatableFields();
 }

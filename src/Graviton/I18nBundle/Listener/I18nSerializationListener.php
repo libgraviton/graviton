@@ -6,7 +6,7 @@ use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
-use Graviton\I18nBundle\Document\TranslatableDocument;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * translate fields during serialization
@@ -69,7 +69,7 @@ class I18nSerializationListener
     {
         $object = $event->getObject();
         $this->localizedFields[\spl_object_hash($object)] = array();
-        if ($object instanceof TranslatableDocument) {
+        if ($object instanceof TranslatableDocumentInterface) {
             foreach ($object->getTranslatableFields() as $field) {
                 $setter = 'set'.ucfirst($field);
                 $getter = 'get'.ucfirst($field);
