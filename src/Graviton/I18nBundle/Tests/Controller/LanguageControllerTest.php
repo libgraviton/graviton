@@ -69,10 +69,7 @@ class LanguageControllerTest extends RestTestCase
 
         $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
-        $response = $client->getResponse();
-        $results = $client->getResults();
-
-        $this->assertEquals('en, de', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
 
         $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
