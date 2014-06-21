@@ -16,66 +16,34 @@ use Graviton\RestBundle\Model\DocumentModel;
 class Language extends DocumentModel
 {
     /**
-     * get the description of the model
+     * the description of the model
      *
-     * @return string
+     * @var string
      */
-    public function getDescription()
-    {
-        return 'A Language available for i18n purposes.';
-    }
+    protected $description = 'A Language available for i18n purposes.';
 
     /**
-     * get the title of a given field
+     * titles for fields
      *
-     * @param string $field field name
-     *
-     * @return string
+     * @var string[]
      */
-    public function getTitleOfField($field)
-    {
-        $title = '';
-        switch ($field) {
-            case 'id':
-                $title = 'Language Tag';
-                break;
-            case 'name':
-                $title = 'Language';
-                break;
-        }
-
-        return $title;
-    }
+    protected $fieldTitles = array(
+        'id' => 'Language Tag',
+        'name' => 'Language',
+    );
 
     /**
-     * get description of a given field
+     * descriptions for fields
      *
-     * @param string $field field name
-     *
-     * @return string
+     * @var string[]
      */
-    public function getDescriptionOfField($field)
-    {
-        $description = '';
-        switch ($field) {
-            case 'id':
-                $description = 'A RFC2616 language tag.';
-                break;
-            case 'name':
-                $description = 'Common name of a language.';
-                break;
-        }
-
-        return $description;
-    }
+    protected $fieldDescriptions = array(
+        'id' => 'A RFC2616 language tag.',
+        'name' => 'Common name of a language.'
+    );
 
     /**
-     * get required fields for this object
-     *
-     * @return string[]
+     * @var string[]
      */
-    public function getRequiredFields()
-    {
-        return array('id', 'name');
-    }
+    protected $requiredFields = array('id', 'name');
 }

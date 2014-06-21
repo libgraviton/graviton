@@ -27,6 +27,26 @@ class DocumentModel implements ModelInterface
     private $paginator;
 
     /**
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * @var string[]
+     */
+    protected $fieldTitles;
+
+    /**
+     * @var string[]
+     */
+    protected $fieldDescriptions;
+
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = array();
+
+    /**
      * create new app model
      *
      * @param ObjectRepository $countries Repository of countries
@@ -180,5 +200,49 @@ class DocumentModel implements ModelInterface
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
         return 'graviton.'.$bundle;
+    }
+
+    /**
+     * get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * get title for a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getTitleOfField($field)
+    {
+        return $this->fieldTitles[$field];
+    }
+
+    /**
+     * get description for a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getDescriptionOfField($field)
+    {
+        return $this->fieldDescriptions[$field];
+    }
+
+    /**
+     * get required fields for this object
+     *
+     * @return string[]
+     */
+    public function getRequiredFields()
+    {
+        return $this->requiredFields;
     }
 }
