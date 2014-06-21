@@ -48,7 +48,7 @@ class Schema extends TranslatableDocument
     /**
      * {@inheritDoc}
      *
-     * @return array
+     * @return string[]
      */
     public function getTranslatableFields()
     {
@@ -136,7 +136,7 @@ class Schema extends TranslatableDocument
     /**
      * get items
      *
-     * @return void
+     * @return Schema
      */
     public function getItems()
     {

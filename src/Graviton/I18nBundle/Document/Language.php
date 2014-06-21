@@ -16,7 +16,7 @@ class Language extends TranslatableDocument
     /**
      * construct language document
      *
-     * @return Language
+     * @return string[]
      */
     public function getTranslatableFields()
     {

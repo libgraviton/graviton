@@ -54,7 +54,7 @@ class SchemaUtils
      * @param string $modelName name of model
      * @param object $model     model
      *
-     * @return \stdClass
+     * @return Schema
      */
     public static function getCollectionSchema($modelName, $model)
     {

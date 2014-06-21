@@ -25,7 +25,7 @@ class AcceptLanguageRequestListener
     /**
      * set language repository used for getting available languages
      *
-     * @param Graviton\I18nBundle\Repository\LanguageRepository $repository repo
+     * @param LanguageRepository $repository repo
      *
      * @return void
      */
