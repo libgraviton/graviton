@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\I18nBundle\Document\Translatable" exclusion-policy="ALL">
+    <property name="id" type="string" accessor-getter="getId" accessor-setter="setId" expose="true"/>
+    <property name="domain" type="string" accessor-getter="getDomain" accessor-setter="setDomain" expose="true"/>
+    <property name="locale" type="string" accessor-getter="getLocale" accessor-setter="setLocale" expose="true"/>
+    <property name="original" type="string" accessor-getter="getOriginal" accessor-setter="setOriginal" expose="true"/>
+    <property name="translated" type="string" accessor-getter="getTranslated" accessor-setter="setTranslated" expose="true"/>
+    <property name="isLocalized" type="boolean" accessor-getter="isLocalized" accessor-setter="setIsLocalized" expose="true"/>
+  </class>
+</serializer>

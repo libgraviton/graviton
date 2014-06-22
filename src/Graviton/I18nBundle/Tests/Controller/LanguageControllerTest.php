@@ -54,6 +54,8 @@ class LanguageControllerTest extends RestTestCase
     {
         $newLang = new \stdClass;
         $newLang->id = 'de';
+        $newLang->name = new \stdClass;
+        $newLang->name->en = 'German';
 
         $client = static::createRestClient();
         $client->post('/i18n/language', $newLang);

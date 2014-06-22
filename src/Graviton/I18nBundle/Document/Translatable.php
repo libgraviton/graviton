@@ -39,6 +39,33 @@ class Translatable
     protected $translated;
 
     /**
+     * @var boolean $isLocalized
+     */
+    protected $isLocalized;
+
+    /**
+     * set id
+     *
+     * @param string $id id
+     *
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * get id
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * set domain
      *
      * @param string $domain domain
@@ -124,5 +151,27 @@ class Translatable
     public function getTranslated()
     {
         return $this->translated;
+    }
+
+    /**
+     * set isLocalized
+     *
+     * @param boolean $isLocalized true/false
+     *
+     * @return void
+     */
+    public function setIsLocalized($isLocalized)
+    {
+        $this->isLocalized = $isLocalized;
+    }
+
+    /**
+     * is this document localized
+     *
+     * @return boolean
+     */
+    public function isLocalized()
+    {
+        return $this->isLocalized;
     }
 }

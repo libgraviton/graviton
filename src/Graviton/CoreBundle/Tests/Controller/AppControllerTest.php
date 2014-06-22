@@ -63,11 +63,11 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('hello', $results[0]->id);
-        $this->assertEquals('Hello World!', $results[0]->title);
+        $this->assertEquals('Hello World!', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
 
         $this->assertEquals('admin', $results[1]->id);
-        $this->assertEquals('Administration', $results[1]->title);
+        $this->assertEquals('Administration', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
 
         $this->assertContains(
@@ -112,7 +112,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('admin', $results->id);
-        $this->assertEquals('Administration', $results->title);
+        $this->assertEquals('Administration', $results->title->en);
         $this->assertEquals(true, $results->showInMenu);
 
         $this->assertContains(
@@ -131,7 +131,8 @@ class AppControllerTest extends RestTestCase
     {
         $testApp = new \stdClass;
         $testApp->id = 'new';
-        $testApp->title = 'new Test App';
+        $testApp->title = new \stdClass;
+        $testApp->title->en = 'new Test App';
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
@@ -143,7 +144,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('new', $results->id);
-        $this->assertEquals('new Test App', $results->title);
+        $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
 
         $this->assertContains(
@@ -173,7 +174,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('hello', $results->id);
-        $this->assertEquals('Hello World!', $results->title);
+        $this->assertEquals('Hello World!', $results->title->en);
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
@@ -192,7 +193,8 @@ class AppControllerTest extends RestTestCase
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
-        $isnogudApp->title = 'I don\'t exist';
+        $isnogudApp->title = new \stdClass;
+        $isnogudApp->title->en = 'I don\'t exist';
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -232,7 +234,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass;
         $helloApp->id = 'hello';
-        $helloApp->title = 'Hello World!';
+        $helloApp->title = new \stdClass;
+        $helloApp->title->en = 'Hello World!';
         $helloApp->showInMenu = 'I am a string and not a boolean.';
 
         $client = static::createRestClient();

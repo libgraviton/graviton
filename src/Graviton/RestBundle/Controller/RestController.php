@@ -284,7 +284,11 @@ class RestController implements ContainerAwareInterface
         // override values from serializer with real ones from request to get originals validated
         foreach (json_decode($content) as $key => $value) {
             $setterMethod = 'set'.ucfirst($key);
-            $record->$setterMethod($value);
+            // this is a very cheap way to skip i18n entries
+            // as always with this method, it needs refactoring badly
+            if (!is_object($value)) {
+                $record->$setterMethod($value);
+            }
         }
 
         $validationErrors = $this->getValidator()->validate($record);

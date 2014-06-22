@@ -30,10 +30,12 @@ class LoadTranslatableData implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $langName = new Translatable;
+        $langName->setId('messages-de-German');
         $langName->setDomain('messages');
         $langName->setLocale('de');
         $langName->setOriginal('German');
         $langName->setTranslated('Deutsch');
+        $langName->setIsLocalized(true);
 
         $manager->persist($langName);
         $manager->flush();

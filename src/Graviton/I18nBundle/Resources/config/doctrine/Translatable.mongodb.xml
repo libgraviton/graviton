@@ -8,5 +8,13 @@
     <field fieldName="locale" type="string"/>
     <field fieldName="original" type="string"/>
     <field fieldName="translated" type="string"/>
+    <field fieldName="isLocalized" type="boolean"/>
+    <indexes>
+      <index unique="true">
+        <key name="domain"/>
+        <key name="locale"/>
+        <key name="original"/>
+      </index>
+    </indexes>
   </document>
 </doctrine-mongo-mapping>
