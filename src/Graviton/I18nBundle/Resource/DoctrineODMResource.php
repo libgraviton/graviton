@@ -65,7 +65,7 @@ class DoctrineODMResource implements ResourceInterface, \Serializable
         if ($fileTime == 0) {
             $fileTime = time();
         }
-        return $timestamp >= $fileTime;
+        return $timestamp <= $fileTime;
     }
 
     /**
