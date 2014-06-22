@@ -68,7 +68,7 @@ class DoctrineODMLoader implements LoaderInterface
             }
         );
 
-        $catalogue->addResource(new DoctrineODMResource($resource), $domain);
+        $catalogue->addResource(new DoctrineODMResource($resource));
 
         return $catalogue;
     }

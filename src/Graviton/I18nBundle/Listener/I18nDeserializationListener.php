@@ -25,7 +25,12 @@ class I18nDeserializationListener
     protected $localizedFields = array();
 
     /**
-     * @var Graviton\I18nBundle\Document\Model\Translatable;
+     * @var Symfony\Component\HttpFoundation\Request
+     */
+    protected $request;
+
+    /**
+     * @var Graviton\I18nBundle\Document\Model\Translatable
      */
     private $translatables;
 

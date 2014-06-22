@@ -3,7 +3,6 @@
 namespace Graviton\I18nBundle\Resource;
 
 use Symfony\Component\Config\Resource\ResourceInterface;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Resource used by translator to keep check of db changes
@@ -17,14 +16,14 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 class DoctrineODMResource implements ResourceInterface, \Serializable
 {
     /**
-     * @var DocumentRepository
+     * @var string
      */
     private $resource;
 
     /**
      * create Doctrine ODM resource
      *
-     * @param DocumentRepository $resource document repo containing i18n strings
+     * @param string $resource path to info file
      *
      * @return DoctrineODMResource
      */
@@ -46,7 +45,7 @@ class DoctrineODMResource implements ResourceInterface, \Serializable
     /**
      * {@inheritDoc}
      *
-     * @return DocumentRepository
+     * @return string
      */
     public function getResource()
     {
