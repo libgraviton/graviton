@@ -119,7 +119,7 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param object $entity entityy to insert
+     * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
      *
      * @return Object
      */
