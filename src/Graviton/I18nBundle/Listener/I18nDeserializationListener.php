@@ -30,7 +30,7 @@ class I18nDeserializationListener
     protected $request;
 
     /**
-     * @var \Graviton\I18nBundle\Document\Model\Translatable
+     * @var \Graviton\I18nBundle\Model\Translatable
      */
     private $translatables;
 
