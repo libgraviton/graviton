@@ -61,8 +61,12 @@ class DoctrineODMResource implements ResourceInterface, \Serializable
      */
     public function isFresh($timestamp)
     {
-        // @todo implement me based on an odm listener and timestamp in the .odm file
-        return false;
+        $fileTime = (int) file_get_contents($this->resource);
+        if ($fileTime == 0) {
+            echo 'nope';
+            $fileTime = time();
+        }
+        return $timestamp >= $fileTime;
     }
 
     /**

@@ -4,6 +4,8 @@ app/bootstrap.php.cache
 app/check.php
 app/SymfonyRequirements.php
 web/bundles
+src/Graviton/I18nBundle/Resources/translations/*.odm
+!src/Graviton/I18nBundle/Resources/translations/messages.de.odm
 vendor/
 *.phar
 *.swp
