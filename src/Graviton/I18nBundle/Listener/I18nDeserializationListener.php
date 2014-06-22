@@ -25,12 +25,12 @@ class I18nDeserializationListener
     protected $localizedFields = array();
 
     /**
-     * @var Symfony\Component\HttpFoundation\Request
+     * @var \Symfony\Component\HttpFoundation\Request
      */
     protected $request;
 
     /**
-     * @var Graviton\I18nBundle\Document\Model\Translatable
+     * @var \Graviton\I18nBundle\Document\Model\Translatable
      */
     private $translatables;
 
@@ -61,7 +61,7 @@ class I18nDeserializationListener
     /**
      * remove translateable strings from object
      *
-     * @param PreSerializeEvent $event event
+     * @param PreDeserializeEvent $event event
      *
      * @return void
      */
@@ -82,8 +82,6 @@ class I18nDeserializationListener
             }
             $event->setData($data);
         }
-
-        return $event;
     }
 
     /**

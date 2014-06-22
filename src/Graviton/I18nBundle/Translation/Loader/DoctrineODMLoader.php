@@ -52,7 +52,7 @@ class DoctrineODMLoader implements LoaderInterface
      * @param string $locale   locale name
      * @param string $domain   message domain
      *
-     * @return MessageCatalog
+     * @return MessageCatalogue
      */
     public function load($resource, $locale, $domain = 'messages')
     {
