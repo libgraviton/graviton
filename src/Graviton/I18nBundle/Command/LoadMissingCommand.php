@@ -57,8 +57,9 @@ class LoadMissingCommand extends ContainerAwareCommand
      */
     private function generateTranslatables()
     {
-        $languages = $this->getContainer()->get('graviton.i18n.repository.language')->findAll();
-        $this->baseStrings = $this->getContainer()->get('graviton.i18n.repository.translatable')->findBy(array('locale' => 'en'));
+        $container = $this->getContainer();
+        $languages = $container->get('graviton.i18n.repository.language')->findAll();
+        $this->baseStrings = $container->get('graviton.i18n.repository.translatable')->findBy(array('locale' => 'en'));
 
         array_walk(
             $languages,
