@@ -47,7 +47,8 @@ class RestTestCase extends GravitonTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
             ),
             null,
             'doctrine_mongodb'

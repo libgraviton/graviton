@@ -2,7 +2,6 @@
 
 namespace Graviton\I18nBundle\Listener;
 
-use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
@@ -85,16 +84,14 @@ class I18nDeserializationListener
     /**
      * translate all strings marked as multi lang
      *
-     * @param ObjectEvent $event serialization event
-     *
      * @return void
      */
-    public function onPostDeserialize(ObjectEvent $event)
+    public function onPostDeserialize()
     {
         \array_walk(
             $this->localizedFields,
-            function ($values, $field) {
-                $this->createTranslatables($field, $values);
+            function ($values) {
+                $this->createTranslatables($values);
             }
         );
     }
@@ -102,12 +99,11 @@ class I18nDeserializationListener
     /**
      * create translatables for all the given languages
      *
-     * @param string   $field  name of field
      * @param string[] $values values for multiple languages
      *
      * @return void
      */
-    public function createTranslatables($field, $values)
+    public function createTranslatables($values)
     {
         if (!array_key_exists('en', $values)) {
             throw new \Exception('Creating new trans strings w/o en is not support yet.');
