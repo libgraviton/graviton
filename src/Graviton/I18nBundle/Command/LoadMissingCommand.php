@@ -19,6 +19,13 @@ use Graviton\I18nBundle\Document\Translatable;
 class LoadMissingCommand extends ContainerAwareCommand
 {
     /**
+     * base strings to translate (en)
+     * 
+     * @var Translatable[]
+     */
+    protected $baseStrings;
+
+    /**
      * set up command
      *
      * @return void
@@ -27,11 +34,14 @@ class LoadMissingCommand extends ContainerAwareCommand
     {
         $this
             ->setName('graviton:i118n:load:missing')
-            ->setDescription('Generate translatable entitites for all the strings in en.');
+            ->setDescription('Generate translatables for strings in en.');
     }
 
     /**
      * run command
+     *
+     * @param InputInterface  $input  input interface
+     * @param OutputInterface $output output interface
      *
      * @return void
      */
