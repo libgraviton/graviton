@@ -20,7 +20,7 @@ class LoadMissingCommand extends ContainerAwareCommand
 {
     /**
      * base strings to translate (en)
-     * 
+     *
      * @var Translatable[]
      */
     protected $baseStrings;

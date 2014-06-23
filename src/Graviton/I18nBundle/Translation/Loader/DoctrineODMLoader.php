@@ -5,7 +5,7 @@ namespace Graviton\I18nBundle\Translation\Loader;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\I18nBundle\Resource\DoctrineODMResource;
+use Symfony\Component\Config\Resource\FileResource;
 
 /**
  * Load translation string from a doctrine-odm repository
