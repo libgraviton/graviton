@@ -105,6 +105,7 @@ class SchemaUtils
     public static function makeTranslatable(Schema $property, $languages)
     {
         $property->setType('object');
+        $property->setTranslatable(true);
 
         array_walk(
             $languages,
