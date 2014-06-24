@@ -40,10 +40,10 @@ class PostPersistTranslatableListener implements EventSubscriber
         if ($object instanceof Translatable) {
             $domain = $object->getDomain();
             $locale = $object->getLocale();
-            file_put_contents(
-                __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm',
-                time()
-            );
+
+            // faster less blocking operation than using touch()
+            $fp = fopen(__DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm', 'rw');
+            ftruncate($fp, 0);
         }
     }
 }
