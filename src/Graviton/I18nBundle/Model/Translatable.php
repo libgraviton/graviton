@@ -33,6 +33,7 @@ class Translatable extends DocumentModel
         'locale' => 'Locale',
         'original' => 'Source String',
         'translated' => 'Translated String',
+        'isLocalized' => 'Localized?',
     );
 
     /**
@@ -45,7 +46,8 @@ class Translatable extends DocumentModel
         'domain' => 'Domain a given string is applicable to.',
         'locale' => 'Language Locale',
         'original' => 'Original version of string (usually english).',
-        'translated' => 'Translated string',
+        'translated' => 'Translated version of string.',
+        'isLocalized' => 'Has this record been translated.',
     );
 
     /**
