@@ -108,7 +108,7 @@ class SchemaUtils
 
         array_walk(
             $languages,
-            function($language) use ($property) {
+            function ($language) use ($property) {
                 $schema = new Schema;
                 $schema->setType('string');
                 $schema->setTitle('Translated String');
