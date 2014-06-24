@@ -30,8 +30,8 @@
       <argument type="string">GravitonCoreBundle:App</argument>
     </service>
     <service id="graviton.core.model.app"
-        class="%graviton.core.model.app.class%"
-        parent="graviton.rest.model">
+             class="%graviton.core.model.app.class%"
+             parent="graviton.rest.model">
       <call method="setRepository">
         <argument type="service" id="graviton.core.repository.app"/>
       </call>

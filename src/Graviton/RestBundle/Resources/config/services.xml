@@ -24,7 +24,7 @@
     </service>
     <service id="graviton.rest.serializer.serializercontext" class="%graviton.rest.serializer.serializercontext.class%">
       <call method="setSerializeNull">
-        <argument type="constant">true</argument>
+        <argument type="constant">false</argument>
       </call>
     </service>
     <service id="graviton.rest.serializer.deserializercontext" class="%graviton.rest.serializer.deserializercontext.class%">

@@ -18,14 +18,14 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
 class Client extends FrameworkClient
 {
     /**
-     * @var string
+     * @var mixed
      */
     private $results;
 
     /**
      * return decoded results from a request
      *
-     * @return object
+     * @return mixed
      */
     public function getResults()
     {

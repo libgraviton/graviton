@@ -24,7 +24,7 @@ class GravitonTestCase extends WebTestCase
      * return our namespaced AppKernel
      *
      * Most symfony projects keep their AppKernel class in phps
-     * global scope. Since we don't this needs to be overridden.
+     * global space. Since we don't this needs to be overridden.
      *
      * This also allows us to properly set up the BundleLoader
      * infrastucture. This isn't in the DIC since it is used to

@@ -3,7 +3,6 @@
 namespace Graviton\SchemaBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
 
 /**
  * GravitonSchemaBundle
@@ -14,18 +13,6 @@ use Graviton\BundleBundle\GravitonBundleInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonSchemaBundle extends Bundle implements GravitonBundleInterface
+class GravitonSchemaBundle extends Bundle
 {
-    /**
-     * {@inheritDoc}
-     *
-     * set up basic bundles needed for being RESTful
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return array(
-        );
-    }
 }

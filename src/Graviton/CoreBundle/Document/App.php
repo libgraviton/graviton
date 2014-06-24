@@ -5,6 +5,8 @@
 
 namespace Graviton\CoreBundle\Document;
 
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+
 /**
  * App
  *
@@ -14,7 +16,7 @@ namespace Graviton\CoreBundle\Document;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class App
+class App implements TranslatableDocumentInterface
 {
     /**
      * @var string app id
@@ -30,6 +32,16 @@ class App
      * @var boolean show app in menu
      */
     protected $showInMenu = false;
+
+    /**
+     * make title translatable
+     *
+     * @return string[]
+     */
+    public function getTranslatableFields()
+    {
+        return array('title');
+    }
 
     /**
      * Set id

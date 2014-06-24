@@ -34,7 +34,8 @@ class CountryControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData'
+                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'
@@ -206,8 +207,8 @@ class CountryControllerTest extends RestTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('Country', $results->title);
-        $this->assertEquals('A country record.', $results->description);
+        $this->assertEquals('Country', $results->title->en);
+        $this->assertEquals('A country record.', $results->description->en);
         $this->assertEquals('object', $results->type);
 
         $fieldAssertions = array(
@@ -238,8 +239,8 @@ class CountryControllerTest extends RestTestCase
         );
         foreach ($fieldAssertions as $field => $values) {
             $this->assertEquals('string', $results->properties->$field->type);
-            $this->assertEquals($values['description'], $results->properties->$field->description);
-            $this->assertEquals($values['title'], $results->properties->$field->title);
+            $this->assertEquals($values['description'], $results->properties->$field->description->en);
+            $this->assertEquals($values['title'], $results->properties->$field->title->en);
         }
 
         $this->assertContains('id', $results->required);

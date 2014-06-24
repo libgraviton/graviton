@@ -2,6 +2,8 @@
 
 namespace Graviton\SchemaBundle;
 
+use Graviton\SchemaBundle\Document\Schema;
+
 /**
  * Utils for generating schemas.
  *
@@ -19,28 +21,29 @@ class SchemaUtils
      * @param string $modelName name of mode to generate schema for
      * @param object $model     model to generate schema for
      *
-     * @return \stdClass
+     * @return Schema
      */
     public static function getModelSchema($modelName, $model)
     {
         // build up schema data
-        $schema = new \stdClass;
-        $schema->title = ucfirst($modelName);
-        $schema->description = $model->getDescription();
-        $schema->type = 'object';
-        $schema->properties = new \stdClass;
+        $schema = new Schema;
+        $schema->setTitle(ucfirst($modelName));
+        $schema->setDescription($model->getDescription());
+        $schema->setType('object');
 
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
 
         foreach ($meta->getFieldNames() as $field) {
-            $schema->properties->$field = new \stdClass;
-            $schema->properties->$field->type = $meta->getTypeOfField($field);
-            $schema->properties->$field->title = $model->getTitleOfField($field);
-            $schema->properties->$field->description = $model->getDescriptionOfField($field);
+            $property = new Schema();
+            $property->setType($meta->getTypeOfField($field));
+            $property->setTitle($model->getTitleOfField($field));
+            $property->setDescription($model->getDescriptionOfField($field));
+
+            $schema->addProperty($field, $property);
         }
-        $schema->required = $model->getRequiredFields();
+        $schema->setRequired($model->getRequiredFields());
 
         return $schema;
     }
@@ -51,14 +54,14 @@ class SchemaUtils
      * @param string $modelName name of model
      * @param object $model     model
      *
-     * @return \stdClass
+     * @return Schema
      */
     public static function getCollectionSchema($modelName, $model)
     {
-        $collectionSchema = new \stdClass;
-        $collectionSchema->title = sprintf('Array of %s objects', $modelName);
-        $collectionSchema->type = 'array';
-        $collectionSchema->items = self::getModelSchema($modelName, $model);
+        $collectionSchema = new Schema;
+        $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
+        $collectionSchema->setType('array');
+        $collectionSchema->setItems(self::getModelSchema($modelName, $model));
 
         return $collectionSchema;
     }
