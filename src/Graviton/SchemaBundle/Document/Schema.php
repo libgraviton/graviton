@@ -222,7 +222,7 @@ class Schema implements TranslatableDocumentInterface
      *
      * @return boolean
      */
-    public function getTranslatable()
+    public function isTranslatable()
     {
         return $this->translatable;
     }
