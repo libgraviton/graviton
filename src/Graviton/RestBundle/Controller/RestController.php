@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -164,13 +165,26 @@ class RestController implements ContainerAwareInterface
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
+        $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
+
+        $translatableFields = array();
+        $languages = array();
+        if ($document instanceof TranslatableDocumentInterface) {
+            $translatableFields = $document->getTranslatableFields();
+            $languages = array_map(
+                function ($language) {
+                    return $language->getId();
+                },
+                $this->container->get('graviton.i18n.repository.language')->findAll()
+            );
+        }
 
         $response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod =  'getCollectionSchema';
         }
-        $schema = SchemaUtils::$schemaMethod($modelName, $model);
+        $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
         $response->setContent(
             $this->getSerializer()->serialize($schema, 'json')
         );

@@ -9,6 +9,8 @@
     <parameter key="graviton.i18n.model.translatable.class">Graviton\I18nBundle\Model\Translatable</parameter>
     <parameter key="graviton.i18n.repository.language.class">Graviton\I18nBundle\Repository\LanguageRepository</parameter>
     <parameter key="graviton.i18n.repository.translatable.class">Graviton\I18nBundle\Repository\TranslatableRepository</parameter>
+    <parameter key="graviton.i18n.document.language.class">Graviton\I18nBundle\Document\Language</parameter>
+    <parameter key="graviton.i18n.document.translatable.class">Graviton\I18nBundle\Document\Translatable</parameter>
     <parameter key="graviton.i18n.listener.contentlanguageresponse.class">Graviton\I18nBundle\Listener\ContentLanguageResponseListener</parameter>
     <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
@@ -18,6 +20,7 @@
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
   </parameters>
   <services>
+    <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
     <service id="graviton.i18n.repository.language"
              class="%graviton.i18n.repository.language.class%"
              factory-service="doctrine_mongodb.odm.default_document_manager"
@@ -52,6 +55,7 @@
         <argument type="service" id="graviton.i18n.repository.translatable"/>
       </call>
     </service>
+    <service id="graviton.i18n.document.translatable" class="%graviton.i18n.document.translatable.class%"/>
     <service id="graviton.i18n.controller.translatable"
       class="%graviton.i18n.controller.translatable.class%"
       parent="graviton.rest.controller" scope="request">
