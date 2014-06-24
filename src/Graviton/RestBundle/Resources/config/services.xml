@@ -6,7 +6,6 @@
     <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
     <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
-    <parameter key="graviton.rest.serializer.exclusion.all.class">stdClass</parameter>
     <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
     <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
     <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
@@ -28,7 +27,6 @@
         <argument type="constant">false</argument>
       </call>
     </service>
-    <service id="graviton.rest.serializer.exclusion.all" class="%graviton.rest.serializer.exclusion.all.class%"/>
     <service id="graviton.rest.serializer.deserializercontext" class="%graviton.rest.serializer.deserializercontext.class%">
       <call method="setSerializeNull">
         <argument type="constant">true</argument>
