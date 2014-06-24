@@ -6,7 +6,8 @@ filter:
 before_commands:
     - 'composer install --dev'
 tools:
-    external_code_coverage: true
+    external_code_coverage:
+      timeout: 1200
     php_mess_detector: true
     php_pdepend: true
     php_analyzer:
