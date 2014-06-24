@@ -43,7 +43,7 @@ class PostPersistTranslatableListener implements EventSubscriber
 
             // faster less blocking operation than using touch()
             $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            if(!file_exists($triggerFile)) {
+            if (!file_exists($triggerFile)) {
                 touch($triggerFile);
             }
             $fp = fopen($triggerFile, 'rw');

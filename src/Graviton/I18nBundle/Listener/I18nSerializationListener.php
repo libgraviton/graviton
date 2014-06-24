@@ -113,6 +113,7 @@ class I18nSerializationListener
     {
         $routeName = $this->request->attributes->get('_route');
         list(, $domain) = explode('.', $routeName);
+
         return array_map(
             function ($language) use ($value, $domain) {
                 return $this->translator->trans($value, array(), $domain, $language);
