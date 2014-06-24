@@ -125,9 +125,9 @@ class I18nDeserializationListener
                     $isLocalized = true;
                 }
                 $translatable = new Translatable;
-                $translatable->setId('messages-'.$locale.'-'.$original);
+                $translatable->setId('i18n-'.$locale.'-'.$original);
                 $translatable->setLocale($locale);
-                $translatable->setDomain('messages');
+                $translatable->setDomain('i18n');
                 $translatable->setOriginal($original);
                 $translatable->setTranslated($translated);
                 $translatable->setIsLocalized($isLocalized);

@@ -30,8 +30,8 @@ class LoadTranslatableData implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $deGerman = new Translatable;
-        $deGerman->setId('messages-de-German');
-        $deGerman->setDomain('messages');
+        $deGerman->setId('i18n-de-German');
+        $deGerman->setDomain('i18n');
         $deGerman->setLocale('de');
         $deGerman->setOriginal('German');
         $deGerman->setTranslated('Deutsch');
@@ -40,8 +40,8 @@ class LoadTranslatableData implements FixtureInterface
         $manager->persist($deGerman);
 
         $deEnglish = new Translatable;
-        $deEnglish->setId('messages-de-English');
-        $deEnglish->setDomain('messages');
+        $deEnglish->setId('i18n-de-English');
+        $deEnglish->setDomain('i18n');
         $deEnglish->setLocale('de');
         $deEnglish->setOriginal('English');
         $deEnglish->setTranslated('Englisch');

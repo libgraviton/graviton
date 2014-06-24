@@ -79,6 +79,12 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertEquals('English', $results->name->en);
         $this->assertEquals('Englisch', $results->name->de);
+
+        $client->request('GET', '/i18n/translatable/i18n-de-German');
+
+        $this->assertEquals('i18n', $client->getResults()->domain);
+        $this->assertEquals('de', $client->getResults()->locale);
+        $this->assertEquals('German', $client->getResults()->original);
     }
 
     /**
