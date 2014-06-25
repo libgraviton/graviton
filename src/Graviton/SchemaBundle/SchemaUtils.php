@@ -18,12 +18,14 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string $modelName name of mode to generate schema for
-     * @param object $model     model to generate schema for
+     * @param string   $modelName          name of mode to generate schema for
+     * @param object   $model              model to generate schema for
+     * @param string[] $translatableFields fields that get translated on the fly
+     * @param string[] $languages          languages
      *
      * @return Schema
      */
-    public static function getModelSchema($modelName, $model)
+    public static function getModelSchema($modelName, $model, $translatableFields, $languages)
     {
         // build up schema data
         $schema = new Schema;
@@ -37,9 +39,12 @@ class SchemaUtils
 
         foreach ($meta->getFieldNames() as $field) {
             $property = new Schema();
-            $property->setType($meta->getTypeOfField($field));
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
+            $property->setType($meta->getTypeOfField($field));
+            if (in_array($field, $translatableFields)) {
+                $property = self::makeTranslatable($property, $languages);
+            }
 
             $schema->addProperty($field, $property);
         }
@@ -51,17 +56,19 @@ class SchemaUtils
     /**
      * get schema for an array of models
      *
-     * @param string $modelName name of model
-     * @param object $model     model
+     * @param string   $modelName          name of model
+     * @param object   $model              model
+     * @param string[] $translatableFields fields that get translated on the fly
+     * @param string[] $languages          languages
      *
      * @return Schema
      */
-    public static function getCollectionSchema($modelName, $model)
+    public static function getCollectionSchema($modelName, $model, $translatableFields, $languages)
     {
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
-        $collectionSchema->setItems(self::getModelSchema($modelName, $model));
+        $collectionSchema->setItems(self::getModelSchema($modelName, $model, $translatableFields, $languages));
 
         return $collectionSchema;
     }
@@ -85,5 +92,32 @@ class SchemaUtils
         }
 
         return implode('.', array_merge($routeParts, array($realRouteType)));
+    }
+
+    /**
+     * turn a property into a translatable property
+     *
+     * @param Schema   $property  simple string property
+     * @param string[] $languages available languages
+     *
+     * @return Schema
+     */
+    public static function makeTranslatable(Schema $property, $languages)
+    {
+        $property->setType('object');
+        $property->setTranslatable(true);
+
+        array_walk(
+            $languages,
+            function ($language) use ($property) {
+                $schema = new Schema;
+                $schema->setType('string');
+                $schema->setTitle('Translated String');
+                $schema->setDescription('String in '.$language.' locale.');
+                $property->addProperty($language, $schema);
+            }
+        );
+
+        return $property;
     }
 }

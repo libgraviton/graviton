@@ -355,9 +355,10 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description->en);
         $this->assertContains('id', $schema->required);
 
-        $this->assertEquals('string', $schema->properties->title->type);
+        $this->assertEquals('object', $schema->properties->title->type);
         $this->assertEquals('Title', $schema->properties->title->title->en);
         $this->assertEquals('Display name for an app.', $schema->properties->title->description->en);
+        $this->assertEquals('string', $schema->properties->title->properties->en->type);
         $this->assertContains('title', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);

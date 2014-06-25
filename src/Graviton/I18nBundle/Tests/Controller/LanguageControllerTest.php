@@ -127,8 +127,9 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('Language Tag', $properties->id->title->en);
         $this->assertEquals('A RFC2616 language tag.', $properties->id->description->en);
 
-        $this->assertEquals('string', $properties->name->type);
+        $this->assertEquals('object', $properties->name->type);
         $this->assertEquals('Language', $properties->name->title->en);
         $this->assertEquals('Common name of a language.', $properties->name->description->en);
+        $this->assertEquals('string', $properties->name->properties->en->type);
     }
 }

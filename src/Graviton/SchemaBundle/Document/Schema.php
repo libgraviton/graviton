@@ -46,6 +46,11 @@ class Schema implements TranslatableDocumentInterface
     protected $required = array();
 
     /**
+     * @var boolean
+     */
+    protected $translatable;
+
+    /**
      * {@inheritDoc}
      *
      * @return string[]
@@ -196,5 +201,29 @@ class Schema implements TranslatableDocumentInterface
         }
 
         return $required;
+    }
+
+    /**
+     * set translatable flag
+     *
+     * This flag is a local extension to json schema.
+     *
+     * @param boolean $translatable translatable flag
+     *
+     * @return void
+     */
+    public function setTranslatable($translatable)
+    {
+        $this->translatable = $translatable;
+    }
+
+    /**
+     * get translatable flag
+     *
+     * @return boolean
+     */
+    public function isTranslatable()
+    {
+        return $this->translatable;
     }
 }

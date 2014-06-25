@@ -10,6 +10,7 @@
     <parameter key="graviton.taxonomy.controller.country.class">Graviton\TaxonomyBundle\Controller\CountryController</parameter>
     <parameter key="graviton.taxonomy.model.country.class">Graviton\TaxonomyBundle\Model\Country</parameter>
     <parameter key="graviton.taxonomy.repository.country.class">Graviton\TaxonomyBundle\Repository\CountryRepository</parameter>
+    <parameter key="graviton.taxonomy.document.country.class">Graviton\TaxonomyBundle\Document\Country</parameter>
   </parameters>
   <services>
     <service id="graviton.taxonomy.serializer" alias="serializer"/>
@@ -47,5 +48,6 @@
         <argument type="service" id="graviton.taxonomy.repository.country"/>
       </call>
     </service>
+    <service id="graviton.taxonomy.document.country" class="%graviton.taxonomy.document.country.class%"/>
   </services>
 </container>
