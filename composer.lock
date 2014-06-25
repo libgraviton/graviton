@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "7f8301d578fb2a12373e437b09b74e8b",
+    "hash": "6bd9d57ebd4fc7f28c43c185e5d304a0",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -815,16 +816,15 @@
         {
             "name": "doctrine/mongodb-odm-bundle",
             "version": "dev-master",
-            "target-dir": "Doctrine/Bundle/MongoDBBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "3aafa97ed74bb6e41b7f3c874dfb21a4e06c2169"
+                "reference": "ededdcec1911b1c25f480f52a6f758fe92d25b17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/3aafa97ed74bb6e41b7f3c874dfb21a4e06c2169",
-                "reference": "3aafa97ed74bb6e41b7f3c874dfb21a4e06c2169",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/ededdcec1911b1c25f480f52a6f758fe92d25b17",
+                "reference": "ededdcec1911b1c25f480f52a6f758fe92d25b17",
                 "shasum": ""
             },
             "require": {
@@ -849,8 +849,8 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\Bundle\\MongoDBBundle": ""
+                "psr-4": {
+                    "Doctrine\\Bundle\\MongoDBBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -881,7 +881,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2014-06-18 20:58:26"
+            "time": "2014-06-25 08:06:26"
         },
         {
             "name": "doctrine/orm",
@@ -1906,17 +1906,17 @@
         },
         {
             "name": "sensio/generator-bundle",
-            "version": "v2.3.4",
+            "version": "v2.3.5",
             "target-dir": "Sensio/Bundle/GeneratorBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioGeneratorBundle.git",
-                "reference": "4a7b126e9c22f858e3584b19ddce6e5bdd7677ee"
+                "reference": "8b7a33aa3d22388443b6de0b0cf184122e9f60d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/4a7b126e9c22f858e3584b19ddce6e5bdd7677ee",
-                "reference": "4a7b126e9c22f858e3584b19ddce6e5bdd7677ee",
+                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/8b7a33aa3d22388443b6de0b0cf184122e9f60d2",
+                "reference": "8b7a33aa3d22388443b6de0b0cf184122e9f60d2",
                 "shasum": ""
             },
             "require": {
@@ -1952,7 +1952,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2013-08-21 18:09:35"
+            "time": "2014-04-28 14:01:06"
         },
         {
             "name": "stof/doctrine-extensions-bundle",
