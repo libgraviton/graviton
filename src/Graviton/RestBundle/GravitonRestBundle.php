@@ -5,7 +5,6 @@ namespace Graviton\RestBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use FOS\RestBundle\FOSRestBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 
@@ -32,7 +31,6 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
     {
         return array(
             new JMSSerializerBundle(),
-            new FOSRestBundle(),
             new MisdGuzzleBundle(),
             new KnpPaginatorBundle(),
         );

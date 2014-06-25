@@ -16,13 +16,14 @@ use Graviton\TestBundle\Test\RestTestCase;
 class CountryControllerTest extends RestTestCase
 {
     /**
-     * @const vendorized country mime type for countries
+     * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/vnd.graviton.taxonomy.country+json; charset=UTF-8';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/item';
+
     /**
      * @const corresponding vendorized collection schema mime type
      */
-    const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
+    const COL_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/collection';
 
     /**
      * setup client and load fixtures
@@ -33,7 +34,8 @@ class CountryControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData'
+                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'
@@ -52,7 +54,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=1>; rel="self"',
@@ -71,7 +73,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=2>; rel="self"',
@@ -90,7 +92,7 @@ class CountryControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
             '<http://localhost/taxonomy/country?page=26>; rel="self"',
@@ -205,21 +207,40 @@ class CountryControllerTest extends RestTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('Country', $results->title);
-        $this->assertEquals('A country record.', $results->description);
+        $this->assertEquals('Country', $results->title->en);
+        $this->assertEquals('A country record.', $results->description->en);
         $this->assertEquals('object', $results->type);
 
         $fieldAssertions = array(
-            'id' => array('description' => 'ISO 3166-1 alpha-3 code.'),
-            'name' => array('description' => 'Country name.'),
-            'isoCode' => array('description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'),
-            'capitalCity' => array('description' => 'Capital city.'),
-            'longitude' => array('description' => 'W/O geographic coordinate.'),
-            'latitude' => array('description' => 'N/S geographic coordinate.')
+            'id' => array(
+                'title' => 'ID',
+                'description' => 'ISO 3166-1 alpha-3 code.'
+            ),
+            'name' => array(
+                'title' => 'Name',
+                'description' => 'Country name.'
+            ),
+            'isoCode' => array(
+                'title' => 'ISO Code',
+                'description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'
+            ),
+            'capitalCity' => array(
+                'title' => 'Capital',
+                'description' => 'Capital city.'
+            ),
+            'longitude' => array(
+                'title' => 'Longitude',
+                'description' => 'W/O geographic coordinate.'
+            ),
+            'latitude' => array(
+                'title' => 'Latitude',
+                'description' => 'N/S geographic coordinate.'
+            )
         );
         foreach ($fieldAssertions as $field => $values) {
             $this->assertEquals('string', $results->properties->$field->type);
-            $this->assertEquals($values['description'], $results->properties->$field->description);
+            $this->assertEquals($values['description'], $results->properties->$field->description->en);
+            $this->assertEquals($values['title'], $results->properties->$field->title->en);
         }
 
         $this->assertContains('id', $results->required);

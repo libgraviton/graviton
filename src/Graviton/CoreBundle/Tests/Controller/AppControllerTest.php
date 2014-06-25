@@ -19,13 +19,14 @@ use Graviton\TestBundle\Test\RestTestCase;
 class AppControllerTest extends RestTestCase
 {
     /**
-     * @const vendorized app mime type for app data
+     * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/vnd.graviton.core.app+json; charset=UTF-8';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/item';
+
     /**
      * @const corresponding vendorized schema mime type
      */
-    const COLLECTION_SCHEMA_TYPE = 'application/vnd.graviton.schema.collection+json';
+    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/collection';
 
     /**
      * setup client and load fixtures
@@ -36,7 +37,8 @@ class AppControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData'
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'
@@ -56,16 +58,16 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::COLLECTION_SCHEMA_TYPE.'; charset=UTF-8', $response);
+        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('hello', $results[0]->id);
-        $this->assertEquals('Hello World!', $results[0]->title);
+        $this->assertEquals('Hello World!', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
 
         $this->assertEquals('admin', $results[1]->id);
-        $this->assertEquals('Administration', $results[1]->title);
+        $this->assertEquals('Administration', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
 
         $this->assertContains(
@@ -73,6 +75,26 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * check for empty collections when no fixtures are loaded
+     *
+     * @return void
+     */
+    public function testFindAllEmptyCollection()
+    {
+        // reset fixtures since we already have some from setUp
+        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
+
+        $this->assertEquals(array(), $results);
     }
 
     /**
@@ -90,7 +112,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('admin', $results->id);
-        $this->assertEquals('Administration', $results->title);
+        $this->assertEquals('Administration', $results->title->en);
         $this->assertEquals(true, $results->showInMenu);
 
         $this->assertContains(
@@ -109,7 +131,8 @@ class AppControllerTest extends RestTestCase
     {
         $testApp = new \stdClass;
         $testApp->id = 'new';
-        $testApp->title = 'new Test App';
+        $testApp->title = new \stdClass;
+        $testApp->title->en = 'new Test App';
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
@@ -121,7 +144,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('new', $results->id);
-        $this->assertEquals('new Test App', $results->title);
+        $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
 
         $this->assertContains(
@@ -151,7 +174,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('hello', $results->id);
-        $this->assertEquals('Hello World!', $results->title);
+        $this->assertEquals('Hello World!', $results->title->en);
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
@@ -170,7 +193,8 @@ class AppControllerTest extends RestTestCase
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
-        $isnogudApp->title = 'I don\'t exist';
+        $isnogudApp->title = new \stdClass;
+        $isnogudApp->title->en = 'I don\'t exist';
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -210,7 +234,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass;
         $helloApp->id = 'hello';
-        $helloApp->title = 'Hello World!';
+        $helloApp->title = new \stdClass;
+        $helloApp->title->en = 'Hello World!';
         $helloApp->showInMenu = 'I am a string and not a boolean.';
 
         $client = static::createRestClient();
@@ -238,9 +263,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType('application/schema+json', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-
+        $this->assertIsSchemaResponse($response);
         $this->assertIsAppSchema($results);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -250,6 +273,21 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/item>; rel="canonical"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * test getting schema information from canonical url
+     *
+     * @return void
+     */
+    public function testGetAppSchemaInformationCanonical()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/schema/core/app/item');
+
+        $this->assertIsSchemaResponse($client->getResponse());
+        $this->assertIsAppSchema($client->getResults());
     }
 
     /**
@@ -269,17 +307,34 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType('application/schema+json', $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('Array of app objects', $results->title);
+        $this->assertEquals('Array of app objects', $results->title->en);
         $this->assertEquals('array', $results->type);
         $this->assertIsAppSchema($results->items);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertContains(
+            'Link',
+            explode(',', $response->headers->get('Access-Control-Expose-Headers'))
+        );
 
         $this->assertContains(
             '<http://localhost/schema/core/app/collection>; rel="canonical"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * check if response looks like schema
+     *
+     * @param object $response response
+     *
+     * @return void
+     */
+    private function assertIsSchemaResponse($response)
+    {
+        $this->assertResponseContentType('application/schema+json', $response);
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     /**
@@ -291,22 +346,26 @@ class AppControllerTest extends RestTestCase
      */
     private function assertIsAppSchema(\stdClass $schema)
     {
-        $this->assertEquals('App', $schema->title);
-        $this->assertEquals('A graviton based app.', $schema->description);
+        $this->assertEquals('App', $schema->title->en);
+        $this->assertEquals('A graviton based app.', $schema->description->en);
         $this->assertEquals('object', $schema->type);
 
         $this->assertEquals('string', $schema->properties->id->type);
-        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
+        $this->assertEquals('ID', $schema->properties->id->title->en);
+        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description->en);
         $this->assertContains('id', $schema->required);
 
-        $this->assertEquals('string', $schema->properties->title->type);
-        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
+        $this->assertEquals('object', $schema->properties->title->type);
+        $this->assertEquals('Title', $schema->properties->title->title->en);
+        $this->assertEquals('Display name for an app.', $schema->properties->title->description->en);
+        $this->assertEquals('string', $schema->properties->title->properties->en->type);
         $this->assertContains('title', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);
+        $this->assertEquals('Show in Menu', $schema->properties->showInMenu->title->en);
         $this->assertEquals(
             'Define if an app should be exposed on the top level menu.',
-            $schema->properties->showInMenu->description
+            $schema->properties->showInMenu->description->en
         );
     }
 }

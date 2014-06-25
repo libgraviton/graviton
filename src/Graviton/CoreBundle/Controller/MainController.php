@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use JMS\Serializer\Exception\Exception;
-use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,7 +20,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class MainController
+class MainController implements ContainerAwareInterface
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
@@ -57,7 +55,7 @@ class MainController
                 $router->generate('graviton.core.rest.app.all', array(), true),
                 array(
                     'rel' => 'apps',
-                    'type' => 'application/vnd.graviton.schema.collection.app+json'
+                    'type' => 'application/json'
                 )
             )
         );

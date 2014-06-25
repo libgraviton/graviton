@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Graviton\SchemaBundle\SchemaUtils;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -51,27 +52,16 @@ class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
             $response = $event->getResponse();
             $router = $this->container->get('router');
             $linkHeader = LinkHeader::fromResponse($response);
-    
-            // extract various info from route
-            $routeName = $request->get('_route');
-            $routeParts = explode('.', $routeName);
 
-            $routeType = array_pop($routeParts);
-            $realRouteType = 'canonicalSchema';
-            if ($routeType == 'idOptions') {
-                $realRouteType = 'canonicalIdSchema';
-            }
-
-            $routeName = implode('.', array_merge($routeParts, array($realRouteType)));
-    
+            $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
             $url = $router->generate($routeName, array(), true);
-    
-            // append rel=self link to link headers
+
+            // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));
-    
+
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
-    
+
             $event->setResponse($response);
         }
     }

@@ -20,56 +20,42 @@ use Graviton\RestBundle\Model\DocumentModel;
 class Country extends DocumentModel
 {
     /**
-     * get the description of the model
+     * the description of the model
      *
-     * @return string
+     * @var string
      */
-    public function getDescription()
-    {
-        return 'A country record.';
-    }
+    protected $description = 'A country record.';
 
     /**
-     * get description of a given field
+     * titles for fields
      *
-     * @param string $field field name
-     *
-     * @return string
+     * @var string[]
      */
-    public function getDescriptionOfField($field)
-    {
-        $description = '';
-        switch ($field) {
-            case 'id':
-                $description = 'ISO 3166-1 alpha-3 code.';
-                break;
-            case 'name':
-                $description = 'Country name.';
-                break;
-            case 'isoCode':
-                $description = 'ISO 3166-1 alpha-2 code (aka cTLD).';
-                break;
-            case 'capitalCity':
-                $description = 'Capital city.';
-                break;
-            case 'latitude':
-                $description = 'N/S geographic coordinate.';
-                break;
-            case 'longitude':
-                $description = 'W/O geographic coordinate.';
-                break;
-        }
-
-        return $description;
-    }
+    protected $fieldTitles = array(
+        'id' => 'ID',
+        'name' => 'Name',
+        'isoCode' => 'ISO Code',
+        'capitalCity' => 'Capital',
+        'longitude' => 'Longitude',
+        'latitude' => 'Latitude'
+    );
 
     /**
-     * get required fields for this model
+     * descriptions for fields
      *
-     * @return string[]
+     * @var string[]
      */
-    public function getRequiredFields()
-    {
-        return array('id', 'name', 'isoCode');
-    }
+    protected $fieldDescriptions = array(
+        'id' => 'ISO 3166-1 alpha-3 code.',
+        'name' => 'Country name.',
+        'isoCode' => 'ISO 3166-1 alpha-2 code (aka cTLD).',
+        'capitalCity' => 'Capital city.',
+        'latitude' => 'N/S geographic coordinate.',
+        'longitude' => 'W/O geographic coordinate.'
+    );
+
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = array('id', 'name', 'isoCode');
 }

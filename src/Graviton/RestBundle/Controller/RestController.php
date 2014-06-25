@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -64,7 +65,7 @@ class RestController implements ContainerAwareInterface
     public function allAction()
     {
         return $this->getResponse(
-            $this->getModel()->findAll($this->container->get('request'))
+            $this->getModel()->findAll($this->getRequest())
         );
     }
 
@@ -82,7 +83,7 @@ class RestController implements ContainerAwareInterface
         );
 
         // store id of new record so we dont need to reparse body later when needed
-        $this->container->get('request')->attributes->set('id', $record->getId());
+        $this->getRequest()->attributes->set('id', $record->getId());
 
         $response = $this->validateRecord($record);
 
@@ -162,16 +163,30 @@ class RestController implements ContainerAwareInterface
         $request = $this->getRequest();
         $request->attributes->set('schemaRequest', true);
 
-        list($app, $module, , $modelName,) = explode('.', $request->attributes->get('_route'));
+        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
+        $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
+
+        $translatableFields = array();
+        $languages = array();
+        if ($document instanceof TranslatableDocumentInterface) {
+            $translatableFields = $document->getTranslatableFields();
+            $languages = array_map(
+                function ($language) {
+                    return $language->getId();
+                },
+                $this->container->get('graviton.i18n.repository.language')->findAll()
+            );
+        }
 
         $response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';
-        if (!$id) {
+        if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod =  'getCollectionSchema';
         }
+        $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
         $response->setContent(
-            json_encode(SchemaUtils::$schemaMethod($modelName, $model))
+            $this->getSerializer()->serialize($schema, 'json')
         );
 
         // enabled methods for CorsListener
@@ -283,7 +298,11 @@ class RestController implements ContainerAwareInterface
         // override values from serializer with real ones from request to get originals validated
         foreach (json_decode($content) as $key => $value) {
             $setterMethod = 'set'.ucfirst($key);
-            $record->$setterMethod($value);
+            // this is a very cheap way to skip i18n entries
+            // as always with this method, it needs refactoring badly
+            if (!is_object($value)) {
+                $record->$setterMethod($value);
+            }
         }
 
         $validationErrors = $this->getValidator()->validate($record);
@@ -307,7 +326,7 @@ class RestController implements ContainerAwareInterface
     private function getResponse($result)
     {
         $response = $this->container->get('graviton.rest.response.404');
-        if ($result) {
+        if (!is_null($result)) {
             $response = $this->container->get('graviton.rest.response.200');
             $response = $this->setContent($response, $result);
         }

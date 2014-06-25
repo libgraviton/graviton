@@ -7,6 +7,7 @@
     <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
     <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
     <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+    <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
   </parameters>
   <services>
     <service id="graviton.core.controller.main"
@@ -30,11 +31,12 @@
       <argument type="string">GravitonCoreBundle:App</argument>
     </service>
     <service id="graviton.core.model.app"
-        class="%graviton.core.model.app.class%"
-        parent="graviton.rest.model">
+             class="%graviton.core.model.app.class%"
+             parent="graviton.rest.model">
       <call method="setRepository">
         <argument type="service" id="graviton.core.repository.app"/>
       </call>
     </service>
+    <service id="graviton.core.document.app" class="%graviton.core.document.app.class%"/>
   </services>
 </container>

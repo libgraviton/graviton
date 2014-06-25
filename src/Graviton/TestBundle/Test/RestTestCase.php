@@ -9,8 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Contains additional helpers for testing RESTful servers
  *
- * @todo refactor alot (use overridden client and whatnot)
- *
  * @category GravitonTestBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
@@ -38,6 +36,23 @@ class RestTestCase extends GravitonTestCase
         $client->setServerParameters($server);
 
         return $client;
+    }
+
+    /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+            ),
+            null,
+            'doctrine_mongodb'
+        );
     }
 
     /**

@@ -11,6 +11,7 @@
     <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
     <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
     <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
+    <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
   </parameters>
   <services>
     <service id="graviton.rest.serializer" alias="serializer">
@@ -23,7 +24,7 @@
     </service>
     <service id="graviton.rest.serializer.serializercontext" class="%graviton.rest.serializer.serializercontext.class%">
       <call method="setSerializeNull">
-        <argument type="constant">true</argument>
+        <argument type="constant">false</argument>
       </call>
     </service>
     <service id="graviton.rest.serializer.deserializercontext" class="%graviton.rest.serializer.deserializercontext.class%">
@@ -34,7 +35,10 @@
     <service id="graviton.rest.doctrine" alias="doctrine"/>
     <service id="graviton.rest.validator" alias="validator"/>
     <service id="graviton.rest.router" alias="router"/>
-    <service id="graviton.rest.request" alias="request"/>
+    <service id="graviton.rest.request"
+      class="%graviton.rest.request.class%"
+      factory-service="request_stack"
+      factory-method="getCurrentRequest"/>
     <service id="graviton.rest.paginator" alias="knp_paginator"/>
     <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
     <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
@@ -60,6 +64,30 @@
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.listener.corsresponselistener" class="%graviton.rest.listener.corsresponselistener.class%">
+      <call method="addHeader">
+        <argument>Link</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Accept</argument>
+      </call>
+      <call method="addHeader">
+        <argument>X-Requested-With</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Content-Type</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Origin</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Cache-Control</argument>
+      </call>
+      <call method="addHeader">
+        <argument>ETag</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Date</argument>
+      </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.model" abstract="true">

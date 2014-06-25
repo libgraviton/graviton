@@ -16,6 +16,23 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class CorsResponseListener
 {
     /**
+     * @var string[]
+     */
+    private $headers = array();
+
+    /**
+     * add an allowed header
+     *
+     * @param string $header header to allow
+     *
+     * @return void
+     */
+    public function addheader($header)
+    {
+        $this->headers[] = $header;
+    }
+
+    /**
      * add a rel=self Link header to the response
      *
      * @param FilterResponseEvent $event response listener event
@@ -33,6 +50,7 @@ class CorsResponseListener
         if (!empty($corsMethods)) {
             $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
         }
+        $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
 
         $event->setResponse($response);
     }

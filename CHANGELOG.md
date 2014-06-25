@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0
+
+* full i18n support
+  * translatable strings stored in ``/i18n/translatable``
+  * supported languages manageable through ``/i18n/language``
+  * ``/core/app`` is now i18n enabled
+  * multilingual schemas (base on a v5 proposal to json+schema)
+  * multilingual properties get marked as translatable to aid frontend developer
+  * makes use of Accept-Language and Content-Language for language negotiations
+  * See (the docs)[http://gravity-platform.github.io/doc/i18n.html] for more information
+* fix loading of VCAP_* env vars in cloudfoundry
+* support getting some headers in CORS responses
+* update all the things: mostly symfony 2.5
+
 ## 0.5.0
 
 * make graviton installable on cloudfoundry out of the box

@@ -24,7 +24,7 @@ class ActionUtils
      */
     public static function getRouteGet($service)
     {
-        return self::getRoute($service, 'GET', 'getAction', array('id' => '\w+'));
+        return self::getRoute($service, 'GET', 'getAction', array('id' => '[a-zA-Z1-9\-_\/]+'));
     }
 
     /**
@@ -60,7 +60,7 @@ class ActionUtils
      */
     public static function getRoutePut($service)
     {
-        return self::getRoute($service, 'PUT', 'putAction', array('id' => '\w+'));
+        return self::getRoute($service, 'PUT', 'putAction', array('id' => '[a-zA-Z1-9\-_]+'));
     }
 
     /**
@@ -72,7 +72,7 @@ class ActionUtils
      */
     public static function getRouteDelete($service)
     {
-        return self::getRoute($service, 'DELETE', 'deleteAction', array('id' => '\w+'));
+        return self::getRoute($service, 'DELETE', 'deleteAction', array('id' => '[a-zA-Z1-9\-_]+'));
     }
 
     /**
@@ -114,7 +114,6 @@ class ActionUtils
 
         return $route;
     }
-
 
     /**
      * Get entity name from service strings.

@@ -21,11 +21,11 @@ class MainControllerTest extends RestTestCase
     /**
      * @const vendorized app mime type for data
      */
-    const CONTENT_TYPE = 'application/vnd.graviton.core.main+json; charset=UTF-8';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8';
     /**
      * @const corresponding vendorized schema mime type
      */
-    const SCHEMA_TYPE = 'application/vnd.graviton.schema.core.main+json';
+    const SCHEMA_TYPE = 'application/json; charset=UTF-8';
 
     /**
      * check if version is returned in header
@@ -58,7 +58,7 @@ class MainControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app>; rel="apps"; type="application/vnd.graviton.schema.collection.app+json"',
+            '<http://localhost/core/app>; rel="apps"; type="application/json"',
             explode(',', $response->headers->get('Link'))
         );
     }

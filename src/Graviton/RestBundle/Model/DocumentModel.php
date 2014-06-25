@@ -27,6 +27,26 @@ class DocumentModel implements ModelInterface
     private $paginator;
 
     /**
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * @var string[]
+     */
+    protected $fieldTitles;
+
+    /**
+     * @var string[]
+     */
+    protected $fieldDescriptions;
+
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = array();
+
+    /**
      * create new app model
      *
      * @param ObjectRepository $countries Repository of countries
@@ -99,7 +119,7 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param object $entity entityy to insert
+     * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
      *
      * @return Object
      */
@@ -164,7 +184,8 @@ class DocumentModel implements ModelInterface
      * {@inheritDoc}
      *
      * Currently this is being used to build the route id used for redirecting
-     * to newly made documents.
+     * to newly made documents. It might benefit from having a different name
+     * for those purposes.
      *
      * We might use a convention based mapping here:
      * Graviton\CoreBundle\Document\App -> mongodb://graviton_core
@@ -176,6 +197,52 @@ class DocumentModel implements ModelInterface
      */
     public function getConnectionName()
     {
-        return 'graviton.core';
+        $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
+
+        return 'graviton.'.$bundle;
+    }
+
+    /**
+     * get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * get title for a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getTitleOfField($field)
+    {
+        return $this->fieldTitles[$field];
+    }
+
+    /**
+     * get description for a given field
+     *
+     * @param string $field field name
+     *
+     * @return string
+     */
+    public function getDescriptionOfField($field)
+    {
+        return $this->fieldDescriptions[$field];
+    }
+
+    /**
+     * get required fields for this object
+     *
+     * @return string[]
+     */
+    public function getRequiredFields()
+    {
+        return $this->requiredFields;
     }
 }

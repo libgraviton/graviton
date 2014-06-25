@@ -19,47 +19,36 @@ use Graviton\RestBundle\Model\DocumentModel;
 class App extends DocumentModel
 {
     /**
-     * get the description of the model
+     * the description of the model
      *
-     * @return string
+     * @var string
      */
-    public function getDescription()
-    {
-        return 'A graviton based app.';
-    }
+    protected $description = 'A graviton based app.';
 
     /**
-     * get description of a given field
+     * titles for fields
      *
-     * @param string $field field name
-     *
-     * @return string
+     * @var string[]
      */
-    public function getDescriptionOfField($field)
-    {
-        $description = '';
-        switch ($field) {
-            case 'id':
-                $description = 'Unique identifier for an app.';
-                break;
-            case 'title':
-                $description = 'Display name for an app.';
-                break;
-            case 'showInMenu':
-                $description = 'Define if an app should be exposed on the top level menu.';
-                break;
-        }
-
-        return $description;
-    }
+    protected $fieldTitles = array(
+        'id' => 'ID',
+        'title' => 'Title',
+        'showInMenu' => 'Show in Menu'
+    );
 
     /**
-     * get required fields for this object
+     * descriptions for fields
      *
-     * @return string[]
+     * @var string[]
      */
-    public function getRequiredFields()
-    {
-        return array('id', 'title', 'showInMenu');
-    }
+    protected $fieldDescriptions = array(
+        'id' => 'Unique identifier for an app.',
+        'title' => 'Display name for an app.',
+        'showInMenu' => 'Define if an app should be exposed on the top level menu.'
+    );
+
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = array('id', 'title', 'showInMenu');
 }

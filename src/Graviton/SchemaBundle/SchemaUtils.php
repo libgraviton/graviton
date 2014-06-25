@@ -2,6 +2,8 @@
 
 namespace Graviton\SchemaBundle;
 
+use Graviton\SchemaBundle\Document\Schema;
+
 /**
  * Utils for generating schemas.
  *
@@ -16,30 +18,37 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string $modelName name of mode to generate schema for
-     * @param object $model     model to generate schema for
+     * @param string   $modelName          name of mode to generate schema for
+     * @param object   $model              model to generate schema for
+     * @param string[] $translatableFields fields that get translated on the fly
+     * @param string[] $languages          languages
      *
-     * @return \stdClass
+     * @return Schema
      */
-    public static function getModelSchema($modelName, $model)
+    public static function getModelSchema($modelName, $model, $translatableFields, $languages)
     {
         // build up schema data
-        $schema = new \stdClass;
-        $schema->title = ucfirst($modelName);
-        $schema->description = $model->getDescription();
-        $schema->type = 'object';
-        $schema->properties = new \stdClass;
+        $schema = new Schema;
+        $schema->setTitle(ucfirst($modelName));
+        $schema->setDescription($model->getDescription());
+        $schema->setType('object');
 
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
 
         foreach ($meta->getFieldNames() as $field) {
-            $schema->properties->$field = new \stdClass;
-            $schema->properties->$field->type = $meta->getTypeOfField($field);
-            $schema->properties->$field->description = $model->getDescriptionOfField($field);
+            $property = new Schema();
+            $property->setTitle($model->getTitleOfField($field));
+            $property->setDescription($model->getDescriptionOfField($field));
+            $property->setType($meta->getTypeOfField($field));
+            if (in_array($field, $translatableFields)) {
+                $property = self::makeTranslatable($property, $languages);
+            }
+
+            $schema->addProperty($field, $property);
         }
-        $schema->required = $model->getRequiredFields();
+        $schema->setRequired($model->getRequiredFields());
 
         return $schema;
     }
@@ -47,18 +56,68 @@ class SchemaUtils
     /**
      * get schema for an array of models
      *
-     * @param string $modelName name of model
-     * @param object $model     model
+     * @param string   $modelName          name of model
+     * @param object   $model              model
+     * @param string[] $translatableFields fields that get translated on the fly
+     * @param string[] $languages          languages
      *
-     * @return \stdClass
+     * @return Schema
      */
-    public static function getCollectionSchema($modelName, $model)
+    public static function getCollectionSchema($modelName, $model, $translatableFields, $languages)
     {
-        $collectionSchema = new \stdClass;
-        $collectionSchema->title = sprintf('Array of %s objects', $modelName);
-        $collectionSchema->type = 'array';
-        $collectionSchema->items = self::getModelSchema($modelName, $model);
+        $collectionSchema = new Schema;
+        $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
+        $collectionSchema->setType('array');
+        $collectionSchema->setItems(self::getModelSchema($modelName, $model, $translatableFields, $languages));
 
         return $collectionSchema;
+    }
+
+    /**
+     * get canonical route to a schema based on a route
+     *
+     * @param string $routeName route name
+     *
+     * @return string schema route name
+     */
+    public static function getSchemaRouteName($routeName)
+    {
+        $routeParts = explode('.', $routeName);
+
+        $routeType = array_pop($routeParts);
+        // check if we need to create an item or collection schema
+        $realRouteType = 'canonicalSchema';
+        if ($routeType != 'options' && $routeType != 'all') {
+            $realRouteType = 'canonicalIdSchema';
+        }
+
+        return implode('.', array_merge($routeParts, array($realRouteType)));
+    }
+
+    /**
+     * turn a property into a translatable property
+     *
+     * @param Schema   $property  simple string property
+     * @param string[] $languages available languages
+     *
+     * @return Schema
+     */
+    public static function makeTranslatable(Schema $property, $languages)
+    {
+        $property->setType('object');
+        $property->setTranslatable(true);
+
+        array_walk(
+            $languages,
+            function ($language) use ($property) {
+                $schema = new Schema;
+                $schema->setType('string');
+                $schema->setTitle('Translated String');
+                $schema->setDescription('String in '.$language.' locale.');
+                $property->addProperty($language, $schema);
+            }
+        );
+
+        return $property;
     }
 }
