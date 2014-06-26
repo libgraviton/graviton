@@ -79,5 +79,9 @@ class MainControllerTest extends RestTestCase
             'Please look at the Link headers of this response for further information.',
             $results->message
         );
+
+        $this->assertTrue(is_array($results->services));
+
+        $this->markTestIncomplete();
     }
 }

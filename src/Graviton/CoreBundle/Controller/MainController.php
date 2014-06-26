@@ -67,6 +67,9 @@ class MainController implements ContainerAwareInterface
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
+
+        $mainPage->services = array();
+
         $response->setContent(json_encode($mainPage));
 
         return $response;
