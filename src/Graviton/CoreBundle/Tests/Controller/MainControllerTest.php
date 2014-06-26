@@ -80,8 +80,23 @@ class MainControllerTest extends RestTestCase
             $results->message
         );
 
-        $this->assertTrue(is_array($results->services));
+        $this->assertInternalType('array', $results->services);
 
-        $this->markTestIncomplete();
+        $refName = '$ref';
+        $serviceRefs = array_map(
+            function ($service) use ($refName) {
+                return $service->$refName;
+            },
+            $results->services
+        );
+        $this->assertContains('http://localhost/core/app', $serviceRefs);
+
+        $profiles = array_map(
+            function ($service) {
+                return $service->profile;
+            },
+            $results->services
+        );
+        $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
     }
 }
