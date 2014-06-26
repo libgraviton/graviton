@@ -131,14 +131,14 @@ class JsonInput
 
         foreach ($validationResult as $violation) {
             $newViolation = new ConstraintViolation(
-                    $violation->getMessage(),
-                    $violation->getMessageTemplate(),
-                    $violation->getParameters(),
-                    $violation->getRoot(),
-                    $prop,
-                    $violation->getInvalidValue(),
-                    $violation->getPlural(),
-                    $violation->getCode()
+                $violation->getMessage(),
+                $violation->getMessageTemplate(),
+                $violation->getParameters(),
+                $violation->getRoot(),
+                $prop,
+                $violation->getInvalidValue(),
+                $violation->getPlural(),
+                $violation->getCode()
             );
 
             $violations->add($newViolation);

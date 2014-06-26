@@ -116,9 +116,9 @@ class RestController implements ContainerAwareInterface
             $response = $this->container->get('graviton.rest.response.404');
         } else {
             $record = $this->getSerializer()->deserialize(
-                    $this->getRequest()->getContent(),
-                    $this->getModel()->getEntityClass(),
-                    'json'
+                $this->getRequest()->getContent(),
+                $this->getModel()->getEntityClass(),
+                'json'
             );
             $response = $this->validateRecord($record);
             if (!$response) {
