@@ -16,6 +16,25 @@ use Symfony\Component\Validator\ConstraintViolationList;
 class JsonInput
 {
     /**
+     * Validator
+     *
+     * @var Symfony\Component\Validator\Validator
+     */
+    private $validator;
+
+    /**
+     * Constructor
+     *
+     * @param Symfony\Component\Validator\Validator $validator Validator
+     *
+     * @return void
+     */
+    public function __construct($validator)
+    {
+        $this->validator = $validator;
+    }
+
+    /**
      * Validate the json input values and check for non existing values
      *
      * @param String                                  $input     Json input string
@@ -24,7 +43,7 @@ class JsonInput
      *
      * @return Symfony\Component\Validator\ConstraintViolationList $violations Constraint violation list
      */
-    public static function validate($input, $model, $validator)
+    public function validate($input, $model)
     {
         // get all fields of this document
         $dm = $model->getRepository()->getDocumentManager();
@@ -32,7 +51,7 @@ class JsonInput
             ->getFieldNames();
 
         // get validation info
-        $classMetadata = $validator->getMetadataFor($model->getEntityClass());
+        $classMetadata = $this->validator->getMetadataFor($model->getEntityClass());
         $constrainedProps = $classMetadata->getConstrainedProperties();
 
         $input = json_decode($input, true);
@@ -48,13 +67,13 @@ class JsonInput
             // if the value is set, validate...
             if (isset($input[$prop])) {
                 $val = $input[$prop];
-                $validationResult = $validator->validateValue($val, $constraints);
-                $violations->addAll(self::createNewViolationList($prop, $validationResult));
+                $validationResult = $this->validator->validateValue($val, $constraints);
+                $violations->addAll($this->createNewViolationList($prop, $validationResult));
             } else {
                 // if it's not set but required, validate with empty value
-                if (self::isRequired($constraints)) {
-                    $validationResult = $validator->validateValue($val, $constraints);
-                    $violations->addAll(self::createNewViolationList($prop, $validationResult));
+                if ($this->isRequired($constraints)) {
+                    $validationResult = $this->validator->validateValue($val, $constraints);
+                    $violations->addAll($this->createNewViolationList($prop, $validationResult));
                 }
             }
         }
@@ -77,39 +96,39 @@ class JsonInput
 
         return $violations;
     }
-    
+
     /**
      * Checks if a value is required
-     * 
+     *
      * @param array $constraints constraints for this value
-     * 
+     *
      * @return boolean $required true/false
      */
-    private static function isRequired($constraints)
+    private function isRequired($constraints)
     {
         $required = false;
-        
+
         foreach ($constraints as $constraint) {
             if ($constraint instanceof Symfony\Component\Validator\Constraints\NotBlank) {
                 $required = true;
             }
         }
-        
+
         return $required;
     }
-    
+
     /**
      * Create a new violation list with the given violations
-     * 
+     *
      * @param String                                              $prop             Property
      * @param Symfony\Component\Validator\ConstraintViolationList $validationResult Violation list
-     * 
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    private static function createNewViolationList($prop, $validationResult)
+    private function createNewViolationList($prop, $validationResult)
     {
         $violations = new ConstraintViolationList();
-        
+
         foreach ($validationResult as $violation) {
             $newViolation = new ConstraintViolation(
                     $violation->getMessage(),
@@ -121,10 +140,10 @@ class JsonInput
                     $violation->getPlural(),
                     $violation->getCode()
             );
-        
+
             $violations->add($newViolation);
         }
-        
+
         return $violations;
     }
 }

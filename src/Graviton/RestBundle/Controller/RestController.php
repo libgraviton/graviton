@@ -121,7 +121,7 @@ class RestController implements ContainerAwareInterface
                     'json'
             );
             $response = $this->validateRecord($record);
-            if (!$response) {                
+            if (!$response) {
                 $record = $this->getModel()->updateRecord($id, $record);
                 $response = $this->container->get('graviton.rest.response.200');
                 $response = $this->setContent($response, $record);
@@ -293,14 +293,11 @@ class RestController implements ContainerAwareInterface
         if (is_resource($content)) {
             throw new \LogicException('unexpected resource in validation');
         }
-        
+
+        $inputValidator = $this->container->get('graviton.rest.validation.jsoninput');
         // check the input params
-        $inputValidation = JsonInput::validate(
-            $content,
-            $this->getModel(),
-            $this->getValidator()
-        );
-        
+        $inputValidation = $inputValidator->validate($content, $this->getModel());
+
         // check the resulting object and merge errors
         $validationResult = $this->getValidator()->validate($record);
         $validationResult->addAll($inputValidation);

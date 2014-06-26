@@ -12,6 +12,7 @@
     <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
     <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
     <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
+    <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validation\JsonInput</parameter>
   </parameters>
   <services>
     <service id="graviton.rest.serializer" alias="serializer">
@@ -109,6 +110,9 @@
     <service id="graviton.rest.response.404" parent="graviton.rest.response">
       <call method="setStatusCode"><argument>404</argument></call>
       <call method="setContent"><argument>Not Found</argument></call>
+    </service>
+    <service id="graviton.rest.validation.jsoninput" class="%graviton.rest.validation.jsoninput.class%">
+        <argument type="service" id="graviton.rest.validator"/>
     </service>
   </services>
 </container>
