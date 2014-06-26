@@ -37,9 +37,8 @@ class JsonInput
     /**
      * Validate the json input values and check for non existing values
      *
-     * @param String                                  $input     Json input string
-     * @param Graviton\RestBundle\Model\DocumentModel $model     Model
-     * @param \Symfony\Component\Validator\Validator  $validator validator class
+     * @param String                                  $input Json input string
+     * @param Graviton\RestBundle\Model\DocumentModel $model Model
      *
      * @return Symfony\Component\Validator\ConstraintViolationList $violations Constraint violation list
      */
