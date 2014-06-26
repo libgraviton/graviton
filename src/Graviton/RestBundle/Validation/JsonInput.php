@@ -35,15 +35,28 @@ class JsonInput
         $classMetadata = $validator->getMetadataFor($model->getEntityClass());
         $constrainedProps = $classMetadata->getConstrainedProperties();
 
-        $input = json_decode($input);
+        $input = json_decode($input, true);
 
         $violations = new ConstraintViolationList();
 
         // Validate input values
         foreach ($constrainedProps as $prop) {
             $metadata = $classMetadata->getPropertyMetadata($prop);
-            $validationResult = $validator->validateValue($input->$prop, $metadata[0]->constraints);
-            $violations->addAll($validationResult);
+            $constraints = $metadata[0]->constraints;
+
+            $val;
+            // if the value is set, validate...
+            if (isset($input[$prop])) {
+                $val = $input[$prop];
+                $validationResult = $validator->validateValue($val, $constraints);
+                $violations->addAll(self::createNewViolationList($prop, $validationResult));
+            } else {
+                // if it's not set but required, validate with empty value
+                if (self::isRequired($constraints)) {
+                    $validationResult = $validator->validateValue($val, $constraints);
+                    $violations->addAll(self::createNewViolationList($prop, $validationResult));
+                }
+            }
         }
 
         // Check for non existing attributes
@@ -62,6 +75,56 @@ class JsonInput
             }
         }
 
+        return $violations;
+    }
+    
+    /**
+     * Checks if a value is required
+     * 
+     * @param array $constraints constraints for this value
+     * 
+     * @return boolean $required true/false
+     */
+    private static function isRequired($constraints)
+    {
+        $required = false;
+        
+        foreach ($constraints as $constraint) {
+            if ($constraint instanceof Symfony\Component\Validator\Constraints\NotBlank) {
+                $required = true;
+            }
+        }
+        
+        return $required;
+    }
+    
+    /**
+     * Create a new violation list with the given violations
+     * 
+     * @param String                                              $prop             Property
+     * @param Symfony\Component\Validator\ConstraintViolationList $validationResult Violation list
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     */
+    private static function createNewViolationList($prop, $validationResult)
+    {
+        $violations = new ConstraintViolationList();
+        
+        foreach ($validationResult as $violation) {
+            $newViolation = new ConstraintViolation(
+                    $violation->getMessage(),
+                    $violation->getMessageTemplate(),
+                    $violation->getParameters(),
+                    $violation->getRoot(),
+                    $prop,
+                    $violation->getInvalidValue(),
+                    $violation->getPlural(),
+                    $violation->getCode()
+            );
+        
+            $violations->add($newViolation);
+        }
+        
         return $violations;
     }
 }

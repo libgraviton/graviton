@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\RestBundle\Validation\JsonInput;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -111,19 +112,16 @@ class RestController implements ContainerAwareInterface
      */
     public function putAction($id)
     {
-        $record = $this->getSerializer()->deserialize(
-            $this->getRequest()->getContent(),
-            $this->getModel()->getEntityClass(),
-            'json'
-        );
-
-        $response = $this->validateRecord($record);
-
-        if (!$response) {
-            $existingRecord = $this->getModel()->find($id);
-            if (!$existingRecord) {
-                $response = $this->container->get('graviton.rest.response.404');
-            } else {
+        if (!$this->getModel()->find($id)) {
+            $response = $this->container->get('graviton.rest.response.404');
+        } else {
+            $record = $this->getSerializer()->deserialize(
+                    $this->getRequest()->getContent(),
+                    $this->getModel()->getEntityClass(),
+                    'json'
+            );
+            $response = $this->validateRecord($record);
+            if (!$response) {                
                 $record = $this->getModel()->updateRecord($id, $record);
                 $response = $this->container->get('graviton.rest.response.200');
                 $response = $this->setContent($response, $record);
@@ -259,7 +257,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getSerializerContext()
     {
-        return $this->container->get('graviton.rest.serializer.serializercontext');
+        return clone $this->container->get('graviton.rest.serializer.serializercontext');
     }
 
     /**
@@ -295,22 +293,22 @@ class RestController implements ContainerAwareInterface
         if (is_resource($content)) {
             throw new \LogicException('unexpected resource in validation');
         }
-        // override values from serializer with real ones from request to get originals validated
-        foreach (json_decode($content) as $key => $value) {
-            $setterMethod = 'set'.ucfirst($key);
-            // this is a very cheap way to skip i18n entries
-            // as always with this method, it needs refactoring badly
-            if (!is_object($value)) {
-                $record->$setterMethod($value);
-            }
-        }
-
-        $validationErrors = $this->getValidator()->validate($record);
+        
+        // check the input params
+        $inputValidation = JsonInput::validate(
+            $content,
+            $this->getModel(),
+            $this->getValidator()
+        );
+        
+        // check the resulting object and merge errors
+        $validationResult = $this->getValidator()->validate($record);
+        $validationResult->addAll($inputValidation);
 
         $response =  null;
-        if (count($validationErrors) > 0) {
+        if ($validationResult->count() > 0) {
             $response = $this->container->get('graviton.rest.response.400');
-            $response = $this->setContent($response, $validationErrors);
+            $response = $this->setContent($response, $validationResult);
         }
 
         return $response;
