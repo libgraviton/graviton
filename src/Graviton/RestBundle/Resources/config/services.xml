@@ -101,6 +101,9 @@
     <service id="graviton.rest.response.200" parent="graviton.rest.response">
       <call method="setStatusCode"><argument>200</argument></call>
     </service>
+    <service id="graviton.rest.response.204" parent="graviton.rest.response">
+      <call method="setStatusCode"><argument>204</argument></call>
+    </service>
     <service id="graviton.rest.response.201" parent="graviton.rest.response">
       <call method="setStatusCode"><argument>201</argument></call>
     </service>

@@ -64,6 +64,18 @@ class ActionUtils
     }
 
     /**
+     * Get route for PATCH request
+     *
+     * @param string $service service id
+     *
+     * @return Route
+     */
+    public static function getRoutePatch($service)
+    {
+        return self::getRoute($service, 'PATCH', 'patchAction', array('id' => '[a-zA-Z1-9\-_]+'));
+    }
+
+    /**
      * Get route for DELETE requests
      *
      * @param string $service service id

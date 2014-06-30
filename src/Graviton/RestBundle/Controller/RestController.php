@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Validation\JsonInput;
+use Rs\Json\Patch;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -86,7 +87,7 @@ class RestController implements ContainerAwareInterface
         // store id of new record so we dont need to reparse body later when needed
         $this->getRequest()->attributes->set('id', $record->getId());
 
-        $response = $this->validateRecord($record);
+        $response = $this->validateRecord($record, $this->getRequest()->getContent());
 
         if (!$response) {
             $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
@@ -120,7 +121,7 @@ class RestController implements ContainerAwareInterface
                 $this->getModel()->getEntityClass(),
                 'json'
             );
-            $response = $this->validateRecord($record);
+            $response = $this->validateRecord($record, $this->getRequest()->getContent());
             if (!$response) {
                 $record = $this->getModel()->updateRecord($id, $record);
                 $response = $this->container->get('graviton.rest.response.200');
@@ -144,6 +145,53 @@ class RestController implements ContainerAwareInterface
 
         if (is_null($this->getModel()->deleteRecord($id))) {
             $response = $this->container->get('graviton.rest.response.200');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Patch a record (partial update)
+     *
+     * @param Number $id ID of record
+     *
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     */
+    public function patchAction($id)
+    {
+        $response = $this->container->get('graviton.rest.response.400');
+
+        $record = $this->getModel()->find($id);
+
+        // Get the patch params from request
+        $requestContent = $this->getRequest()->getContent();
+
+        if (!is_null($record) && !empty($requestContent)) {
+            // get the record as json to handle json-patch
+            $jsonString = $this->getSerializer()->serialize(
+                $record,
+                'json',
+                $this->getSerializerContext()
+            );
+
+            // Now replace existing values with the new ones
+            $patch = new Patch($jsonString, $requestContent);
+
+            // Deserialize the new json string to an object
+            $newRecord = $this->getSerializer()->deserialize(
+                $patch->apply(),
+                $this->getModel()->getEntityClass(),
+                'json'
+            );
+
+            // Validate the new object
+            $response = $this->validateRecord($newRecord, $patch->apply());
+
+            // If everything is ok, update record and return 204 No Content
+            if (!$response) {
+                $record = $this->getModel()->updateRecord($id, $newRecord);
+                $response = $this->container->get('graviton.rest.response.204');
+            }
         }
 
         return $response;
@@ -283,13 +331,13 @@ class RestController implements ContainerAwareInterface
     /**
      * validate a record and return an approriate reponse
      *
-     * @param Object $record record to validate
+     * @param Object $record  record to validate
+     * @param String $content request content
      *
      * @return \Symfony\Component\HttpFoundation\Response|null
      */
-    private function validateRecord($record)
+    private function validateRecord($record, $content)
     {
-        $content = $this->getRequest()->getContent();
         if (is_resource($content)) {
             throw new \LogicException('unexpected resource in validation');
         }
