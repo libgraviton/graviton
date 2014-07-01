@@ -325,6 +325,70 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * Test replace an existing value of a record
+     *
+     * @return void
+     */
+    public function testPatchAppReplace()
+    {
+        $client = static::createRestClient();
+        $patchString = json_decode('[{"op":"replace","path":"/showInMenu","value":false}]');
+
+        $client->patch('/core/app/hello', $patchString);
+
+        $response = $client->getResponse();
+
+        // get the patched record
+        $client->request('GET', '/core/app/hello');
+        $results = $client->getResults();
+
+        // check status code (204 No Content)
+        $this->assertEquals('204', $response->getStatusCode());
+
+        // check record values
+        $this->assertEquals('hello', $results->id);
+        $this->assertEquals('Hello World!', $results->title->en);
+        $this->assertFalse($results->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app/hello>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * Test add must replace an existing value of a record
+     *
+     * @return void
+     */
+    public function testPatchAppAddMustReplace()
+    {
+        $client = static::createRestClient();
+        $patchString = json_decode('[{"op":"add","path":"/showInMenu","value":false}]');
+
+        $client->patch('/core/app/hello', $patchString);
+
+        $response = $client->getResponse();
+
+        // get the patched record
+        $client->request('GET', '/core/app/hello');
+        $results = $client->getResults();
+
+        // check status code (204 No Content)
+        $this->assertEquals('204', $response->getStatusCode());
+
+        // check record values
+        $this->assertEquals('hello', $results->id);
+        $this->assertEquals('Hello World!', $results->title->en);
+        $this->assertFalse($results->showInMenu);
+
+        $this->assertContains(
+            '<http://localhost/core/app/hello>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
      * check if response looks like schema
      *
      * @param object $response response

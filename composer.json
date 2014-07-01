@@ -62,7 +62,9 @@
         "doctrine/doctrine-fixtures-bundle": "~2.2",
         "misd/guzzle-bundle": "~1.0",
         "knplabs/knp-paginator-bundle": "~2.4",
-        "symfony/icu": "~1.0.0"
+        "symfony/icu": "~1.0.0",
+        "php-jsonpointer/php-jsonpointer": "@dev",
+        "php-jsonpatch/php-jsonpatch": "@dev"
     },
     "config": {
       "github-oauth": {
