@@ -21,6 +21,11 @@ class CorsResponseListener
     private $headers = array();
 
     /**
+     * @var string[]
+     */
+    private $allowHeaders = array('Content-Type', 'Content-Language');
+
+    /**
      * add an allowed header
      *
      * @param string $header header to allow
@@ -51,6 +56,7 @@ class CorsResponseListener
             $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
         }
         $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
+        $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->allowHeaders));
 
         $event->setResponse($response);
     }

@@ -89,6 +89,12 @@
       <call method="addHeader">
         <argument>Date</argument>
       </call>
+      <call method="addHeader">
+        <argument>Access-Control-Allow-Methods</argument>
+      </call>
+      <call method="addHeader">
+        <argument>Content-Language</argument>
+      </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.rest.model" abstract="true">
