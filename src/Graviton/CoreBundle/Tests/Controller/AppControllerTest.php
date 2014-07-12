@@ -223,6 +223,9 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+
+        $client->request('GET', '/core/app/hello');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**

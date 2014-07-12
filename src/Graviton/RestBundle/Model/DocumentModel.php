@@ -164,6 +164,7 @@ class DocumentModel implements ModelInterface
         $return = $entity;
         if ($entity) {
             $dm->remove($entity);
+            $dm->flush();
             $return = null;
         }
 
