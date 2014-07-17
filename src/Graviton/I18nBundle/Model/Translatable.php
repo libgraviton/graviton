@@ -15,43 +15,4 @@ use Graviton\RestBundle\Model\DocumentModel;
  */
 class Translatable extends DocumentModel
 {
-    /**
-     * the description of the model
-     *
-     * @var string
-     */
-    protected $description = 'A Translatable string available for i18n purposes.';
-
-    /**
-     * titles for fields
-     *
-     * @var string[]
-     */
-    protected $fieldTitles = array(
-        'id' => 'ID',
-        'domain' => 'Domain',
-        'locale' => 'Locale',
-        'original' => 'Source String',
-        'translated' => 'Translated String',
-        'isLocalized' => 'Localized?',
-    );
-
-    /**
-     * descriptions for fields
-     *
-     * @var string[]
-     */
-    protected $fieldDescriptions = array(
-        'id' => 'Internal identifier of a translation string.',
-        'domain' => 'Domain a given string is applicable to.',
-        'locale' => 'Language Locale',
-        'original' => 'Original version of string (usually english).',
-        'translated' => 'Translated version of string.',
-        'isLocalized' => 'Has this record been translated.',
-    );
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = array('domain', 'locale', 'original');
 }

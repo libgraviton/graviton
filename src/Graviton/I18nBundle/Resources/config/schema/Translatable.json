@@ -1,0 +1,34 @@
+{
+  "description": "A Translatable string available for i18n purposes.",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Internal identifier of a translation string."
+    },
+    "domain": {
+      "title": "Domain",
+      "description": "Domain a given string is applicable to."
+    },
+    "locale": {
+      "title": "Locale",
+      "description": "Language Locale."
+    },
+    "original": {
+      "title": "Source String",
+      "description": "Original version of string (usually english)."
+    },
+    "translated": {
+      "title": "Translated String",
+      "description": "Translated version of string."
+    },
+    "isLocalized": {
+      "title": "Localized?",
+      "description": "Has this record been translated."
+    }
+  },
+  "required": [
+    "domain",
+    "locale",
+    "original"
+  ]
+}
