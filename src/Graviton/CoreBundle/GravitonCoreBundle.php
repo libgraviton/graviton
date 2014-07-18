@@ -23,6 +23,8 @@ use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 /**
  * GravitonCoreBundle
  *
+ * WARNING: Don't change me without changing Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
+ *
  * @category GravitonCoreBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
