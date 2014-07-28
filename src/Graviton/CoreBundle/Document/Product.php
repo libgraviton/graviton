@@ -27,20 +27,6 @@ class Product
     protected $name;
 
     /**
-     * Set id
-     *
-     * @param string $id id for new document
-     *
-     * @return self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
      * @return string $id
@@ -48,20 +34,6 @@ class Product
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name product name
-     *
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     /**

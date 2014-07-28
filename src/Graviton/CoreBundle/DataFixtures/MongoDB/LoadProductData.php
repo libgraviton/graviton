@@ -5,6 +5,8 @@
 
 namespace Graviton\CoreBundle\DataFixtures\MongoDB;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Graviton\CoreBundle\Document\Product;
@@ -18,8 +20,25 @@ use Graviton\CoreBundle\Document\Product;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class LoadProductData implements FixtureInterface
+class LoadProductData implements FixtureInterface, ContainerAwareInterface
 {
+    /**
+     * @private ContainerInterface
+     */
+    private $container;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param ContainerInterface $container service_container
+     *
+     * @return void
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -30,23 +49,26 @@ class LoadProductData implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $products = array(
-            1 => 'Checking account',
-            2 => 'Savings Account',
-            3 => 'Money market account',
-            4 => 'Mortgage',
-            5 => 'Personal loan',
-            6 => 'Mutual fund',
-            7 => 'Revolving credit',
-            8 => 'Business loan',
- 
+            array('id' => 1, 'name' => array('en' => 'Checking account')),
+            array('id' => 2, 'name' => array('en' => 'Savings Account')),
+            array('id' => 3, 'name' => array('en' => 'Money market account')),
+            array('id' => 4, 'name' => array('en' => 'Mortgage')),
+            array('id' => 5, 'name' => array('en' => 'Personal loan')),
+            array('id' => 6, 'name' => array('en' => 'Mutual fund')),
+            array('id' => 7, 'name' => array('en' => 'Revolving credit')),
+            array('id' => 8, 'name' => array('en' => 'Business loan')),
         );
-        foreach ($products as $id => $name) {
-            $product = new Product;
-            $product->setId($id);
-            $product->setName(array('en' => $name));
+        $serializer = $this->container->get('serializer');
+
+        $data = $serializer->deserialize(
+            json_encode($products),
+            'array<Graviton\CoreBundle\Document\Product>',
+            'json'
+        );
+
+        foreach ($data as $product) {
             $manager->persist($product);
         }
-
         $manager->flush();
     }
 }

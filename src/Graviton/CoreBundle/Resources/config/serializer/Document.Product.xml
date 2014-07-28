@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
   <class name="Graviton\CoreBundle\Document\Product">
-    <property name="id" type="integer" accessor-getter="getId" accessor-setter="setId"/>
-    <property name="name" accessor-getter="getName" accessor-setter="setName">
-      <type><![CDATA[array<string>]]></type>
+    <property name="id" type="integer" accessor-getter="getId"/>
+    <property name="name" accessor-getter="getName">
+      <type><![CDATA[array<string,string>]]></type>
     </property>
   </class>
 </serializer>
