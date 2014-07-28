@@ -217,13 +217,13 @@ class RestController implements ContainerAwareInterface
         $languages = array();
         if ($document instanceof TranslatableDocumentInterface) {
             $translatableFields = $document->getTranslatableFields();
-            $languages = array_map(
-                function ($language) {
-                    return $language->getId();
-                },
-                $this->container->get('graviton.i18n.repository.language')->findAll()
-            );
         }
+        $languages = array_map(
+            function ($language) {
+                return $language->getId();
+            },
+            $this->container->get('graviton.i18n.repository.language')->findAll()
+        );
 
         $response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';

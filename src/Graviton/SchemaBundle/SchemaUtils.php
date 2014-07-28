@@ -33,6 +33,9 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
+        // add pre translated fields
+        $translatableFields = array_merge($translatableFields, $model->getPreTranslatedFields());
+
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();

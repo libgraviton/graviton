@@ -33,6 +33,10 @@ class SchemaModel
         }
 
         $this->schema = \json_decode(file_get_contents($file));
+
+        if (is_null($this->schema)) {
+            throw new \LogicException('The file '.$file.' doe not contain valid json');
+        }
     }
 
     /**
@@ -77,5 +81,19 @@ class SchemaModel
     public function getRequiredFields()
     {
         return $this->schema->required;
+    }
+
+    /**
+     * get pretranslated fields for this object
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields()
+    {
+        $return = array();
+        if (isset($this->schema->pretranslated)) {
+            $return = $this->schema->pretranslated;
+        }
+        return $return;
     }
 }
