@@ -122,6 +122,15 @@ class ConsultantControllerTest extends RestTestCase
         $this->assertEquals('Taylor', $results->firstName);
         $this->assertEquals('Hermiston', $results->lastName);
 
+        $this->assertEquals('email', $results->contacts[0]->type);
+        $this->assertEquals('mailto:brandyn60@littel.biz', $results->contacts[0]->uri);
+        $this->assertEquals('phone', $results->contacts[1]->type);
+        $this->assertEquals('tel:+1613-055-9515', $results->contacts[1]->uri);
+        $this->assertEquals('fax', $results->contacts[2]->type);
+        $this->assertEquals('tel:+1613-055-9515', $results->contacts[1]->uri);
+        $this->assertEquals('web', $results->contacts[3]->type);
+        $this->assertEquals('http://www.moore.net/', $results->contacts[3]->uri);
+
         $this->assertContains(
             '<http://localhost/person/consultant/NOKB528VY>; rel="self"',
             explode(',', $response->headers->get('Link'))

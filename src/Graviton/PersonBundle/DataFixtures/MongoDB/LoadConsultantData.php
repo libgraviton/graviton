@@ -53,7 +53,7 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
             $contacts = array(
                 array(
                     'type' => 'email',
-                    'uri' => $faker->email,
+                    'uri' => 'mailto:'.$faker->email,
                 ),
                 array(
                     'type' => 'phone',
