@@ -8,6 +8,10 @@
     <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
     <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
     <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
+    <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
+    <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
+    <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
+    <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
   </parameters>
   <services>
     <service id="graviton.core.controller.main"
@@ -38,5 +42,27 @@
       </call>
     </service>
     <service id="graviton.core.document.app" class="%graviton.core.document.app.class%"/>
+    <service id="graviton.core.controller.product"
+             class="%graviton.core.controller.product.class%"
+             parent="graviton.rest.controller" scope="request">
+      <call method="setModel">
+        <argument type="service" id="graviton.core.model.product"/>
+      </call>
+      <tag name="graviton.rest"/>
+    </service>
+    <service id="graviton.core.repository.product"
+             class="%graviton.core.repository.product.class%"
+             factory-service="doctrine_mongodb.odm.default_document_manager"
+             factory-method="getRepository">
+      <argument type="string">GravitonCoreBundle:Product</argument>
+    </service>
+    <service id="graviton.core.model.product"
+             class="%graviton.core.model.product.class%"
+             parent="graviton.rest.model">
+      <call method="setRepository">
+        <argument type="service" id="graviton.core.repository.product"/>
+      </call>
+    </service>
+    <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
   </services>
 </container>
