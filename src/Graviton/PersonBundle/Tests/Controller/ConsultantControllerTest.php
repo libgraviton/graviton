@@ -65,7 +65,7 @@ class ConsultantControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/person/consultant?page=41>; rel="last"',
+            '<http://localhost/person/consultant?page=2>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
 
@@ -81,25 +81,6 @@ class ConsultantControllerTest extends RestTestCase
         );
         $this->assertContains(
             '<http://localhost/person/consultant?page=1>; rel="prev"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/person/consultant?page=3>; rel="next"',
-            explode(',', $response->headers->get('Link'))
-        );
-
-        $client->request('GET', '/person/consultant?page=41');
-
-        $response = $client->getResponse();
-
-        $this->assertResponseContentType(self::COL_TYPE, $response);
-
-        $this->assertContains(
-            '<http://localhost/person/consultant?page=41>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/person/consultant?page=1>; rel="first"',
             explode(',', $response->headers->get('Link'))
         );
     }

@@ -48,7 +48,7 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
         $serializer = $this->container->get('serializer');
         $faker = $this->container->get('davidbadura_faker.faker');
 
-        for ($i = 0; $i <= 400; $i++) {
+        for ($i = 0; $i < 15; $i++) {
             $faker->seed($i);
             $contacts = array(
                 array(
