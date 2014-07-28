@@ -190,7 +190,6 @@ class ConsultantControllerTest extends RestTestCase
      */
     public function testGetConsultantSchemaInformation()
     {
-        $this->markTestIncomplete();
         $client = static::createRestClient();
 
         $client->request('GET', '/schema/person/consultant/item');
@@ -203,47 +202,47 @@ class ConsultantControllerTest extends RestTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertEquals('Consultant', $results->title->en);
-        $this->assertEquals('A consultant record.', $results->description->en);
+        $this->assertEquals('A customer consultant.', $results->description->en);
         $this->assertEquals('object', $results->type);
 
         $fieldAssertions = array(
             'id' => array(
                 'title' => 'ID',
-                'description' => 'ISO 3166-1 alpha-3 code.'
+                'type' => 'string',
+                'description' => 'Consultant identifier.'
             ),
-            'name' => array(
-                'title' => 'Name',
-                'description' => 'Consultant name.'
+            'firstName' => array(
+                'title' => 'First Name',
+                'type' => 'string',
+                'description' => 'First name of consultant.'
             ),
-            'isoCode' => array(
-                'title' => 'ISO Code',
-                'description' => 'ISO 3166-1 alpha-2 code (aka cTLD).'
+            'lastName' => array(
+                'title' => 'Last Name',
+                'type' => 'string',
+                'description' => 'Last name of consultant.'
             ),
-            'capitalCity' => array(
-                'title' => 'Capital',
-                'description' => 'Capital city.'
+            'title' => array(
+                'title' => 'Title',
+                'type' => 'string',
+                'description' => 'Organizational title of consultant.'
             ),
-            'longitude' => array(
-                'title' => 'Longitude',
-                'description' => 'W/E geographic coordinate.'
-            ),
-            'latitude' => array(
-                'title' => 'Latitude',
-                'description' => 'N/S geographic coordinate.'
+            'contacts' => array(
+                'title' => 'Contacts',
+                'type' => 'array',
+                'description' => 'Ways to contact a consultant.'
             )
         );
         foreach ($fieldAssertions as $field => $values) {
-            $this->assertEquals('string', $results->properties->$field->type);
+            $this->assertEquals($values['type'], $results->properties->$field->type);
             $this->assertEquals($values['description'], $results->properties->$field->description->en);
             $this->assertEquals($values['title'], $results->properties->$field->title->en);
         }
 
         $this->assertContains('id', $results->required);
-        $this->assertContains('name', $results->required);
-        $this->assertContains('isoCode', $results->required);
-        $this->assertNotContains('capitalCity', $results->required);
-        $this->assertNotContains('latitude', $results->required);
-        $this->assertNotContains('longitude', $results->required);
+        $this->assertContains('firstName', $results->required);
+        $this->assertContains('lastName', $results->required);
+        $this->assertNotContains('title', $results->required);
+        $this->assertNotContains('contacts', $results->required);
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
     }

@@ -1,5 +1,5 @@
 {
-  "description": "A consultant aka customer sales rep.",
+  "description": "A customer consultant.",
   "properties": {
     "id": {
       "title": "ID",
