@@ -26,7 +26,7 @@
   </doctrine_mongodb:config>
   <sensio-framework-extra:config>
     <sensio-framework-extra:view annotations="false"/>
-    <sensio-framework-extra:router annotations="true"/>
+    <sensio-framework-extra:router annotations="false"/>
   </sensio-framework-extra:config>
   <jms-serializer:config>
     <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
