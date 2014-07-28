@@ -2,9 +2,9 @@
 <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-  <document name="Graviton\PersonBundle\Document\PersonContact" repository-class="Graviton\PersonBundle\Repository\PersonContactRepository">
+  <embedded-document name="Graviton\PersonBundle\Document\PersonContact" repository-class="Graviton\PersonBundle\Repository\PersonContactRepository">
     <field fieldName="id" type="id" id="true"/>
     <field fieldName="type" type="string"/>
     <field fieldName="uri" type="string"/>
-  </document>
+  </embedded-document>
 </doctrine-mongo-mapping>

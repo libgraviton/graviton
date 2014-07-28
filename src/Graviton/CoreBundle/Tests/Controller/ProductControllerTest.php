@@ -103,7 +103,7 @@ class ProductControllerTest extends RestTestCase
         $this->assertIsProductSchema($results);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEquals('GET, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
 
         $this->assertContains(
             '<http://localhost/schema/core/product/item>; rel="canonical"',

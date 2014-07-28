@@ -112,18 +112,18 @@ class ConsultantControllerTest extends RestTestCase
     public function testGetConsultant()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/person/consultant/4488PSD65');
+        $client->request('GET', '/person/consultant/NOKB528VY');
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('4488PSD65', $results->id);
-        $this->assertEquals('Ruthie', $results->firstName);
-        $this->assertEquals('Littel', $results->lastName);
+        $this->assertEquals('NOKB528VY', $results->id);
+        $this->assertEquals('Taylor', $results->firstName);
+        $this->assertEquals('Hermiston', $results->lastName);
 
         $this->assertContains(
-            '<http://localhost/person/consultant/4488PSD65>; rel="self"',
+            '<http://localhost/person/consultant/NOKB528VY>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -157,11 +157,11 @@ class ConsultantControllerTest extends RestTestCase
     public function testPutApp()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/person/consultant/4488PSD65');
+        $client->request('GET', '/person/consultant/NOKB528VY');
 
         $consultant = $client->getResults();
 
-        $client->put('/person/consultant/4488PSD65', $consultant);
+        $client->put('/person/consultant/NOKB528VY', $consultant);
 
         $response = $client->getResponse();
 
@@ -177,7 +177,7 @@ class ConsultantControllerTest extends RestTestCase
     public function testDeleteApp()
     {
         $client = static::createRestClient();
-        $client->request('DELETE', '/person/consultant/4488PSD65');
+        $client->request('DELETE', '/person/consultant/NOKB528VY');
 
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
         $this->assertEquals('GET, HEAD, OPTIONS', $client->getResponse()->headers->get('Allow'));
