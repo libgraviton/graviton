@@ -12,6 +12,14 @@
     "lastName": {
       "title": "Last Name",
       "description": "Last name of consultant."
+    },
+    "title": {
+      "title": "Title",
+      "description": "Organizational title of consultant."
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Ways to contact a consultant."
     }
   },
   "required": [

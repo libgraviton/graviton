@@ -97,7 +97,7 @@
       </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
-    <service id="graviton.rest.model" abstract="true">
+    <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel">
       <call method="setPaginator">
         <argument type="service" id="graviton.rest.paginator"/>
       </call>

@@ -7,6 +7,9 @@
     <parameter key="graviton.person.repository.consultant.class">Graviton\PersonBundle\Repository\ConsultantRepository</parameter>
     <parameter key="graviton.person.model.consultant.class">Graviton\PersonBundle\Model\Consultant</parameter>
     <parameter key="graviton.person.document.consultant.class">Graviton\PersonBundle\Document\Consultant</parameter>
+    <parameter key="graviton.person.repository.personcontact.class">Graviton\PersonBundle\Repository\PersonContactRepository</parameter>
+    <parameter key="graviton.person.model.personcontact.class">Graviton\PersonBundle\Model\PersonContact</parameter>
+    <parameter key="graviton.person.document.personcontact.class">Graviton\PersonBundle\Document\PersonContact</parameter>
   </parameters>
   <services>
     <service id="graviton.person.controller.consultant"
@@ -31,5 +34,19 @@
       </call>
     </service>
     <service id="graviton.person.document.consultant" class="%graviton.person.document.consultant.class%"/>
+    <service id="graviton.person.repository.personcontact"
+             class="%graviton.person.repository.personcontact.class%"
+             factory-service="doctrine_mongodb.odm.default_document_manager"
+             factory-method="getRepository">
+      <argument type="string">GravitonPersonBundle:PersonContact</argument>
+    </service>
+    <service id="graviton.person.model.personcontact"
+             class="%graviton.person.model.personcontact.class%"
+             parent="graviton.rest.model">
+      <call method="setRepository">
+        <argument type="service" id="graviton.person.repository.personcontact"/>
+      </call>
+    </service>
+    <service id="graviton.person.document.personcontact" class="%graviton.person.document.personcontact.class%"/>
   </services>
 </container>
