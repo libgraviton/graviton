@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+  <document name="Graviton\PersonBundle\Document\Consultant" repository-class="Graviton\PersonBundle\Repository\ConsultantRepository">
+    <field fieldName="id" type="string" id="true"/>
+    <field fieldName="firstName" type="string"/>
+    <field fieldName="lastName" type="string"/>
+    <field fieldName="title" type="string"/>
+    <embed-many field="contacts" target-document="Graviton\PersonBundle\Document\PersonContact"/>
+  </document>
+</doctrine-mongo-mapping>

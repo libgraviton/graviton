@@ -1,0 +1,22 @@
+{
+  "description": "A consultant aka customer sales rep.",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Consultant identifier."
+    },
+    "firstName": {
+      "title": "First Name",
+      "description": "First name of consultant."
+    },
+    "lastName": {
+      "title": "Last Name",
+      "description": "Last name of consultant."
+    }
+  },
+  "required": [
+    "id",
+    "firstName",
+    "lastName"
+  ]
+}
