@@ -189,7 +189,7 @@ class RestController implements ContainerAwareInterface
 
             // If everything is ok, update record and return 204 No Content
             if (!$response) {
-                $record = $this->getModel()->updateRecord($id, $newRecord);
+                $this->getModel()->updateRecord($id, $newRecord);
                 $response = $this->container->get('graviton.rest.response.204');
             }
         }
@@ -214,7 +214,6 @@ class RestController implements ContainerAwareInterface
         $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
 
         $translatableFields = array();
-        $languages = array();
         if ($document instanceof TranslatableDocumentInterface) {
             $translatableFields = $document->getTranslatableFields();
         }

@@ -45,8 +45,8 @@ class JsonInput
     public function validate($input, $model)
     {
         // get all fields of this document
-        $dm = $model->getRepository()->getDocumentManager();
-        $entityFields = $dm->getClassMetadata($model->getEntityClass())
+        $manager = $model->getRepository()->getDocumentManager();
+        $entityFields = $manager->getClassMetadata($model->getEntityClass())
             ->getFieldNames();
 
         // get validation info
@@ -62,7 +62,6 @@ class JsonInput
             $metadata = $classMetadata->getPropertyMetadata($prop);
             $constraints = $metadata[0]->constraints;
 
-            $val;
             // if the value is set, validate...
             if (isset($input[$prop])) {
                 $val = $input[$prop];
@@ -78,7 +77,7 @@ class JsonInput
         }
 
         // Check for non existing attributes
-        foreach ($input as $key => $value) {
+        foreach (array_keys($input) as $key) {
             if (!in_array($key, $entityFields)) {
                 $violation = new ConstraintViolation(
                     'Attribute does not exist!',
@@ -108,7 +107,7 @@ class JsonInput
         $required = false;
 
         foreach ($constraints as $constraint) {
-            if ($constraint instanceof Symfony\Component\Validator\Constraints\NotBlank) {
+            if ($constraint instanceof \Symfony\Component\Validator\Constraints\NotBlank) {
                 $required = true;
             }
         }

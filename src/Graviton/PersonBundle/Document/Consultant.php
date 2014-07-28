@@ -34,7 +34,7 @@ class Consultant
     protected $title;
 
     /**
-     * @var Graviton\PersonBundle\Document\PersonContact[]
+     * @var Doctrine\Common\Collections\ArrayCollection
      */
     protected $contacts = array();
 
