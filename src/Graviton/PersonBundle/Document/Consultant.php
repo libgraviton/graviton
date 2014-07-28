@@ -38,6 +38,11 @@ class Consultant
      */
     protected $contacts = array();
 
+    /**
+     * construct
+     *
+     * @return Graviton\PersonBundle\Document\Consultant
+     */
     public function __construct()
     {
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection();
@@ -76,21 +81,29 @@ class Consultant
     /**
      * Add contact
      *
-     * @param Graviton\PersonBundle\Document\PersonContact $contact
+     * @param Graviton\PersonBundle\Document\PersonContact $contact contact to add
+     *
+     * @return self
      */
     public function addContact(\Graviton\PersonBundle\Document\PersonContact $contact)
     {
         $this->contacts[] = $contact;
+
+        return $this;
     }
 
     /**
      * Remove contact
      *
-     * @param Graviton\PersonBundle\Document\PersonContact $contact
+     * @param Graviton\PersonBundle\Document\PersonContact $contact contact to remove
+     *
+     * @return self
      */
     public function removeContact(\Graviton\PersonBundle\Document\PersonContact $contact)
     {
         $this->contacts->removeElement($contact);
+
+        return $this;
     }
 
     /**

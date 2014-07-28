@@ -98,7 +98,7 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * get property model for embedded field
      *
-     * @param string $field name of mapping class
+     * @param string $mapping name of mapping class
      *
      * @return self
      */
@@ -111,6 +111,7 @@ class SchemaModel implements ContainerAwareInterface
         $document = strtolower($document);
         $propertyService = implode('.', array($app, $bundle, 'model', $document));
         $propertyModel = $this->container->get($propertyService);
+
         return $propertyModel;
     }
 
