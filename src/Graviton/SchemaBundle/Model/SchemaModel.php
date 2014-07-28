@@ -94,6 +94,7 @@ class SchemaModel
         if (isset($this->schema->pretranslated)) {
             $return = $this->schema->pretranslated;
         }
+
         return $return;
     }
 }
