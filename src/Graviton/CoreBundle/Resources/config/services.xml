@@ -48,7 +48,7 @@
       <call method="setModel">
         <argument type="service" id="graviton.core.model.product"/>
       </call>
-      <tag name="graviton.rest"/>
+      <tag name="graviton.rest" read-only="true"/>
     </service>
     <service id="graviton.core.repository.product"
              class="%graviton.core.repository.product.class%"

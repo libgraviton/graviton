@@ -1,0 +1,30 @@
+{
+  "description": "A customer consultant.",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Consultant identifier."
+    },
+    "firstName": {
+      "title": "First Name",
+      "description": "First name of consultant."
+    },
+    "lastName": {
+      "title": "Last Name",
+      "description": "Last name of consultant."
+    },
+    "title": {
+      "title": "Title",
+      "description": "Organizational title of consultant."
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Ways to contact a consultant."
+    }
+  },
+  "required": [
+    "id",
+    "firstName",
+    "lastName"
+  ]
+}

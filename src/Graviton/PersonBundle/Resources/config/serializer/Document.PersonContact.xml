@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\PersonBundle\Document\PersonContact">
+    <property name="type" type="string" accessor-getter="getType"/>
+    <property name="uri" type="string" accessor-getter="getUri"/>
+  </class>
+</serializer>
