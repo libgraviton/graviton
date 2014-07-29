@@ -53,19 +53,19 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
             $contacts = array(
                 array(
                     'type' => 'email',
-                    'uri' => 'mailto:'.$faker->email,
+                    '$ref' => 'mailto:'.$faker->email,
                 ),
                 array(
                     'type' => 'phone',
-                    'uri' => 'tel:'.$faker->phoneNumber,
+                    '$ref' => 'tel:'.$faker->phoneNumber,
                 ),
                 array(
                     'type' => 'fax',
-                    'uri' => 'tel:'.$faker->phoneNumber,
+                    '$ref' => 'tel:'.$faker->phoneNumber,
                 ),
                 array(
                     'type' => 'web',
-                    'uri' =>  $faker->url,
+                    '$ref' =>  $faker->url,
                 ),
             );
             $consultant = array(

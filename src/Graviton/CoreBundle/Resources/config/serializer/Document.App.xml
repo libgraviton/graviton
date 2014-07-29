@@ -3,6 +3,6 @@
   <class name="Graviton\CoreBundle\Document\App">
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId"/>
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle"/>
-    <property name="showInMenu" type="boolean" accessor-getter="getShowInMenu" accessor-setter="setShowInMenu"/>
+    <property name="showInMenu" type="boolean" accessor-getter="getShowInMenu" accessor-setter="setShowInMenu" serialized-name="showInMenu"/>
   </class>
 </serializer>

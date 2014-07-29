@@ -3,6 +3,6 @@
   <class name="Graviton\PersonBundle\Document\PersonContact" exclusion-policy="ALL">
     <property name="id" type="string" expose="false"/>
     <property name="type" type="string" accessor-getter="getType" exclude="false" expose="true"/>
-    <property name="uri" type="string" accessor-getter="getUri" exclude="false" expose="true"/>
+    <property name="uri" type="string" accessor-getter="getUri" exclude="false" expose="true" serialized-name="$ref"/>
   </class>
 </serializer>
