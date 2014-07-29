@@ -41,6 +41,10 @@ class SchemaUtils
         $meta = $repo->getClassMetadata();
 
         foreach ($meta->getFieldNames() as $field) {
+            // @todo replace this exremenly dirty hack (i didn't figure out how to store $ref in mongodb)
+            if ($field == 'uri') {
+                $field = '$ref';
+            }
             $property = new Schema();
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));

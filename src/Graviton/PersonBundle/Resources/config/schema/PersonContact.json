@@ -9,7 +9,7 @@
       "title": "Contact Type",
       "description": "Type of contact."
     },
-    "uri": {
+    "$ref": {
       "title": "URI",
       "description": "URI of Contact."
     }
