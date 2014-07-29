@@ -6,6 +6,6 @@
     <property name="locale" type="string" accessor-getter="getLocale" accessor-setter="setLocale" expose="true"/>
     <property name="original" type="string" accessor-getter="getOriginal" accessor-setter="setOriginal" expose="true"/>
     <property name="translated" type="string" accessor-getter="getTranslated" accessor-setter="setTranslated" expose="true"/>
-    <property name="isLocalized" type="boolean" accessor-getter="isLocalized" accessor-setter="setIsLocalized" expose="true"/>
+    <property name="isLocalized" type="boolean" accessor-getter="isLocalized" accessor-setter="setIsLocalized" expose="true" serialized-name="isLocalized"/>
   </class>
 </serializer>

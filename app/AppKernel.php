@@ -14,6 +14,7 @@ use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
+use DavidBadura\FakerBundle\DavidBaduraFakerBundle;
 
 /**
  * AppKernel
@@ -78,6 +79,7 @@ class AppKernel extends Kernel
             $bundles[] = new WebProfilerBundle();
             $bundles[] = new SensioDistributionBundle();
             $bundles[] = new SensioGeneratorBundle();
+            $bundles[] = new DavidBaduraFakerBundle();
         }
 
         return $bundles;

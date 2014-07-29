@@ -5,6 +5,7 @@
   <parameters>
     <parameter key="graviton.schema.listener.schematyperesponse.class">Graviton\SchemaBundle\Listener\SchemaContentTypeResponseListener</parameter>
     <parameter key="graviton.schema.listener.canonicalschemaresponse.class">Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener</parameter>
+    <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -18,6 +19,11 @@
         <argument type="service" id="service_container"></argument>
       </call>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
+    </service>
+    <service id="graviton.schema.model.schemamodel" class="%graviton.schema.model.schemamodel.class%" abstract="true">
+      <call method="setContainer">
+        <argument type="service" id="service_container"></argument>
+      </call>
     </service>
   </services>
 </container>

@@ -79,5 +79,24 @@ class MainControllerTest extends RestTestCase
             'Please look at the Link headers of this response for further information.',
             $results->message
         );
+
+        $this->assertInternalType('array', $results->services);
+
+        $refName = '$ref';
+        $serviceRefs = array_map(
+            function ($service) use ($refName) {
+                return $service->$refName;
+            },
+            $results->services
+        );
+        $this->assertContains('http://localhost/core/app', $serviceRefs);
+
+        $profiles = array_map(
+            function ($service) {
+                return $service->profile;
+            },
+            $results->services
+        );
+        $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
     }
 }

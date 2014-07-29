@@ -92,7 +92,7 @@ class ExceptionListener
 
         if (array_key_exists('class', $line)) {
             $trace['call'] = $line['class'].$line['type'].$line['function'];
-        } else {
+        } elseif (array_key_exists('function', $line)) {
             $trace['call'] = $line['function'];
         }
 

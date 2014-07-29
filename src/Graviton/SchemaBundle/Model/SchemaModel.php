@@ -2,6 +2,9 @@
 
 namespace Graviton\SchemaBundle\Model;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
@@ -11,12 +14,17 @@ namespace Graviton\SchemaBundle\Model;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class SchemaModel
+class SchemaModel implements ContainerAwareInterface
 {
     /**
      * object
      */
     private $schema;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
     /**
      * load some schema info for the model
@@ -33,6 +41,24 @@ class SchemaModel
         }
 
         $this->schema = \json_decode(file_get_contents($file));
+
+        if (is_null($this->schema)) {
+            throw new \LogicException('The file '.$file.' doe not contain valid json');
+        }
+    }
+
+    /**
+     * inject container
+     *
+     * @param ContainerInterface $container service container
+     *
+     * @return self
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 
     /**
@@ -70,6 +96,26 @@ class SchemaModel
     }
 
     /**
+     * get property model for embedded field
+     *
+     * @param string $mapping name of mapping class
+     *
+     * @return self
+     */
+    public function manyPropertyModelForTarget($mapping)
+    {
+        // @todo refactor to get rid of container dependency (maybe remove from here)
+        list($app, $bundle, , $document) = explode('\\', $mapping);
+        $app = strtolower($app);
+        $bundle = strtolower(substr($bundle, 0, -6));
+        $document = strtolower($document);
+        $propertyService = implode('.', array($app, $bundle, 'model', $document));
+        $propertyModel = $this->container->get($propertyService);
+
+        return $propertyModel;
+    }
+
+    /**
      * get required fields for this object
      *
      * @return string[]
@@ -77,5 +123,20 @@ class SchemaModel
     public function getRequiredFields()
     {
         return $this->schema->required;
+    }
+
+    /**
+     * get pretranslated fields for this object
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields()
+    {
+        $return = array();
+        if (isset($this->schema->pretranslated)) {
+            $return = $this->schema->pretranslated;
+        }
+
+        return $return;
     }
 }

@@ -113,6 +113,12 @@ class Schema implements TranslatableDocumentInterface
      */
     public function setType($type)
     {
+        if ($type === 'int') {
+            $type = 'integer';
+        }
+        if ($type === 'hash') {
+            $type = 'object';
+        }
         $this->type = $type;
     }
 

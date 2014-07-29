@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xmlns:jms-serializer="jms_serializer"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <doctrine_mongodb:config>
+    <doctrine_mongodb:document-manager id="default">
+      <doctrine_mongodb:mapping name="GravitonPersonBundle" type="xml"/>
+    </doctrine_mongodb:document-manager>
+  </doctrine_mongodb:config>
+  <jms-serializer:config>
+    <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
+      <jms-serializer:directory namespace_prefix="Graviton\PersonBundle" path="@GravitonPersonBundle/Resources/config/serializer"/>
+    </jms-serializer:metadata>
+  </jms-serializer:config>
+</container>
