@@ -57,11 +57,11 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
                 ),
                 array(
                     'type' => 'phone',
-                    'uri' => 'tel:+1'.$faker->phoneNumber,
+                    'uri' => 'tel:'.$faker->phoneNumber,
                 ),
                 array(
                     'type' => 'fax',
-                    'uri' => 'tel:+1'.$faker->phoneNumber,
+                    'uri' => 'tel:'.$faker->phoneNumber,
                 ),
                 array(
                     'type' => 'web',
