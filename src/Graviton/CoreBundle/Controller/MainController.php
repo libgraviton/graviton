@@ -67,6 +67,38 @@ class MainController implements ContainerAwareInterface
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
+
+        $mainPage->services = array();
+
+        $router = $this->container->get('router');
+
+        // get options routes since theyt are a good indicator if a services exists
+        $optionRoutes = array_filter(
+            $router->getRouteCollection()->all(),
+            function ($route) {
+                if ($route->getRequirement('_method') != 'OPTIONS') {
+                    return false;
+                }
+
+                return is_null($route->getRequirement('id'));
+            }
+        );
+
+        $services = array_map(
+            function ($routeName) use ($router) {
+                list($app, $bundle, $rest, $document) = explode('.', $routeName);
+                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
+
+                return array(
+                    '$ref' => $router->generate($routeName, array(), true),
+                    'profile' => $router->generate($schemaRoute, array(), true),
+                );
+            },
+            array_keys($optionRoutes)
+        );
+
+        $mainPage->services = array_values($services);
+
         $response->setContent(json_encode($mainPage));
 
         return $response;
