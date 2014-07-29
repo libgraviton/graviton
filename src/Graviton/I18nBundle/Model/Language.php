@@ -15,35 +15,4 @@ use Graviton\RestBundle\Model\DocumentModel;
  */
 class Language extends DocumentModel
 {
-    /**
-     * the description of the model
-     *
-     * @var string
-     */
-    protected $description = 'A Language available for i18n purposes.';
-
-    /**
-     * titles for fields
-     *
-     * @var string[]
-     */
-    protected $fieldTitles = array(
-        'id' => 'Language Tag',
-        'name' => 'Language',
-    );
-
-    /**
-     * descriptions for fields
-     *
-     * @var string[]
-     */
-    protected $fieldDescriptions = array(
-        'id' => 'A RFC2616 language tag.',
-        'name' => 'Common name of a language.'
-    );
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = array('id', 'name');
 }

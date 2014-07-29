@@ -18,37 +18,4 @@ use Graviton\RestBundle\Model\DocumentModel;
  */
 class App extends DocumentModel
 {
-    /**
-     * the description of the model
-     *
-     * @var string
-     */
-    protected $description = 'A graviton based app.';
-
-    /**
-     * titles for fields
-     *
-     * @var string[]
-     */
-    protected $fieldTitles = array(
-        'id' => 'ID',
-        'title' => 'Title',
-        'showInMenu' => 'Show in Menu'
-    );
-
-    /**
-     * descriptions for fields
-     *
-     * @var string[]
-     */
-    protected $fieldDescriptions = array(
-        'id' => 'Unique identifier for an app.',
-        'title' => 'Display name for an app.',
-        'showInMenu' => 'Define if an app should be exposed on the top level menu.'
-    );
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = array('id', 'title', 'showInMenu');
 }

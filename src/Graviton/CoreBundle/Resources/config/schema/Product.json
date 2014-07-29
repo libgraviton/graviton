@@ -1,0 +1,20 @@
+{
+  "description": "A product.",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Unique identifier for a product."
+    },
+    "name": {
+      "title": "Name",
+      "description": "Display name for a product."
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "pretranslated": [
+    "name"
+  ]
+}

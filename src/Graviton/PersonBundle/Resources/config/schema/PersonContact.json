@@ -1,0 +1,21 @@
+{
+  "description": "Contact informationj for a person.",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Internal identifier."
+    },
+    "type": {
+      "title": "Contact Type",
+      "description": "Type of contact."
+    },
+    "uri": {
+      "title": "URI",
+      "description": "URI of Contact."
+    }
+  },
+  "required": [
+    "type",
+    "uri"
+  ]
+}

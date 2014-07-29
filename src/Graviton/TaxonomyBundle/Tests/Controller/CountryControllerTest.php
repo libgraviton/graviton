@@ -230,7 +230,7 @@ class CountryControllerTest extends RestTestCase
             ),
             'longitude' => array(
                 'title' => 'Longitude',
-                'description' => 'W/O geographic coordinate.'
+                'description' => 'W/E geographic coordinate.'
             ),
             'latitude' => array(
                 'title' => 'Latitude',

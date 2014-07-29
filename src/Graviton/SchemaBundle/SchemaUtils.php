@@ -33,6 +33,9 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
+        // add pre translated fields
+        $translatableFields = array_merge($translatableFields, $model->getPreTranslatedFields());
+
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
@@ -41,7 +44,14 @@ class SchemaUtils
             $property = new Schema();
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
+
             $property->setType($meta->getTypeOfField($field));
+            if ($meta->getTypeOfField($field) === 'many') {
+
+                $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
+                $property->setItems(self::getModelSchema($field, $propertyModel, $translatableFields, $languages));
+                $property->setType('array');
+            }
             if (in_array($field, $translatableFields)) {
                 $property = self::makeTranslatable($property, $languages);
             }

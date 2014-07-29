@@ -4,6 +4,7 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Knp\Component\Pager\Paginator;
+use Graviton\SchemaBundle\Model\SchemaModel;
 
 /**
  * Use doctrine odm as backend
@@ -14,7 +15,7 @@ use Knp\Component\Pager\Paginator;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class DocumentModel implements ModelInterface
+class DocumentModel extends SchemaModel implements ModelInterface
 {
     /**
      * @var ObjectRepository
@@ -164,6 +165,7 @@ class DocumentModel implements ModelInterface
         $return = $entity;
         if ($entity) {
             $dm->remove($entity);
+            $dm->flush();
             $return = null;
         }
 
@@ -200,49 +202,5 @@ class DocumentModel implements ModelInterface
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
         return 'graviton.'.$bundle;
-    }
-
-    /**
-     * get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * get title for a given field
-     *
-     * @param string $field field name
-     *
-     * @return string
-     */
-    public function getTitleOfField($field)
-    {
-        return $this->fieldTitles[$field];
-    }
-
-    /**
-     * get description for a given field
-     *
-     * @param string $field field name
-     *
-     * @return string
-     */
-    public function getDescriptionOfField($field)
-    {
-        return $this->fieldDescriptions[$field];
-    }
-
-    /**
-     * get required fields for this object
-     *
-     * @return string[]
-     */
-    public function getRequiredFields()
-    {
-        return $this->requiredFields;
     }
 }
