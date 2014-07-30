@@ -1,13 +1,13 @@
 <?php
 
-namespace Graviton\TaxonomyBundle\DataFixtures\Loader;
+namespace Graviton\EntityBundle\DataFixtures\Loader;
 
 use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * Load json Files that we want to load as fixture.
  *
- * @category GravitonTaxonomyBundle
+ * @category GravitonEntityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License

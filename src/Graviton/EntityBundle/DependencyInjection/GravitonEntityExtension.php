@@ -3,7 +3,7 @@
  * manage and load bundle config.
  */
 
-namespace Graviton\TaxonomyBundle\DependencyInjection;
+namespace Graviton\EntityBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
 
@@ -12,13 +12,13 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @category GravitonTaxonomyBundle
+ * @category GravitonEntityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonTaxonomyExtension extends GravitonBundleExtension
+class GravitonEntityExtension extends GravitonBundleExtension
 {
     /**
      * {@inheritDoc}

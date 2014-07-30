@@ -10,7 +10,7 @@ While this project is still in its infancy it already implements some REST resou
 
 * ``/core/app`` exposes app objects and supports rw operation
 * ``/core/product`` exposes a ro collection of products that are expected to be loaded for an erp
-* ``/taxonomy/country`` exposes a list of countries from The World Bank, it only supports ro operation
+* ``/entity/country`` exposes a list of countries from The World Bank, it only supports ro operation
 * ``/person/consultant`` exposes a list of customer sales reps and only supports ro operation
 * ``/i18n/language`` and ``/i18n/translatable`` expose rw collections that may be used for various i18n purposes
 

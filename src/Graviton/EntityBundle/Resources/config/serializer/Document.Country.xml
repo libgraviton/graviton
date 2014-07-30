@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
-  <class name="Graviton\TaxonomyBundle\Document\Country">
+  <class name="Graviton\EntityBundle\Document\Country">
     <property name="id" type="string" accessor-getter="getId"/>
     <property name="name" type="string" accessor-getter="getName"/>
     <property name="isoCode" type="string" accessor-getter="getIsoCode" serialized-name="isoCode"/>

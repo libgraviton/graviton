@@ -1,13 +1,13 @@
 <?php
 
-namespace Graviton\TaxonomyBundle\Tests\Controller;
+namespace Graviton\EntityBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**
- * Basic functional tests for /taxonomy/country.
+ * Basic functional tests for /entity/country.
  *
- * @category GravitonTaxonomyBundle
+ * @category GravitonEntityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -18,12 +18,12 @@ class CountryControllerTest extends RestTestCase
     /**
      * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/item';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/entity/country/item';
 
     /**
      * @const corresponding vendorized collection schema mime type
      */
-    const COL_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/taxonomy/country/collection';
+    const COL_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/entity/country/collection';
 
     /**
      * setup client and load fixtures
@@ -34,7 +34,7 @@ class CountryControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\TaxonomyBundle\DataFixtures\MongoDB\LoadCountryData',
+                'Graviton\EntityBundle\DataFixtures\MongoDB\LoadCountryData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
@@ -50,56 +50,56 @@ class CountryControllerTest extends RestTestCase
     public function testFindAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/taxonomy/country');
+        $client->request('GET', '/entity/country');
 
         $response = $client->getResponse();
 
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=1>; rel="self"',
+            '<http://localhost/entity/country?page=1>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=2>; rel="next"',
+            '<http://localhost/entity/country?page=2>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=26>; rel="last"',
+            '<http://localhost/entity/country?page=26>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
 
-        $client->request('GET', '/taxonomy/country?page=2');
+        $client->request('GET', '/entity/country?page=2');
 
         $response = $client->getResponse();
 
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=2>; rel="self"',
+            '<http://localhost/entity/country?page=2>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=1>; rel="prev"',
+            '<http://localhost/entity/country?page=1>; rel="prev"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=3>; rel="next"',
+            '<http://localhost/entity/country?page=3>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
 
-        $client->request('GET', '/taxonomy/country?page=26');
+        $client->request('GET', '/entity/country?page=26');
 
         $response = $client->getResponse();
 
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=26>; rel="self"',
+            '<http://localhost/entity/country?page=26>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/taxonomy/country?page=1>; rel="first"',
+            '<http://localhost/entity/country?page=1>; rel="first"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -112,7 +112,7 @@ class CountryControllerTest extends RestTestCase
     public function testGetApp()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/taxonomy/country/CHE');
+        $client->request('GET', '/entity/country/CHE');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -126,7 +126,7 @@ class CountryControllerTest extends RestTestCase
         $this->assertEquals('46.948', $results->latitude);
 
         $this->assertContains(
-            '<http://localhost/taxonomy/country/CHE>; rel="self"',
+            '<http://localhost/entity/country/CHE>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -147,7 +147,7 @@ class CountryControllerTest extends RestTestCase
         $testCountry->latitude = 1;
 
         $client = static::createRestClient();
-        $client->post('/taxonomy/country', $testCountry);
+        $client->post('/entity/country', $testCountry);
 
         $response = $client->getResponse();
 
@@ -163,11 +163,11 @@ class CountryControllerTest extends RestTestCase
     public function testPutApp()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/taxonomy/country/CHE');
+        $client->request('GET', '/entity/country/CHE');
 
         $country = $client->getResults();
 
-        $client->put('/taxonomy/country/CHE', $country);
+        $client->put('/entity/country/CHE', $country);
 
         $response = $client->getResponse();
 
@@ -183,7 +183,7 @@ class CountryControllerTest extends RestTestCase
     public function testDeleteApp()
     {
         $client = static::createRestClient();
-        $client->request('DELETE', '/taxonomy/country/CHE');
+        $client->request('DELETE', '/entity/country/CHE');
 
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
         $this->assertEquals('GET, HEAD, OPTIONS', $client->getResponse()->headers->get('Allow'));
@@ -198,7 +198,7 @@ class CountryControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/taxonomy/country/CHE');
+        $client->request('OPTIONS', '/entity/country/CHE');
 
         $response = $client->getResponse();
         $results = $client->getResults();

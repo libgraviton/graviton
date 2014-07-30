@@ -3,14 +3,14 @@
  * Repository for accessing Countrys
  */
 
-namespace Graviton\TaxonomyBundle\Repository;
+namespace Graviton\EntityBundle\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * CountryRepository
  *
- * @category GravitonTaxonomyBundle
+ * @category GravitonEntityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License

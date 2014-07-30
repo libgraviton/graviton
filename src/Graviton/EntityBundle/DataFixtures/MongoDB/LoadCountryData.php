@@ -1,17 +1,17 @@
 <?php
 
-namespace Graviton\TaxonomyBundle\DataFixtures\MongoDB;
+namespace Graviton\EntityBundle\DataFixtures\MongoDB;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Graviton\TaxonomyBundle\Document\Country;
+use Graviton\EntityBundle\Document\Country;
 
 /**
  * Load countries from Resources/data/coutries.json into mongodb
  *
- * @category GravitonTaxonomyBundle
+ * @category GravitonEntityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -45,15 +45,15 @@ class LoadCountryData implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $manager)
     {
-        $serializer = $this->container->get('graviton.taxonomy.serializer');
-        $loader = $this->container->get('graviton.taxonomy.fixturedata.loader');
+        $serializer = $this->container->get('graviton.entity.serializer');
+        $loader = $this->container->get('graviton.entity.fixturedata.loader');
 
         $rawData = $loader->load(__DIR__.'/../../Resources/data/countries.json');
         $rawData = json_encode(json_decode($rawData)[1]);
 
         $data = $serializer->deserialize(
             $rawData,
-            'array<Graviton\TaxonomyBundle\Document\Country>',
+            'array<Graviton\EntityBundle\Document\Country>',
             'json'
         );
 
