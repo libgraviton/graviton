@@ -105,13 +105,13 @@ class ConsultantControllerTest extends RestTestCase
 
         $refVar = '$ref';
 
-        $this->assertEquals('email', $results->contacts[0]->type);
+        $this->assertEquals('business', $results->contacts[0]->type);
         $this->assertEquals('mailto:brandyn60@littel.biz', $results->contacts[0]->$refVar);
-        $this->assertEquals('phone', $results->contacts[1]->type);
+        $this->assertEquals('business', $results->contacts[1]->type);
         $this->assertEquals('tel:613-055-9515', $results->contacts[1]->$refVar);
-        $this->assertEquals('fax', $results->contacts[2]->type);
-        $this->assertEquals('tel:613-055-9515', $results->contacts[1]->$refVar);
-        $this->assertEquals('web', $results->contacts[3]->type);
+        $this->assertEquals('business', $results->contacts[2]->type);
+        $this->assertEquals('fax:104.932.2280', $results->contacts[2]->$refVar);
+        $this->assertEquals('business', $results->contacts[3]->type);
         $this->assertEquals('http://www.moore.net/', $results->contacts[3]->$refVar);
 
         $this->assertContains(
