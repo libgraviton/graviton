@@ -86,4 +86,22 @@ class RestTestCase extends GravitonTestCase
         $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
 
     }
+
+    /**
+     * assert that putting a fetched resource fails
+     *
+     * @param string $url    url
+     * @param object $client client to use
+     *
+     * @return void
+     */
+    public function assertPutFails($url, $client)
+    {
+        $client->request('GET', $url);
+        $client->put($url, $client->getResults());
+
+        $response = $client->getResponse();
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
+    }
 }

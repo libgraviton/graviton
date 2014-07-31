@@ -163,16 +163,7 @@ class CountryControllerTest extends RestTestCase
     public function testPutApp()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/entity/country/CHE');
-
-        $country = $client->getResults();
-
-        $client->put('/entity/country/CHE', $country);
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
+        $this->assertPutFails('/entity/country/CHE', $client);
     }
 
     /**

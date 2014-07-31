@@ -149,16 +149,7 @@ class ConsultantControllerTest extends RestTestCase
     public function testPutApp()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/person/consultant/NOKB528VY');
-
-        $consultant = $client->getResults();
-
-        $client->put('/person/consultant/NOKB528VY', $consultant);
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
+        $this->assertPutFails('/person/consultant/NOKB528VY', $client);
     }
 
     /**
