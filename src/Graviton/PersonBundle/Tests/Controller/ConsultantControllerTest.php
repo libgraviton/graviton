@@ -235,7 +235,6 @@ class ConsultantControllerTest extends RestTestCase
         $this->assertContains('lastName', $results->required);
         $this->assertNotContains('title', $results->required);
         $this->assertNotContains('contacts', $results->required);
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('GET, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertCorsHeaders('GET, OPTIONS', $response);
     }
 }

@@ -71,4 +71,19 @@ class RestTestCase extends GravitonTestCase
             'Content-Type mismatch in response'
         );
     }
+
+    /**
+     * assertion for checking cors headers
+     *
+     * @param string $methods  methods to check for
+     * @param object $response response to load headers from
+     *
+     * @return void
+     */
+    public function assertCorsHeaders($methods, $response)
+    {
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
+
+    }
 }
