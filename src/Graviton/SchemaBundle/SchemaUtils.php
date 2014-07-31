@@ -42,7 +42,9 @@ class SchemaUtils
 
         foreach ($meta->getFieldNames() as $field) {
             // @todo replace this exremenly dirty hack (i didn't figure out how to store $ref in mongodb)
-            if ($field == 'uri') {
+            // we should probably get the info what to do here from meta oder the model...
+            // using 'value' here won't be sustainable for long (which is why i proposed uri)
+            if ($field == 'value') {
                 $field = '$ref';
             }
             $property = new Schema();
