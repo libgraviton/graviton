@@ -9,7 +9,7 @@ php:
   - 5.5
   - 5.4
 script:
-  - ./vendor/bin/phpunit -c app/ --coverage-text --coverage-clover=coverage.clover
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
   - ./vendor/bin/phpcs --standard=PSR1 --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' src/ app/ web/
   - ./vendor/bin/phpcs --standard=PSR2 --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' src/ app/ web/

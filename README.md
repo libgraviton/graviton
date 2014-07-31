@@ -38,7 +38,7 @@ You can now start a development server.
 php app/console server:run
 ````
 
-Please run ``./vendor/bin/phpunit -c app/`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
+Please run ``./vendor/bin/phpunit`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
 
 ## Quality Control
 
