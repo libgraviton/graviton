@@ -11,6 +11,8 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
+use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
+use Graviton\TestBundle\GravitonTestBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
@@ -80,6 +82,8 @@ class AppKernel extends Kernel
             $bundles[] = new SensioDistributionBundle();
             $bundles[] = new SensioGeneratorBundle();
             $bundles[] = new DavidBaduraFakerBundle();
+            $bundles[] = new GravitonTestBundle();
+            $bundles[] = new LiipFunctionalTestBundle();
         }
 
         return $bundles;

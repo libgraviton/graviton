@@ -328,9 +328,11 @@ class AppControllerTest extends RestTestCase
     /**
      * Test various permutations of the PATCH method
      *
-     * @dataProvider patchMethodTests
+     * @param string $patchString json-patch to apply
      *
      * @return void
+     *
+     * @dataProvider patchMethodTests
      */
     public function testPatchApp($patchString)
     {

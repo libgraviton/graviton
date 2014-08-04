@@ -3,10 +3,12 @@
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Composer\Autoload\ClassLoader;
 
+ini_set('include_path', __DIR__.'/../:'.ini_get('include_path'));
+
 /**
  * @var ClassLoader $loader
  */
-$loader = include __DIR__.'/../vendor/autoload.php';
+$loader = include 'vendor/autoload.php';
 
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 

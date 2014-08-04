@@ -2,15 +2,26 @@
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <!--
+    have a look at app/config/config.xml where I explain why this is smelly
   <imports>
-    <!-- have a look at app/config/config.xml where I explain why this is smelly -->
     <import resource="../../../../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/services.xml"/>
   </imports>
+  -->
   <parameters>
     <parameter key="graviton.test.rest.client.class">Graviton\TestBundle\Client</parameter>
+    <parameter key="test.client.parameters" type="collection"></parameter>
+    <parameter key="test.client.history.class">Symfony\Component\BrowserKit\History</parameter>
+    <parameter key="test.client.cookiejar.class">Symfony\Component\BrowserKit\CookieJar</parameter>
   </parameters>
   <services>
-    <service id="graviton.test.rest.client" class="%graviton.test.rest.client.class%" parent="test.client" scope="prototype">
+    <service id="graviton.test.rest.client" class="%graviton.test.rest.client.class%" scope="prototype">
+      <argument type="service" id="kernel" />
+      <argument>%test.client.parameters%</argument>
+      <argument type="service" id="test.client.history" />
+      <argument type="service" id="test.client.cookiejar" />
     </service>
-  </services>
+    <service id="test.client.history" class="%test.client.history.class%" scope="prototype" />
+    <service id="test.client.cookiejar" class="%test.client.cookiejar.class%" scope="prototype" />
+   </services>
 </container>
