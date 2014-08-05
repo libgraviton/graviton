@@ -12,6 +12,4 @@
   <monolog:config>
     <monolog:handler name="main" type="test"/>
   </monolog:config>
-  <framework:test/>
-  <liip_functional_test:config/>
 </container>

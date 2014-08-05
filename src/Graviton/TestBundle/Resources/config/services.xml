@@ -13,6 +13,8 @@
     <parameter key="test.client.parameters" type="collection"></parameter>
     <parameter key="test.client.history.class">Symfony\Component\BrowserKit\History</parameter>
     <parameter key="test.client.cookiejar.class">Symfony\Component\BrowserKit\CookieJar</parameter>
+    <parameter key="test.faker.factory.class">Faker\Factory</parameter>
+    <parameter key="test.faker.faker.class">Faker\Generator</parameter>
   </parameters>
   <services>
     <service id="graviton.test.rest.client" class="%graviton.test.rest.client.class%" scope="prototype">
@@ -23,5 +25,6 @@
     </service>
     <service id="test.client.history" class="%test.client.history.class%" scope="prototype" />
     <service id="test.client.cookiejar" class="%test.client.cookiejar.class%" scope="prototype" />
+    <service id="test.faker" class="%test.faker.faker.class%" factory-class="%test.faker.factory.class%" factory-method="create"/>
    </services>
 </container>
