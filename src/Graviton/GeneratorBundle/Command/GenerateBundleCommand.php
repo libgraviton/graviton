@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
 use Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator;
+use Graviton\GeneratorBundle\Generator\BundleGenerator;
 
 /**
  * generator command
@@ -114,5 +115,17 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
         $format
     ) {
         return array();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Use an overridden generator to make nicer code
+     *
+     * @return BundleGenerator
+     */
+    protected function createGenerator()
+    {
+        return new BundleGenerator($this->getContainer()->get('filesystem'));
     }
 }
