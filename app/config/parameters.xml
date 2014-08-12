@@ -6,13 +6,8 @@
     <import resource="vcap.php"/>
   </imports>
   <parameters>
-    <parameter key="database_driver">pdo_mysql</parameter>
-    <parameter key="database_host">127.0.0.1</parameter>
-    <parameter key="database_port">null</parameter>
-    <parameter key="database_name">symfony</parameter>
-    <parameter key="database_name_report">graviton_report</parameter>
-    <parameter key="database_user">root</parameter>
-    <parameter key="database_password"/>
+    <parameter key="mongodb.default.server.uri">mongodb://localhost:27017</parameter>
+    <parameter key="mongodb.default.server.db">db</parameter>
     <parameter key="mailer_transport">smtp</parameter>
     <parameter key="mailer_host">127.0.0.1</parameter>
     <parameter key="mailer_user">null</parameter>
