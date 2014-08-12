@@ -268,9 +268,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertIsSchemaResponse($response);
         $this->assertIsAppSchema($results);
-
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
 
         $this->assertContains(
             '<http://localhost/schema/core/app/item>; rel="canonical"',
@@ -328,14 +326,18 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * Test replace an existing value of a record
+     * Test various permutations of the PATCH method
+     *
+     * @param string $patchString json-patch to apply
      *
      * @return void
+     *
+     * @dataProvider patchMethodTests
      */
-    public function testPatchAppReplace()
+    public function testPatchApp($patchString)
     {
         $client = static::createRestClient();
-        $patchString = json_decode('[{"op":"replace","path":"/showInMenu","value":false}]');
+        $patchString = json_decode($patchString);
 
         $client->patch('/core/app/hello', $patchString);
 
@@ -360,34 +362,18 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * Test add must replace an existing value of a record
+     * various ways to test PATH
      *
-     * @return void
+     * All of these should set showInMenu to false on the /core/app/hello record while never
+     * creating any duplicate items.
+     *
+     * @return array
      */
-    public function testPatchAppAddMustReplace()
+    public function patchMethodTests()
     {
-        $client = static::createRestClient();
-        $patchString = json_decode('[{"op":"add","path":"/showInMenu","value":false}]');
-
-        $client->patch('/core/app/hello', $patchString);
-
-        $response = $client->getResponse();
-
-        // get the patched record
-        $client->request('GET', '/core/app/hello');
-        $results = $client->getResults();
-
-        // check status code (204 No Content)
-        $this->assertEquals('204', $response->getStatusCode());
-
-        // check record values
-        $this->assertEquals('hello', $results->id);
-        $this->assertEquals('Hello World!', $results->title->en);
-        $this->assertFalse($results->showInMenu);
-
-        $this->assertContains(
-            '<http://localhost/core/app/hello>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+        return array(
+            array('[{"op":"replace","path":"/showInMenu","value":false}]'),
+            array('[{"op":"add","path":"/showInMenu","value":false}]'),
         );
     }
 

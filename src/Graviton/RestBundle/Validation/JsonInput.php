@@ -70,7 +70,7 @@ class JsonInput
             } else {
                 // if it's not set but required, validate with empty value
                 if ($this->isRequired($constraints)) {
-                    $validationResult = $this->validator->validateValue($val, $constraints);
+                    $validationResult = $this->validator->validateValue(null, $constraints);
                     $violations->addAll($this->createNewViolationList($prop, $validationResult));
                 }
             }

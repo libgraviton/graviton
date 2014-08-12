@@ -5,10 +5,6 @@
     xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
     xmlns:doctrine_extensions="http://example.org/schema/dic/stof_doctrine_extensions"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-  <parameters>
-    <parameter key="mongodb.default.server.uri">mongodb://localhost:27017</parameter>
-    <parameter key="mongodb.default.server.db">default</parameter>
-  </parameters>
   <doctrine:config>
     <doctrine:dbal default-connection="default"/>
     <doctrine:orm default-entity-manager="default"/>

@@ -7,10 +7,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <imports>
     <import resource="config_dev.xml"/>
+    <import resource="../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml"/>
   </imports>
   <monolog:config>
     <monolog:handler name="main" type="test"/>
   </monolog:config>
-  <framework:test/>
-  <liip_functional_test:config/>
 </container>

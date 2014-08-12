@@ -1,6 +1,6 @@
 # Graviton
 
-[![Build Status](https://travis-ci.org/libgraviton/graviton.png?branch=master)](https://travis-ci.org/libgraviton/graviton) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=master) [![Latest Stable Version](https://poser.pugx.org/graviton/graviton/v/stable.svg)](https://packagist.org/packages/graviton/graviton) [![Total Downloads](https://poser.pugx.org/graviton/graviton/downloads.svg)](https://packagist.org/packages/graviton/graviton) [![Latest Unstable Version](https://poser.pugx.org/graviton/graviton/v/unstable.svg)](https://packagist.org/packages/graviton/graviton) [![License](https://poser.pugx.org/graviton/graviton/license.svg)](https://packagist.org/packages/graviton/graviton)
+[![Build Status](https://travis-ci.org/libgraviton/graviton.png?branch=develop)](https://travis-ci.org/libgraviton/graviton) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=develop) [![Code Coverage](https://scrutinizer-ci.com/g/libgraviton/graviton/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/libgraviton/graviton/?branch=develop) [![Latest Stable Version](https://poser.pugx.org/graviton/graviton/v/stable.svg)](https://packagist.org/packages/graviton/graviton) [![Total Downloads](https://poser.pugx.org/graviton/graviton/downloads.svg)](https://packagist.org/packages/graviton/graviton) [![Latest Unstable Version](https://poser.pugx.org/graviton/graviton/v/unstable.svg)](https://packagist.org/packages/graviton/graviton) [![License](https://poser.pugx.org/graviton/graviton/license.svg)](https://packagist.org/packages/graviton/graviton)
 
 Graviton is a symfony2 based REST server.
 
@@ -9,13 +9,18 @@ Graviton is a symfony2 based REST server.
 While this project is still in its infancy it already implements some REST resources.
 
 * ``/core/app`` exposes app objects and supports rw operation
-* ``/taxonomy/country`` exposes a list of countries from The World Bank, it only supports ro operation
+* ``/core/product`` exposes a ro collection of products that are expected to be loaded for an erp
+* ``/entity/country`` exposes a list of countries from The World Bank, it only supports ro operation
+* ``/person/consultant`` exposes a list of customer sales reps and only supports ro operation
+* ``/i18n/language`` and ``/i18n/translatable`` expose rw collections that may be used for various i18n purposes
 
 The implemented resources are mainly for validating the server and we will be adding
 more services as soon as that has been done.
 
 The data available in the services are loaded with DataFixtures to ease development but will also
 be populated by external means when we get nearer to production.
+
+The graviton server returns a list of all the available resource collections in response to ``GET /``.
 
 ## Developing
 
@@ -33,7 +38,7 @@ You can now start a development server.
 php app/console server:run
 ````
 
-Please run ``./vendor/bin/phpunit -c app/`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
+Please run ``./vendor/bin/phpunit`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
 
 ## Quality Control
 
@@ -54,8 +59,37 @@ This generates a files called ``cachegrind.out.<PPID>`` that you may inspect usi
 ## Deploying
 
 Graviton supports Cloudfoundry out of the box. You need to define a mongodb service called ``graviton-dev-mongo``. Pushing to the cloud
-will only push the bare code an run ``composer install`` on the target.
+will push the bare code and run ``composer install`` on the target. Currently cloud installs get populated with mongodb fixtures on each
+start.
 
 ``bash
 cf push graviton-dev
+``
+
+### Loading fixtures in cloudfoundry.
+
+Add the connection data from ``vcap_services.mongodb-2.2[0].credentials.url`` to ``app/config/parameters_local.xml`` but replace
+the ``<ip>:<port>`` part with ``localhost:8001``.
+
+``xml
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <parameters>
+    <parameter key="mongodb.default.server.uri">mongodb://user:pass@127.0.0.1:8001/db</parameter>
+  </parameters>
+</container>
+``
+
+Open a local connection using the service connector console.
+
+``bash
+sc connect 8001 -u $USERNAME -p $PASSWORD  graviton-dev-mongo
+``
+
+Load the fixtures using app/console.
+
+``bash
+php app/console doctrine:mongodb:fixtures:load
 ``

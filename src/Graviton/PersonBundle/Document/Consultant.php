@@ -34,14 +34,14 @@ class Consultant
     protected $title;
 
     /**
-     * @var Doctrine\Common\Collections\ArrayCollection
+     * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $contacts = array();
 
     /**
      * construct
      *
-     * @return Graviton\PersonBundle\Document\Consultant
+     * @return Consultant
      */
     public function __construct()
     {

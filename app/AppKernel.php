@@ -11,10 +11,10 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
+use Graviton\TestBundle\GravitonTestBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
-use DavidBadura\FakerBundle\DavidBaduraFakerBundle;
 
 /**
  * AppKernel
@@ -79,7 +79,7 @@ class AppKernel extends Kernel
             $bundles[] = new WebProfilerBundle();
             $bundles[] = new SensioDistributionBundle();
             $bundles[] = new SensioGeneratorBundle();
-            $bundles[] = new DavidBaduraFakerBundle();
+            $bundles[] = new GravitonTestBundle();
         }
 
         return $bundles;

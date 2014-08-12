@@ -46,25 +46,25 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $manager)
     {
         $serializer = $this->container->get('serializer');
-        $faker = $this->container->get('davidbadura_faker.faker');
+        $faker = $this->container->get('test.faker');
 
         for ($i = 0; $i < 15; $i++) {
             $faker->seed($i);
             $contacts = array(
                 array(
-                    'type' => 'email',
+                    'type' => 'business',
                     '$ref' => 'mailto:'.$faker->email,
                 ),
                 array(
-                    'type' => 'phone',
+                    'type' => 'business',
                     '$ref' => 'tel:'.$faker->phoneNumber,
                 ),
                 array(
-                    'type' => 'fax',
-                    '$ref' => 'tel:'.$faker->phoneNumber,
+                    'type' => 'business',
+                    '$ref' => 'fax:'.$faker->phoneNumber,
                 ),
                 array(
-                    'type' => 'web',
+                    'type' => 'business',
                     '$ref' =>  $faker->url,
                 ),
             );

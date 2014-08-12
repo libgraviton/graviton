@@ -5,6 +5,6 @@
   <embedded-document name="Graviton\PersonBundle\Document\PersonContact" repository-class="Graviton\PersonBundle\Repository\PersonContactRepository">
     <field fieldName="id" type="id" id="true"/>
     <field fieldName="type" type="string"/>
-    <field fieldName="uri" type="string"/>
+    <field fieldName="value" type="string"/>
   </embedded-document>
 </doctrine-mongo-mapping>

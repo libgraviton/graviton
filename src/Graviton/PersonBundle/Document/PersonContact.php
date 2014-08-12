@@ -24,9 +24,9 @@ class PersonContact
     protected $type;
 
     /**
-     * @var string $uri
+     * @var string $ri
      */
-    protected $uri;
+    protected $value;
 
     /**
      * Get id
@@ -63,26 +63,26 @@ class PersonContact
     }
 
     /**
-     * Set uri
+     * Set value
      *
-     * @param string $uri uri to contact resource (starting with tel:, http:, ...)
+     * @param string $value value to contact resource (starting with tel:, http:, ...)
      *
      * @return self
      */
-    public function setUri($uri)
+    public function setValue($value)
     {
-        $this->uri = $uri;
+        $this->value = $value;
 
         return $this;
     }
 
     /**
-     * Get uri
+     * Get value
      *
-     * @return string $uri
+     * @return string $value
      */
-    public function getUri()
+    public function getValue()
     {
-        return $this->uri;
+        return $this->value;
     }
 }

@@ -6,8 +6,6 @@
 namespace Graviton\TestBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
-use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
 
 /**
  * GravitonTestBundle
@@ -18,19 +16,6 @@ use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonTestBundle extends Bundle implements GravitonBundleInterface
+class GravitonTestBundle extends Bundle
 {
-    /**
-     * {@inheritDoc}
-     *
-     * set up a bare bones symfony2 context
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return array(
-            new LiipFunctionalTestBundle(),
-        );
-    }
 }
