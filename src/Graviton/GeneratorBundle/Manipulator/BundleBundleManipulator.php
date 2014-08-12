@@ -8,6 +8,11 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 /**
  * change the code of a GravitonBundleInterface based bundle
  *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class BundleBundleManipulator extends Manipulator
 {
@@ -51,7 +56,12 @@ class BundleBundleManipulator extends Manipulator
 
         // Don't add same bundle twice
         if (false !== strpos(implode('', $lines), $shortName)) {
-            throw new \RuntimeException(sprintf('Bundle "%s" is already defined in "AppKernel::registerBundles()".', $shortName));
+            throw new \RuntimeException(
+                sprintf(
+                    'Bundle "%s" is already defined in "AppKernel::registerBundles()".',
+                    $shortName
+                )
+            );
         }
 
         $namespaces[] = "use ${bundle};\n";
@@ -59,7 +69,11 @@ class BundleBundleManipulator extends Manipulator
         $lines = array_merge(
             array_slice($src, 0, 7),
             $namespaces,
-            array_slice($src, $this->reflected->getEndLine() - $this->reflected->getStartLine() - 5, $method->getStartLine() - count($lines) - 6),
+            array_slice(
+                $src,
+                $this->reflected->getEndLine() - $this->reflected->getStartLine() - 5,
+                $method->getStartLine() - count($lines) - 6
+            ),
             $lines,
             array_slice($src, $method->getEndLine() - 2)
         );
