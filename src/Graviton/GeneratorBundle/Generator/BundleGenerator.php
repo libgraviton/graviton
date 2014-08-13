@@ -9,6 +9,10 @@ use Sensio\Bundle\GeneratorBundle\Generator\BundleGenerator as SensioBundleGener
 /**
  * bundle containing various code generators
  *
+ * This code is more or less loosley based on SensioBundleGenerator. It could
+ * use some refactoring to duplicate less for that, but this is how i finally
+ * got a working version.
+ *
  * @category GeneratorBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
@@ -17,6 +21,55 @@ use Sensio\Bundle\GeneratorBundle\Generator\BundleGenerator as SensioBundleGener
  */
 class BundleGenerator extends SensioBundleGenerator
 {
+    /**
+     * @private string[]
+     */
+    private $skeletonDirs;
+
+    /**
+     * Sets an array of directories to look for templates.
+     *
+     * The directories must be sorted from the most specific to the most
+     * directory.
+     *
+     * @param array $skeletonDirs An array of skeleton dirs
+     *
+     * @return void
+     */
+    public function setSkeletonDirs($skeletonDirs)
+    {
+        $skeletonDirs = array_merge(
+            array(__DIR__.'/../Resources/SensioGeneratorBundle/skeleton'),
+            $skeletonDirs
+        );
+        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : array($skeletonDirs);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * render a new object using twig
+     *
+     * @param string $template   template to use
+     * @param array  $parameters info used in creating the object
+     *
+     * @return string
+     */
+    protected function render($template, $parameters)
+    {
+        $twig = new \Twig_Environment(
+            new \Twig_Loader_Filesystem($this->skeletonDirs),
+            array(
+                'debug'            => true,
+                'cache'            => false,
+                'strict_variables' => true,
+                'autoescape'       => false,
+            )
+        );
+
+        return $twig->render($template, $parameters);
+    }
+
     /**
      * generate bundle code
      *
@@ -59,11 +112,16 @@ class BundleGenerator extends SensioBundleGenerator
             }
         }
 
+        $author = trim(`git config --get user.name`);
+        $email = trim(`git config --get user.email`);
+
         $basename = substr($bundle, 0, -6);
         $parameters = array(
             'namespace' => $namespace,
             'bundle'    => $bundle,
             'format'    => $format,
+            'author'    => $author,
+            'email'     => $email,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
@@ -77,10 +135,16 @@ class BundleGenerator extends SensioBundleGenerator
 
         if ('xml' === $format || 'annotation' === $format) {
             $this->renderFile('bundle/services.xml.twig', $dir.'/Resources/config/services.xml', $parameters);
+            $this->renderFile('bundle/config.xml.twig', $dir.'/Resources/config/config.xml', $parameters);
         } else {
             $this->renderFile(
                 'bundle/services.'.$format.'.twig',
                 $dir.'/Resources/config/services.'.$format,
+                $parameters
+            );
+            $this->renderFile(
+                'bundle/config.'.$format.'.twig',
+                $dir.'/Resources/config/config.'.$format,
                 $parameters
             );
         }
