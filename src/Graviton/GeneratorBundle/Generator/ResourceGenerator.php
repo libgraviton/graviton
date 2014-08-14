@@ -4,7 +4,8 @@ namespace Graviton\GeneratorBundle\Generator;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\DependencyInjection\Container;
-use Sensio\Bundle\GeneratorBundle\Generator\BundleGenerator as SensioBundleGenerator;
+use Sensio\Bundle\GeneratorBundle\Generator\Generator;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
  * bundle containing various code generators
@@ -19,12 +20,40 @@ use Sensio\Bundle\GeneratorBundle\Generator\BundleGenerator as SensioBundleGener
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class BundleGenerator extends SensioBundleGenerator
+class ResourceGenerator extends Generator
 {
     /**
      * @private string[]
      */
     private $skeletonDirs;
+    /**
+     * @private
+     */
+    private $filesystem;
+    /**
+     * @private
+     */
+    private $doctrine;
+    /**
+     * @private
+     */
+    private $kernel;
+
+    /**
+     * instanciate generator object
+     *
+     * @param object $filesystem fs abstraction layer
+     * @param object $doctrine   dbal
+     * @param object $kernel     app kernel
+     *
+     * @return ResourceGenerator
+     */
+    public function __construct($filesystem, $doctrine, $kernel)
+    {
+        $this->filesystem = $filesystem;
+        $this->doctrine = $doctrine;
+        $this->kernel = $kernel;
+    }
 
     /**
      * Sets an array of directories to look for templates.
@@ -71,62 +100,48 @@ class BundleGenerator extends SensioBundleGenerator
     }
 
     /**
-     * generate bundle code
+     * generate the resource with all its bits and parts
      *
-     * @param string  $namespace namspace name
-     * @param string  $bundle    bundle name
-     * @param string  $dir       bundle dir
-     * @param string  $format    bundle condfig file format
-     * @param boolean $structure generate structure?
+     * @param BundleInterface $bundle         bundle
+     * @param string          $document       document name
+     * @param string          $format         format of config files (please use xml)
+     * @param array           $fields         fields to add
+     * @param boolean         $withRepository generate repository class
      *
      * @return void
      */
-    public function generate($namespace, $bundle, $dir, $format, $structure)
+    public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
     {
-        $dir .= '/'.strtr($namespace, '\\', '/');
-        if (file_exists($dir)) {
-            if (!is_dir($dir)) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" exists but is a file.',
-                        realpath($dir)
-                    )
-                );
-            }
-            $files = scandir($dir);
-            if ($files != array('.', '..')) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" is not empty.',
-                        realpath($dir)
-                    )
-                );
-            }
-            if (!is_writable($dir)) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" is not writable.',
-                        realpath($dir)
-                    )
-                );
-            }
-        }
-
+        $dir = $bundle->getPath();
         $author = trim(`git config --get user.name`);
         $email = trim(`git config --get user.email`);
 
-        $basename = substr($bundle, 0, -6);
+        $basename = substr($document, 0, -6);
+        $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
         $parameters = array(
-            'namespace' => $namespace,
-            'bundle'    => $bundle,
+            'document'  => $document,
+            'base'      => $bundleNamespace,
+            'bundle'    => $bundle->getName(),
             'format'    => $format,
             'author'    => $author,
             'email'     => $email,
+            'fields'    => $fields,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
 
-        $this->renderFile('bundle/Bundle.php.twig', $dir.'/'.$bundle.'.php', $parameters);
+        $this->renderFile(
+            'document/Document.mongodb.xml.twig',
+            $dir.'/Resources/config/doctrine/'.$document.'.mongodb.xml',
+            $parameters
+        );
+
+        // run built in doctrine commands
+        $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($this->kernel);
+        $application->setAutoExit(false);
+        $options = array('command' => 'doctrine:mongodb:generate:documents', 'bundle' => $bundle->getName());
+        $application->run(new \Symfony\Component\Console\Input\ArrayInput($options));
+        return;
         $this->renderFile(
             'bundle/Extension.php.twig',
             $dir.'/DependencyInjection/'.$basename.'Extension.php',
@@ -135,7 +150,6 @@ class BundleGenerator extends SensioBundleGenerator
 
         if ('xml' === $format || 'annotation' === $format) {
             $this->renderFile('bundle/services.xml.twig', $dir.'/Resources/config/services.xml', $parameters);
-            mkdir($dir.'/Resources/config/doctrine');
             $this->renderFile('bundle/config.xml.twig', $dir.'/Resources/config/config.xml', $parameters);
         } else {
             $this->renderFile(
@@ -143,7 +157,6 @@ class BundleGenerator extends SensioBundleGenerator
                 $dir.'/Resources/config/services.'.$format,
                 $parameters
             );
-            mkdir($dir.'/Resources/config/doctrine');
             $this->renderFile(
                 'bundle/config.'.$format.'.twig',
                 $dir.'/Resources/config/config.'.$format,
