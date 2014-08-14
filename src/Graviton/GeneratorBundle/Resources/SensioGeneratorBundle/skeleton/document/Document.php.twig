@@ -45,7 +45,11 @@ class {{ document }}
      * @return {{ field.type }} ${{ field.fieldName }}
 {% endif %}
      */
+{% if 'boolean' in field.type %}
+    public function is{{ field.fieldName|capitalize }}()
+{% else %}
     public function get{{ field.fieldName|capitalize }}()
+{% endif %}
     {
         return $this->{{ field.fieldName }};
     }
