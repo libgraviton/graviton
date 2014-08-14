@@ -40,6 +40,24 @@ php app/console server:run
 
 Please run ``./vendor/bin/phpunit`` and ``./vendor/bin/php-cs-fixer fix src/`` before commiting changes.
 
+### Code Generators
+
+There are various code generators available at you disposal.
+
+#### Generate new Bundle
+
+````bash
+php app/console graviton:generate:bundle --namespace=Acme/FooBundle --dir=src --bundle-name=AcmeFooBundle
+````
+
+#### Generate a new Resource
+
+````bash
+php app/console graviton:generate:resource --entity=AcmeFooBundle:Bar --format=xml --fields="name:string" --with-repository
+php app/console graviton:generate:resource --entity=AcmeFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant" --with-repository
+````
+
+
 ## Quality Control
 
 Graviton uses [travis-ci](http://travis-ci.org) and [scrutinizer-ci](http://scrutinizer-ci.com).
