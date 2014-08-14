@@ -66,7 +66,11 @@ class {{ document }}
      * @return self
      */
 {% if 'Graviton' in field.type %}
+{% if '[]' in field.type %}
+    public function set{{ field.fieldName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.fieldName }})
+{% else %}
     public function set{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
+{% endif %}
 {% else %}
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% endif %}
@@ -75,5 +79,49 @@ class {{ document }}
 
         return $this;
     }
+{% if ('[]' in field.type or field.type == 'array') %}
+
+    /**
+     * add element to {{ field.fieldName }}
+     * 
+{% if 'Graviton' in field.type %}
+     * @param \{{ field.type[0:-2] }} ${{ field.fieldName }} object to add to {{ field.fieldName }}
+{% else %}
+     * @param {{ field.type }} ${{ field.fieldName }} value to add to {{ field.fieldName }}
+{% endif %}
+     *
+     * @return self
+     */
+    public function add{{ field.fieldName|capitalize }}(${{field.fieldName}})
+    {
+        $this->{{ field.fieldName }}[] = ${{ field.fieldName }};
+    }
+
+    /**
+     * remove element from {{ field.fieldName }}
+     *
+{% if '[]' in field.type %}
+     * @param {{ field.type[0:-2] }} ${{ field.fieldName }} object to remove from {{ field.fieldName }}
+{% else %}
+     * @param {{ field.type }} ${{ field.fieldName }} object to remove from {{ field.fieldName }}
+{% endif %}
+     *
+     * @return self
+     */
+{% if 'Graviton' in field.type %}
+{% if '[]' in field.type %}
+    public function remove{{ field.fieldName|capitalize }})(\{{ field.type[0:-2] }} ${{ field.fieldName }})
+{% else  %}
+    public function remove{{ field.fieldName|capitalize }})(\{{ field.type }} ${{ field.fieldName }})
+{% endif %}
+{% else  %}
+    public function remove{{ field.fieldName|capitalize }})({{ field.type }} ${{ field.fieldName }})
+{% endif %}
+    {
+        $this->{{ field.fieldName }}->removeElement(${{ field.fieldName }});
+
+        return $this;
+    }
+{% endif %}
 {% endfor %}
 }
