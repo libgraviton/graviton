@@ -53,7 +53,8 @@ class {{ document }}
      *
      * @return self
      */
-    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }}) {
+    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+    {
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
 
         return $this;

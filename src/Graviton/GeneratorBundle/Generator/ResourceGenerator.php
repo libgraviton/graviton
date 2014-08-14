@@ -141,12 +141,20 @@ class ResourceGenerator extends Generator
             $dir.'/Document/'.$document.'.php',
             $parameters
         );
+
+        if ($withRepository) {
+            $this->renderFile(
+                'document/DocumentRepository.php.twig',
+                $dir.'/Repository/'.$document.'Repository.php',
+                $parameters
+            );
+        }
         return;
 
         // run built in doctrine commands
         $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($this->kernel);
         $application->setAutoExit(false);
-        $options = array('command' => 'doctrine:mongodb:generate:documents', 'bundle' => $bundle->getName());
+        $options = array('command' => 'graviton:generate:mongodb:documents', 'bundle' => $bundle->getName());
         $application->run(new \Symfony\Component\Console\Input\ArrayInput($options));
         return;
         $this->renderFile(
