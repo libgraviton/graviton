@@ -149,47 +149,5 @@ class ResourceGenerator extends Generator
                 $parameters
             );
         }
-        return;
-
-        // run built in doctrine commands
-        $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($this->kernel);
-        $application->setAutoExit(false);
-        $options = array('command' => 'graviton:generate:mongodb:documents', 'bundle' => $bundle->getName());
-        $application->run(new \Symfony\Component\Console\Input\ArrayInput($options));
-        return;
-        $this->renderFile(
-            'bundle/Extension.php.twig',
-            $dir.'/DependencyInjection/'.$basename.'Extension.php',
-            $parameters
-        );
-
-        if ('xml' === $format || 'annotation' === $format) {
-            $this->renderFile('bundle/services.xml.twig', $dir.'/Resources/config/services.xml', $parameters);
-            $this->renderFile('bundle/config.xml.twig', $dir.'/Resources/config/config.xml', $parameters);
-        } else {
-            $this->renderFile(
-                'bundle/services.'.$format.'.twig',
-                $dir.'/Resources/config/services.'.$format,
-                $parameters
-            );
-            $this->renderFile(
-                'bundle/config.'.$format.'.twig',
-                $dir.'/Resources/config/config.'.$format,
-                $parameters
-            );
-        }
-
-        if ('annotation' != $format) {
-            $this->renderFile(
-                'bundle/routing.'.$format.'.twig',
-                $dir.'/Resources/config/routing.'.$format,
-                $parameters
-            );
-        }
-
-        if ($structure) {
-            $this->filesystem->mkdir($dir.'/Resources/doc');
-            $this->filesystem->touch($dir.'/Resources/doc/index.rst');
-        }
     }
 }
