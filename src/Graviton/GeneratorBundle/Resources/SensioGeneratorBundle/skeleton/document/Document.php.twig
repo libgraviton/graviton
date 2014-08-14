@@ -1,0 +1,62 @@
+<?php
+
+namespace {{ base }}Document;
+
+/**
+ * {{ base }}Document\{{ document }}
+ *
+ * @category {{ bundle }}
+ * @package  Graviton
+ * @author   {{ author }} <{{ email }}>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
+class {{ document }}
+{
+    /**
+     * @var MongoId $id
+     */
+    protected $id;
+
+{% for field in fields %}
+    /**
+     * @var {{ field.type }} ${{ field.fieldName }}
+     */
+    protected ${{ field.fieldName }};
+
+{% endfor %}
+    /**
+     * Get id
+     *
+     * @return string $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+{% for field in fields %}
+
+    /**
+     * Get {{ field.fieldName }}
+     *
+     * @return {{ field.type }} ${{ field.fieldName }}
+     */
+    public function get{{ field.fieldName|capitalize }}()
+    {
+        return $this->{{ field.fieldName }};
+    }
+
+    /**
+     * Set {{ field.fieldName }}
+     * 
+     * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+     *
+     * @return self
+     */
+    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }}) {
+        $this->{{ field.fieldName }} = ${{ field.fieldName }};
+
+        return $this;
+    }
+{% endfor %}
+}

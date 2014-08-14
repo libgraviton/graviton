@@ -136,6 +136,13 @@ class ResourceGenerator extends Generator
             $parameters
         );
 
+        $this->renderFile(
+            'document/Document.php.twig',
+            $dir.'/Document/'.$document.'.php',
+            $parameters
+        );
+        return;
+
         // run built in doctrine commands
         $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($this->kernel);
         $application->setAutoExit(false);
