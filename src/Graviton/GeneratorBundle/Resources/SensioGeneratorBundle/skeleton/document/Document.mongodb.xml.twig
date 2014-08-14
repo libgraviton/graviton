@@ -4,8 +4,11 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
   <document name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
     <field fieldName="id" type="string" id="true"/>
-{% for field in fields %}
+{% for field in fields %}{% if not 'Graviton' in field.type %}
     <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
-{% endfor %}
+{% endif %}{% endfor %}
+{% for field in fields %}{% if 'Graviton' in field.type %}
+    <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}"/>
+{% endif %}{% endfor %}
   </document>
 </doctrine-mongo-mapping>

@@ -39,7 +39,11 @@ class {{ document }}
     /**
      * Get {{ field.fieldName }}
      *
+{% if 'Graviton' in field.type %}
+     * @return \{{ field.type }} ${{ field.fieldName }}
+{% else %}
      * @return {{ field.type }} ${{ field.fieldName }}
+{% endif %}
      */
     public function get{{ field.fieldName|capitalize }}()
     {
@@ -49,11 +53,19 @@ class {{ document }}
     /**
      * Set {{ field.fieldName }}
      * 
+{% if 'Graviton' in field.type %}
+     * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
+{% else %}
      * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+{% endif %}
      *
      * @return self
      */
+{% if 'Graviton' in field.type %}
+    public function set{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
+{% else %}
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+{% endif %}
     {
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
 
