@@ -8,7 +8,11 @@
     <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
 {% endif %}{% endfor %}
 {% for field in fields %}{% if 'Graviton' in field.type %}
+{% if '[]' in field.type %}
+    <embed-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}"/>
+{% else %}
     <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}"/>
+{% endif %}
 {% endif %}{% endfor %}
   </document>
 </doctrine-mongo-mapping>
