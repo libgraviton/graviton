@@ -110,12 +110,12 @@ class {{ document }}
      */
 {% if 'Graviton' in field.type %}
 {% if '[]' in field.type %}
-    public function remove{{ field.fieldName|capitalize }})(\{{ field.type[0:-2] }} ${{ field.fieldName }})
+    public function remove{{ field.fieldName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.fieldName }})
 {% else  %}
-    public function remove{{ field.fieldName|capitalize }})(\{{ field.type }} ${{ field.fieldName }})
+    public function remove{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
 {% endif %}
 {% else  %}
-    public function remove{{ field.fieldName|capitalize }})({{ field.type }} ${{ field.fieldName }})
+    public function remove{{ field.fieldName|capitalize }}({{ field.type }} ${{ field.fieldName }})
 {% endif %}
     {
         $this->{{ field.fieldName }}->removeElement(${{ field.fieldName }});

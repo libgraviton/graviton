@@ -112,12 +112,30 @@ class ResourceGenerator extends Generator
      */
     public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
     {
-        $dir = $bundle->getPath();
         $author = trim(`git config --get user.name`);
         $email = trim(`git config --get user.email`);
 
+        $dir = $bundle->getPath();
         $basename = substr($document, 0, -6);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
+
+        // derive types for serializer from document types
+        $fields = array_map(
+            function ($field) {
+                $field['serializerType'] = $field['type'];
+                if (substr($field['type'], -2) == '[]') {
+                    $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
+                }
+                // @todo this next assumtion is a hack and needs fixing
+                if ($field['type'] === 'array') {
+                    $field['serializerType'] = 'array<string>';
+                }
+
+                return $field;
+            },
+            $fields
+        );
+
         $parameters = array(
             'document'  => $document,
             'base'      => $bundleNamespace,
@@ -130,6 +148,22 @@ class ResourceGenerator extends Generator
             'extension_alias' => Container::underscore($basename),
         );
 
+        $this->generateDocument($parameters, $dir, $document, $withRepository);
+        $this->generateSerializer($parameters, $dir, $document);
+    }
+
+    /**
+     * generate document part of a resource
+     *
+     * @param array   $parameters     twig parameters
+     * @param string  $dir            base bundle dir
+     * @param string  $document       document name
+     * @param boolean $withRepository generate repository class
+     *
+     * @return void
+     */
+    protected function generateDocument($parameters, $dir, $document, $withRepository)
+    {
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir.'/Resources/config/doctrine/'.$document.'.mongodb.xml',
@@ -149,5 +183,23 @@ class ResourceGenerator extends Generator
                 $parameters
             );
         }
+    }
+
+    /**
+     * generate serializer part of a resource
+     *
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
+     *
+     * @return void
+     */
+    protected function generateSerializer(array $parameters, $dir, $document)
+    {
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir.'/Resources/config/serializer/Document.'.$document.'.xml',
+            $parameters
+        );
     }
 }

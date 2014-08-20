@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="{{ base }}Document\{{ document }}">
+    <property name="id" type="string" accessor-getter="getId"/>
+{% for field in fields %}
+    <property name="{{ field.fieldName }}" accessor-getter="get{{ field.fieldName|capitalize }}" accessor-setter="set{{ field.fieldName|capitalize }}">
+      <type><![CDATA[{{ field.serializerType }}]]</type>
+    </property>
+{% endfor %}
+    <property name="contacts">
+       <type><![CDATA[array<Graviton\PersonBundle\Document\PersonContact>]]></type>
+    </property>
+  </class>
+</serializer>
