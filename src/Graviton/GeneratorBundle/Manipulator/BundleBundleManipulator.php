@@ -39,7 +39,7 @@ class BundleBundleManipulator extends Manipulator
      *
      * @return boolean
      *
-     * @throws  \RuntimeException If bundle is already defined
+     * @throws \RuntimeException If bundle is already defined
      */
     public function addBundle($bundle)
     {
@@ -79,6 +79,7 @@ class BundleBundleManipulator extends Manipulator
         );
 
         file_put_contents($this->reflected->getFilename(), implode('', $lines));
+
         return true;
     }
 }

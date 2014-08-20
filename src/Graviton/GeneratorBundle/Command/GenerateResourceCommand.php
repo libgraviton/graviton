@@ -3,11 +3,6 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
-use Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
 /**

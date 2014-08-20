@@ -76,7 +76,7 @@ class {{ document }}
 
     /**
      * Set {{ field.fieldName }}
-     * 
+     *
 {% if 'Graviton' in field.type %}
      * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
 {% else %}
@@ -103,7 +103,7 @@ class {{ document }}
 
     /**
      * add element to {{ field.fieldName }}
-     * 
+     *
 {% if 'Graviton' in field.type %}
      * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to add to {{ field.fieldName }}
 {% else %}
