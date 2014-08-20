@@ -2,6 +2,8 @@
 
 namespace {{ base }}Document;
 
+use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * {{ base }}Document\{{ document }}
  *
@@ -22,9 +24,27 @@ class {{ document }}
     /**
      * @var {{ field.type }} ${{ field.fieldName }}
      */
+{% if field.type == 'array' %}
+    protected ${{ field.fieldName }} = array();
+{% else %}
     protected ${{ field.fieldName }};
+{% endif %}
 
 {% endfor %}
+    /**
+     * constructor
+     *
+     * @return self
+     */
+    public function __construct()
+    {
+{% for field in fields %}
+{% if '[]' in field.type %}
+        $this->{{ field.fieldName }} = new ArrayCollection();
+{% endif %}
+{% endfor %}
+    }
+
     /**
      * Get id
      *
@@ -85,40 +105,40 @@ class {{ document }}
      * add element to {{ field.fieldName }}
      * 
 {% if 'Graviton' in field.type %}
-     * @param \{{ field.type[0:-2] }} ${{ field.fieldName }} object to add to {{ field.fieldName }}
+     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to add to {{ field.fieldName }}
 {% else %}
-     * @param {{ field.type }} ${{ field.fieldName }} value to add to {{ field.fieldName }}
+     * @param {{ field.type }} ${{ field.singularName }} value to add to {{ field.fieldName }}
 {% endif %}
      *
      * @return self
      */
-    public function add{{ field.fieldName|capitalize }}(${{field.fieldName}})
+    public function add{{ field.singularName|capitalize }}(${{field.singularName}})
     {
-        $this->{{ field.fieldName }}[] = ${{ field.fieldName }};
+        $this->{{ field.fieldName }}[] = ${{ field.singularName }};
     }
 
     /**
      * remove element from {{ field.fieldName }}
      *
 {% if '[]' in field.type %}
-     * @param {{ field.type[0:-2] }} ${{ field.fieldName }} object to remove from {{ field.fieldName }}
+     * @param {{ field.type[0:-2] }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
 {% else %}
-     * @param {{ field.type }} ${{ field.fieldName }} object to remove from {{ field.fieldName }}
+     * @param {{ field.type }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
 {% endif %}
      *
      * @return self
      */
 {% if 'Graviton' in field.type %}
 {% if '[]' in field.type %}
-    public function remove{{ field.fieldName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.fieldName }})
+    public function remove{{ field.singularName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.singularName }})
 {% else  %}
-    public function remove{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
+    public function remove{{ field.singularName|capitalize }}(\{{ field.type }} ${{ field.singularName }})
 {% endif %}
 {% else  %}
-    public function remove{{ field.fieldName|capitalize }}({{ field.type }} ${{ field.fieldName }})
+    public function remove{{ field.singularName|capitalize }}({{ field.type }} ${{ field.singularName }})
 {% endif %}
     {
-        $this->{{ field.fieldName }}->removeElement(${{ field.fieldName }});
+        $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
 
         return $this;
     }

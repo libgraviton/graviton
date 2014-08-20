@@ -6,6 +6,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\DependencyInjection\Container;
 use Sensio\Bundle\GeneratorBundle\Generator\Generator;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Doctrine\Common\Inflector\Inflector;
 
 /**
  * bundle containing various code generators
@@ -119,17 +120,22 @@ class ResourceGenerator extends Generator
         $basename = substr($document, 0, -6);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // derive types for serializer from document types
+        // add more info to the fields array
         $fields = array_map(
             function ($field) {
+
+                // derive types for serializer from document types
                 $field['serializerType'] = $field['type'];
                 if (substr($field['type'], -2) == '[]') {
                     $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
                 }
-                // @todo this next assumtion is a hack and needs fixing
+                // @todo this assumtion is a hack and needs fixing
                 if ($field['type'] === 'array') {
                     $field['serializerType'] = 'array<string>';
                 }
+
+                // add singular form
+                $field['singularName'] = Inflector::singularize($field['fieldName']);
 
                 return $field;
             },

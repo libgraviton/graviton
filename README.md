@@ -44,6 +44,11 @@ Please run ``./vendor/bin/phpunit`` and ``./vendor/bin/php-cs-fixer fix src/`` b
 
 There are various code generators available at you disposal.
 
+If you are prompted for a config type you should always choose xml
+since xml is the only format we are currently supporting. If you
+use other formats, chances are you will have to fix and/or implement
+features that where only added to the xml templates.
+
 #### Generate new Bundle
 
 ````bash
