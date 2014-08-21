@@ -50,37 +50,7 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 0; $i < 15; $i++) {
             $faker->seed($i);
-            $mailto = $faker->email;
-            $tel = $faker->phoneNumber;
-            $fax = $faker->phoneNumber;
-            $url = $faker->url;
-            list($urlProto) = explode(':', $url);
-            $contacts = array(
-                array(
-                    'type' => 'business',
-                    'protocol' => 'mailto',
-                    'value' => $mailto,
-                    '$ref' => 'mailto:'.$mailto,
-                ),
-                array(
-                    'type' => 'business',
-                    'protocol' => 'tel',
-                    'value' => $tel,
-                    '$ref' => 'tel:'.$tel,
-                ),
-                array(
-                    'type' => 'business',
-                    'protocol' => 'fax',
-                    'value' => $fax,
-                    '$ref' => 'fax:'.$fax,
-                ),
-                array(
-                    'type' => 'business',
-                    'protocol' => $urlProto,
-                    'value' => $url,
-                    '$ref' => $url,
-                ),
-            );
+            $contacts = $this->generateContacts($faker);
             $consultant = array(
                 'id' => strtoupper($faker->bothify('????###??')),
                 'firstName' => $faker->firstName,
@@ -96,5 +66,47 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
             );
         }
         $manager->flush();
+    }
+
+    /**
+     * get fake contact info
+     *
+     * @param \Faker\Generator $faker seeded faker
+     *
+     * @return object[]
+     */
+    private function generateContacts(\Faker\Generator $faker)
+    {
+        $mailto = $faker->email;
+        $tel = $faker->phoneNumber;
+        $fax = $faker->phoneNumber;
+        $url = $faker->url;
+        list($urlProto) = explode(':', $url);
+        return array(
+            array(
+                'type' => 'business',
+                'protocol' => 'mailto',
+                'value' => $mailto,
+                '$ref' => 'mailto:'.$mailto,
+            ),
+            array(
+                'type' => 'business',
+                'protocol' => 'tel',
+                'value' => $tel,
+                '$ref' => 'tel:'.$tel,
+            ),
+            array(
+                'type' => 'business',
+                'protocol' => 'fax',
+                'value' => $fax,
+                '$ref' => 'fax:'.$fax,
+            ),
+            array(
+                'type' => 'business',
+                'protocol' => $urlProto,
+                'value' => $url,
+                '$ref' => $url,
+            ),
+        );
     }
 }
