@@ -112,14 +112,12 @@ class ProductControllerTest extends RestTestCase
     public function testGetProductSchemaInformation()
     {
         $client = static::createRestClient();
-
         $client->request('OPTIONS', '/core/product/1');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertIsSchemaResponse($response);
-        $this->assertIsProductSchema($results);
+        $this->assertIsProductSchema($client->getResults());
         $this->assertCorsHeaders('GET, OPTIONS', $response);
 
         $this->assertContains(
@@ -136,7 +134,6 @@ class ProductControllerTest extends RestTestCase
     public function testGetProductSchemaInformationCanonical()
     {
         $client = static::createRestClient();
-
         $client->request('GET', '/schema/core/product/item');
 
         $this->assertIsSchemaResponse($client->getResponse());
