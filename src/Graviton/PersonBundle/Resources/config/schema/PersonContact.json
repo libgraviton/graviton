@@ -9,6 +9,14 @@
       "title": "Contact Type",
       "description": "Type of contact."
     },
+    "protocol": {
+      "title": "Protocol",
+      "description": "Protocol to use when contacting this contact."
+    },
+    "value": {
+      "title": "Contact value",
+      "description": "Protocol specific value to contact."
+    },
     "$ref": {
       "title": "URI",
       "description": "URI of Contact."
@@ -16,6 +24,8 @@
   },
   "required": [
     "type",
+    "protocol",
+    "value",
     "uri"
   ]
 }

@@ -85,4 +85,34 @@ class PersonContact
     {
         return $this->value;
     }
+    /**
+     * @var string $protocol
+     */
+    protected $protocol;
+
+    /**
+     * @var string $uri
+     */
+    protected $uri;
+
+
+    /**
+     * Get protocol
+     *
+     * @return string $protocol
+     */
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    /**
+     * Get uri
+     *
+     * @return string $uri
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
 }

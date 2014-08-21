@@ -50,22 +50,35 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 0; $i < 15; $i++) {
             $faker->seed($i);
+            $mailto = $faker->email;
+            $tel = $faker->phoneNumber;
+            $fax = $faker->phoneNumber;
+            $url = $faker->url;
+            list($urlProto) = explode(':', $url);
             $contacts = array(
                 array(
                     'type' => 'business',
-                    '$ref' => 'mailto:'.$faker->email,
+                    'protocol' => 'mailto',
+                    'value' => $mailto,
+                    '$ref' => 'mailto:'.$mailto,
                 ),
                 array(
                     'type' => 'business',
-                    '$ref' => 'tel:'.$faker->phoneNumber,
+                    'protocol' => 'tel',
+                    'value' => $tel,
+                    '$ref' => 'tel:'.$tel,
                 ),
                 array(
                     'type' => 'business',
-                    '$ref' => 'fax:'.$faker->phoneNumber,
+                    'protocol' => 'fax',
+                    'value' => $fax,
+                    '$ref' => 'fax:'.$fax,
                 ),
                 array(
                     'type' => 'business',
-                    '$ref' =>  $faker->url,
+                    'protocol' => $urlProto,
+                    'value' => $url,
+                    '$ref' => $url,
                 ),
             );
             $consultant = array(
