@@ -29,7 +29,6 @@ class IfNoneMatchResponseListener
 
         $ifNoneMatch = $request->headers->get('if-none-match');
         $etag = $response->headers->get('ETag', 'empty');
-        //var_dump($etag, $ifNoneMatch, $request->headers);
 
         if ($ifNoneMatch === $etag) {
             $response->setStatusCode(304);

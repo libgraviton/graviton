@@ -86,6 +86,25 @@ class ProductControllerTest extends RestTestCase
     }
 
     /**
+     * check for caching on product resource
+     *
+     * @return void
+     */
+    public function testProductIsCached()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/product');
+
+        $etag = $client->getResponse()->headers->get('ETag');
+
+        $this->assertInternalType('string', $etag);
+
+        $client->request('GET', '/core/product', array(), array(), array('HTTP_If-None-Match' => $etag));
+
+        $this->assertEmpty($client->getResponse()->getContent());
+    }
+
+    /**
      * test getting schema information
      *
      * @return void

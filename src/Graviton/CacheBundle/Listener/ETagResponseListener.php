@@ -24,8 +24,7 @@ class ETagResponseListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-            $response = $event->getResponse();
-//            echo 'frist';
+        $response = $event->getResponse();
 
         $response->headers->set('ETag', sha1($response->getContent()));
     }
