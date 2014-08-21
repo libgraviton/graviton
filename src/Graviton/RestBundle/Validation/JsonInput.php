@@ -4,7 +4,7 @@ namespace Graviton\RestBundle\Validation;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validator\LegacyValidator AS Validator;
+use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 
 /**
