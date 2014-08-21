@@ -95,7 +95,6 @@ class PersonContact
      */
     protected $uri;
 
-
     /**
      * Get protocol
      *

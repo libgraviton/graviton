@@ -3,6 +3,9 @@ namespace Graviton\RestBundle\Validation;
 
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validator\LegacyValidator AS Validator;
+use Graviton\RestBundle\Model\DocumentModel;
 
 /**
  * Validator class for json inputs
@@ -12,24 +15,26 @@ use Symfony\Component\Validator\ConstraintViolationList;
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
+ *
+ * @todo refactor as to not use LegacyValidator that was introduced by the 2.5 bump
  */
 class JsonInput
 {
     /**
      * Validator
      *
-     * @var Symfony\Component\Validator\Validator
+     * @var Validator
      */
     private $validator;
 
     /**
      * Constructor
      *
-     * @param Symfony\Component\Validator\Validator $validator Validator
+     * @param Validator $validator Validator
      *
      * @return void
      */
-    public function __construct($validator)
+    public function __construct(Validator $validator)
     {
         $this->validator = $validator;
     }
@@ -37,12 +42,12 @@ class JsonInput
     /**
      * Validate the json input values and check for non existing values
      *
-     * @param String                                  $input Json input string
-     * @param Graviton\RestBundle\Model\DocumentModel $model Model
+     * @param string        $input Json input string
+     * @param DocumentModel $model Model
      *
      * @return ConstraintViolationList $violations Constraint violation list
      */
-    public function validate($input, $model)
+    public function validate($input, DocumentModel $model)
     {
         // get all fields of this document
         $manager = $model->getRepository()->getDocumentManager();
@@ -107,7 +112,7 @@ class JsonInput
         $required = false;
 
         foreach ($constraints as $constraint) {
-            if ($constraint instanceof \Symfony\Component\Validator\Constraints\NotBlank) {
+            if ($constraint instanceof NotBlank) {
                 $required = true;
             }
         }
@@ -118,10 +123,10 @@ class JsonInput
     /**
      * Create a new violation list with the given violations
      *
-     * @param String                                              $prop             Property
-     * @param Symfony\Component\Validator\ConstraintViolationList $validationResult Violation list
+     * @param string                  $prop             Property
+     * @param ConstraintViolationList $validationResult Violation list
      *
-     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     * @return ConstraintViolationList $violations Violations
      */
     private function createNewViolationList($prop, $validationResult)
     {

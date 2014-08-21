@@ -82,6 +82,7 @@ class LoadConsultantData implements FixtureInterface, ContainerAwareInterface
         $fax = $faker->phoneNumber;
         $url = $faker->url;
         list($urlProto) = explode(':', $url);
+
         return array(
             array(
                 'type' => 'business',

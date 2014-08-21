@@ -96,6 +96,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
                 $parameters['per_page'] = $request->attributes->get('perPage');
             }
         }
+
         return $parameters;
     }
 }
