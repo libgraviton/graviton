@@ -84,13 +84,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $id id of entity to find
+     * @param string $documentId id of entity to find
      *
      * @return Object
      */
-    public function find($id)
+    public function find($documentId)
     {
-        return $this->repository->find($id);
+        return $this->repository->find($documentId);
     }
 
     /**
@@ -105,13 +105,14 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $pagination = $this->paginator->paginate(
             $this->repository->findAll(),
             $request->query->get('page', 1),
-            10
+            $request->query->get('per_page', 10)
         );
 
         $numPages = (int) ceil($pagination->getTotalItemCount() / $pagination->getItemNumberPerPage());
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
+            $request->attributes->set('perPage', $request->query->get('per_page'));
         }
 
         return $pagination->getItems();
@@ -126,9 +127,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
-        $dm = $this->repository->getDocumentManager();
-        $dm->persist($entity);
-        $dm->flush();
+        $manager = $this->repository->getDocumentManager();
+        $manager->persist($entity);
+        $manager->flush();
 
         return $this->find($entity->getId());
     }
@@ -136,16 +137,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $id     id of entity to update
-     * @param Object $entity new enetity
+     * @param string $documentId id of entity to update
+     * @param Object $entity     new enetity
      *
      * @return Object
      */
-    public function updateRecord($id, $entity)
+    public function updateRecord($documentId, $entity)
     {
-        $dm = $this->repository->getDocumentManager();
-        $dm->persist($entity);
-        $dm->flush();
+        $manager = $this->repository->getDocumentManager();
+        $manager->persist($entity);
+        $manager->flush();
 
         return $entity;
     }
@@ -153,19 +154,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $id id of entity to delete
+     * @param string $documentId id of entity to delete
      *
      * @return null|Object
      */
-    public function deleteRecord($id)
+    public function deleteRecord($documentId)
     {
-        $dm = $this->repository->getDocumentManager();
-        $entity = $this->find($id);
+        $manager = $this->repository->getDocumentManager();
+        $entity = $this->find($documentId);
 
         $return = $entity;
         if ($entity) {
-            $dm->remove($entity);
-            $dm->flush();
+            $manager->remove($entity);
+            $manager->flush();
             $return = null;
         }
 
