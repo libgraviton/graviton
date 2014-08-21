@@ -105,6 +105,36 @@ class CountryControllerTest extends RestTestCase
     }
 
     /**
+     * check if per_page param works on collections
+     *
+     * @return void
+     */
+    public function testFindAllWithPerPageParam()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/entity/country?per_page=20');
+
+        $response = $client->getResponse();
+
+        $this->assertResponseContentType(self::COL_TYPE, $response);
+
+        $this->assertEquals(20, count($client->getResults()));
+
+        $this->assertContains(
+            '<http://localhost/entity/country?page=1&per_page=20>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page=2&per_page=20>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page=13&per_page=20>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
      * test if we can get an country by id
      *
      * @return void

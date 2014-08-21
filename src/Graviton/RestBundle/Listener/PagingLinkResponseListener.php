@@ -67,7 +67,8 @@ class PagingLinkResponseListener implements ContainerAwareInterface
             $this->generateLinks(
                 $routeName,
                 $request->get('page', 1),
-                $request->attributes->get('numPages')
+                $request->attributes->get('numPages'),
+                $request->attributes->get('perPage')
             );
             $response->headers->set(
                 'Link',
@@ -84,22 +85,23 @@ class PagingLinkResponseListener implements ContainerAwareInterface
      * @param string  $route    name of route
      * @param integer $page     current page
      * @param integer $numPages number of all pages
+     * @param integer $perPage  number of records per page
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages)
+    private function generateLinks($route, $page, $numPages, $perPage)
     {
         if ($page > 2) {
-            $this->generateLink($route, 1, 'first');
+            $this->generateLink($route, 1, $perPage, 'first');
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, 'prev');
+            $this->generateLink($route, $page - 1, $perPage, 'prev');
         }
         if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, 'next');
+            $this->generateLink($route, $page + 1, $perPage, 'next');
         }
         if ($page != $numPages) {
-            $this->generateLink($route, $numPages, 'last');
+            $this->generateLink($route, $numPages, $perPage, 'last');
         }
     }
 
@@ -108,14 +110,19 @@ class PagingLinkResponseListener implements ContainerAwareInterface
      *
      * @param string  $routeName use with router to generate urls
      * @param integer $page      page to link to
+     * @param integer $perPage   number of items per page
      * @param string  $type      rel type of link to generate
      *
      * @return string
      */
-    private function generateLink($routeName, $page, $type)
+    private function generateLink($routeName, $page, $perPage, $type)
     {
         $router = $this->container->get('router');
-        $url = $router->generate($routeName, array('page' => $page), true);
+        $parameters = array('page' => $page);
+        if ($perPage) {
+            $parameters['per_page'] = $perPage;
+        }
+        $url = $router->generate($routeName, $parameters, true);
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }
 }
