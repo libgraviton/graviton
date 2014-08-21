@@ -5,6 +5,7 @@ namespace Graviton\RestBundle\Listener;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpFoundation\Request;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 
@@ -56,23 +57,11 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
-        // for now we assume that everything except collections has an id
-        // this is also flawed since it does not handle search actions
-        $parameters = array();
         if ($routeType == 'post') {
-            // handle post request by rewriting self link to newly created resource
-            $parameters = array('id' => $request->get('id'));
             $routeName = substr($routeName, 0, -4).'get';
-        } elseif ($routeType != 'all') {
-            $parameters = array('id' => $request->get('id'));
-        } elseif ($request->attributes->get('paging')) {
-            $parameters = array('page' => $request->get('page', 1));
-            if ($request->attributes->get('perPage')) {
-                $parameters['per_page'] = $request->attributes->get('perPage');
-            }
         }
 
-        $url = $router->generate($routeName, $parameters, true);
+        $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
 
         // append rel=self link to link headers
         $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
@@ -81,5 +70,32 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $response->headers->set('Link', (string) $linkHeader);
 
         $event->setResponse($response);
+    }
+
+    /**
+     * generate parameters for LinkHeaderItem
+     *
+     * @param string  $routeType type of route
+     * @param Request $request   request object
+     *
+     * @return array
+     */
+    private function generateParameters($routeType, Request $request)
+    {
+        // for now we assume that everything except collections has an id
+        // this is also flawed since it does not handle search actions
+        $parameters = array();
+        if ($routeType == 'post') {
+            // handle post request by rewriting self link to newly created resource
+            $parameters = array('id' => $request->get('id'));
+        } elseif ($routeType != 'all') {
+            $parameters = array('id' => $request->get('id'));
+        } elseif ($request->attributes->get('paging')) {
+            $parameters = array('page' => $request->get('page', 1));
+            if ($request->attributes->get('perPage')) {
+                $parameters['per_page'] = $request->attributes->get('perPage');
+            }
+        }
+        return $parameters;
     }
 }
