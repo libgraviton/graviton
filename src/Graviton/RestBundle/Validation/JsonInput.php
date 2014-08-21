@@ -40,7 +40,7 @@ class JsonInput
      * @param String                                  $input Json input string
      * @param Graviton\RestBundle\Model\DocumentModel $model Model
      *
-     * @return Symfony\Component\Validator\ConstraintViolationList $violations Constraint violation list
+     * @return ConstraintViolationList $violations Constraint violation list
      */
     public function validate($input, $model)
     {
