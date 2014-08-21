@@ -18,6 +18,7 @@ use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\EntityBundle\GravitonEntityBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\CacheBundle\GravitonCacheBundle;
 
 /**
  * GravitonCoreBundle
@@ -51,6 +52,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonEntityBundle(),
             new GravitonI18nBundle(),
             new GravitonPersonBundle(),
+            new GravitonCacheBundle(),
         );
     }
 }
