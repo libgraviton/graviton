@@ -156,6 +156,7 @@ class ResourceGenerator extends Generator
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
+        $this->generateModel($parameters, $dir, $document);
         $this->generateController($parameters, $dir, $document);
     }
 
@@ -211,6 +212,44 @@ class ResourceGenerator extends Generator
     }
 
     /**
+     * generate model poart of a resource
+     *
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
+     *
+     * @return void
+     */
+    protected function generateModel(array $parameters, $dir, $document)
+    {
+        $this->renderFile(
+            'model/Model.php.twig',
+            $dir.'/Model/'.$document.'.php',
+            $parameters
+        );
+
+        $services = $this->loadServices($dir);
+
+        $bundleParts = explode('\\', $parameters['base']);
+        $shortName = strtolower($bundleParts[0]);
+        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+        $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
+
+        $services = $this->addParam(
+            $services,
+            $paramName.'.class',
+            $parameters['base'].'Model\\'.$parameters['document']
+        );
+
+        $services = $this->addService(
+            $services,
+            $paramName
+        );
+ 
+        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
+    }
+
+    /**
      * generate RESTful controllers ans service configs
      *
      * @param array  $parameters twig parameters
@@ -226,103 +265,178 @@ class ResourceGenerator extends Generator
             $dir.'/Controller/'.$document.'Controller.php',
             $parameters
         );
-        $services = new \DOMDocument;
-        $services->formatOutput = true;
-        $services->preserveWhiteSpace = false;
-        $services->load($dir.'/Resources/config/services.xml');
-
-        $container = $services->getElementsByTagName('container')->item(0);
-
-        // add <parameters> if missing
-        $paramNodes = $container->getElementsByTagName('parameters');
-        if ($paramNodes->length < 1) {
-            $paramNode = $services->createElement('parameters');
-            $container->appendChild($paramNode);
-        } else {
-            $paramNode = $paramNodes->item(0);
-        }
-
-        $xpath = new \DomXpath($services);
+        
+        $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
-        $nodes = $xpath->query('//parameters/parameter[@key="'.$paramName.'.class"]');
+
+        $services = $this->addParam(
+            $services,
+            $paramName.'.class',
+            $parameters['base'].'Controller\\'.$parameters['document']
+        );
+
+        $services = $this->addService(
+            $services,
+            $paramName,
+            'request',
+            array(
+                array(
+                  'method' => 'setModel',
+                  'service' => implode(
+                      '.',
+                      array($shortName, $shortBundle, 'model', strtolower($parameters['document']))
+                  )
+                )
+            ),
+            'graviton.rest'
+        );
+
+        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
+    }
+
+    /**
+     * load services.xml
+     *
+     * @param string $dir base dir
+     *
+     * @return \DOMDocument
+     */
+    private function loadServices($dir)
+    {
+        $services = new \DOMDocument;
+        $services->formatOutput = true;
+        $services->preserveWhiteSpace = false;
+        $services->load($dir.'/Resources/config/services.xml');
+
+        return $services;
+    }
+
+    /**
+     * add param to services.xml
+     *
+     * @param \DOMDocument $dom   services.xml document
+     * @param string       $key   parameter key
+     * @param string       $value parameter value
+     *
+     * @return \DOMDocument
+     */
+    private function addParam(\DOMDocument $dom, $key, $value)
+    {
+        $container = $dom->getElementsByTagName('container')->item(0);
+
+        // add <parameters> if missing
+        $paramNodes = $container->getElementsByTagName('parameters');
+        if ($paramNodes->length < 1) {
+            $paramNode = $dom->createElement('parameters');
+            $container->appendChild($paramNode);
+        } else {
+            $paramNode = $paramNodes->item(0);
+        }
+
+        $xpath = new \DomXpath($dom);
+
+        $nodes = $xpath->query('//parameters/parameter[@key="'.$key.'.class"]');
         if ($nodes->length < 1) {
-            $attrNode = $services->createElement(
-                'parameter',
-                $parameters['base'].'Controller\\'.$parameters['document']
-            );
-            $attrKey = $services->createAttribute('key');
-            $attrKey->value = $paramName.'.class';
+            $attrNode = $dom->createElement('parameter', $value);
+
+            $attrKey = $dom->createAttribute('key');
+            $attrKey->value = $key;
+
             $attrNode->appendChild($attrKey);
             $paramNode->appendChild($attrNode);
         }
 
+        return $dom;
+    }
+
+    /**
+     * add service to services.xml
+     *
+     * @param \DOMDocument $dom   services.xml dom
+     * @param string       $id    id of new service
+     * @param string       $scope scope of service
+     * @param array        $calls methodCalls to add
+     * @param string       $tag   tag name or empty if no tag needed
+     *
+     * @return \DOMDocument
+     */
+    private function addService($dom, $id, $scope = null, array $calls = array(), $tag = null)
+    {
+        $container = $dom->getElementsByTagName('container')->item(0);
+
         // add <services> if missing
         $servicesNodes = $container->getElementsByTagName('services');
         if ($servicesNodes->length < 1) {
-            $servicesNode = $services->createElement('services');
+            $servicesNode = $dom->createElement('services');
             $container->appendChild($servicesNode);
         } else {
             $servicesNode = $servicesNodes->item(0);
         }
 
+        $xpath = new \DomXpath($dom);
+
         // add controller to services
-        $nodes = $xpath->query('//services/service[@id="'.$paramName.'"]');
+        $nodes = $xpath->query('//services/service[@id="'.$id.'"]');
         if ($nodes->length < 1) {
-            $attrNode = $services->createElement('service');
+            $attrNode = $dom->createElement('service');
 
-            $attrKey = $services->createAttribute('id');
-            $attrKey->value = $paramName;
+            $attrKey = $dom->createAttribute('id');
+            $attrKey->value = $id;
             $attrNode->appendChild($attrKey);
 
-            $attrKey = $services->createAttribute('class');
-            $attrKey->value = '%'.$paramName.'.class%';
+            $attrKey = $dom->createAttribute('class');
+            $attrKey->value = '%'.$id.'.class%';
             $attrNode->appendChild($attrKey);
 
-            $attrKey = $services->createAttribute('parent');
+            $attrKey = $dom->createAttribute('parent');
             $attrKey->value = 'graviton.rest.controller';
             $attrNode->appendChild($attrKey);
 
-            $attrKey = $services->createAttribute('scope');
-            $attrKey->value = 'request';
-            $attrNode->appendChild($attrKey);
+            if ($scope) {
+                $attrKey = $dom->createAttribute('scope');
+                $attrKey->value = $scope;
+                $attrNode->appendChild($attrKey);
+            }
 
-            $callNode = $services->createElement('call');
+            foreach ($calls as $call) {
+                $callNode = $dom->createElement('call');
 
-            $attrKey = $services->createAttribute('method');
-            $attrKey->value = 'setService';
-            $callNode->appendChild($attrKey);
+                $attrKey = $dom->createAttribute('method');
+                $attrKey->value = $call['method'];
+                $callNode->appendChild($attrKey);
 
-            $argNode = $services->createElement('argument');
+                $argNode = $dom->createElement('argument');
 
-            $attrKey = $services->createAttribute('type');
-            $attrKey->value = 'service';
-            $argNode->appendChild($attrKey);
+                $attrKey = $dom->createAttribute('type');
+                $attrKey->value = 'service';
+                $argNode->appendChild($attrKey);
 
-            $attrKey = $services->createAttribute('id');
-            $attrKey->value = implode(
-                '.',
-                array($shortName, $shortBundle, 'model', strtolower($parameters['document']))
-            );
-            $argNode->appendChild($attrKey);
+                $attrKey = $dom->createAttribute('id');
+                $attrKey->value = $call['service'];
+                        
+                $argNode->appendChild($attrKey);
 
-            $callNode->appendChild($argNode);
+                $callNode->appendChild($argNode);
+                $attrNode->appendChild($callNode);
+            }
 
-            $tagNode = $services->createElement('tag');
+            if ($tag) {
+                $tagNode = $dom->createElement('tag');
 
-            $attrKey = $services->createAttribute('name');
-            $attrKey->value = 'graviton.rest';
-            $tagNode->appendChild($attrKey);
+                $attrKey = $dom->createAttribute('name');
+                $attrKey->value = $tag;
+                $tagNode->appendChild($attrKey);
 
-            $attrNode->appendChild($callNode);
-            $attrNode->appendChild($tagNode);
+                $attrNode->appendChild($tagNode);
+            }
 
             $servicesNode->appendChild($attrNode);
         }
 
-        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
+        return $dom;
     }
 }
