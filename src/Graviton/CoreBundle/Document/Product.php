@@ -39,7 +39,7 @@ class Product
     /**
      * Get name
      *
-     * @return string $name
+     * @return string[] $name
      */
     public function getName()
     {

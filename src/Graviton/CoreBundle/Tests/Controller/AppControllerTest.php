@@ -260,14 +260,12 @@ class AppControllerTest extends RestTestCase
     public function testGetAppSchemaInformation()
     {
         $client = static::createRestClient();
-
         $client->request('OPTIONS', '/core/app/hello');
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertIsSchemaResponse($response);
-        $this->assertIsAppSchema($results);
+        $this->assertIsAppSchema($client->getResults());
         $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
 
         $this->assertContains(
@@ -284,7 +282,6 @@ class AppControllerTest extends RestTestCase
     public function testGetAppSchemaInformationCanonical()
     {
         $client = static::createRestClient();
-
         $client->request('GET', '/schema/core/app/item');
 
         $this->assertIsSchemaResponse($client->getResponse());

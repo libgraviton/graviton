@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-use Graviton\RestBundle\Validation\JsonInput;
 use Rs\Json\Patch;
 
 /**
