@@ -157,10 +157,5 @@ class BundleGenerator extends SensioBundleGenerator
                 $parameters
             );
         }
-
-        if ($structure) {
-            $this->filesystem->mkdir($dir.'/Resources/doc');
-            $this->filesystem->touch($dir.'/Resources/doc/index.rst');
-        }
     }
 }
