@@ -62,6 +62,7 @@ php app/console graviton:generate:resource --entity=AcmeFooBundle:Bar --format=x
 php app/console graviton:generate:resource --entity=AcmeFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant" --with-repository
 ````
 
+You will need to clean up the newly generated models Resource/schema/<name>.json file. 
 
 ## Quality Control
 
