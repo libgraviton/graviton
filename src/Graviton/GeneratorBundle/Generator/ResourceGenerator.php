@@ -290,6 +290,12 @@ class ResourceGenerator extends Generator
             $parameters
         );
 
+        $this->renderFile(
+            'model/schema.json.twig',
+            $dir.'/Resources/config/schema/'.$document.'.json',
+            $parameters
+        );
+
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
@@ -347,7 +353,7 @@ class ResourceGenerator extends Generator
         $services = $this->addParam(
             $services,
             $paramName.'.class',
-            $parameters['base'].'Controller\\'.$parameters['document']
+            $parameters['base'].'Controller\\'.$parameters['document'].'Controller'
         );
 
         $services = $this->addService(
