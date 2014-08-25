@@ -3,6 +3,7 @@
 namespace Graviton\GeneratorBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use Sensio\Bundle\GeneratorBundle\Tests\Command\GenerateBundleCommandTest as BaseTest;
 use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
 
 /**
@@ -14,36 +15,102 @@ use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  *
- * @todo refactor these to use something like CommandTester
- * @todo fix that these do no write coverage info atm
+ * @todo fix that updateKernel is not getting tested
  */
-class GenerateBundleCommandTest extends \PHPUnit_Framework_TestCase
+class GenerateBundleCommandTest extends BaseTest
 {
     /**
-     * test generating GravitonFooBundle
+     * test basic calls to command
+     *
+     * @param array  $options  options
+     * @param string $input    cli input
+     * @param array  $expected results to assert
      *
      * @return void
+     *
+     * @dataProvider getInteractiveCommandData
      */
-    public function testGenerateGravitonFooBundle()
+    public function testInteractiveCommand($options, $input, $expected)
     {
-        $args = '--namespace=Graviton/FooBundle --dir=src --bundle-name=GravitonFooBundle --no-interaction';
-        exec('php app/console graviton:generate:bundle '.$args.' 2>&1', $display);
-
-        $this->assertContains('Generating the bundle code: OK', $display);
-        $this->assertContains('Checking that the bundle is autoloaded: OK', $display);
-        $this->assertContains('Enabling the bundle inside the core bundle: OK', $display);
-        $this->markTestIncomplete();
+        parent::testInteractiveCommand($options, $input, $expected);
     }
 
     /**
-     * test for required params
+     * add xml test to upstreams test data
      *
-     * @return void
+     * @return array[]
      */
-    public function testRequiredParams()
+    public function getInteractiveCommandData()
     {
-        exec('php app/console graviton:generate:bundle -n 2>&1', $display);
-        $this->assertContains('  The "namespace" option must be provided.', $display);
-        $this->markTestIncomplete();
+        $tmp = sys_get_temp_dir();
+
+        return array_merge(
+            parent::getInteractiveCommandData(),
+            array(
+                array(
+                    array(
+                        '--dir' => $tmp,
+                        '--format' => 'xml'
+                    ),
+                    "Foo/BarBundle\n",
+                    array('Foo\BarBundle', 'FooBarBundle', $tmp.'/', 'xml', false)
+                )
+            )
+        );
+    }
+
+    /**
+     * get command
+     *
+     * @param \Graviton\GeneratorBundle\Generator\BundleGenerator $generator generator
+     * @param object                                              $input     input mock
+     *
+     * @return \Graviton\GeneratorBundle\Command\GenerateBundleCommand
+     */
+    protected function getCommand($generator, $input)
+    {
+        $command = $this
+            ->getMockBuilder('Graviton\GeneratorBundle\Command\GenerateBundleCommand')
+            ->setMethods(array('checkAutoloader', 'updateKernel'))
+            ->getMock();
+
+        $command->setContainer($this->getContainer());
+        $command->setHelperSet($this->getHelperSet($input));
+        $command->setGenerator($generator);
+
+        return $command;
+    }
+
+    /**
+     * get generator
+     *
+     * @return \Graviton\GeneratorBundle\Generator\BundleGenerator
+     */
+    protected function getGenerator()
+    {
+        // get a noop generator
+        return $this
+            ->getMockBuilder('Graviton\GeneratorBundle\Generator\BundleGenerator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('generate'))
+            ->getMock();
+    }
+
+    /**
+     * get bundle
+     *
+     * @return \Graviton\BundleBundle\GravitonBundleInterface
+     *
+     * @todo move one class up
+     */
+    protected function getBundle()
+    {
+        $bundle = $this->getMock('Graviton\BundleBundle\GravitonBundleInterface');
+        $bundle
+            ->expects($this->any())
+            ->method('getPath')
+            ->will($this->returnValue(sys_get_temp_dir()));
+
+        return $bundle;
     }
 }
