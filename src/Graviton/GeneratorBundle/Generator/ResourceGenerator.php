@@ -540,7 +540,11 @@ class ResourceGenerator extends Generator
             }
 
             foreach ($arguments as $argument) {
-                $argNode = $dom->createElement('argument');
+                $argNode = $dom->createElement('argument', $argument['value']);
+
+                $argType = $dom->createAttribute('type');
+                $argType->value = $argument['type'];
+                $argNode->appendChild($argType);
 
                 $attrNode->appendChild($argNode);
             }
