@@ -18,7 +18,7 @@ use Graviton\I18nBundle\Repository\LanguageRepository;
 class AcceptLanguageRequestListener
 {
     /**
-     * @var Graviton\I18nBundle\Repository\LanguageRepository;
+     * @var Graviton\I18nBundle\Repository\LanguageRepository
      */
     private $repository;
 
