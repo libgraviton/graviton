@@ -53,7 +53,7 @@ class Consultant
     /**
      * Set id
      *
-     * @param string $id id
+     * @param MongoId $id id
      * 
      * @return self
      */
@@ -67,7 +67,7 @@ class Consultant
     /**
      * Get id
      *
-     * @return string $id
+     * @return MongoId $id
      */
     public function getId()
     {
@@ -103,7 +103,7 @@ class Consultant
      */
     public function setContacts($contacts)
     {
-        $this->contacts = $contacts;
+        $this->contacts = new ArrayCollection($contacts);
 
         return $this;
     }
