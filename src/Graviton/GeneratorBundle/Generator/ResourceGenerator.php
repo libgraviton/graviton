@@ -489,27 +489,7 @@ class ResourceGenerator extends Generator
                 $attrNode->appendChild($attr);
             }
 
-            foreach ($calls as $call) {
-                $callNode = $dom->createElement('call');
-
-                $attrKey = $dom->createAttribute('method');
-                $attrKey->value = $call['method'];
-                $callNode->appendChild($attrKey);
-
-                $argNode = $dom->createElement('argument');
-
-                $attrKey = $dom->createAttribute('type');
-                $attrKey->value = 'service';
-                $argNode->appendChild($attrKey);
-
-                $attrKey = $dom->createAttribute('id');
-                $attrKey->value = $call['service'];
-
-                $argNode->appendChild($attrKey);
-
-                $callNode->appendChild($argNode);
-                $attrNode->appendChild($callNode);
-            }
+            $this->addCallsToService($calls, $dom, $attrNode);
 
             if ($tag) {
                 $tagNode = $dom->createElement('tag');
@@ -521,15 +501,7 @@ class ResourceGenerator extends Generator
                 $attrNode->appendChild($tagNode);
             }
 
-            foreach ($arguments as $argument) {
-                $argNode = $dom->createElement('argument', $argument['value']);
-
-                $argType = $dom->createAttribute('type');
-                $argType->value = $argument['type'];
-                $argNode->appendChild($argType);
-
-                $attrNode->appendChild($argNode);
-            }
+            $this->addArgumentsToService($arguments, $dom, $attrNode);
 
             $servicesNode->appendChild($attrNode);
         }
@@ -557,5 +529,89 @@ class ResourceGenerator extends Generator
             $newNode = $nodes->item(0);
         }
         return $newNode;
+    }
+
+    /**
+     * add calls to service
+     *
+     * @param array        $calls info on calls to create
+     * @param \DOMDocument $dom   current domdocument
+     * @param \DOMElement  $node  node to add call to
+     *
+     * @return void
+     */
+    private function addCallsToService($calls, $dom, $node)
+    {
+        foreach ($calls as $call) {
+            $this->addCallToService($call, $dom, $node);
+        }
+    }
+
+    /**
+     * add call to service
+     *
+     * @param array        $call info on call node to create
+     * @param \DOMDocument $dom  current domdocument
+     * @param \DOMElement  $node node to add call to
+     *
+     * @return void
+     */
+    private function addCallToService($call, $dom, $node)
+    {
+        $callNode = $dom->createElement('call');
+
+        $attr = $dom->createAttribute('method');
+        $attr->value = $call['method'];
+        $callNode->appendChild($attr);
+
+        $argNode = $dom->createElement('argument');
+
+        $attr = $dom->createAttribute('type');
+        $attr->value = 'service';
+        $argNode->appendChild($attr);
+
+        $attr = $dom->createAttribute('id');
+        $attr->value = $call['service'];
+        $argNode->appendChild($attr);
+
+        $callNode->appendChild($argNode);
+
+        $node->appendChild($callNode);
+    }
+
+    /**
+     * add arguments to servie
+     *
+     * @param array        $arguments arguments to create
+     * @param \DOMDocument $dom       dom document to add to
+     * @param \DOMElement  $node      node to use as parent
+     *
+     * @return void
+     */
+    private function addArgumentsToService($arguments, $dom, $node)
+    {
+        foreach ($arguments as $argument) {
+            $this->addArgumentToService($argument, $dom, $node);
+        }
+    }
+
+    /**
+     * add argument to service
+     *
+     * @param array        $argument info on argument to create
+     * @param \DOMDocument $dom      dom document to add to
+     * @param \DOMElement  $node     node to use as parent
+     *
+     * @return void
+     */
+    private function addArgumentToService($argument, $dom, $node)
+    {
+        $argNode = $dom->createElement('argument', $argument['value']);
+
+        $argType = $dom->createAttribute('type');
+        $argType->value = $argument['type'];
+        $argNode->appendChild($argType);
+
+        $node->appendChild($argNode);
     }
 }
