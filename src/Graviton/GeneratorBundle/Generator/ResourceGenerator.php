@@ -404,16 +404,7 @@ class ResourceGenerator extends Generator
      */
     private function addParam(\DOMDocument $dom, $key, $value)
     {
-        $container = $dom->getElementsByTagName('container')->item(0);
-
-        // add <parameters> if missing
-        $paramNodes = $container->getElementsByTagName('parameters');
-        if ($paramNodes->length < 1) {
-            $paramNode = $dom->createElement('parameters');
-            $container->appendChild($paramNode);
-        } else {
-            $paramNode = $paramNodes->item(0);
-        }
+        $paramNode = $this->addNodeIfMissing($dom, 'parameters');
 
         $xpath = new \DomXpath($dom);
 
@@ -457,16 +448,7 @@ class ResourceGenerator extends Generator
         $factoryService = null,
         $factoryMethod = null
     ) {
-        $container = $dom->getElementsByTagName('container')->item(0);
-
-        // add <services> if missing
-        $servicesNodes = $container->getElementsByTagName('services');
-        if ($servicesNodes->length < 1) {
-            $servicesNode = $dom->createElement('services');
-            $container->appendChild($servicesNode);
-        } else {
-            $servicesNode = $servicesNodes->item(0);
-        }
+        $servicesNode = $this->addNodeIfMissing($dom, 'services');
 
         $xpath = new \DomXpath($dom);
 
@@ -553,5 +535,27 @@ class ResourceGenerator extends Generator
         }
 
         return $dom;
+    }
+
+    /**
+     * add node if missing
+     *
+     * @param \DOMDocument &$dom      document
+     * @param string       $element   name for new node element
+     * @param string       $container name of container tag
+     *
+     * @return \DOMNode new element node
+     */
+    private function addNodeIfMissing(&$dom, $element, $container = 'container')
+    {
+        $container = $dom->getElementsByTagName($container)->item(0);
+        $nodes = $dom->getElementsByTagName($element);
+        if ($nodes->length < 1) {
+            $newNode = $dom->createElement($element);
+            $container->appendChild($newNode);
+        } else {
+            $newNode = $nodes->item(0);
+        }
+        return $newNode;
     }
 }
