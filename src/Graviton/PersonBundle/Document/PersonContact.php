@@ -29,6 +29,16 @@ class PersonContact
     protected $value;
 
     /**
+     * @var string $protocol
+     */
+    protected $protocol;
+
+    /**
+     * @var string $uri
+     */
+    protected $uri;
+
+    /**
      * Get id
      *
      * @return id $id
@@ -85,15 +95,20 @@ class PersonContact
     {
         return $this->value;
     }
-    /**
-     * @var string $protocol
-     */
-    protected $protocol;
 
     /**
-     * @var string $uri
+     * Set protocol
+     *
+     * @param string $protocol protocol
+     *
+     * @return self
      */
-    protected $uri;
+    public function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
+
+        return $this;
+    }
 
     /**
      * Get protocol
@@ -103,6 +118,20 @@ class PersonContact
     public function getProtocol()
     {
         return $this->protocol;
+    }
+
+    /**
+     * Set uri
+     *
+     * @param string $uri uri
+     *
+     * @return self
+     */
+    public function setUri($uri)
+    {
+         $this->uri = $uri;
+
+         return $this;
     }
 
     /**
