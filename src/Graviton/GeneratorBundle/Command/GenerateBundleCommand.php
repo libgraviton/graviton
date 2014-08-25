@@ -67,7 +67,11 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
         }
 
         $output->write('Enabling the bundle inside the core bundle: ');
-        $manip = new BundleBundleManipulator($kernel->getBundle('GravitonCoreBundle'));
+        $coreBundle = $kernel->getBundle('GravitonCoreBundle');
+        if (!is_a($coreBundle, '\Graviton\BundleBundle\GravitonBundleInterface')) {
+            throw new \LogicException('GravitonCoreBundle does not implement GravitonBundleInterface');
+        }
+        $manip = new BundleBundleManipulator($coreBundle);
         try {
             $ret = $auto ? $manip->addBundle($namespace.'\\'.$bundle) : false;
 
