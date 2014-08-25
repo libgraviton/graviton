@@ -190,6 +190,27 @@ class ResourceGenerator extends Generator
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
 
+        $docName = implode(
+            '.',
+            array(
+                $shortName,
+                $shortBundle,
+                'document',
+                strtolower($parameters['document'])
+            )
+        );
+
+        $services = $this->addParam(
+            $services,
+            $docName.'.class',
+            $parameters['base'].'Document\\'.$parameters['document']
+        );
+
+        $services = $this->addService(
+            $services,
+            $docName
+        );
+
         if ($withRepository) {
             $repoName = implode(
                 '.',
@@ -219,7 +240,9 @@ class ResourceGenerator extends Generator
                         'type' => 'string',
                         'value' => $parameters['bundle'].':'.$document
                     )
-                )
+                ),
+                'doctrine_mongodb.odm.default_document_manager',
+                'getRepository'
             );
  
             $this->renderFile(
@@ -405,24 +428,28 @@ class ResourceGenerator extends Generator
     /**
      * add service to services.xml
      *
-     * @param \DOMDocument $dom       services.xml dom
-     * @param string       $id        id of new service
-     * @param string       $parent    parent for service
-     * @param string       $scope     scope of service
-     * @param array        $calls     methodCalls to add
-     * @param string       $tag       tag name or empty if no tag needed
-     * @param array        $arguments service arguments
+     * @param \DOMDocument $dom            services.xml dom
+     * @param string       $id             id of new service
+     * @param string       $parent         parent for service
+     * @param string       $scope          scope of service
+     * @param array        $calls          methodCalls to add
+     * @param string       $tag            tag name or empty if no tag needed
+     * @param array        $arguments      service arguments
+     * @param string       $factoryService factory service id
+     * @param string       $factoryMethod  factory method name
      *
      * @return \DOMDocument
      */
     private function addService(
         $dom,
         $id,
-        $parent,
+        $parent = null,
         $scope = null,
         array $calls = array(),
         $tag = null,
-        array $arguments = array()
+        array $arguments = array(),
+        $factoryService = null,
+        $factoryMethod = null
     ) {
         $container = $dom->getElementsByTagName('container')->item(0);
 
@@ -460,6 +487,18 @@ class ResourceGenerator extends Generator
                 $attrKey = $dom->createAttribute('scope');
                 $attrKey->value = $scope;
                 $attrNode->appendChild($attrKey);
+            }
+
+            if ($factoryService) {
+                $attr = $dom->createAttribute('factory-service');
+                $attr->value = $factoryService;
+                $attrNode->appendChild($attr);
+            }
+
+            if ($factoryMethod) {
+                $attr = $dom->createAttribute('factory-method');
+                $attr->value = $factoryMethod;
+                $attrNode->appendChild($attr);
             }
 
             foreach ($calls as $call) {
