@@ -244,7 +244,7 @@ class ResourceGenerator extends Generator
                 'doctrine_mongodb.odm.default_document_manager',
                 'getRepository'
             );
- 
+
             $this->renderFile(
                 'document/DocumentRepository.php.twig',
                 $dir.'/Repository/'.$document.'Repository.php',
@@ -322,7 +322,7 @@ class ResourceGenerator extends Generator
                 )
             )
         );
- 
+
         file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
     }
 
@@ -342,7 +342,7 @@ class ResourceGenerator extends Generator
             $dir.'/Controller/'.$document.'Controller.php',
             $parameters
         );
-        
+
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
@@ -522,7 +522,7 @@ class ResourceGenerator extends Generator
 
                 $attrKey = $dom->createAttribute('id');
                 $attrKey->value = $call['service'];
-                        
+
                 $argNode->appendChild($attrKey);
 
                 $callNode->appendChild($argNode);
