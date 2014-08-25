@@ -39,6 +39,8 @@ class GenerateBundleCommandTest extends BaseTest
      * add xml test to upstreams test data
      *
      * @return array[]
+     *
+     * @codeCoverageIgnore
      */
     public function getInteractiveCommandData()
     {
