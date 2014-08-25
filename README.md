@@ -52,14 +52,14 @@ features that where only added to the xml templates.
 #### Generate new Bundle
 
 ````bash
-php app/console graviton:generate:bundle --namespace=Acme/FooBundle --dir=src --bundle-name=AcmeFooBundle
+php app/console graviton:generate:bundle --namespace=Graviton/FooBundle --dir=src --bundle-name=GravitonFooBundle
 ````
 
 #### Generate a new Resource
 
 ````bash
-php app/console graviton:generate:resource --entity=AcmeFooBundle:Bar --format=xml --fields="name:string" --with-repository
-php app/console graviton:generate:resource --entity=AcmeFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant" --with-repository
+php app/console graviton:generate:resource --entity=GravitonFooBundle:Bar --format=xml --fields="name:string" --with-repository
+php app/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant" --with-repository
 ````
 
 You will need to clean up the newly generated models Resource/schema/<name>.json file. 
