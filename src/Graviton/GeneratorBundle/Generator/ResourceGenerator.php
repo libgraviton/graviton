@@ -184,13 +184,52 @@ class ResourceGenerator extends Generator
             $parameters
         );
 
+        $services = $this->loadServices($dir);
+
+        $bundleParts = explode('\\', $parameters['base']);
+        $shortName = strtolower($bundleParts[0]);
+        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+
         if ($withRepository) {
+            $repoName = implode(
+                '.',
+                array(
+                    $shortName,
+                    $shortBundle,
+                    'repository',
+                    strtolower($parameters['document'])
+                )
+            );
+
+            $services = $this->addParam(
+                $services,
+                $repoName.'.class',
+                $parameters['base'].'Repository\\'.$parameters['document']
+            );
+
+            $services = $this->addService(
+                $services,
+                $repoName,
+                null,
+                null,
+                array(),
+                null,
+                array(
+                    array(
+                        'type' => 'string',
+                        'value' => $parameters['bundle'].':'.$document
+                    )
+                )
+            );
+ 
             $this->renderFile(
                 'document/DocumentRepository.php.twig',
                 $dir.'/Repository/'.$document.'Repository.php',
                 $parameters
             );
         }
+
+        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
     }
 
     /**
@@ -234,6 +273,7 @@ class ResourceGenerator extends Generator
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
+        $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
 
         $services = $this->addParam(
             $services,
@@ -243,7 +283,15 @@ class ResourceGenerator extends Generator
 
         $services = $this->addService(
             $services,
-            $paramName
+            $paramName,
+            'graviton.rest.model',
+            null,
+            array(
+                array(
+                    'method' => 'setRepository',
+                    'service' => $repoName
+                )
+            )
         );
  
         file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
@@ -282,6 +330,7 @@ class ResourceGenerator extends Generator
         $services = $this->addService(
             $services,
             $paramName,
+            'graviton.rest.controller',
             'request',
             array(
                 array(
@@ -356,16 +405,25 @@ class ResourceGenerator extends Generator
     /**
      * add service to services.xml
      *
-     * @param \DOMDocument $dom   services.xml dom
-     * @param string       $id    id of new service
-     * @param string       $scope scope of service
-     * @param array        $calls methodCalls to add
-     * @param string       $tag   tag name or empty if no tag needed
+     * @param \DOMDocument $dom       services.xml dom
+     * @param string       $id        id of new service
+     * @param string       $parent    parent for service
+     * @param string       $scope     scope of service
+     * @param array        $calls     methodCalls to add
+     * @param string       $tag       tag name or empty if no tag needed
+     * @param array        $arguments service arguments
      *
      * @return \DOMDocument
      */
-    private function addService($dom, $id, $scope = null, array $calls = array(), $tag = null)
-    {
+    private function addService(
+        $dom,
+        $id,
+        $parent,
+        $scope = null,
+        array $calls = array(),
+        $tag = null,
+        array $arguments = array()
+    ) {
         $container = $dom->getElementsByTagName('container')->item(0);
 
         // add <services> if missing
@@ -392,9 +450,11 @@ class ResourceGenerator extends Generator
             $attrKey->value = '%'.$id.'.class%';
             $attrNode->appendChild($attrKey);
 
-            $attrKey = $dom->createAttribute('parent');
-            $attrKey->value = 'graviton.rest.controller';
-            $attrNode->appendChild($attrKey);
+            if ($parent) {
+                $attrKey = $dom->createAttribute('parent');
+                $attrKey->value = $parent;
+                $attrNode->appendChild($attrKey);
+            }
 
             if ($scope) {
                 $attrKey = $dom->createAttribute('scope');
@@ -432,6 +492,12 @@ class ResourceGenerator extends Generator
                 $tagNode->appendChild($attrKey);
 
                 $attrNode->appendChild($tagNode);
+            }
+
+            foreach ($arguments as $argument) {
+                $argNode = $dom->createElement('argument');
+
+                $attrNode->appendChild($argNode);
             }
 
             $servicesNode->appendChild($attrNode);
