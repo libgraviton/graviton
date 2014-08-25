@@ -412,10 +412,8 @@ class ResourceGenerator extends Generator
         if ($nodes->length < 1) {
             $attrNode = $dom->createElement('parameter', $value);
 
-            $attrKey = $dom->createAttribute('key');
-            $attrKey->value = $key;
+            $this->addAttributeToNode('key', $key, $dom, $attrNode);
 
-            $attrNode->appendChild($attrKey);
             $paramNode->appendChild($attrNode);
         }
 
@@ -457,46 +455,18 @@ class ResourceGenerator extends Generator
         if ($nodes->length < 1) {
             $attrNode = $dom->createElement('service');
 
-            $attrKey = $dom->createAttribute('id');
-            $attrKey->value = $id;
-            $attrNode->appendChild($attrKey);
-
-            $attrKey = $dom->createAttribute('class');
-            $attrKey->value = '%'.$id.'.class%';
-            $attrNode->appendChild($attrKey);
-
-            if ($parent) {
-                $attrKey = $dom->createAttribute('parent');
-                $attrKey->value = $parent;
-                $attrNode->appendChild($attrKey);
-            }
-
-            if ($scope) {
-                $attrKey = $dom->createAttribute('scope');
-                $attrKey->value = $scope;
-                $attrNode->appendChild($attrKey);
-            }
-
-            if ($factoryService) {
-                $attr = $dom->createAttribute('factory-service');
-                $attr->value = $factoryService;
-                $attrNode->appendChild($attr);
-            }
-
-            if ($factoryMethod) {
-                $attr = $dom->createAttribute('factory-method');
-                $attr->value = $factoryMethod;
-                $attrNode->appendChild($attr);
-            }
-
+            $this->addAttributeToNode('id', $id, $dom, $attrNode);
+            $this->addAttributeToNode('class', '%'.$id.'.class%', $dom, $attrNode);
+            $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
+            $this->addAttributeToNode('scope', $scope, $dom, $attrNode);
+            $this->addAttributeToNode('factory-service', $factoryService, $dom, $attrNode);
+            $this->addAttributeToNode('factory-method', $factoryMethod, $dom, $attrNode);
             $this->addCallsToService($calls, $dom, $attrNode);
 
             if ($tag) {
                 $tagNode = $dom->createElement('tag');
 
-                $attrKey = $dom->createAttribute('name');
-                $attrKey->value = $tag;
-                $tagNode->appendChild($attrKey);
+                $this->addAttributeToNode('name', $tag, $dom, $tagNode);
 
                 $attrNode->appendChild($tagNode);
             }
@@ -613,5 +583,24 @@ class ResourceGenerator extends Generator
         $argNode->appendChild($argType);
 
         $node->appendChild($argNode);
+    }
+
+    /**
+     * add attribute to node if needed
+     *
+     * @param string       $name  attribute name
+     * @param string       $value attribute value
+     * @param \DOMDocument $dom   document
+     * @param \DOMElement  $node  parent node
+     *
+     * @return void
+     */
+    private function addAttributeToNode($name, $value, $dom, $node)
+    {
+        if ($value) {
+            $attr = $dom->createAttribute($name);
+            $attr->value = $value;
+            $node->appendChild($attr);
+        }
     }
 }
