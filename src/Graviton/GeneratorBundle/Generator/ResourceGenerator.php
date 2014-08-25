@@ -43,9 +43,9 @@ class ResourceGenerator extends Generator
     /**
      * instanciate generator object
      *
-     * @param object $filesystem fs abstraction layer
-     * @param object $doctrine   dbal
-     * @param object $kernel     app kernel
+     * @param FileSystem $filesystem fs abstraction layer
+     * @param object     $doctrine   dbal
+     * @param object     $kernel     app kernel
      *
      * @return ResourceGenerator
      */
