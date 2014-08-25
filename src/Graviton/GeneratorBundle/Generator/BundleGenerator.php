@@ -23,7 +23,7 @@ class BundleGenerator extends SensioBundleGenerator
     /**
      * @private string[]
      */
-    private $skeletonDirs;
+    private $gravitonSkeletons;
 
     /**
      * Sets an array of directories to look for templates.
@@ -31,17 +31,17 @@ class BundleGenerator extends SensioBundleGenerator
      * The directories must be sorted from the most specific to the most
      * directory.
      *
-     * @param array $skeletonDirs An array of skeleton dirs
+     * @param array $gravitonSkeletons An array of skeleton dirs
      *
      * @return void
      */
-    public function setSkeletonDirs($skeletonDirs)
+    public function setSkeletonDirs($gravitonSkeletons)
     {
-        $skeletonDirs = array_merge(
-            array(__DIR__.'/../Resources/SensioGeneratorBundle/skeleton'),
-            $skeletonDirs
+        $gravitonSkeletons = array_merge(
+            array(__DIR__.'/../Resources/skeleton'),
+            $gravitonSkeletons
         );
-        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : array($skeletonDirs);
+        $this->gravitonSkeletons = is_array($gravitonSkeletons) ? $gravitonSkeletons : array($gravitonSkeletons);
     }
 
     /**
@@ -57,7 +57,7 @@ class BundleGenerator extends SensioBundleGenerator
     protected function render($template, $parameters)
     {
         $twig = new \Twig_Environment(
-            new \Twig_Loader_Filesystem($this->skeletonDirs),
+            new \Twig_Loader_Filesystem($this->gravitonSkeletons),
             array(
                 'debug'            => true,
                 'cache'            => false,
