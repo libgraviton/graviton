@@ -51,6 +51,20 @@ class Consultant
     }
 
     /**
+     * Set id
+     *
+     * @param string $id id
+     * 
+     * @return self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return string $id
@@ -78,6 +92,20 @@ class Consultant
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * Set contacts
+     *
+     * @param PersonContact[] $contacts replacement contacts
+     * 
+     * @return self
+     */
+    public function setContacts($contacts)
+    {
+        $this->contacts = $contacts;
+
+        return $this;
     }
 
     /**
