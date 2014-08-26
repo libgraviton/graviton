@@ -3,6 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
     xmlns:jms-serializer="jms_serializer"
+    xmlns:monolog="http://symfony.com/schema/dic/monolog"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <doctrine_mongodb:config>
     <doctrine_mongodb:document-manager id="default">
@@ -14,4 +15,7 @@
       <jms-serializer:directory namespace_prefix="Graviton\LogBundle" path="@GravitonLogBundle/Resources/config/serializer"/>
     </jms-serializer:metadata>
   </jms-serializer:config>
+  <monolog:config>
+    <monolog:handler name="elasticsearch" type="service" id="graviton.log.monolog.elasticsearch"/>
+  </monolog:config>
 </container>
