@@ -498,6 +498,7 @@ class ResourceGenerator extends Generator
         } else {
             $newNode = $nodes->item(0);
         }
+
         return $newNode;
     }
 

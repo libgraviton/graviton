@@ -54,7 +54,7 @@ class Consultant
      * Set id
      *
      * @param MongoId $id id
-     * 
+     *
      * @return self
      */
     public function setId($id)
@@ -98,7 +98,7 @@ class Consultant
      * Set contacts
      *
      * @param PersonContact[] $contacts replacement contacts
-     * 
+     *
      * @return self
      */
     public function setContacts($contacts)
