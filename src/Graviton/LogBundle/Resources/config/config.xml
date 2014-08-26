@@ -16,6 +16,8 @@
     </jms-serializer:metadata>
   </jms-serializer:config>
   <monolog:config>
+    <monolog:handler name="output" type="console" level="DEBUG"/>
+    <monolog:handler name="file" type="stream"/>
     <monolog:handler name="elasticsearch" type="service" id="graviton.log.monolog.elasticsearch"/>
   </monolog:config>
 </container>
