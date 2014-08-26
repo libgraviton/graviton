@@ -2,7 +2,10 @@
   "ADMIN_EMAIL": "lucas.bickel@swisscom.com",
   "WEB_SERVER": "nginx",
   "PHP_VERSION": "{PHP_55_LATEST}",
+  "NGINX_VERSION": "{NGINX_17_LATEST}",
   "PHP_MODULES": ["cli", "fpm"],
   "PHP_EXTENSIONS": ["bz2", "zlib", "curl", "mcrypt", "mongo", "openssl"],
+  "WEBDIR": "web",
+  "LIBDIR": ".",
   "ZEND_EXTENSIONS": ["xdebug"]
 }

@@ -6,12 +6,10 @@ use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\AppKernel;
 
-ini_set('include_path', __DIR__.'/../:'.ini_get('include_path'));
-
-$loader = include_once 'app/bootstrap.php.cache';
+$loader = include_once __DIR__.'/../app/bootstrap.php.cache';
 Debug::enable();
 
-require_once 'app/AppKernel.php';
+require_once __DIR__.'/../app/AppKernel.php';
 
 $kernel = new AppKernel('dev', true);
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));

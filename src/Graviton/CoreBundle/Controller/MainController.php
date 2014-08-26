@@ -63,15 +63,7 @@ class MainController implements ContainerAwareInterface
         $response->headers->set('Link', (string) $links);
 
         # @todo don't find the composer file like so, use packagist to find and parse it if possible
-        $defaultFile = __DIR__.'/../../../../composer.json';
-        $cloudFile = __DIR__.'/../../../../../composer.json';
-        if (file_exists($defaultFile)) {
-            $composerFile = $defaultFile;
-        } elseif (file_exists($cloudFile)) {
-            $composerFile = $cloudFile;
-        } else {
-            throw new \LogicException('Could not load composer.json from "'.$defaultFile.'" or "'.$cloudFile.'"');
-        }
+        $composerFile = __DIR__.'/../../../../composer.json';
         $composer = json_decode(file_get_contents($composerFile), true);
         $response->headers->set('X-Version', $composer['version']);
 
