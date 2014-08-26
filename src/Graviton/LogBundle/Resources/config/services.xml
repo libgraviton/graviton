@@ -17,11 +17,7 @@
       <argument>%graviton.log.elasticsearch.client.arguments%</argument>
     </service>
     <service id="graviton.log.monolog.formatter.logstash" class="%graviton.log.monolog.formatter.logstash.class%">
-      <argument type="string">application</argument>
-      <argument type="constant">null</argument>
-      <argument type="constant">null</argument>
-      <argument type="string">null</argument>
-      <argument type="expression">1</argument>
+      <argument type="string">graviton</argument>
     </service>
     <service id="graviton.log.monolog.elasticsearch" class="%graviton.log.monolog.elasticsearch.class%">
       <argument type="service" id="graviton.log.elasticsearch.client"/>
