@@ -65,7 +65,8 @@
         "knplabs/knp-paginator-bundle": "~2.4",
         "symfony/icu": "~1.0.0",
         "php-jsonpointer/php-jsonpointer": "@dev",
-        "php-jsonpatch/php-jsonpatch": "@dev"
+        "php-jsonpatch/php-jsonpatch": "@dev",
+        "nulpunkt/monolog-elasticsearch-logstashformat": "*"
     },
     "config": {
       "github-oauth": {
