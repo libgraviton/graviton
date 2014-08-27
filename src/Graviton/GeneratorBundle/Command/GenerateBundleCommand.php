@@ -147,6 +147,6 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      */
     protected function createGenerator()
     {
-        return new BundleGenerator($this->getContainer()->get('filesystem'));
+        return new BundleGenerator();
     }
 }

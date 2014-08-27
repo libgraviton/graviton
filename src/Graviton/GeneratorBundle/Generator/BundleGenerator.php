@@ -22,15 +22,14 @@ class BundleGenerator extends AbstractGenerator
     /**
      * generate bundle code
      *
-     * @param string  $namespace namspace name
-     * @param string  $bundle    bundle name
-     * @param string  $dir       bundle dir
-     * @param string  $format    bundle condfig file format
-     * @param boolean $structure generate structure?
+     * @param string $namespace namspace name
+     * @param string $bundle    bundle name
+     * @param string $dir       bundle dir
+     * @param string $format    bundle condfig file format
      *
      * @return void
      */
-    public function generate($namespace, $bundle, $dir, $format, $structure)
+    public function generate($namespace, $bundle, $dir, $format)
     {
         $dir .= '/'.strtr($namespace, '\\', '/');
         if (file_exists($dir)) {
