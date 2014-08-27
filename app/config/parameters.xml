@@ -8,6 +8,7 @@
   <parameters>
     <parameter key="mongodb.default.server.uri">mongodb://localhost:27017</parameter>
     <parameter key="mongodb.default.server.db">db</parameter>
+    <parameter key="graviton.log.elasticsearch.host">http://elasticsearch.beta.scapp.io:80</parameter>
     <parameter key="mailer_transport">smtp</parameter>
     <parameter key="mailer_host">127.0.0.1</parameter>
     <parameter key="mailer_user">null</parameter>
