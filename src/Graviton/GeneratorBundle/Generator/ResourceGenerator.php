@@ -20,6 +20,8 @@ use Doctrine\Common\Inflector\Inflector;
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
+ *
+ * @todo split all the xml handling on services.conf into a Manipulator
  */
 class ResourceGenerator extends Generator
 {

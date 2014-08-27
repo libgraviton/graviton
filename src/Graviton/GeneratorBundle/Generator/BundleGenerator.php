@@ -133,6 +133,7 @@ class BundleGenerator extends SensioBundleGenerator
         );
 
         if ('xml' === $format || 'annotation' === $format) {
+            // @todo make this leave doctrine alone and move doctrine to a Manipulator in generate:resource
             $this->renderFile('bundle/services.xml.twig', $dir.'/Resources/config/services.xml', $parameters);
             mkdir($dir.'/Resources/config/doctrine');
             $this->renderFile('bundle/config.xml.twig', $dir.'/Resources/config/config.xml', $parameters);
