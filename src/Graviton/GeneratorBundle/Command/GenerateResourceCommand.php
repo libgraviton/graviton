@@ -3,6 +3,8 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
 /**
@@ -30,6 +32,23 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             ->setDescription('Generates a graviton rest resource');
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param InputInterface  $input  input
+     * @param OutputInterface $output output
+     *
+     * @return void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        parent::execute($input, $output);
+
+        $output->writeln(
+            'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
+        );
+    }
+ 
     /**
      * {@inheritDoc}
      *

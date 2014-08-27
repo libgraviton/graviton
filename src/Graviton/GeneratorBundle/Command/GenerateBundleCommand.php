@@ -38,6 +38,23 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
     /**
      * {@inheritDoc}
      *
+     * @param InputInterface  $input  input
+     * @param OutputInterface $output output
+     *
+     * @return void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        parent::execute($input, $output);
+
+        $output->writeln(
+            'Please review Resource/config/config.xml before commiting'
+        );
+    }
+ 
+    /**
+     * {@inheritDoc}
+     *
      * Add the new bundle to the BundleBundle loader infrastructure instead of main kernel
      *
      * @param DialogHelper    $dialog    dialog
