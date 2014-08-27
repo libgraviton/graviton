@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+  <parameters>
+    <parameter key="graviton.log.monolog.elasticsearch.class">Monolog\ElasticLogstashHandler</parameter>
+    <parameter key="graviton.log.monolog.formatter.logstash.class">Monolog\Formatter\LogstashFormatter</parameter>
+    <parameter key="graviton.log.elasticsearch.client.class">Elasticsearch\Client</parameter>
+    <parameter key="graviton.log.elasticsearch.client.arguments" type="collection">
+      <parameter key="hosts" type="collection">
+        <parameter>%graviton.log.elasticsearch.host%</parameter>
+      </parameter>
+    </parameter>
+  </parameters>
+  <services>
+    <service id="graviton.log.elasticsearch.client" class="%graviton.log.elasticsearch.client.class%">
+      <argument>%graviton.log.elasticsearch.client.arguments%</argument>
+    </service>
+    <service id="graviton.log.monolog.formatter.logstash" class="%graviton.log.monolog.formatter.logstash.class%">
+      <argument type="string">graviton</argument>
+    </service>
+    <service id="graviton.log.monolog.elasticsearch" class="%graviton.log.monolog.elasticsearch.class%">
+      <argument type="service" id="graviton.log.elasticsearch.client"/>
+      <call method="setFormatter">
+        <argument type="service" id="graviton.log.monolog.formatter.logstash"/>
+      </call>
+    </service>
+  </services>
+</container>

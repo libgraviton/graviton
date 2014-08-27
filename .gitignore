@@ -1,4 +1,4 @@
-app/log
+app/logs
 app/cache
 app/bootstrap.php.cache
 app/check.php
