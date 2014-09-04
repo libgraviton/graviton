@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Route;
  */
 class ActionUtils
 {
+    const ID_PATTERN = '[a-zA-Z0-9\-_\/]+';
     /**
      * Get route for GET requests
      *
@@ -24,7 +25,7 @@ class ActionUtils
      */
     public static function getRouteGet($service)
     {
-        return self::getRoute($service, 'GET', 'getAction', array('id' => '[a-zA-Z1-9\-_\/]+'));
+        return self::getRoute($service, 'GET', 'getAction', array('id' => self::ID_PATTERN));
     }
 
     /**
@@ -60,7 +61,7 @@ class ActionUtils
      */
     public static function getRoutePut($service)
     {
-        return self::getRoute($service, 'PUT', 'putAction', array('id' => '[a-zA-Z1-9\-_]+'));
+        return self::getRoute($service, 'PUT', 'putAction', array('id' => self::ID_PATTERN));
     }
 
     /**
@@ -72,7 +73,7 @@ class ActionUtils
      */
     public static function getRoutePatch($service)
     {
-        return self::getRoute($service, 'PATCH', 'patchAction', array('id' => '[a-zA-Z1-9\-_]+'));
+        return self::getRoute($service, 'PATCH', 'patchAction', array('id' => self::ID_PATTERN));
     }
 
     /**
@@ -84,7 +85,7 @@ class ActionUtils
      */
     public static function getRouteDelete($service)
     {
-        return self::getRoute($service, 'DELETE', 'deleteAction', array('id' => '[a-zA-Z1-9\-_]+'));
+        return self::getRoute($service, 'DELETE', 'deleteAction', array('id' => self::ID_PATTERN));
     }
 
     /**
