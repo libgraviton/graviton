@@ -62,16 +62,16 @@ Graviton supports Cloudfoundry out of the box. You need to define a mongodb serv
 will push the bare code and run ``composer install`` on the target. Currently cloud installs get populated with mongodb fixtures on each
 start.
 
-``bash
+```bash
 cf push graviton-dev
-``
+```
 
 ### Loading fixtures in cloudfoundry.
 
 Add the connection data from ``vcap_services.mongodb-2.2[0].credentials.url`` to ``app/config/parameters_local.xml`` but replace
 the ``<ip>:<port>`` part with ``localhost:8001``.
 
-``xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -80,7 +80,7 @@ the ``<ip>:<port>`` part with ``localhost:8001``.
     <parameter key="mongodb.default.server.uri">mongodb://user:pass@127.0.0.1:8001/db</parameter>
   </parameters>
 </container>
-``
+```
 
 Open a local connection using the service connector console.
 
