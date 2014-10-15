@@ -10,5 +10,7 @@ vendor/
 *.swp
 *.swo
 .*~
+.buildpath
+.settings/*
 web/.htaccess
 mongodata/
