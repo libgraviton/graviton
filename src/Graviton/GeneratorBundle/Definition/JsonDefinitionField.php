@@ -33,7 +33,7 @@ class JsonDefinitionField
      */
     private $_doctrineTypeMap = array(
         self::TYPE_STRING => 'string',
-        self::TYPE_INTEGER => 'int',
+        self::TYPE_INTEGER => 'integer',
         self::TYPE_DATETIME => 'date'
     );
 
