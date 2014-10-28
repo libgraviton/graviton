@@ -1,0 +1,65 @@
+<?php
+
+namespace Graviton\GeneratorBundle\Command;
+
+use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+
+/**
+ * generator command
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
+class GenerateResourceCommand extends GenerateDoctrineEntityCommand
+{
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     */
+    protected function configure()
+    {
+        parent::configure();
+
+        $this
+            ->setName('graviton:generate:resource')
+            ->setDescription('Generates a graviton rest resource');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param InputInterface  $input  input
+     * @param OutputInterface $output output
+     *
+     * @return void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        parent::execute($input, $output);
+
+        $output->writeln(
+            'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
+        );
+    }
+ 
+    /**
+     * {@inheritDoc}
+     *
+     * @return ResourceGenerator
+     */
+    protected function createGenerator()
+    {
+        return new ResourceGenerator(
+            $this->getContainer()->get('filesystem'),
+            $this->getContainer()->get('doctrine'),
+            $this->getContainer()->get('kernel')
+        );
+    }
+}

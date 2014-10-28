@@ -51,9 +51,23 @@ class Consultant
     }
 
     /**
+     * Set id
+     *
+     * @param MongoId $id id
+     *
+     * @return self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
-     * @return string $id
+     * @return MongoId $id
      */
     public function getId()
     {
@@ -78,6 +92,20 @@ class Consultant
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * Set contacts
+     *
+     * @param PersonContact[] $contacts replacement contacts
+     *
+     * @return self
+     */
+    public function setContacts($contacts)
+    {
+        $this->contacts = new ArrayCollection($contacts);
+
+        return $this;
     }
 
     /**

@@ -1,0 +1,37 @@
+<?php
+
+namespace {{ namespace }}\DependencyInjection;
+
+{% block use_statements %}
+use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+{% endblock use_statements %}
+
+/**
+{% block phpdoc_class_header %}
+ * This is the class that loads and manages your bundle configuration
+{% endblock phpdoc_class_header %}
+ *
+ * To learn more see {@link http://scm.to/004w}
+ *
+ * @category {{ bundle }}
+ * @package  Graviton
+ * @author   {{ author }} <{{ email }}>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
+{% block class_definition %}
+class {{ bundle_basename }}Extension extends GravitonBundleExtension
+{% endblock class_definition %}
+{
+{% block class_body %}
+    /**
+     * {@inheritDoc}
+     *
+     * @return string
+     */
+    public function getConfigDir()
+    {
+        return __DIR__.'/../Resources/config';
+    }
+{% endblock class_body %}
+}

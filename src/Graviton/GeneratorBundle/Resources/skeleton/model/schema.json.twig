@@ -1,0 +1,17 @@
+{
+  "description": "@todo replace me",
+  "properties": {
+{% for field in fields %}
+    "{{ field.fieldName }}": {
+      "title": "{{ field.fieldName }}",
+      "description": "@todo replace me"
+    },
+{% endfor %}
+    "id": {
+      "title": "ID",
+      "description": "@todo replace me"
+    }
+  },
+  "required": [
+  ]
+}
