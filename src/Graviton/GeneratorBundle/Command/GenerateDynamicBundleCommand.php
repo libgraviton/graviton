@@ -13,7 +13,6 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 
-
 /**
  * generator command
  *
@@ -39,7 +38,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             ->setName('graviton:generate:dynamicbundle')
             ->setDescription('Generates a graviton dynamic bundle from a json definition');
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -47,51 +46,78 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      *            input
      * @param OutputInterface $output
      *            output
-     *
+     *            
      * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //new JsonDefinition($filename)
-        //$json = new JsonDefiniton($input->getOption('json'));
-        
         $jsonDef = new JsonDefinition($input->getOption('json'));
         
-        // compose names
-        $namespace = 'GravitonDynamic/Bundle/'.ucfirst(strtolower($jsonDef->getId())).'Bundle';
-        $bundleName = str_replace('/', '', $namespace);
+        /**
+         * ** GENERATE THE BUNDLE ***
+         */
         
+        // compose names
+        $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+        $namespace = 'Graviton/' . $thisIdName . 'Bundle';
+        $bundleName = str_replace('/', '', $namespace);
+        $baseDir = dirname(__FILE__) . '/../../../';
         
         // first, create the bundle
         $command = $this->getApplication()->find('graviton:generate:bundle');
         $arguments = array(
-            'graviton:generate:bundle',       
+            'graviton:generate:bundle',
             '--namespace' => $namespace,
             '--bundle-name' => $bundleName,
-            '--dir' => '/tmp/',
+            '--dir' => $baseDir,
             '--format' => 'xml',
             '--structure' => 'true'
         );
-
+        
         $input = new ArrayInput($arguments);
         $input->setInteractive(false);
-        
         $returnCode = $command->run($input, $output);
-        if($returnCode == 0) {
-            echo "ok!";
-                var_dump($returnCode);
-        }        
         
-        die;
-    
+        /**
+         * ** GENERATE THE RESOURCE ***
+         */
         
-        foreach ($json->getFields() as $field) {
-            //var_dump($field->getDescription());
-        }
-    
-        //parent::execute($input, $output);
-    
-        $output->writeln('Please review Resource/config/config.xml before commiting');
-    }    
+        $command = $this->getApplication()->find('graviton:generate:resource');
+        $arguments = array(
+            'graviton:generate:resource',
+            '--entity' => $bundleName . ':' . $thisIdName,
+            '--format' => 'xml',
+            '--fields' => $this->getFieldString($jsonDef),
+            '--with-repository' => 'true'
+        );
+        $input = new ArrayInput($arguments);
+        $input->setInteractive(false);
+        $returnCode = $command->run($input, $output);
+        
+        // php app/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml \
+        // --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant valid:boolean contacts:Graviton\\PersonBundle\\Document\\PersonContact[] tags:array" \
+        // --with-repository --no-interaction
+        
+        $output->writeln('Generated the bundle and the resource.');
+    }
 
+    /**
+     * Returns the field string as described in the json file
+     *
+     * @param JsonDefinition $jsonDef
+     *            The json def
+     */
+    private function getFieldString(JsonDefinition $jsonDef)
+    {
+        $ret = array();
+        
+        foreach ($jsonDef->getFields() as $field) {
+            // don't add 'id' field it seems..
+            if ($field->getName != 'id') {
+                $ret[] = $field->getName() . ':' . $field->getTypeDoctrine();
+            }
+        }
+        
+        return implode(' ', $ret);
+    }
 }

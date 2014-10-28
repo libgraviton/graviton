@@ -18,13 +18,24 @@ class JsonDefinitionField
 {
 
     /**
-     * Consts for comparison
+     * Consts for our types..
      *
      * @var string
      */
     const TYPE_STRING = 'VARCHAR';
 
     const TYPE_INTEGER = 'INT';
+
+    const TYPE_DATETIME = 'DATETIME';
+    
+    /**
+     * Typemap from our source types to doctrine types
+     */
+    private $_doctrineTypeMap = array(
+        self::TYPE_STRING => 'string',
+        self::TYPE_INTEGER => 'int',
+        self::TYPE_DATETIME => 'date'
+    );
 
     /**
      * Our definition
@@ -62,6 +73,21 @@ class JsonDefinitionField
     public function getType()
     {
         return $this->_def->type;
+    }
+
+    /**
+     * Returns the field type in a doctrine-understandable way..
+     * 
+     * @return string Type
+     */
+    public function getTypeDoctrine()
+    {
+        $ret = false;
+        if (isset($this->_doctrineTypeMap[$this->getType()])) {
+            $ret = $this->_doctrineTypeMap[$this->getType()];
+        }
+        
+        return $ret;
     }
 
     /**
