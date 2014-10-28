@@ -19,7 +19,7 @@ class JsonDefinitionField
 
     /**
      * Consts for comparison
-     * 
+     *
      * @var string
      */
     const TYPE_STRING = 'VARCHAR';
@@ -35,7 +35,7 @@ class JsonDefinitionField
 
     /**
      * Constructor
-     * 
+     *
      * @param \stdClass $def
      *            Definition
      */
@@ -72,5 +72,20 @@ class JsonDefinitionField
     public function getLength()
     {
         return $this->_def->length;
+    }
+
+    /**
+     * Returns the field description
+     *
+     * @return string description
+     */
+    public function getDescription()
+    {
+        // not mandatory..
+        $ret = '';
+        if (isset($this->_def->description))
+            $ret = $this->_def->description;
+        
+        return $ret;
     }
 }

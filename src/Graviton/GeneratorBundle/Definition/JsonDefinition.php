@@ -51,6 +51,26 @@ class JsonDefinition
         
         $this->_doc = json_decode(file_get_contents($this->_filename));
     }
+    
+    /**
+     * Returns this loads ID
+     * 
+     * @return string ID
+     */
+    public function getId()
+    {
+        return $this->_doc->id;
+    }
+    
+    /**
+     * Returns the description
+     * 
+     * @return string Description
+     */
+    public function getDescription()
+    {
+        return $this->_doc->description;
+    }    
 
     /**
      * Returns the field definition
