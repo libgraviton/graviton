@@ -13,13 +13,20 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\Output;
+use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 
 /**
- * Here, we generate all "dynamic" Graviton bundles.. The workflow is as
- * follows: * Generate a BundleBundle, implementing the GravitonBundleInterface
- * * Generate our Bundles per JSON file * Creating the necessary resources and
- * files inside the newly created bundles. * All that in our own GravitonDyn
- * namespace. Important: Why are we using shell_exec instead of just using the
+ * Here, we generate all "dynamic" Graviton bundles..
+ * The workflow is as
+ * follows:
+ *
+ * * Generate a BundleBundle, implementing the GravitonBundleInterface
+ * * Generate our Bundles per JSON file
+ * * Creating the necessary resources and files inside the newly created
+ * bundles.
+ * * All that in our own GravitonDyn namespace.
+ *
+ * Important: Why are we using shell_exec instead of just using the
  * internal API? Well, the main problem is, that we want to add resources (like
  * Documents) to our Bundles *directly* after generating them. Using the
  * internal API, we cannot add resources there using our tools as those Bundles
@@ -37,6 +44,13 @@ use Symfony\Component\Console\Output\Output;
  */
 class GenerateDynamicBundleCommand extends ContainerAwareCommand
 {
+    
+    private $bundleBundleNamespace;
+    private $bundleBundleDir;
+    private $bundleBundleClassname;
+    private $bundleBundleClassfile;
+    private $bundleBundleList = array();
+    
 
     /**
      * {@inheritDoc}
@@ -51,12 +65,14 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             'Path to the json definition.')
             ->addOption('bundleNameMask', '', InputOption::VALUE_OPTIONAL, 
             'Name mask', 'GravitonDyn/%sBundle')
-            ->addOption('srcDir', '', InputOption::VALUE_OPTIONAL, 
-            'Src Dir', dirname(__FILE__) . '/../../../')
-            ->addOption('bundleFormat', '', InputOption::VALUE_OPTIONAL,
-                'Which format', 'xml')            
+            ->addOption('srcDir', '', InputOption::VALUE_OPTIONAL, 'Src Dir', 
+            dirname(__FILE__) . '/../../../')
+            ->addOption('bundleBundleName', '', InputOption::VALUE_OPTIONAL, 
+            'Which BundleBundle to manipulate to add our stuff', 
+            'GravitonDynBundleBundle')
+            ->addOption('bundleFormat', '', InputOption::VALUE_OPTIONAL, 
+            'Which format', 'xml')
             ->setName('graviton:generate:dynamicbundles')
-            
             ->setDescription(
             'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.');
@@ -79,8 +95,16 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
          * GENERATE THE BUNDLEBUNDLE
          */
         $namespace = sprintf($bundleNameMask, 'Bundle');
-        $this->generateBundle($namespace, $input, $output);        
+        $bundleName = str_replace('/', '', $namespace);
+        $this->generateBundle($namespace, $bundleName, $input, $output, 'false');
         
+        // bundlebundle stuff..
+        $this->bundleBundleNamespace = $namespace;
+        $this->bundleBundleDir = $input->getOption('srcDir').$namespace;
+        $this->bundleBundleClassname = $bundleName;
+        $this->bundleBundleClassfile = $this->bundleBundleDir.'/'
+            .$this->bundleBundleClassname.'.php';
+                
         /**
          * GENERATE THE BUNDLE
          */
@@ -88,14 +112,17 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         
         $thisIdName = ucfirst(strtolower($jsonDef->getId()));
         $namespace = sprintf($bundleNameMask, $thisIdName);
-        $this->generateBundle($namespace, $input, $output);  
-                
-        /**
-         * ** GENERATE THE RESOURCE ***
-         */
+        $bundleName = str_replace('/', '', $namespace);
+        $this->generateBundle($namespace, $bundleName, $input, $output);
         
-        // $command =
-        // $this->getApplication()->find('graviton:generate:resource');
+        $this->bundleBundleList[] = $namespace;
+        
+        // re-generate our bundlebundle..
+        $this->generateBundleBundleClass();
+        
+        /**
+         * GENERATE THE RESOURCE(S)
+         */
         $arguments = array(
             'graviton:generate:resource',
             '--entity' => $bundleName . ':' . $thisIdName,
@@ -104,25 +131,13 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '--with-repository' => null
         );
         $this->executeCommand($arguments, $output);
-        
-        // $input = new ArrayInput($arguments);
-        // $input->setInteractive(false);
-        // $returnCode = $command->run($input, $output);
-        
-        // php app/console graviton:generate:resource
-        // --entity=GravitonFooBundle:Baz --format=xml \
-        // --fields="name:string isTrue:boolean
-        // consultant:Graviton\\PersonBundle\\Document\\Consultant valid:boolean
-        // contacts:Graviton\\PersonBundle\\Document\\PersonContact[]
-        // tags:array" \
-        // --with-repository --no-interaction
-        
+
         $output->writeln('Generated the bundle and the resource.');
     }
-    
-    private function generateBundle($namespace, InputInterface $input, OutputInterface $output)
+
+    private function generateBundle($namespace, $bundleName, 
+        InputInterface $input, OutputInterface $output, $updateKernel = 'true')
     {
-        $bundleName = str_replace('/', '', $namespace);
         
         // first, create the bundle
         $arguments = array(
@@ -132,6 +147,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '--dir' => $input->getOption('srcDir'),
             '--format' => $input->getOption('bundleFormat'),
             '--doUpdateKernel' => 'false',
+            '--loaderBundleName' => $input->getOption('bundleBundleName'),
             '--structure' => null
         );
         
@@ -155,6 +171,17 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         return shell_exec($cmd);
     }
     
+    private function generateBundleBundleClass()
+    {
+        $dbbGenerator = new DynamicBundleBundleGenerator();
+        $dbbGenerator->generate(
+            $this->bundleBundleList,
+            $this->bundleBundleNamespace,
+            $this->bundleBundleClassname,
+            $this->bundleBundleClassfile
+        );        
+    }
+
     /**
      * Returns the field string as described in the json file
      *

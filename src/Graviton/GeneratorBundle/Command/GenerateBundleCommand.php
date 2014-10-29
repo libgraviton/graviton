@@ -31,7 +31,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
     {
         parent::configure();
         
-        $this->addOption('loadBundleName', 'lbn', InputOption::VALUE_OPTIONAL, 
+        $this->addOption('loaderBundleName', 'lbn', InputOption::VALUE_OPTIONAL, 
             'Name of the bundle to manipulate, defaults to GravitonCoreBundle', 
             'GravitonCoreBundle')
             ->addOption('doUpdateKernel', 'dak', InputOption::VALUE_OPTIONAL, 
@@ -98,7 +98,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
         }
         
         $output->write('Enabling the bundle inside the core bundle: ');
-        $coreBundle = $kernel->getBundle($input->getOption('loadBundleName'));
+        $coreBundle = $kernel->getBundle($input->getOption('loaderBundleName'));
         if (! is_a($coreBundle, 
             '\Graviton\BundleBundle\GravitonBundleInterface')) {
             throw new \LogicException(

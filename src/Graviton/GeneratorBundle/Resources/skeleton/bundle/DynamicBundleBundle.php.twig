@@ -2,35 +2,32 @@
 
 namespace {{ namespace }};
 
-{% block use_statements %}
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
-{% endblock use_statements %}
 
-{% block class_definition %}
 /**
- * {{ bundle }}
+ * Graviton dynamic BundleBundle - DO NOT MANIPULATE!
  *
- * @category {{ bundle }}
- * @author   {{ author }} <{{ email }}>
+ * @category GravitonDynBundleBundle
+ * @author   some dude <some@dude.ch>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class {{ bundle }} extends Bundle implements GravitonBundleInterface
-{% endblock class_definition %}
+class {{bundleName}} extends Bundle implements GravitonBundleInterface
 {
-{% block class_body %}
     /**
      * {@inheritDoc}
      *
-     * set up graviton symfony bundles
+     * set up graviton symfony dynamic bundles
      *
      * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {
         return array(
+        {% for className in bundleClassList %}
+  			new {{ className }}(),
+		{% endfor %}
         );
     }
-{% endblock class_body %}
 }
