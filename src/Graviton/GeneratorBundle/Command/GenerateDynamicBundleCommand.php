@@ -59,7 +59,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         
         // compose names
         $thisIdName = ucfirst(strtolower($jsonDef->getId()));
-        $namespace = 'Graviton/' . $thisIdName . 'Bundle';
+        $namespace = 'GravitonDyn/' . $thisIdName . 'Bundle';
         $bundleName = str_replace('/', '', $namespace);
         $baseDir = dirname(__FILE__) . '/../../../';
         
