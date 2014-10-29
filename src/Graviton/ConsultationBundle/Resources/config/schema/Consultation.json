@@ -1,0 +1,25 @@
+{
+  "description": "A consultation",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Consultation identifier."
+    },
+    "customer": {
+      "title": "Customer",
+      "description": "Customer of this consultation"
+    },
+    "agenda": {
+      "title": "Agenda",
+      "description": "Agenda of this consultation"
+    },
+    "creationDate": {
+        "title": "Creation Date",
+        "description": "Creation date of this consultation"
+     }
+  },
+  "required": [
+    "id",
+    "customer"
+  ]
+}

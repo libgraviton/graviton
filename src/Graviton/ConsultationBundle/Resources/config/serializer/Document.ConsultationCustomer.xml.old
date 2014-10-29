@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\ConsultationBundle\Document\ConsultationCustomer" exclusion-policy="ALL">
+    <property name="id" type="string" expose="false"/>
+    <property name="customerId">
+<type><![CDATA["string"]]></type>
+</property>
+    
+    <property name="customerNumber">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="firstName">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="salutation">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="clientAdvisor">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="lastName">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="customerOpeningDate">
+    <type><![CDATA[DateTime]]></type>
+    </property>
+    
+    <property name="nationality">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="domicile">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="sex">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="birthDate">
+    <type><![CDATA[DateTime]]></type>
+    </property>
+    
+    <property name="bankAccount">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="education">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="employmentStatus">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="profession">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="maritalStatus">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="customerType">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="rating">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="portfolioValue">
+    <type><![CDATA[double]]></type>
+    </property>
+    
+    <property name="assetManagementCode">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="performance">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="taxDomicil">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="totalAssets">
+    <type><![CDATA[double]]></type>
+    </property>
+    
+    <property name="qiBasket">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="strategy">
+    <type><![CDATA[string]]></type>
+    </property>
+    
+    <property name="BVGCode">
+    <type><![CDATA[boolean]]></type>
+    </property>
+    
+    <property name="euTaxLiability">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="mifidCategory">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="language">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="mainType">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="customerCategory">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="documents">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="customerSegment">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="legalAddress">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="contacts">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="relations">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    <property name="clientSpecificValues">
+    <type><![CDATA[array]]></type>
+    </property>
+    
+    
+  </class>
+</serializer>

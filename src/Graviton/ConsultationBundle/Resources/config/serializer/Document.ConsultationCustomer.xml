@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\ConsultationBundle\Document\ConsultationCustomer" exclusion-policy="ALL">
+   <!--  <property name="id" type="string" expose="false"/> -->
+    <property name="customerId" type="string" accessor-getter="getCustomerId" accessor-setter="setCustomerId" />
+  </class>
+</serializer>
