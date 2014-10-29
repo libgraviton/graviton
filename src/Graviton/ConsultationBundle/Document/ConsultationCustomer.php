@@ -4,6 +4,12 @@ namespace Graviton\ConsultationBundle\Document;
 
 /**
  * Graviton\ConsultationBundle\Document\ConsultationCustomer
+ *
+ * @category ConsultationBundle
+ * @package  Graviton
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
  */
 class ConsultationCustomer
 {
@@ -210,7 +216,8 @@ class ConsultationCustomer
     /**
      * Set customerId
      *
-     * @param  string $customerId
+     * @param string $customerId customerId
+     *
      * @return self
      */
     public function setCustomerId($customerId)
@@ -223,7 +230,7 @@ class ConsultationCustomer
     /**
      * Get customerId
      *
-     * @return string $customerId
+     * @return string $customerId customerId
      */
     public function getCustomerId()
     {
@@ -233,7 +240,8 @@ class ConsultationCustomer
     /**
      * Set customerNumber
      *
-     * @param  string $customerNumber
+     * @param string $customerNumber customerNumber
+     *
      * @return self
      */
     public function setCustomerNumber($customerNumber)
@@ -246,7 +254,7 @@ class ConsultationCustomer
     /**
      * Get customerNumber
      *
-     * @return string $customerNumber
+     * @return string $customerNumber customerNumber
      */
     public function getCustomerNumber()
     {
@@ -256,7 +264,8 @@ class ConsultationCustomer
     /**
      * Set salutation
      *
-     * @param  collection $salutation
+     * @param collection $salutation salutation
+     *
      * @return self
      */
     public function setSalutation($salutation)
@@ -269,7 +278,7 @@ class ConsultationCustomer
     /**
      * Get salutation
      *
-     * @return collection $salutation
+     * @return collection $salutation salutation
      */
     public function getSalutation()
     {
@@ -279,7 +288,8 @@ class ConsultationCustomer
     /**
      * Set firstName
      *
-     * @param  string $firstName
+     * @param string $firstName firstName
+     *
      * @return self
      */
     public function setFirstName($firstName)
@@ -292,7 +302,7 @@ class ConsultationCustomer
     /**
      * Get firstName
      *
-     * @return string $firstName
+     * @return string $firstName firstName
      */
     public function getFirstName()
     {
@@ -302,7 +312,8 @@ class ConsultationCustomer
     /**
      * Set lastName
      *
-     * @param  string $lastName
+     * @param string $lastName lastName
+     *
      * @return self
      */
     public function setLastName($lastName)
@@ -315,7 +326,7 @@ class ConsultationCustomer
     /**
      * Get lastName
      *
-     * @return string $lastName
+     * @return string $lastName lastName
      */
     public function getLastName()
     {
@@ -325,7 +336,8 @@ class ConsultationCustomer
     /**
      * Set clientAdvisor
      *
-     * @param  string $clientAdvisor
+     * @param string $clientAdvisor clientAdvisor
+     *
      * @return self
      */
     public function setClientAdvisor($clientAdvisor)
@@ -338,7 +350,7 @@ class ConsultationCustomer
     /**
      * Get clientAdvisor
      *
-     * @return string $clientAdvisor
+     * @return string $clientAdvisor clientAdvisor
      */
     public function getClientAdvisor()
     {
@@ -348,7 +360,8 @@ class ConsultationCustomer
     /**
      * Set customerType
      *
-     * @param  string $customerType
+     * @param string $customerType customerType
+     *
      * @return self
      */
     public function setCustomerType($customerType)
@@ -371,7 +384,8 @@ class ConsultationCustomer
     /**
      * Set domicile
      *
-     * @param  string $domicile
+     * @param string $domicile domicile
+     *
      * @return self
      */
     public function setDomicile($domicile)
@@ -384,7 +398,7 @@ class ConsultationCustomer
     /**
      * Get domicile
      *
-     * @return string $domicile
+     * @return string $domicile domicile
      */
     public function getDomicile()
     {
@@ -394,7 +408,8 @@ class ConsultationCustomer
     /**
      * Set customerOpeningDate
      *
-     * @param  date $customerOpeningDate
+     * @param date $customerOpeningDate customerOpeningDate
+     *
      * @return self
      */
     public function setCustomerOpeningDate($customerOpeningDate)
@@ -407,7 +422,7 @@ class ConsultationCustomer
     /**
      * Get customerOpeningDate
      *
-     * @return date $customerOpeningDate
+     * @return date $customerOpeningDate customerOpeningDate
      */
     public function getCustomerOpeningDate()
     {
@@ -417,7 +432,8 @@ class ConsultationCustomer
     /**
      * Set nationality
      *
-     * @param  collection $nationality
+     * @param collection $nationality nationality
+     *
      * @return self
      */
     public function setNationality($nationality)
@@ -430,7 +446,7 @@ class ConsultationCustomer
     /**
      * Get nationality
      *
-     * @return collection $nationality
+     * @return collection $nationality nationality
      */
     public function getNationality()
     {
@@ -440,7 +456,8 @@ class ConsultationCustomer
     /**
      * Set sex
      *
-     * @param  collection $sex
+     * @param collection $sex sex
+     *
      * @return self
      */
     public function setSex($sex)
@@ -453,7 +470,7 @@ class ConsultationCustomer
     /**
      * Get sex
      *
-     * @return collection $sex
+     * @return collection $sex sex
      */
     public function getSex()
     {
@@ -463,7 +480,8 @@ class ConsultationCustomer
     /**
      * Set birthDate
      *
-     * @param  date $birthDate
+     * @param date $birthDate birthDate
+     *
      * @return self
      */
     public function setBirthDate($birthDate)
@@ -476,7 +494,7 @@ class ConsultationCustomer
     /**
      * Get birthDate
      *
-     * @return date $birthDate
+     * @return date $birthDate birthDate
      */
     public function getBirthDate()
     {
@@ -486,7 +504,8 @@ class ConsultationCustomer
     /**
      * Set bankAccount
      *
-     * @param  string $bankAccount
+     * @param string $bankAccount bankAccount
+     *
      * @return self
      */
     public function setBankAccount($bankAccount)
@@ -499,7 +518,7 @@ class ConsultationCustomer
     /**
      * Get bankAccount
      *
-     * @return string $bankAccount
+     * @return string $bankAccount bankAccount
      */
     public function getBankAccount()
     {
@@ -509,7 +528,8 @@ class ConsultationCustomer
     /**
      * Set maritalStatus
      *
-     * @param  collection $maritalStatus
+     * @param collection $maritalStatus maritalStatus
+     *
      * @return self
      */
     public function setMaritalStatus($maritalStatus)
@@ -522,7 +542,7 @@ class ConsultationCustomer
     /**
      * Get maritalStatus
      *
-     * @return collection $maritalStatus
+     * @return collection $maritalStatus maritalStatus
      */
     public function getMaritalStatus()
     {
@@ -532,7 +552,8 @@ class ConsultationCustomer
     /**
      * Set education
      *
-     * @param  string $education
+     * @param string $education education
+     *
      * @return self
      */
     public function setEducation($education)
@@ -545,7 +566,7 @@ class ConsultationCustomer
     /**
      * Get education
      *
-     * @return string $education
+     * @return string $education education
      */
     public function getEducation()
     {
@@ -555,7 +576,8 @@ class ConsultationCustomer
     /**
      * Set employmentStatus
      *
-     * @param  collection $employmentStatus
+     * @param collection $employmentStatus employmentStatus
+     *
      * @return self
      */
     public function setEmploymentStatus($employmentStatus)
@@ -568,7 +590,7 @@ class ConsultationCustomer
     /**
      * Get employmentStatus
      *
-     * @return collection $employmentStatus
+     * @return collection $employmentStatus employmentStatus
      */
     public function getEmploymentStatus()
     {
@@ -578,7 +600,8 @@ class ConsultationCustomer
     /**
      * Set profession
      *
-     * @param  collection $profession
+     * @param collection $profession profession
+     *
      * @return self
      */
     public function setProfession($profession)
@@ -591,7 +614,7 @@ class ConsultationCustomer
     /**
      * Get profession
      *
-     * @return collection $profession
+     * @return collection $profession profession
      */
     public function getProfession()
     {
@@ -601,7 +624,8 @@ class ConsultationCustomer
     /**
      * Set rating
      *
-     * @param  string $rating
+     * @param string $rating rating
+     *
      * @return self
      */
     public function setRating($rating)
@@ -614,7 +638,7 @@ class ConsultationCustomer
     /**
      * Get rating
      *
-     * @return string $rating
+     * @return string $rating rating
      */
     public function getRating()
     {
@@ -624,7 +648,8 @@ class ConsultationCustomer
     /**
      * Set portfolioValue
      *
-     * @param  float $portfolioValue
+     * @param float $portfolioValue portfolioValue
+     *
      * @return self
      */
     public function setPortfolioValue($portfolioValue)
@@ -637,7 +662,7 @@ class ConsultationCustomer
     /**
      * Get portfolioValue
      *
-     * @return float $portfolioValue
+     * @return float $portfolioValue portfolioValue
      */
     public function getPortfolioValue()
     {
@@ -647,7 +672,8 @@ class ConsultationCustomer
     /**
      * Set totalAssets
      *
-     * @param  float $totalAssets
+     * @param float $totalAssets totalAssets
+     *
      * @return self
      */
     public function setTotalAssets($totalAssets)
@@ -660,7 +686,7 @@ class ConsultationCustomer
     /**
      * Get totalAssets
      *
-     * @return float $totalAssets
+     * @return float $totalAssets totalAssets
      */
     public function getTotalAssets()
     {
@@ -670,7 +696,8 @@ class ConsultationCustomer
     /**
      * Set strategy
      *
-     * @param  string $strategy
+     * @param string $strategy strategy
+     *
      * @return self
      */
     public function setStrategy($strategy)
@@ -683,7 +710,7 @@ class ConsultationCustomer
     /**
      * Get strategy
      *
-     * @return string $strategy
+     * @return string $strategy strategy
      */
     public function getStrategy()
     {
@@ -693,7 +720,8 @@ class ConsultationCustomer
     /**
      * Set assetManagementCode
      *
-     * @param  string $assetManagementCode
+     * @param string $assetManagementCode assetManagementCode
+     *
      * @return self
      */
     public function setAssetManagementCode($assetManagementCode)
@@ -706,7 +734,7 @@ class ConsultationCustomer
     /**
      * Get assetManagementCode
      *
-     * @return string $assetManagementCode
+     * @return string $assetManagementCode assetManagementCode
      */
     public function getAssetManagementCode()
     {
@@ -716,7 +744,8 @@ class ConsultationCustomer
     /**
      * Set performance
      *
-     * @param  string $performance
+     * @param string $performance performance
+     *
      * @return self
      */
     public function setPerformance($performance)
@@ -729,7 +758,7 @@ class ConsultationCustomer
     /**
      * Get performance
      *
-     * @return string $performance
+     * @return string $performance performance
      */
     public function getPerformance()
     {
@@ -739,7 +768,8 @@ class ConsultationCustomer
     /**
      * Set taxDomicil
      *
-     * @param  collection $taxDomicil
+     * @param collection $taxDomicil taxDomicil
+     *
      * @return self
      */
     public function setTaxDomicil($taxDomicil)
@@ -752,7 +782,7 @@ class ConsultationCustomer
     /**
      * Get taxDomicil
      *
-     * @return collection $taxDomicil
+     * @return collection $taxDomicil taxDomicil
      */
     public function getTaxDomicil()
     {
@@ -762,7 +792,8 @@ class ConsultationCustomer
     /**
      * Set qiBasket
      *
-     * @param  collection $qiBasket
+     * @param collection $qiBasket qiBasket
+     *
      * @return self
      */
     public function setQiBasket($qiBasket)
@@ -775,7 +806,7 @@ class ConsultationCustomer
     /**
      * Get qiBasket
      *
-     * @return collection $qiBasket
+     * @return collection $qiBasket qiBasket
      */
     public function getQiBasket()
     {
@@ -785,7 +816,8 @@ class ConsultationCustomer
     /**
      * Set euTaxLiability
      *
-     * @param  collection $euTaxLiability
+     * @param collection $euTaxLiability euTaxLiability
+     *
      * @return self
      */
     public function setEuTaxLiability($euTaxLiability)
@@ -798,7 +830,7 @@ class ConsultationCustomer
     /**
      * Get euTaxLiability
      *
-     * @return collection $euTaxLiability
+     * @return collection $euTaxLiability euTaxLiability
      */
     public function getEuTaxLiability()
     {
@@ -808,7 +840,8 @@ class ConsultationCustomer
     /**
      * Set mifidCategory
      *
-     * @param  collection $mifidCategory
+     * @param collection $mifidCategory mifidCategory
+     *
      * @return self
      */
     public function setMifidCategory($mifidCategory)
@@ -821,7 +854,7 @@ class ConsultationCustomer
     /**
      * Get mifidCategory
      *
-     * @return collection $mifidCategory
+     * @return collection $mifidCategory mifidCategory
      */
     public function getMifidCategory()
     {
@@ -831,7 +864,8 @@ class ConsultationCustomer
     /**
      * Set bVGCode
      *
-     * @param  boolean $bVGCode
+     * @param boolean $bVGCode bVGCode
+     *
      * @return self
      */
     public function setBVGCode($bVGCode)
@@ -844,7 +878,7 @@ class ConsultationCustomer
     /**
      * Get bVGCode
      *
-     * @return boolean $bVGCode
+     * @return boolean $bVGCode bVGCode
      */
     public function getBVGCode()
     {
@@ -854,7 +888,8 @@ class ConsultationCustomer
     /**
      * Set customerCategory
      *
-     * @param  collection $customerCategory
+     * @param collection $customerCategory customerCategory
+     *
      * @return self
      */
     public function setCustomerCategory($customerCategory)
@@ -867,7 +902,7 @@ class ConsultationCustomer
     /**
      * Get customerCategory
      *
-     * @return collection $customerCategory
+     * @return collection $customerCategory customerCategory
      */
     public function getCustomerCategory()
     {
@@ -877,7 +912,8 @@ class ConsultationCustomer
     /**
      * Set mainType
      *
-     * @param  collection $mainType
+     * @param collection $mainType mainType
+     *
      * @return self
      */
     public function setMainType($mainType)
@@ -900,7 +936,8 @@ class ConsultationCustomer
     /**
      * Set customerSegment
      *
-     * @param  collection $customerSegment
+     * @param collection $customerSegment customerSegment
+     *
      * @return self
      */
     public function setCustomerSegment($customerSegment)
@@ -913,7 +950,7 @@ class ConsultationCustomer
     /**
      * Get customerSegment
      *
-     * @return collection $customerSegment
+     * @return collection $customerSegment customerSegment
      */
     public function getCustomerSegment()
     {
@@ -923,7 +960,8 @@ class ConsultationCustomer
     /**
      * Set language
      *
-     * @param  collection $language
+     * @param collection $language language
+     *
      * @return self
      */
     public function setLanguage($language)
@@ -936,7 +974,7 @@ class ConsultationCustomer
     /**
      * Get language
      *
-     * @return collection $language
+     * @return collection $language language
      */
     public function getLanguage()
     {
@@ -946,7 +984,8 @@ class ConsultationCustomer
     /**
      * Set clientSpecificValues
      *
-     * @param  collection $clientSpecificValues
+     * @param collection $clientSpecificValues clientSpecificValues
+     *
      * @return self
      */
     public function setClientSpecificValues($clientSpecificValues)
@@ -959,7 +998,7 @@ class ConsultationCustomer
     /**
      * Get clientSpecificValues
      *
-     * @return collection $clientSpecificValues
+     * @return collection $clientSpecificValues clientSpecificValues
      */
     public function getClientSpecificValues()
     {
@@ -969,7 +1008,8 @@ class ConsultationCustomer
     /**
      * Set documents
      *
-     * @param  collection $documents
+     * @param collection $documents documents
+     *
      * @return self
      */
     public function setDocuments($documents)
@@ -982,7 +1022,7 @@ class ConsultationCustomer
     /**
      * Get documents
      *
-     * @return collection $documents
+     * @return collection $documents documents
      */
     public function getDocuments()
     {
@@ -992,7 +1032,8 @@ class ConsultationCustomer
     /**
      * Set legalAddress
      *
-     * @param  collection $legalAddress
+     * @param collection $legalAddress legalAddress
+     *
      * @return self
      */
     public function setLegalAddress($legalAddress)
@@ -1005,7 +1046,7 @@ class ConsultationCustomer
     /**
      * Get legalAddress
      *
-     * @return collection $legalAddress
+     * @return collection $legalAddress legalAddress
      */
     public function getLegalAddress()
     {
@@ -1015,7 +1056,8 @@ class ConsultationCustomer
     /**
      * Set contacts
      *
-     * @param  collection $contacts
+     * @param collection $contacts contacts
+     *
      * @return self
      */
     public function setContacts($contacts)
@@ -1028,7 +1070,7 @@ class ConsultationCustomer
     /**
      * Get contacts
      *
-     * @return collection $contacts
+     * @return collection $contacts contacts
      */
     public function getContacts()
     {
@@ -1038,7 +1080,8 @@ class ConsultationCustomer
     /**
      * Set relations
      *
-     * @param  collection $relations
+     * @param collection $relations relations
+     *
      * @return self
      */
     public function setRelations($relations)
@@ -1051,7 +1094,7 @@ class ConsultationCustomer
     /**
      * Get relations
      *
-     * @return collection $relations
+     * @return collection $relations relations
      */
     public function getRelations()
     {

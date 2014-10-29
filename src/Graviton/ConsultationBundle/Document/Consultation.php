@@ -4,6 +4,12 @@ namespace Graviton\ConsultationBundle\Document;
 
 /**
  * Graviton\ConsultationBundle\Document\Consultation
+ *
+ * @category ConsultationBundle
+ * @package  Graviton
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
  */
 class Consultation
 {
@@ -100,7 +106,8 @@ class Consultation
     /**
      * Set creationDate
      *
-     * @param  date $creationDate
+     * @param date $creationDate Creation date
+     *
      * @return self
      */
     public function setCreationDate($creationDate)
@@ -123,7 +130,8 @@ class Consultation
     /**
      * Set dossierName
      *
-     * @param  string $dossierName
+     * @param string $dossierName Dossier name
+     *
      * @return self
      */
     public function setDossierName($dossierName)
@@ -136,7 +144,7 @@ class Consultation
     /**
      * Get dossierName
      *
-     * @return string $dossierName
+     * @return string $dossierName Dossier name
      */
     public function getDossierName()
     {
@@ -146,7 +154,8 @@ class Consultation
     /**
      * Set prettyDossierName
      *
-     * @param  string $prettyDossierName
+     * @param string $prettyDossierName Pretty dossier name
+     *
      * @return self
      */
     public function setPrettyDossierName($prettyDossierName)
@@ -159,7 +168,7 @@ class Consultation
     /**
      * Get prettyDossierName
      *
-     * @return string $prettyDossierName
+     * @return string $prettyDossierName Pretty dossier name
      */
     public function getPrettyDossierName()
     {
@@ -169,7 +178,8 @@ class Consultation
     /**
      * Set lastInterestUpdate
      *
-     * @param  date $lastInterestUpdate
+     * @param date $lastInterestUpdate Last interest update
+     *
      * @return self
      */
     public function setLastInterestUpdate($lastInterestUpdate)
@@ -182,7 +192,7 @@ class Consultation
     /**
      * Get lastInterestUpdate
      *
-     * @return date $lastInterestUpdate
+     * @return date $lastInterestUpdate Last interest update
      */
     public function getLastInterestUpdate()
     {
@@ -192,7 +202,8 @@ class Consultation
     /**
      * Set customer
      *
-     * @param  hash $customer
+     * @param hash $customer Customer
+     *
      * @return self
      */
     public function setCustomer($customer)
@@ -205,7 +216,7 @@ class Consultation
     /**
      * Get customer
      *
-     * @return hash $customer
+     * @return hash $customer Customer
      */
     public function getCustomer()
     {
@@ -215,7 +226,8 @@ class Consultation
     /**
      * Set agenda
      *
-     * @param  hash $agenda
+     * @param hash $agenda Agenda
+     *
      * @return self
      */
     public function setAgenda($agenda)
@@ -228,7 +240,7 @@ class Consultation
     /**
      * Get agenda
      *
-     * @return hash $agenda
+     * @return hash $agenda Agenda
      */
     public function getAgenda()
     {
@@ -238,7 +250,8 @@ class Consultation
     /**
      * Set investmentConsultation
      *
-     * @param  hash $investmentConsultation
+     * @param hash $investmentConsultation Investment consultation
+     *
      * @return self
      */
     public function setInvestmentConsultation($investmentConsultation)
@@ -251,7 +264,7 @@ class Consultation
     /**
      * Get investmentConsultation
      *
-     * @return hash $investmentConsultation
+     * @return hash $investmentConsultation Investment consultation
      */
     public function getInvestmentConsultation()
     {
@@ -261,7 +274,8 @@ class Consultation
     /**
      * Set investmentStockData
      *
-     * @param  hash $investmentStockData
+     * @param hash $investmentStockData Investment stock data
+     *
      * @return self
      */
     public function setInvestmentStockData($investmentStockData)
@@ -274,7 +288,7 @@ class Consultation
     /**
      * Get investmentStockData
      *
-     * @return hash $investmentStockData
+     * @return hash $investmentStockData Investment stock data
      */
     public function getInvestmentStockData()
     {
@@ -284,7 +298,8 @@ class Consultation
     /**
      * Set modulePDFImageStorage
      *
-     * @param  hash $modulePDFImageStorage
+     * @param hash $modulePDFImageStorage PDF image store
+     *
      * @return self
      */
     public function setModulePDFImageStorage($modulePDFImageStorage)
@@ -295,7 +310,7 @@ class Consultation
     }
 
     /**
-     * Get modulePDFImageStorage
+     * Get modulePDFImageStorage PDF image store
      *
      * @return hash $modulePDFImageStorage
      */
@@ -307,7 +322,8 @@ class Consultation
     /**
      * Set realEstateStockData
      *
-     * @param  hash $realEstateStockData
+     * @param hash $realEstateStockData Real estate stock data
+     *
      * @return self
      */
     public function setRealEstateStockData($realEstateStockData)
@@ -320,7 +336,7 @@ class Consultation
     /**
      * Get realEstateStockData
      *
-     * @return hash $realEstateStockData
+     * @return hash $realEstateStockData Real estate stock data
      */
     public function getRealEstateStockData()
     {
@@ -330,7 +346,8 @@ class Consultation
     /**
      * Set requisitionConsultation
      *
-     * @param  hash $requisitionConsultation
+     * @param hash $requisitionConsultation Requisition consultation
+     *
      * @return self
      */
     public function setRequisitionConsultation($requisitionConsultation)
@@ -343,7 +360,7 @@ class Consultation
     /**
      * Get requisitionConsultation
      *
-     * @return hash $requisitionConsultation
+     * @return hash $requisitionConsultation Requisition consultation
      */
     public function getRequisitionConsultation()
     {
@@ -353,7 +370,8 @@ class Consultation
     /**
      * Set toolboxNotes
      *
-     * @param  hash $toolboxNotes
+     * @param hash $toolboxNotes Toolbox notes
+     *
      * @return self
      */
     public function setToolboxNotes($toolboxNotes)
@@ -366,7 +384,7 @@ class Consultation
     /**
      * Get toolboxNotes
      *
-     * @return hash $toolboxNotes
+     * @return hash $toolboxNotes Toolbox notes
      */
     public function getToolboxNotes()
     {
@@ -376,7 +394,8 @@ class Consultation
     /**
      * Set paramterData
      *
-     * @param  hash $paramterData
+     * @param hash $paramterData Parameter data
+     *
      * @return self
      */
     public function setParamterData($paramterData)
@@ -389,7 +408,7 @@ class Consultation
     /**
      * Get paramterData
      *
-     * @return hash $paramterData
+     * @return hash $paramterData Parameter data
      */
     public function getParamterData()
     {
@@ -399,7 +418,8 @@ class Consultation
     /**
      * Set realEstateConsultation
      *
-     * @param  hash $realEstateConsultation
+     * @param hash $realEstateConsultation Real estate consultation
+     *
      * @return self
      */
     public function setRealEstateConsultation($realEstateConsultation)
@@ -412,7 +432,7 @@ class Consultation
     /**
      * Get realEstateConsultation
      *
-     * @return hash $realEstateConsultation
+     * @return hash $realEstateConsultation Real estate consultation
      */
     public function getRealEstateConsultation()
     {
@@ -422,7 +442,8 @@ class Consultation
     /**
      * Set funding
      *
-     * @param  hash $funding
+     * @param hash $funding Funding
+     *
      * @return self
      */
     public function setFunding($funding)
@@ -435,7 +456,7 @@ class Consultation
     /**
      * Get funding
      *
-     * @return hash $funding
+     * @return hash $funding Funding
      */
     public function getFunding()
     {
