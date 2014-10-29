@@ -73,8 +73,13 @@ class BundleGenerator extends AbstractGenerator
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
+        
+        // if the name somehow includes "BundeBundle", we use a different template ;-)
+        // this is used in the "graviton dynamic bundles", to generate the bundlebundle there.. 
+        $bundleTemplate = 'bundle/Bundle.php.twig';
+        if (strpos($bundle, 'BundleBundle') !== false) $bundleTemplate = 'bundle/BundleBundle.php.twig';
 
-        $this->renderFile('bundle/Bundle.php.twig', $dir.'/'.$bundle.'.php', $parameters);
+        $this->renderFile($bundleTemplate, $dir.'/'.$bundle.'.php', $parameters);
         $this->renderFile(
             'bundle/Extension.php.twig',
             $dir.'/DependencyInjection/'.$basename.'Extension.php',
