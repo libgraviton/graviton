@@ -2,8 +2,6 @@
 
 namespace Graviton\ConsultationBundle\Document;
 
-
-
 /**
  * Graviton\ConsultationBundle\Document\Consultation
  */
@@ -89,7 +87,6 @@ class Consultation
      */
     protected $funding;
 
-
     /**
      * Get id
      *
@@ -103,12 +100,13 @@ class Consultation
     /**
      * Set creationDate
      *
-     * @param date $creationDate
+     * @param  date $creationDate
      * @return self
      */
     public function setCreationDate($creationDate)
     {
         $this->creationDate = $creationDate;
+
         return $this;
     }
 
@@ -125,12 +123,13 @@ class Consultation
     /**
      * Set dossierName
      *
-     * @param string $dossierName
+     * @param  string $dossierName
      * @return self
      */
     public function setDossierName($dossierName)
     {
         $this->dossierName = $dossierName;
+
         return $this;
     }
 
@@ -147,12 +146,13 @@ class Consultation
     /**
      * Set prettyDossierName
      *
-     * @param string $prettyDossierName
+     * @param  string $prettyDossierName
      * @return self
      */
     public function setPrettyDossierName($prettyDossierName)
     {
         $this->prettyDossierName = $prettyDossierName;
+
         return $this;
     }
 
@@ -169,12 +169,13 @@ class Consultation
     /**
      * Set lastInterestUpdate
      *
-     * @param date $lastInterestUpdate
+     * @param  date $lastInterestUpdate
      * @return self
      */
     public function setLastInterestUpdate($lastInterestUpdate)
     {
         $this->lastInterestUpdate = $lastInterestUpdate;
+
         return $this;
     }
 
@@ -191,12 +192,13 @@ class Consultation
     /**
      * Set customer
      *
-     * @param hash $customer
+     * @param  hash $customer
      * @return self
      */
     public function setCustomer($customer)
     {
         $this->customer = $customer;
+
         return $this;
     }
 
@@ -213,12 +215,13 @@ class Consultation
     /**
      * Set agenda
      *
-     * @param hash $agenda
+     * @param  hash $agenda
      * @return self
      */
     public function setAgenda($agenda)
     {
         $this->agenda = $agenda;
+
         return $this;
     }
 
@@ -235,12 +238,13 @@ class Consultation
     /**
      * Set investmentConsultation
      *
-     * @param hash $investmentConsultation
+     * @param  hash $investmentConsultation
      * @return self
      */
     public function setInvestmentConsultation($investmentConsultation)
     {
         $this->investmentConsultation = $investmentConsultation;
+
         return $this;
     }
 
@@ -257,12 +261,13 @@ class Consultation
     /**
      * Set investmentStockData
      *
-     * @param hash $investmentStockData
+     * @param  hash $investmentStockData
      * @return self
      */
     public function setInvestmentStockData($investmentStockData)
     {
         $this->investmentStockData = $investmentStockData;
+
         return $this;
     }
 
@@ -279,12 +284,13 @@ class Consultation
     /**
      * Set modulePDFImageStorage
      *
-     * @param hash $modulePDFImageStorage
+     * @param  hash $modulePDFImageStorage
      * @return self
      */
     public function setModulePDFImageStorage($modulePDFImageStorage)
     {
         $this->modulePDFImageStorage = $modulePDFImageStorage;
+
         return $this;
     }
 
@@ -301,12 +307,13 @@ class Consultation
     /**
      * Set realEstateStockData
      *
-     * @param hash $realEstateStockData
+     * @param  hash $realEstateStockData
      * @return self
      */
     public function setRealEstateStockData($realEstateStockData)
     {
         $this->realEstateStockData = $realEstateStockData;
+
         return $this;
     }
 
@@ -323,12 +330,13 @@ class Consultation
     /**
      * Set requisitionConsultation
      *
-     * @param hash $requisitionConsultation
+     * @param  hash $requisitionConsultation
      * @return self
      */
     public function setRequisitionConsultation($requisitionConsultation)
     {
         $this->requisitionConsultation = $requisitionConsultation;
+
         return $this;
     }
 
@@ -345,12 +353,13 @@ class Consultation
     /**
      * Set toolboxNotes
      *
-     * @param hash $toolboxNotes
+     * @param  hash $toolboxNotes
      * @return self
      */
     public function setToolboxNotes($toolboxNotes)
     {
         $this->toolboxNotes = $toolboxNotes;
+
         return $this;
     }
 
@@ -367,12 +376,13 @@ class Consultation
     /**
      * Set paramterData
      *
-     * @param hash $paramterData
+     * @param  hash $paramterData
      * @return self
      */
     public function setParamterData($paramterData)
     {
         $this->paramterData = $paramterData;
+
         return $this;
     }
 
@@ -389,12 +399,13 @@ class Consultation
     /**
      * Set realEstateConsultation
      *
-     * @param hash $realEstateConsultation
+     * @param  hash $realEstateConsultation
      * @return self
      */
     public function setRealEstateConsultation($realEstateConsultation)
     {
         $this->realEstateConsultation = $realEstateConsultation;
+
         return $this;
     }
 
@@ -411,12 +422,13 @@ class Consultation
     /**
      * Set funding
      *
-     * @param hash $funding
+     * @param  hash $funding
      * @return self
      */
     public function setFunding($funding)
     {
         $this->funding = $funding;
+
         return $this;
     }
 

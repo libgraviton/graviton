@@ -2,7 +2,6 @@
 /**
  * controller for consultations
  */
-
 namespace Graviton\ConsultationBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
