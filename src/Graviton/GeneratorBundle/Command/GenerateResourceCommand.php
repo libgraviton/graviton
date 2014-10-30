@@ -2,10 +2,11 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
+use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
 /**
  * generator command
@@ -27,7 +28,12 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     {
         parent::configure();
 
-        $this
+        $this->addOption(
+            'json',
+            '',
+            InputOption::VALUE_OPTIONAL,
+            'Path to the json definition.'
+        )
             ->setName('graviton:generate:resource')
             ->setDescription('Generates a graviton rest resource');
     }
@@ -42,13 +48,16 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // put input here for later use..
+        $this->input = $input;
+
         parent::execute($input, $output);
 
         $output->writeln(
             'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
         );
     }
- 
+
     /**
      * {@inheritDoc}
      *
@@ -57,6 +66,7 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     protected function createGenerator()
     {
         return new ResourceGenerator(
+            $this->input,
             $this->getContainer()->get('filesystem'),
             $this->getContainer()->get('doctrine'),
             $this->getContainer()->get('kernel')

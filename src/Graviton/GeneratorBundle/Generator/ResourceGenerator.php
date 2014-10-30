@@ -2,10 +2,11 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Doctrine\Common\Inflector\Inflector;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
  * bundle containing various code generators
@@ -20,7 +21,7 @@ use Doctrine\Common\Inflector\Inflector;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *
- * @todo split all the xml handling on services.conf into a Manipulator
+ * @todo     split all the xml handling on services.conf into a Manipulator
  */
 class ResourceGenerator extends AbstractGenerator
 {
@@ -36,18 +37,24 @@ class ResourceGenerator extends AbstractGenerator
      * @private
      */
     private $kernel;
+    /**
+     * @private
+     */
+    private $input;
 
     /**
      * instanciate generator object
      *
-     * @param FileSystem $filesystem fs abstraction layer
-     * @param object     $doctrine   dbal
-     * @param object     $kernel     app kernel
+     * @param InputInterface $input      Input
+     * @param FileSystem     $filesystem fs abstraction layer
+     * @param object         $doctrine   dbal
+     * @param object         $kernel     app kernel
      *
      * @return ResourceGenerator
      */
-    public function __construct($filesystem, $doctrine, $kernel)
+    public function __construct($input, $filesystem, $doctrine, $kernel)
     {
+        $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
@@ -95,14 +102,21 @@ class ResourceGenerator extends AbstractGenerator
             $fields
         );
 
+        // do we have a json path passed?
+        $jsonDef = null;
+        if (!is_null($this->input->getOption('json'))) {
+            $jsonDef = new JsonDefinition($this->input->getOption('json'));
+        }
+
         $parameters = array(
-            'document'  => $document,
-            'base'      => $bundleNamespace,
-            'bundle'    => $bundle->getName(),
-            'format'    => $format,
-            'author'    => $author,
-            'email'     => $email,
-            'fields'    => $fields,
+            'document' => $document,
+            'base' => $bundleNamespace,
+            'bundle' => $bundle->getName(),
+            'format' => $format,
+            'author' => $author,
+            'email' => $email,
+            'fields' => $fields,
+            'json' => $jsonDef,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
@@ -125,15 +139,18 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document, $withRepository)
     {
+
+        //var_dump($parameters); die;
+
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
-            $dir.'/Resources/config/doctrine/'.$document.'.mongodb.xml',
+            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
             $parameters
         );
 
         $this->renderFile(
             'document/Document.php.twig',
-            $dir.'/Document/'.$document.'.php',
+            $dir . '/Document/' . $document . '.php',
             $parameters
         );
 
@@ -155,8 +172,8 @@ class ResourceGenerator extends AbstractGenerator
 
         $services = $this->addParam(
             $services,
-            $docName.'.class',
-            $parameters['base'].'Document\\'.$parameters['document']
+            $docName . '.class',
+            $parameters['base'] . 'Document\\' . $parameters['document']
         );
 
         $services = $this->addService(
@@ -177,8 +194,8 @@ class ResourceGenerator extends AbstractGenerator
 
             $services = $this->addParam(
                 $services,
-                $repoName.'.class',
-                $parameters['base'].'Repository\\'.$parameters['document']
+                $repoName . '.class',
+                $parameters['base'] . 'Repository\\' . $parameters['document']
             );
 
             $services = $this->addService(
@@ -191,7 +208,7 @@ class ResourceGenerator extends AbstractGenerator
                 array(
                     array(
                         'type' => 'string',
-                        'value' => $parameters['bundle'].':'.$document
+                        'value' => $parameters['bundle'] . ':' . $document
                     )
                 ),
                 'doctrine_mongodb.odm.default_document_manager',
@@ -200,133 +217,12 @@ class ResourceGenerator extends AbstractGenerator
 
             $this->renderFile(
                 'document/DocumentRepository.php.twig',
-                $dir.'/Repository/'.$document.'Repository.php',
+                $dir . '/Repository/' . $document . 'Repository.php',
                 $parameters
             );
         }
 
-        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
-    }
-
-    /**
-     * generate serializer part of a resource
-     *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
-     *
-     * @return void
-     */
-    protected function generateSerializer(array $parameters, $dir, $document)
-    {
-        $this->renderFile(
-            'serializer/Document.xml.twig',
-            $dir.'/Resources/config/serializer/Document.'.$document.'.xml',
-            $parameters
-        );
-    }
-
-    /**
-     * generate model poart of a resource
-     *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
-     *
-     * @return void
-     */
-    protected function generateModel(array $parameters, $dir, $document)
-    {
-        $this->renderFile(
-            'model/Model.php.twig',
-            $dir.'/Model/'.$document.'.php',
-            $parameters
-        );
-
-        $this->renderFile(
-            'model/schema.json.twig',
-            $dir.'/Resources/config/schema/'.$document.'.json',
-            $parameters
-        );
-
-        $services = $this->loadServices($dir);
-
-        $bundleParts = explode('\\', $parameters['base']);
-        $shortName = strtolower($bundleParts[0]);
-        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
-        $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
-        $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
-
-        $services = $this->addParam(
-            $services,
-            $paramName.'.class',
-            $parameters['base'].'Model\\'.$parameters['document']
-        );
-
-        $services = $this->addService(
-            $services,
-            $paramName,
-            'graviton.rest.model',
-            null,
-            array(
-                array(
-                    'method' => 'setRepository',
-                    'service' => $repoName
-                )
-            )
-        );
-
-        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
-    }
-
-    /**
-     * generate RESTful controllers ans service configs
-     *
-     * @param array  $parameters twig parameters
-     * @param string $dir        base bundle dir
-     * @param string $document   document name
-     *
-     * @return void
-     */
-    protected function generateController(array $parameters, $dir, $document)
-    {
-        $this->renderFile(
-            'controller/DocumentController.php.twig',
-            $dir.'/Controller/'.$document.'Controller.php',
-            $parameters
-        );
-
-        $services = $this->loadServices($dir);
-
-        $bundleParts = explode('\\', $parameters['base']);
-        $shortName = strtolower($bundleParts[0]);
-        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
-        $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
-
-        $services = $this->addParam(
-            $services,
-            $paramName.'.class',
-            $parameters['base'].'Controller\\'.$parameters['document'].'Controller'
-        );
-
-        $services = $this->addService(
-            $services,
-            $paramName,
-            'graviton.rest.controller',
-            'request',
-            array(
-                array(
-                  'method' => 'setModel',
-                  'service' => implode(
-                      '.',
-                      array($shortName, $shortBundle, 'model', strtolower($parameters['document']))
-                  )
-                )
-            ),
-            'graviton.rest'
-        );
-
-        file_put_contents($dir.'/Resources/config/services.xml', $services->saveXML());
+        file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
     }
 
     /**
@@ -341,7 +237,7 @@ class ResourceGenerator extends AbstractGenerator
         $services = new \DOMDocument;
         $services->formatOutput = true;
         $services->preserveWhiteSpace = false;
-        $services->load($dir.'/Resources/config/services.xml');
+        $services->load($dir . '/Resources/config/services.xml');
 
         return $services;
     }
@@ -361,7 +257,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $xpath = new \DomXpath($dom);
 
-        $nodes = $xpath->query('//parameters/parameter[@key="'.$key.'.class"]');
+        $nodes = $xpath->query('//parameters/parameter[@key="' . $key . '.class"]');
         if ($nodes->length < 1) {
             $attrNode = $dom->createElement('parameter', $value);
 
@@ -371,6 +267,48 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         return $dom;
+    }
+
+    /**
+     * add node if missing
+     *
+     * @param \DOMDocument &$dom      document
+     * @param string       $element   name for new node element
+     * @param string       $container name of container tag
+     *
+     * @return \DOMNode new element node
+     */
+    private function addNodeIfMissing(&$dom, $element, $container = 'container')
+    {
+        $container = $dom->getElementsByTagName($container)->item(0);
+        $nodes = $dom->getElementsByTagName($element);
+        if ($nodes->length < 1) {
+            $newNode = $dom->createElement($element);
+            $container->appendChild($newNode);
+        } else {
+            $newNode = $nodes->item(0);
+        }
+
+        return $newNode;
+    }
+
+    /**
+     * add attribute to node if needed
+     *
+     * @param string       $name  attribute name
+     * @param string       $value attribute value
+     * @param \DOMDocument $dom   document
+     * @param \DOMElement  $node  parent node
+     *
+     * @return void
+     */
+    private function addAttributeToNode($name, $value, $dom, $node)
+    {
+        if ($value) {
+            $attr = $dom->createAttribute($name);
+            $attr->value = $value;
+            $node->appendChild($attr);
+        }
     }
 
     /**
@@ -404,12 +342,12 @@ class ResourceGenerator extends AbstractGenerator
         $xpath = new \DomXpath($dom);
 
         // add controller to services
-        $nodes = $xpath->query('//services/service[@id="'.$id.'"]');
+        $nodes = $xpath->query('//services/service[@id="' . $id . '"]');
         if ($nodes->length < 1) {
             $attrNode = $dom->createElement('service');
 
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
-            $this->addAttributeToNode('class', '%'.$id.'.class%', $dom, $attrNode);
+            $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
             $this->addAttributeToNode('scope', $scope, $dom, $attrNode);
             $this->addAttributeToNode('factory-service', $factoryService, $dom, $attrNode);
@@ -430,29 +368,6 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         return $dom;
-    }
-
-    /**
-     * add node if missing
-     *
-     * @param \DOMDocument &$dom      document
-     * @param string       $element   name for new node element
-     * @param string       $container name of container tag
-     *
-     * @return \DOMNode new element node
-     */
-    private function addNodeIfMissing(&$dom, $element, $container = 'container')
-    {
-        $container = $dom->getElementsByTagName($container)->item(0);
-        $nodes = $dom->getElementsByTagName($element);
-        if ($nodes->length < 1) {
-            $newNode = $dom->createElement($element);
-            $container->appendChild($newNode);
-        } else {
-            $newNode = $nodes->item(0);
-        }
-
-        return $newNode;
     }
 
     /**
@@ -540,21 +455,141 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * add attribute to node if needed
+     * generate serializer part of a resource
      *
-     * @param string       $name  attribute name
-     * @param string       $value attribute value
-     * @param \DOMDocument $dom   document
-     * @param \DOMElement  $node  parent node
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
      *
      * @return void
      */
-    private function addAttributeToNode($name, $value, $dom, $node)
+    protected function generateSerializer(array $parameters, $dir, $document)
     {
-        if ($value) {
-            $attr = $dom->createAttribute($name);
-            $attr->value = $value;
-            $node->appendChild($attr);
+        // if we got a json file; get more stuff from there and generate more specific stuff..
+        if ($parameters['json'] instanceof JsonDefinition) {
+            $jsonDef = $parameters['json'];
+            $fields = $parameters['fields'];
+
+            foreach ($fields as $key => $field) {
+                $thisField = $jsonDef->getField($field['fieldName']);
+
+                if (!is_null($thisField) && $thisField->isHash()) {
+                    // array<string,string>
+                    $field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
+                }
+                $fields[$key] = $field;
+            }
+
+            $parameters['fields'] = $fields;
         }
+
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
+            $parameters
+        );
+    }
+
+    /**
+     * generate model poart of a resource
+     *
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
+     *
+     * @return void
+     */
+    protected function generateModel(array $parameters, $dir, $document)
+    {
+        $this->renderFile(
+            'model/Model.php.twig',
+            $dir . '/Model/' . $document . '.php',
+            $parameters
+        );
+
+        $this->renderFile(
+            'model/schema.json.twig',
+            $dir . '/Resources/config/schema/' . $document . '.json',
+            $parameters
+        );
+
+        $services = $this->loadServices($dir);
+
+        $bundleParts = explode('\\', $parameters['base']);
+        $shortName = strtolower($bundleParts[0]);
+        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+        $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
+        $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
+
+        $services = $this->addParam(
+            $services,
+            $paramName . '.class',
+            $parameters['base'] . 'Model\\' . $parameters['document']
+        );
+
+        $services = $this->addService(
+            $services,
+            $paramName,
+            'graviton.rest.model',
+            null,
+            array(
+                array(
+                    'method' => 'setRepository',
+                    'service' => $repoName
+                )
+            )
+        );
+
+        file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
+    }
+
+    /**
+     * generate RESTful controllers ans service configs
+     *
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
+     *
+     * @return void
+     */
+    protected function generateController(array $parameters, $dir, $document)
+    {
+        $this->renderFile(
+            'controller/DocumentController.php.twig',
+            $dir . '/Controller/' . $document . 'Controller.php',
+            $parameters
+        );
+
+        $services = $this->loadServices($dir);
+
+        $bundleParts = explode('\\', $parameters['base']);
+        $shortName = strtolower($bundleParts[0]);
+        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+        $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
+
+        $services = $this->addParam(
+            $services,
+            $paramName . '.class',
+            $parameters['base'] . 'Controller\\' . $parameters['document'] . 'Controller'
+        );
+
+        $services = $this->addService(
+            $services,
+            $paramName,
+            'graviton.rest.controller',
+            'request',
+            array(
+                array(
+                    'method' => 'setModel',
+                    'service' => implode(
+                        '.',
+                        array($shortName, $shortBundle, 'model', strtolower($parameters['document']))
+                    )
+                )
+            ),
+            'graviton.rest'
+        );
+
+        file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
     }
 }
