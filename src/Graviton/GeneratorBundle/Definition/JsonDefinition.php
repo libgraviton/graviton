@@ -74,6 +74,26 @@ class JsonDefinition
     }
 
     /**
+     * Returns a specific field or null
+     *
+     * @param $name Field name
+     *
+     * @return JsonDefinitionField The field
+     */
+    public function getField($name)
+    {
+        $ret = null;
+        foreach ($this->getFields() as $field) {
+            if ($field->getName() == $name) {
+                $ret = $field;
+                break;
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Returns the field definition
      *
      * @return JsonDefinitionField[]

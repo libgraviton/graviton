@@ -5,10 +5,6 @@ namespace Graviton\GeneratorBundle\Definition;
  * An interface having some common stuff for all definitions for easier
  * use of those objects..
  *
- * Important: Here we collect all the types in those constants. All "primitive" types
- * (including DateTime) SHOULD be referenced by their MariaDB-types as a common descriptor.
- * That way, we have an uniform lingo of those types.
- *
  * @category GeneratorBundle
  * @package  Graviton
  * @author   Dario Nuevo <dario.nuevo@swisscom.com>
@@ -47,5 +43,12 @@ interface DefinitionElementInterface
      * @return string
      */
     public function getType();
+
+    /**
+     * Get type for Doctrine, may be different..
+     *
+     * @return string
+     */
+    public function getTypeDoctrine();
 
 }

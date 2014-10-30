@@ -50,16 +50,6 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
-     * Returns this hash' fields..
-     *
-     * @return array|JsonDefinitionField[]
-     */
-    public function getFields()
-    {
-        return $this->_fields;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function isField()
@@ -76,11 +66,57 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
-     * Returns the field type
+     * Returns the types of all fields
      *
-     * @return string Type
+     * @return string[] the types..
+     */
+    public function getFieldTypes()
+    {
+        $ret = array();
+        foreach ($this->getFields() as $field) {
+            $ret[] = $field->getType();
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the types of all fields
+     *
+     * @return string[] the types..
+     */
+    public function getFieldDoctrineTypes()
+    {
+        $ret = array();
+        foreach ($this->getFields() as $field) {
+            $ret[] = $field->getTypeDoctrine();
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns this hash' fields..
+     *
+     * @return array|JsonDefinitionField[]
+     */
+    public function getFields()
+    {
+        return $this->_fields;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getType()
+    {
+        return self::TYPE_HASH;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTypeDoctrine()
     {
         return self::TYPE_HASH;
     }

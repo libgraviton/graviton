@@ -146,6 +146,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $arguments = array(
             'graviton:generate:resource',
             '--entity' => $bundleName . ':' . $thisIdName,
+            '--json' => $input->getOption('json'),
             '--format' => 'xml',
             '--fields' => $this->getFieldString($jsonDef),
             '--with-repository' => null
@@ -247,17 +248,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $ret = array();
 
         foreach ($jsonDef->getFields() as $field) {
-
-            // check the type
-            // @todo complex type handling / refs maybe here? - verify what types to pass for primitives
-            $thisType = 'string';
-            if ($field->isField()) {
-                $thisType = $field->getTypeDoctrine();
-            }
-
             // don't add 'id' field it seems..
             if ($field->getName() != 'id') {
-                $ret[] = $field->getName() . ':' . $thisType;
+                $ret[] = $field->getName() . ':' . $field->getTypeDoctrine();
             }
         }
 
