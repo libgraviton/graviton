@@ -1,21 +1,21 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
-use \Exception;
+use Exception;
 
 /**
  * This class represents the json file that defines the structure
  * of a mongo collection that exists and serves as a base to generate
  * a bundle.
  *
- * @todo if this json format serves in more places; move this class
- * @todo validate json
- *      
+ * @todo     if this json format serves in more places; move this class
+ * @todo     validate json
+ *
  * @category GeneratorBundle
- * @package Graviton
- * @author Dario Nuevo <dario.nuevo@swisscom.com>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link http://swisscom.ch
+ * @package  Graviton
+ * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class JsonDefinition
 {
@@ -39,38 +39,39 @@ class JsonDefinition
      *
      * @param string $filename
      *            Path to the json file
+     *
      * @throws Exception
      */
     public function __construct($filename)
     {
         $this->_filename = $filename;
-        
-        if (! file_exists($this->_filename)) {
+
+        if (!file_exists($this->_filename)) {
             throw new Exception(sprintf('File %s doesn\'t exist', $this->_filename));
         }
-        
+
         $this->_doc = json_decode(file_get_contents($this->_filename));
     }
-    
+
     /**
      * Returns this loads ID
-     * 
+     *
      * @return string ID
      */
     public function getId()
     {
         return $this->_doc->id;
     }
-    
+
     /**
      * Returns the description
-     * 
+     *
      * @return string Description
      */
     public function getDescription()
     {
         return $this->_doc->description;
-    }    
+    }
 
     /**
      * Returns the field definition
@@ -79,10 +80,37 @@ class JsonDefinition
      */
     public function getFields()
     {
-        $ret = array();
+        $fields = array();
         foreach ($this->_doc->target->fields as $field) {
-            $ret[] = new JsonDefinitionField($field);
+            $field = new JsonDefinitionField($field);
+            $fields[$field->getName()] = $field;
         }
-        return $ret;
+
+        // object generation (dot-notation parsing)
+        $fieldHierarchy = array();
+        $retFields = array();
+        foreach ($fields as $fieldName => $field) {
+            if (strpos($fieldName, '.') !== false) {
+                $nameParts = explode('.', $fieldName);
+
+                // hm, i'm too uninspired to make this recursive..
+                switch (count($nameParts)) {
+                    case 2:
+                        $fieldHierarchy[$nameParts[0]][$nameParts[1]] = $field;
+                        break;
+                    case 3:
+                        $fieldHierarchy[$nameParts[0]][$nameParts[1]][$nameParts[2]] = $field;
+                        break;
+                }
+            } else {
+                $retFields[$fieldName] = $field;
+            }
+        }
+
+        foreach ($fieldHierarchy as $fieldName => $subElements) {
+            $retFields[$fieldName] = new JsonDefinitionHash($fieldName, $subElements);
+        }
+
+        return $retFields;
     }
 }

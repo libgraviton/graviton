@@ -1,33 +1,20 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
-use \Exception;
-
 /**
  * A single field as specified in the json definition
  *
- * @todo if this json format serves in more places; move this class
- *      
+ * @todo     if this json format serves in more places; move this class
+ *
  * @category GeneratorBundle
- * @package Graviton
- * @author Dario Nuevo <dario.nuevo@swisscom.com>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link http://swisscom.ch
+ * @package  Graviton
+ * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
-class JsonDefinitionField
+class JsonDefinitionField implements DefinitionElementInterface
 {
 
-    /**
-     * Consts for our types..
-     *
-     * @var string
-     */
-    const TYPE_STRING = 'VARCHAR';
-
-    const TYPE_INTEGER = 'INT';
-
-    const TYPE_DATETIME = 'DATETIME';
-    
     /**
      * Typemap from our source types to doctrine types
      */
@@ -66,18 +53,8 @@ class JsonDefinitionField
     }
 
     /**
-     * Returns the field type
-     *
-     * @return string Type
-     */
-    public function getType()
-    {
-        return $this->_def->type;
-    }
-
-    /**
      * Returns the field type in a doctrine-understandable way..
-     * 
+     *
      * @return string Type
      */
     public function getTypeDoctrine()
@@ -86,8 +63,18 @@ class JsonDefinitionField
         if (isset($this->_doctrineTypeMap[$this->getType()])) {
             $ret = $this->_doctrineTypeMap[$this->getType()];
         }
-        
+
         return $ret;
+    }
+
+    /**
+     * Returns the field type
+     *
+     * @return string Type
+     */
+    public function getType()
+    {
+        return $this->_def->type;
     }
 
     /**
@@ -109,9 +96,27 @@ class JsonDefinitionField
     {
         // not mandatory..
         $ret = '';
-        if (isset($this->_def->description))
+        if (isset($this->_def->description)) {
             $ret = $this->_def->description;
-        
+        }
+
         return $ret;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isField()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isHash()
+    {
+        return false;
+    }
+
 }

@@ -12,5 +12,7 @@ vendor/
 .*~
 .buildpath
 .settings/*
+.idea
 web/.htaccess
 mongodata/
+src/GravitonDyn/*
