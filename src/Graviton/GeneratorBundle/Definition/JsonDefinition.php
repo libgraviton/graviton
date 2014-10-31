@@ -25,14 +25,14 @@ class JsonDefinition
      *
      * @var string
      */
-    private $_filename;
+    private $filename;
 
     /**
      * Deserialized json
      *
      * @var \stdClass
      */
-    private $_doc;
+    private $doc;
 
     /**
      * Constructor
@@ -43,18 +43,18 @@ class JsonDefinition
      */
     public function __construct($filename)
     {
-        $this->_filename = $filename;
+        $this->filename = $filename;
 
-        if (!file_exists($this->_filename)) {
+        if (!file_exists($this->filename)) {
             throw new Exception(
                 sprintf(
                     'File %s doesn\'t exist',
-                    $this->_filename
+                    $this->filename
                 )
             );
         }
 
-        $this->_doc = json_decode(file_get_contents($this->_filename));
+        $this->doc = json_decode(file_get_contents($this->filename));
     }
 
     /**
@@ -64,7 +64,7 @@ class JsonDefinition
      */
     public function getId()
     {
-        return $this->_doc->id;
+        return $this->doc->id;
     }
 
     /**
@@ -74,7 +74,7 @@ class JsonDefinition
      */
     public function getDescription()
     {
-        return $this->_doc->description;
+        return $this->doc->description;
     }
 
     /**
@@ -105,7 +105,7 @@ class JsonDefinition
     public function getFields()
     {
         $fields = array();
-        foreach ($this->_doc->target->fields as $field) {
+        foreach ($this->doc->target->fields as $field) {
             $field = new JsonDefinitionField($field);
             $fields[$field->getName()] = $field;
         }

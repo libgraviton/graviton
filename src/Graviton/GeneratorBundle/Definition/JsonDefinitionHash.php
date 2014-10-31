@@ -18,14 +18,14 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @var JsonDefinitionField[]
      */
-    private $_fields = array();
+    private $fields = array();
 
     /**
      * Name of this hash
      *
      * @var string
      */
-    private $_name;
+    private $name;
 
     /**
      * Constructor
@@ -35,8 +35,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function __construct($name, array $fields)
     {
-        $this->_name = $name;
-        $this->_fields = $fields;
+        $this->name = $name;
+        $this->fields = $fields;
     }
 
     /**
@@ -46,7 +46,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -91,7 +91,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getFields()
     {
-        return $this->_fields;
+        return $this->fields;
     }
 
     /**
