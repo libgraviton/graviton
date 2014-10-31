@@ -50,5 +50,4 @@ interface DefinitionElementInterface
      * @return string
      */
     public function getTypeDoctrine();
-
 }

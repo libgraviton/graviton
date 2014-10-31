@@ -37,8 +37,7 @@ class JsonDefinition
     /**
      * Constructor
      *
-     * @param string $filename
-     *            Path to the json file
+     * @param string $filename Path to the json file
      *
      * @throws Exception
      */
@@ -47,7 +46,12 @@ class JsonDefinition
         $this->_filename = $filename;
 
         if (!file_exists($this->_filename)) {
-            throw new Exception(sprintf('File %s doesn\'t exist', $this->_filename));
+            throw new Exception(
+                sprintf(
+                    'File %s doesn\'t exist',
+                    $this->_filename
+                )
+            );
         }
 
         $this->_doc = json_decode(file_get_contents($this->_filename));
@@ -76,7 +80,7 @@ class JsonDefinition
     /**
      * Returns a specific field or null
      *
-     * @param $name Field name
+     * @param string $name Field name
      *
      * @return JsonDefinitionField The field
      */
@@ -96,7 +100,7 @@ class JsonDefinition
     /**
      * Returns the field definition
      *
-     * @return JsonDefinitionField[]
+     * @return JsonDefinitionField[] Fields
      */
     public function getFields()
     {
@@ -110,8 +114,16 @@ class JsonDefinition
         $fieldHierarchy = array();
         $retFields = array();
         foreach ($fields as $fieldName => $field) {
-            if (strpos($fieldName, '.') !== false) {
-                $nameParts = explode('.', $fieldName);
+            if (
+                strpos(
+                    $fieldName,
+                    '.'
+                ) !== false
+            ) {
+                $nameParts = explode(
+                    '.',
+                    $fieldName
+                );
 
                 // hm, i'm too uninspired to make this recursive..
                 switch (count($nameParts)) {
@@ -128,7 +140,10 @@ class JsonDefinition
         }
 
         foreach ($fieldHierarchy as $fieldName => $subElements) {
-            $retFields[$fieldName] = new JsonDefinitionHash($fieldName, $subElements);
+            $retFields[$fieldName] = new JsonDefinitionHash(
+                $fieldName,
+                $subElements
+            );
         }
 
         return $retFields;

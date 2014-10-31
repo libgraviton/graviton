@@ -51,6 +51,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isField()
     {
@@ -59,6 +61,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isHash()
     {
@@ -81,6 +85,16 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Returns this hash' fields..
+     *
+     * @return array|JsonDefinitionField[]
+     */
+    public function getFields()
+    {
+        return $this->_fields;
+    }
+
+    /**
      * Returns the types of all fields
      *
      * @return string[] the types..
@@ -96,17 +110,9 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
-     * Returns this hash' fields..
-     *
-     * @return array|JsonDefinitionField[]
-     */
-    public function getFields()
-    {
-        return $this->_fields;
-    }
-
-    /**
      * {@inheritDoc}
+     *
+     * * @return string type
      */
     public function getType()
     {
@@ -115,10 +121,11 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * * @return string type
      */
     public function getTypeDoctrine()
     {
         return self::TYPE_HASH;
     }
-
 }

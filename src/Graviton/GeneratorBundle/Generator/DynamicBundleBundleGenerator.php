@@ -2,11 +2,6 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Doctrine\Common\Inflector\Inflector;
-
 /**
  * Generates a BundeList - a list of Bundles in a PHP parsable structure
  *
@@ -21,13 +16,14 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     /**
      * @private string[]
      */
-    protected $gravitonSkeletons;    
+    protected $gravitonSkeletons;
 
     /**
      * Generate the BundeList
      *
-     * @param array $bundleList List of bundles
+     * @param array  $bundleList     List of bundles
      * @param string $bundleBundleNamespace Namespace of our BundleBundle
+     * @param string $bundleName     Name of the bundle
      * @param string $targetFilename Where to write the list to
      *
      * @return void
@@ -36,22 +32,21 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     {
         // hm, where should that be called?
         $this->setSkeletonDirs(array('.'));
-        
+
         // compose absolute classnames
         // array contains DynNamespace/NameBundle -> convert
         $absoluteList = array();
         foreach ($bundleList as $namespace) {
-            $absoluteList[] = '\\'.str_replace('/', '\\', $namespace).
-                '\\'.str_replace('/', '', $namespace);
+            $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .
+                '\\' . str_replace('/', '', $namespace);
         }
-        
+
         $parameters = array(
             'namespace' => str_replace('/', '\\', $bundleBundleNamespace),
             'bundleName' => $bundleName,
-            'bundleClassList'  => $absoluteList
+            'bundleClassList' => $absoluteList
         );
-        
+
         $this->renderFile('bundle/DynamicBundleBundle.php.twig', $targetFilename, $parameters);
     }
-
 }

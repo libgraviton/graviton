@@ -33,7 +33,7 @@ abstract class AbstractGenerator extends Generator
     public function setSkeletonDirs($gravitonSkeletons)
     {
         $gravitonSkeletons = array_merge(
-            array(__DIR__.'/../Resources/skeleton'),
+            array(__DIR__ . '/../Resources/skeleton'),
             $gravitonSkeletons
         );
         $this->gravitonSkeletons = is_array($gravitonSkeletons) ? $gravitonSkeletons : array($gravitonSkeletons);
@@ -54,10 +54,10 @@ abstract class AbstractGenerator extends Generator
         $twig = new \Twig_Environment(
             new \Twig_Loader_Filesystem($this->gravitonSkeletons),
             array(
-                'debug'            => true,
-                'cache'            => false,
+                'debug' => true,
+                'cache' => false,
                 'strict_variables' => true,
-                'autoescape'       => false,
+                'autoescape' => false,
             )
         );
 

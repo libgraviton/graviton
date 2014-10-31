@@ -34,8 +34,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Constructor
      *
-     * @param \stdClass $def
-     *            Definition
+     * @param \stdClass $def Definition
      */
     public function __construct($def)
     {
@@ -105,6 +104,8 @@ class JsonDefinitionField implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isField()
     {
@@ -113,10 +114,11 @@ class JsonDefinitionField implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isHash()
     {
         return false;
     }
-
 }
