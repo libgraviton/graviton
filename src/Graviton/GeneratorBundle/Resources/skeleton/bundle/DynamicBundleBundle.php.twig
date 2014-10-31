@@ -25,9 +25,9 @@ class {{bundleName}} extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-        {% for className in bundleClassList %}
-  			new {{ className }}(),
-		{% endfor %}
+{% for className in bundleClassList %}
+    new {{ className }}(),
+{% endfor %}
         );
     }
 }

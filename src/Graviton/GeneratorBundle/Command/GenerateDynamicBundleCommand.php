@@ -121,13 +121,18 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '',
             $namespace
         );
-        $this->generateBundle(
-            $namespace,
-            $bundleName,
-            $input,
-            $output
-        );
+        /*
+                $genStatus = $this->generateBundle(
+                    $namespace,
+                    $bundleName,
+                    $input,
+                    $output
+                );
 
+                if ($genStatus !== 0) {
+                    throw new \LogicException('Create BundeBundle call failed, see above. Exiting.');
+                }
+        */
         // bundlebundle stuff..
         $this->bundleBundleNamespace = $namespace;
         $this->bundleBundleDir = $input->getOption('srcDir') . $namespace;
@@ -135,50 +140,92 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/'
             . $this->bundleBundleClassname . '.php';
 
+
+        // file or folder?
+        $jsonPath = $input->getOption('json');
+
+        if (is_file($jsonPath)) {
+            $filesToWorkOn = array($jsonPath);
+        } else {
+            if (is_dir($jsonPath)) {
+                // search for json files we want..
+                if (substr($jsonPath, -1) != '/') {
+                    $jsonPath .= '/';
+                }
+
+                $filesToWorkOn = array();
+                foreach (scandir($jsonPath) as $jsonFile) {
+                    if (substr($jsonFile, -5) == '.json' && substr($jsonFile, 0, 1) != '_') {
+                        $filesToWorkOn[] = $jsonPath . $jsonFile;
+                    }
+                };
+            } else {
+                throw new \LogicException("File or path '" . $jsonPath . "' doesn't seem to exist.");
+            }
+        }
+
+        if (count($filesToWorkOn) < 1) {
+            throw new \LogicException("Could not find any usable JSON files.");
+        }
+
         /**
-         * GENERATE THE BUNDLE
+         * GENERATE THE BUNDLE(S)
          */
-        $jsonDef = new JsonDefinition($input->getOption('json'));
+        foreach ($filesToWorkOn as $jsonFile) {
+            $jsonDef = new JsonDefinition($jsonFile);
 
-        $thisIdName = ucfirst(strtolower($jsonDef->getId()));
-        $namespace = sprintf(
-            $bundleNameMask,
-            $thisIdName
-        );
-        $bundleName = str_replace(
-            '/',
-            '',
-            $namespace
-        );
-        $this->generateBundle(
-            $namespace,
-            $bundleName,
-            $input,
-            $output
-        );
+            $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+            $namespace = sprintf(
+                $bundleNameMask,
+                $thisIdName
+            );
+            $bundleName = str_replace(
+                '/',
+                '',
+                $namespace
+            );
 
-        $this->bundleBundleList[] = $namespace;
+            $genStatus = $this->generateBundle(
+                $namespace,
+                $bundleName,
+                $input,
+                $output
+            );
 
-        // re-generate our bundlebundle..
-        $this->generateBundleBundleClass();
+            if ($genStatus !== 0) {
+                throw new \LogicException('Create bundle call failed, see above. Exiting.');
+            }
 
-        /**
-         * GENERATE THE RESOURCE(S)
-         */
-        $arguments = array(
-            'graviton:generate:resource',
-            '--entity' => $bundleName . ':' . $thisIdName,
-            '--json' => $input->getOption('json'),
-            '--format' => 'xml',
-            '--fields' => $this->getFieldString($jsonDef),
-            '--with-repository' => null
-        );
-        $this->executeCommand(
-            $arguments,
-            $output
-        );
+            $this->bundleBundleList[] = $namespace;
 
-        $output->writeln('Generated the bundle and the resource.');
+            // re-generate our bundlebundle..
+            $this->generateBundleBundleClass();
+
+            /**
+             * GENERATE THE RESOURCE(S)
+             */
+            $arguments = array(
+                'graviton:generate:resource',
+                '--entity' => $bundleName . ':' . $thisIdName,
+                '--json' => $jsonFile,
+                '--format' => 'xml',
+                '--fields' => $this->getFieldString($jsonDef),
+                '--with-repository' => null
+            );
+
+            $genStatus = $this->executeCommand(
+                $arguments,
+                $output
+            );
+
+            if ($genStatus !== 0) {
+                throw new \LogicException('Create resource call failed, see above. Exiting.');
+            }
+
+            $output->writeln('');
+            $output->writeln(sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonFile));
+            $output->writeln('');
+        }
     }
 
     /**
@@ -240,14 +287,18 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
         }
 
+        $output->writeln('');
+
         $output->writeln(
             sprintf(
-                'Executing "%s"',
+                '<comment>Executing "%s"</comment>',
                 $cmd
             )
         );
 
-        return shell_exec($cmd);
+        passthru($cmd, $exitCode);
+
+        return $exitCode;
     }
 
     /**

@@ -475,7 +475,6 @@ class ResourceGenerator extends AbstractGenerator
                 $thisField = $jsonDef->getField($field['fieldName']);
 
                 if (!is_null($thisField) && $thisField->isHash()) {
-                    // array<string,string>
                     $field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
                 }
                 $fields[$key] = $field;
