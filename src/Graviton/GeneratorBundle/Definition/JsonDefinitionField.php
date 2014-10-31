@@ -20,7 +20,8 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     private $doctrineTypeMap = array(
         self::TYPE_STRING => 'string',
-        self::TYPE_INTEGER => 'integer',
+        self::TYPE_INTEGER => 'int',
+        self::TYPE_LONG => 'int',
         self::TYPE_DATETIME => 'date'
     );
 
