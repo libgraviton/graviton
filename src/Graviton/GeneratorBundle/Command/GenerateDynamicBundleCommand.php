@@ -100,10 +100,8 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
     /**
      * {@inheritDoc}
      *
-     * @param InputInterface $input
-     *            input
-     * @param OutputInterface $output
-     *            output
+     * @param InputInterface  $input  input
+     * @param OutputInterface $output output
      *
      * @return void
      */
@@ -114,9 +112,21 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         /**
          * GENERATE THE BUNDLEBUNDLE
          */
-        $namespace = sprintf($bundleNameMask, 'Bundle');
-        $bundleName = str_replace('/', '', $namespace);
-        $this->generateBundle($namespace, $bundleName, $input, $output);
+        $namespace = sprintf(
+            $bundleNameMask,
+            'Bundle'
+        );
+        $bundleName = str_replace(
+            '/',
+            '',
+            $namespace
+        );
+        $this->generateBundle(
+            $namespace,
+            $bundleName,
+            $input,
+            $output
+        );
 
         // bundlebundle stuff..
         $this->bundleBundleNamespace = $namespace;
@@ -131,9 +141,21 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $jsonDef = new JsonDefinition($input->getOption('json'));
 
         $thisIdName = ucfirst(strtolower($jsonDef->getId()));
-        $namespace = sprintf($bundleNameMask, $thisIdName);
-        $bundleName = str_replace('/', '', $namespace);
-        $this->generateBundle($namespace, $bundleName, $input, $output);
+        $namespace = sprintf(
+            $bundleNameMask,
+            $thisIdName
+        );
+        $bundleName = str_replace(
+            '/',
+            '',
+            $namespace
+        );
+        $this->generateBundle(
+            $namespace,
+            $bundleName,
+            $input,
+            $output
+        );
 
         $this->bundleBundleList[] = $namespace;
 
@@ -151,7 +173,10 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '--fields' => $this->getFieldString($jsonDef),
             '--with-repository' => null
         );
-        $this->executeCommand($arguments, $output);
+        $this->executeCommand(
+            $arguments,
+            $output
+        );
 
         $output->writeln('Generated the bundle and the resource.');
     }
@@ -185,7 +210,10 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '--structure' => null
         );
 
-        return $this->executeCommand($arguments, $output);
+        return $this->executeCommand(
+            $arguments,
+            $output
+        );
     }
 
     /**
@@ -212,7 +240,12 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
         }
 
-        $output->writeln(sprintf('Executing "%s"', $cmd));
+        $output->writeln(
+            sprintf(
+                'Executing "%s"',
+                $cmd
+            )
+        );
 
         return shell_exec($cmd);
     }
@@ -238,8 +271,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
     /**
      * Returns the field string as described in the json file
      *
-     * @param JsonDefinition $jsonDef
-     *            The json def
+     * @param JsonDefinition $jsonDef The json def
      *
      * @return string CommandLine string for the generator command
      */
@@ -254,6 +286,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
         }
 
-        return implode(' ', $ret);
+        return implode(
+            ' ',
+            $ret
+        );
     }
 }

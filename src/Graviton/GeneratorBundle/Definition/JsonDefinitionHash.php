@@ -18,14 +18,14 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @var JsonDefinitionField[]
      */
-    private $_fields = array();
+    private $fields = array();
 
     /**
      * Name of this hash
      *
      * @var string
      */
-    private $_name;
+    private $name;
 
     /**
      * Constructor
@@ -35,8 +35,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function __construct($name, array $fields)
     {
-        $this->_name = $name;
-        $this->_fields = $fields;
+        $this->name = $name;
+        $this->fields = $fields;
     }
 
     /**
@@ -46,11 +46,13 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isField()
     {
@@ -59,6 +61,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isHash()
     {
@@ -81,6 +85,16 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Returns this hash' fields..
+     *
+     * @return array|JsonDefinitionField[]
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
      * Returns the types of all fields
      *
      * @return string[] the types..
@@ -96,17 +110,9 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
-     * Returns this hash' fields..
-     *
-     * @return array|JsonDefinitionField[]
-     */
-    public function getFields()
-    {
-        return $this->_fields;
-    }
-
-    /**
      * {@inheritDoc}
+     *
+     * * @return string type
      */
     public function getType()
     {
@@ -115,10 +121,11 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * * @return string type
      */
     public function getTypeDoctrine()
     {
         return self::TYPE_HASH;
     }
-
 }

@@ -51,7 +51,10 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
         // put input here for later use..
         $this->input = $input;
 
-        parent::execute($input, $output);
+        parent::execute(
+            $input,
+            $output
+        );
 
         $output->writeln(
             'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
@@ -67,9 +70,12 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     {
         return new ResourceGenerator(
             $this->input,
-            $this->getContainer()->get('filesystem'),
-            $this->getContainer()->get('doctrine'),
-            $this->getContainer()->get('kernel')
+            $this->getContainer()
+                 ->get('filesystem'),
+            $this->getContainer()
+                 ->get('doctrine'),
+            $this->getContainer()
+                 ->get('kernel')
         );
     }
 }

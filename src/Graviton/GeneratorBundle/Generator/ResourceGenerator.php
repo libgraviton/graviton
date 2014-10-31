@@ -280,7 +280,8 @@ class ResourceGenerator extends AbstractGenerator
      */
     private function addNodeIfMissing(&$dom, $element, $container = 'container')
     {
-        $container = $dom->getElementsByTagName($container)->item(0);
+        $container = $dom->getElementsByTagName($container)
+                         ->item(0);
         $nodes = $dom->getElementsByTagName($element);
         if ($nodes->length < 1) {
             $newNode = $dom->createElement($element);

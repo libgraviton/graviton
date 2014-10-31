@@ -18,7 +18,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Typemap from our source types to doctrine types
      */
-    private $_doctrineTypeMap = array(
+    private $doctrineTypeMap = array(
         self::TYPE_STRING => 'string',
         self::TYPE_INTEGER => 'integer',
         self::TYPE_DATETIME => 'date'
@@ -29,17 +29,16 @@ class JsonDefinitionField implements DefinitionElementInterface
      *
      * @var \stdClass
      */
-    private $_def;
+    private $def;
 
     /**
      * Constructor
      *
-     * @param \stdClass $def
-     *            Definition
+     * @param \stdClass $def Definition
      */
     public function __construct($def)
     {
-        $this->_def = $def;
+        $this->def = $def;
     }
 
     /**
@@ -49,7 +48,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getName()
     {
-        return $this->_def->name;
+        return $this->def->name;
     }
 
     /**
@@ -60,8 +59,8 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getTypeDoctrine()
     {
         $ret = false;
-        if (isset($this->_doctrineTypeMap[$this->getType()])) {
-            $ret = $this->_doctrineTypeMap[$this->getType()];
+        if (isset($this->doctrineTypeMap[$this->getType()])) {
+            $ret = $this->doctrineTypeMap[$this->getType()];
         }
 
         return $ret;
@@ -74,7 +73,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        return $this->_def->type;
+        return $this->def->type;
     }
 
     /**
@@ -84,7 +83,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getLength()
     {
-        return $this->_def->length;
+        return $this->def->length;
     }
 
     /**
@@ -96,8 +95,8 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         // not mandatory..
         $ret = '';
-        if (isset($this->_def->description)) {
-            $ret = $this->_def->description;
+        if (isset($this->def->description)) {
+            $ret = $this->def->description;
         }
 
         return $ret;
@@ -105,6 +104,8 @@ class JsonDefinitionField implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isField()
     {
@@ -113,10 +114,11 @@ class JsonDefinitionField implements DefinitionElementInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      */
     public function isHash()
     {
         return false;
     }
-
 }

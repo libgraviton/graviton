@@ -25,32 +25,36 @@ class JsonDefinition
      *
      * @var string
      */
-    private $_filename;
+    private $filename;
 
     /**
      * Deserialized json
      *
      * @var \stdClass
      */
-    private $_doc;
+    private $doc;
 
     /**
      * Constructor
      *
-     * @param string $filename
-     *            Path to the json file
+     * @param string $filename Path to the json file
      *
      * @throws Exception
      */
     public function __construct($filename)
     {
-        $this->_filename = $filename;
+        $this->filename = $filename;
 
-        if (!file_exists($this->_filename)) {
-            throw new Exception(sprintf('File %s doesn\'t exist', $this->_filename));
+        if (!file_exists($this->filename)) {
+            throw new Exception(
+                sprintf(
+                    'File %s doesn\'t exist',
+                    $this->filename
+                )
+            );
         }
 
-        $this->_doc = json_decode(file_get_contents($this->_filename));
+        $this->doc = json_decode(file_get_contents($this->filename));
     }
 
     /**
@@ -60,7 +64,7 @@ class JsonDefinition
      */
     public function getId()
     {
-        return $this->_doc->id;
+        return $this->doc->id;
     }
 
     /**
@@ -70,13 +74,13 @@ class JsonDefinition
      */
     public function getDescription()
     {
-        return $this->_doc->description;
+        return $this->doc->description;
     }
 
     /**
      * Returns a specific field or null
      *
-     * @param $name Field name
+     * @param string $name Field name
      *
      * @return JsonDefinitionField The field
      */
@@ -96,12 +100,12 @@ class JsonDefinition
     /**
      * Returns the field definition
      *
-     * @return JsonDefinitionField[]
+     * @return JsonDefinitionField[] Fields
      */
     public function getFields()
     {
         $fields = array();
-        foreach ($this->_doc->target->fields as $field) {
+        foreach ($this->doc->target->fields as $field) {
             $field = new JsonDefinitionField($field);
             $fields[$field->getName()] = $field;
         }
@@ -110,8 +114,16 @@ class JsonDefinition
         $fieldHierarchy = array();
         $retFields = array();
         foreach ($fields as $fieldName => $field) {
-            if (strpos($fieldName, '.') !== false) {
-                $nameParts = explode('.', $fieldName);
+            if (
+                strpos(
+                    $fieldName,
+                    '.'
+                ) !== false
+            ) {
+                $nameParts = explode(
+                    '.',
+                    $fieldName
+                );
 
                 // hm, i'm too uninspired to make this recursive..
                 switch (count($nameParts)) {
@@ -128,7 +140,10 @@ class JsonDefinition
         }
 
         foreach ($fieldHierarchy as $fieldName => $subElements) {
-            $retFields[$fieldName] = new JsonDefinitionHash($fieldName, $subElements);
+            $retFields[$fieldName] = new JsonDefinitionHash(
+                $fieldName,
+                $subElements
+            );
         }
 
         return $retFields;
