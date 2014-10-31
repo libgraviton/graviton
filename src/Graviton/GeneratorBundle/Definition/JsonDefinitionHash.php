@@ -112,7 +112,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     /**
      * {@inheritDoc}
      *
-     * * @return string type
+     * @return string type
      */
     public function getType()
     {
@@ -122,7 +122,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     /**
      * {@inheritDoc}
      *
-     * * @return string type
+     * @return string type
      */
     public function getTypeDoctrine()
     {
