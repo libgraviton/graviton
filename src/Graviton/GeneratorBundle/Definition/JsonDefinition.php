@@ -78,6 +78,25 @@ class JsonDefinition
     }
 
     /**
+     * Returns whether this service is read-only
+     *
+     * @todo read from file..
+     *
+     * @return bool true if yes, false if not
+     */
+    public function isReadOnlyService()
+    {
+        // default
+        $ret = false;
+
+        if (isset($this->doc->service->readOnly) && (bool) $this->doc->service->readOnly === true) {
+            $ret = true;
+        }
+
+        return $ret;
+    }
+
+    /**
      * Returns a specific field or null
      *
      * @param string $name Field name
