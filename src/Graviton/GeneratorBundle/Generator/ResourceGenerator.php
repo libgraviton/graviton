@@ -362,9 +362,18 @@ class ResourceGenerator extends AbstractGenerator
 
                 $this->addAttributeToNode('name', $tag, $dom, $tagNode);
 
-                // is this read only?
-                if ($this->json instanceof JsonDefinition && $this->json->isReadOnlyService()) {
-                    $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
+                // get stuff from json definition
+                if ($this->json instanceof JsonDefinition) {
+                    // is this read only?
+                    if ($this->json->isReadOnlyService()) {
+                        $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
+                    }
+
+                    // router base defined?
+                    $routerBase = $this->json->getRouterBase();
+                    if ($routerBase !== false) {
+                        $this->addAttributeToNode('router-base', $routerBase, $dom, $tagNode);
+                    }
                 }
 
                 $attrNode->appendChild($tagNode);

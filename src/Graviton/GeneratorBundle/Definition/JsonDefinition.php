@@ -97,6 +97,29 @@ class JsonDefinition
     }
 
     /**
+     * Returns a router base path. false if default should be used.
+     *
+     * @return string router base, i.e. /bundle/name/
+     */
+    public function getRouterBase()
+    {
+        $ret = false;
+
+        if (isset($this->doc->service->routerBase) && strlen($this->doc->service->routerBase) > 0) {
+            $ret = $this->doc->service->routerBase;
+            if (substr($ret, 0, 1) != '/') {
+                $ret = '/' . $ret;
+            }
+
+            if (substr($ret, -1) == '/') {
+                $ret = substr($ret, 0, -1);
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Returns a specific field or null
      *
      * @param string $name Field name
