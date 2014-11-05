@@ -67,8 +67,8 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getDefAsArray()
     {
         $ret = (array) $this->def;
-        $ret['typeDoctrine'] = $this->getTypeDoctrine();
-        $ret['typeSerializer'] = $this->getTypeSerializer();
+        $ret['doctrineType'] = $this->getTypeDoctrine();
+        $ret['serializerType'] = $this->getTypeSerializer();
 
         return $ret;
     }

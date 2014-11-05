@@ -116,6 +116,20 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Returns the definition as array..
+     *
+     * @return string[] the definiton
+     */
+    public function getDefAsArray()
+    {
+        return array(
+            'type' => $this->getType(),
+            'doctrineType' => $this->getTypeDoctrine(),
+            'serializerType' => 'array'
+        );
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @return string type

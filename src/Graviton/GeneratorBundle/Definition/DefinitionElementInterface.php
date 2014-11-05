@@ -52,4 +52,11 @@ interface DefinitionElementInterface
      * @return string
      */
     public function getTypeDoctrine();
+
+    /**
+     * Returns the definition as array
+     *
+     * @return string[] definiton
+     */
+    public function getDefAsArray();
 }

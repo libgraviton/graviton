@@ -3,7 +3,7 @@
   <class name="{{ base }}Document\{{ document }}">
 
 {% if idField is defined %}
-    <property name="id" type="{{ idField.typeSerializer }}" accessor-getter="getId"/>
+    <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
 {% else %}
     <property name="id" type="string" accessor-getter="getId"/>
 {% endif %}
