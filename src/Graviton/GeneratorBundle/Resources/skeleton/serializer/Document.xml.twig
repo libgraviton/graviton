@@ -9,7 +9,14 @@
 {% endif %}
 
 {% for field in fields %}
-    <property name="{{ field.fieldName }}" accessor-getter="get{{ field.fieldName|capitalize }}" accessor-setter="set{{ field.fieldName|capitalize }}">
+
+    {% if field.type == 'boolean' %}
+      {% set getterMethod = "is#{field.fieldName|capitalize}" %}
+    {% else %}
+      {% set getterMethod = "get#{field.fieldName|capitalize}" %}
+    {% endif %}
+
+    <property name="{{ field.fieldName }}" serialized-name="{{ field.fieldName }}" accessor-getter="{{ getterMethod }}" accessor-setter="set{{ field.fieldName|capitalize }}">
       <type><![CDATA[{{ field.serializerType }}]]></type>
     </property>
 {% endfor %}
