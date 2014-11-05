@@ -106,7 +106,7 @@ class ActionUtils
     /**
      * Get route for POST requests
      *
-     * @param string $service service id
+     * @param string $service       service id
      * @param array  $serviceConfig service configuration
      *
      * @return Route
@@ -132,7 +132,7 @@ class ActionUtils
     /**
      * Get route for PATCH request
      *
-     * @param string $service service id
+     * @param string $service       service id
      * @param array  $serviceConfig service configuration
      *
      * @return Route
@@ -159,8 +159,8 @@ class ActionUtils
      * Get route for OPTIONS requests
      *
      * @param string $service       service id
-     * @param array $serviceConfig service configuration
-     * @param array $parameters    service params
+     * @param array  $serviceConfig service configuration
+     * @param array  $parameters    service params
      *
      * @return Route
      */
