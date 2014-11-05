@@ -490,12 +490,19 @@ class ResourceGenerator extends AbstractGenerator
                 $thisField = $this->json->getField($field['fieldName']);
 
                 if (!is_null($thisField) && $thisField->isHash()) {
-                    $field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
+                    // @todo don't include the real type - just write array? full validation or not?
+                    //$field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
+                    $field['serializerType'] = 'array';
                 }
                 $fields[$key] = $field;
             }
 
             $parameters['fields'] = $fields;
+
+            // special handling of specs for "id" field..
+            // if we have data for id field, pass it along
+            $idField = $this->json->getField('id');
+            if (!is_null($idField)) $parameters['idField'] = $idField->getDefAsArray();
         }
 
         $this->renderFile(
