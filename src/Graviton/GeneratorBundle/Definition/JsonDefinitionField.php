@@ -30,7 +30,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_STRING => 'string',
         self::TYPE_INTEGER => 'integer',
         self::TYPE_LONG => 'integer',
-        self::TYPE_DATETIME => 'date',
+        self::TYPE_DATETIME => 'DateTime',
         self::TYPE_BOOLEAN => 'boolean'
     );
 
