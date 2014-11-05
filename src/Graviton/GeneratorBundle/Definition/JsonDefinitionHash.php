@@ -102,8 +102,14 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getFieldDoctrineTypes()
     {
         $ret = array();
+
         foreach ($this->getFields() as $field) {
-            $ret[] = $field->getTypeDoctrine();
+            if ($field instanceof JsonDefinitionField) {
+                $ret[] = $field->getTypeDoctrine();
+            } elseif (is_array($field)) {
+                // @todo how to prepare arrays of hashes here for the serializer?
+                $ret[] = 'string';
+            }
         }
 
         return $ret;

@@ -3,7 +3,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 /**
- * Generates a BundeList - a list of Bundles in a PHP parsable structure
+ * Generates the dynamic BundleBundle
  *
  * @category GeneratorBundle
  * @package  Graviton
@@ -19,12 +19,12 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     protected $gravitonSkeletons;
 
     /**
-     * Generate the BundeList
+     * Generate the BundleBundle
      *
-     * @param array  $bundleList     List of bundles
+     * @param array  $bundleList            List of bundles
      * @param string $bundleBundleNamespace Namespace of our BundleBundle
-     * @param string $bundleName     Name of the bundle
-     * @param string $targetFilename Where to write the list to
+     * @param string $bundleName            Name of the bundle
+     * @param string $targetFilename        Where to write the list to
      *
      * @return void
      */

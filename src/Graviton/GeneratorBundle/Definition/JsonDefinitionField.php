@@ -20,7 +20,15 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     private $doctrineTypeMap = array(
         self::TYPE_STRING => 'string',
+        self::TYPE_INTEGER => 'int',
+        self::TYPE_LONG => 'int',
+        self::TYPE_DATETIME => 'date'
+    );
+
+    private $serializerTypeMap = array(
+        self::TYPE_STRING => 'string',
         self::TYPE_INTEGER => 'integer',
+        self::TYPE_LONG => 'integer',
         self::TYPE_DATETIME => 'date'
     );
 
@@ -52,6 +60,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the whole definition in array form
+     *
+     * @return array Definition
+     */
+    public function getDefAsArray()
+    {
+        $ret = (array) $this->def;
+        $ret['typeDoctrine'] = $this->getTypeDoctrine();
+        $ret['typeSerializer'] = $this->getTypeSerializer();
+
+        return $ret;
+    }
+
+    /**
      * Returns the field type in a doctrine-understandable way..
      *
      * @return string Type
@@ -74,6 +96,21 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getType()
     {
         return $this->def->type;
+    }
+
+    /**
+     * Returns the field type in a serializer-understandable way..
+     *
+     * @return string Type
+     */
+    public function getTypeSerializer()
+    {
+        $ret = false;
+        if (isset($this->serializerTypeMap[$this->getType()])) {
+            $ret = $this->serializerTypeMap[$this->getType()];
+        }
+
+        return $ret;
     }
 
     /**

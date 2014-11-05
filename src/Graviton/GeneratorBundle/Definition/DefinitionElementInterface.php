@@ -19,6 +19,8 @@ interface DefinitionElementInterface
 
     const TYPE_INTEGER = 'INT';
 
+    const TYPE_LONG = 'BIGINT';
+
     const TYPE_DATETIME = 'DATETIME';
 
     const TYPE_HASH = 'hash';

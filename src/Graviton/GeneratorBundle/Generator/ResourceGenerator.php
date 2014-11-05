@@ -43,6 +43,13 @@ class ResourceGenerator extends AbstractGenerator
     private $input;
 
     /**
+     * our json file definition
+     *
+     * @var JsonDefinition
+     */
+    private $json = false;
+
+    /**
      * instanciate generator object
      *
      * @param InputInterface $input      Input
@@ -103,9 +110,8 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         // do we have a json path passed?
-        $jsonDef = null;
         if (!is_null($this->input->getOption('json'))) {
-            $jsonDef = new JsonDefinition($this->input->getOption('json'));
+            $this->json = new JsonDefinition($this->input->getOption('json'));
         }
 
         $parameters = array(
@@ -116,7 +122,6 @@ class ResourceGenerator extends AbstractGenerator
             'author' => $author,
             'email' => $email,
             'fields' => $fields,
-            'json' => $jsonDef,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
@@ -139,9 +144,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document, $withRepository)
     {
-
-        //var_dump($parameters); die;
-
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
@@ -360,6 +362,20 @@ class ResourceGenerator extends AbstractGenerator
 
                 $this->addAttributeToNode('name', $tag, $dom, $tagNode);
 
+                // get stuff from json definition
+                if ($this->json instanceof JsonDefinition) {
+                    // is this read only?
+                    if ($this->json->isReadOnlyService()) {
+                        $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
+                    }
+
+                    // router base defined?
+                    $routerBase = $this->json->getRouterBase();
+                    if ($routerBase !== false) {
+                        $this->addAttributeToNode('router-base', $routerBase, $dom, $tagNode);
+                    }
+                }
+
                 $attrNode->appendChild($tagNode);
             }
 
@@ -467,21 +483,28 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateSerializer(array $parameters, $dir, $document)
     {
         // if we got a json file; get more stuff from there and generate more specific stuff..
-        if ($parameters['json'] instanceof JsonDefinition) {
-            $jsonDef = $parameters['json'];
+        if ($this->json instanceof JsonDefinition) {
             $fields = $parameters['fields'];
 
             foreach ($fields as $key => $field) {
-                $thisField = $jsonDef->getField($field['fieldName']);
+                $thisField = $this->json->getField($field['fieldName']);
 
                 if (!is_null($thisField) && $thisField->isHash()) {
-                    // array<string,string>
-                    $field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
+                    // @todo don't include the real type - just write array? full validation or not?
+                    //$field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
+                    $field['serializerType'] = 'array';
                 }
                 $fields[$key] = $field;
             }
 
             $parameters['fields'] = $fields;
+
+            // special handling of specs for "id" field..
+            // if we have data for id field, pass it along
+            $idField = $this->json->getField('id');
+            if (!is_null($idField)) {
+                $parameters['idField'] = $idField->getDefAsArray();
+            }
         }
 
         $this->renderFile(
