@@ -502,7 +502,9 @@ class ResourceGenerator extends AbstractGenerator
             // special handling of specs for "id" field..
             // if we have data for id field, pass it along
             $idField = $this->json->getField('id');
-            if (!is_null($idField)) $parameters['idField'] = $idField->getDefAsArray();
+            if (!is_null($idField)) {
+                $parameters['idField'] = $idField->getDefAsArray();
+            }
         }
 
         $this->renderFile(

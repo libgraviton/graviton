@@ -60,6 +60,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the whole definition in array form
+     *
+     * @return array Definition
+     */
+    public function getDefAsArray()
+    {
+        $ret = (array) $this->def;
+        $ret['typeDoctrine'] = $this->getTypeDoctrine();
+        $ret['typeSerializer'] = $this->getTypeSerializer();
+
+        return $ret;
+    }
+
+    /**
      * Returns the field type in a doctrine-understandable way..
      *
      * @return string Type
@@ -75,6 +89,16 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the field type
+     *
+     * @return string Type
+     */
+    public function getType()
+    {
+        return $this->def->type;
+    }
+
+    /**
      * Returns the field type in a serializer-understandable way..
      *
      * @return string Type
@@ -87,30 +111,6 @@ class JsonDefinitionField implements DefinitionElementInterface
         }
 
         return $ret;
-    }
-
-    /**
-     * Returns the whole definition in array form
-     *
-     * @return array Definition
-     */
-    public function getDefAsArray()
-    {
-        $ret = (array)$this->def;
-        $ret['typeDoctrine'] = $this->getTypeDoctrine();
-        $ret['typeSerializer'] = $this->getTypeSerializer();
-
-        return $ret;
-    }
-
-    /**
-     * Returns the field type
-     *
-     * @return string Type
-     */
-    public function getType()
-    {
-        return $this->def->type;
     }
 
     /**
