@@ -556,6 +556,12 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
+        $this->renderFile(
+            'validator/validation.xml.twig',
+            $dir . '/Resources/config/validation.xml',
+            $parameters
+        );
+
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);

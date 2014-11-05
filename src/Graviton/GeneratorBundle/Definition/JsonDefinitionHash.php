@@ -36,6 +36,12 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function __construct($name, array $fields)
     {
         $this->name = $name;
+
+        // sets ourselves as parent on our fields
+        foreach ($fields as $key => $field) {
+            $fields[$key]->setParentHash($this);
+        }
+
         $this->fields = $fields;
     }
 

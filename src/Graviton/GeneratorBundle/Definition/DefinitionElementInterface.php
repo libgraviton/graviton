@@ -15,13 +15,15 @@ interface DefinitionElementInterface
 {
 
 
-    const TYPE_STRING = 'VARCHAR';
+    const TYPE_STRING = 'varchar';
 
-    const TYPE_INTEGER = 'INT';
+    const TYPE_INTEGER = 'int';
 
-    const TYPE_LONG = 'BIGINT';
+    const TYPE_LONG = 'bigint';
 
-    const TYPE_DATETIME = 'DATETIME';
+    const TYPE_DATETIME = 'datetime';
+
+    const TYPE_BOOLEAN = 'boolean';
 
     const TYPE_HASH = 'hash';
 

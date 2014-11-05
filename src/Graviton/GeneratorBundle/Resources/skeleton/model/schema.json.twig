@@ -7,6 +7,7 @@
 {% endif %}
 
   "properties": {
+{% set requiredFields = [] %}
 {% for field in fields %}
     "{{ field.fieldName }}": {
 
@@ -22,6 +23,10 @@
       "description": "@todo replace me"
 {% endif %}
 
+{% if field.required is defined and field.required == true %}
+    {% set requiredFields = requiredFields|merge([field.fieldName]) %}
+{% endif %}
+
     },
 {% endfor %}
     "id": {
@@ -29,6 +34,5 @@
       "description": "Unique identifier"
     }
   },
-  "required": [
-  ]
+  "required": {{ requiredFields|json_encode() }}
 }
