@@ -83,20 +83,28 @@ class RestController implements ContainerAwareInterface
             'json'
         );
 
-        // store id of new record so we dont need to reparse body later when needed
-        $this->getRequest()->attributes->set('id', $record->getId());
-
         $response = $this->validateRecord($record, $this->getRequest()->getContent());
 
         if (!$response) {
-            $baseName = basename(strtr($this->model->getEntityClass(), '\\', '/'));
-            $serviceName = $this->model->getConnectionName().'.rest.'.strtolower($baseName);
             $record = $this->getModel()->insertRecord($record);
+
+            // store id of new record so we dont need to reparse body later when needed
+            $this->getRequest()->attributes->set('id', $record->getId());
+
             $response = $this->container->get('graviton.rest.response.201');
             $response = $this->setContent($response, $record);
+
+            $routeName = $this->getRequest()->get('_route');
+            $routeParts = explode('.', $routeName);
+            $routeType = end($routeParts);
+
+            if ($routeType == 'post') {
+                $routeName = substr($routeName, 0, -4).'get';
+            }
+
             $response->headers->set(
                 'Location',
-                $this->getRouter()->generate($serviceName.'.get', array('id' => $record->getId()))
+                $this->getRouter()->generate($routeName, array('id' => $record->getId()))
             );
         }
 
