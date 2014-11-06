@@ -129,6 +129,10 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         if ($this->isClassType()) {
             $ret = $this->getClassName();
+            // collection?
+            if (substr($ret, -2) == '[]') {
+                $ret = 'array<'.substr($ret, 0, -2).'>';
+            }
         } else {
             if (isset($this->serializerTypeMap[$this->getType()])) {
                 $ret = $this->serializerTypeMap[$this->getType()];

@@ -98,7 +98,7 @@ class {{ document }} implements TranslatableDocumentInterface
      */
 {% if 'Graviton' in field.type %}
 {% if '[]' in field.type %}
-    public function set{{ field.fieldName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.fieldName }})
+    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% else %}
     public function set{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
 {% endif %}
@@ -106,7 +106,11 @@ class {{ document }} implements TranslatableDocumentInterface
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% endif %}
     {
+{% if '[]' in field.type %}
+        $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
+{% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
+{% endif %}
 
         return $this;
     }
@@ -132,9 +136,9 @@ class {{ document }} implements TranslatableDocumentInterface
      * remove element from {{ field.fieldName }}
      *
 {% if '[]' in field.type %}
-     * @param {{ field.type[0:-2] }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
+     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
 {% else %}
-     * @param {{ field.type }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
+     * @param \{{ field.type }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
 {% endif %}
      *
      * @return self
