@@ -78,5 +78,4 @@ class ValidationRequestListener
     {
         $this->container = $container;
     }
-
 }
