@@ -73,12 +73,14 @@ class I18nDeserializationListener
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
-                $this->localizedFields[$field] = $data[$field];
-                $defaultValue = \reset($data[$field]);
-                if (array_key_exists('en', $data[$field])) {
-                    $defaultValue = $data[$field]['en'];
+                if (isset($data[$field])) {
+                    $this->localizedFields[$field] = $data[$field];
+                    $defaultValue = \reset($data[$field]);
+                    if (array_key_exists('en', $data[$field])) {
+                        $defaultValue = $data[$field]['en'];
+                    }
+                    $data[$field] = $defaultValue;
                 }
-                $data[$field] = $defaultValue;
             }
             $event->setData($data);
         }

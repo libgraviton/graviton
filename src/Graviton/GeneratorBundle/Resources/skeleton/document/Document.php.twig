@@ -3,6 +3,9 @@
 namespace {{ base }}Document;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+
+{% set translatableFields = [] %}
 
 /**
  * {{ base }}Document\{{ document }}
@@ -13,7 +16,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class {{ document }}
+class {{ document }} implements TranslatableDocumentInterface
 {
     /**
      * @var MongoId $id
@@ -55,6 +58,10 @@ class {{ document }}
         return $this->id;
     }
 {% for field in fields %}
+
+    {% if field.translatable is defined and field.translatable == true %}
+        {% set translatableFields = translatableFields|merge([field.fieldName]) %}
+    {% endif %}
 
     /**
      * Get {{ field.fieldName }}
@@ -144,4 +151,15 @@ class {{ document }}
     }
 {% endif %}
 {% endfor %}
+
+    /**
+    * return translatable field names
+    *
+    * @return string[]
+    */
+    public function getTranslatableFields()
+    {
+        return array('{{ translatableFields|join('\',\'') }}');
+    }
+
 }

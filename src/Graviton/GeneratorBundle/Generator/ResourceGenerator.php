@@ -3,6 +3,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Doctrine\Common\Inflector\Inflector;
+use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Filesystem\Filesystem;
@@ -87,6 +88,11 @@ class ResourceGenerator extends AbstractGenerator
         $basename = substr($document, 0, -6);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
+        // do we have a json path passed?
+        if (!is_null($this->input->getOption('json'))) {
+            $this->json = new JsonDefinition($this->input->getOption('json'));
+        }
+
         // add more info to the fields array
         $fields = array_map(
             function ($field) {
@@ -96,6 +102,7 @@ class ResourceGenerator extends AbstractGenerator
                 if (substr($field['type'], -2) == '[]') {
                     $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
                 }
+
                 // @todo this assumtion is a hack and needs fixing
                 if ($field['type'] === 'array') {
                     $field['serializerType'] = 'array<string>';
@@ -104,15 +111,26 @@ class ResourceGenerator extends AbstractGenerator
                 // add singular form
                 $field['singularName'] = Inflector::singularize($field['fieldName']);
 
+                // add information from our json file (if provided)..
+                if (
+                    $this->json instanceof JsonDefinition &&
+                    $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
+                ) {
+                    $fieldInformation = $this->json->getField($field['fieldName'])
+                                                   ->getDefAsArray();
+
+                    // in this context, the default type is the doctrine type..
+                    if (isset($fieldInformation['doctrineType'])) {
+                        $fieldInformation['type'] = $fieldInformation['doctrineType'];
+                    }
+
+                    $field = array_merge($field, $fieldInformation);
+                }
+
                 return $field;
             },
             $fields
         );
-
-        // do we have a json path passed?
-        if (!is_null($this->input->getOption('json'))) {
-            $this->json = new JsonDefinition($this->input->getOption('json'));
-        }
 
         $parameters = array(
             'document' => $document,
@@ -121,6 +139,7 @@ class ResourceGenerator extends AbstractGenerator
             'format' => $format,
             'author' => $author,
             'email' => $email,
+            'json' => $this->json,
             'fields' => $fields,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
@@ -534,6 +553,12 @@ class ResourceGenerator extends AbstractGenerator
         $this->renderFile(
             'model/schema.json.twig',
             $dir . '/Resources/config/schema/' . $document . '.json',
+            $parameters
+        );
+
+        $this->renderFile(
+            'validator/validation.xml.twig',
+            $dir . '/Resources/config/validation.xml',
             $parameters
         );
 

@@ -36,6 +36,12 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function __construct($name, array $fields)
     {
         $this->name = $name;
+
+        // sets ourselves as parent on our fields
+        foreach ($fields as $key => $field) {
+            $fields[$key]->setParentHash($this);
+        }
+
         $this->fields = $fields;
     }
 
@@ -113,6 +119,20 @@ class JsonDefinitionHash implements DefinitionElementInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * Returns the definition as array..
+     *
+     * @return string[] the definiton
+     */
+    public function getDefAsArray()
+    {
+        return array(
+            'type' => $this->getType(),
+            'doctrineType' => $this->getTypeDoctrine(),
+            'serializerType' => 'array'
+        );
     }
 
     /**
