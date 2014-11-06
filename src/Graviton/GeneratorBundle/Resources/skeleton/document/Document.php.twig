@@ -25,8 +25,12 @@ class {{ document }} implements TranslatableDocumentInterface
 
 {% for field in fields %}
     /**
-     * @var {{ field.type }} ${{ field.fieldName }}
-     */
+{% if 'Graviton' in field.type %}
+    * @var \{{ field.type }} ${{ field.fieldName }}
+{% else %}
+    * @var {{ field.type }} ${{ field.fieldName }}
+{% endif %}
+    */
 {% if field.type == 'array' %}
     protected ${{ field.fieldName }} = array();
 {% else %}

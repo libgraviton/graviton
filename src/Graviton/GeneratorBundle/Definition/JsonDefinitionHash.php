@@ -131,7 +131,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
         return array(
             'type' => $this->getType(),
             'doctrineType' => $this->getTypeDoctrine(),
-            'serializerType' => 'array'
+            'serializerType' => 'array',
+            'isClassType' => false
         );
     }
 

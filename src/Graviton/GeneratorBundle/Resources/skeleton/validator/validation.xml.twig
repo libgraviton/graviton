@@ -26,6 +26,10 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">bool</option></constraint>']) %}
     {% endif %}
 
+    {% if field.isClassType is defined and field.isClassType == true %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
+    {% endif %}
+
     {% if thisCons is not empty %}
         <property name="{{ field.fieldName }}">
             {{ thisCons|join("\n") }}
