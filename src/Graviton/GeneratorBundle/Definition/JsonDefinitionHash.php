@@ -35,6 +35,13 @@ class JsonDefinitionHash implements DefinitionElementInterface
     private $parentName;
 
     /**
+     * Whether this is an array hash, so an array of ourselves.
+     *
+     * @var bool true if yes
+     */
+    private $isArrayHash = false;
+
+    /**
      * Constructor
      *
      * @param string                $name   Name of this hash
@@ -107,7 +114,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
         return array(
             'type' => $this->getType(),
             'doctrineType' => $this->getTypeDoctrine(),
-            'serializerType' => $this->getClassName(true),
+            'serializerType' => $this->getTypeSerializer(),
             'isClassType' => true
         );
     }
@@ -129,7 +136,31 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getTypeDoctrine()
     {
-        return $this->getClassName(true);
+        $ret = $this->getClassName(true);
+
+        // make sure we're recognized as array ;-)
+        if ($this->isArrayHash()) {
+            $ret .= '[]';
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the field type in a serializer-understandable way..
+     *
+     * @return string Type
+     */
+    public function getTypeSerializer()
+    {
+        $ret = $this->getClassName(true);
+
+        // make sure we're recognized as array ;-)
+        if ($this->isArrayHash()) {
+            $ret = 'array<'.$ret.'>';
+        }
+
+        return $ret;
     }
 
     /**
@@ -140,6 +171,28 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function isClassType()
     {
         return true;
+    }
+
+    /**
+     * true if this is an array hash
+     *
+     * @return boolean
+     */
+    public function isArrayHash()
+    {
+        return $this->isArrayHash;
+    }
+
+    /**
+     * set if this is an array hash
+     *
+     * @param boolean $isArrayHash if array hash or not
+     *
+     * @return boolean
+     */
+    public function setIsArrayHash($isArrayHash)
+    {
+        $this->isArrayHash = $isArrayHash;
     }
 
     /**
@@ -158,7 +211,12 @@ class JsonDefinitionHash implements DefinitionElementInterface
 
         foreach ($this->getFields() as $field) {
             $thisDef = clone $field->getDef();
+
             $thisDef->name = str_replace($this->getName() . '.', '', $thisDef->name);
+
+            if ($this->isArrayHash()) {
+                $thisDef->name = preg_replace('/([0-9]+)\./', '', $thisDef->name);
+            }
 
             $ret['target']['fields'][] = (array) $thisDef;
         }

@@ -160,6 +160,7 @@ class JsonDefinition
         // object generation (dot-notation parsing)
         $fieldHierarchy = array();
         $retFields = array();
+        $arrayHashes = array();
         foreach ($fields as $fieldName => $field) {
             if (
                 strpos($fieldName, '.') !== false
@@ -172,7 +173,14 @@ class JsonDefinition
                         $fieldHierarchy[$nameParts[0]][$nameParts[1]] = $field;
                         break;
                     case 3:
-                        $fieldHierarchy[$nameParts[0]][$nameParts[1]][$nameParts[2]] = $field;
+                        // handle "0-9" in second part (like field.0.val)
+                        // ..handle as normal hash, but set array property
+                        if (preg_match('([0-9]+)', $nameParts[1])) {
+                            $fieldHierarchy[$nameParts[0]][$nameParts[2]] = $field;
+                            $arrayHashes[] = $nameParts[0];
+                        } else {
+                            $fieldHierarchy[$nameParts[0]][$nameParts[1]][$nameParts[2]] = $field;
+                        }
                         break;
                 }
             } else {
@@ -186,6 +194,9 @@ class JsonDefinition
                 $subElements
             );
             $retFields[$fieldName]->setParentName($this->getId());
+            if (in_array($fieldName, $arrayHashes)) {
+                $retFields[$fieldName]->setIsArrayHash(true);
+            }
         }
 
         return $retFields;

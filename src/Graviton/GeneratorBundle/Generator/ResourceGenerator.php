@@ -508,6 +508,10 @@ class ResourceGenerator extends AbstractGenerator
             $idField = $this->json->getField('id');
             if (!is_null($idField)) {
                 $parameters['idField'] = $idField->getDefAsArray();
+            } else {
+                // if there is a json file and no id defined - so we don't do one here..
+                // we leave it in the document though but we don't wanna output it..
+                $parameters['noIdField'] = true;
             }
         }
 

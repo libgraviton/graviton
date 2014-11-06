@@ -5,7 +5,9 @@
 {% if idField is defined %}
     <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
 {% else %}
+{% if noIdField is not defined %}
     <property name="id" type="string" accessor-getter="getId"/>
+{% endif %}
 {% endif %}
 
 {% for field in fields %}

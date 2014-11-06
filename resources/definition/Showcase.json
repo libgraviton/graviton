@@ -73,6 +73,12 @@
                 "translatable": true,
                 "title": "Meaning of the code",
                 "description": "Some text to the code.."
+            },
+            {
+                "name": "nestedArray.0.name",
+                "type": "varchar",
+                "title": "Name of nested array",
+                "description": "Some text"
             }
         ]
     }
