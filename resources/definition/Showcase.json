@@ -1,0 +1,79 @@
+{
+    "id": "Showcase",
+    "description": "A service showcasing all of our generator features",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/hans/showcase/"
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "INT",
+                "description": "Unique identifier for an item."
+            },
+            {
+                "name": "testField",
+                "type": "varchar",
+                "title": "A testing title",
+                "description": "A lengthy and detailed description.",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "someOtherField",
+                "type": "varchar",
+                "title": "Another field",
+                "description": "A very nice field",
+                "translatable": true
+            },
+            {
+                "name": "aBoolean",
+                "type": "boolean",
+                "title": "Some boolean",
+                "description": "Everybody likes a good ol' bool",
+                "required": true
+            },
+            {
+                "name": "modificationDate",
+                "type": "datetime",
+                "title": "An important date",
+                "description": "Don't forget to save the date"
+            },
+            {
+                "name": "contact",
+                "type": "class:Graviton\\PersonBundle\\Document\\PersonContact",
+                "title": "A single contact element",
+                "description": "How to contact someone..",
+                "required": false
+            },
+            {
+                "name": "contacts",
+                "type": "class:Graviton\\PersonBundle\\Document\\PersonContact[]",
+                "title": "An array of contact elements..",
+                "description": "Other ways to contact someone.."
+            },
+            {
+                "name": "contactCode.id",
+                "type": "integer",
+                "title": "Unique identifier",
+                "description": "Identifier of this code"
+            },
+            {
+                "name": "contactCode.someDate",
+                "type": "datetime",
+                "title": "Another datetime",
+                "description": "Who doesn't like a datetime??"
+            },
+            {
+                "name": "contactCode.text",
+                "type": "varchar",
+                "translatable": true,
+                "title": "Meaning of the code",
+                "description": "Some text to the code.."
+            }
+        ]
+    }
+}

@@ -63,13 +63,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             'Path to the json definition.'
         )
             ->addOption(
-                'bundleNameMask',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Name mask',
-                'GravitonDyn/%sBundle'
-            )
-            ->addOption(
                 'srcDir',
                 '',
                 InputOption::VALUE_OPTIONAL,
@@ -107,7 +100,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $bundleNameMask = $input->getOption('bundleNameMask');
+        $bundleNameMask = 'GravitonDyn/%sBundle';
 
         /**
          * GENERATE THE BUNDLEBUNDLE
@@ -202,7 +195,40 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             $this->generateBundleBundleClass();
 
             /**
-             * GENERATE THE RESOURCE(S)
+             * GENERATE SUB-RESOURCES (HASHES)..
+             */
+            foreach ($jsonDef->getFields() as $field) {
+                if ($field->isHash()) {
+
+                    // get json for this hash and save to temp file..
+                    $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
+                    file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
+
+                    $arguments = array(
+                        'graviton:generate:resource',
+                        '--entity' => $bundleName . ':' . $field->getClassName(),
+                        '--format' => 'xml',
+                        '--json' => $tempPath,
+                        '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
+                        '--with-repository' => null
+                    );
+
+                    $genStatus = $this->executeCommand(
+                        $arguments,
+                        $output
+                    );
+
+                    // throw away the temp json ;-)
+                    unlink($tempPath);
+
+                    if ($genStatus !== 0) {
+                        throw new \LogicException('Create subresource call failed, see above. Exiting.');
+                    }
+                }
+            }
+
+            /**
+             * GENERATE THE MAIN RESOURCE(S)
              */
             $arguments = array(
                 'graviton:generate:resource',

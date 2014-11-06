@@ -74,7 +74,12 @@ class JsonDefinition
      */
     public function getDescription()
     {
-        return $this->doc->description;
+        $ret = '';
+        if (isset($this->doc->description)) {
+            $ret = $this->doc->description;
+        }
+
+        return $ret;
     }
 
     /**
@@ -157,15 +162,9 @@ class JsonDefinition
         $retFields = array();
         foreach ($fields as $fieldName => $field) {
             if (
-                strpos(
-                    $fieldName,
-                    '.'
-                ) !== false
+                strpos($fieldName, '.') !== false
             ) {
-                $nameParts = explode(
-                    '.',
-                    $fieldName
-                );
+                $nameParts = explode('.', $fieldName);
 
                 // hm, i'm too uninspired to make this recursive..
                 switch (count($nameParts)) {
@@ -186,6 +185,7 @@ class JsonDefinition
                 $fieldName,
                 $subElements
             );
+            $retFields[$fieldName]->setParentName($this->getId());
         }
 
         return $retFields;

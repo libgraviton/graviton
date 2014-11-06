@@ -59,6 +59,16 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the definition
+     *
+     * @return \stdClass definition
+     */
+    public function getDef()
+    {
+        return $this->def;
+    }
+
+    /**
      * Returns the field name
      *
      * @return string Name

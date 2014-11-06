@@ -503,21 +503,6 @@ class ResourceGenerator extends AbstractGenerator
     {
         // if we got a json file; get more stuff from there and generate more specific stuff..
         if ($this->json instanceof JsonDefinition) {
-            $fields = $parameters['fields'];
-
-            foreach ($fields as $key => $field) {
-                $thisField = $this->json->getField($field['fieldName']);
-
-                if (!is_null($thisField) && $thisField->isHash()) {
-                    // @todo don't include the real type - just write array? full validation or not?
-                    //$field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
-                    $field['serializerType'] = 'array';
-                }
-                $fields[$key] = $field;
-            }
-
-            $parameters['fields'] = $fields;
-
             // special handling of specs for "id" field..
             // if we have data for id field, pass it along
             $idField = $this->json->getField('id');
