@@ -17,16 +17,16 @@ class ValidationExceptionListener
 {
     /**
      * Service container
-     * 
+     *
      * @var Symfony\Component\DependencyInjection\Container
      */
     private $container;
 
     /**
      * Handle the exception and send the right response
-     * 
+     *
      * @param GetResponseForExceptionEvent $event Event
-     * 
+     *
      * @return void
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -36,10 +36,10 @@ class ValidationExceptionListener
             if (!($response = $exception->getResponse())) {
                 $response = $this->container->get('graviton.rest.response.400');
             }
-            
+
             $serializer = $this->container->get('graviton.rest.serializer');
             $serializerContext = clone $this->container->get('graviton.rest.serializer.serializercontext');
-            
+
             $response->setContent(
                 $serializer->serialize(
                     $exception->getViolations(),
@@ -51,12 +51,12 @@ class ValidationExceptionListener
             $event->setResponse($response);
         }
     }
-    
+
     /**
      * Set the container
-     * 
+     *
      * @param Symfony\Component\DependencyInjection\Container $container Container
-     * 
+     *
      * @return void
      */
     public function setContainer($container)

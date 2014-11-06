@@ -51,33 +51,33 @@ class JsonInput
     {
         // Get the entity manager
         $em = $model->getRepository()->getDocumentManager();
-        
+
         // Get all fields of this document / entity
         $fields = $em->getClassMetadata($model->getEntityClass())->getFieldNames();
-        
+
         // Get class metadata
         $metadata = $this->validator->getMetadataFor($model->getEntityClass());
-        
+
         // Get properties with constraints
         $props = $metadata->getConstrainedProperties();
-        
+
         // Decode the json from request
         $input = json_decode($input, true);
-        
+
         // Create a new ConstraintViolationList
         $violations = new ConstraintViolationList();
-        
+
         foreach ($props as $key => $prop) {
-            // check if 
+            // check if
             $propertyMetadata = $metadata->getPropertyMetadata($prop);
             $constraints = $propertyMetadata[0]->constraints;
-            
-            // ToDo: Check for nested documents... 
+
+            // ToDo: Check for nested documents...
             // If the property is a nested document, the constraint of this prop will be "Valid"
             // http://symfony.com/doc/2.3/reference/constraints/Valid.html
             // In this case, load metadata for this class an check it.
             // constraints = $this->validate(input['subobject'], subobjectclass or whatever...);
-            
+
             // Check every single prop
             if (isset($input[$prop])) {
                 $val = $input[$prop];
@@ -90,7 +90,7 @@ class JsonInput
                     $violations->addAll($this->createNewViolationList($prop, $validationResult));
                 }
             }
-            
+
             // Check for non existing properties.
             // Don't know if this is necessary, remove it if not...
             if (is_array($input)) {
@@ -104,12 +104,12 @@ class JsonInput
                         $key,
                         $key
                     );
-                    
+
                     $violations->add($violation);
                 }
             }
         }
-        
+
         return $violations;
     }
 
