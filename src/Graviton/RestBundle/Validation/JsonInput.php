@@ -40,7 +40,7 @@ class JsonInput
     }
 
     /**
-     * Validate the json input values and check for non existing values
+     * Validate the json input and check for non existing values
      *
      * @param string        $input Json input string
      * @param DocumentModel $model Model
@@ -49,25 +49,36 @@ class JsonInput
      */
     public function validate($input, DocumentModel $model)
     {
-        // get all fields of this document
-        $manager = $model->getRepository()->getDocumentManager();
-        $entityFields = $manager->getClassMetadata($model->getEntityClass())
-            ->getFieldNames();
-
-        // get validation info
-        $classMetadata = $this->validator->getMetadataFor($model->getEntityClass());
-        $constrainedProps = $classMetadata->getConstrainedProperties();
-
+        // Get the entity manager
+        $em = $model->getRepository()->getDocumentManager();
+        
+        // Get all fields of this document / entity
+        $fields = $em->getClassMetadata($model->getEntityClass())->getFieldNames();
+        
+        // Get class metadata
+        $metadata = $this->validator->getMetadataFor($model->getEntityClass());
+        
+        // Get properties with constraints
+        $props = $metadata->getConstrainedProperties();
+        
+        // Decode the json from request
         $input = json_decode($input, true);
-
+        
+        // Create a new ConstraintViolationList
         $violations = new ConstraintViolationList();
-
-        // Validate input values
-        foreach ($constrainedProps as $prop) {
-            $metadata = $classMetadata->getPropertyMetadata($prop);
-            $constraints = $metadata[0]->constraints;
-
-            // if the value is set, validate...
+        
+        foreach ($props as $key => $prop) {
+            // check if 
+            $propertyMetadata = $metadata->getPropertyMetadata($prop);
+            $constraints = $propertyMetadata[0]->constraints;
+            
+            // ToDo: Check for nested documents... 
+            // If the property is a nested document, the constraint of this prop will be "Valid"
+            // http://symfony.com/doc/2.3/reference/constraints/Valid.html
+            // In this case, load metadata for this class an check it.
+            // constraints = $this->validate(input['subobject'], subobjectclass or whatever...);
+            
+            // Check every single prop
             if (isset($input[$prop])) {
                 $val = $input[$prop];
                 $validationResult = $this->validator->validateValue($val, $constraints);
@@ -79,24 +90,26 @@ class JsonInput
                     $violations->addAll($this->createNewViolationList($prop, $validationResult));
                 }
             }
-        }
-
-        // Check for non existing attributes
-        foreach (array_keys($input) as $key) {
-            if (!in_array($key, $entityFields)) {
-                $violation = new ConstraintViolation(
-                    'Attribute does not exist!',
-                    'Attribute does not exist!',
-                    array(),
-                    $key,
-                    $key,
-                    $key
-                );
-
-                $violations->add($violation);
+            
+            // Check for non existing properties.
+            // Don't know if this is necessary, remove it if not...
+            if (is_array($input)) {
+                $diff = array_diff(array_keys($input), $fields);
+                foreach ($diff as $field) {
+                    $violation = new ConstraintViolation(
+                        'Attribute does not exist!',
+                        'Attribute does not exist!',
+                        array(),
+                        $key,
+                        $key,
+                        $key
+                    );
+                    
+                    $violations->add($violation);
+                }
             }
         }
-
+        
         return $violations;
     }
 
