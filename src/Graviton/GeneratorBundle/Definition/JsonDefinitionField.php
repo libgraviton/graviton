@@ -20,9 +20,26 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     private $doctrineTypeMap = array(
         self::TYPE_STRING => 'string',
-        self::TYPE_INTEGER => 'integer',
-        self::TYPE_DATETIME => 'date'
+        self::TYPE_INTEGER => 'int',
+        self::TYPE_LONG => 'int',
+        self::TYPE_DATETIME => 'date',
+        self::TYPE_BOOLEAN => 'boolean'
     );
+
+    private $serializerTypeMap = array(
+        self::TYPE_STRING => 'string',
+        self::TYPE_INTEGER => 'integer',
+        self::TYPE_LONG => 'integer',
+        self::TYPE_DATETIME => 'DateTime',
+        self::TYPE_BOOLEAN => 'boolean'
+    );
+
+    /**
+     * This is a ref to the parent hash of this field (if any)
+     *
+     * @var JsonDefinitionHash
+     */
+    private $parentHash;
 
     /**
      * Our definition
@@ -52,6 +69,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the whole definition in array form
+     *
+     * @return array Definition
+     */
+    public function getDefAsArray()
+    {
+        $ret = (array) $this->def;
+        $ret['doctrineType'] = $this->getTypeDoctrine();
+        $ret['serializerType'] = $this->getTypeSerializer();
+
+        return $ret;
+    }
+
+    /**
      * Returns the field type in a doctrine-understandable way..
      *
      * @return string Type
@@ -73,7 +104,22 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        return $this->def->type;
+        return strtolower($this->def->type);
+    }
+
+    /**
+     * Returns the field type in a serializer-understandable way..
+     *
+     * @return string Type
+     */
+    public function getTypeSerializer()
+    {
+        $ret = false;
+        if (isset($this->serializerTypeMap[$this->getType()])) {
+            $ret = $this->serializerTypeMap[$this->getType()];
+        }
+
+        return $ret;
     }
 
     /**
@@ -100,6 +146,28 @@ class JsonDefinitionField implements DefinitionElementInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * Returns the parent hash (if any)
+     *
+     * @return JsonDefinitionHash The parent hash
+     */
+    public function getParentHash()
+    {
+        return $this->parentHash;
+    }
+
+    /**
+     * Sets the parent hash
+     *
+     * @param JsonDefinitionHash $parentHash The parent hash
+     *
+     * @return void
+     */
+    public function setParentHash(JsonDefinitionHash $parentHash)
+    {
+        $this->parentHash = $parentHash;
     }
 
     /**

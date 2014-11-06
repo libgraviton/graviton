@@ -1,13 +1,13 @@
 <?php
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Load routes for all rest services
@@ -49,28 +49,6 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     }
 
     /**
-     * set container
-     *
-     * @param ContainerInterface $container global container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * get the container
-     *
-     * @return ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
      * Load routes for all services tagged with graviton.rest
      *
      * @param string $resource unused
@@ -95,19 +73,6 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param string $resource unused
-     * @param string $type     Type to match against
-     *
-     * @return Boolean
-     */
-    public function supports($resource, $type = null)
-    {
-        return 'graviton.rest.routing.loader' === $type;
-    }
-
-    /**
      * Loads the ContainerBuilder from the cache.
      *
      * @return ContainerBuilder
@@ -116,7 +81,11 @@ class BasicLoader extends Loader implements ContainerAwareInterface
      */
     protected function getContainerBuilder()
     {
-        if (!is_file($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
+        if (!is_file(
+            $cachedFile = $this->getContainer()
+                               ->getParameter('debug.container.dump')
+        )
+        ) {
             throw new \LogicException('Debug information about the container could not be found.');
         }
 
@@ -126,6 +95,28 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         $loader->load($cachedFile);
 
         return $container;
+    }
+
+    /**
+     * get the container
+     *
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * set container
+     *
+     * @param ContainerInterface $container global container
+     *
+     * @return void
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -141,61 +132,76 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         list($app, $bundle, , $entity) = explode('.', $service);
         $resource = implode('.', array($app, $bundle, 'rest', $entity));
 
-        $this->loadReadOnlyRoutes($service, $resource);
+        $this->loadReadOnlyRoutes($service, $resource, $serviceConfig);
         if (!($serviceConfig[0] && array_key_exists('read-only', $serviceConfig[0]))) {
-            $this->loadWriteRoutes($service, $resource);
+            $this->loadWriteRoutes($service, $resource, $serviceConfig);
         }
     }
 
     /**
      * generate ro routes
      *
-     * @param string $service  service name
-     * @param string $resource resource name
+     * @param string $service       service name
+     * @param string $resource      resource name
+     * @param array  $serviceConfig service configuration
      *
      * @return void
      */
-    public function loadReadOnlyRoutes($service, $resource)
+    public function loadReadOnlyRoutes($service, $resource, $serviceConfig)
     {
-        $actionGet = ActionUtils::getRouteGet($service);
-        $this->routes->add($resource.'.get', $actionGet);
+        $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
+        $this->routes->add($resource . '.get', $actionGet);
 
-        $actionAll = ActionUtils::getRouteAll($service);
-        $this->routes->add($resource.'.all', $actionAll);
+        $actionAll = ActionUtils::getRouteAll($service, $serviceConfig);
+        $this->routes->add($resource . '.all', $actionAll);
 
-        $actionOptions = ActionUtils::getRouteOptions($service);
-        $this->routes->add($resource.'.options', $actionOptions);
+        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig);
+        $this->routes->add($resource . '.options', $actionOptions);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, 'collection');
-        $this->routes->add($resource.'.canonicalSchema', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection');
+        $this->routes->add($resource . '.canonicalSchema', $actionOptions);
 
-        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service);
-        $this->routes->add($resource.'.canonicalIdSchema', $actionOptions);
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig);
+        $this->routes->add($resource . '.canonicalIdSchema', $actionOptions);
 
-        $actionOptions = ActionUtils::getRouteOptions($service, array('id' => '\w+'));
-        $this->routes->add($resource.'.idOptions', $actionOptions);
+        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array('id' => '\w+'));
+        $this->routes->add($resource . '.idOptions', $actionOptions);
     }
 
     /**
      * generate write routes
      *
-     * @param string $service  service name
-     * @param string $resource resource name
+     * @param string $service       service name
+     * @param string $resource      resource name
+     * @param array  $serviceConfig service configuration
      *
      * @return void
      */
-    public function loadWriteRoutes($service, $resource)
+    public function loadWriteRoutes($service, $resource, $serviceConfig)
     {
-        $actionPost = ActionUtils::getRoutePost($service);
-        $this->routes->add($resource.'.post', $actionPost);
+        $actionPost = ActionUtils::getRoutePost($service, $serviceConfig);
+        $this->routes->add($resource . '.post', $actionPost);
 
-        $actionPut = ActionUtils::getRoutePut($service);
-        $this->routes->add($resource.'.put', $actionPut);
+        $actionPut = ActionUtils::getRoutePut($service, $serviceConfig);
+        $this->routes->add($resource . '.put', $actionPut);
 
-        $actionPatch = ActionUtils::getRoutePatch($service);
-        $this->routes->add($resource.'.patch', $actionPatch);
+        $actionPatch = ActionUtils::getRoutePatch($service, $serviceConfig);
+        $this->routes->add($resource . '.patch', $actionPatch);
 
-        $actionDelete = ActionUtils::getRouteDelete($service);
-        $this->routes->add($resource.'.delete', $actionDelete);
+        $actionDelete = ActionUtils::getRouteDelete($service, $serviceConfig);
+        $this->routes->add($resource . '.delete', $actionDelete);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param string $resource unused
+     * @param string $type     Type to match against
+     *
+     * @return Boolean
+     */
+    public function supports($resource, $type = null)
+    {
+        return 'graviton.rest.routing.loader' === $type;
     }
 }

@@ -61,15 +61,26 @@ class SelfLinkResponseListener implements ContainerAwareInterface
             $routeName = substr($routeName, 0, -4).'get';
         }
 
-        $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
+        /** if the request failed in the RestController, $request will not have an record id in
+         case of a POST and $router->generate() will fail. that's why we catch it and fail silently
+         by not including our header in the response. i hope that's a good compromise. **/
 
-        // append rel=self link to link headers
-        $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
+        $addHeader = true;
+        try {
+            $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
+        } catch (\Exception $e) {
+            $addHeader = false;
+        }
 
-        // overwrite link headers with new headers
-        $response->headers->set('Link', (string) $linkHeader);
+        if ($addHeader) {
+            // append rel=self link to link headers
+            $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
 
-        $event->setResponse($response);
+            // overwrite link headers with new headers
+            $response->headers->set('Link', (string) $linkHeader);
+
+            $event->setResponse($response);
+        }
     }
 
     /**

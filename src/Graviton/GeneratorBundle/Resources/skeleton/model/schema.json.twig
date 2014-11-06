@@ -1,17 +1,38 @@
 {
+
+{% if json is defined %}
+  "description": {{ json.getDescription()|json_encode() }},
+{% else %}
   "description": "@todo replace me",
+{% endif %}
+
   "properties": {
+{% set requiredFields = [] %}
 {% for field in fields %}
     "{{ field.fieldName }}": {
-      "title": "{{ field.fieldName }}",
+
+{% if field.title is defined %}
+      "title": {{ field.title|json_encode() }},
+{% else %}
+      "title": {{ field.fieldName|json_encode() }},
+{% endif %}
+
+{% if field.description is defined %}
+      "description": {{ field.description|json_encode() }}
+{% else %}
       "description": "@todo replace me"
+{% endif %}
+
+{% if field.required is defined and field.required == true %}
+    {% set requiredFields = requiredFields|merge([field.fieldName]) %}
+{% endif %}
+
     },
 {% endfor %}
     "id": {
       "title": "ID",
-      "description": "@todo replace me"
+      "description": "Unique identifier"
     }
   },
-  "required": [
-  ]
+  "required": {{ requiredFields|json_encode() }}
 }

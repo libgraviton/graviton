@@ -15,11 +15,15 @@ interface DefinitionElementInterface
 {
 
 
-    const TYPE_STRING = 'VARCHAR';
+    const TYPE_STRING = 'varchar';
 
-    const TYPE_INTEGER = 'INT';
+    const TYPE_INTEGER = 'int';
 
-    const TYPE_DATETIME = 'DATETIME';
+    const TYPE_LONG = 'bigint';
+
+    const TYPE_DATETIME = 'datetime';
+
+    const TYPE_BOOLEAN = 'boolean';
 
     const TYPE_HASH = 'hash';
 
@@ -50,4 +54,11 @@ interface DefinitionElementInterface
      * @return string
      */
     public function getTypeDoctrine();
+
+    /**
+     * Returns the definition as array
+     *
+     * @return string[] definiton
+     */
+    public function getDefAsArray();
 }
