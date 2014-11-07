@@ -174,6 +174,29 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Well.. a "bag of primitives" is basically if we're having an array
+     * (isArrayHash()=true) and we're only having primitive types
+     * in our fields with NO keys(!)
+     * get the difference: a hash forms an object with index keys
+     * (i.e. {"hans": "fred"}, BUT with the same type and NO keys
+     * we have a bag of primitives, ie. [3, 4, 5]
+     *
+     * @return boolean true if yes
+     */
+    public function isBagOfPrimitives()
+    {
+        $ret = true;
+        foreach ($this->getFields() as $key => $field) {
+            if (!preg_match('([0-9]+)', $key)) {
+                $ret = false;
+                break;
+            }
+        }
+        return $ret;
+
+    }
+
+    /**
      * true if this is an array hash
      *
      * @return boolean
@@ -235,13 +258,22 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getClassName($fq = false)
     {
-        $ret = ucfirst($this->getName());
-        if (!is_null($this->getParentName())) {
-            $ret = $this->getParentName() . $ret;
-        }
+        if (!$this->isBagOfPrimitives()) {
+            $ret = ucfirst($this->getName());
+            if (!is_null($this->getParentName())) {
+                $ret = $this->getParentName() . $ret;
+            }
 
-        if (true === $fq) {
-            $ret = 'GravitonDyn\ShowcaseBundle\Document\\' . $ret;
+            if (true === $fq) {
+                $ret = 'GravitonDyn\ShowcaseBundle\Document\\' . $ret;
+            }
+        } else {
+            // ok, we're a bag of primitives.. (ie int[] or string[])
+            // let's just get the first field and take that
+            $thisFields = $this->getFields();
+            $firstField = array_shift($thisFields);
+
+            $ret = $firstField->getType();
         }
 
         return $ret;

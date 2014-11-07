@@ -125,6 +125,23 @@ class JsonDefinition
     }
 
     /**
+     * Returns the Controller classname this services' controller shout inherit.
+     * Defaults to the RestController of the RestBundle of course.
+     *
+     * @return string base controller
+     */
+    public function getBaseController()
+    {
+        $ret = 'RestController';
+
+        if (isset($this->doc->service->baseController) && strlen($this->doc->service->baseController) > 0) {
+            $ret = $this->doc->service->baseController;
+        }
+
+        return $ret;
+    }
+
+    /**
      * Returns a specific field or null
      *
      * @param string $name Field name
@@ -162,15 +179,18 @@ class JsonDefinition
         $retFields = array();
         $arrayHashes = array();
         foreach ($fields as $fieldName => $field) {
-            if (
-                strpos($fieldName, '.') !== false
-            ) {
+            if (strpos($fieldName, '.') !== false) {
                 $nameParts = explode('.', $fieldName);
 
                 // hm, i'm too uninspired to make this recursive..
                 switch (count($nameParts)) {
                     case 2:
                         $fieldHierarchy[$nameParts[0]][$nameParts[1]] = $field;
+
+                        if (preg_match('([0-9]+)', $nameParts[1])) {
+                            $arrayHashes[] = $nameParts[0];
+                        }
+
                         break;
                     case 3:
                         // handle "0-9" in second part (like field.0.val)

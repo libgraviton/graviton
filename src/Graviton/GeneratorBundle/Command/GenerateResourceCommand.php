@@ -28,12 +28,19 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     {
         parent::configure();
 
-        $this->addOption(
-            'json',
-            '',
-            InputOption::VALUE_OPTIONAL,
-            'Path to the json definition.'
-        )
+        $this
+            ->addOption(
+                'json',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Path to the json definition.'
+            )
+            ->addOption(
+                'no-controller',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Pass if no controller should be generated'
+            )
             ->setName('graviton:generate:resource')
             ->setDescription('Generates a graviton rest resource');
     }
@@ -70,12 +77,9 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     {
         return new ResourceGenerator(
             $this->input,
-            $this->getContainer()
-                 ->get('filesystem'),
-            $this->getContainer()
-                 ->get('doctrine'),
-            $this->getContainer()
-                 ->get('kernel')
+            $this->getContainer()->get('filesystem'),
+            $this->getContainer()->get('doctrine'),
+            $this->getContainer()->get('kernel')
         );
     }
 }
