@@ -3,6 +3,7 @@
     "description": "A service showcasing all of our generator features",
     "service": {
         "readOnly": false,
+        "baseController": "\\Graviton\\CoreBundle\\Controller\\ShowcaseExtensionController",
         "routerBase": "/hans/showcase/"
     },
     "target": {
@@ -56,12 +57,6 @@
                 "description": "Other ways to contact someone.."
             },
             {
-                "name": "contactCode.id",
-                "type": "integer",
-                "title": "Unique identifier",
-                "description": "Identifier of this code"
-            },
-            {
                 "name": "contactCode.someDate",
                 "type": "datetime",
                 "title": "Another datetime",
@@ -71,6 +66,7 @@
                 "name": "contactCode.text",
                 "type": "varchar",
                 "translatable": true,
+                "required": true,
                 "title": "Meaning of the code",
                 "description": "Some text to the code.."
             },
