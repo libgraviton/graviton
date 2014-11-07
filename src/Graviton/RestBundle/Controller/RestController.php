@@ -372,7 +372,7 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    private function getResponse($result)
+    protected function getResponse($result)
     {
         $response = $this->container->get('graviton.rest.response.404');
         if (!is_null($result)) {
@@ -391,7 +391,7 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    private function setContent(Response $response, $content)
+    protected function setContent(Response $response, $content)
     {
         $response->setContent(
             $this->getSerializer()->serialize(

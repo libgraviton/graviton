@@ -46,7 +46,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
     private $bundleBundleClassfile;
     private $bundleBundleList = array();
 
-
     /**
      * {@inheritDoc}
      *
@@ -62,39 +61,32 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             InputOption::VALUE_OPTIONAL,
             'Path to the json definition.'
         )
-            ->addOption(
-                'bundleNameMask',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Name mask',
-                'GravitonDyn/%sBundle'
-            )
-            ->addOption(
-                'srcDir',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Src Dir',
-                dirname(__FILE__) . '/../../../'
-            )
-            ->addOption(
-                'bundleBundleName',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Which BundleBundle to manipulate to add our stuff',
-                'GravitonDynBundleBundle'
-            )
-            ->addOption(
-                'bundleFormat',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Which format',
-                'xml'
-            )
-            ->setName('graviton:generate:dynamicbundles')
-            ->setDescription(
-                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
+             ->addOption(
+                 'srcDir',
+                 '',
+                 InputOption::VALUE_OPTIONAL,
+                 'Src Dir',
+                 dirname(__FILE__) . '/../../../'
+             )
+             ->addOption(
+                 'bundleBundleName',
+                 '',
+                 InputOption::VALUE_OPTIONAL,
+                 'Which BundleBundle to manipulate to add our stuff',
+                 'GravitonDynBundleBundle'
+             )
+             ->addOption(
+                 'bundleFormat',
+                 '',
+                 InputOption::VALUE_OPTIONAL,
+                 'Which format',
+                 'xml'
+             )
+             ->setName('graviton:generate:dynamicbundles')
+             ->setDescription(
+                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
-            );
+             );
     }
 
     /**
@@ -107,7 +99,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $bundleNameMask = $input->getOption('bundleNameMask');
+        $bundleNameMask = 'GravitonDyn/%sBundle';
 
         /**
          * GENERATE THE BUNDLEBUNDLE
@@ -121,25 +113,13 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             '',
             $namespace
         );
-        /*
-                $genStatus = $this->generateBundle(
-                    $namespace,
-                    $bundleName,
-                    $input,
-                    $output
-                );
 
-                if ($genStatus !== 0) {
-                    throw new \LogicException('Create BundeBundle call failed, see above. Exiting.');
-                }
-        */
         // bundlebundle stuff..
         $this->bundleBundleNamespace = $namespace;
         $this->bundleBundleDir = $input->getOption('srcDir') . $namespace;
         $this->bundleBundleClassname = $bundleName;
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/'
             . $this->bundleBundleClassname . '.php';
-
 
         // file or folder?
         $jsonPath = $input->getOption('json');
@@ -179,11 +159,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $bundleNameMask,
                 $thisIdName
             );
-            $bundleName = str_replace(
-                '/',
-                '',
-                $namespace
-            );
+            $bundleName = str_replace('/', '', $namespace);
 
             $genStatus = $this->generateBundle(
                 $namespace,
@@ -201,8 +177,52 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             // re-generate our bundlebundle..
             $this->generateBundleBundleClass();
 
+            // here we collect main class nodes from validation.xml files
+            $this->validationXmlNodes = array();
+
             /**
-             * GENERATE THE RESOURCE(S)
+             * GENERATE SUB-RESOURCES (HASHES)..
+             */
+            foreach ($jsonDef->getFields() as $field) {
+                if ($field->isHash() && !$field->isBagOfPrimitives()) {
+
+                    // get json for this hash and save to temp file..
+                    $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
+                    file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
+
+                    $arguments = array(
+                        'graviton:generate:resource',
+                        '--entity' => $bundleName . ':' . $field->getClassName(),
+                        '--format' => 'xml',
+                        '--json' => $tempPath,
+                        '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
+                        '--with-repository' => null,
+                        '--no-controller' => 'true'
+                    );
+
+                    $genStatus = $this->executeCommand(
+                        $arguments,
+                        $output
+                    );
+
+                    // throw away the temp json ;-)
+                    unlink($tempPath);
+
+                    if ($genStatus !== 0) {
+                        throw new \LogicException('Create subresource call failed, see above. Exiting.');
+                    }
+
+                    // look for validation.xml and save it from over-writing ;-)
+                    // we basically get the xml content that was generated in order to save them later..
+                    $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+                    if (file_exists($validationXml)) {
+                        $this->validationXmlNodes[] = file_get_contents($validationXml);
+                    }
+                }
+            }
+
+            /**
+             * GENERATE THE MAIN RESOURCE(S)
              */
             $arguments = array(
                 'graviton:generate:resource',
@@ -220,6 +240,43 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
 
             if ($genStatus !== 0) {
                 throw new \LogicException('Create resource call failed, see above. Exiting.');
+            }
+
+            /**
+             * what are we doing here?
+             * well, when we started to generate our subclasses (hashes in our own service) as own
+             * Document classes, i had the problem that the validation.xml always got overwritten by the
+             * console task. sadly, validation.xml is one file for all classes in the bundle.
+             * so here we merge the generated validation.xml we saved in the loop before back into the
+             * final validation.xml again. the final result should be one validation.xml including all
+             * the validation rules for all the documents in this bundle.
+             */
+            if (count($this->validationXmlNodes) > 0) {
+                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+                if (file_exists($validationXml)) {
+                    $doc = new \DOMDocument();
+                    $doc->formatOutput = true;
+                    $doc->preserveWhiteSpace = false;
+                    $doc->load($validationXml);
+
+                    foreach ($this->validationXmlNodes as $xmlNode) {
+                        $mergeDoc = new \DOMDocument();
+                        $mergeDoc->formatOutput = true;
+                        $mergeDoc->preserveWhiteSpace = false;
+                        $mergeDoc->loadXML($xmlNode);
+
+                        $importNode = $mergeDoc->getElementsByTagNameNS(
+                            'http://symfony.com/schema/dic/constraint-mapping',
+                            'class'
+                        )->item(0);
+
+                        $importNode = $doc->importNode($importNode, true);
+                        $doc->documentElement->appendChild($importNode);
+                    }
+
+                    // generate new validation.xml
+                    $doc->save($validationXml);
+                }
             }
 
             $output->writeln('');
@@ -299,6 +356,39 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         passthru($cmd, $exitCode);
 
         return $exitCode;
+    }
+
+
+    /**
+     * Returns an XMLElement from a generated validation.xml that was generated during Resources generation.
+     *
+     * @param string $namespace Namespace, ie GravitonDyn\ShowcaseBundle
+     *
+     * @return \SimpleXMLElement The element
+     */
+    public function getGeneratedValidationXml($namespace)
+    {
+        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
+        if (file_exists($validationXmlPath)) {
+            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
+            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
+        } else {
+            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
+        }
+
+        return $validationXml;
+    }
+
+    /**
+     * Returns the path to the generated validation.xml
+     *
+     * @param string $namespace Namespace
+     *
+     * @return string path
+     */
+    public function getGeneratedValidationXmlPath($namespace)
+    {
+        return dirname(__FILE__) . '/../../../' . $namespace . '/Resources/config/validation.xml';
     }
 
     /**

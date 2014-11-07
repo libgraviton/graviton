@@ -59,6 +59,16 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
+     * Returns the definition
+     *
+     * @return \stdClass definition
+     */
+    public function getDef()
+    {
+        return $this->def;
+    }
+
+    /**
      * Returns the field name
      *
      * @return string Name
@@ -78,6 +88,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         $ret = (array) $this->def;
         $ret['doctrineType'] = $this->getTypeDoctrine();
         $ret['serializerType'] = $this->getTypeSerializer();
+        $ret['isClassType'] = $this->isClassType();
 
         return $ret;
     }
@@ -89,11 +100,16 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getTypeDoctrine()
     {
-        $ret = false;
-        if (isset($this->doctrineTypeMap[$this->getType()])) {
-            $ret = $this->doctrineTypeMap[$this->getType()];
+        if ($this->isClassType()) {
+            $ret = $this->getClassName();
+        } else {
+            if (isset($this->doctrineTypeMap[$this->getType()])) {
+                $ret = $this->doctrineTypeMap[$this->getType()];
+            } else {
+                // our fallback default
+                $ret = $this->doctrineTypeMap[self::TYPE_STRING];
+            }
         }
-
         return $ret;
     }
 
@@ -104,7 +120,14 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        return strtolower($this->def->type);
+        $thisType = $this->def->type;
+        if ($this->isClassType()) {
+            $thisType = $this->getClassName();
+        } else {
+            $thisType = strtolower($thisType);
+        }
+
+        return $thisType;
     }
 
     /**
@@ -114,12 +137,45 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getTypeSerializer()
     {
-        $ret = false;
-        if (isset($this->serializerTypeMap[$this->getType()])) {
-            $ret = $this->serializerTypeMap[$this->getType()];
+        if ($this->isClassType()) {
+            $ret = $this->getClassName();
+            // collection?
+            if (substr($ret, -2) == '[]') {
+                $ret = 'array<'.substr($ret, 0, -2).'>';
+            }
+        } else {
+            if (isset($this->serializerTypeMap[$this->getType()])) {
+                $ret = $this->serializerTypeMap[$this->getType()];
+            } else {
+                // our fallback default
+                $ret = $this->serializerTypeMap[self::TYPE_STRING];
+            }
         }
-
         return $ret;
+    }
+
+    /**
+     * If this is a classType, return the defined class name
+     *
+     * @return string class name
+     */
+    public function getClassName()
+    {
+        $ret = null;
+        if ($this->isClassType()) {
+            $ret = str_replace('class:', '', $this->def->type);
+        }
+        return $ret;
+    }
+
+    /**
+     * Returns whether this is a class type (= not a primitive)
+     *
+     * @return boolean true if yes
+     */
+    public function isClassType()
+    {
+        return preg_match('/^class\:/', $this->def->type);
     }
 
     /**

@@ -9,6 +9,10 @@
             "email": "lucas.bickel@swisscom.com"
         },
         {
+            "name": "Dario Nuevo",
+            "email": "dario.nuevo@swisscom.com"
+        },
+        {
             "name": "Markus Dessler",
             "email": "markus.dessler@swisscom.com"
         },
@@ -46,8 +50,8 @@
     },
     "require": {
         "php": "~5.4",
-        "symfony/symfony": "~2.3",
-        "doctrine/orm": "~2.2",
+        "symfony/symfony": "~2.5",
+        "doctrine/orm": "~2.4",
         "doctrine/doctrine-bundle": ">=1.2",
         "twig/extensions": "~1.0",
         "symfony/swiftmailer-bundle": "~2.3",

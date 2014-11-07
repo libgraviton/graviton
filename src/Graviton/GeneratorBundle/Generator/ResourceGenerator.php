@@ -145,10 +145,26 @@ class ResourceGenerator extends AbstractGenerator
             'extension_alias' => Container::underscore($basename),
         );
 
+        // some stuff special for the "id" field..
+        if ($this->json instanceof JsonDefinition) {
+            // if we have data for id field, pass it along
+            $idField = $this->json->getField('id');
+            if (!is_null($idField)) {
+                $parameters['idField'] = $idField->getDefAsArray();
+            } else {
+                // if there is a json file and no id defined - so we don't do one here..
+                // we leave it in the document though but we don't wanna output it..
+                $parameters['noIdField'] = true;
+            }
+        }
+
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
         $this->generateModel($parameters, $dir, $document);
-        $this->generateController($parameters, $dir, $document);
+
+        if ($this->input->getOption('no-controller') != 'true') {
+            $this->generateController($parameters, $dir, $document);
+        }
     }
 
     /**
@@ -501,31 +517,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document)
     {
-        // if we got a json file; get more stuff from there and generate more specific stuff..
-        if ($this->json instanceof JsonDefinition) {
-            $fields = $parameters['fields'];
-
-            foreach ($fields as $key => $field) {
-                $thisField = $this->json->getField($field['fieldName']);
-
-                if (!is_null($thisField) && $thisField->isHash()) {
-                    // @todo don't include the real type - just write array? full validation or not?
-                    //$field['serializerType'] = 'array<' . implode(',', $thisField->getFieldDoctrineTypes()) . '>';
-                    $field['serializerType'] = 'array';
-                }
-                $fields[$key] = $field;
-            }
-
-            $parameters['fields'] = $fields;
-
-            // special handling of specs for "id" field..
-            // if we have data for id field, pass it along
-            $idField = $this->json->getField('id');
-            if (!is_null($idField)) {
-                $parameters['idField'] = $idField->getDefAsArray();
-            }
-        }
-
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
