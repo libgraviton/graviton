@@ -56,9 +56,16 @@ interface DefinitionElementInterface
     public function getTypeDoctrine();
 
     /**
+     * Returns the field type in a serializer-understandable way..
+     *
+     * @return string Type
+     */
+    public function getTypeSerializer();
+
+    /**
      * Returns the definition as array
      *
-     * @return string[] definiton
+     * @return string[] definition
      */
     public function getDefAsArray();
 }

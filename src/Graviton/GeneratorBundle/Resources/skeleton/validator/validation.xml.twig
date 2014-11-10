@@ -4,9 +4,11 @@
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
     <class name="{{ base }}Document\{{ document }}">
 
+{% if noIdField is not defined %}
         <property name="id">
             <constraint name="NotBlank"/>
         </property>
+{% endif %}
 
 {% for field in fields %}
 
@@ -24,6 +26,10 @@
 
     {% if field.type == 'boolean' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">bool</option></constraint>']) %}
+    {% endif %}
+
+    {% if field.isClassType is defined and field.isClassType == true %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
     {% endif %}
 
     {% if thisCons is not empty %}
