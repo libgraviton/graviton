@@ -42,7 +42,7 @@ class JsonInput
     /**
      * Validate the json input and check for non existing values
      *
-     * @param string        $input Json input string
+     * @param string        $input Json input (decoded -> Important for recursion)
      * @param DocumentModel $model Model
      *
      * @return ConstraintViolationList $violations Constraint violation list
@@ -60,9 +60,6 @@ class JsonInput
 
         // Get properties with constraints
         $props = $metadata->getConstrainedProperties();
-
-        // Decode the json from request
-        $input = json_decode($input, true);
 
         // Create a new ConstraintViolationList
         $violations = new ConstraintViolationList();

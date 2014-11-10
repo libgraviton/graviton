@@ -192,6 +192,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 break;
             }
         }
+
         return $ret;
 
     }

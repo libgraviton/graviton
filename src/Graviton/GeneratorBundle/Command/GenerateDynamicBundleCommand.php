@@ -4,7 +4,6 @@ namespace Graviton\GeneratorBundle\Command;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
@@ -357,7 +356,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
 
         return $exitCode;
     }
-
 
     /**
      * Returns an XMLElement from a generated validation.xml that was generated during Resources generation.

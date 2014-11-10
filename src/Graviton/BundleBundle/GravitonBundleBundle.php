@@ -34,16 +34,16 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
         $bundles = array(
             new GravitonCoreBundle()
         );
-        
+
         /*** LOOK AFTER DYNAMIC BUNDLEBUNDLE ***/
-        
+
         // @todo it seems we have no container at this point - how to make this configurable?
         $dynamicBundleBundle = '\GravitonDyn\BundleBundle\GravitonDynBundleBundle';
-        
+
         if (class_exists($dynamicBundleBundle)) {
             $bundles[] = new $dynamicBundleBundle();
         }
-        
+
         return $bundles;
     }
 }

@@ -83,9 +83,7 @@ class RestController implements ContainerAwareInterface
             'json'
         );
 
-        $response = $this->validateRecord($record, $this->getRequest()->getContent());
-
-        if (!$response) {
+        if ($this->isValid($record)) {
             $record = $this->getModel()->insertRecord($record);
 
             // store id of new record so we dont need to reparse body later when needed
@@ -128,8 +126,8 @@ class RestController implements ContainerAwareInterface
                 $this->getModel()->getEntityClass(),
                 'json'
             );
-            $response = $this->validateRecord($record, $this->getRequest()->getContent());
-            if (!$response) {
+
+            if ($this->isValid($record)) {
                 $record = $this->getModel()->updateRecord($id, $record);
                 $response = $this->container->get('graviton.rest.response.200');
                 $response = $this->setContent($response, $record);
@@ -191,11 +189,8 @@ class RestController implements ContainerAwareInterface
                 'json'
             );
 
-            // Validate the new object
-            $response = $this->validateRecord($newRecord, $patch->apply());
-
             // If everything is ok, update record and return 204 No Content
-            if (!$response) {
+            if ($this->isValid($newRecord)) {
                 $this->getModel()->updateRecord($id, $newRecord);
                 $response = $this->container->get('graviton.rest.response.204');
             }
@@ -335,34 +330,28 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * validate a record and return an approriate reponse
+     * Validate a record and throw a 400 error if not valid
      *
-     * @param Object $record  record to validate
-     * @param String $content request content
+     * @param Graviton\RestBundle\Model\DocumentModel $record Record
      *
-     * @return \Symfony\Component\HttpFoundation\Response|null
+     * @throws \Graviton\RestBundle\Controller\ValidationException
+     *
+     * @return boolean $ret true / false
      */
-    private function validateRecord($record, $content)
+    private function isValid($record)
     {
-        if (is_resource($content)) {
-            throw new \LogicException('unexpected resource in validation');
+        // Re-validate record after serialization (we don't trust the serializer...)
+        $violations = $this->getValidator()->validate($record);
+
+        if ($violations->count() > 0) {
+            $e = new ValidationException('Validation failed');
+            $e->setViolations($violations);
+            $e->setResponse($this->container->get('graviton.rest.response.400'));
+
+            throw $e;
         }
 
-        $inputValidator = $this->container->get('graviton.rest.validation.jsoninput');
-        // check the input params
-        $inputValidation = $inputValidator->validate($content, $this->getModel());
-
-        // check the resulting object and merge errors
-        $validationResult = $this->getValidator()->validate($record);
-        $validationResult->addAll($inputValidation);
-
-        $response =  null;
-        if ($validationResult->count() > 0) {
-            $response = $this->container->get('graviton.rest.response.400');
-            $response = $this->setContent($response, $validationResult);
-        }
-
-        return $response;
+        return true;
     }
 
     /**

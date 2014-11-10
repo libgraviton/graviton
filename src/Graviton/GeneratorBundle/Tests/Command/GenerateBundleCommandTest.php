@@ -2,7 +2,6 @@
 
 namespace Graviton\GeneratorBundle\Tests\Command;
 
-use Symfony\Component\Console\Tester\CommandTester;
 use Sensio\Bundle\GeneratorBundle\Tests\Command\GenerateBundleCommandTest as BaseTest;
 use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
 

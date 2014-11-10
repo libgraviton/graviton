@@ -44,7 +44,6 @@ class ShowcaseExtensionController extends RestController
 
         // here you could work with the objects..
         // or do own stuff
-
         return $this->getResponse(
             $data
         );

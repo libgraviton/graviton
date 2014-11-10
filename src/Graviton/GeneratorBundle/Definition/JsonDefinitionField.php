@@ -110,6 +110,7 @@ class JsonDefinitionField implements DefinitionElementInterface
                 $ret = $this->doctrineTypeMap[self::TYPE_STRING];
             }
         }
+
         return $ret;
     }
 
@@ -151,6 +152,7 @@ class JsonDefinitionField implements DefinitionElementInterface
                 $ret = $this->serializerTypeMap[self::TYPE_STRING];
             }
         }
+
         return $ret;
     }
 
@@ -165,6 +167,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         if ($this->isClassType()) {
             $ret = str_replace('class:', '', $this->def->type);
         }
+
         return $ret;
     }
 

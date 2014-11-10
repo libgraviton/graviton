@@ -44,12 +44,20 @@ class ValidationRequestListener
             $serializer = $this->container->get('graviton.rest.serializer');
             $serializerContext = clone $this->container->get('graviton.rest.serializer.serializercontext');
 
-            $result = $inputValidator->validate($event->getRequest()->getContent(), $controller->getModel());
+            // Moved this from RestController to ValidationListener (don't know if necessary)
+            $content = $event->getRequest()->getContent();
+            if (is_resource($content)) {
+                throw new \LogicException('unexpected resource in validation');
+            }
+
+            // Decode the json from request
+            $input = json_decode($content, true);
+            $result = $inputValidator->validate($input, $controller->getModel());
 
             if ($result->count() > 0) {
                 // Hmpf... isn't it possible to send the response right now and
                 // stop execution of the stack???
-                //$event->setResponse($response);
+                //$event->setResponse($response); This only stops the request event...
 
                 // Create a "ValidationException" class and catch the error
                 // later in an errorhandler

@@ -14,7 +14,6 @@ namespace Graviton\GeneratorBundle\Definition;
 interface DefinitionElementInterface
 {
 
-
     const TYPE_STRING = 'varchar';
 
     const TYPE_INTEGER = 'int';
