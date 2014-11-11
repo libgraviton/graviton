@@ -31,7 +31,6 @@ class ValidationExceptionListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        //var_dump(array("Ugh"));die;
         if (($exception = $event->getException()) instanceof ValidationException) {
             if (!($response = $exception->getResponse())) {
                 $response = $this->container->get('graviton.rest.response.400');
