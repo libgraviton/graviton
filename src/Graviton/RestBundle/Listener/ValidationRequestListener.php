@@ -40,16 +40,16 @@ class ValidationRequestListener
             // get the service name
             list ($serviceName, $action) = explode(":", $event->getRequest()->get('_controller'));
 
-            // get the controller which handles this request           
+            // get the controller which handles this request
             $controller = $this->container->get($serviceName);
-            
-            // get the input validator 
+
+            // get the input validator
             $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
-            
+
             // get the document manager for this model
             $em = $controller->getModel()->getRepository()->getDocumentManager();
             $inputValidator->setDocumentManager($em);
-  
+
             // Moved this from RestController to ValidationListener (don't know if necessary)
             $content = $event->getRequest()->getContent();
             if (is_resource($content)) {
@@ -58,12 +58,12 @@ class ValidationRequestListener
 
             // Decode the json from request
             $input = json_decode($content, true);
-            
+
             // validate the document
             $result = $inputValidator->validate($input, $controller->getModel()->getEntityClass());
 
             if ($result->count() > 0) {
-            	// $response->send()...
+                // $response->send()...
                 $e = new ValidationException("Validation failed");
                 $e->setViolations($result);
 

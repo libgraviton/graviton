@@ -5,7 +5,6 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
-use Graviton\RestBundle\Model\DocumentModel;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -28,14 +27,14 @@ class JsonInput
      * @var Validator
      */
     private $validator;
-    
+
     /**
      * Document Manager
-     * 
+     *
      * @var DocumentManager
      */
     private $em;
-    
+
     private $violations;
 
     /**
@@ -50,31 +49,31 @@ class JsonInput
         $this->validator = $validator;
         $this->violations = new ConstraintViolationList();
     }
-    
+
     /**
      * Get metadata/constraints of the given class an validate
-     * 
+     *
      * @param array  $input         Json input (decoded)
      * @param string $documentClass Classname (document)
-     * 
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
     public function validate($input, $documentClass)
     {
         $this->checkDocument($input, $documentClass);
-        
+
         return $this->violations;
     }
-    
+
     /**
      * Check the given document
-     * 
+     *
      * @param array  $input         Json input (decoded)
-     * @param string $documentClass Classname (document) 
+     * @param string $documentClass Classname (document)
      * @param string $path          Path to the value
-     * 
-     * @throws \Exception 
-     * 
+     *
+     * @throws \Exception
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
     public function checkDocument($input, $documentClass, $path = false)
@@ -82,14 +81,14 @@ class JsonInput
         if (!$this->em) {
             throw new \Exception("No document manager set");
         }
-        
+
         // Get metadata for this document
         $documentMetadata = $this->em->getClassMetadata($documentClass);
         $fields = $documentMetadata->getFieldNames();
-         
+
         // Get validation metadata for this document
         $validationMetadata = $metadata = $this->validator->getMetadataFor($documentClass);
-        
+
         foreach ($fields as $key => $property) {
             if (!$path) {
                 $violations = $this->checkProperty($property, $input, $documentMetadata, $validationMetadata);
@@ -97,25 +96,25 @@ class JsonInput
                 $violations = $this->checkProperty($path.".".$property, $input, $documentMetadata, $validationMetadata);
             }
         }
-        
-        return $violations; 
+
+        return $violations;
     }
-    
+
     /**
-     * Check a single property 
-     * 
-     * @param array                                               $input                Json input (decoded)
-     * @param string                                             $documentClass        Classname (document)
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata         $documentMetadata   Doctrine metadata
+     * Check a single property
+     *
+     * @param string                                            $path               Path to property
+     * @param array                                             $input              Json input (decoded)
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata        $documentMetadata   Doctrine metadata
      * @param Symfony\Component\Validator\Mapping\ClassMetadata $validationMetadata Validator metadata
-     * 
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
     public function checkProperty($path, $input, $documentMetadata, $validationMetadata)
     {
         // empty violation list
         $violations = new ConstraintViolationList();
-        
+
         // get the last part of the path... this is the property
         $parts = explode('.', $path);
         $property = end($parts);
@@ -127,7 +126,7 @@ class JsonInput
         if (isset($propertyMetadata[0])) {
             $constraints = $propertyMetadata[0]->constraints;
         }
-        
+
         // is the property set? If not, check for required
         if (isset($input[$property])) {
             // Is the given property an association?
@@ -141,26 +140,26 @@ class JsonInput
                 $violations = $this->checkConstraints($path, null, $constraints);
             }
         }
-        
+
         $this->violations->addAll($violations);
-        
+
         return $violations;
     }
-    
+
     /**
      * Check an association (embedded documents)
-     * 
-     * @param string                                      $path               Path to property
-     * @param array                                      $input               Json input
+     *
+     * @param string                                     $path             Path to property
+     * @param array                                      $input            Json input
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $documentMetadata Document metadata
-     * 
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
     private function checkAssociation($path, $input, $documentMetadata)
     {
         $parts = explode('.', $path);
         $property = end($parts);
-        
+
         // Check association type
         if ($documentMetadata->isSingleValuedAssociation($property)) {
             $className = $documentMetadata->getAssociationTargetClass($property);
@@ -175,41 +174,41 @@ class JsonInput
 
         return $violations;
     }
-    
+
     /**
      * Get violations for a given value
-     * 
-     * @param string $path          Path to the value
-     * @param mixed  $value          Value to check
+     *
+     * @param string $path        Path to the value
+     * @param mixed  $value       Value to check
      * @param array  $constraints Constraints
-     * 
+     *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
     private function checkConstraints($path, $value, $constraints)
     {
         $validationResult = $this->validator->validateValue($value, $constraints);
         $violations = $this->createNewViolationList($path, $validationResult);
-    
+
         return $violations;
     }
 
     /**
-     * Set the document manager 
-     * 
+     * Set the document manager
+     *
      * @param \Doctrine\ODM\MongoDB\DocumentManager $em Doctrine document manager
-     * 
+     *
      * @return \Graviton\RestBundle\Validation\JsonInput $this This
      */
     public function setDocumentManager($em)
     {
         $this->em = $em;
-        
+
         return $this;
     }
-    
+
     /**
      * Get the document manager
-     * 
+     *
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     public function getDocumentManager()
