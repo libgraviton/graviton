@@ -37,13 +37,19 @@ class ValidationRequestListener
         $request = $event->getRequest();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
+            // get the service name
             list ($serviceName, $action) = explode(":", $event->getRequest()->get('_controller'));
 
+            // get the controller which handles this request           
             $controller = $this->container->get($serviceName);
+            
+            // get the input validator 
             $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
-            $serializer = $this->container->get('graviton.rest.serializer');
-            $serializerContext = clone $this->container->get('graviton.rest.serializer.serializercontext');
-
+            
+            // get the document manager for this model
+            $em = $controller->getModel()->getRepository()->getDocumentManager();
+            $inputValidator->setDocumentManager($em);
+  
             // Moved this from RestController to ValidationListener (don't know if necessary)
             $content = $event->getRequest()->getContent();
             if (is_resource($content)) {
@@ -52,15 +58,12 @@ class ValidationRequestListener
 
             // Decode the json from request
             $input = json_decode($content, true);
-            $result = $inputValidator->validate($input, $controller->getModel());
+            
+            // validate the document
+            $result = $inputValidator->validate($input, $controller->getModel()->getEntityClass());
 
             if ($result->count() > 0) {
-                // Hmpf... isn't it possible to send the response right now and
-                // stop execution of the stack???
-                //$event->setResponse($response); This only stops the request event...
-
-                // Create a "ValidationException" class and catch the error
-                // later in an errorhandler
+            	// $response->send()...
                 $e = new ValidationException("Validation failed");
                 $e->setViolations($result);
 

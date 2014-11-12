@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Rs\Json\Patch;
+use Graviton\ExceptionBundle\Exception\ValidationException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some

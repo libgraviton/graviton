@@ -6,6 +6,8 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
 use Graviton\RestBundle\Model\DocumentModel;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Validator class for json inputs
@@ -26,6 +28,15 @@ class JsonInput
      * @var Validator
      */
     private $validator;
+    
+    /**
+     * Document Manager
+     * 
+     * @var DocumentManager
+     */
+    private $em;
+    
+    private $violations;
 
     /**
      * Constructor
@@ -37,77 +48,173 @@ class JsonInput
     public function __construct(Validator $validator)
     {
         $this->validator = $validator;
+        $this->violations = new ConstraintViolationList();
     }
-
+    
     /**
-     * Validate the json input and check for non existing values
-     *
-     * @param string        $input Json input (decoded -> Important for recursion)
-     * @param DocumentModel $model Model
-     *
-     * @return ConstraintViolationList $violations Constraint violation list
+     * Get metadata/constraints of the given class an validate
+     * 
+     * @param array  $input         Json input (decoded)
+     * @param string $documentClass Classname (document)
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    public function validate($input, DocumentModel $model)
+    public function validate($input, $documentClass)
     {
-        // Get the entity manager
-        $em = $model->getRepository()->getDocumentManager();
-
-        // Get all fields of this document / entity
-        $fields = $em->getClassMetadata($model->getEntityClass())->getFieldNames();
-
-        // Get class metadata
-        $metadata = $this->validator->getMetadataFor($model->getEntityClass());
-
-        // Get properties with constraints
-        $props = $metadata->getConstrainedProperties();
-
-        // Create a new ConstraintViolationList
-        $violations = new ConstraintViolationList();
-
-        foreach ($props as $key => $prop) {
-            // check if
-            $propertyMetadata = $metadata->getPropertyMetadata($prop);
-            $constraints = $propertyMetadata[0]->constraints;
-
-            // ToDo: Check for nested documents...
-            // If the property is a nested document, the constraint of this prop will be "Valid"
-            // http://symfony.com/doc/2.3/reference/constraints/Valid.html
-            // In this case, load metadata for this class an check it.
-            // constraints = $this->validate(input['subobject'], subobjectclass or whatever...);
-
-            // Check every single prop
-            if (isset($input[$prop])) {
-                $val = $input[$prop];
-                $validationResult = $this->validator->validateValue($val, $constraints);
-                $violations->addAll($this->createNewViolationList($prop, $validationResult));
+        $this->checkDocument($input, $documentClass);
+        
+        return $this->violations;
+    }
+    
+    /**
+     * Check the given document
+     * 
+     * @param array  $input         Json input (decoded)
+     * @param string $documentClass Classname (document) 
+     * @param string $path          Path to the value
+     * 
+     * @throws \Exception 
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     */
+    public function checkDocument($input, $documentClass, $path = false)
+    {
+        if (!$this->em) {
+            throw new \Exception("No document manager set");
+        }
+        
+        // Get metadata for this document
+        $documentMetadata = $this->em->getClassMetadata($documentClass);
+        $fields = $documentMetadata->getFieldNames();
+         
+        // Get validation metadata for this document
+        $validationMetadata = $metadata = $this->validator->getMetadataFor($documentClass);
+        
+        foreach ($fields as $key => $property) {
+            if (!$path) {
+                $violations = $this->checkProperty($property, $input, $documentMetadata, $validationMetadata);
             } else {
-                // if it's not set but required, validate with empty value
-                if ($this->isRequired($constraints)) {
-                    $validationResult = $this->validator->validateValue(null, $constraints);
-                    $violations->addAll($this->createNewViolationList($prop, $validationResult));
-                }
+                $violations = $this->checkProperty($path.".".$property, $input, $documentMetadata, $validationMetadata);
             }
+        }
+        
+        return $violations; 
+    }
+    
+    /**
+     * Check a single property 
+     * 
+     * @param array                                               $input                Json input (decoded)
+     * @param string                                             $documentClass        Classname (document)
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata         $documentMetadata   Doctrine metadata
+     * @param Symfony\Component\Validator\Mapping\ClassMetadata $validationMetadata Validator metadata
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     */
+    public function checkProperty($path, $input, $documentMetadata, $validationMetadata)
+    {
+        // empty violation list
+        $violations = new ConstraintViolationList();
+        
+        // get the last part of the path... this is the property
+        $parts = explode('.', $path);
+        $property = end($parts);
 
-            // Check for non existing properties.
-            // Don't know if this is necessary, remove it if not...
-            if (is_array($input)) {
-                $diff = array_diff(array_keys($input), $fields);
-                foreach ($diff as $field) {
-                    $violation = new ConstraintViolation(
-                        'Attribute does not exist!',
-                        'Attribute does not exist!',
-                        array(),
-                        $key,
-                        $key,
-                        $key
-                    );
+        // get validation constraints for this property
+        $propertyMetadata = $validationMetadata->getPropertyMetadata($property);
 
-                    $violations->add($violation);
-                }
+        $constraints = array();
+        if (isset($propertyMetadata[0])) {
+            $constraints = $propertyMetadata[0]->constraints;
+        }
+        
+        // is the property set? If not, check for required
+        if (isset($input[$property])) {
+            // Is the given property an association?
+            if ($documentMetadata->hasAssociation($property)) {
+                $violations = $this->checkAssociation($path, $input, $documentMetadata);
+            } else {
+                $violations = $this->checkConstraints($path, $input[$property], $constraints);
+            }
+        } else {
+            if ($this->isRequired($constraints)) {
+                $violations = $this->checkConstraints($path, null, $constraints);
+            }
+        }
+        
+        $this->violations->addAll($violations);
+        
+        return $violations;
+    }
+    
+    /**
+     * Check an association (embedded documents)
+     * 
+     * @param string                                      $path               Path to property
+     * @param array                                      $input               Json input
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $documentMetadata Document metadata
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     */
+    private function checkAssociation($path, $input, $documentMetadata)
+    {
+        $parts = explode('.', $path);
+        $property = end($parts);
+        
+        // Check association type
+        if ($documentMetadata->isSingleValuedAssociation($property)) {
+            $className = $documentMetadata->getAssociationTargetClass($property);
+            $violations = $this->checkDocument($input[$property], $className, $path);
+        } else {
+            $violations = new ConstraintViolationList();
+            $className = $documentMetadata->getAssociationTargetClass($property);
+            foreach ($input[$property] as $key => $value) {
+                $violations->addAll($this->checkDocument($value, $className, $path."[".$key."]"));
             }
         }
 
         return $violations;
+    }
+    
+    /**
+     * Get violations for a given value
+     * 
+     * @param string $path          Path to the value
+     * @param mixed  $value          Value to check
+     * @param array  $constraints Constraints
+     * 
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
+     */
+    private function checkConstraints($path, $value, $constraints)
+    {
+        $validationResult = $this->validator->validateValue($value, $constraints);
+        $violations = $this->createNewViolationList($path, $validationResult);
+    
+        return $violations;
+    }
+
+    /**
+     * Set the document manager 
+     * 
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $em Doctrine document manager
+     * 
+     * @return \Graviton\RestBundle\Validation\JsonInput $this This
+     */
+    public function setDocumentManager($em)
+    {
+        $this->em = $em;
+        
+        return $this;
+    }
+    
+    /**
+     * Get the document manager
+     * 
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    public function getDocumentManager()
+    {
+        return $this->em;
     }
 
     /**
@@ -122,7 +229,7 @@ class JsonInput
         $required = false;
 
         foreach ($constraints as $constraint) {
-            if ($constraint instanceof NotBlank) {
+            if ($constraint instanceof NotBlank || $constraint instanceof NotNull) {
                 $required = true;
             }
         }
