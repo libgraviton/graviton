@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cfb18a8849f5462ead32d60092d76d83",
+    "hash": "02448ff1b4189071a22c48fa40208701",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1127,6 +1127,54 @@
                 "uploadable"
             ],
             "time": "2014-01-12 16:34:06"
+        },
+        {
+            "name": "graviton/php-rql-parser",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/php-rql-parser.git",
+                "reference": "43e0610eb5ad6008db70c138fce221fcf591503d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/43e0610eb5ad6008db70c138fce221fcf591503d",
+                "reference": "43e0610eb5ad6008db70c138fce221fcf591503d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Graviton": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Dario Nuevo",
+                    "email": "dario.nuevo@swisscom.com"
+                }
+            ],
+            "description": "A standalone RQL (Resource Query Language) Parser with flexible usage possibilities",
+            "homepage": "https://github.com/libgraviton/php-rql-parser",
+            "keywords": [
+                "language",
+                "parser",
+                "query",
+                "resource",
+                "rest",
+                "rql"
+            ],
+            "time": "2014-11-12 14:30:34"
         },
         {
             "name": "guzzle/guzzle",
@@ -3267,20 +3315,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpmd/phpmd.git",
-                "reference": "768fd15c128e682c787f7bc3d9969061f1d9ed32"
+                "reference": "d68ea329ba2a738fa9dae95187b35832b921949d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/768fd15c128e682c787f7bc3d9969061f1d9ed32",
-                "reference": "768fd15c128e682c787f7bc3d9969061f1d9ed32",
+                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/d68ea329ba2a738fa9dae95187b35832b921949d",
+                "reference": "d68ea329ba2a738fa9dae95187b35832b921949d",
                 "shasum": ""
             },
             "require": {
                 "pdepend/pdepend": "2.0.*",
                 "php": ">=5.3.0",
-                "symfony/config": "2.5.*",
-                "symfony/dependency-injection": "2.5.*",
-                "symfony/filesystem": "2.5.*"
+                "symfony/config": "~2.5",
+                "symfony/dependency-injection": "~2.5",
+                "symfony/filesystem": "~2.5"
             },
             "require-dev": {
                 "phpunit/phpunit": "*"
@@ -3288,7 +3336,7 @@
             "bin": [
                 "src/bin/phpmd"
             ],
-            "type": "library",
+            "type": "project",
             "autoload": {
                 "psr-0": {
                     "PHPMD\\": "src/main/php"
@@ -3298,8 +3346,29 @@
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "Official version of PHPMD handled with Composer.",
-            "time": "2014-10-10 07:28:15"
+            "authors": [
+                {
+                    "name": "Manuel Pichler",
+                    "email": "github@manuel-pichler.de",
+                    "homepage": "https://github.com/manuelpichler",
+                    "role": "Project founder"
+                },
+                {
+                    "name": "Other contributors",
+                    "homepage": "https://github.com/phpmd/phpmd/graphs/contributors",
+                    "role": "Contributors"
+                }
+            ],
+            "description": "PHPMD is a spin-off project of PHP Depend and aims to be a PHP equivalent of the well known Java tool PMD.",
+            "homepage": "http://phpmd.org/",
+            "keywords": [
+                "mess detection",
+                "mess detector",
+                "pdepend",
+                "phpmd",
+                "pmd"
+            ],
+            "time": "2014-11-10 12:28:02"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3550,16 +3619,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.3.4",
+            "version": "4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "23e4e0310f037aae873cc81b8658dbbb82878f71"
+                "reference": "2dab9d593997db4abcf58d0daf798eb4e9cecfe1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/23e4e0310f037aae873cc81b8658dbbb82878f71",
-                "reference": "23e4e0310f037aae873cc81b8658dbbb82878f71",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2dab9d593997db4abcf58d0daf798eb4e9cecfe1",
+                "reference": "2dab9d593997db4abcf58d0daf798eb4e9cecfe1",
                 "shasum": ""
             },
             "require": {
@@ -3620,7 +3689,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-10-22 11:43:12"
+            "time": "2014-11-11 10:11:09"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4024,6 +4093,7 @@
         "doctrine/mongodb-odm-bundle": 20,
         "php-jsonpointer/php-jsonpointer": 20,
         "php-jsonpatch/php-jsonpatch": 20,
+        "graviton/php-rql-parser": 20,
         "libgraviton/codesniffer": 20,
         "liip/functional-test-bundle": 20,
         "phpmd/phpmd": 20,
