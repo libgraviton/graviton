@@ -102,7 +102,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function findAll($request)
     {
-        $numberPerPage = $request->query->get('per_page', 10);
+        $numberPerPage = (int) $request->query->get('per_page', 10);
 
         $pagination = $this->paginator->paginate(
             $this->repository->findAll(),
