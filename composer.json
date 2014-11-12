@@ -70,7 +70,8 @@
         "symfony/icu": "~1.0.0",
         "php-jsonpointer/php-jsonpointer": "@dev",
         "php-jsonpatch/php-jsonpatch": "@dev",
-        "nulpunkt/monolog-elasticsearch-logstashformat": "*"
+        "nulpunkt/monolog-elasticsearch-logstashformat": "*",
+        "graviton/php-rql-parser": "dev-master"
     },
     "config": {
       "github-oauth": {
