@@ -33,17 +33,26 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function __construct()
     {
-        list(, $bundle, ,$model) = explode('\\', get_called_class());
-        $file = __DIR__.'/../../'.$bundle.'/Resources/config/schema/'.$model.'.json';
+        list(, $bundle, , $model) = explode('\\', get_called_class());
+        $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
 
         if (!file_exists($file)) {
-            throw new \LogicException('Please create the schema file '.$file);
+
+            // fallback try on model property (this should be available on some generated classes)
+            if (isset($this->_modelPath)) {
+                // try to find schema.json relative to the model involved..
+                $file = dirname($this->_modelPath) . '/../Resources/config/schema/' . $model . '.json';
+            }
+
+            if (!file_exists($file)) {
+                throw new \LogicException('Please create the schema file ' . $file);
+            }
         }
 
         $this->schema = \json_decode(file_get_contents($file));
 
         if (is_null($this->schema)) {
-            throw new \LogicException('The file '.$file.' doe not contain valid json');
+            throw new \LogicException('The file ' . $file . ' doe not contain valid json');
         }
     }
 

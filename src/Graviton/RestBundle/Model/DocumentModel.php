@@ -3,8 +3,10 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Knp\Component\Pager\Paginator;
+use Graviton\Rql\Queriable\MongoOdm;
+use Graviton\Rql\Query;
 use Graviton\SchemaBundle\Model\SchemaModel;
+use Knp\Component\Pager\Paginator;
 
 /**
  * Use doctrine odm as backend
@@ -18,34 +20,39 @@ use Graviton\SchemaBundle\Model\SchemaModel;
 class DocumentModel extends SchemaModel implements ModelInterface
 {
     /**
+     * @var string
+     */
+    protected $description;
+    /**
+     * @var string[]
+     */
+    protected $fieldTitles;
+    /**
+     * @var string[]
+     */
+    protected $fieldDescriptions;
+    /**
+     * @var string[]
+     */
+    protected $requiredFields = array();
+    /**
      * @var ObjectRepository
      */
     private $repository;
-
     /**
      * @var Paginator
      */
     private $paginator;
 
     /**
-     * @var string
+     * get repository instance
+     *
+     * @return ObjectRepository
      */
-    protected $description;
-
-    /**
-     * @var string[]
-     */
-    protected $fieldTitles;
-
-    /**
-     * @var string[]
-     */
-    protected $fieldDescriptions;
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = array();
+    public function getRepository()
+    {
+        return $this->repository;
+    }
 
     /**
      * create new app model
@@ -57,16 +64,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function setRepository(ObjectRepository $countries)
     {
         $this->repository = $countries;
-    }
-
-    /**
-     * get repository instance
-     *
-     * @return ObjectRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
     }
 
     /**
@@ -84,35 +81,38 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to find
-     *
-     * @return Object
-     */
-    public function find($documentId)
-    {
-        return $this->repository->find($documentId);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @param Request $request Request object
      *
      * @return array
      */
     public function findAll($request)
     {
-        $pagination = $this->paginator->paginate(
-            $this->repository->findAll(),
-            $request->query->get('page', 1),
+        $numberPerPage = (int) $request->query->get(
+            'perPage',
             $request->query->get('per_page', 10)
         );
 
-        $numPages = (int) ceil($pagination->getTotalItemCount() / $pagination->getItemNumberPerPage());
+        // *** do we have an RQL expression, do we need to filter data?
+        if (count($request->query->all()) > 0) {
+            $queryParser = new Query(urldecode($request->getQueryString()));
+            $queriable = new MongoOdm($this->repository);
+            $queriable = $queryParser->applyToQueriable($queriable);
+            $records = $queriable->getDocuments();
+        } else {
+            $records = $this->repository->findAll();
+        }
+
+        $pagination = $this->paginator->paginate(
+            $records,
+            $request->query->get('page', 1),
+            $numberPerPage
+        );
+
+        $numPages = (int) ceil($pagination->getTotalItemCount() / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
-            $request->attributes->set('perPage', $request->query->get('per_page'));
+            $request->attributes->set('perPage', $numberPerPage);
         }
 
         return $pagination->getItems();
@@ -132,6 +132,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $manager->flush();
 
         return $this->find($entity->getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param string $documentId id of entity to find
+     *
+     * @return Object
+     */
+    public function find($documentId)
+    {
+        return $this->repository->find($documentId);
     }
 
     /**
@@ -202,6 +214,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
-        return 'graviton.'.$bundle;
+        return 'graviton.' . $bundle;
     }
 }

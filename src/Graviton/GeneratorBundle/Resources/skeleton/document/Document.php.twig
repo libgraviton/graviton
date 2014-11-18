@@ -1,0 +1,173 @@
+<?php
+
+namespace {{ base }}Document;
+
+use \Doctrine\Common\Collections\ArrayCollection;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+
+{% set translatableFields = [] %}
+
+/**
+ * {{ base }}Document\{{ document }}
+ *
+ * @category {{ bundle }}
+ * @package  Graviton
+ * @author   {{ author }} <{{ email }}>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
+class {{ document }} implements TranslatableDocumentInterface
+{
+    /**
+     * @var MongoId $id
+     */
+    protected $id;
+
+{% for field in fields %}
+    /**
+{% if 'Graviton' in field.type %}
+    * @var \{{ field.type }} ${{ field.fieldName }}
+{% else %}
+    * @var {{ field.type }} ${{ field.fieldName }}
+{% endif %}
+    */
+{% if field.type == 'array' %}
+    protected ${{ field.fieldName }} = array();
+{% else %}
+    protected ${{ field.fieldName }};
+{% endif %}
+
+{% endfor %}
+    /**
+     * constructor
+     *
+     * @return self
+     */
+    public function __construct()
+    {
+{% for field in fields %}
+{% if '[]' in field.type %}
+        $this->{{ field.fieldName }} = new ArrayCollection();
+{% endif %}
+{% endfor %}
+    }
+
+    /**
+     * Get id
+     *
+     * @return string $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+{% for field in fields %}
+
+    {% if field.translatable is defined and field.translatable == true %}
+        {% set translatableFields = translatableFields|merge([field.fieldName]) %}
+    {% endif %}
+
+    /**
+     * Get {{ field.fieldName }}
+     *
+{% if 'Graviton' in field.type %}
+     * @return \{{ field.type }} ${{ field.fieldName }}
+{% else %}
+     * @return {{ field.type }} ${{ field.fieldName }}
+{% endif %}
+     */
+{% if 'boolean' in field.type %}
+    public function is{{ field.fieldName|capitalize }}()
+{% else %}
+    public function get{{ field.fieldName|capitalize }}()
+{% endif %}
+    {
+        return $this->{{ field.fieldName }};
+    }
+
+    /**
+     * Set {{ field.fieldName }}
+     *
+{% if 'Graviton' in field.type %}
+     * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
+{% else %}
+     * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+{% endif %}
+     *
+     * @return self
+     */
+{% if 'Graviton' in field.type %}
+{% if '[]' in field.type %}
+    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+{% else %}
+    public function set{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
+{% endif %}
+{% else %}
+    public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+{% endif %}
+    {
+{% if '[]' in field.type %}
+        $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
+{% else %}
+        $this->{{ field.fieldName }} = ${{ field.fieldName }};
+{% endif %}
+
+        return $this;
+    }
+{% if ('[]' in field.type or field.type == 'array') %}
+
+    /**
+     * add element to {{ field.fieldName }}
+     *
+{% if 'Graviton' in field.type %}
+     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to add to {{ field.fieldName }}
+{% else %}
+     * @param {{ field.type }} ${{ field.singularName }} value to add to {{ field.fieldName }}
+{% endif %}
+     *
+     * @return self
+     */
+    public function add{{ field.singularName|capitalize }}(${{field.singularName}})
+    {
+        $this->{{ field.fieldName }}[] = ${{ field.singularName }};
+    }
+
+    /**
+     * remove element from {{ field.fieldName }}
+     *
+{% if '[]' in field.type %}
+     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
+{% else %}
+     * @param \{{ field.type }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
+{% endif %}
+     *
+     * @return self
+     */
+{% if 'Graviton' in field.type %}
+{% if '[]' in field.type %}
+    public function remove{{ field.singularName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.singularName }})
+{% else  %}
+    public function remove{{ field.singularName|capitalize }}(\{{ field.type }} ${{ field.singularName }})
+{% endif %}
+{% else  %}
+    public function remove{{ field.singularName|capitalize }}({{ field.type }} ${{ field.singularName }})
+{% endif %}
+    {
+        $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
+
+        return $this;
+    }
+{% endif %}
+{% endfor %}
+
+    /**
+    * return translatable field names
+    *
+    * @return string[]
+    */
+    public function getTranslatableFields()
+    {
+        return array('{{ translatableFields|join('\',\'') }}');
+    }
+
+}

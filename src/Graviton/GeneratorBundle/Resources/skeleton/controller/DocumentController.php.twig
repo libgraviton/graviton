@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ base }}Controller;
+
+use Graviton\RestBundle\Controller\RestController;
+
+/**
+ * {{ base }}Controller\{{ document }}Controller
+ *
+ * @category {{ bundle}}
+ * @package  Graviton
+ * @author   {{ author }} <{{ email }}>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
+class {{ document }}Controller extends {% if json is defined %}{{ json.getBaseController() }}{% else %}RestController{% endif %}
+{
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+    <class name="{{ base }}Document\{{ document }}">
+
+{% if noIdField is not defined %}
+        <property name="id">
+            <constraint name="NotBlank"/>
+        </property>
+{% endif %}
+
+{% for field in fields %}
+
+{# there is an xml error if we generate <property> without <constraint> child, that's why we build array first to check #}
+
+    {% set thisCons = [] %}
+
+    {% if field.required is defined and field.required == true %}
+        {% if field.type != 'boolean' %}
+            {%  set thisCons = thisCons|merge(['<constraint name="NotBlank"/>']) %}
+        {% else %}
+            {%  set thisCons = thisCons|merge(['<constraint name="NotNull"/>']) %}
+        {% endif %}
+    {% endif %}
+
+    {% if field.type == 'boolean' %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">bool</option></constraint>']) %}
+    {% endif %}
+
+    {% if field.isClassType is defined and field.isClassType == true %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
+    {% endif %}
+
+    {% if thisCons is not empty %}
+        <property name="{{ field.fieldName }}">
+            {{ thisCons|join("\n") }}
+        </property>
+    {% endif %}
+
+{% endfor %}
+    </class>
+</constraint-mapping>
