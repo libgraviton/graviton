@@ -3,6 +3,7 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Listener for validation exceptions
@@ -32,13 +33,13 @@ class ValidationExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof ValidationException) {
-            if (!($response = $exception->getResponse())) {
-                $response = $this->container->get('graviton.rest.response.400');
-            }
-
+        	$response = $exception->getResponse();
+        	
             $serializer = $this->container->get('graviton.rest.serializer');
             $serializerContext = clone $this->container->get('graviton.rest.serializer.serializercontext');
 
+            // Set status code and content
+            $response->setStatusCode(Response::HTTP_BAD_REQUEST);
             $response->setContent(
                 $serializer->serialize(
                     $exception->getViolations(),

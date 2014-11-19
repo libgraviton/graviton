@@ -90,20 +90,19 @@ class RestController implements ContainerAwareInterface
             // store id of new record so we dont need to reparse body later when needed
             $this->getRequest()->attributes->set('id', $record->getId());
 
-            $response = $this->container->get('graviton.rest.response.201');
+            $response = $this->container->get("graviton.rest.response");
+            $response->setStatusCode(Response::HTTP_OK);
             $response = $this->setContent($response, $record);
 
-            $routeName = $this->getRequest()->get('_route');
-            $routeParts = explode('.', $routeName);
-            $routeType = end($routeParts);
-
-            if ($routeType == 'post') {
-                $routeName = substr($routeName, 0, -4).'get';
-            }
+            $routeParts = explode('.', $this->getRequest()->get('_route'));
+            // remove last element (post in this case)
+			array_pop($routeParts);
+			// and replace it with get
+            array_push($routeParts, 'get');
 
             $response->headers->set(
                 'Location',
-                $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+                $this->getRouter()->generate(implode('.', $routeParts), array('id' => $record->getId()))
             );
         }
 
@@ -119,8 +118,10 @@ class RestController implements ContainerAwareInterface
      */
     public function putAction($id)
     {
+    	$response = $this->container->get("graviton.rest.response");
+    	
         if (!$this->getModel()->find($id)) {
-            $response = $this->container->get('graviton.rest.response.404');
+            $response->setStatusCode(Response::HTTP_NOT_FOUND);
         } else {
             $record = $this->getSerializer()->deserialize(
                 $this->getRequest()->getContent(),
@@ -130,7 +131,7 @@ class RestController implements ContainerAwareInterface
 
             if ($this->isValid($record)) {
                 $record = $this->getModel()->updateRecord($id, $record);
-                $response = $this->container->get('graviton.rest.response.200');
+                $response->setStatusCode(Response::HTTP_OK);
                 $response = $this->setContent($response, $record);
             }
         }
@@ -147,10 +148,11 @@ class RestController implements ContainerAwareInterface
      */
     public function deleteAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.404');
+        $response = $this->container->get("graviton.rest.response");
+        $response->setStatusCode(Response::HTTP_NOT_FOUND);
 
         if (is_null($this->getModel()->deleteRecord($id))) {
-            $response = $this->container->get('graviton.rest.response.200');
+            $response->setStatusCode(Response::HTTP_OK);
         }
 
         return $response;
@@ -165,7 +167,8 @@ class RestController implements ContainerAwareInterface
      */
     public function patchAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.400');
+        $response = $this->container->get("graviton.rest.response");
+        $response->setStatusCode(Response::HTTP_BAD_REQUEST);
 
         $record = $this->getModel()->find($id);
 
@@ -193,7 +196,7 @@ class RestController implements ContainerAwareInterface
             // If everything is ok, update record and return 204 No Content
             if ($this->isValid($newRecord)) {
                 $this->getModel()->updateRecord($id, $newRecord);
-                $response = $this->container->get('graviton.rest.response.204');
+                $response->setStatusCode(Response::HTTP_NO_CONTENT);
             }
         }
 
@@ -227,7 +230,9 @@ class RestController implements ContainerAwareInterface
             $this->container->get('graviton.i18n.repository.language')->findAll()
         );
 
-        $response = $this->container->get('graviton.rest.response.200');
+        $response = $this->container->get("graviton.rest.response");
+        $response->setStatusCode(Response::HTTP_OK);
+        //$response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod =  'getCollectionSchema';
@@ -332,12 +337,13 @@ class RestController implements ContainerAwareInterface
 
     /**
      * Validate a record and throw a 400 error if not valid
+     * ToDo: Find a bether name for this method
      *
      * @param Graviton\RestBundle\Model\DocumentModel $record Record
      *
      * @throws \Graviton\RestBundle\Controller\ValidationException
      *
-     * @return boolean $ret true / false
+     * @return boolean $ret true 
      */
     private function isValid($record)
     {
@@ -345,9 +351,12 @@ class RestController implements ContainerAwareInterface
         $violations = $this->getValidator()->validate($record);
 
         if ($violations->count() > 0) {
+        	$response = $this->container->get("graviton.rest.response");
+        	$response->setStatusCode(Response::HTTP_BAD_REQUEST);
+        	
             $e = new ValidationException('Validation failed');
             $e->setViolations($violations);
-            $e->setResponse($this->container->get('graviton.rest.response.400'));
+            $e->setResponse($response);
 
             throw $e;
         }
@@ -364,9 +373,11 @@ class RestController implements ContainerAwareInterface
      */
     protected function getResponse($result)
     {
-        $response = $this->container->get('graviton.rest.response.404');
+    	$response = $this->container->get("graviton.rest.response");
+    	$response->setStatusCode(Response::HTTP_BAD_REQUEST);
+
         if (!is_null($result)) {
-            $response = $this->container->get('graviton.rest.response.200');
+			$response->setStatusCode(Response::HTTP_OK);
             $response = $this->setContent($response, $result);
         }
 

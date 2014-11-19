@@ -4,6 +4,8 @@ namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\RestBundle\Event\RestEvent;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -30,19 +32,15 @@ class ValidationRequestListener
      *
      * @return void
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RestEvent $event)
     {
         // only validate on POST and PUT
         // if patch is required, refactor the method or do something else
         $request = $event->getRequest();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
-            // get the service name
-            list ($serviceName, $action) = explode(":", $event->getRequest()->get('_controller'));
-
-            // get the controller which handles this request
-            $controller = $this->container->get($serviceName);
-
+        	$controller = $event->getController();
+        	
             // get the input validator
             $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
 
@@ -66,10 +64,11 @@ class ValidationRequestListener
                 // $response->send()...
                 $e = new ValidationException("Validation failed");
                 $e->setViolations($result);
-
-                if (($event->hasResponse())) {
-                    $e->setResponse($event->getResponse());
-                }
+                
+                $response = $event->getResponse()->setStatusCode(Response::HTTP_BAD_REQUEST);
+                
+                // pass the event..???
+                $e->setResponse($event->getResponse());
 
                 throw $e;
             }

@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -15,7 +16,6 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  * @category GravitonRestBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -45,7 +45,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(RestEvent $event)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
@@ -79,7 +79,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
 
-            $event->setResponse($response);
+           // $event->setResponse($response);
         }
     }
 

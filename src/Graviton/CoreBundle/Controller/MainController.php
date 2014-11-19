@@ -46,7 +46,8 @@ class MainController implements ContainerAwareInterface
      */
     public function indexAction()
     {
-        $response = $this->container->get('graviton.rest.response.200');
+        $response = $this->container->get("graviton.rest.response");
+        $response->setStatusCode(Response::HTTP_OK);
         $router = $this->container->get('router');
 
         $links = LinkHeader::fromString('');
