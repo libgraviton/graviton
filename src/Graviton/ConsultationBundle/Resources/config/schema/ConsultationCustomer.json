@@ -1,0 +1,12 @@
+{
+  "description": "Consultation customer",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Internal identifier."
+    }
+  },
+  "required": [
+    "id"
+  ]
+}
