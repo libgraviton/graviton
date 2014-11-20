@@ -1,12 +1,12 @@
 <?php
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
- * Listener for validation exceptions
+ * Listener for not found exceptions
  *
  * @category GravitonExceptionBundle
  * @package  Graviton
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ValidationExceptionListener extends RestExceptionListener
+class NotFoundExceptionListener extends RestExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -25,13 +25,13 @@ class ValidationExceptionListener extends RestExceptionListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof ValidationException) {
+        if (($exception = $event->getException()) instanceof NotFoundException) {
             $response = $exception->getResponse();
-            
+
             // Set status code and content
-            $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response->setStatusCode(Response::HTTP_NOT_FOUND);
             $response->setContent(
-                $this->getSerializedContent($exception->getViolations())
+                $this->getSerializedContent($exception->getMessage())
             );
 
             $event->setResponse($response);

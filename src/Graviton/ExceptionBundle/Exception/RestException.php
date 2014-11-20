@@ -10,14 +10,14 @@ namespace Graviton\ExceptionBundle\Exception;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ValidationException extends RestException
+class RestException extends \Exception
 {
     /**
-     * Violations
+     * Response object
      *
-     * @var Symfony\Component\Validator\ConstraintViolationList
+     * @var Symfony\Component\HttpFoundation\Response
      */
-    private $violations;
+    private $response = false;
 
     /**
      * Constructor
@@ -27,32 +27,32 @@ class ValidationException extends RestException
      *
      * @return void
      */
-    public function __construct($message = "Validation Failed", $code = 400, $prev = null)
+    public function __construct($message, $code = 0, $prev = null)
     {
         parent::__construct($message, $code, $prev);
     }
 
     /**
-     * Set violations
+     * Set the response object (optional)
      *
-     * @param Symfony\Component\Validator\ConstraintViolationList $violations Violation list
+     * @param Symfony\Component\HttpFoundation\Response $response Response object
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setViolations($violations)
+    public function setResponse($response)
     {
-        $this->violations = $violations;
+        $this->response = $response;
 
         return $this;
     }
 
     /**
-     * Get violation list
+     * Get the response object
      *
-     * @return ConstraintViolationList $violations violations
+     * @return \Graviton\ExceptionBundle\Exception\Symfony\Component\HttpFoundation\Response $response Response object
      */
-    public function getViolations()
+    public function getResponse()
     {
-        return $this->violations;
+        return $this->response;
     }
 }
