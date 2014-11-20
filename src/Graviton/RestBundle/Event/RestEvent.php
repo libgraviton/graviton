@@ -99,7 +99,7 @@ class RestEvent extends Event
      *
      * @return \Graviton\RestBundle\Event\RestEvent $this This object
      */
-    public function setController(RestController $controller)
+    public function setController($controller)
     {
         $this->controller = $controller;
 
