@@ -8,6 +8,6 @@
          type="DateTime"
          direction="serialization"
          format="json"
-         method="serializeDateTimeToJsonUgh"/>
+         method="serializeDateTimeToJson"/>
   </jms_serializer:config>
 </container>
