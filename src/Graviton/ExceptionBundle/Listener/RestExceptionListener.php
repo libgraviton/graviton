@@ -29,44 +29,44 @@ abstract class RestExceptionListener
      *
      * @return void
      */
-    abstract function onKernelException(GetResponseForExceptionEvent $event);
+    abstract public function onKernelException(GetResponseForExceptionEvent $event);
 
     /**
      * Set the DI container
-     * 
+     *
      * @param Symfony\Component\DependencyInjection\Container $container DI container
-     * 
+     *
      * @return \Graviton\ExceptionBundle\Listener\RestExceptionListener
      */
     public function setContainer(Container $container)
     {
         $this->container = $container;
-        
+
         return $this;
     }
-    
+
     /**
      * Get the DI container
-     * 
+     *
      * @return Symfony\Component\DependencyInjection\Container
      */
     public function getContainer()
     {
         return $this->container;
     }
-    
+
     /**
      * Serialize the given content
-     * 
+     *
      * @param mixed $content Content
-     * 
+     *
      * @return string $content Json content
      */
     public function getSerializedContent($content)
     {
         $serializer = $this->getContainer()->get('graviton.rest.serializer');
         $serializerContext = clone $this->getContainer()->get('graviton.rest.serializer.serializercontext');
-         
+
         return $serializer->serialize(
             $content,
             'json',

@@ -12,7 +12,6 @@ use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Rs\Json\Patch;
 use Graviton\ExceptionBundle\Exception\ValidationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
@@ -59,17 +58,17 @@ class RestController implements ContainerAwareInterface
     public function getAction($id)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         if (!($record = $this->getModel()->find($id))) {
             // looks like an exception factory... or builder
             $e = new NotFoundException("Entry with id ".$id.' not found!');
             $e->setResponse($response);
             throw $e;
         }
-        
+
         $response->setStatusCode(Response::HTTP_OK);
         $response->setContent($this->serialize($record));
-        
+
         return $response;
     }
 
@@ -83,7 +82,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->container->get("graviton.rest.response");
         $response->setStatusCode(Response::HTTP_OK);
         $response->setContent($this->serialize($this->getModel()->findAll($this->getRequest())));
-        
+
         return $response;
     }
 
@@ -93,10 +92,10 @@ class RestController implements ContainerAwareInterface
      * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
      */
     public function postAction()
-    {    
+    {
         // Get the response object from container
         $response = $this->container->get("graviton.rest.response");
-        
+
         // Deserialize the request content (throws an exception if something fails)
         $record = $this->deserialize(
             $this->getRequest()->getContent(),
@@ -106,23 +105,23 @@ class RestController implements ContainerAwareInterface
         // Re-validate the serialized record to make sure the serializer made no faults
         // Throws an exception if not
         $record = $this->validate($record);
-        
+
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
-        
+
         // store id of new record so we dont need to reparse body later when needed
         $this->getRequest()->attributes->set('id', $record->getId());
-        
+
         // Set status code and content
         $response->setStatusCode(Response::HTTP_OK);
         $response->setContent($this->serialize($record));
-        
+
         $routeParts = explode('.', $this->getRequest()->get('_route'));
         // remove last element (post in this case)
         array_pop($routeParts);
         // and replace it with get
         array_push($routeParts, 'get');
-        
+
         $response->headers->set(
             'Location',
             $this->getRouter()->generate(implode('.', $routeParts), array('id' => $record->getId()))
@@ -141,23 +140,23 @@ class RestController implements ContainerAwareInterface
     public function putAction($id)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         // If no record with this id exists, throw a not found exception
         if (!$this->getModel()->find($id)) {
             $e = new NotFoundException("Entry with id ".$id.' not found!');
             $e->setResponse($response);
             throw $e;
         }
-        
+
         // Deserialize the content
         $record = $this->deserialize(
             $this->getRequest()->getContent(),
             $this->getModel()->getEntityClass()
         );
-        
+
         // Re-validate the record
         $record = $this->validate($record);
-        
+
         // And update the record, if everything is ok
         $record = $this->getModel()->updateRecord($id, $record);
         $response->setStatusCode(Response::HTTP_OK);
@@ -176,7 +175,7 @@ class RestController implements ContainerAwareInterface
     public function deleteAction($id)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         // Does the record exist?
         if (!$this->getModel()->find($id)) {
             $e = new NotFoundException("Entry with id ".$id.' not found!');
@@ -378,12 +377,12 @@ class RestController implements ContainerAwareInterface
      *
      * @throws \Graviton\RestBundle\Controller\ValidationException
      *
-     * @return boolean $ret true 
+     * @return boolean $ret true
      */
     private function validate($record)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         // Re-validate record after serialization (we don't trust the serializer...)
         $violations = $this->getValidator()->validate($record);
 
@@ -400,17 +399,17 @@ class RestController implements ContainerAwareInterface
 
     /**
      * Serialize the given record and throw an exception if something went wrong
-     * 
+     *
      * @param DocumentModel $record Record
-     * 
+     *
      * @throws \Graviton\ExceptionBundle\Exception\SerializationException
-     * 
+     *
      * @return string $content Json content
      */
     private function serialize($result)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         try {
             $content = $this->getSerializer()->serialize(
                 $result,
@@ -422,24 +421,24 @@ class RestController implements ContainerAwareInterface
             $exception->setResponse($response);
             throw $exception;
         }
-        
+
         return $content;
     }
-    
+
     /**
      * Deserialize the given content throw an exception if something went wrong
-     * 
+     *
      * @param string $content       Request content
      * @param string $documentClass Document class
-     * 
+     *
      * @throws \Graviton\ExceptionBundle\Exception\DeserializationException
-     * 
+     *
      * @return object $record Document
      */
     private function deserialize($content, $documentClass)
     {
         $response = $this->container->get("graviton.rest.response");
-        
+
         try {
             $record = $this->getSerializer()->deserialize(
                 $content,
@@ -450,13 +449,13 @@ class RestController implements ContainerAwareInterface
             // pass the previous exception in this case to get the error message in the handler
             // http://php.net/manual/de/exception.getprevious.php
             $exception = new DeserializationException("Deserialization failed", Response::HTTP_BAD_REQUEST, $e);
-            
+
             // at the moment, the response has to be set on the exception object.
             // try to refactor this and return the graviton.rest.response if none is set...
             $exception->setResponse($response);
             throw $exception;
         }
-        
+
         return $record;
     }
 }

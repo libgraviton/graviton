@@ -34,8 +34,8 @@
         <argument type="constant">true</argument>
       </call>
     </service>
-    
-    
+
+
     <service id="graviton.rest.doctrine" alias="doctrine"/>
     <service id="graviton.rest.validator" alias="validator"/>
     <service id="graviton.rest.router" alias="router"/>
@@ -45,18 +45,18 @@
       factory-method="getCurrentRequest"/>
     <!-- Pagination -->
     <service id="graviton.rest.paginator" alias="knp_paginator"/>
-    
+
     <!-- Routing -->
     <!-- Routing collection -->
     <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
-    
+
     <!-- Routing loader -->
     <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
       <argument type="service" id="graviton.rest.routing.collection"/>
       <call method="setContainer"><argument type="service" id="service_container"/></call>
       <tag name="routing.loader"/>
     </service>
-    
+
     <!-- Controller -->
     <service id="graviton.rest.controller" scope="request" abstract="true">
       <call method="setContainer">
@@ -74,13 +74,13 @@
     <!-- Response object with scope request (get a new one for each request) -->
     <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
     </service>
-    
+
     <!-- Validation listener / Json validator -->
     <service id="graviton.rest.listener.validationrequestlistener" class="Graviton\RestBundle\Listener\ValidationRequestListener">
         <call method="setContainer"><argument type="service" id="service_container"></argument></call>
         <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
     </service>
-    
+
     <service id="graviton.rest.validation.jsoninput" class="%graviton.rest.validation.jsoninput.class%">
         <argument type="service" id="graviton.rest.validator"/>
     </service>
@@ -94,7 +94,7 @@
         <call method="setContainer"><argument type="service" id="service_container"></argument></call>
         <tag name="kernel.event_subscriber" />
     </service>
-    
+
     <!-- Graviton rest event listeners -->
     <!-- Paging listener -->
     <service id="graviton.rest.listener.paginglinkresponselistener" class="%graviton.rest.listener.paginglinkresponselistener.class%">
@@ -103,7 +103,7 @@
       </call>
       <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
     </service>
-    
+
     <!-- Self link response listener -->
     <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
       <call method="setContainer">
@@ -111,7 +111,7 @@
       </call>
       <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
     </service>
-    
+
     <!-- Cors listener (move the addHeader calls somewhere else... -->
     <service id="graviton.rest.listener.corsresponselistener" class="%graviton.rest.listener.corsresponselistener.class%">
       <call method="addHeader">

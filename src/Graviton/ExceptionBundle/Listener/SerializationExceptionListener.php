@@ -2,7 +2,6 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\DependencyInjection\Container;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
@@ -26,7 +25,7 @@ class SerializationExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof SerializationException) {
-             
+
         }
     }
 }

@@ -39,8 +39,8 @@ class ValidationRequestListener
         $request = $event->getRequest();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
-        	$controller = $event->getController();
-        	
+            $controller = $event->getController();
+
             // get the input validator
             $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
 
@@ -64,9 +64,9 @@ class ValidationRequestListener
                 // $response->send()...
                 $e = new ValidationException("Validation failed");
                 $e->setViolations($result);
-                
+
                 $response = $event->getResponse()->setStatusCode(Response::HTTP_BAD_REQUEST);
-                
+
                 // pass the event..???
                 $e->setResponse($event->getResponse());
 
