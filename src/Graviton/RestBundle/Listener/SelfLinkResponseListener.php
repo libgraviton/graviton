@@ -66,6 +66,8 @@ class SelfLinkResponseListener implements ContainerAwareInterface
          by not including our header in the response. i hope that's a good compromise. **/
 
         $addHeader = true;
+        $url = '';
+
         try {
             $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
         } catch (\Exception $e) {
