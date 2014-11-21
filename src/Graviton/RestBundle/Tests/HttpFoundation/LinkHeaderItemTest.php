@@ -48,10 +48,10 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'base URI'                              => array(self::URI),
-            'base URI encapsulated'                 => array('<' . self::URI . '>'),
-            'base URI, self linking, no quotes'     => array('<' . self::URI . '>; rel=self', 'self'),
-            'base URI, self linking, double quotes' => array('<' . self::URI . '>; rel="self"', 'self'),
-            'base URI, self linking, single quotes' => array('<' . self::URI . ">; rel='self'", 'self'),
+            'base URI encapsulated'                 => array('<'.self::URI.'>'),
+            'base URI, self linking, no quotes'     => array('<'.self::URI.'>; rel=self', 'self'),
+            'base URI, self linking, double quotes' => array('<'.self::URI.'>; rel="self"', 'self'),
+            'base URI, self linking, single quotes' => array('<'.self::URI.">; rel='self'", 'self'),
         );
     }
 
@@ -67,7 +67,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($uri, $linkHeaderItem->getUri());
 
-        $uri = $uri . '?test=true';
+        $uri = $uri.'?test=true';
         $linkHeaderItem->setUri($uri);
 
         $this->assertEquals($uri, $linkHeaderItem->getUri());

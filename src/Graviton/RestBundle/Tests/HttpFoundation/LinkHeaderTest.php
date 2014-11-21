@@ -50,12 +50,12 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'base URI' => array(self::URI . ',' . self::ALT_URI),
-            'base URI encapsulated' => array('<'. self::URI . '>, <' . self::ALT_URI . '>'),
-            'base URI encapsulated no space' => array('<'. self::URI . '>,<' . self::ALT_URI . '>'),
-            'base URI, self linking, double quotes' => array('<'. self::URI . '>; rel="self", <' . self::ALT_URI . '>'),
-            'base URI, self linking, single quotes' => array('<'. self::URI . ">; rel='self', <" . self::ALT_URI . '>'),
+            'base URI encapsulated' => array('<'.self::URI.'>, <'.self::ALT_URI.'>'),
+            'base URI encapsulated no space' => array('<'.self::URI.'>,<'.self::ALT_URI.'>'),
+            'base URI, self linking, double quotes' => array('<'.self::URI.'>; rel="self", <'.self::ALT_URI.'>'),
+            'base URI, self linking, single quotes' => array('<'.self::URI.">; rel='self', <".self::ALT_URI.'>'),
             'base URI with schema and type, double quotes' =>
-                array('<'. self::URI . '>; rel="schema"; type="urn:uri",<' . self::ALT_URI . '>'),
+                array('<'.self::URI.'>; rel="schema"; type="urn:uri",<'.self::ALT_URI .'>'),
         );
     }
 
@@ -80,8 +80,8 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'no items' => array(''),
-            'one item' => array('<' . self::URI .'>'),
-            'two items' => array('<' . self::URI .'>, <'. self::ALT_URI . '>'),
+            'one item' => array('<'.self::URI.'>'),
+            'two items' => array('<'.self::URI.'>, <'.self::ALT_URI.'>'),
         );
     }
 
