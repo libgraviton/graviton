@@ -26,7 +26,7 @@ class RestTestCase extends GravitonTestCase
      * @param array $options An array of options to pass to the createKernel class
      * @param array $server  An array of server parameters
      *
-     * @return Client A Client instance
+     * @return \Graviton\TestBundle\Client A Client instance
      */
     protected static function createRestClient(array $options = array(), array $server = array())
     {

@@ -2,6 +2,7 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\RestBundle\Model\DocumentModel;
 use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Response;
@@ -279,6 +280,8 @@ class RestController implements ContainerAwareInterface
     /**
      * Return the model
      *
+     * @throws \Exception in case no model was defined.
+     *
      * @return object $model Model
      */
     public function getModel()
@@ -293,7 +296,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the serializer
      *
-     * @return \JMS\Serializer\Serializer\Serializer
+     * @return \JMS\Serializer\Serializer
      */
     public function getSerializer()
     {
@@ -333,13 +336,13 @@ class RestController implements ContainerAwareInterface
     /**
      * Validate a record and throw a 400 error if not valid
      *
-     * @param Graviton\RestBundle\Model\DocumentModel $record Record
+     * @param \Graviton\RestBundle\Model\DocumentModel $record Record
      *
-     * @throws \Graviton\RestBundle\Controller\ValidationException
+     * @throws \Graviton\ExceptionBundle\Exception\ValidationException
      *
-     * @return boolean $ret true / false
+     * @return boolean $ret true, if no exception was thrown.
      */
-    private function isValid($record)
+    private function isValid(DocumentModel $record)
     {
         // Re-validate record after serialization (we don't trust the serializer...)
         $violations = $this->getValidator()->validate($record);
