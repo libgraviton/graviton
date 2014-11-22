@@ -117,8 +117,12 @@ class JsonInput
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    public function checkProperty($path, array $input, ClassMetadata $documentMetadata, SFClassMetaData $validationMetadata)
-    {
+    public function checkProperty(
+        $path,
+        array $input,
+        ClassMetadata $documentMetadata,
+        SFClassMetaData $validationMetadata
+    ) {
         // empty violation list
         $violations = new ConstraintViolationList();
 

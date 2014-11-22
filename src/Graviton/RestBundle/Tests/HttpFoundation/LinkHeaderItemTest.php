@@ -38,7 +38,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for »testFromString« to make it more clear what $itemValue caused a test to fail.
+     *data provider for »testFromString« to make it more clear what $itemValue caused a test to fail.
      *
      * @return array
      *
@@ -74,7 +74,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test getting and setting rel attribute.
+     * test getting and setting rel attribute.
      *
      * @return void
      */
@@ -92,7 +92,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     /**
      * test string conversion.
      *
-     * @dataProvider LinkHeaderItemParameterProvider
+     * @dataProvider linkHeaderItemParameterProvider
      *
      * @return void
      */
@@ -104,15 +104,20 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for »testToString« to make it more clear what $uri/$attributes combination caused a test to fail.
+     * data provider for »testToString« to make it more clear what $uri/$attributes combination caused a test to fail.
      *
      * @return array
      */
-    public function LinkHeaderItemParameterProvider()
+    public function linkHeaderItemParameterProvider()
     {
         return array(
             'uri only'            => array('<http://localhost>', 'http://localhost'),
-            'uri plus attribute'  => array('<http://localhost>; rel="self"', 'http://localhost', array('rel' => 'self')),
+            'uri plus attribute'  =>
+                array(
+                    '<http://localhost>; rel="self"',
+                    'http://localhost',
+                    array('rel' => 'self')
+                ),
             'uri plus attributes' => array(
                 '<http://localhost>; rel="schema"; type="urn:uri"',
                 'http://localhost',
