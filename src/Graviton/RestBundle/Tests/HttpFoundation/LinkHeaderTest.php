@@ -81,7 +81,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
         return array(
             'no items' => array(''),
             'one item' => array('<'.self::URI.'>'),
-            'two items' => array('<'.self::URI.'>, <'.self::ALT_URI.'>'),
+            'two items' => array('<'.self::URI.'>,<'.self::ALT_URI.'>'),
         );
     }
 
