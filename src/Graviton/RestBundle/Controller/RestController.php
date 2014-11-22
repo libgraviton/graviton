@@ -334,7 +334,7 @@ class RestController implements ContainerAwareInterface
      *
      * @throws \Graviton\ExceptionBundle\Exception\ValidationException
      *
-     * @return boolean $ret true, if no exception was thrown.
+     * @return void
      */
     protected function validateRecord($record)
     {
