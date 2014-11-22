@@ -111,10 +111,10 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     public function LinkHeaderItemParameterProvider()
     {
         return array(
-            'uri only'            => array('http://localhost', 'http://localhost'),
-            'uri plus attribute'  => array('http://localhost; rel="self"', 'http://localhost', array('rel' => 'self')),
+            'uri only'            => array('<http://localhost>', 'http://localhost'),
+            'uri plus attribute'  => array('<http://localhost>; rel="self"', 'http://localhost', array('rel' => 'self')),
             'uri plus attributes' => array(
-                'http://localhost; rel="schema"; type="urn:uri"',
+                '<http://localhost>; rel="schema"; type="urn:uri"',
                 'http://localhost',
                 array('rel' => 'schema', 'type' => 'urn:uri')
             ),

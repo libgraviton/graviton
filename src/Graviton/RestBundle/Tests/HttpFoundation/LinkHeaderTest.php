@@ -62,7 +62,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
     /**
      * test building of strings
      *
-     * @DataProvider headerStringProvider
+     * @dataProvider headerStringProvider
      *
      * @return void
      */
