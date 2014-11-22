@@ -336,13 +336,13 @@ class RestController implements ContainerAwareInterface
     /**
      * Validate a record and throw a 400 error if not valid
      *
-     * @param \Graviton\RestBundle\Model\DocumentModel $record Record
+     * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
      *
      * @throws \Graviton\ExceptionBundle\Exception\ValidationException
      *
      * @return boolean $ret true, if no exception was thrown.
      */
-    private function isValid(DocumentModel $record)
+    private function isValid($record)
     {
         // Re-validate record after serialization (we don't trust the serializer...)
         $violations = $this->getValidator()->validate($record);
