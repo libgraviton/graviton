@@ -116,7 +116,9 @@ class LinkHeaderItem
      */
     public function getRel()
     {
-        return empty($this->getAttribute('rel')) ? '' : $this->getAttribute('rel');
+        $relation = $this->getAttribute('rel');
+
+        return empty($relation) ? '' : $relation;
     }
 
     /**
