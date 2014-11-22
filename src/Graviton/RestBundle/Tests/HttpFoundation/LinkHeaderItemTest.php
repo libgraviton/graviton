@@ -100,7 +100,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     {
         $item = new LinkHeaderItem($uri, $attributes);
 
-        $this->assertEquals($expected, (string)$item);
+        $this->assertEquals($expected, (string) $item);
     }
 
     /**

@@ -24,7 +24,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider headerValueProvider
      *
-     * @param string $headerValue  String to be transcoded to a \Graviton\RestBundle\HttpFoundation\LinkHeader
+     * @param  string $headerValue String to be transcoded to a \Graviton\RestBundle\HttpFoundation\LinkHeader
      * @return void
      *
      * @see headerValueProvider
