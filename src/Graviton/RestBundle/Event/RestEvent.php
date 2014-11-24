@@ -22,14 +22,14 @@ class RestEvent extends Event
     /**
      * Response object
      *
-     * @var Symfony\Component\HttpFoundation\Response
+     * @var \Symfony\Component\HttpFoundation\Response
      */
     private $response = null;
 
     /**
      * Controller which handles the request
      *
-     * @var Graviton\RestBundle\Controller\RestController
+     * @var \Graviton\RestBundle\Controller\RestController
      */
     private $controller = null;
 
@@ -85,7 +85,7 @@ class RestEvent extends Event
     /**
      * Get the response object
      *
-     * @return \Graviton\RestBundle\Event\Symfony\Component\HttpFoundation\Response $response Response object
+     * @return Response $response Response object
      */
     public function getResponse()
     {
@@ -94,6 +94,8 @@ class RestEvent extends Event
 
     /**
      * Set the controller for this request
+     * At the moment, the MainController doesn't extend the RestController.
+     * As soon this is refactored, we can add a type hint to the method
      *
      * @param RestController $controller Controller
      *
@@ -107,9 +109,9 @@ class RestEvent extends Event
     }
 
     /**
-     * Get the controler
+     * Get the controller
      *
-     * @return \Graviton\RestBundle\Event\Graviton\RestBundle\Controller\RestController $controller Controller
+     * @return RestController $controller Controller
      */
     public function getController()
     {
