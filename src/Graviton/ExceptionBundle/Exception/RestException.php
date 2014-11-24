@@ -2,6 +2,7 @@
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Validation exception class
  *
