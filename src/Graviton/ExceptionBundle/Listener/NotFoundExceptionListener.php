@@ -31,7 +31,7 @@ class NotFoundExceptionListener extends RestExceptionListener
             // Set status code and content
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
             $response->setContent(
-                $this->getSerializedContent($exception->getMessage())
+                $this->getSerializedContent(array("message" => $exception->getMessage()))
             );
 
             $event->setResponse($response);
