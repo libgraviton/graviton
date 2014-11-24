@@ -55,7 +55,7 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
         $containerMock
             ->expects($this->at(1))
             ->method('get')
-            ->with($this->equalTo('graviton.rest.response.400'))
+            ->with($this->equalTo('graviton.rest.response'))
             ->will($this->returnValue($responseMock));
 
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
