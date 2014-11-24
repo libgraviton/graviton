@@ -406,7 +406,7 @@ class RestController implements ContainerAwareInterface
      *
      * @return string $content Json content
      */
-    public function serialize($result)
+    protected function serialize($result)
     {
         $response = $this->container->get("graviton.rest.response");
 
@@ -435,7 +435,7 @@ class RestController implements ContainerAwareInterface
      *
      * @return object $record Document
      */
-    public function deserialize($content, $documentClass)
+    protected function deserialize($content, $documentClass)
     {
         $response = $this->container->get("graviton.rest.response");
 
