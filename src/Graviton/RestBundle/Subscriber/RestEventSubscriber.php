@@ -50,6 +50,8 @@ class RestEventSubscriber implements EventSubscriberInterface
      * Handler for kernel.request events
      *
      * @param GetResponseEvent $event Event
+     *
+     * @return void
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
@@ -63,6 +65,8 @@ class RestEventSubscriber implements EventSubscriberInterface
      * Handler for kernel.response events
      *
      * @param FilterResponseEvent $event Event
+     *
+     * @return void
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
@@ -74,6 +78,7 @@ class RestEventSubscriber implements EventSubscriberInterface
         // setResponse stops the propagation of this event
         $response = $restEvent->getResponse()
             ->prepare($event->getRequest());
+
         $event->setResponse($response);
     }
 
@@ -106,7 +111,7 @@ class RestEventSubscriber implements EventSubscriberInterface
      *
      * @param Event $event Original event (kernel.request / kernel.response)
      *
-     * @return RestEvent $evet
+     * @return RestEvent $restEvent
      */
     private function getEventObject(Event $event)
     {

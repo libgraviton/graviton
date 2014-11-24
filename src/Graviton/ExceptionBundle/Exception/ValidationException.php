@@ -22,8 +22,9 @@ class ValidationException extends RestException
     /**
      * Constructor
      *
-     * @param string $message Error message
-     * @param number $code    Error code
+     * @param string     $message Error message
+     * @param number     $code    Error code
+     * @param /Exception $prev    Previous Exception
      *
      * @return void
      */

@@ -81,7 +81,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
 
-           // $event->setResponse($response);
+            // $event->setResponse($response);
         }
     }
 
