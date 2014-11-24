@@ -72,7 +72,9 @@ class RestEventSubscriber implements EventSubscriberInterface
         $dispatcher->dispatch("graviton.rest.response", $restEvent);
 
         // setResponse stops the propagation of this event
-        $event->setResponse($restEvent->getResponse());
+        $response = $restEvent->getResponse()
+            ->prepare($event->getRequest());
+        $event->setResponse($response);
     }
 
     /**
