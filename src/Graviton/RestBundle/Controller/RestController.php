@@ -218,7 +218,7 @@ class RestController implements ContainerAwareInterface
             $newRecord = $this->deserialize(
                 $patch->apply(),
                 $this->getModel()->getEntityClass()
-               );
+            );
 
             // If everything is ok, update record and return 204 No Content
             $this->validateRecord($newRecord);
