@@ -2,6 +2,7 @@
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Validation exception class
@@ -17,7 +18,7 @@ class ValidationException extends RestException
     /**
      * Violations
      *
-     * @var Symfony\Component\Validator\ConstraintViolationList
+     * @var Symfony\Component\Validator\ConstraintViolationListInterface
      */
     private $violations;
 
@@ -42,7 +43,7 @@ class ValidationException extends RestException
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setViolations(ConstraintViolationList $violations)
+    public function setViolations(ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
 
