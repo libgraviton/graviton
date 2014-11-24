@@ -200,7 +200,8 @@ class RestController implements ContainerAwareInterface
      */
     public function patchAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.400');
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_NOT_FOUND);
 
         $record = $this->getModel()->find($id);
 
@@ -209,26 +210,21 @@ class RestController implements ContainerAwareInterface
 
         if (!is_null($record) && !empty($requestContent)) {
             // get the record as json to handle json-patch
-            $jsonString = $this->getSerializer()->serialize(
-                $record,
-                'json',
-                $this->getSerializerContext()
-            );
+            $jsonString = $this->serialize($record);
 
             // Now replace existing values with the new ones
             $patch = new Patch($jsonString, $requestContent);
 
-            // Deserialize the new json string to an object
-            $newRecord = $this->getSerializer()->deserialize(
+            $newRecord = $this->deserialize(
                 $patch->apply(),
-                $this->getModel()->getEntityClass(),
-                'json'
-            );
+                $this->getModel()->getEntityClass()
+               );
 
             // If everything is ok, update record and return 204 No Content
             $this->validateRecord($newRecord);
             $this->getModel()->updateRecord($id, $newRecord);
-            $response = $this->container->get('graviton.rest.response.204');
+            //$response = $this->container->get('graviton.rest.response.204');
+            $response->setStatusCode(Response::HTTP_NO_CONTENT);
         }
 
         return $response;
