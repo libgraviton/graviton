@@ -1,6 +1,7 @@
 <?php
 namespace Graviton\ExceptionBundle\Exception;
 
+use Symfony\Component\HttpFoundation\Response;
 /**
  * Validation exception class
  *
@@ -36,11 +37,11 @@ class RestException extends \Exception
     /**
      * Set the response object (optional)
      *
-     * @param Symfony\Component\HttpFoundation\Response $response Response object
+     * @param \Symfony\Component\HttpFoundation\Response $response Response object
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setResponse($response)
+    public function setResponse(Response $response)
     {
         $this->response = $response;
 
@@ -50,7 +51,7 @@ class RestException extends \Exception
     /**
      * Get the response object
      *
-     * @return \Graviton\ExceptionBundle\Exception\Symfony\Component\HttpFoundation\Response $response Response object
+     * @return \Symfony\Component\HttpFoundation\Response $response Response object
      */
     public function getResponse()
     {
