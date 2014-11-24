@@ -31,6 +31,10 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
             ->method('count')
             ->will($this->returnValue(1));
 
+        $responseMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Response')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $validatorMock = $this->getMockBuilder('\Symfony\Component\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
             ->setMethods(array('validate'))
@@ -51,7 +55,8 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
         $containerMock
             ->expects($this->at(1))
             ->method('get')
-            ->with($this->equalTo('graviton.rest.response'));
+            ->with($this->equalTo('graviton.rest.response.400'))
+            ->will($this->returnValue($responseMock));
 
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
 
