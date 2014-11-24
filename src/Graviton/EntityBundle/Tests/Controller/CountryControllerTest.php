@@ -57,15 +57,15 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=1>; rel="self"',
+            '<http://localhost/entity/country?page=1&per_page=10>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=2>; rel="next"',
+            '<http://localhost/entity/country?page=2&per_page=10>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=26>; rel="last"',
+            '<http://localhost/entity/country?page=26&per_page=10>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
 
@@ -76,15 +76,15 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=2>; rel="self"',
+            '<http://localhost/entity/country?page=2&per_page=10>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=1>; rel="prev"',
+            '<http://localhost/entity/country?page=1&per_page=10>; rel="prev"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=3>; rel="next"',
+            '<http://localhost/entity/country?page=3&per_page=10>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
 
@@ -95,11 +95,11 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=26>; rel="self"',
+            '<http://localhost/entity/country?page=26&per_page=10>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=1>; rel="first"',
+            '<http://localhost/entity/country?page=1&per_page=10>; rel="first"',
             explode(',', $response->headers->get('Link'))
         );
     }

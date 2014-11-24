@@ -1,12 +1,14 @@
 <?php
 namespace Graviton\RestBundle\Validation;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Mapping\ClassMetadata as SFClassMetaData;
 use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
-use Symfony\Component\Validator\Constraints\NotNull;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Validator class for json inputs
@@ -17,7 +19,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  *
- * @todo refactor as to not use LegacyValidator that was introduced by the 2.5 bump
+ * @todo     refactor as to not use LegacyValidator that was introduced by the 2.5 bump
  */
 class JsonInput
 {
@@ -42,7 +44,7 @@ class JsonInput
      *
      * @param Validator $validator Validator
      *
-     * @return void
+     * @return \Graviton\RestBundle\Validation\JsonInput
      */
     public function __construct(Validator $validator)
     {
@@ -76,7 +78,7 @@ class JsonInput
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    public function checkDocument($input, $documentClass, $path = false)
+    public function checkDocument(array $input, $documentClass, $path = '')
     {
         if (!$this->em) {
             throw new \Exception("No document manager set");
@@ -93,7 +95,12 @@ class JsonInput
             if (!$path) {
                 $violations = $this->checkProperty($property, $input, $documentMetadata, $validationMetadata);
             } else {
-                $violations = $this->checkProperty($path.".".$property, $input, $documentMetadata, $validationMetadata);
+                $violations = $this->checkProperty(
+                    $path . "." . $property,
+                    $input,
+                    $documentMetadata,
+                    $validationMetadata
+                );
             }
         }
 
@@ -103,15 +110,19 @@ class JsonInput
     /**
      * Check a single property
      *
-     * @param string                                            $path               Path to property
-     * @param array                                             $input              Json input (decoded)
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata        $documentMetadata   Doctrine metadata
-     * @param Symfony\Component\Validator\Mapping\ClassMetadata $validationMetadata Validator metadata
+     * @param string                                             $path               Path to property
+     * @param array                                              $input              Json input (decoded)
+     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata        $documentMetadata   Doctrine metadata
+     * @param \Symfony\Component\Validator\Mapping\ClassMetadata $validationMetadata Validator metadata
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    public function checkProperty($path, $input, $documentMetadata, $validationMetadata)
-    {
+    public function checkProperty(
+        $path,
+        array $input,
+        ClassMetadata $documentMetadata,
+        SFClassMetaData $validationMetadata
+    ) {
         // empty violation list
         $violations = new ConstraintViolationList();
 
@@ -155,7 +166,7 @@ class JsonInput
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    private function checkAssociation($path, $input, $documentMetadata)
+    private function checkAssociation($path, array $input, ClassMetadata $documentMetadata)
     {
         $parts = explode('.', $path);
         $property = end($parts);
@@ -168,7 +179,7 @@ class JsonInput
             $violations = new ConstraintViolationList();
             $className = $documentMetadata->getAssociationTargetClass($property);
             foreach ($input[$property] as $key => $value) {
-                $violations->addAll($this->checkDocument($value, $className, $path."[".$key."]"));
+                $violations->addAll($this->checkDocument($value, $className, $path . "[" . $key . "]"));
             }
         }
 
@@ -184,7 +195,7 @@ class JsonInput
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    private function checkConstraints($path, $value, $constraints)
+    private function checkConstraints($path, $value, array $constraints)
     {
         $validationResult = $this->validator->validateValue($value, $constraints);
         $violations = $this->createNewViolationList($path, $validationResult);
@@ -199,7 +210,7 @@ class JsonInput
      *
      * @return \Graviton\RestBundle\Validation\JsonInput $this This
      */
-    public function setDocumentManager($em)
+    public function setDocumentManager(DocumentManager $em)
     {
         $this->em = $em;
 
@@ -223,7 +234,7 @@ class JsonInput
      *
      * @return boolean $required true/false
      */
-    private function isRequired($constraints)
+    private function isRequired(array $constraints)
     {
         $required = false;
 
@@ -239,12 +250,12 @@ class JsonInput
     /**
      * Create a new violation list with the given violations
      *
-     * @param string                  $prop             Property
-     * @param ConstraintViolationList $validationResult Violation list
+     * @param string                                               $prop             Property
+     * @param \Symfony\Component\Validator\ConstraintViolationList $validationResult Violation list
      *
-     * @return ConstraintViolationList $violations Violations
+     * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
-    private function createNewViolationList($prop, $validationResult)
+    private function createNewViolationList($prop, ConstraintViolationList $validationResult)
     {
         $violations = new ConstraintViolationList();
 

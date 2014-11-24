@@ -2,16 +2,14 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use JMS\Serializer\Exception\Exception;
-use JMS\Serializer\Serializer;
-use Symfony\Component\HttpFoundation\Response;
+use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\SchemaBundle\SchemaUtils;
+use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Graviton\SchemaBundle\SchemaUtils;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-use Rs\Json\Patch;
-use Graviton\ExceptionBundle\Exception\ValidationException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -84,28 +82,27 @@ class RestController implements ContainerAwareInterface
             'json'
         );
 
-        if ($this->isValid($record)) {
-            $record = $this->getModel()->insertRecord($record);
+        $this->validateRecord($record);
+        $record = $this->getModel()->insertRecord($record);
 
-            // store id of new record so we dont need to reparse body later when needed
-            $this->getRequest()->attributes->set('id', $record->getId());
+        // store id of new record so we dont need to reparse body later when needed
+        $this->getRequest()->attributes->set('id', $record->getId());
 
-            $response = $this->container->get('graviton.rest.response.201');
-            $response = $this->setContent($response, $record);
+        $response = $this->container->get('graviton.rest.response.201');
+        $response = $this->setContent($response, $record);
 
-            $routeName = $this->getRequest()->get('_route');
-            $routeParts = explode('.', $routeName);
-            $routeType = end($routeParts);
+        $routeName = $this->getRequest()->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
 
-            if ($routeType == 'post') {
-                $routeName = substr($routeName, 0, -4).'get';
-            }
-
-            $response->headers->set(
-                'Location',
-                $this->getRouter()->generate($routeName, array('id' => $record->getId()))
-            );
+        if ($routeType == 'post') {
+            $routeName = substr($routeName, 0, -4) . 'get';
         }
+
+        $response->headers->set(
+            'Location',
+            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+        );
 
         return $response;
     }
@@ -128,11 +125,10 @@ class RestController implements ContainerAwareInterface
                 'json'
             );
 
-            if ($this->isValid($record)) {
-                $record = $this->getModel()->updateRecord($id, $record);
-                $response = $this->container->get('graviton.rest.response.200');
-                $response = $this->setContent($response, $record);
-            }
+            $this->validateRecord($record);
+            $record = $this->getModel()->updateRecord($id, $record);
+            $response = $this->container->get('graviton.rest.response.200');
+            $response = $this->setContent($response, $record);
         }
 
         return $response;
@@ -191,10 +187,9 @@ class RestController implements ContainerAwareInterface
             );
 
             // If everything is ok, update record and return 204 No Content
-            if ($this->isValid($newRecord)) {
-                $this->getModel()->updateRecord($id, $newRecord);
-                $response = $this->container->get('graviton.rest.response.204');
-            }
+            $this->validateRecord($newRecord);
+            $this->getModel()->updateRecord($id, $newRecord);
+            $response = $this->container->get('graviton.rest.response.204');
         }
 
         return $response;
@@ -230,7 +225,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->container->get('graviton.rest.response.200');
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schemaMethod =  'getCollectionSchema';
+            $schemaMethod = 'getCollectionSchema';
         }
         $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
         $response->setContent(
@@ -279,6 +274,8 @@ class RestController implements ContainerAwareInterface
     /**
      * Return the model
      *
+     * @throws \Exception in case no model was defined.
+     *
      * @return object $model Model
      */
     public function getModel()
@@ -293,7 +290,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the serializer
      *
-     * @return \JMS\Serializer\Serializer\Serializer
+     * @return \JMS\Serializer\Serializer
      */
     public function getSerializer()
     {
@@ -333,13 +330,13 @@ class RestController implements ContainerAwareInterface
     /**
      * Validate a record and throw a 400 error if not valid
      *
-     * @param Graviton\RestBundle\Model\DocumentModel $record Record
+     * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
      *
-     * @throws \Graviton\RestBundle\Controller\ValidationException
+     * @throws \Graviton\ExceptionBundle\Exception\ValidationException
      *
-     * @return boolean $ret true / false
+     * @return void
      */
-    private function isValid($record)
+    protected function validateRecord($record)
     {
         // Re-validate record after serialization (we don't trust the serializer...)
         $violations = $this->getValidator()->validate($record);
@@ -351,8 +348,6 @@ class RestController implements ContainerAwareInterface
 
             throw $e;
         }
-
-        return true;
     }
 
     /**
