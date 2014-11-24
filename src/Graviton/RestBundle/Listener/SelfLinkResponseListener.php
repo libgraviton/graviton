@@ -65,6 +65,8 @@ class SelfLinkResponseListener implements ContainerAwareInterface
          case of a POST and $router->generate() will fail. that's why we catch it and fail silently
          by not including our header in the response. i hope that's a good compromise. **/
 
+        /** Nope, it's not a good compromise...catch and handle it where it happens.
+         *  I will refactory this in another branch*/
         $addHeader = true;
         $url = '';
 
@@ -80,8 +82,6 @@ class SelfLinkResponseListener implements ContainerAwareInterface
 
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
-
-            // $event->setResponse($response);
         }
     }
 
