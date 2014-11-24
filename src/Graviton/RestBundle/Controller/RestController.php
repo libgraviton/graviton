@@ -391,7 +391,7 @@ class RestController implements ContainerAwareInterface
         if ($violations->count() > 0) {
             $e = new ValidationException('Validation failed');
             $e->setViolations($violations);
-            $e->setResponse($this->container->get('graviton.rest.response'));
+            $e->setResponse($this->getResponse());
 
             throw $e;
         }
