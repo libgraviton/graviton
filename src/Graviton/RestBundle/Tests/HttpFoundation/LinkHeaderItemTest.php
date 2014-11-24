@@ -15,33 +15,44 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  */
 class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
 {
+    const URI = 'http://localhost/test/resource';
+
     /**
      * test extracting basic header from string
      *
+     * @dataProvider headerValueProvider
+     *
+     * @param string $itemValue String to be transcoded to a \Graviton\RestBundle\HttpFoundation\LinkHeaderItem
+     * @param string $relation  Name of the relation defined by the $itemValue
+     *
      * @return void
      */
-    public function testFromString()
+    public function testFromString($itemValue, $relation = '')
     {
-        $uri = 'http://localhost/test/resource';
-        $tests = array(
-            array($uri),
-            array("<${uri}>"),
-            array("<${uri}>; rel=\"self\"", array('rel' => 'self')),
-            array("<${uri}>; rel=self", array('rel' => 'self')),
-            array("<${uri}>; rel='self'", array('rel' => 'self')),
+        $linkHeaderItem = LinkHeaderItem::fromString($itemValue);
+
+        $this->assertInstanceOf('Graviton\RestBundle\HttpFoundation\LinkHeaderItem', $linkHeaderItem);
+        $this->assertEquals(self::URI, $linkHeaderItem->getUri());
+
+        $this->assertEquals($relation, $linkHeaderItem->getRel());
+    }
+
+    /**
+     *data provider for »testFromString« to make it more clear what $itemValue caused a test to fail.
+     *
+     * @return array
+     *
+     * @see testFromString
+     */
+    public function headerValueProvider()
+    {
+        return array(
+            'base URI'                              => array(self::URI),
+            'base URI encapsulated'                 => array('<'.self::URI.'>'),
+            'base URI, self linking, no quotes'     => array('<'.self::URI.'>; rel=self', 'self'),
+            'base URI, self linking, double quotes' => array('<'.self::URI.'>; rel="self"', 'self'),
+            'base URI, self linking, single quotes' => array('<'.self::URI.">; rel='self'", 'self'),
         );
-        foreach ($tests as $test) {
-            $itemValue = $test[0];
-
-            $linkHeaderItem = LinkHeaderItem::fromString($itemValue);
-
-            $this->assertInstanceOf('Graviton\RestBundle\HttpFoundation\LinkHeaderItem', $linkHeaderItem);
-            $this->assertEquals($uri, $linkHeaderItem->getUri());
-
-            if (!empty($test[1]) && array_key_exists('rel', $test[1])) {
-                $this->assertEquals($test[1]['rel'], $linkHeaderItem->getRel());
-            }
-        }
     }
 
     /**
@@ -63,7 +74,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test getting and setting rel attribute.
+     * test getting and setting rel attribute.
      *
      * @return void
      */
@@ -81,16 +92,37 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     /**
      * test string conversion.
      *
+     * @dataProvider linkHeaderItemParameterProvider
+     *
      * @return void
      */
-    public function testToString()
+    public function testToString($expected, $uri, array $attributes = array())
     {
-        $item = new LinkHeaderItem('http://localhost');
+        $item = new LinkHeaderItem($uri, $attributes);
 
-        $this->assertEquals('<http://localhost>', (string) $item);
+        $this->assertEquals($expected, (string) $item);
+    }
 
-        $item =  new LinkHeaderItem('http://localhost', array('rel' => 'self'));
-
-        $this->assertEquals('<http://localhost>; rel="self"', (string) $item);
+    /**
+     * data provider for »testToString« to make it more clear what $uri/$attributes combination caused a test to fail.
+     *
+     * @return array
+     */
+    public function linkHeaderItemParameterProvider()
+    {
+        return array(
+            'uri only'            => array('<http://localhost>', 'http://localhost'),
+            'uri plus attribute'  =>
+                array(
+                    '<http://localhost>; rel="self"',
+                    'http://localhost',
+                    array('rel' => 'self')
+                ),
+            'uri plus attributes' => array(
+                '<http://localhost>; rel="schema"; type="urn:uri"',
+                'http://localhost',
+                array('rel' => 'schema', 'type' => 'urn:uri')
+            ),
+        );
     }
 }
