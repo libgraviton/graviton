@@ -17,7 +17,7 @@ abstract class RestException extends \Exception
     /**
      * Response object
      *
-     * @var Symfony\Component\HttpFoundation\Response
+     * @var Response
      */
     private $response = false;
 
@@ -26,7 +26,7 @@ abstract class RestException extends \Exception
      *
      * @param Response $response Response object
      *
-     * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
+     * @return RestException $this This
      */
     public function setResponse(Response $response)
     {
