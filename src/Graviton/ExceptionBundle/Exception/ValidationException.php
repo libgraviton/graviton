@@ -3,6 +3,7 @@ namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Validation exception class
@@ -13,12 +14,12 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ValidationException extends RestException
+final class ValidationException extends RestException
 {
     /**
      * Violations
      *
-     * @var Symfony\Component\Validator\ConstraintViolationListInterface
+     * @var \Symfony\Component\Validator\ConstraintViolationListInterface
      */
     private $violations;
 
@@ -27,23 +28,23 @@ class ValidationException extends RestException
      *
      * @param string     $message Error message
      * @param number     $code    Error code
-     * @param /Exception $prev    Previous Exception
+     * @param \Exception $prev    Previous Exception
      *
      * @return void
      */
-    public function __construct($message = "Validation Failed", $code = 400, $prev = null)
+    public function __construct($message = "Validation Failed", $prev = null)
     {
-        parent::__construct($message, $code, $prev);
+        parent::__construct($message, Response::HTTP_BAD_REQUEST, $prev);
     }
 
     /**
      * Set violations
      *
-     * @param Symfony\Component\Validator\ConstraintViolationList $violations Violation list
+     * @param \Symfony\Component\Validator\ConstraintViolationList $violations Violation list
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setViolations(ConstraintViolationListInterface $violations)
+    public function setViolations(\ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
 

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class RestException extends \Exception
+abstract class RestException extends \Exception
 {
     /**
      * Response object
@@ -22,27 +22,13 @@ class RestException extends \Exception
     private $response = false;
 
     /**
-     * Constructor
-     *
-     * @param string     $message Error message
-     * @param number     $code    Error code
-     * @param /Exception $prev    Previous Exception
-     *
-     * @return void
-     */
-    public function __construct($message, $code = 0, $prev = null)
-    {
-        parent::__construct($message, $code, $prev);
-    }
-
-    /**
      * Set the response object (optional)
      *
      * @param \Symfony\Component\HttpFoundation\Response $response Response object
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setResponse(Response $response)
+    public function setResponse(\Response $response)
     {
         $this->response = $response;
 

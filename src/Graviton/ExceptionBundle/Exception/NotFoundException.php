@@ -1,6 +1,7 @@
 <?php
 namespace Graviton\ExceptionBundle\Exception;
 
+use Symfony\Component\HttpFoundation\Response;
 /**
  * Validation exception class
  *
@@ -10,19 +11,19 @@ namespace Graviton\ExceptionBundle\Exception;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class NotFoundException extends RestException
+final class NotFoundException extends RestException
 {
     /**
      * Constructor
      *
      * @param string     $message Error message
      * @param number     $code    Error code
-     * @param /Exception $prev    Previous Exception
+     * @param \Exception $prev    Previous Exception
      *
      * @return void
      */
-    public function __construct($message = "Not Found", $code = 404, $prev = null)
+    public function __construct($message = "Not Found", $prev = null)
     {
-        parent::__construct($message, $code, $prev);
+        parent::__construct($message, Response::HTTP_NOT_FOUND, $prev);
     }
 }
