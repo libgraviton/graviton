@@ -3,6 +3,7 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Listener for validation exceptions
@@ -50,7 +51,7 @@ abstract class RestExceptionListener
      *
      * @return \Graviton\ExceptionBundle\Listener\RestExceptionListener
      */
-    public function setContainer($container)
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
 
@@ -77,6 +78,8 @@ abstract class RestExceptionListener
     public function getSerializedContent($content)
     {
         $serializer = $this->getContainer()->get('graviton.rest.serializer');
+
+        // can't use the same context twice.. maybe scope="prototype" in service.xml would do the trick
         $serializerContext = clone $this->getContainer()->get('graviton.rest.serializer.serializercontext');
 
         return $serializer->serialize(

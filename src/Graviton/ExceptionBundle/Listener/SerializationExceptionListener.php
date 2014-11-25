@@ -26,8 +26,8 @@ class SerializationExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof SerializationException) {
-            $response = $exception->getResponse();
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response = $exception->getResponse()
+                ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
 
             $event->setResponse($response);
         }

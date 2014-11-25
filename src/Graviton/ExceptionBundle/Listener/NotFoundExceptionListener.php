@@ -26,13 +26,11 @@ class NotFoundExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof NotFoundException) {
-            $response = $exception->getResponse();
-
+            $msg = array("message" => $exception->getMessage());
             // Set status code and content
-            $response->setStatusCode(Response::HTTP_NOT_FOUND);
-            $response->setContent(
-                $this->getSerializedContent(array("message" => $exception->getMessage()))
-            );
+            $response = $exception->getResponse()
+                ->setStatusCode(Response::HTTP_NOT_FOUND)
+                ->setContent($this->getSerializedContent($msg));
 
             $event->setResponse($response);
         }

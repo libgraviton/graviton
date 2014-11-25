@@ -29,11 +29,8 @@ class NoInputExceptionListener extends RestExceptionListener
             $msg = array("message" => "No input data");
 
             $response = $exception->getResponse()
-                ->setStatusCode(Response::HTTP_BAD_REQUEST);
-
-            $response->setContent(
-                $this->getSerializedContent($msg)
-            );
+                ->setStatusCode(Response::HTTP_BAD_REQUEST)
+                ->setContent($this->getSerializedContent($msg));
 
             $event->setResponse($response);
         }
