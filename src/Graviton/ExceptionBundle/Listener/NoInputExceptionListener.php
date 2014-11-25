@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 
 /**
- * Listener for deserialization exceptions
+ * Listener for no input exceptions
  *
  * @category GravitonExceptionBundle
  * @package  Graviton

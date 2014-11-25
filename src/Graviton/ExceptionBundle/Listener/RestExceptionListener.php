@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Listener for validation exceptions
+ * Base listener for rest exceptions
  *
  * There are multiple handler classes. Each handles a specific exception.
  * At the moment, these classes only prepare the response before sending it.

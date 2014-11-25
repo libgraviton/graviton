@@ -4,7 +4,7 @@ namespace Graviton\ExceptionBundle\Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Validation exception class
+ * Base rest exception class
  *
  * @category GravitonExceptionBundle
  * @package  Graviton
