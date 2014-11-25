@@ -27,7 +27,6 @@ final class ValidationException extends RestException
      * Constructor
      *
      * @param string     $message Error message
-     * @param number     $code    Error code
      * @param \Exception $prev    Previous Exception
      *
      * @return void
@@ -44,7 +43,7 @@ final class ValidationException extends RestException
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setViolations(\ConstraintViolationListInterface $violations)
+    public function setViolations(ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
 
