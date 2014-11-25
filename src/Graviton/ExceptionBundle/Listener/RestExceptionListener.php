@@ -31,7 +31,7 @@ abstract class RestExceptionListener
     /**
      * Service container
      *
-     * @var Symfony\Component\DependencyInjection\Container
+     * @var ContainerInterface
      */
     private $container;
 
@@ -47,9 +47,9 @@ abstract class RestExceptionListener
     /**
      * Set the DI container
      *
-     * @param Symfony\Component\DependencyInjection\Container $container DI container
+     * @param ContainerInterface $container DI container
      *
-     * @return \Graviton\ExceptionBundle\Listener\RestExceptionListener
+     * @return RestExceptionListener
      */
     public function setContainer(ContainerInterface $container)
     {
@@ -61,7 +61,7 @@ abstract class RestExceptionListener
     /**
      * Get the DI container
      *
-     * @return Symfony\Component\DependencyInjection\Container
+     * @return ContainerInterface
      */
     public function getContainer()
     {
