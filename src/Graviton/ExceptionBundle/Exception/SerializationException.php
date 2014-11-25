@@ -2,6 +2,7 @@
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Serialization exception class
  *
@@ -17,7 +18,6 @@ final class SerializationException extends RestException
      * Constructor
      *
      * @param string     $message Error message
-     * @param number     $code    Error code
      * @param \Exception $prev    Previous Exception
      *
      * @return void

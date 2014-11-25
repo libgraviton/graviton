@@ -7,6 +7,18 @@ use Symfony\Component\DependencyInjection\Container;
 /**
  * Listener for validation exceptions
  *
+ * There are multiple handler classes. Each handles a specific exception.
+ * At the moment, these classes only prepare the response before sending it.
+ * Feel free to add more functionality to these handlers (e.g. logging).
+ *
+ * All these handlers call setResponse() on the event object. When doing
+ * this, the whole response-event-stack (kernel.response, graviton.rest.response
+ * and all the response listeners you added in your own bundles) is processed.
+ * If this is not the behaviour you expect, you can send your response directly to
+ * the client.
+ * Have a look at Symfony\Component\HttpFoundation\Response or Symfony\Component\HttpFoundation\JsonRepsonse
+ * to find out how this works
+ *
  * @category GravitonExceptionBundle
  * @package  Graviton
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
@@ -29,7 +41,7 @@ abstract class RestExceptionListener
      *
      * @return void
      */
-    abstract public function onKernelException(GetResponseForExceptionEvent $event);
+    abstract public function onKernelException(\GetResponseForExceptionEvent $event);
 
     /**
      * Set the DI container
@@ -38,7 +50,7 @@ abstract class RestExceptionListener
      *
      * @return \Graviton\ExceptionBundle\Listener\RestExceptionListener
      */
-    public function setContainer(Container $container)
+    public function setContainer($container)
     {
         $this->container = $container;
 

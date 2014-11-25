@@ -408,7 +408,7 @@ class RestController implements ContainerAwareInterface
      */
     protected function serialize($result)
     {
-        $response = $this->container->get("graviton.rest.response");
+        $response = $this->getResponse();
 
         try {
             $content = $this->getSerializer()->serialize(
@@ -437,7 +437,7 @@ class RestController implements ContainerAwareInterface
      */
     protected function deserialize($content, $documentClass)
     {
-        $response = $this->container->get("graviton.rest.response");
+        $response = $this->getResponse();
 
         try {
             $record = $this->getSerializer()->deserialize(
@@ -448,7 +448,7 @@ class RestController implements ContainerAwareInterface
         } catch (\Exception $e) {
             // pass the previous exception in this case to get the error message in the handler
             // http://php.net/manual/de/exception.getprevious.php
-            $exception = new DeserializationException("Deserialization failed", Response::HTTP_BAD_REQUEST, $e);
+            $exception = new DeserializationException("Deserialization failed", $e);
 
             // at the moment, the response has to be set on the exception object.
             // try to refactor this and return the graviton.rest.response if none is set...

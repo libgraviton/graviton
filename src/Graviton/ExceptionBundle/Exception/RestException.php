@@ -28,7 +28,7 @@ abstract class RestException extends \Exception
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setResponse(\Response $response)
+    public function setResponse(Response $response)
     {
         $this->response = $response;
 
