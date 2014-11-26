@@ -58,11 +58,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
 
-        if (!($record = $this->getModel()->find($id))) {
-            $e = new NotFoundException("Entry with id ".$id." not found!");
-            $e->setResponse($response);
-            throw $e;
-        }
+        $record = $this->findRecord($id);
 
         $response->setContent($this->serialize($record));
 
@@ -141,12 +137,8 @@ class RestController implements ContainerAwareInterface
     {
         $response = $this->getResponse();
 
-        // If no record with this id exists, throw a not found exception
-        if (!$this->getModel()->find($id)) {
-            $e = new NotFoundException("Entry with id ".$id.' not found!');
-            $e->setResponse($response);
-            throw $e;
-        }
+        // does it realy exist??
+        $this->findRecord($id);
 
         // Deserialize the content
         $record = $this->deserialize(
@@ -176,12 +168,8 @@ class RestController implements ContainerAwareInterface
     {
         $response = $this->getResponse();
 
-        // Does the record exist?
-        if (!$this->getModel()->find($id)) {
-            $e = new NotFoundException("Entry with id ".$id.' not found!');
-            $e->setResponse($response);
-            throw $e;
-        }
+        // does this record exist?
+        $this->findRecord($id);
 
         $this->getModel()->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_OK);
@@ -203,7 +191,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_NOT_FOUND);
 
-        $record = $this->getModel()->find($id);
+        $record = $this->findRecord($id);
 
         // Get the patch params from request
         $requestContent = $this->getRequest()->getContent();
@@ -454,6 +442,28 @@ class RestController implements ContainerAwareInterface
             // try to refactor this and return the graviton.rest.response if none is set...
             $exception->setResponse($response);
             throw $exception;
+        }
+
+        return $record;
+    }
+
+    /**
+     * Get a single record from database or throw an exception if it doesn't exist
+     *
+     * @param mixed $id Record id
+     *
+     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
+     *
+     * @return object $record Document object
+     */
+    protected function findRecord($id)
+    {
+        $response = $this->getResponse();
+
+        if (!($record = $this->getModel()->find($id))) {
+            $e = new NotFoundException("Entry with id ".$id." not found!");
+            $e->setResponse($response);
+            throw $e;
         }
 
         return $record;
