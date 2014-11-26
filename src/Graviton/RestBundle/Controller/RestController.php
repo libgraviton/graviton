@@ -10,6 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
+use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -52,9 +55,14 @@ class RestController implements ContainerAwareInterface
      */
     public function getAction($id)
     {
-        return $this->getResponse(
-            $this->getModel()->find($id)
-        );
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_OK);
+
+        $record = $this->findRecord($id);
+
+        $response->setContent($this->serialize($record));
+
+        return $response;
     }
 
     /**
@@ -64,9 +72,13 @@ class RestController implements ContainerAwareInterface
      */
     public function allAction()
     {
-        return $this->getResponse(
-            $this->getModel()->findAll($this->getRequest())
-        );
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent(
+                $this->serialize($this->getModel()->findAll($this->getRequest()))
+            );
+
+        return $response;
     }
 
     /**
@@ -76,20 +88,27 @@ class RestController implements ContainerAwareInterface
      */
     public function postAction()
     {
-        $record = $this->getSerializer()->deserialize(
+        // Get the response object from container
+        $response = $this->getResponse();
+
+        // Deserialize the request content (throws an exception if something fails)
+        $record = $this->deserialize(
             $this->getRequest()->getContent(),
-            $this->getModel()->getEntityClass(),
-            'json'
+            $this->getModel()->getEntityClass()
         );
 
+        // Re-validate record
         $this->validateRecord($record);
+
+        // Insert the new record
         $record = $this->getModel()->insertRecord($record);
 
         // store id of new record so we dont need to reparse body later when needed
         $this->getRequest()->attributes->set('id', $record->getId());
 
-        $response = $this->container->get('graviton.rest.response.201');
-        $response = $this->setContent($response, $record);
+        // Set status code and content
+        $response->setStatusCode(Response::HTTP_CREATED);
+        $response->setContent($this->serialize($record));
 
         $routeName = $this->getRequest()->get('_route');
         $routeParts = explode('.', $routeName);
@@ -116,20 +135,24 @@ class RestController implements ContainerAwareInterface
      */
     public function putAction($id)
     {
-        if (!$this->getModel()->find($id)) {
-            $response = $this->container->get('graviton.rest.response.404');
-        } else {
-            $record = $this->getSerializer()->deserialize(
-                $this->getRequest()->getContent(),
-                $this->getModel()->getEntityClass(),
-                'json'
-            );
+        $response = $this->getResponse();
 
-            $this->validateRecord($record);
-            $record = $this->getModel()->updateRecord($id, $record);
-            $response = $this->container->get('graviton.rest.response.200');
-            $response = $this->setContent($response, $record);
-        }
+        // does it realy exist??
+        $this->findRecord($id);
+
+        // Deserialize the content
+        $record = $this->deserialize(
+            $this->getRequest()->getContent(),
+            $this->getModel()->getEntityClass()
+        );
+
+        // Re-validate record
+        $this->validateRecord($record);
+
+        // And update the record, if everything is ok
+        $record = $this->getModel()->updateRecord($id, $record);
+        $response->setStatusCode(Response::HTTP_OK);
+        $response->setContent($this->serialize($record));
 
         return $response;
     }
@@ -143,17 +166,21 @@ class RestController implements ContainerAwareInterface
      */
     public function deleteAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.404');
+        $response = $this->getResponse();
 
-        if (is_null($this->getModel()->deleteRecord($id))) {
-            $response = $this->container->get('graviton.rest.response.200');
-        }
+        // does this record exist?
+        $this->findRecord($id);
+
+        $this->getModel()->deleteRecord($id);
+        $response->setStatusCode(Response::HTTP_OK);
 
         return $response;
     }
 
     /**
-     * Patch a record (partial update)
+     * Patch a record (partial update) -> DO NOT USE THIS (or refactor it...)
+     * We tried to implement the jsonpatch rfc but this is not possible
+     * because of doctrine odm / serializer
      *
      * @param Number $id ID of record
      *
@@ -161,35 +188,31 @@ class RestController implements ContainerAwareInterface
      */
     public function patchAction($id)
     {
-        $response = $this->container->get('graviton.rest.response.400');
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_NOT_FOUND);
 
-        $record = $this->getModel()->find($id);
+        $record = $this->findRecord($id);
 
         // Get the patch params from request
         $requestContent = $this->getRequest()->getContent();
 
         if (!is_null($record) && !empty($requestContent)) {
             // get the record as json to handle json-patch
-            $jsonString = $this->getSerializer()->serialize(
-                $record,
-                'json',
-                $this->getSerializerContext()
-            );
+            $jsonString = $this->serialize($record);
 
             // Now replace existing values with the new ones
             $patch = new Patch($jsonString, $requestContent);
 
-            // Deserialize the new json string to an object
-            $newRecord = $this->getSerializer()->deserialize(
+            $newRecord = $this->deserialize(
                 $patch->apply(),
-                $this->getModel()->getEntityClass(),
-                'json'
+                $this->getModel()->getEntityClass()
             );
 
             // If everything is ok, update record and return 204 No Content
             $this->validateRecord($newRecord);
             $this->getModel()->updateRecord($id, $newRecord);
-            $response = $this->container->get('graviton.rest.response.204');
+            //$response = $this->container->get('graviton.rest.response.204');
+            $response->setStatusCode(Response::HTTP_NO_CONTENT);
         }
 
         return $response;
@@ -222,14 +245,16 @@ class RestController implements ContainerAwareInterface
             $this->container->get('graviton.i18n.repository.language')->findAll()
         );
 
-        $response = $this->container->get('graviton.rest.response.200');
+        $response = $this->container->get("graviton.rest.response");
+        $response->setStatusCode(Response::HTTP_OK);
+
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod = 'getCollectionSchema';
         }
         $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
         $response->setContent(
-            $this->getSerializer()->serialize($schema, 'json')
+            $this->serialize($schema)
         );
 
         // enabled methods for CorsListener
@@ -255,6 +280,16 @@ class RestController implements ContainerAwareInterface
     public function getRequest()
     {
         return $this->container->get('graviton.rest.request');
+    }
+
+    /**
+     * Get the response object
+     *
+     * @return \Symfony\Component\HttpFoundation\Response $response Response object
+     */
+    public function getResponse()
+    {
+        return $this->container->get("graviton.rest.response");
     }
 
     /**
@@ -344,48 +379,93 @@ class RestController implements ContainerAwareInterface
         if ($violations->count() > 0) {
             $e = new ValidationException('Validation failed');
             $e->setViolations($violations);
-            $e->setResponse($this->container->get('graviton.rest.response.400'));
+            $e->setResponse($this->getResponse());
 
             throw $e;
         }
     }
 
     /**
-     * create responses for simple get cases
+     * Serialize the given record and throw an exception if something went wrong
      *
-     * @param Object|Object[] $result result to base response on
+     * @param object $result Record
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
+     *
+     * @return string $content Json content
      */
-    protected function getResponse($result)
+    protected function serialize($result)
     {
-        $response = $this->container->get('graviton.rest.response.404');
-        if (!is_null($result)) {
-            $response = $this->container->get('graviton.rest.response.200');
-            $response = $this->setContent($response, $result);
+        $response = $this->getResponse();
+
+        try {
+            $content = $this->getSerializer()->serialize(
+                $result,
+                'json',
+                $this->getSerializerContext()
+            );
+        } catch (\Exception $e) {
+            $exception = new SerializationException();
+            $exception->setResponse($response);
+            throw $exception;
         }
 
-        return $response;
+        return $content;
     }
 
     /**
-     * set content on response
+     * Deserialize the given content throw an exception if something went wrong
      *
-     * @param \Symfony\Component\HttpFoundation\Response $response reponse to edit
-     * @param Object|Object[]                            $content  object to serialize into content
+     * @param string $content       Request content
+     * @param string $documentClass Document class
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Graviton\ExceptionBundle\Exception\DeserializationException
+     *
+     * @return object $record Document
      */
-    protected function setContent(Response $response, $content)
+    protected function deserialize($content, $documentClass)
     {
-        $response->setContent(
-            $this->getSerializer()->serialize(
-                $content,
-                'json',
-                $this->getSerializerContext()
-            )
-        );
+        $response = $this->getResponse();
 
-        return $response;
+        try {
+            $record = $this->getSerializer()->deserialize(
+                $content,
+                $documentClass,
+                'json'
+            );
+        } catch (\Exception $e) {
+            // pass the previous exception in this case to get the error message in the handler
+            // http://php.net/manual/de/exception.getprevious.php
+            $exception = new DeserializationException("Deserialization failed", $e);
+
+            // at the moment, the response has to be set on the exception object.
+            // try to refactor this and return the graviton.rest.response if none is set...
+            $exception->setResponse($response);
+            throw $exception;
+        }
+
+        return $record;
+    }
+
+    /**
+     * Get a single record from database or throw an exception if it doesn't exist
+     *
+     * @param mixed $id Record id
+     *
+     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
+     *
+     * @return object $record Document object
+     */
+    protected function findRecord($id)
+    {
+        $response = $this->getResponse();
+
+        if (!($record = $this->getModel()->find($id))) {
+            $e = new NotFoundException("Entry with id ".$id." not found!");
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        return $record;
     }
 }

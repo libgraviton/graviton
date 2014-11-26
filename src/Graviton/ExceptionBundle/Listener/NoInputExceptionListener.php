@@ -1,12 +1,12 @@
 <?php
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Graviton\ExceptionBundle\Exception\NoInputException;
 
 /**
- * Listener for validation exceptions
+ * Listener for no input exceptions
  *
  * @category GravitonExceptionBundle
  * @package  Graviton
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ValidationExceptionListener extends RestExceptionListener
+class NoInputExceptionListener extends RestExceptionListener
 {
     /**
      * Handle the exception and send the right response
@@ -25,13 +25,12 @@ class ValidationExceptionListener extends RestExceptionListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof ValidationException) {
-            // Set status code and content
+        if (($exception = $event->getException()) instanceof NoInputException) {
+            $msg = array("message" => "No input data");
+
             $response = $exception->getResponse()
                 ->setStatusCode(Response::HTTP_BAD_REQUEST)
-                ->setContent(
-                    $this->getSerializedContent($exception->getViolations())
-                );
+                ->setContent($this->getSerializedContent($msg));
 
             $event->setResponse($response);
         }

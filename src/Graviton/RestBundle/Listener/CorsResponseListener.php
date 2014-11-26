@@ -3,6 +3,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * FilterResponseListener for setting up CORS headers.
@@ -32,7 +33,7 @@ class CorsResponseListener
      *
      * @return void
      */
-    public function addheader($header)
+    public function addHeader($header)
     {
         $this->headers[] = $header;
     }
@@ -44,7 +45,7 @@ class CorsResponseListener
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(RestEvent $event)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
@@ -57,7 +58,5 @@ class CorsResponseListener
         }
         $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
         $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->allowHeaders));
-
-        $event->setResponse($response);
     }
 }

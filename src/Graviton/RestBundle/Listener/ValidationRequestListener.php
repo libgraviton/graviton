@@ -4,6 +4,9 @@ namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\RestBundle\Event\RestEvent;
+use Symfony\Component\HttpFoundation\Response;
+use Graviton\ExceptionBundle\Exception\NoInputException;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -30,25 +33,15 @@ class ValidationRequestListener
      *
      * @return void
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RestEvent $event)
     {
         // only validate on POST and PUT
         // if patch is required, refactor the method or do something else
         $request = $event->getRequest();
+        $response = $event->getResponse();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
-            // get the service name
-            list ($serviceName, $action) = explode(":", $event->getRequest()->get('_controller'));
-
-            // get the controller which handles this request
-            $controller = $this->container->get($serviceName);
-
-            // get the input validator
-            $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
-
-            // get the document manager for this model
-            $em = $controller->getModel()->getRepository()->getDocumentManager();
-            $inputValidator->setDocumentManager($em);
+            $controller = $event->getController();
 
             // Moved this from RestController to ValidationListener (don't know if necessary)
             $content = $event->getRequest()->getContent();
@@ -57,7 +50,18 @@ class ValidationRequestListener
             }
 
             // Decode the json from request
-            $input = json_decode($content, true);
+            if (!($input = json_decode($content, true))) {
+                $e = new NoInputException();
+                $e->setResponse($response);
+                throw $e;
+            }
+
+            // get the input validator
+            $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
+
+            // get the document manager for this model
+            $em = $controller->getModel()->getRepository()->getDocumentManager();
+            $inputValidator->setDocumentManager($em);
 
             // validate the document
             $result = $inputValidator->validate($input, $controller->getModel()->getEntityClass());
@@ -67,9 +71,8 @@ class ValidationRequestListener
                 $e = new ValidationException("Validation failed");
                 $e->setViolations($result);
 
-                if (($event->hasResponse())) {
-                    $e->setResponse($event->getResponse());
-                }
+                // pass the event..???
+                $e->setResponse($response);
 
                 throw $e;
             }

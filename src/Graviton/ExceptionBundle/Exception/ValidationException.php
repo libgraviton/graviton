@@ -1,6 +1,10 @@
 <?php
 namespace Graviton\ExceptionBundle\Exception;
 
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Validation exception class
  *
@@ -10,43 +14,36 @@ namespace Graviton\ExceptionBundle\Exception;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ValidationException extends \Exception
+final class ValidationException extends RestException
 {
     /**
      * Violations
      *
-     * @var Symfony\Component\Validator\ConstraintViolationList
+     * @var \Symfony\Component\Validator\ConstraintViolationListInterface
      */
     private $violations;
 
     /**
-     * Response object
-     *
-     * @var Symfony\Component\HttpFoundation\Response
-     */
-    private $response = false;
-
-    /**
      * Constructor
      *
-     * @param string $message Error message
-     * @param number $code    Error code
+     * @param string     $message Error message
+     * @param \Exception $prev    Previous Exception
      *
      * @return void
      */
-    public function __construct($message, $code = 0)
+    public function __construct($message = "Validation Failed", $prev = null)
     {
-        parent::__construct($message, $code);
+        parent::__construct($message, Response::HTTP_BAD_REQUEST, $prev);
     }
 
     /**
      * Set violations
      *
-     * @param Symfony\Component\Validator\ConstraintViolationList $violations Violation list
+     * @param \Symfony\Component\Validator\ConstraintViolationList $violations Violation list
      *
      * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
      */
-    public function setViolations($violations)
+    public function setViolations(ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
 
@@ -61,29 +58,5 @@ class ValidationException extends \Exception
     public function getViolations()
     {
         return $this->violations;
-    }
-
-    /**
-     * Set the response object (optional)
-     *
-     * @param Symfony\Component\HttpFoundation\Response $response Response object
-     *
-     * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
-     */
-    public function setResponse($response)
-    {
-        $this->response = $response;
-
-        return $this;
-    }
-
-    /**
-     * Get the response object
-     *
-     * @return \Graviton\ExceptionBundle\Exception\Symfony\Component\HttpFoundation\Response $response Response object
-     */
-    public function getResponse()
-    {
-        return $this->response;
     }
 }
