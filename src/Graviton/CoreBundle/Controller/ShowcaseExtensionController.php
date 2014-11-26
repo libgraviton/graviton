@@ -42,10 +42,11 @@ class ShowcaseExtensionController extends RestController
 
         $data = $this->getModel()->findAll($this->getRequest());
 
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent($this->serialize($data));
         // here you could work with the objects..
         // or do own stuff
-        return $this->getResponse(
-            $data
-        );
+        return $response;
     }
 }
