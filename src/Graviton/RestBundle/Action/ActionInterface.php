@@ -66,44 +66,27 @@ interface ActionInterface
      * @var string
      */
     const ACTION_CANONICAL_SCHEMA = "canonicalSchema";
-    
+
     /**
      * Schema id action
      *
      * @var string
      */
     const ACTION_CANONICAL_ID_SCHEMA = "canonicalIdSchema";
-    
+
     /**
      * Options action
      *
      * @var string
      */
     const ACTION_OPTIONS = "options";
-    
+
     /**
      * Id options action
      *
      * @var string
      */
     const ACTION_ID_OPTIONS = "idOptions";
-
-    /**
-     * Return the route to this action
-     *
-     * @param string $actionName Action name
-     */
-    public function getRoute($actionName);
-
-    /**
-     * Get the ref=self link for this action
-     *
-     * @param RouterInterface $router   Router instance
-     * @param bool            $absoulte Absolute path
-     *
-     * @return string $url Url
-     */
-    public function getRefLinkUrl($router, $absoulte = false);
 
     /**
      * Does this action have a next page?
@@ -127,7 +110,17 @@ interface ActionInterface
     public function hasLastPage();
 
     /**
-     * Get the "next" link url
+     * Get the rel=self link for this action
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absoulte Absolute path
+     *
+     * @return string $url Url
+     */
+    public function getRefLinkUrl($router, $absoulte = false);
+
+    /**
+     * Get the "rel=next" link url
      *
      * @param RouterInterface $router   Router
      * @param bool            $absoulte Absolute path
@@ -137,7 +130,7 @@ interface ActionInterface
     public function getNextPageUrl($router, $absoulte = false);
 
     /**
-     * Get the "prev" link url
+     * Get the "rel=prev" link url
      *
      * @param RouterInterface $router   Router
      * @param bool            $absoulte Absolute path
@@ -147,7 +140,7 @@ interface ActionInterface
     public function getPrevPageUrl($router, $absoulte = false);
 
     /**
-     * Get the "last" link url
+     * Get the "rel=last" link url
      *
      * @param RouterInterface $router   Router
      * @param bool            $absoulte Absolute path

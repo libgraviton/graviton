@@ -3,8 +3,8 @@ namespace Graviton\RestBundle\Action;
 
 /**
  *  Action factory
- *  
- *  There are some actions 
+ *
+ *  There are some actions
  *
  * @category RestBundle
  * @package  Graviton
@@ -42,7 +42,8 @@ class ActionFactory
         $className = __NAMESPACE__.'\\'.ucfirst($actionName)."Action";
 
         if (!class_exists($className)) {
-            throw new \Exception("Action ".$actionName." (".$className.") not supported");
+            $msg = "Action %s (%s) not supported";
+            throw new \Exception(sprintf($msg, $actionName, $className));
         }
 
         $action = new $className($request, $response);

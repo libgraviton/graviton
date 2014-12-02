@@ -21,10 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class AbstractAction implements ActionInterface
+abstract class AbstractAction implements ActionInterface
 {
-	const ACTION = self::ACTION_ALL;
-	
     /**
      * Request
      *
@@ -54,21 +52,6 @@ class AbstractAction implements ActionInterface
     }
 
     /**
-     * (non-PHPdoc)
-     * @see \Graviton\RestBundle\Action\ActionInterface::getRoute()
-     */
-    public function getRoute($actionName)
-    {
-        $routeParts = explode('.', $this->request->get('_route'));
-
-        // Replace the last part of the route (post, put...) with action name
-        array_pop($routeParts);
-        array_push($routeParts, $actionName);
-
-        return implode(".", $routeParts);
-    }
-
-    /**
      * Return the request objecg
      *
      * @return Request
@@ -90,161 +73,232 @@ class AbstractAction implements ActionInterface
 
     /**
      * (non-PHPdoc)
-     * @see \Graviton\RestBundle\Action\ActionInterface::getRefLink()
-     */
-    public function getRefLinkUrl($router, $absolute = false)
-    {
-        // This is the default case (get, put, post)
-        $route = $this->getRoute(self::ACTION_GET);
-        $id = $this->getRequest()->get('id');
-
-        return $router->generate($route, array('id' => $id), $absolute);
-    }
-
-    /**
-     * (non-PHPdoc)
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::hasNextPage()
+     *
+     * @return bool $ret true/false
      */
     public function hasNextPage()
     {
-    	$ret = false;
-    	 
-    	if (null !== $this->getRequest()->attributes->get('paging')) {
-    		$lastPage = $this->getRequest()->attributes->get('numPages');
-    		$page = $this->getRequest()->attributes->get('page');
-    
-    		if ($lastPage > $page) {
-    			$ret = true;
-    		}
-    	}
-    
-    	return $ret;
+        $ret = false;
+
+        if (null !== $this->getRequest()->attributes->get('paging')) {
+            $lastPage = $this->getRequest()->attributes->get('numPages');
+            $page = $this->getRequest()->query->get('page');
+
+            if ($lastPage > $page) {
+                $ret = true;
+            }
+        }
+
+        return $ret;
     }
-    
+
     /**
      * (non-PHPdoc)
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::hasPrevPage()
+     *
+     * @return bool $ret true/false
      */
     public function hasPrevPage()
     {
-    	$ret = false;
-    	 
-    	if (null !== $this->getRequest()->attributes->get('page')) {
-    		if ($this->getRequest()->attributes->get('page') > 1) {
-    			$ret = true;
-    		}
-    	}
-    	 
-    	return $ret;
+        $ret = false;
+
+        if (null !== $this->getRequest()->query->get('page')) {
+            if ($this->getRequest()->query->get('page') > 1) {
+                $ret = true;
+            }
+        }
+
+        return $ret;
     }
-    
+
     /**
      * (non-PHPdoc)
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::hasLastPage()
+     *
+     * @return bool $ret true/false
      */
     public function hasLastPage()
     {
-    	$ret = false;
-    	 
-    	if (null !== $this->getRequest()->attributes->get('numPages')) {
-    		$ret = true;
-    	}
-    	 
-    	return $ret;
+        $ret = false;
+
+        if (null !== $this->getRequest()->attributes->get('numPages')) {
+            $ret = true;
+        }
+
+        return $ret;
     }
-    
+
     /**
-     * (non-PHPdoc)
+     * Get the rel=self url
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
+     * @return string $url Url (rel=self)
+     */
+    public function getRefLinkUrl($router, $absolute = false)
+    {
+        $id = $this->getRequest()->get('id');
+        $url = $this->generateUrl($router, self::ACTION_GET, array('id' => $id), $absolute);
+
+        return $url;
+    }
+
+    /**
+     * Get the rel=next url
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absoulte Absolute path
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::getNextLink()
+     *
+     * @return string $ret Url or empty string
      */
     public function getNextPageUrl($router, $absoulte = false)
     {
-        return null;
+        return "";
     }
 
     /**
-     * (non-PHPdoc)
+     * Get the rel=prev url
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absoulte Absolute path
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::getPrevLink()
+     *
+     * @return string $ret Url or empty string
      */
     public function getPrevPageUrl($router, $absoulte = false)
     {
-        return null;
+        return "";
     }
 
     /**
-     * (non-PHPdoc)
+     * Get the rel=last url
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absoulte Absolute path
+     *
      * @see \Graviton\RestBundle\Action\ActionInterface::getLastLink()
+     *
+     * @return string $ret Url or empty string
      */
     public function getLastPageUrl($router, $absoulte = false)
     {
-        return null;
+        return "";
     }
-    
+
+    /**
+     * Returns an array with pagination params if set
+     *
+     * @return multitype:number
+     */
     protected function getPaginationParams()
     {
-    	$params = array();
-    	 
-    	if (null !== $this->getRequest()->attributes->get('paging')) {
-    		$params['page'] = (int) $this->getRequest()->get('page', 1);
-    		$params['per_page'] = (int) $this->getRequest()->attributes->get('perPage');
-    	}
-    	 
-    	return $params;
+        $params = array();
+
+        if (null !== $this->getRequest()->attributes->get('paging')) {
+            $params['page'] = (int) $this->getRequest()->get('page', 1);
+            $params['per_page'] = (int) $this->getRequest()->attributes->get('perPage');
+        }
+
+        return $params;
     }
-    
-    protected function removePaginationParams($queryString = "")
-    {
-    	$params = $this->getPaginationParams();
-    	 
-    	$search = "page=".$params['page'];
-    	$queryString = str_replace($search, "", $queryString);
-    	
-    	$search = "&per_page=".$params['per_page'];
-    	$queryString = str_replace($search, "", $queryString);
-    	 
-    	return $queryString;
-    }
-    
+
     /**
      * Generate an url with the given parameters
-     * 
-     * I'm not sure if this realy work. Maybe one needs to refactor this.
+     *
+     * I'm not sure if this realy works. Maybe one needs to refactor this.
      * The RQL Parser is able to parse the url and exract the necessary parameters.
      * Something like that could do the trick...
-     * 
+     *
      * @param Router $router   Router
+     * @param string $action   Action (defined in ActionInterface)
      * @param array  $params   Parameters
      * @param string $absolute Absolute path
-     * 
-     * @return string $url Url 
+     *
+     * @return string $url Url
      */
-    protected function generateUrl($router, $params = array(), $absolute = false)
+    protected function generateUrl(
+        $router,
+        $action,
+        $params = array(),
+        $absolute = false
+    ) {
+        $delimiter = '?';
+
+        if (!empty($params)) {
+            $delimiter = '&';
+        }
+
+        $url = $router->generate(
+            $this->getRoute($action),
+            $params,
+            $absolute
+        );
+
+        // get the query string and remove page/per_page params
+        $queryString = $this->removePaginationParams(
+            $this->getRequest()->getQueryString()
+        );
+
+        if (!empty($queryString)) {
+            $url .= $delimiter.urldecode($queryString);
+        }
+
+        return $url;
+    }
+
+    /**
+     * Get the route to this action
+     *
+     * @param string $actionName Name of this action (defined in ActionInterface)
+     *
+     * @see \Graviton\RestBundle\Action\ActionInterface::getRoute()
+     *
+     * @return string $route Route identifier of this action
+     */
+    protected function getRoute($actionName)
     {
-    	$delimiter = '?';
-    	
-    	if (!empty($params)) {
-    		$delimiter = '&';
-    	}
-    	
-    	$url = $router->generate(
-    		$this->getRoute(static::ACTION),
-    		$params,
-    		$absolute
-    	);
-    	
-    	// get the query string and remove page/per_page params
-    	$queryString = $this->removePaginationParams(
-    		$this->getRequest()->getQueryString()
-    	);
+        $routeParts = explode('.', $this->request->get('_route'));
 
-    	// It's possible that there are some "&" sign left in the query string
-    	// Use Request::normalize to remove them
-    	$queryString = Request::normalizeQueryString($queryString);
-    	
-    	if (!empty($queryString)) {
-    		$url .= $delimiter.urldecode($queryString);
-    	}
+        // Replace the last part of the route (post, put...) with action name
+        array_pop($routeParts);
+        array_push($routeParts, $actionName);
 
-    	return $url;
+        return implode(".", $routeParts);
+    }
+
+    /**
+     * Remove the pagination params from query string (if set)
+     *
+     * @param string $queryString Query string from request object
+     *
+     * @return string $queryString Normalized query string without pagination params
+     */
+    protected function removePaginationParams($queryString = "")
+    {
+        $params = $this->getPaginationParams();
+
+        if (!empty($params['page'])) {
+            $search = "page=".$params['page'];
+            $queryString = str_replace($search, "", $queryString);
+        }
+
+        if (!empty($params['per_page'])) {
+            $search = "&per_page=".$params['per_page'];
+            $queryString = str_replace($search, "", $queryString);
+        }
+
+        // It's possible that there are some "&" sign left in the query string
+        // Use Request::normalize to remove them
+        $queryString = Request::normalizeQueryString($queryString);
+
+        return $queryString;
     }
 }

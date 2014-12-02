@@ -16,12 +16,18 @@ class OptionsAction extends AbstractAction
 {
     /**
      * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
      * @see \Graviton\RestBundle\Action\AbstractAction::getRefLink()
+     *
+     * @return string $url Url
      */
     public function getRefLinkUrl($router, $absolute = false)
     {
-        $route = $this->getRoute(self::ACTION_SCHEMA);
+        $url = $this->generateUrl($router, self::ACTION_OPTIONS, array(), $absolute);
 
-        return $router->generate($route, array(), $absolute);
+        return $url;
     }
 }

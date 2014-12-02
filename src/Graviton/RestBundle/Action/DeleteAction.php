@@ -16,10 +16,16 @@ class DeleteAction extends AbstractAction
 {
     /**
      * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
      * @see \Graviton\RestBundle\Action\AbstractAction::getRefLink()
+     *
+     * @return string $url Empty string
      */
     public function getRefLinkUrl($router, $absolute = false)
     {
-        return null;
+        return "";
     }
 }

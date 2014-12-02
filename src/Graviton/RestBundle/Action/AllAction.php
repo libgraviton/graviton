@@ -26,79 +26,91 @@ class AllAction extends AbstractAction
      * what happens if the rql query contains an "=" sign...)
      * That's why i add the whole query string to the url...
      *
-     * (non-PHPdoc)
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
      * @see \Graviton\RestBundle\Action\AbstractAction::getRefLink()
+     *
+     * @return string $url Url
      */
     public function getRefLinkUrl($router, $absolute = false)
     {
-        $route = $this->getRoute(self::ACTION_ALL);
+        $params = $this->getPaginationParams();
 
-        // Generate the base route
-        $url = $router->generate($route, array(), $absolute);
+        $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
 
-        if (!is_null(($queryString = $this->getRequest()->getQueryString()))) {
-            $url .= "?".urldecode($queryString);
+        return $url;
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
+     * @see \Graviton\RestBundle\Action\AbstractAction::getNextPageUrl()
+     *
+     * @return string url Url or empty string
+     */
+    public function getNextPageUrl($router, $absolute = false)
+    {
+        $url = "";
+
+        if ($this->hasNextPage()) {
+            $params = $this->getPaginationParams();
+            $params['page']++;
+
+            $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
         }
 
         return $url;
     }
- 
-    /**
-     * Generate the url to the next page
-     * 
-     * @param Router  $router   Router
-     * @param boolean $absolute Absolute path
-     * 
-     * @return Ambigous <NULL, string>
-     */
-    public function getNextPageUrl($router, $absolute = false)
-    {
-    	$url = null;
-    	$params = $this->getPaginationParams();
-    	
-    	if ($this->hasNextPage()) {
-    		$params = $this->getPaginationParams();
-    		$params['page']++;
-	 
-    		$url = $this->generateUrl($router, $params, $absolute);
-    	}
 
-    	return $url;
-    }
-    
     /**
-     * Generate the url to the last page
-     * 
-     * @param Router  $router   Router
-     * @param boolean $absolute Absolute path
-     * 
-     * @return 
+     * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
+     * @see \Graviton\RestBundle\Action\AbstractAction::getPrevPageUrl()
+     *
+     * @return string $url Url or empty string
      */
     public function getPrevPageUrl($router, $absolute = false)
     {
-    	$url = null;
-    	
-    	if ($this->hasPrevPage()) {
-    		$params = $this->getPaginationParams();
-    		$params['page']--;
-    		
-    		$url = $this->generateUrl($router, $params, $absolute);
-    	}
-    	
-    	return $url;
+        $url = "";
+
+        if ($this->hasPrevPage()) {
+            $params = $this->getPaginationParams();
+            $params['page']--;
+
+            $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
+        }
+
+        return $url;
     }
-    
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
+     * @see \Graviton\RestBundle\Action\AbstractAction::getLastPageUrl()
+     *
+     * @return string $url Url or empty string
+     */
     public function getLastPageUrl($router, $absolute = false)
     {
-    	$url = null;
-    	
-    	if ($this->hasLastPage()) {
-    		$params = $this->getPaginationParams();
-    		$params['page'] = $this->getRequest()->attributes->get('numPages');
-    		
-    		$url = $this->generateUrl($router, $params, $absolute);
-    	}
-    
-    	return $url;
+        $url = "";
+
+        if ($this->hasLastPage()) {
+            $params = $this->getPaginationParams();
+            $params['page'] = $this->getRequest()->attributes->get('numPages');
+
+            $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
+        }
+
+        return $url;
     }
 }
