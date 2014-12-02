@@ -105,7 +105,7 @@ abstract class AbstractAction implements ActionInterface
     {
         $ret = false;
 
-        if (null !== $this->getRequest()->query->get('page')) {
+        if (null !== $this->getRequest()->attributes->get('paging')) {
             if ($this->getRequest()->query->get('page') > 1) {
                 $ret = true;
             }
