@@ -3,6 +3,7 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * This is just a dummy controller for demonstrating
