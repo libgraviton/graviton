@@ -2,7 +2,7 @@
 namespace Graviton\RestBundle\Action;
 
 /**
- * Get Action
+ * Post Action
  *
  * Nothing to do...
  *
