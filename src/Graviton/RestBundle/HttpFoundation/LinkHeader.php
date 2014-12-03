@@ -49,7 +49,7 @@ class LinkHeader
                     return $item;
                 },
                 preg_split(
-                    '/(?:(".+?"|<(?:.*?)>(?:[^,]+))(?:,|$))/',
+                    '/(?:(".+?"|(?:<*)http(?:.*?)|(?:[^,]+))(?:,|$))/',
                     $headerValue,
                     0,
                     PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
