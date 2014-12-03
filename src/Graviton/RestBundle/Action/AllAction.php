@@ -113,7 +113,7 @@ class AllAction extends AbstractAction
 
         return $url;
     }
-    
+
     /**
      * (non-PHPdoc)
      *
@@ -126,15 +126,15 @@ class AllAction extends AbstractAction
      */
     public function getLastPageUrl($router, $absolute = false)
     {
-    	$url = "";
-    
-    	if ($this->hasLastPage()) {
-    		$params = $this->getPaginationParams();
-    		$params['page'] = $this->getRequest()->attributes->get('numPages');
-    
-    		$url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
-    	}
-    
-    	return $url;
+        $url = "";
+
+        if ($this->hasLastPage()) {
+            $params = $this->getPaginationParams();
+            $params['page'] = $this->getRequest()->attributes->get('numPages');
+
+            $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
+        }
+
+        return $url;
     }
 }

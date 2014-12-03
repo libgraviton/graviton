@@ -113,7 +113,7 @@ abstract class AbstractAction implements ActionInterface
 
         return $ret;
     }
-    
+
     /**
      * (non-PHPdoc)
      *
@@ -123,15 +123,15 @@ abstract class AbstractAction implements ActionInterface
      */
     public function hasFirstPage()
     {
-    	$ret = false;
-    
-    	if (null !== $this->getRequest()->get('paging')) {
-    		if ((int) $this->getRequest()->get('page') > 2) {
-    			$ret = true;
-    		}
-    	}
-    
-    	return $ret;
+        $ret = false;
+
+        if (null !== $this->getRequest()->get('paging')) {
+            if ((int) $this->getRequest()->get('page') > 2) {
+                $ret = true;
+            }
+        }
+
+        return $ret;
     }
 
     /**
@@ -146,9 +146,9 @@ abstract class AbstractAction implements ActionInterface
         $ret = false;
 
         if (null !== $this->getRequest()->get('paging')) {
-        	if ((int) $this->getRequest()->get('page') !== (int) $this->getRequest()->get('numPages')) {
-            	$ret = true;
-        	}
+            if ((int) $this->getRequest()->get('page') !== (int) $this->getRequest()->get('numPages')) {
+                $ret = true;
+            }
         }
 
         return $ret;
@@ -199,7 +199,7 @@ abstract class AbstractAction implements ActionInterface
     {
         return "";
     }
-    
+
     /**
      * Get the rel=first url
      *
@@ -212,7 +212,7 @@ abstract class AbstractAction implements ActionInterface
      */
     public function getFirstPageUrl($router, $absoulte = false)
     {
-    	return "";
+        return "";
     }
 
     /**
@@ -323,10 +323,10 @@ abstract class AbstractAction implements ActionInterface
         $params = $this->getPaginationParams();
 
         if (!empty($params['per_page'])) {
-        	$search = "per_page=".$params['per_page'];
-        	$queryString = str_replace($search, "", $queryString);
+            $search = "per_page=".$params['per_page'];
+            $queryString = str_replace($search, "", $queryString);
         }
-        
+
         if (!empty($params['page'])) {
             $search = "page=".$params['page'];
             $queryString = str_replace($search, "", $queryString);

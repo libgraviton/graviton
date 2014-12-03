@@ -101,10 +101,10 @@ interface ActionInterface
      * @return bool $ret true/false
      */
     public function hasPrevPage();
-    
+
     /**
      * Does this action have a first page?
-     * 
+     *
      * @return bool $ret true/false
      */
     public function hasFirstPage();
@@ -155,7 +155,7 @@ interface ActionInterface
      * @return string $ret Link url
      */
     public function getFirstPageUrl($router, $absoulte = false);
-    
+
     /**
      * Get the "rel=last" link url
      *

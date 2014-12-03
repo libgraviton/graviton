@@ -26,7 +26,7 @@ class IdOptionsAction extends AbstractAction
      */
     public function getRefLinkUrl($router, $absolute = false)
     {
-    	$id = $this->getRequest()->get('id');
+        $id = $this->getRequest()->get('id');
         $url = $this->generateUrl($router, self::ACTION_ID_OPTIONS, array('id' => $id), $absolute);
 
         return $url;

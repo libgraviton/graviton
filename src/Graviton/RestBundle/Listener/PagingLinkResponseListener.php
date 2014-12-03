@@ -60,18 +60,18 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         $action = ActionFactory::factory($request, $response);
 
         if ($action->hasFirstPage()) {
-        	$url = $action->getFirstPageUrl($router, true);
-        	$this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "first")));
+            $url = $action->getFirstPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "first")));
         }
 
         if ($action->hasPrevPage()) {
             $url = $action->getPrevPageUrl($router, true);
             $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "prev")));
         }
-        
+
         if ($action->hasNextPage()) {
-        	$url = $action->getNextPageUrl($router, true);
-        	$this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "next")));
+            $url = $action->getNextPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "next")));
         }
 
         if ($action->hasLastPage()) {
