@@ -15,6 +15,13 @@ namespace Graviton\RestBundle\Action;
 class ActionFactory
 {
     /**
+     * Actions array
+     *
+     * @var array
+     */
+
+    private static $actions = array();
+    /**
      * Constructor (private... use the factory method)
      *
      * @return void
@@ -46,7 +53,12 @@ class ActionFactory
             throw new \Exception(sprintf($msg, $actionName, $className));
         }
 
-        $action = new $className($request, $response);
+        if (!isset(self::$actions[$request->get('_route')])) {
+            $action = new $className($request, $response);
+            self::$actions[$request->get('_route')] = $action;
+        } else {
+            $action = self::$actions[$request->get('_route')];
+        }
 
         return $action;
     }
