@@ -82,9 +82,9 @@ abstract class AbstractAction implements ActionInterface
     {
         $ret = false;
 
-        if (null !== $this->getRequest()->attributes->get('paging')) {
-            $lastPage = $this->getRequest()->attributes->get('numPages');
-            $page = $this->getRequest()->query->get('page');
+        if (null !== $this->getRequest()->get('paging')) {
+            $lastPage = $this->getRequest()->get('numPages');
+            $page = $this->getRequest()->get('page');
 
             if ($lastPage > $page) {
                 $ret = true;
@@ -105,13 +105,33 @@ abstract class AbstractAction implements ActionInterface
     {
         $ret = false;
 
-        if (null !== $this->getRequest()->attributes->get('paging')) {
-            if ($this->getRequest()->query->get('page') > 1) {
+        if (null !== $this->getRequest()->get('paging')) {
+            if ($this->getRequest()->get('page') > 1) {
                 $ret = true;
             }
         }
 
         return $ret;
+    }
+    
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Graviton\RestBundle\Action\ActionInterface::hasLastPage()
+     *
+     * @return bool $ret true/false
+     */
+    public function hasFirstPage()
+    {
+    	$ret = false;
+    
+    	if (null !== $this->getRequest()->get('paging')) {
+    		if ((int) $this->getRequest()->get('page') > 2) {
+    			$ret = true;
+    		}
+    	}
+    
+    	return $ret;
     }
 
     /**
@@ -125,8 +145,10 @@ abstract class AbstractAction implements ActionInterface
     {
         $ret = false;
 
-        if (null !== $this->getRequest()->attributes->get('numPages')) {
-            $ret = true;
+        if (null !== $this->getRequest()->get('paging')) {
+        	if ((int) $this->getRequest()->get('page') !== (int) $this->getRequest()->get('numPages')) {
+            	$ret = true;
+        	}
         }
 
         return $ret;
@@ -177,6 +199,21 @@ abstract class AbstractAction implements ActionInterface
     {
         return "";
     }
+    
+    /**
+     * Get the rel=first url
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absoulte Absolute path
+     *
+     * @see \Graviton\RestBundle\Action\ActionInterface::getLastLink()
+     *
+     * @return string $ret Url or empty string
+     */
+    public function getFirstPageUrl($router, $absoulte = false)
+    {
+    	return "";
+    }
 
     /**
      * Get the rel=last url
@@ -204,7 +241,7 @@ abstract class AbstractAction implements ActionInterface
 
         if (null !== $this->getRequest()->attributes->get('paging')) {
             $params['page'] = (int) $this->getRequest()->get('page', 1);
-            $params['per_page'] = (int) $this->getRequest()->attributes->get('perPage');
+            $params['per_page'] = (int) $this->getRequest()->get('perPage');
         }
 
         return $params;
@@ -285,13 +322,13 @@ abstract class AbstractAction implements ActionInterface
     {
         $params = $this->getPaginationParams();
 
+        if (!empty($params['per_page'])) {
+        	$search = "per_page=".$params['per_page'];
+        	$queryString = str_replace($search, "", $queryString);
+        }
+        
         if (!empty($params['page'])) {
             $search = "page=".$params['page'];
-            $queryString = str_replace($search, "", $queryString);
-        }
-
-        if (!empty($params['per_page'])) {
-            $search = "&per_page=".$params['per_page'];
             $queryString = str_replace($search, "", $queryString);
         }
 
