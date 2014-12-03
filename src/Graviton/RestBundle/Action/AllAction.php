@@ -100,17 +100,41 @@ class AllAction extends AbstractAction
      *
      * @return string $url Url or empty string
      */
-    public function getLastPageUrl($router, $absolute = false)
+    public function getFirstPageUrl($router, $absolute = false)
     {
         $url = "";
 
-        if ($this->hasLastPage()) {
+        if ($this->hasFirstPage()) {
             $params = $this->getPaginationParams();
-            $params['page'] = $this->getRequest()->attributes->get('numPages');
+            $params['page'] = 1;
 
             $url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
         }
 
         return $url;
+    }
+    
+    /**
+     * (non-PHPdoc)
+     *
+     * @param RouterInterface $router   Router instance
+     * @param bool            $absolute Absolute path
+     *
+     * @see \Graviton\RestBundle\Action\AbstractAction::getLastPageUrl()
+     *
+     * @return string $url Url or empty string
+     */
+    public function getLastPageUrl($router, $absolute = false)
+    {
+    	$url = "";
+    
+    	if ($this->hasLastPage()) {
+    		$params = $this->getPaginationParams();
+    		$params['page'] = $this->getRequest()->attributes->get('numPages');
+    
+    		$url = $this->generateUrl($router, self::ACTION_ALL, $params, $absolute);
+    	}
+    
+    	return $url;
     }
 }
