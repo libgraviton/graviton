@@ -68,6 +68,11 @@ class PagingLinkResponseListener implements ContainerAwareInterface
             $url = $action->getPrevPageUrl($router, true);
             $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "prev")));
         }
+        
+        if ($action->hasFirstPage()) {
+        	$url = $action->getFirstPageUrl($router, true);
+        	$this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "first")));
+        }
 
         if ($action->hasLastPage()) {
             $url = $action->getLastPageUrl($router, true);
