@@ -53,13 +53,8 @@ class ActionFactory
             throw new \Exception(sprintf($msg, $actionName, $className));
         }
 
-        if (!isset(self::$actions[$request->get('_route')])) {
-            $action = new $className($request, $response);
-            self::$actions[$request->get('_route')] = $action;
-        } else {
-            $action = self::$actions[$request->get('_route')];
-        }
-
+        $action = new $className($request, $response);
+        
         return $action;
     }
 }
