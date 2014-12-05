@@ -250,9 +250,20 @@ abstract class AbstractAction implements ActionInterface
     /**
      * Generate an url with the given parameters
      *
+     * The query string can containt pagination and/or rql params.
+     * When generating the url, all these params have to be
+     * added as query string. Else pagination and rql wont work together...
+     *
+     * "page" and "per_page" are easy, they're set as key=value pairs.
+     * rql is a bit harder, because the rql params are only separated by &.
+     * When using $this->getRequest()->query->all(); the framework will split
+     * the rql params into an array with a single param as key and an empty value (Don't know
+     * what happens if the rql query contains an "=" sign...)
+     * That's why i add the whole query string to the url...
+     *
      * I'm not sure if this realy works. Maybe one needs to refactor this.
      * The RQL Parser is able to parse the url and exract the necessary parameters.
-     * Something like that could do the trick...
+     * But there could be additional params that also have to be added (or not)..
      *
      * @param Router $router   Router
      * @param string $action   Action (defined in ActionInterface)
