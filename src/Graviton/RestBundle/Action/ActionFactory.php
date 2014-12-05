@@ -54,7 +54,7 @@ class ActionFactory
         }
 
         $action = new $className($request, $response);
-        
+
         return $action;
     }
 }
