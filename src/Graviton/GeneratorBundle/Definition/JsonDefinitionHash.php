@@ -35,6 +35,13 @@ class JsonDefinitionHash implements DefinitionElementInterface
     private $parentName;
 
     /**
+     * Fixtures for this field
+     *
+     * @var array
+     */
+    private $fixtures;
+
+    /**
      * Whether this is an array hash, so an array of ourselves.
      *
      * @var bool true if yes
@@ -219,6 +226,27 @@ class JsonDefinitionHash implements DefinitionElementInterface
         $this->isArrayHash = $isArrayHash;
     }
 
+
+    /**
+     * gets the fixtures
+     *
+     * @return array
+     */
+    public function getFixtures()
+    {
+        return $this->fixtures;
+    }
+
+    /**
+     * sets the fixtures
+     *
+     * @param array $fixtures
+     */
+    public function setFixtures($fixtures)
+    {
+        $this->fixtures = $fixtures;
+    }
+
     /**
      * Returns the field definition of this hash from "local perspective",
      * meaning that we only include fields inside this hash BUT with all
@@ -232,6 +260,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
         $ret = array();
         $ret['id'] = $this->getClassName();
         $ret['target']['fields'] = array();
+        $ret['service']['fixtures'] = $this->getFixtures();
 
         foreach ($this->getFields() as $field) {
             $thisDef = clone $field->getDef();

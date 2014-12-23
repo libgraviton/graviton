@@ -85,8 +85,6 @@ class JsonDefinition
     /**
      * Returns whether this service is read-only
      *
-     * @todo read from file..
-     *
      * @return bool true if yes, false if not
      */
     public function isReadOnlyService()
@@ -96,6 +94,57 @@ class JsonDefinition
 
         if (isset($this->doc->service->readOnly) && (bool) $this->doc->service->readOnly === true) {
             $ret = true;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns whether this service has fixtures
+     *
+     * @param string $fieldName ask for specific field
+     *
+     * @return bool true if yes, false if not
+     */
+    public function hasFixtures($fieldName = null)
+    {
+        // default
+        $ret = false;
+
+        if (count($this->getFixtures($fieldName)) > 0) {
+            $ret = true;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the fixtures or empty array if none
+     *
+     * @param string $fieldName ask for specific field
+     *
+     * @return array fixtures
+     */
+    public function getFixtures($fieldName = null)
+    {
+        // default
+        $ret = array();
+
+        if (isset($this->doc->service->fixtures)) {
+            $ret = (array) $this->doc->service->fixtures;
+        }
+
+        // do we have a nested fixture set with fieldnames as keys?
+        if (!is_null($fieldName) && isset($ret[$fieldName]) && is_array($ret[$fieldName])) {
+            $ret = $ret[$fieldName];
+        } else {
+            if (!is_null($fieldName)) {
+                $ret = array();
+            } elseif (count($ret) > 0) {
+                // if no $fieldName set and we have some, just take the first..
+                $keys = array_keys($ret);
+                $ret = $ret[$keys[0]];
+            }
         }
 
         return $ret;
@@ -214,6 +263,11 @@ class JsonDefinition
                 $subElements
             );
             $retFields[$fieldName]->setParentName($this->getId());
+
+            if ($this->hasFixtures($fieldName)) {
+                $retFields[$fieldName]->setFixtures($this->getFixtures($fieldName));
+            }
+
             if (in_array($fieldName, $arrayHashes)) {
                 $retFields[$fieldName]->setIsArrayHash(true);
             }

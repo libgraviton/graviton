@@ -4,7 +4,25 @@
     "service": {
         "readOnly": false,
         "baseController": "\\Graviton\\CoreBundle\\Controller\\ShowcaseExtensionController",
-        "routerBase": "/hans/showcase/"
+        "routerBase": "/hans/showcase/",
+        "fixtures": {
+            "": [
+                {
+                    "id": 5,
+                    "anotherInt": 655,
+                    "testField": {"en": "a string value"},
+                    "someOtherField": {"en": "some ol' string"},
+                    "aBoolean": false,
+                    "modificationDate": "1984-05-02T00:00:00Z"
+                }
+            ],
+            "contactCode": [
+                {
+                    "someDate": "1979-12-21T00:00:00Z",
+                    "text": {"en": "Dudi"}
+                }
+            ]
+        }
     },
     "target": {
         "indexes": [],

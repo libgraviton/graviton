@@ -162,6 +162,10 @@ class ResourceGenerator extends AbstractGenerator
         $this->generateSerializer($parameters, $dir, $document);
         $this->generateModel($parameters, $dir, $document);
 
+        if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
+            $this->generateFixtures($parameters, $dir, $document);
+        }
+
         if ($this->input->getOption('no-controller') != 'true') {
             $this->generateController($parameters, $dir, $document);
         }
@@ -631,5 +635,25 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
+    }
+
+
+    /**
+     * generates fixtures
+     *
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
+     *
+     * @return void
+     */
+    protected function generateFixtures(array $parameters, $dir, $document)
+    {
+        $parameters['fixtures_json'] = addcslashes(json_encode($this->json->getFixtures()), "'");
+        $this->renderFile(
+            'fixtures/LoadFixtures.php.twig',
+            $dir . '/DataFixtures/MongoDB/Load' . $document . 'Data.php',
+            $parameters
+        );
     }
 }

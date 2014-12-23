@@ -116,25 +116,27 @@ class I18nDeserializationListener
         }
         $original = $values['en'];
         // @todo change this so it grabs all languages and not negotiated ones
-        $languages = $this->request->attributes->get('languages');
-        \array_walk(
-            $languages,
-            function ($locale) use ($original, $values) {
-                $isLocalized = false;
-                $translated = '';
-                if (array_key_exists($locale, $values)) {
-                    $translated = $values[$locale];
-                    $isLocalized = true;
+        if (isset($this->request)) {
+            $languages = $this->request->attributes->get('languages');
+            \array_walk(
+                $languages,
+                function ($locale) use ($original, $values) {
+                    $isLocalized = false;
+                    $translated = '';
+                    if (array_key_exists($locale, $values)) {
+                        $translated = $values[$locale];
+                        $isLocalized = true;
+                    }
+                    $translatable = new Translatable;
+                    $translatable->setId('i18n-' . $locale . '-' . $original);
+                    $translatable->setLocale($locale);
+                    $translatable->setDomain('i18n');
+                    $translatable->setOriginal($original);
+                    $translatable->setTranslated($translated);
+                    $translatable->setIsLocalized($isLocalized);
+                    $this->translatables->insertRecord($translatable);
                 }
-                $translatable = new Translatable;
-                $translatable->setId('i18n-'.$locale.'-'.$original);
-                $translatable->setLocale($locale);
-                $translatable->setDomain('i18n');
-                $translatable->setOriginal($original);
-                $translatable->setTranslated($translated);
-                $translatable->setIsLocalized($isLocalized);
-                $this->translatables->insertRecord($translatable);
-            }
-        );
+            );
+        }
     }
 }
