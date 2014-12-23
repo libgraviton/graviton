@@ -141,9 +141,10 @@ class JsonDefinition
             if (!is_null($fieldName)) {
                 $ret = array();
             } elseif (count($ret) > 0) {
-                // if no $fieldName set and we have some, just take the first..
-                $keys = array_keys($ret);
-                $ret = $ret[$keys[0]];
+                // if no $fieldName set and we have some, just take the first or the one named "" (root data)
+                if (isset($ret[""])) {
+                    $ret = $ret[""];
+                }
             }
         }
 
