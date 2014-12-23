@@ -121,31 +121,15 @@ class JsonDefinition
     /**
      * Returns the fixtures or empty array if none
      *
-     * @param string $fieldName ask for specific field
-     *
      * @return array fixtures
      */
-    public function getFixtures($fieldName = null)
+    public function getFixtures()
     {
         // default
         $ret = array();
 
-        if (isset($this->doc->service->fixtures)) {
-            $ret = (array) $this->doc->service->fixtures;
-        }
-
-        // do we have a nested fixture set with fieldnames as keys?
-        if (!is_null($fieldName) && isset($ret[$fieldName]) && is_array($ret[$fieldName])) {
-            $ret = $ret[$fieldName];
-        } else {
-            if (!is_null($fieldName)) {
-                $ret = array();
-            } elseif (count($ret) > 0) {
-                // if no $fieldName set and we have some, just take the first or the one named "" (root data)
-                if (isset($ret[""])) {
-                    $ret = $ret[""];
-                }
-            }
+        if (isset($this->doc->service->fixtures) && is_array($this->doc->service->fixtures)) {
+            $ret = $this->doc->service->fixtures;
         }
 
         return $ret;
@@ -264,10 +248,6 @@ class JsonDefinition
                 $subElements
             );
             $retFields[$fieldName]->setParentName($this->getId());
-
-            if ($this->hasFixtures($fieldName)) {
-                $retFields[$fieldName]->setFixtures($this->getFixtures($fieldName));
-            }
 
             if (in_array($fieldName, $arrayHashes)) {
                 $retFields[$fieldName]->setIsArrayHash(true);
