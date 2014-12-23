@@ -7,19 +7,88 @@
         "routerBase": "/hans/showcase/",
         "fixtures": [
             {
-                "id": 5,
-                "anotherInt": 655,
-                "testField": {"en": "a string value"},
-                "someOtherField": {"en": "some ol' string"},
+                "id": 500,
+                "anotherInt": 6555488894525,
+                "testField": {"en": "a test string"},
+                "someOtherField": {"en": "another good ol' test string"},
                 "aBoolean": false,
                 "modificationDate": "1984-05-02T00:00:00Z",
+                "contact": {
+                    "type": "home",
+                    "value": "joe@example.com",
+                    "protocol": "mailto",
+                    "$ref": "mailto:joe@example.com"
+                },
+                "contacts": [
+                    {
+                        "type": "business",
+                        "value": "+41791456214",
+                        "protocol": "tel",
+                        "$ref": "tel:+41791456214"
+                    },
+                    {
+                        "type": "home",
+                        "value": "+41332434479",
+                        "protocol": "tel",
+                        "$ref": "tel:+41332434479"
+                    },
+                    {
+                        "type": "home",
+                        "value": "someuser",
+                        "protocol": "skype",
+                        "$ref": "skype:someuser"
+                    }
+                ],
                 "contactCode": {
                     "someDate": "2012-12-21T00:00:00Z",
-                    "text": {"en": "Dudi"}
+                    "text": {"en": "Ad mailing campaign 2012"}
                 },
                 "nestedArray": [
                     {"name": "element one"},
                     {"name": "element two"}
+                ]
+
+            },
+            {
+                "id": 600,
+                "anotherInt": 544615898841,
+                "testField": {"en": "some text"},
+                "someOtherField": {"en": "this is a text from another field"},
+                "aBoolean": true,
+                "modificationDate": "2012-12-24T14:15:55Z",
+                "contact": {
+                    "type": "business",
+                    "value": "dave@example-company.com",
+                    "protocol": "mailto",
+                    "$ref": "mailto:dave@example-company.com"
+                },
+                "contacts": [
+                    {
+                        "type": "home",
+                        "value": "+41767845112",
+                        "protocol": "tel",
+                        "$ref": "tel:+41767845112"
+                    },
+                    {
+                        "type": "home",
+                        "value": "+41317415488",
+                        "protocol": "tel",
+                        "$ref": "tel:+41317415488"
+                    },
+                    {
+                        "type": "business",
+                        "value": "another@example.com",
+                        "protocol": "jabber",
+                        "$ref": "jabber:another@example.com"
+                    }
+                ],
+                "contactCode": {
+                    "someDate": "2014-06-30T11:45:31Z",
+                    "text": {"en": "Phone call"}
+                },
+                "nestedArray": [
+                    {"name": "array element one"},
+                    {"name": "array element two"}
                 ]
 
             }
