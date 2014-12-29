@@ -139,7 +139,21 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                     }
                 };
             } else {
-                throw new \LogicException("File or path '" . $jsonPath . "' doesn't seem to exist.");
+                $output->writeln('');
+                $output->writeln('<info>No path given. Searching for "resources/definition" folders..</info>');
+                $output->writeln('');
+
+                $findCmd = 'find '.escapeshellarg($input->getOption('srcDir').'../').
+                    ' -path \'*/resources/definition*\' -iname \'*.json\'';
+
+                $findFiles = explode('\n', shell_exec($findCmd));
+
+                $filesToWorkOn = array();
+                foreach ($findFiles as $foundFile) {
+                    if (is_file(trim($foundFile))) {
+                        $filesToWorkOn[] = trim($foundFile);
+                    }
+                }
             }
         }
 
