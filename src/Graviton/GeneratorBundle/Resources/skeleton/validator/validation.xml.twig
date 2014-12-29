@@ -5,9 +5,11 @@
     <class name="{{ base }}Document\{{ document }}">
 
 {% if noIdField is not defined %}
+        <!--
         <property name="id">
             <constraint name="NotBlank"/>
         </property>
+        -->
 {% endif %}
 
 {% for field in fields %}

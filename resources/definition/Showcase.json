@@ -100,7 +100,7 @@
         "fields": [
             {
                 "name": "id",
-                "type": "INT",
+                "type": "varchar",
                 "description": "Unique identifier for an item."
             },
             {
