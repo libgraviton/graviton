@@ -23,6 +23,11 @@ class {{ document }} implements TranslatableDocumentInterface
      */
     protected $id;
 
+    /**
+    * @var Date $deletedDate
+    */
+    protected $deletedDate;
+
 {% for field in fields %}
     /**
 {% if 'Graviton' in field.type %}
@@ -61,6 +66,12 @@ class {{ document }} implements TranslatableDocumentInterface
     {
         return $this->id;
     }
+
+    public function getDeleteddate()
+    {
+    return $this->deletedDate;
+    }
+
 {% for field in fields %}
 
     {% if field.translatable is defined and field.translatable == true %}

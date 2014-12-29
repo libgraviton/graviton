@@ -6,6 +6,10 @@
     <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
 {% else %}
 
+    <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
+        <type><![CDATA[DateTime]]></type>
+    </property>
+
 {% if noIdField is not defined %}
     <property name="id" type="string" accessor-getter="getId"/>
 {% else %}
