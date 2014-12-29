@@ -4,7 +4,7 @@ namespace Graviton\GeneratorBundle\Command;
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateBundleCommand as SymfonyGenerateBundleCommand;
-use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -83,7 +83,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * @return string[]
      */
     protected function updateKernel(
-        DialogHelper $dialog,
+        QuestionHelper $questionHelper,
         InputInterface $input,
         OutputInterface $output,
         KernelInterface $kernel,
@@ -99,9 +99,9 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
 
         $auto = true;
         if ($input->isInteractive()) {
-            $auto = $dialog->askConfirmation(
+            $auto = $questionHelper->doAsk(
                 $output,
-                $dialog->getQuestion(
+                $questionHelper->getQuestion(
                     'Confirm automatic update of your core bundle',
                     'yes',
                     '?'
@@ -167,7 +167,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * @return string[]
      */
     protected function updateRouting(
-        DialogHelper $dialog,
+        QuestionHelper $questionHelper,
         InputInterface $input,
         OutputInterface $output,
         $bundle,

@@ -4,7 +4,7 @@ namespace Graviton\I18nBundle\Listener;
 
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
@@ -49,11 +49,11 @@ class I18nSerializationListener
     /**
      * set translator
      *
-     * @param \Symfony\Bundle\FrameworkBundle\Translation\Translator $translator translator
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator translator
      *
      * @return void
      */
-    public function setTranslator(Translator $translator)
+    public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
