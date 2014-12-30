@@ -17,6 +17,12 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RestEvent extends Event
 {
+
+    /**
+     * Request object
+     *
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
     private $request = null;
 
     /**
