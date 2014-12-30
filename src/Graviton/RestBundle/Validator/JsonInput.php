@@ -1,5 +1,5 @@
 <?php
-namespace Graviton\RestBundle\Validation;
+namespace Graviton\RestBundle\Validator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
