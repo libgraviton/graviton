@@ -85,8 +85,6 @@ class JsonDefinition
     /**
      * Returns whether this service is read-only
      *
-     * @todo read from file..
-     *
      * @return bool true if yes, false if not
      */
     public function isReadOnlyService()
@@ -96,6 +94,42 @@ class JsonDefinition
 
         if (isset($this->doc->service->readOnly) && (bool) $this->doc->service->readOnly === true) {
             $ret = true;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns whether this service has fixtures
+     *
+     * @param string $fieldName ask for specific field
+     *
+     * @return bool true if yes, false if not
+     */
+    public function hasFixtures($fieldName = null)
+    {
+        // default
+        $ret = false;
+
+        if (count($this->getFixtures($fieldName)) > 0) {
+            $ret = true;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the fixtures or empty array if none
+     *
+     * @return array fixtures
+     */
+    public function getFixtures()
+    {
+        // default
+        $ret = array();
+
+        if (isset($this->doc->service->fixtures) && is_array($this->doc->service->fixtures)) {
+            $ret = $this->doc->service->fixtures;
         }
 
         return $ret;
@@ -214,6 +248,7 @@ class JsonDefinition
                 $subElements
             );
             $retFields[$fieldName]->setParentName($this->getId());
+
             if (in_array($fieldName, $arrayHashes)) {
                 $retFields[$fieldName]->setIsArrayHash(true);
             }

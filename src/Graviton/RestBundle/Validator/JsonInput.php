@@ -1,8 +1,10 @@
 <?php
-namespace Graviton\RestBundle\Validation;
+namespace Graviton\RestBundle\Validator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Graviton\RestBundle\Validator\Constraints\PostId;
+use Graviton\RestBundle\Validator\Constraints\PutId;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -37,6 +39,18 @@ class JsonInput
      */
     private $em;
 
+    /**
+     * Request
+     *
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
+    private $request;
+
+    /**
+     * Validation list
+     *
+     * @var ConstraintViolationList
+     */
     private $violations;
 
     /**
@@ -89,7 +103,20 @@ class JsonInput
         $fields = $documentMetadata->getFieldNames();
 
         // Get validation metadata for this document
-        $validationMetadata = $metadata = $this->validator->getMetadataFor($documentClass);
+        $validationMetadata = $this->validator->getMetadataFor($documentClass);
+
+        // method dependent checks
+        if ($this->request->getMethod() == 'POST') {
+            // id is not allowed in POST payload
+            $validationMetadata->addPropertyConstraint('id', new PostId());
+        }
+
+        if ($this->request->getMethod() == 'PUT') {
+            // id is not allowed in POST payload
+            $putIdConstraint = new PutId();
+            $putIdConstraint->setUpdateId($this->getRequest()->get('id'));
+            $validationMetadata->addPropertyConstraint('id', $putIdConstraint);
+        }
 
         foreach ($fields as $key => $property) {
             if (!$path) {
@@ -225,6 +252,28 @@ class JsonInput
     public function getDocumentManager()
     {
         return $this->em;
+    }
+
+    /**
+     * Gets the request
+     *
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Sets the request
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request Request
+     *
+     * @return void
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
     }
 
     /**

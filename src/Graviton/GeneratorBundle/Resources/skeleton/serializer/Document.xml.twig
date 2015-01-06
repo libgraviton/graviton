@@ -14,6 +14,10 @@
 
 {% endif %}
 
+    <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
+        <type><![CDATA[DateTime]]></type>
+    </property>
+
 {% for field in fields %}
 
     {% if field.type == 'boolean' %}

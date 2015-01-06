@@ -29,6 +29,11 @@
     <sensio-framework-extra:router annotations="false"/>
   </sensio-framework-extra:config>
   <jms-serializer:config>
+    <jms-serializer:handlers>
+      <jms-serializer:datetime
+        default-format="Y-m-d\TH:i:s\Z"
+        default-timezone="UTC" />
+    </jms-serializer:handlers>
     <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
       <jms-serializer:directory namespace_prefix="Graviton\CoreBundle" path="@GravitonCoreBundle/Resources/config/serializer"/>
     </jms-serializer:metadata>
