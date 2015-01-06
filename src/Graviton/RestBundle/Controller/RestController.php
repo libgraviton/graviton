@@ -45,6 +45,17 @@ class RestController implements ContainerAwareInterface
     {
         $this->container = $container;
     }
+    
+    /**
+     * Get the container object
+     * 
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    
+    public function getContainer()
+    {
+    	return $this->container;
+    }
 
     /**
      * Returns a single record
