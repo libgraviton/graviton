@@ -54,7 +54,7 @@ class RestController implements ContainerAwareInterface
     
     public function getContainer()
     {
-    	return $this->container;
+        return $this->container;
     }
 
     /**
