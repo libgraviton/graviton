@@ -146,7 +146,7 @@ class AppControllerTest extends RestTestCase
         $this->assertTrue($results->showInMenu);
 
         $this->assertContains(
-            '<http://localhost/core/app/new>; rel="self"',
+            '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }
