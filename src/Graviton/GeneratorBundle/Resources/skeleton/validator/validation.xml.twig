@@ -27,11 +27,15 @@
     {% endif %}
 
     {% if field.type == 'boolean' %}
-        {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">bool</option></constraint>']) %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\BooleanStrict"/>']) %}
     {% endif %}
 
     {% if field.isClassType is defined and field.isClassType == true %}
         {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
+    {% endif %}
+
+    {% if field.translatable is defined and field.translatable == true %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\Translatable"/>']) %}
     {% endif %}
 
     {% if thisCons is not empty %}

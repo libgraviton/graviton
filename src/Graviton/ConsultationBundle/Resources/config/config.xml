@@ -10,11 +10,6 @@
     </doctrine_mongodb:document-manager>
   </doctrine_mongodb:config>
   <jms-serializer:config>
-     <handlers>
-        <datetime
-            format="Y-mdTH:i:s/Z"
-            default-timezone="UTC" />
-    </handlers>
     <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
       <jms-serializer:directory namespace_prefix="Graviton\ConsultationBundle" path="@GravitonConsultationBundle/Resources/config/serializer"/>
     </jms-serializer:metadata>

@@ -123,6 +123,8 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         // file or folder?
         $jsonPath = $input->getOption('json');
 
+
+
         if (is_file($jsonPath)) {
             $filesToWorkOn = array($jsonPath);
         } else {
@@ -139,7 +141,33 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                     }
                 };
             } else {
-                throw new \LogicException("File or path '" . $jsonPath . "' doesn't seem to exist.");
+                $output->writeln('');
+                $output->writeln('<info>No path given. Searching for "resources/definition" folders..</info>');
+                $output->writeln('');
+
+                // more broad scanning..
+                // normally, we just look in the local 'src' folder.. BUT
+                // if we find 'vendor/graviton/graviton' in our path means, we're inside a composer
+                // dependency ourselves.. in that case, search the entire vendor/ folder.. ;-)
+                // that we, we can find bundles wrapped as separate dependency..
+                $rootDir = $this->getContainer()->get('kernel')->getRootDir();
+                if (strpos($rootDir, 'vendor/graviton/graviton')) {
+                    $scanDir = dirname($this->getContainer()->get('kernel')->getRootDir()).'/../../';
+                } else {
+                    $scanDir = $input->getOption('srcDir').'../';
+                }
+
+                $findCmd = 'find '.escapeshellarg($scanDir).
+                    ' -path \'*/resources/definition*\' -iname \'*.json\'';
+
+                $findFiles = explode("\n", shell_exec($findCmd));
+
+                $filesToWorkOn = array();
+                foreach ($findFiles as $foundFile) {
+                    if (file_exists(trim($foundFile))) {
+                        $filesToWorkOn[] = trim($foundFile);
+                    }
+                }
             }
         }
 
@@ -329,7 +357,11 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
-        $cmd = 'php app/console -n ';
+
+        // get path to console from kernel..
+        $consolePath = $this->getContainer()->get('kernel')->getRootDir().'/console';
+
+        $cmd = 'php '.$consolePath.' -n ';
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {

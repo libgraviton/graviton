@@ -130,7 +130,6 @@ class AppControllerTest extends RestTestCase
     public function testPostApp()
     {
         $testApp = new \stdClass;
-        $testApp->id = 'new';
         $testApp->title = new \stdClass;
         $testApp->title->en = 'new Test App';
         $testApp->showInMenu = true;
@@ -143,12 +142,11 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('new', $results->id);
         $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
 
         $this->assertContains(
-            '<http://localhost/core/app/new>; rel="self"',
+            '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }

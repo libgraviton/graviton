@@ -45,6 +45,17 @@ class RestController implements ContainerAwareInterface
     {
         $this->container = $container;
     }
+    
+    /**
+     * Get the container object
+     * 
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    
+    public function getContainer()
+    {
+        return $this->container;
+    }
 
     /**
      * Returns a single record
@@ -97,8 +108,13 @@ class RestController implements ContainerAwareInterface
             $this->getModel()->getEntityClass()
         );
 
-        // Re-validate record
-        $this->validateRecord($record);
+        /*
+         * [nue]: it should be safe to *not* validate here again as the ValidationListener did
+         * that already.. i'm leaving it here to remember ourselves that it was just disabled here..
+         * if it turns out ok, remove it completely.. re-validation makes it harder as we have
+         * some special constraints that are better validated directly on the json input..
+         */
+        //$this->validateRecord($record);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -137,7 +153,7 @@ class RestController implements ContainerAwareInterface
     {
         $response = $this->getResponse();
 
-        // does it realy exist??
+        // does it really exist??
         $this->findRecord($id);
 
         // Deserialize the content
@@ -146,12 +162,16 @@ class RestController implements ContainerAwareInterface
             $this->getModel()->getEntityClass()
         );
 
-        // Re-validate record
-        $this->validateRecord($record);
+        // disabled here, see comment in postAction()..
+        //$this->validateRecord($record);
 
         // And update the record, if everything is ok
-        $record = $this->getModel()->updateRecord($id, $record);
+        $this->getModel()->updateRecord($id, $record);
         $response->setStatusCode(Response::HTTP_OK);
+
+        // i fetch it here again to prevent some "id" from the payload
+        // visibly overriding the one provided by GET. just to make sure
+        // we really give the client back what he actually saved.
         $response->setContent($this->serialize($record));
 
         return $response;
@@ -208,8 +228,9 @@ class RestController implements ContainerAwareInterface
                 $this->getModel()->getEntityClass()
             );
 
-            // If everything is ok, update record and return 204 No Content
-            $this->validateRecord($newRecord);
+            // disabled here, see comment in postAction()..
+            //$this->validateRecord($newRecord);
+
             $this->getModel()->updateRecord($id, $newRecord);
             //$response = $this->container->get('graviton.rest.response.204');
             $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -368,6 +389,8 @@ class RestController implements ContainerAwareInterface
      * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
      *
      * @throws \Graviton\ExceptionBundle\Exception\ValidationException
+     *
+     * @deprecated
      *
      * @return void
      */

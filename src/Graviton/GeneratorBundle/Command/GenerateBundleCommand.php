@@ -73,12 +73,12 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * {@inheritDoc}
      * Add the new bundle to the BundleBundle loader infrastructure instead of main kernel
      *
-     * @param DialogHelper    $dialog    dialog
-     * @param InputInterface  $input     input
-     * @param OutputInterface $output    output
-     * @param KernelInterface $kernel    kernel
-     * @param string          $namespace namespace
-     * @param string          $bundle    bundle
+     * @param QuestionHelper  $questionHelper dialog
+     * @param InputInterface  $input          input
+     * @param OutputInterface $output         output
+     * @param KernelInterface $kernel         kernel
+     * @param string          $namespace      namespace
+     * @param string          $bundle         bundle
      *
      * @return string[]
      */
@@ -158,11 +158,11 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * {@inheritDoc}
      * Don't check routing since graviton bundles usually get routed explicitly based on their naming.
      *
-     * @param DialogHelper    $dialog dialog
-     * @param InputInterface  $input  input
-     * @param OutputInterface $output output
-     * @param object          $bundle bundle
-     * @param object          $format format
+     * @param QuestionHelper  $questionHelper dialog
+     * @param InputInterface  $input          input
+     * @param OutputInterface $output         output
+     * @param object          $bundle         bundle
+     * @param object          $format         format
      *
      * @return string[]
      */

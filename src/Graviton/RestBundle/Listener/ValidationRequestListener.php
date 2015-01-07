@@ -58,6 +58,7 @@ class ValidationRequestListener
 
             // get the input validator
             $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
+            $inputValidator->setRequest($request);
 
             // get the document manager for this model
             $em = $controller->getModel()->getRepository()->getDocumentManager();
