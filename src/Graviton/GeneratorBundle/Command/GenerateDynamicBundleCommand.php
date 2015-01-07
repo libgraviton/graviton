@@ -123,8 +123,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         // file or folder?
         $jsonPath = $input->getOption('json');
 
-
-
         if (is_file($jsonPath)) {
             $filesToWorkOn = array($jsonPath);
         } else {
@@ -186,6 +184,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $bundleNameMask,
                 $thisIdName
             );
+
+            $jsonDef->setNamespace($namespace);
+
             $bundleName = str_replace('/', '', $namespace);
 
             $genStatus = $this->generateBundle(
