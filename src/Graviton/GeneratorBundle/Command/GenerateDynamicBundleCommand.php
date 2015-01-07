@@ -261,6 +261,11 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 '--with-repository' => null
             );
 
+            // controller?
+            if (!$jsonDef->hasController()) {
+                $arguments['--no-controller'] = 'true';
+            }
+
             $genStatus = $this->executeCommand(
                 $arguments,
                 $output

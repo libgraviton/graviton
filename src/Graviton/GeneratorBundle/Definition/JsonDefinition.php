@@ -90,6 +90,22 @@ class JsonDefinition
     }
 
     /**
+     * Returns whether this definition requires the generation
+     * of a controller. normally yes, but sometimes not ;-)
+     *
+     * @return bool true if yes, false if no
+     */
+    public function hasController()
+    {
+        $hasController = true;
+        if (!isset($this->doc->service)) {
+            $hasController = false;
+        }
+
+        return $hasController;
+    }
+
+    /**
      * Gets the namespace
      *
      * @return string
