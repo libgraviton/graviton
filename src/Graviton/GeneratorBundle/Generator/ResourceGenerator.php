@@ -91,6 +91,7 @@ class ResourceGenerator extends AbstractGenerator
         // do we have a json path passed?
         if (!is_null($this->input->getOption('json'))) {
             $this->json = new JsonDefinition($this->input->getOption('json'));
+            $this->json->setNamespace($bundleNamespace);
         }
 
         // add more info to the fields array

@@ -35,6 +35,13 @@ class JsonDefinition
     private $doc;
 
     /**
+     * Composed namespace of this definition, must be explicitly set
+     *
+     * @var string
+     */
+    private $namespace;
+
+    /**
      * Constructor
      *
      * @param string $filename Path to the json file
@@ -80,6 +87,33 @@ class JsonDefinition
         }
 
         return $ret;
+    }
+
+    /**
+     * Gets the namespace
+     *
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * Sets the namespace
+     *
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        // normalize namespace
+        $namespace = str_replace('/', '\\', $namespace);
+
+        if (substr($namespace, -1) == '\\') {
+            $namespace = substr($namespace, 0, -1);
+        }
+
+        $this->namespace = $namespace;
     }
 
     /**
@@ -247,7 +281,7 @@ class JsonDefinition
                 $fieldName,
                 $subElements
             );
-            $retFields[$fieldName]->setParentName($this->getId());
+            $retFields[$fieldName]->setParent($this);
 
             if (in_array($fieldName, $arrayHashes)) {
                 $retFields[$fieldName]->setIsArrayHash(true);
