@@ -13,7 +13,7 @@
                 "someOtherField": {"en": "another good ol' test string"},
                 "aBoolean": false,
                 "optionalBoolean": true,
-
+                "someFloatyDouble": 11.7,
                 "modificationDate": "1984-05-02T00:00:00Z",
                 "contact": {
                     "type": "home",
@@ -57,7 +57,7 @@
                 "testField": {"en": "some text"},
                 "someOtherField": {"en": "this is a text from another field"},
                 "aBoolean": true,
-
+                "someFloatyDouble": 458.114,
                 "modificationDate": "2012-12-24T14:15:55Z",
                 "contact": {
                     "type": "business",

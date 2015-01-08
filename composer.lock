@@ -4,8 +4,51 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "419da56643b2c6ee10ca06c649208c5f",
+    "hash": "d55cf6a66157e24e411f0d12701d6fd2",
     "packages": [
+        {
+            "name": "davidbadura/faker-bundle",
+            "version": "v1.0.2",
+            "target-dir": "DavidBadura/FakerBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DavidBadura/FakerBundle.git",
+                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DavidBadura/FakerBundle/zipball/4ef64a9c5c542283e7b1df712ada1511373bb505",
+                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505",
+                "shasum": ""
+            },
+            "require": {
+                "fzaninotto/faker": "~1.0",
+                "php": ">=5.3.0",
+                "symfony/symfony": ">=2.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "DavidBadura\\FakerBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Badura",
+                    "email": "d.badura@gmx.de"
+                }
+            ],
+            "keywords": [
+                "Symfony2",
+                "faker",
+                "fixtures"
+            ],
+            "time": "2014-01-16 16:03:19"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.2.3",
@@ -1153,6 +1196,54 @@
             "time": "2014-12-16 20:57:37"
         },
         {
+            "name": "fzaninotto/faker",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fzaninotto/Faker.git",
+                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/010c7efedd88bf31141a02719f51fb44c732d5a0",
+                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
+            "autoload": {
+                "psr-0": {
+                    "Faker": "src/",
+                    "Faker\\PHPUnit": "test/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Zaninotto"
+                }
+            ],
+            "description": "Faker is a PHP library that generates fake data for you.",
+            "keywords": [
+                "data",
+                "faker",
+                "fixtures"
+            ],
+            "time": "2014-06-04 14:43:02"
+        },
+        {
             "name": "gedmo/doctrine-extensions",
             "version": "v2.3.9",
             "source": {
@@ -1717,9 +1808,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes Schmitt",
+                    "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2452,17 +2543,17 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v2.3.7",
+            "version": "v2.3.8",
             "target-dir": "Sensio/Bundle/DistributionBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "59085bedb5bffbc7305f42b836daa2ed3173be3b"
+                "reference": "9a72f821957141ee3d9703da3fa8266d59ef4b1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/59085bedb5bffbc7305f42b836daa2ed3173be3b",
-                "reference": "59085bedb5bffbc7305f42b836daa2ed3173be3b",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/9a72f821957141ee3d9703da3fa8266d59ef4b1c",
+                "reference": "9a72f821957141ee3d9703da3fa8266d59ef4b1c",
                 "shasum": ""
             },
             "require": {
@@ -2494,7 +2585,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2014-12-30 08:39:48"
+            "time": "2015-01-07 07:11:03"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2872,23 +2963,23 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.6.1",
+            "version": "v2.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "d805dfd67950848ec0338b4acd75777b340977b7"
+                "reference": "c34ef418015793a4653f2670afb69dd167ebf578"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/d805dfd67950848ec0338b4acd75777b340977b7",
-                "reference": "d805dfd67950848ec0338b4acd75777b340977b7",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/c34ef418015793a4653f2670afb69dd167ebf578",
+                "reference": "c34ef418015793a4653f2670afb69dd167ebf578",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.2",
+                "doctrine/common": "~2.3",
                 "php": ">=5.3.3",
                 "psr/log": "~1.0",
-                "twig/twig": "~1.12"
+                "twig/twig": "~1.12,>=1.12.3"
             },
             "replace": {
                 "symfony/browser-kit": "self.version",
@@ -2944,7 +3035,7 @@
                 "egulias/email-validator": "~1.2",
                 "ircmaxell/password-compat": "~1.0",
                 "monolog/monolog": "~1.11",
-                "ocramius/proxy-manager": ">=0.3.1,<0.6-dev",
+                "ocramius/proxy-manager": "~0.4|~1.0",
                 "propel/propel1": "~1.6"
             },
             "type": "library",
@@ -2984,7 +3075,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-12-03 16:40:43"
+            "time": "2015-01-07 14:47:29"
         },
         {
             "name": "twig/extensions",
@@ -3098,49 +3189,6 @@
     ],
     "packages-dev": [
         {
-            "name": "davidbadura/faker-bundle",
-            "version": "v1.0.2",
-            "target-dir": "DavidBadura/FakerBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DavidBadura/FakerBundle.git",
-                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DavidBadura/FakerBundle/zipball/4ef64a9c5c542283e7b1df712ada1511373bb505",
-                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505",
-                "shasum": ""
-            },
-            "require": {
-                "fzaninotto/faker": "~1.0",
-                "php": ">=5.3.0",
-                "symfony/symfony": ">=2.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "DavidBadura\\FakerBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Badura",
-                    "email": "d.badura@gmx.de"
-                }
-            ],
-            "keywords": [
-                "Symfony2",
-                "faker",
-                "fixtures"
-            ],
-            "time": "2014-01-16 16:03:19"
-        },
-        {
             "name": "fabpot/php-cs-fixer",
             "version": "v0.4.0",
             "source": {
@@ -3189,54 +3237,6 @@
             ],
             "description": "A script to automatically fix Symfony Coding Standard",
             "time": "2014-01-07 09:13:46"
-        },
-        {
-            "name": "fzaninotto/faker",
-            "version": "v1.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/010c7efedd88bf31141a02719f51fb44c732d5a0",
-                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~1.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": []
-            },
-            "autoload": {
-                "psr-0": {
-                    "Faker": "src/",
-                    "Faker\\PHPUnit": "test/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "François Zaninotto"
-                }
-            ],
-            "description": "Faker is a PHP library that generates fake data for you.",
-            "keywords": [
-                "data",
-                "faker",
-                "fixtures"
-            ],
-            "time": "2014-06-04 14:43:02"
         },
         {
             "name": "goatherd/phpcs_installer",
