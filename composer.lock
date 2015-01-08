@@ -4,8 +4,51 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "419da56643b2c6ee10ca06c649208c5f",
+    "hash": "6abc1a68cd290a4043a2c1d049cb763c",
     "packages": [
+        {
+            "name": "davidbadura/faker-bundle",
+            "version": "v1.0.2",
+            "target-dir": "DavidBadura/FakerBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DavidBadura/FakerBundle.git",
+                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DavidBadura/FakerBundle/zipball/4ef64a9c5c542283e7b1df712ada1511373bb505",
+                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505",
+                "shasum": ""
+            },
+            "require": {
+                "fzaninotto/faker": "~1.0",
+                "php": ">=5.3.0",
+                "symfony/symfony": ">=2.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "DavidBadura\\FakerBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Badura",
+                    "email": "d.badura@gmx.de"
+                }
+            ],
+            "keywords": [
+                "Symfony2",
+                "faker",
+                "fixtures"
+            ],
+            "time": "2014-01-16 16:03:19"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.2.3",
@@ -1153,6 +1196,54 @@
             "time": "2014-12-16 20:57:37"
         },
         {
+            "name": "fzaninotto/faker",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fzaninotto/Faker.git",
+                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/010c7efedd88bf31141a02719f51fb44c732d5a0",
+                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
+            "autoload": {
+                "psr-0": {
+                    "Faker": "src/",
+                    "Faker\\PHPUnit": "test/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Zaninotto"
+                }
+            ],
+            "description": "Faker is a PHP library that generates fake data for you.",
+            "keywords": [
+                "data",
+                "faker",
+                "fixtures"
+            ],
+            "time": "2014-06-04 14:43:02"
+        },
+        {
             "name": "gedmo/doctrine-extensions",
             "version": "v2.3.9",
             "source": {
@@ -1279,6 +1370,39 @@
                 "rql"
             ],
             "time": "2014-11-12 14:30:34"
+        },
+        {
+            "name": "grv/graviton-service-bundle-financing",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@git.swisscom.ch:7999/grv/graviton-service-bundle-financing.git",
+                "reference": "7c5c6899857ae9b8a040829fee50a5e9de1013e1"
+            },
+            "require": {
+                "php": "~5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Graviton": "src/"
+                }
+            },
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Dario Nuevo",
+                    "email": "dario.nuevo@swisscom.com"
+                }
+            ],
+            "description": "Financing API package for graviton2",
+            "homepage": "http://www.swisscom.com",
+            "time": "2015-01-06 16:26:12"
         },
         {
             "name": "guzzle/guzzle",
@@ -3098,49 +3222,6 @@
     ],
     "packages-dev": [
         {
-            "name": "davidbadura/faker-bundle",
-            "version": "v1.0.2",
-            "target-dir": "DavidBadura/FakerBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DavidBadura/FakerBundle.git",
-                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DavidBadura/FakerBundle/zipball/4ef64a9c5c542283e7b1df712ada1511373bb505",
-                "reference": "4ef64a9c5c542283e7b1df712ada1511373bb505",
-                "shasum": ""
-            },
-            "require": {
-                "fzaninotto/faker": "~1.0",
-                "php": ">=5.3.0",
-                "symfony/symfony": ">=2.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "DavidBadura\\FakerBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Badura",
-                    "email": "d.badura@gmx.de"
-                }
-            ],
-            "keywords": [
-                "Symfony2",
-                "faker",
-                "fixtures"
-            ],
-            "time": "2014-01-16 16:03:19"
-        },
-        {
             "name": "fabpot/php-cs-fixer",
             "version": "v0.4.0",
             "source": {
@@ -3189,54 +3270,6 @@
             ],
             "description": "A script to automatically fix Symfony Coding Standard",
             "time": "2014-01-07 09:13:46"
-        },
-        {
-            "name": "fzaninotto/faker",
-            "version": "v1.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/010c7efedd88bf31141a02719f51fb44c732d5a0",
-                "reference": "010c7efedd88bf31141a02719f51fb44c732d5a0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~1.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": []
-            },
-            "autoload": {
-                "psr-0": {
-                    "Faker": "src/",
-                    "Faker\\PHPUnit": "test/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "François Zaninotto"
-                }
-            ],
-            "description": "Faker is a PHP library that generates fake data for you.",
-            "keywords": [
-                "data",
-                "faker",
-                "fixtures"
-            ],
-            "time": "2014-06-04 14:43:02"
         },
         {
             "name": "goatherd/phpcs_installer",
@@ -4238,19 +4271,20 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "doctrine/mongodb-odm": 20,
         "doctrine/mongodb-odm-bundle": 20,
         "php-jsonpointer/php-jsonpointer": 20,
         "php-jsonpatch/php-jsonpatch": 20,
         "graviton/php-rql-parser": 20,
+        "grv/graviton-service-bundle-financing": 20,
         "libgraviton/codesniffer": 20,
         "liip/functional-test-bundle": 20,
         "phpmd/phpmd": 20,
         "fabpot/php-cs-fixer": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "~5.4"
