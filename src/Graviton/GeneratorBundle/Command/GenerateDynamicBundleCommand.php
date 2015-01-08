@@ -143,7 +143,19 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $output->writeln('<info>No path given. Searching for "resources/definition" folders..</info>');
                 $output->writeln('');
 
-                $findCmd = 'find '.escapeshellarg($input->getOption('srcDir').'../').
+                // more broad scanning..
+                // normally, we just look in the local 'src' folder.. BUT
+                // if we find 'vendor/graviton/graviton' in our path means, we're inside a composer
+                // dependency ourselves.. in that case, search the entire vendor/ folder.. ;-)
+                // that we, we can find bundles wrapped as separate dependency..
+                $rootDir = $this->getContainer()->get('kernel')->getRootDir();
+                if (strpos($rootDir, 'vendor/graviton/graviton')) {
+                    $scanDir = dirname($this->getContainer()->get('kernel')->getRootDir()).'/../../';
+                } else {
+                    $scanDir = $input->getOption('srcDir').'../';
+                }
+
+                $findCmd = 'find '.escapeshellarg($scanDir).
                     ' -path \'*/resources/definition*\' -iname \'*.json\'';
 
                 $findFiles = explode("\n", shell_exec($findCmd));
@@ -172,6 +184,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $bundleNameMask,
                 $thisIdName
             );
+
+            $jsonDef->setNamespace($namespace);
+
             $bundleName = str_replace('/', '', $namespace);
 
             $genStatus = $this->generateBundle(
@@ -245,6 +260,11 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 '--fields' => $this->getFieldString($jsonDef),
                 '--with-repository' => null
             );
+
+            // controller?
+            if (!$jsonDef->hasController()) {
+                $arguments['--no-controller'] = 'true';
+            }
 
             $genStatus = $this->executeCommand(
                 $arguments,
@@ -343,7 +363,11 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
-        $cmd = 'php app/console -n ';
+
+        // get path to console from kernel..
+        $consolePath = $this->getContainer()->get('kernel')->getRootDir().'/console';
+
+        $cmd = 'php '.$consolePath.' -n ';
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {

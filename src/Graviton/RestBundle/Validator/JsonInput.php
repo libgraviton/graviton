@@ -107,8 +107,24 @@ class JsonInput
 
         // method dependent checks
         if ($this->request->getMethod() == 'POST') {
-            // id is not allowed in POST payload
-            $validationMetadata->addPropertyConstraint('id', new PostId());
+            // id is not allowed in POST payload - except it is required!
+            // some services *need* to set the id in some rare circumstances - like language resource!
+            $idMetadata = $validationMetadata->getPropertyMetadata('id');
+
+            $isIdRequired = false;
+            if (is_array($idMetadata)) {
+                foreach ($idMetadata as $metadata) {
+                    foreach ($metadata->getConstraints() as $constraint) {
+                        if ($constraint instanceof NotBlank) {
+                            $isIdRequired = true;
+                        }
+                    }
+                }
+            }
+
+            if (!$isIdRequired) {
+                $validationMetadata->addPropertyConstraint('id', new PostId());
+            }
         }
 
         if ($this->request->getMethod() == 'PUT') {

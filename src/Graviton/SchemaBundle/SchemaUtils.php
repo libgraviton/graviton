@@ -68,6 +68,12 @@ class SchemaUtils
             if ($field == 'uri') {
                 $field = '$ref';
             }
+
+            // don't describe deletedDate in schema..
+            if ($field == 'deletedDate') {
+                continue;
+            }
+
             $property = new Schema();
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));

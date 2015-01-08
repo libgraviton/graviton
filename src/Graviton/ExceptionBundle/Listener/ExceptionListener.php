@@ -72,6 +72,7 @@ class ExceptionListener
         $response->setData($message);
 
         $event->setResponse($response);
+        $response->send();
     }
 
     /**

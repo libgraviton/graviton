@@ -15,9 +15,17 @@
 {% endif %}{% endfor %}
 {% for field in fields %}{% if 'Graviton' in field.type %}
 {% if '[]' in field.type %}
-    <embed-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}"/>
+    <reference-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}">
+    <cascade>
+        <all />
+    </cascade>
+    </reference-many>
 {% else %}
-    <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}"/>
+    <reference-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
+    <cascade>
+        <all />
+    </cascade>
+    </reference-one>
 {% endif %}
 {% endif %}{% endfor %}
   </document>

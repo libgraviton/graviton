@@ -28,11 +28,11 @@ class JsonDefinitionHash implements DefinitionElementInterface
     private $name;
 
     /**
-     * Name of the parent definition (needed in name composing)
+     * The parent
      *
-     * @var string
+     * @var JsonDefinition
      */
-    private $parentName;
+    private $parent;
 
     /**
      * Whether this is an array hash, so an array of ourselves.
@@ -266,7 +266,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
             }
 
             if (true === $fq) {
-                $ret = 'GravitonDyn\ShowcaseBundle\Document\\' . $ret;
+                $ret = $this->getParent()->getNamespace().'\Document\\'.$ret;
             }
         } else {
             // ok, we're a bag of primitives.. (ie int[] or string[])
@@ -291,24 +291,34 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Returns the parent
+     *
+     * @return JsonDefinition
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Sets the parent
+     *
+     * @param JsonDefinition $parent Parent
+     *
+     * @return void
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
      * Gets the name of parent definition element
      *
      * @return string parent name
      */
     public function getParentName()
     {
-        return $this->parentName;
-    }
-
-    /**
-     * Sets the parent name
-     *
-     * @param string $parentName parent name
-     *
-     * @return void
-     */
-    public function setParentName($parentName)
-    {
-        $this->parentName = $parentName;
+        return $this->getParent()->getId();
     }
 }
