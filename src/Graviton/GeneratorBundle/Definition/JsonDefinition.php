@@ -108,7 +108,7 @@ class JsonDefinition
     /**
      * Gets the namespace
      *
-     * @return string
+     * @return string namespace
      */
     public function getNamespace()
     {
@@ -118,7 +118,9 @@ class JsonDefinition
     /**
      * Sets the namespace
      *
-     * @param string $namespace
+     * @param string $namespace namespace
+     *
+     * @return void
      */
     public function setNamespace($namespace)
     {
