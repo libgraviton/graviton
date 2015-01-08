@@ -169,6 +169,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
         }
 
+        // ml3k bundles in mongodb?
+        $filesToWorkOn = array_merge($filesToWorkOn, $this->getMongoDbMl3kBundles());
+
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
         }
@@ -266,10 +269,13 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $arguments['--no-controller'] = 'true';
             }
 
-            $genStatus = $this->executeCommand(
-                $arguments,
-                $output
-            );
+            // don't generate if no fields..
+            if (strlen($arguments['--fields']) > 0) {
+                $genStatus = $this->executeCommand(
+                    $arguments,
+                    $output
+                );
+            }
 
             if ($genStatus !== 0) {
                 throw new \LogicException('Create resource call failed, see above. Exiting.');
@@ -467,5 +473,27 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             ' ',
             $ret
         );
+    }
+
+    private function getMongoDbMl3kBundles()
+    {
+        $collectionName = 'Ml3kLoadConfig';
+        $conn = $this->getContainer()->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
+        $collection = $conn->selectCollection('db', $collectionName);
+        $files = array();
+
+        $cursor = $collection->find(array());
+        foreach ($cursor as $doc) {
+            if (isset($doc['_id'])) {
+                unset($doc['_id']);
+            }
+
+            $thisFilename = tempnam(sys_get_temp_dir(), 'ml3kjson_');
+            file_put_contents($thisFilename, json_encode($doc));
+
+            $files[] = $thisFilename;
+        }
+
+        return $files;
     }
 }

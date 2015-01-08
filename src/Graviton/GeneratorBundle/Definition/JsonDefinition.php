@@ -98,7 +98,7 @@ class JsonDefinition
     public function hasController()
     {
         $hasController = true;
-        if (!isset($this->doc->service)) {
+        if (!isset($this->doc->service) || (isset($this->doc->service)) && !isset($this->doc->service->routerBase)) {
             $hasController = false;
         }
 
