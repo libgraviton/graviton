@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
-      xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-  <document name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+    <document name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document }}Repository">
 
-    <field fieldName="id" type="string" id="true"/>
+        <field fieldName="id" type="string" id="true"/>
 
-    <field fieldName="deletedDate" type="date" />
-    <gedmo:soft-deleteable field-name="deletedDate" time-aware="true" />
+        <field fieldName="deletedDate" type="date"/>
+        <gedmo:soft-deleteable field-name="deletedDate" time-aware="true"/>
 
-      {% for field in fields %}{% if 'Graviton' not in field.type and field.type != 'hash' %}
-    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
-{% endif %}{% endfor %}
-{% for field in fields %}{% if 'Graviton' in field.type %}
-{% if '[]' in field.type %}
-    <embed-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}"/>
-{% else %}
-    <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}"/>
-{% endif %}
-{% endif %}{% endfor %}
-  </document>
+        {% for field in fields %}
+            {% if 'Graviton' in field.type %}
+
+                {% if '[]' in field.type %}
+                    <embed-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}"/>
+                {% else %}
+                    <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}"/>
+                {% endif %}
+
+            {% elseif 'Graviton' not in field.type %}
+                {% if field.type == 'object' %}
+                    <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif field.type != 'hash' %}
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </document>
 </doctrine-mongo-mapping>

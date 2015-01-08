@@ -26,6 +26,8 @@ interface DefinitionElementInterface
 
     const TYPE_HASH = 'hash';
 
+    const TYPE_OBJECT = 'object';
+
     /**
      * Returns whether this element is a field
      *

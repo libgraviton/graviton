@@ -109,6 +109,11 @@ class ResourceGenerator extends AbstractGenerator
                     $field['serializerType'] = 'array<string>';
                 }
 
+                // @todo this assumtion is a hack and needs fixing
+                if ($field['type'] === 'object') {
+                    $field['serializerType'] = 'array';
+                }
+
                 // add singular form
                 $field['singularName'] = Inflector::singularize($field['fieldName']);
 
