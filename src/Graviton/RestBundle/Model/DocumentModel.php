@@ -127,9 +127,17 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
+
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
-        $manager->flush();
+
+        //var_dump($manager->getUnitOfWork());
+
+        //die;
+
+        var_dump($manager->flush());
+        //var_dump($this->find($entity->getId())); die;
+        die;
 
         return $this->find($entity->getId());
     }
