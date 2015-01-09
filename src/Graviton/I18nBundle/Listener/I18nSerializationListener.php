@@ -68,19 +68,25 @@ class I18nSerializationListener
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-        $this->localizedFields[\spl_object_hash($object)] = array();
-        if ($object instanceof TranslatableDocumentInterface) {
-            foreach ($object->getTranslatableFields() as $field) {
-                $setter = 'set'.ucfirst($field);
-                $getter = 'get'.ucfirst($field);
 
-                // only allow objects that we can update during postSerialize
-                if (method_exists($object, $setter)) {
-                    $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
-                    // remove untranslated field to make space for translation struct
-                    $object->$setter(null);
+        $this->localizedFields[\spl_object_hash($object)] = array();
+
+        try {
+            if ($object instanceof TranslatableDocumentInterface) {
+                foreach ($object->getTranslatableFields() as $field) {
+                    $setter = 'set'.ucfirst($field);
+                    $getter = 'get'.ucfirst($field);
+
+                    // only allow objects that we can update during postSerialize
+                    if (method_exists($object, $setter)) {
+                            $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
+                            // remove untranslated field to make space for translation struct
+                            $object->$setter(null);
+                    }
                 }
             }
+        } catch(\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            // @todo if a document references a non-existing document, this exception gets thrown - handle it so it renders to null!
         }
     }
 
