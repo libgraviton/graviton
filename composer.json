@@ -40,12 +40,6 @@
     "autoload": {
             "psr-0": { "": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "ssh://git@git.swisscom.ch:7999/grv/graviton-service-bundle-financing.git"
-        }
-    ],
     "require-dev": {
         "libgraviton/codesniffer": "dev-master@dev",
         "phpunit/phpunit": "*",
@@ -77,8 +71,7 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
-        "graviton/php-rql-parser": "dev-master",
-        "grv/graviton-service-bundle-financing": "dev-master"
+        "graviton/php-rql-parser": "dev-master"
     },
     "config": {
       "github-oauth": {
