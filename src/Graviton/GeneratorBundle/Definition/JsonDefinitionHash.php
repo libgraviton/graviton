@@ -303,7 +303,9 @@ class JsonDefinitionHash implements DefinitionElementInterface
     /**
      * Sets the parent
      *
-     * @param JsonDefinition $parent
+     * @param JsonDefinition $parent Parent
+     *
+     * @return void
      */
     public function setParent($parent)
     {
@@ -319,5 +321,4 @@ class JsonDefinitionHash implements DefinitionElementInterface
     {
         return $this->getParent()->getId();
     }
-
 }
