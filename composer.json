@@ -78,7 +78,8 @@
         "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
       }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "symfony-app-dir": "app",
         "symfony-web-dir": "web"
