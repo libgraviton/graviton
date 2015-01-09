@@ -5,7 +5,11 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
   <document name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
 
-    <field fieldName="id" type="string" id="true"/>
+  {% if idField is defined %}
+      <field fieldName="id" type="{{ idField.doctrineType }}" id="true"/>
+  {% else %}
+      <field fieldName="id" type="string" id="true"/>
+  {% endif %}
 
     <field fieldName="deletedDate" type="date" />
     <gedmo:soft-deleteable field-name="deletedDate" time-aware="true" />
@@ -15,17 +19,17 @@
 {% endif %}{% endfor %}
 {% for field in fields %}{% if 'Graviton' in field.type %}
 {% if '[]' in field.type %}
-    <reference-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}">
+    <embed-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}">
     <cascade>
         <all />
     </cascade>
-    </reference-many>
+    </embed-many>
 {% else %}
-    <reference-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
+    <embed-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
     <cascade>
         <all />
     </cascade>
-    </reference-one>
+    </embed-one>
 {% endif %}
 {% endif %}{% endfor %}
   </document>
