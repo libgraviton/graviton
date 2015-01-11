@@ -60,16 +60,11 @@ class BundleGenerator extends AbstractGenerator
             }
         }
 
-        $author = trim(`git config --get user.name`);
-        $email = trim(`git config --get user.email`);
-
         $basename = substr($bundle, 0, -6);
         $parameters = array(
             'namespace' => $namespace,
             'bundle' => $bundle,
             'format' => $format,
-            'author' => $author,
-            'email' => $email,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
         );
