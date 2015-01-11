@@ -5,6 +5,10 @@
     "license": "GPL",
     "authors": [
         {
+            "name": "List of contributors",
+            "homepage": "https://github.com/libgraviton/graviton/graphs/contributors"
+        },
+        {
             "name": "Lucas Bickel",
             "email": "lucas.bickel@swisscom.com"
         },
