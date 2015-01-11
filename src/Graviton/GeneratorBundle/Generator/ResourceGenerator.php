@@ -85,7 +85,10 @@ class ResourceGenerator extends AbstractGenerator
         $email = trim(`git config --get user.email`);
 
         $dir = $bundle->getPath();
+
+        //@todo: check if the content of document is postfixed with 'Bundle' before trying to remove it.
         $basename = substr($document, 0, -6);
+
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
         // do we have a json path passed?
@@ -203,14 +206,14 @@ class ResourceGenerator extends AbstractGenerator
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
-        $shortName = strtolower($bundleParts[0]);
-        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+        $shortName = $bundleParts[0];
+        $shortBundle = substr($bundleParts[1], 0, -6);
 
         $docName = implode(
             '.',
             array(
-                $shortName,
-                $shortBundle,
+                strtolower($shortName),
+                strtolower($shortBundle),
                 'document',
                 strtolower($parameters['document'])
             )
@@ -231,8 +234,8 @@ class ResourceGenerator extends AbstractGenerator
             $repoName = implode(
                 '.',
                 array(
-                    $shortName,
-                    $shortBundle,
+                    strtolower($shortName),
+                    strtolower($shortBundle),
                     'repository',
                     strtolower($parameters['document'])
                 )
@@ -641,7 +644,6 @@ class ResourceGenerator extends AbstractGenerator
 
         file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
     }
-
 
     /**
      * generates fixtures
