@@ -5,6 +5,7 @@ namespace Graviton\RestBundle\Controller;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Knp\Component\Pager\Paginator;
 use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\RestBundle\Model\PaginatorAwareInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -45,13 +47,13 @@ class RestController implements ContainerAwareInterface
     {
         $this->container = $container;
     }
-    
+
     /**
      * Get the container object
-     * 
+     *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-    
+
     public function getContainer()
     {
         return $this->container;
@@ -83,10 +85,17 @@ class RestController implements ContainerAwareInterface
      */
     public function allAction()
     {
+        $model = $this->getModel();
+
+        if ($model instanceof PaginatorAwareInterface)  {
+            $paginator = new Paginator();
+            $model->setPaginator($paginator);
+        }
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent(
-                $this->serialize($this->getModel()->findAll($this->getRequest()))
+                $this->serialize($model->findAll($this->getRequest()))
             );
 
         return $response;

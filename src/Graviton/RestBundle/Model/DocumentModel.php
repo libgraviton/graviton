@@ -17,7 +17,7 @@ use Knp\Component\Pager\Paginator;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class DocumentModel extends SchemaModel implements ModelInterface
+class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwareInterface
 {
     /**
      * @var string
