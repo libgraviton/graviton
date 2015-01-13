@@ -7,6 +7,7 @@ use Graviton\Rql\Queriable\MongoOdm;
 use Graviton\Rql\Query;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * Use doctrine odm as backend
@@ -76,6 +77,16 @@ class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwar
     public function setPaginator(Paginator $paginator)
     {
         $this->paginator = $paginator;
+    }
+
+    /**
+     * Determines, if there is already a paginator defined.
+     *
+     * @return bool
+     */
+    public function hasPaginator()
+    {
+        return (!empty($this->paginator) && $this->paginator instanceof PaginatorInterface);
     }
 
     /**
