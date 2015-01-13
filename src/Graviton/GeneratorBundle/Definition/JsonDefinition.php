@@ -228,6 +228,22 @@ class JsonDefinition
     }
 
     /**
+     * Get target relations which are explictly defined
+     *
+     * @return array relations
+     */
+    public function getRelations()
+    {
+        $ret = array();
+        if (isset($this->doc->target->relations) && is_array($this->doc->target->relations)) {
+            foreach ($this->doc->target->relations as $rel) {
+                $ret[$rel->localProperty] = $rel;
+            }
+        }
+        return $ret;
+    }
+
+    /**
      * Returns the Controller classname this services' controller shout inherit.
      * Defaults to the RestController of the RestBundle of course.
      *
@@ -272,9 +288,18 @@ class JsonDefinition
     public function getFields()
     {
         $fields = array();
+        $relations = $this->getRelations();
+
         foreach ($this->doc->target->fields as $field) {
             $field = new JsonDefinitionField($field);
             $fields[$field->getName()] = $field;
+
+            // embed rel?
+            if (isset($relations[$field->getName()]->type)) {
+                if ($relations[$field->getName()]->type == 'embed') {
+                    $fields[$field->getName()]->setRelType($field::REL_TYPE_EMBED);
+                }
+            }
         }
 
         // object generation (dot-notation parsing)

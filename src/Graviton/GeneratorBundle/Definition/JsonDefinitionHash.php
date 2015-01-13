@@ -41,9 +41,6 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     private $isArrayHash = false;
 
-    const REL_TYPE_REF = 'reference';
-
-    const REL_TYPE_EMBED = 'embed';
 
     /**
      * How the relation type of this hash to his parent is..
