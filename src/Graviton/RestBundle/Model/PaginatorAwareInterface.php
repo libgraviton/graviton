@@ -24,4 +24,10 @@ interface PaginatorAwareInterface
      */
     public function setPaginator(Paginator $paginator);
 
+    /**
+     * Determines, if there is already a paginator defined.
+     *
+     * @return boolean
+     */
+    public function hasPaginator();
 }
