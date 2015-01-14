@@ -5,6 +5,10 @@
     "license": "GPL",
     "authors": [
         {
+            "name": "List of contributors",
+            "homepage": "https://github.com/libgraviton/graviton/graphs/contributors"
+        },
+        {
             "name": "Lucas Bickel",
             "email": "lucas.bickel@swisscom.com"
         },
@@ -71,14 +75,15 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
-        "graviton/php-rql-parser": "dev-master"
+        "graviton/php-rql-parser": "dev-develop"
     },
     "config": {
       "github-oauth": {
         "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
       }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "symfony-app-dir": "app",
         "symfony-web-dir": "web"

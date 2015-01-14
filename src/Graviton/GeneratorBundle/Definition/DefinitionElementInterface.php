@@ -28,6 +28,8 @@ interface DefinitionElementInterface
 
     const TYPE_HASH = 'hash';
 
+    const TYPE_OBJECT = 'object';
+
     const REL_TYPE_REF = 'reference';
 
     const REL_TYPE_EMBED = 'embed';

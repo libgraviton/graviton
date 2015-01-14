@@ -5,6 +5,7 @@ namespace Graviton\GeneratorBundle\Generator;
 use Doctrine\Common\Inflector\Inflector;
 use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -51,7 +52,7 @@ class ResourceGenerator extends AbstractGenerator
     private $json = false;
 
     /**
-     * instanciate generator object
+     * Instantiates generator object
      *
      * @param InputInterface $input      Input
      * @param FileSystem     $filesystem fs abstraction layer
@@ -60,7 +61,7 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return ResourceGenerator
      */
-    public function __construct($input, $filesystem, $doctrine, $kernel)
+    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
     {
         $this->input = $input;
         $this->filesystem = $filesystem;
@@ -81,11 +82,11 @@ class ResourceGenerator extends AbstractGenerator
      */
     public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
     {
-        $author = trim(`git config --get user.name`);
-        $email = trim(`git config --get user.email`);
-
         $dir = $bundle->getPath();
+
+        //@todo: check if the content of document is postfixed with 'Bundle' before trying to remove it.
         $basename = substr($document, 0, -6);
+
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
         // do we have a json path passed?
@@ -107,6 +108,10 @@ class ResourceGenerator extends AbstractGenerator
                 // @todo this assumtion is a hack and needs fixing
                 if ($field['type'] === 'array') {
                     $field['serializerType'] = 'array<string>';
+                }
+
+                if ($field['type'] === 'object') {
+                    $field['serializerType'] = 'array';
                 }
 
                 // add singular form
@@ -138,8 +143,6 @@ class ResourceGenerator extends AbstractGenerator
             'base' => $bundleNamespace,
             'bundle' => $bundle->getName(),
             'format' => $format,
-            'author' => $author,
-            'email' => $email,
             'json' => $this->json,
             'fields' => $fields,
             'bundle_basename' => $basename,
@@ -199,14 +202,14 @@ class ResourceGenerator extends AbstractGenerator
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
-        $shortName = strtolower($bundleParts[0]);
-        $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
+        $shortName = $bundleParts[0];
+        $shortBundle = substr($bundleParts[1], 0, -6);
 
         $docName = implode(
             '.',
             array(
-                $shortName,
-                $shortBundle,
+                strtolower($shortName),
+                strtolower($shortBundle),
                 'document',
                 strtolower($parameters['document'])
             )
@@ -227,8 +230,8 @@ class ResourceGenerator extends AbstractGenerator
             $repoName = implode(
                 '.',
                 array(
-                    $shortName,
-                    $shortBundle,
+                    strtolower($shortName),
+                    strtolower($shortBundle),
                     'repository',
                     strtolower($parameters['document'])
                 )
@@ -637,7 +640,6 @@ class ResourceGenerator extends AbstractGenerator
 
         file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
     }
-
 
     /**
      * generates fixtures

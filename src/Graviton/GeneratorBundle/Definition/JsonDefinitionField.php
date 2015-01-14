@@ -24,7 +24,8 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_LONG => 'int',
         self::TYPE_DOUBLE => 'float',
         self::TYPE_DATETIME => 'date',
-        self::TYPE_BOOLEAN => 'boolean'
+        self::TYPE_BOOLEAN => 'boolean',
+        self::TYPE_OBJECT => 'object'
     );
 
     private $serializerTypeMap = array(
@@ -33,7 +34,8 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_LONG => 'integer',
         self::TYPE_DOUBLE => 'double',
         self::TYPE_DATETIME => 'DateTime',
-        self::TYPE_BOOLEAN => 'boolean'
+        self::TYPE_BOOLEAN => 'boolean',
+        self::TYPE_OBJECT => 'array'
     );
 
     /**

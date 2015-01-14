@@ -48,8 +48,26 @@
                 "nestedArray": [
                     {"name": "element one"},
                     {"name": "element two"}
-                ]
-
+                ],
+                "unstructedObject": {
+                    "intField": 17,
+                    "stringField": "Tux",
+                    "listField": ["Linus", "Gnu"],
+                    "hashField": {
+                        "someField": 21,
+                        "anotherField": "half the truth"
+                    },
+                    "nestedArrayField": [
+                        {
+                            "someField": 21,
+                            "anotherField": "half the truth"
+                        },
+                        {
+                            "someField": 23,
+                            "anotherField": "nothing is as it seems"
+                        }
+                    ]
+                }
             },
             {
                 "id": 600,
@@ -92,8 +110,14 @@
                 "nestedArray": [
                     {"name": "array element one"},
                     {"name": "array element two"}
-                ]
-
+                ],
+                "unstructedObject": {
+                    "intField": 17,
+                    "stringField": "some random string",
+                    "booleanField": true,
+                    "dateField": "2012-12-24T14:15:55Z",
+                    "someFloatyDouble": 458.114
+                }
             }
         ]
     },
@@ -184,6 +208,12 @@
                 "type": "varchar",
                 "title": "Name of nested array",
                 "description": "Some text"
+            },
+            {
+                "name": "unstructedObject",
+                "type": "object",
+                "title": "Some data blob",
+                "description": "Unstructured information"
             }
         ]
     }

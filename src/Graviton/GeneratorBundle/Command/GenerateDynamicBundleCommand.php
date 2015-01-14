@@ -182,7 +182,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         foreach ($filesToWorkOn as $jsonFile) {
             $jsonDef = new JsonDefinition($jsonFile);
 
-            $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+// @todo: resulting thisIdName will not match to SF2 nameing conventions
+//            $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+            $thisIdName = $jsonDef->getId();
             $namespace = sprintf(
                 $bundleNameMask,
                 $thisIdName
