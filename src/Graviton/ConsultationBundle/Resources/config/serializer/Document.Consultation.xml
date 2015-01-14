@@ -12,7 +12,7 @@
     </property>
 
 	<property name="investmentConsultation" type="array" accessor-getter="getInvestmentConsultation" accessor-setter="setInvestmentConsultation" />
-	<property name="creationDate"  accessor-getter="getCreationDate" accessor-setter="setCreationDate" ><type><![CDATA[DateTime<"Y-m-d\TH:i:s\Z">]]></type></property>
+	<property name="creationDate"  accessor-getter="getCreationDate" accessor-setter="setCreationDate" ><type><![CDATA[DateTime]]></type></property>
  	<property name="customer" accessor-getter="getCustomer" accessor-setter="setCustomer">
 	   <type><![CDATA[array]]></type>
 	</property>

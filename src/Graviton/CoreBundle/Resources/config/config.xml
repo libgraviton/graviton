@@ -31,7 +31,7 @@
   <jms-serializer:config>
     <jms-serializer:handlers>
       <jms-serializer:datetime
-        default-format="Y-m-d\TH:i:s\Z"
+        default-format="Y-m-d\TH:i:sO"
         default-timezone="UTC" />
     </jms-serializer:handlers>
     <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
