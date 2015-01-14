@@ -43,6 +43,8 @@ class CountryControllerTest extends RestTestCase
     }
 
     /**
+     * Validates that every request contains an appropiate link header
+     *
      * @dataProvider queryStringProvider
      * @return void
      */
@@ -70,6 +72,11 @@ class CountryControllerTest extends RestTestCase
         );
     }
 
+    /**
+     * Test data provider for the testFindAllWithPaging()
+     *
+     * @return array
+     */
     public function queryStringProvider()
     {
         return array(
@@ -79,6 +86,11 @@ class CountryControllerTest extends RestTestCase
         );
     }
 
+    /**
+     * Validates that a request providing the first 10 entities contains an appropriate link header
+     *
+     * @return void
+     */
     public function testFindAllWithPagingFirstPage()
     {
         $client = static::createRestClient();
@@ -104,6 +116,8 @@ class CountryControllerTest extends RestTestCase
     }
 
     /**
+     * Validates that a request providing the last 10 entities contains an appropriate link header
+     *
      * @return void
      */
     public function testFindAllWithPagingLastPage()
