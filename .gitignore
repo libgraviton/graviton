@@ -16,3 +16,5 @@ vendor/
 web/.htaccess
 mongodata/
 src/GravitonDyn/*
+app/config/parameters_local.xml
+bin
