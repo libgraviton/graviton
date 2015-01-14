@@ -6,19 +6,17 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\Rql\Queriable\MongoOdm;
 use Graviton\Rql\Query;
 use Graviton\SchemaBundle\Model\SchemaModel;
-use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Use doctrine odm as backend
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwareInterface
+class DocumentModel extends SchemaModel implements ModelInterface
 {
     /**
      * @var string
@@ -37,18 +35,14 @@ class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwar
      */
     protected $requiredFields = array();
     /**
-     * @var ObjectRepository
+     * @var \Doctrine\Common\Persistence\ObjectRepository
      */
     private $repository;
-    /**
-     * @var Paginator
-     */
-    private $paginator;
 
     /**
      * get repository instance
      *
-     * @return ObjectRepository
+     * @return \Doctrine\Common\Persistence\ObjectRepository
      */
     public function getRepository()
     {
@@ -58,7 +52,7 @@ class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwar
     /**
      * create new app model
      *
-     * @param ObjectRepository $countries Repository of countries
+     * @param \Doctrine\Common\Persistence\ObjectRepository $countries Repository of countries
      *
      * @return void
      */
@@ -68,65 +62,51 @@ class DocumentModel extends SchemaModel implements ModelInterface, PaginatorAwar
     }
 
     /**
-     * set paginator
-     *
-     * @param Paginator $paginator paginator used in collection
-     *
-     * @return void
-     */
-    public function setPaginator(Paginator $paginator)
-    {
-        $this->paginator = $paginator;
-    }
-
-    /**
-     * Determines, if there is already a paginator defined.
-     *
-     * @return bool
-     */
-    public function hasPaginator()
-    {
-        return (!empty($this->paginator) && $this->paginator instanceof PaginatorInterface);
-    }
-
-    /**
      * {@inheritDoc}
      *
-     * @param Request $request Request object
+     * @param \Symfony\Component\HttpFoundation\Request $request Request object
      *
      * @return array
      */
-    public function findAll($request)
+    public function findAll(Request $request)
     {
-        $numberPerPage = (int) $request->query->get(
+        $pageNumber = $request->query->get('page', 1);
+        $numberPerPage = (int)$request->query->get(
             'perPage',
             $request->query->get('per_page', 10)
         );
+        $startAt = ($pageNumber - 1) * $numberPerPage;
 
         // *** do we have an RQL expression, do we need to filter data?
         if (count($request->query->all()) > 0) {
             $queryParser = new Query(urldecode($request->getQueryString()));
-            $queriable = new MongoOdm($this->repository);
+            $queriable = new MongoOdm($this->repository, $numberPerPage, $startAt);
             $queriable = $queryParser->applyToQueriable($queriable);
             $records = $queriable->getDocuments();
+
+            $totalCount = $queriable->getResultCount();
+
         } else {
-            $records = $this->repository->findAll();
+            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+            $qb = $this->repository
+                ->createQueryBuilder()
+                ->limit($numberPerPage)
+                ->find($this->repository->getDocumentName());
+
+            /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
+            $query = $qb->getQuery();
+            $totalCount = $query->count();
+            $records = array_values($query->execute()->toArray());
         }
 
-        $pagination = $this->paginator->paginate(
-            $records,
-            $request->query->get('page', 1),
-            $numberPerPage
-        );
-
-        $numPages = (int) ceil($pagination->getTotalItemCount() / $numberPerPage);
+        $numPages = (int)ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
             $request->attributes->set('perPage', $numberPerPage);
         }
 
-        return $pagination->getItems();
+        return $records;
     }
 
     /**
