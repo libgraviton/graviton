@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services">
+
+    <parameters>
+        <!-- this is the name of the mongo collection that is searched for bundle definitions -->
+        <parameter key="generator.dynamicbundles.mongocollection"></parameter>
+        <!-- you can supply a custom json object in order to find specific documents -->
+        <parameter key="generator.dynamicbundles.mongocollection.criteria">
+            <![CDATA[
+            {}
+            ]]>
+        </parameter>
+    </parameters>
+
 </container>
