@@ -43,11 +43,95 @@ class CountryControllerTest extends RestTestCase
     }
 
     /**
+     * @dataProvider queryStringProvider
+     * @return void
+     */
+    public function testFindAllWithPaging($queryString, $pageNumber)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/entity/country'. $queryString);
+
+        $response = $client->getResponse();
+        $linkHeader = explode(',', $response->headers->get('Link'));
+
+        $this->assertResponseContentType(self::COL_TYPE, $response);
+
+        $this->assertContains(
+            '<http://localhost/entity/country?page='. $pageNumber .'&per_page=10>; rel="self"',
+            $linkHeader
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page='. ($pageNumber - 1) .'&per_page=10>; rel="prev"',
+            $linkHeader
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page='. ($pageNumber + 1) .'&per_page=10>; rel="next"',
+            $linkHeader
+        );
+    }
+
+    public function queryStringProvider()
+    {
+        return array(
+            'get 2nd page' => array('?page=2', 2),
+            'get 15th page' => array('?page=15', 15),
+            'get 25th page' => array('?page=25', 25),
+        );
+    }
+
+    public function testFindAllWithPagingFirstPage()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/entity/country?page=26');
+
+        $response = $client->getResponse();
+        $linkHeader = explode(',', $response->headers->get('Link'));
+
+        $this->assertResponseContentType(self::COL_TYPE, $response);
+
+        $this->assertContains(
+            '<http://localhost/entity/country?page=26&per_page=10>; rel="last"',
+            $linkHeader
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page=1&per_page=10>; rel="self"',
+            $linkHeader
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page=2&per_page=10>; rel="next"',
+            $linkHeader
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testFindAllWithPagingLastPage()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/entity/country?page=26');
+
+        $response = $client->getResponse();
+
+        $this->assertResponseContentType(self::COL_TYPE, $response);
+
+        $this->assertContains(
+            '<http://localhost/entity/country?page=26&per_page=10>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+        $this->assertContains(
+            '<http://localhost/entity/country?page=1&per_page=10>; rel="first"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+
+    /**
      * check if all fixtures are returned on GET
      *
      * @return void
      */
-    public function testFindAll()
+    public function testFindAllPlainRequest()
     {
         $client = static::createRestClient();
         $client->request('GET', '/entity/country');
@@ -66,40 +150,6 @@ class CountryControllerTest extends RestTestCase
         );
         $this->assertContains(
             '<http://localhost/entity/country?page=26&per_page=10>; rel="last"',
-            explode(',', $response->headers->get('Link'))
-        );
-
-        $client->request('GET', '/entity/country?page=2');
-
-        $response = $client->getResponse();
-
-        $this->assertResponseContentType(self::COL_TYPE, $response);
-
-        $this->assertContains(
-            '<http://localhost/entity/country?page=2&per_page=10>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=10>; rel="prev"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/entity/country?page=3&per_page=10>; rel="next"',
-            explode(',', $response->headers->get('Link'))
-        );
-
-        $client->request('GET', '/entity/country?page=26');
-
-        $response = $client->getResponse();
-
-        $this->assertResponseContentType(self::COL_TYPE, $response);
-
-        $this->assertContains(
-            '<http://localhost/entity/country?page=26&per_page=10>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-        $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=10>; rel="first"',
             explode(',', $response->headers->get('Link'))
         );
     }
