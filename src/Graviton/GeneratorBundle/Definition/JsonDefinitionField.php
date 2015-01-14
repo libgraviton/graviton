@@ -282,5 +282,4 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         $this->relType = $relType;
     }
-
 }

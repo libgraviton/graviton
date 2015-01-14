@@ -85,8 +85,8 @@ class I18nSerializationListener
                     }
                 }
             }
-        } catch(\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
-            // @todo if a document references a non-existing document, this exception gets thrown - handle it so it renders to null!
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            // @todo if a document references a non-existing document - handle it so it renders to null!
         }
     }
 

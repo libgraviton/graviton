@@ -91,5 +91,4 @@ interface DefinitionElementInterface
      * @return void
      */
     public function setRelType($relType);
-
 }
