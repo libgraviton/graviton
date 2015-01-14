@@ -3,6 +3,7 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * ModelInterface
@@ -18,7 +19,7 @@ interface ModelInterface
     /**
      * Set document repository
      *
-     * @param ObjectRepository $repository document repo
+     * @param \Doctrine\Common\Persistence\ObjectRepository $repository document repo
      *
      * @return void
      */
@@ -43,11 +44,11 @@ interface ModelInterface
     /**
      * Find all records
      *
-     * @param Request $request Request object
+     * @param \Symfony\Component\HttpFoundation\Request $request Request object
      *
      * @return Object[]
      */
-    public function findAll($request);
+    public function findAll(Request $request);
 
     /**
      * Insert a new Record
