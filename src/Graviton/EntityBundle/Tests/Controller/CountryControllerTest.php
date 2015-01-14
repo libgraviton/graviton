@@ -82,7 +82,7 @@ class CountryControllerTest extends RestTestCase
     public function testFindAllWithPagingFirstPage()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/entity/country?page=26');
+        $client->request('GET', '/entity/country');
 
         $response = $client->getResponse();
         $linkHeader = explode(',', $response->headers->get('Link'));

@@ -1,6 +1,6 @@
 ---
 applications:
-- name: graviton
+- name: lapis-graviton2
   buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
   services:
   - graviton-dev-mongo
