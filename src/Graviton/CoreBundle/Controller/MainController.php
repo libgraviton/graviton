@@ -100,6 +100,14 @@ class MainController implements ContainerAwareInterface
             array_keys($optionRoutes)
         );
 
+
+        $sortArr = array();
+        foreach ($services as $key => $val) {
+            $sortArr[$key] = $val['$ref'];
+        }
+
+        array_multisort($sortArr, SORT_ASC, $services);
+
         $mainPage->services = array_values($services);
 
         $response->setContent(json_encode($mainPage));
