@@ -215,7 +215,7 @@ class JsonDefinition
         // default
         $ret = 100;
         if (isset($this->doc->service->fixtureOrder)) {
-            $ret = (int)$this->doc->service->fixtureOrder;
+            $ret = (int) $this->doc->service->fixtureOrder;
         }
         return $ret;
     }
