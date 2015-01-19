@@ -44,11 +44,18 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $ENV = $container->getParameter('kernel.environment');
+
         $loader = new Loader\XmlFileLoader(
             $container,
             new FileLocator($this->getConfigDir())
         );
         $loader->load('services.xml');
+
+        if (file_exists($this->getConfigDir() . '/services_' . $ENV . '.xml')) {
+
+            $loader->load('services_' . $ENV . '.xml');
+        }
     }
 
     /**
