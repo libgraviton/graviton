@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle;
 
+use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -61,6 +62,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonCacheBundle(),
             new GravitonLogBundle(),
             new GravitonConsultationBundle(),
+            new GravitonSecurityBundle(),
         );
     }
 }
