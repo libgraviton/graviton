@@ -4,7 +4,8 @@ namespace {{ base }}DataFixtures\MongoDB;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 use {{ base }}Document\{{ document }};
@@ -17,7 +18,7 @@ use {{ base }}Document\{{ document }};
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
+class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
      * @private ContainerInterface
@@ -47,20 +48,54 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
     {
         $serializer = $this->container->get('serializer');
         $fixtures = json_decode('{{ fixtures_json }}');
+        $refName = '$ref';
+        $idName = '$id';
 
         if (count($fixtures) > 0) {
             foreach ($fixtures as $record) {
-                $manager->persist(
-                    $serializer->deserialize(
-                        json_encode($record),
-                        '{{ base }}Document\{{ document }}',
-                        'json'
-                    )
+
+                $thisRecord = $serializer->deserialize(
+                    json_encode($record),
+                    '{{ base }}Document\{{ document }}',
+                    'json'
                 );
+
+                // obvious refs..
+                foreach ($record as $key => $val) {
+                    if ($val instanceof \stdClass && isset($val->$refName) && isset($val->$idName)) {
+                        $setterFunction = 'set'.ucfirst($key);
+                        $thisRecord->$setterFunction($this->getReference($val->$refName.'-'.$val->$idName));
+                    }
+
+                    // cheap attempt for arrays..
+                    if (is_array($val) && isset($val[0]->$refName) && isset($val[0]->$idName)) {
+                        // clear first..
+                        $setterFunction = 'set'.ucfirst($key);
+                        $thisRecord->$setterFunction(array());
+
+                        foreach ($val as $subkey => $subval) {
+                            $addFunction = 'add'.ucfirst($key);
+                            $thisRecord->$addFunction($this->getReference($subval->$refName.'-'.$subval->$idName));
+                        }
+                    }
+                }
+
+                $manager->persist($thisRecord);
+                $manager->flush();
+
+                if (isset($record->id) && strlen($record->id) > 0) {
+                    $this->addReference('{{ document }}-'.$record->id, $thisRecord);
+                }
+
             }
         }
 
         $manager->flush();
+    }
+
+    public function getOrder()
+    {
+        return {{ fixtureOrder }};
     }
 
 }
