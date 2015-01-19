@@ -2,8 +2,10 @@
 
 namespace Graviton\SecurityBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
+use Graviton\SecurityBundle\DependencyInjection\AuthenticationPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * GravitonSecurityBundle
@@ -25,4 +27,15 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
         return array(
         );
     }
+
+    /**
+     * Find authentication strategies tagged as 'graviton.security.authentication.strategy'
+     *
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new AuthenticationPass());
+    }
+
 }
