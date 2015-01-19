@@ -5,7 +5,7 @@ namespace Graviton\SecurityBundle\EventListener\Strategies;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class HeaderExtractStrategy
@@ -86,14 +86,15 @@ final class HeaderExtractStrategy implements StrategyInterface
         }
 
         // get rid of control characters
-        $stripped = preg_replace('#[[:cntrl:]]#i', '', $authInfo);
-
-        if (false !== $passed && $authInfo === $stripped) {
+        if (false !== $passed && $authInfo === preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
             $passed = true;
         }
 
         if (false === $passed) {
-            throw new BadRequestHttpException('Mandatory header field (' . $fieldName . ') not provided.');
+            throw new HttpException(
+                Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED,
+                'Mandatory header field (' . $fieldName . ') not provided.'
+            );
         }
     }
 
