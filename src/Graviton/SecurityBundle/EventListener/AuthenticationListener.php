@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class AuthenticationListener
+final class AuthenticationListener
 {
     /**
      * @var \Graviton\SecurityBundle\EventListener\Strategies\\StrategyCollection
