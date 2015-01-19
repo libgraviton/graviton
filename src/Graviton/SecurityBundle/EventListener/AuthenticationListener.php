@@ -1,6 +1,6 @@
 <?php
 
-namespace Graviton\SecurityBundle\Listener;
+namespace Graviton\SecurityBundle\EventListener;
 
 use Graviton\SecurityBundle\EventListener\Strategies\StrategyCollection;
 use Symfony\Component\HttpFoundation\HeaderBag;

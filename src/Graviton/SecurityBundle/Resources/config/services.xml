@@ -2,21 +2,18 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-    <parameters>
-
-    </parameters>
     <services>
 
         <service id="graviton.security.event.http_header_extract.strategy" class="Graviton\SecurityBundle\EventListener\Strategies\HeaderExtractStrategy" />
-        <service id="graviton.security.authentication.strategy.collection"
-                 class="Graviton\SecurityBundle\EventListener\StrategyCollection">
+        <service id="graviton.sercurity.authentication.strategy.collection"
+                 class="Graviton\SecurityBundle\EventListener\Strategies\StrategyCollection">
             <argument type="collection">
                 <argument type="service" id="graviton.security.event.http_header_extract.strategy"/>
             </argument>
         </service>
 
         <service id="graviton.security.authentication.listener"
-                 class="Graviton\SecurityBundle\Listener\AuthenticationListener">
+                 class="Graviton\SecurityBundle\EventListener\AuthenticationListener">
             <argument type="service" id="graviton.sercurity.authentication.strategy.collection"/>
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest"/>
         </service>
