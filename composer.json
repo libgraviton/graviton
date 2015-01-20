@@ -27,6 +27,10 @@
         {
             "name": "Manuel Kipfer",
             "email": "manuel.kipfer@swisscom.com"
+        },
+        {
+            "name": "Bastian Feder",
+            "email": "bastian.feder@swisscom.com"
         }
     ],
     "scripts": {
