@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category GravitonCoreBundle
  * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -24,18 +25,18 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array(
-        );
+        return array();
     }
 
     /**
      * Find authentication strategies tagged as 'graviton.security.authentication.strategy'
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
+     *
+     * @return void
      */
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new AuthenticationPass());
     }
-
 }

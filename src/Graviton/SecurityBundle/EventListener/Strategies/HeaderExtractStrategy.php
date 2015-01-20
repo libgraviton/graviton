@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @category GravitonSecurityBundle
  * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -71,8 +72,10 @@ final class HeaderExtractStrategy implements StrategyInterface
      * Verifies that the provided header has the expected/mandatory fields.
      *
      * @param \Symfony\Component\HttpFoundation\HeaderBag $header    object representation of the request header.
+     * @param string                                      $fieldName Name of the header field to be validated.
      *
-     * @param                                             $fieldName Name of the header field to be validated.
+     * @return void
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     private function validateField(HeaderBag $header, $fieldName)
     {
@@ -109,5 +112,4 @@ final class HeaderExtractStrategy implements StrategyInterface
     {
         return '\Graviton\SecurityBundle\EventListener\HeaderExtractStrategy';
     }
-
 }

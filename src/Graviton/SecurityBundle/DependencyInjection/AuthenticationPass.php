@@ -2,11 +2,19 @@
 
 namespace Graviton\SecurityBundle\DependencyInjection;
 
-
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Class AuthenticationPass
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 class AuthenticationPass implements CompilerPassInterface
 {
     /**
@@ -14,30 +22,24 @@ class AuthenticationPass implements CompilerPassInterface
      * defined in parameters as "graviton-security.authentication.services" and adds them to
      * the "graviton.sercurity.authentication.strategy.collection".
      *
-     * @param ContainerBuilder $container
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container Parameter vault
      *
      * @api
+     * @return void
      */
     public function process(ContainerBuilder $container)
     {
         $strategies = array();
 
-        if($container->hasParameter('graviton-security.authentication.services')) {
+        if ($container->hasParameter('graviton-security.authentication.services')) {
             $strategies = $container->getParameter("graviton-security.authentication.services");
         }
 
-        $taggedServiceIds = array_unique(array_merge(
-            $strategies,
-            array_keys($container->findTaggedServiceIds('graviton.security.authentication.strategy'))
-        ));
+        $strategyDefinition = $container->getDefinition('graviton.sercurity.authentication.strategy.collection');
 
-        $strategyDefinition
-            = $container->getDefinition('graviton.sercurity.authentication.strategy.collection');
-
-        foreach ($taggedServiceIds as $serviceId) {
+        foreach ($strategies as $serviceId) {
 
             $strategyDefinition->addMethodCall('add', array(new Reference($serviceId)));
         }
     }
-
 }

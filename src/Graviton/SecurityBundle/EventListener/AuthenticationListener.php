@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  *
  * @category GravitonSecurityBundle
  * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -25,7 +26,9 @@ final class AuthenticationListener
 
 
     /**
-     * @param \Graviton\SecurityBundle\EventListener\Strategies\StrategyCollection $strategies
+     * Constructor of the class.
+     *
+     * @param \Graviton\SecurityBundle\EventListener\Strategies\StrategyCollection $strategies how to handle headers.
      */
     public function __construct(StrategyCollection $strategies)
     {
@@ -35,7 +38,9 @@ final class AuthenticationListener
     /**
      * Callback run, when event was thrown.
      *
-     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event Event thrown by kernel.
+     *
+     * @return void
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
@@ -50,7 +55,7 @@ final class AuthenticationListener
     /**
      * Extracts authentication information from the current request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Symfony\Component\HttpFoundation\Request $request received Http request
      *
      * @return array
      */
