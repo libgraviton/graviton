@@ -65,11 +65,7 @@
     </service>
 
     <!-- Model -->
-    <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel">
-      <call method="setPaginator">
-        <argument type="service" id="graviton.rest.paginator"/>
-      </call>
-    </service>
+    <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel" />
 
     <!-- Response object with scope request (get a new one for each request) -->
     <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
