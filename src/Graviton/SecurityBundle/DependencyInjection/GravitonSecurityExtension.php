@@ -6,6 +6,7 @@
 namespace Graviton\SecurityBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * This is the class that loads and manages your bundle configuration

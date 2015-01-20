@@ -8,6 +8,9 @@
   </imports>
   <parameters>
     <parameter key="kernel.debug">true</parameter>
+    <parameter key="graviton-security.authentication.services" type="collection">
+        <parameter>graviton.security.event.http_header_extract.strategy</parameter>
+    </parameter>
   </parameters>
   <monolog:config>
     <monolog:handler name="output" type="console" level="DEBUG"/>

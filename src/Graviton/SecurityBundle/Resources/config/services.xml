@@ -6,7 +6,6 @@
 
         <service id="graviton.security.event.http_header_extract.strategy"
                  class="Graviton\SecurityBundle\EventListener\Strategies\HeaderExtractStrategy">
-            <tag name="graviton.security.authentication.strategy"/>
         </service>
 
         <service id="graviton.sercurity.authentication.strategy.collection"

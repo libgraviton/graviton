@@ -10,7 +10,9 @@ use Symfony\Component\DependencyInjection\Reference;
 class AuthenticationPass implements CompilerPassInterface
 {
     /**
-     * You can modify the container here before it is dumped to PHP code.
+     * Finds services tagged with "graviton.security.authentication.strategy" or
+     * defined in parameters as "graviton-security.authentication.services" and adds them to
+     * the "graviton.sercurity.authentication.strategy.collection".
      *
      * @param ContainerBuilder $container
      *
@@ -18,13 +20,21 @@ class AuthenticationPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $taggedServiceIds
-            = $container->findTaggedServiceIds('graviton.security.authentication.strategy');
+        $strategies = array();
+
+        if($container->hasParameter('graviton-security.authentication.services')) {
+            $strategies = $container->getParameter("graviton-security.authentication.services");
+        }
+
+        $taggedServiceIds = array_unique(array_merge(
+            $strategies,
+            array_keys($container->findTaggedServiceIds('graviton.security.authentication.strategy'))
+        ));
 
         $strategyDefinition
             = $container->getDefinition('graviton.sercurity.authentication.strategy.collection');
 
-        foreach ($taggedServiceIds as $serviceId => $tags) {
+        foreach ($taggedServiceIds as $serviceId) {
 
             $strategyDefinition->addMethodCall('add', array(new Reference($serviceId)));
         }
