@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @category GravitonRestBundle
  * @package  Graviton
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -71,7 +72,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int)$request->query->get(
+        $numberPerPage = (int) $request->query->get(
             'perPage',
             $request->query->get('per_page', 10)
         );
@@ -99,7 +100,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $records = array_values($query->execute()->toArray());
         }
 
-        $numPages = (int)ceil($totalCount / $numberPerPage);
+        $numPages = (int) ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
