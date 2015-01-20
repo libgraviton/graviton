@@ -87,7 +87,7 @@ class RestController implements ContainerAwareInterface
     {
         $model = $this->getModel();
 
-        if ($model instanceofof PaginatorAwareInterface && !$model->hasPaginator()) {
+        if ($model instanceof PaginatorAwareInterface && !$model->hasPaginator()) {
             $paginator = new Paginator();
             $model->setPaginator($paginator);
         }
