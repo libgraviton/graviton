@@ -30,6 +30,10 @@ interface DefinitionElementInterface
 
     const TYPE_OBJECT = 'object';
 
+    const REL_TYPE_REF = 'reference';
+
+    const REL_TYPE_EMBED = 'embed';
+
     /**
      * Returns whether this element is a field
      *
@@ -71,4 +75,20 @@ interface DefinitionElementInterface
      * @return string[] definition
      */
     public function getDefAsArray();
+
+    /**
+     * Gets the rel type
+     *
+     * @return string
+     */
+    public function getRelType();
+
+    /**
+     * Sets the rel type
+     *
+     * @param string $relType rel type
+     *
+     * @return void
+     */
+    public function setRelType($relType);
 }

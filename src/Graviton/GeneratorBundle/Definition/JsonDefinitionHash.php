@@ -41,6 +41,14 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     private $isArrayHash = false;
 
+
+    /**
+     * How the relation type of this hash to his parent is..
+     *
+     * @var string rel type
+     */
+    private $relType = self::REL_TYPE_REF;
+
     /**
      * Constructor
      *
@@ -80,6 +88,28 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Gets the rel type
+     *
+     * @return string
+     */
+    public function getRelType()
+    {
+        return $this->relType;
+    }
+
+    /**
+     * Sets the rel type
+     *
+     * @param string $relType rel type
+     *
+     * @return void
+     */
+    public function setRelType($relType)
+    {
+        $this->relType = $relType;
+    }
+
+    /**
      * Returns the types of all fields
      *
      * @return string[] the types..
@@ -113,6 +143,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     {
         return array(
             'type' => $this->getType(),
+            'relType' => $this->getRelType(),
             'doctrineType' => $this->getTypeDoctrine(),
             'serializerType' => $this->getTypeSerializer(),
             'isClassType' => true
@@ -232,6 +263,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
         $ret = array();
         $ret['id'] = $this->getClassName();
         $ret['target']['fields'] = array();
+        $ret['isSubDocument'] = true;
 
         foreach ($this->getFields() as $field) {
             $thisDef = clone $field->getDef();

@@ -98,11 +98,28 @@ class JsonDefinition
     public function hasController()
     {
         $hasController = true;
-        if (!isset($this->doc->service)) {
+        if (!isset($this->doc->service) || (isset($this->doc->service)) && !isset($this->doc->service->routerBase)) {
             $hasController = false;
         }
 
         return $hasController;
+    }
+
+    /**
+     * This is a method that allows us to distinguish between a full json spec
+     * and a hash defined in a full spec which was divided into a seperate Document (thus, a SubDocument).
+     * To be aware what it is mainly serves for the generator to generate them as embedded documents,
+     * as subdocuments are always embedded.
+     *
+     * @return bool true if yes, false if not
+     */
+    public function isSubDocument()
+    {
+        $ret = false;
+        if (isset($this->doc->isSubDocument) && $this->doc->isSubDocument == true) {
+            $ret = true;
+        }
+        return $ret;
     }
 
     /**
@@ -188,6 +205,22 @@ class JsonDefinition
     }
 
     /**
+     * Returns the order number at which order this fixture should be loaded.
+     * this is needed if we have relations/references between the fixtures..
+     *
+     * @return int order
+     */
+    public function getFixtureOrder()
+    {
+        // default
+        $ret = 100;
+        if (isset($this->doc->service->fixtureOrder)) {
+            $ret = (int) $this->doc->service->fixtureOrder;
+        }
+        return $ret;
+    }
+
+    /**
      * Returns a router base path. false if default should be used.
      *
      * @return string router base, i.e. /bundle/name/
@@ -207,6 +240,22 @@ class JsonDefinition
             }
         }
 
+        return $ret;
+    }
+
+    /**
+     * Get target relations which are explictly defined
+     *
+     * @return array relations
+     */
+    public function getRelations()
+    {
+        $ret = array();
+        if (isset($this->doc->target->relations) && is_array($this->doc->target->relations)) {
+            foreach ($this->doc->target->relations as $rel) {
+                $ret[$rel->localProperty] = $rel;
+            }
+        }
         return $ret;
     }
 
@@ -255,9 +304,18 @@ class JsonDefinition
     public function getFields()
     {
         $fields = array();
+        $relations = $this->getRelations();
+
         foreach ($this->doc->target->fields as $field) {
             $field = new JsonDefinitionField($field);
             $fields[$field->getName()] = $field;
+
+            // embed rel?
+            if (isset($relations[$field->getName()]->type)) {
+                if ($relations[$field->getName()]->type == 'embed') {
+                    $fields[$field->getName()]->setRelType($field::REL_TYPE_EMBED);
+                }
+            }
         }
 
         // object generation (dot-notation parsing)
@@ -300,6 +358,7 @@ class JsonDefinition
                 $subElements
             );
             $retFields[$fieldName]->setParent($this);
+            $retFields[$fieldName]->setRelType(JsonDefinitionHash::REL_TYPE_EMBED);
 
             if (in_array($fieldName, $arrayHashes)) {
                 $retFields[$fieldName]->setIsArrayHash(true);

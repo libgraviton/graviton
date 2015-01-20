@@ -435,7 +435,7 @@ class RestController implements ContainerAwareInterface
                 $this->getSerializerContext()
             );
         } catch (\Exception $e) {
-            $exception = new SerializationException();
+            $exception = new SerializationException($e);
             $exception->setResponse($response);
             throw $exception;
         }

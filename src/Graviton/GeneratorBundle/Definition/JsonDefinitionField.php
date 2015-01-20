@@ -53,6 +53,13 @@ class JsonDefinitionField implements DefinitionElementInterface
     private $def;
 
     /**
+     * How the relation type of this field is (if applicable to the type)
+     *
+     * @var string rel type
+     */
+    private $relType = self::REL_TYPE_REF;
+
+    /**
      * Constructor
      *
      * @param \stdClass $def Definition
@@ -92,6 +99,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         $ret = (array) $this->def;
         $ret['doctrineType'] = $this->getTypeDoctrine();
         $ret['serializerType'] = $this->getTypeSerializer();
+        $ret['relType'] = $this->getRelType();
         $ret['isClassType'] = $this->isClassType();
 
         return $ret;
@@ -251,5 +259,27 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function isHash()
     {
         return false;
+    }
+
+    /**
+     * Gets the rel type
+     *
+     * @return string
+     */
+    public function getRelType()
+    {
+        return $this->relType;
+    }
+
+    /**
+     * Sets the rel type
+     *
+     * @param string $relType rel type
+     *
+     * @return void
+     */
+    public function setRelType($relType)
+    {
+        $this->relType = $relType;
     }
 }

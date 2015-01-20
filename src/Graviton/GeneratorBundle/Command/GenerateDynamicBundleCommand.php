@@ -169,6 +169,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
         }
 
+        // bundles in mongodb?
+        $filesToWorkOn = array_merge($filesToWorkOn, $this->getDefinitionsFromMongoDb());
+
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
         }
@@ -179,8 +182,9 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         foreach ($filesToWorkOn as $jsonFile) {
             $jsonDef = new JsonDefinition($jsonFile);
 
-// @todo: resulting thisIdName will not match to SF2 nameing conventions
-//            $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+            // @todo: resulting thisIdName will not match to SF2 nameing conventions
+            // $thisIdName = ucfirst(strtolower($jsonDef->getId()));
+
             $thisIdName = $jsonDef->getId();
             $namespace = sprintf(
                 $bundleNameMask,
@@ -268,10 +272,13 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $arguments['--no-controller'] = 'true';
             }
 
-            $genStatus = $this->executeCommand(
-                $arguments,
-                $output
-            );
+            // don't generate if no fields..
+            if (strlen($arguments['--fields']) > 0) {
+                $genStatus = $this->executeCommand(
+                    $arguments,
+                    $output
+                );
+            }
 
             if ($genStatus !== 0) {
                 throw new \LogicException('Create resource call failed, see above. Exiting.');
@@ -469,5 +476,51 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             ' ',
             $ret
         );
+    }
+
+    /**
+     * As an alternative, bundle definitions can be stored in a MongoDB collection.
+     * Here we look for those and return them as files to be included in the generation process.
+     *
+     * @return array Bundles
+     */
+    private function getDefinitionsFromMongoDb()
+    {
+        $collectionName = $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection');
+
+        // nothing there..
+        if (strlen($collectionName) < 1) {
+            return array();
+        }
+
+        $conn = $this->getContainer()->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
+        $collection = $conn->selectCollection('db', $collectionName);
+        $files = array();
+
+        // custom criteria defined?
+        $criteria = json_decode(
+            $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection.criteria'),
+            true
+        );
+
+        if (is_array($criteria)) {
+            $cursor = $collection->find($criteria);
+        } else {
+            // get all
+            $cursor = $collection->find(array());
+        }
+
+        foreach ($cursor as $doc) {
+            if (isset($doc['_id'])) {
+                unset($doc['_id']);
+            }
+
+            $thisFilename = tempnam(sys_get_temp_dir(), 'mongoBundle_');
+            file_put_contents($thisFilename, json_encode($doc));
+
+            $files[] = $thisFilename;
+        }
+
+        return $files;
     }
 }
