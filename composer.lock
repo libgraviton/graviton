@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "effd709fa74a4f8255fb8d7c331a1353",
+    "hash": "e97854e2374f68f4880bc67c46de2739",
     "packages": [
         {
             "name": "davidbadura/faker-bundle",
@@ -1325,6 +1325,39 @@
                 "rql"
             ],
             "time": "2015-01-14 14:15:27"
+        },
+        {
+            "name": "grv/graviton-service-bundle-financing",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "ssh://git@git.swisscom.ch:7999/grv/graviton-service-bundle-financing.git",
+                "reference": "b335714253c517cce66cad9ffb13d82624f40d19"
+            },
+            "require": {
+                "php": "~5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Graviton": "src/"
+                }
+            },
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Dario Nuevo",
+                    "email": "dario.nuevo@swisscom.com"
+                }
+            ],
+            "description": "Financing API package for graviton2",
+            "homepage": "http://www.swisscom.com",
+            "time": "2015-01-12 12:26:33"
         },
         {
             "name": "guzzle/guzzle",
@@ -4235,6 +4268,7 @@
         "php-jsonpointer/php-jsonpointer": 20,
         "php-jsonpatch/php-jsonpatch": 20,
         "graviton/php-rql-parser": 20,
+        "grv/graviton-service-bundle-financing": 20,
         "libgraviton/codesniffer": 20,
         "liip/functional-test-bundle": 20,
         "phpmd/phpmd": 20,
