@@ -27,6 +27,10 @@
         {
             "name": "Manuel Kipfer",
             "email": "manuel.kipfer@swisscom.com"
+        },
+        {
+            "name": "Bastian Feder",
+            "email": "bastian.feder@swisscom.com"
         }
     ],
     "scripts": {
@@ -42,7 +46,7 @@
         ]
     },
     "autoload": {
-            "psr-0": { "": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
+        "psr-0": {"": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
     },
     "require-dev": {
         "libgraviton/codesniffer": "dev-master@dev",
@@ -78,9 +82,9 @@
         "graviton/php-rql-parser": "dev-develop"
     },
     "config": {
-      "github-oauth": {
-        "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
-      }
+        "github-oauth": {
+            "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
