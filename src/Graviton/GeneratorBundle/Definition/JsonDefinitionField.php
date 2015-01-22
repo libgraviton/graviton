@@ -23,6 +23,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_INTEGER => 'int',
         self::TYPE_LONG => 'int',
         self::TYPE_DOUBLE => 'float',
+        self::TYPE_DECIMAL => 'float',
         self::TYPE_DATETIME => 'date',
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'object'
@@ -33,6 +34,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_INTEGER => 'integer',
         self::TYPE_LONG => 'integer',
         self::TYPE_DOUBLE => 'double',
+        self::TYPE_DECIMAL => 'double',
         self::TYPE_DATETIME => 'DateTime',
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'array'

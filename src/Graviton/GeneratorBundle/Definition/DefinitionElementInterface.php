@@ -22,6 +22,8 @@ interface DefinitionElementInterface
 
     const TYPE_DOUBLE = 'double';
 
+    const TYPE_DECIMAL = 'decimal';
+
     const TYPE_DATETIME = 'datetime';
 
     const TYPE_BOOLEAN = 'boolean';
