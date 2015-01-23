@@ -142,6 +142,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getDefAsArray()
     {
         return array(
+            'exposedName' => $this->getName(),
             'type' => $this->getType(),
             'relType' => $this->getRelType(),
             'doctrineType' => $this->getTypeDoctrine(),

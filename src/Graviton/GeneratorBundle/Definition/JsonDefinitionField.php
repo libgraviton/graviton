@@ -99,6 +99,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getDefAsArray()
     {
         $ret = (array) $this->def;
+        $ret['exposedName'] = $this->getExposedName();
         $ret['doctrineType'] = $this->getTypeDoctrine();
         $ret['serializerType'] = $this->getTypeSerializer();
         $ret['relType'] = $this->getRelType();
@@ -123,6 +124,23 @@ class JsonDefinitionField implements DefinitionElementInterface
                 // our fallback default
                 $ret = $this->doctrineTypeMap[self::TYPE_STRING];
             }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Gets the name this field should be exposed as (serializer concern).
+     * Normally this is the name, but can be overriden by "exposeAs" property on the field.
+     *
+     * @return string exposed field name
+     */
+    public function getExposedName()
+    {
+        $ret = $this->def->name;
+
+        if (isset($this->def->exposeAs) && strlen($this->def->exposeAs) > 0) {
+            $ret = $this->def->exposeAs;
         }
 
         return $ret;
