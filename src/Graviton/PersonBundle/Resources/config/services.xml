@@ -3,37 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
-    <parameter key="graviton.person.controller.consultant.class">Graviton\PersonBundle\Controller\ConsultantController</parameter>
-    <parameter key="graviton.person.repository.consultant.class">Graviton\PersonBundle\Repository\ConsultantRepository</parameter>
-    <parameter key="graviton.person.model.consultant.class">Graviton\PersonBundle\Model\Consultant</parameter>
-    <parameter key="graviton.person.document.consultant.class">Graviton\PersonBundle\Document\Consultant</parameter>
     <parameter key="graviton.person.repository.personcontact.class">Graviton\PersonBundle\Repository\PersonContactRepository</parameter>
     <parameter key="graviton.person.model.personcontact.class">Graviton\PersonBundle\Model\PersonContact</parameter>
     <parameter key="graviton.person.document.personcontact.class">Graviton\PersonBundle\Document\PersonContact</parameter>
   </parameters>
   <services>
-    <service id="graviton.person.controller.consultant"
-             class="%graviton.person.controller.consultant.class%"
-             parent="graviton.rest.controller" scope="request">
-      <call method="setModel">
-        <argument type="service" id="graviton.person.model.consultant"/>
-      </call>
-      <tag name="graviton.rest" read-only="true"/>
-    </service>
-    <service id="graviton.person.repository.consultant"
-             class="%graviton.person.repository.consultant.class%"
-             factory-service="doctrine_mongodb.odm.default_document_manager"
-             factory-method="getRepository">
-      <argument type="string">GravitonPersonBundle:Consultant</argument>
-    </service>
-    <service id="graviton.person.model.consultant"
-             class="%graviton.person.model.consultant.class%"
-             parent="graviton.rest.model">
-      <call method="setRepository">
-        <argument type="service" id="graviton.person.repository.consultant"/>
-      </call>
-    </service>
-    <service id="graviton.person.document.consultant" class="%graviton.person.document.consultant.class%"/>
     <service id="graviton.person.repository.personcontact"
              class="%graviton.person.repository.personcontact.class%"
              factory-service="doctrine_mongodb.odm.default_document_manager"
