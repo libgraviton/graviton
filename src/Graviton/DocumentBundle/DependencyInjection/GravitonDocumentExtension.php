@@ -44,6 +44,21 @@ class GravitonDocumentExtension extends GravitonBundleExtension
     {
         parent::prepend($container);
 
+        /** [nue]
+         * this is a workaround for a current symfony bug:
+         * https://github.com/symfony/symfony/issues/7555
+         *
+         * we *want* to be able to override any param with our env variables..
+         * so we do again, what the kernel did already here.. ;-)
+         */
+        if (strlen(getenv('SYMFONY__MONGODB__DEFAULT__SERVER__URI')) > 0) {
+            foreach ($_SERVER as $key => $value) {
+                if (0 === strpos($key, 'SYMFONY__')) {
+                    $container->setParameter(strtolower(str_replace('__', '.', substr($key, 9))), $value);
+                }
+            }
+        }
+
         // populated from cf's VCAP_SERVICES variable
         $services = $container->getParameter('vcap.services');
         if (!empty($services)) {
