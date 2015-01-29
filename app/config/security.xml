@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:security="http://symfony.com/schema/dic/security"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-  <security:config>
+<!--  <security:config>
     <encoder class="Symfony\Component\Security\Core\User\User" algorithm="bcrypt" cost="15"/>
     <acl>
       <dbal>
@@ -13,12 +13,12 @@
     <role id="ROLE_ADMIN">ROLE_USER</role>
     <role id="ROLE_SUPER_ADMIN">ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH</role>
     <provider name="in_memory">
-      <!-- This provider was rewritten from the yml one and still needs some testing.
+      &lt;!&ndash; This provider was rewritten from the yml one and still needs some testing.
            I'm not sure if specifying roles as a subtag is the correct way to go
            but we need to change this so some better auth mechanism anyhow.
            Originally it looked like so:
                     user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-      -->
+      &ndash;&gt;
       <memory>
         <user name="user" password="userpass">
           <role id="ROLE_USER"/>
@@ -28,7 +28,7 @@
         </user>
       </memory>
     </provider>
-  </security:config>
+  </security:config>-->
   <!--
 The below was copied from xml and parts that where not rewritten now are left here
 

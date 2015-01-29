@@ -5,16 +5,22 @@
 
 namespace Graviton;
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Bundle\TwigBundle\TwigBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
+use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\TestBundle\GravitonTestBundle;
-use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
+use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
+use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * AppKernel
@@ -67,13 +73,21 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
+        $bundles = array(
+            new FrameworkBundle(),
+            new SecurityBundle(),
+            new MonologBundle(),
+            new DoctrineBundle(),
+            new StofDoctrineExtensionsBundle(),
+            new SensioFrameworkExtraBundle(),
+            new SwiftmailerBundle(),
+            new DoctrineMongoDBBundle(),
+            new DoctrineFixturesBundle(),
+        );
+
         if ($this->bundleLoader) {
-            $bundles = $this->bundleLoader->load();
+            $bundles = array_merge($bundles, $this->bundleLoader->load());
         }
-        // @todo move these into their own Bundles or remove completely
-        $bundles[] = new SwiftmailerBundle();
-        $bundles[] = new DoctrineBundle();
-        $bundles[] = new TwigBundle();
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new WebProfilerBundle();
@@ -94,6 +108,6 @@ class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/config_'.$this->getEnvironment().'.xml');
+        $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.xml');
     }
 }
