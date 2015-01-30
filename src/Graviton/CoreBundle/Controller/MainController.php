@@ -70,22 +70,10 @@ class MainController implements ContainerAwareInterface
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
-
         $mainPage->services = array();
 
-        $router = $this->container->get('router');
-
-        // get options routes since theyt are a good indicator if a services exists
-        $optionRoutes = array_filter(
-            $router->getRouteCollection()->all(),
-            function ($route) {
-                if ($route->getRequirement('_method') != 'OPTIONS') {
-                    return false;
-                }
-
-                return is_null($route->getRequirement('id'));
-            }
-        );
+        $restUtils = $this->container->get('graviton.rest.restutils');
+        $optionRoutes = $restUtils->getOptionRoutes();
 
         $services = array_map(
             function ($routeName) use ($router) {
@@ -99,7 +87,6 @@ class MainController implements ContainerAwareInterface
             },
             array_keys($optionRoutes)
         );
-
 
         $sortArr = array();
         foreach ($services as $key => $val) {

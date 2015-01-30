@@ -5,6 +5,7 @@
   <parameters>
     <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
     <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
+    <parameter key="graviton.rest.controller.apidoc.class">Graviton\RestBundle\Controller\ApidocController</parameter>
     <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
     <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
     <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
@@ -64,6 +65,14 @@
       </call>
     </service>
 
+    <!-- apidoc controller -->
+    <service id="graviton.rest.controller.apidoc"
+             class="%graviton.rest.controller.apidoc.class%">
+      <call method="setContainer">
+        <argument type="service" id="service_container"/>
+      </call>
+    </service>
+
     <!-- Model -->
     <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel" />
 
@@ -79,6 +88,11 @@
 
     <service id="graviton.rest.validation.jsoninput" class="%graviton.rest.validation.jsoninput.class%">
         <argument type="service" id="graviton.rest.validator"/>
+    </service>
+
+    <!-- restUtils service - a service providing some helpers dealing with services -->
+    <service id="graviton.rest.restutils" class="Graviton\RestBundle\Service\RestUtils">
+      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
     </service>
 
     <!-- Graviton rest event stuff -->
