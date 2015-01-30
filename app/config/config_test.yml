@@ -1,5 +1,9 @@
 imports:
     - { resource: config_dev.yml }
+    - { resource: "../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml" }
+
+parameters:
+    kernel.debug: true
 
 framework:
     test: ~
@@ -14,3 +18,8 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+monolog:
+    handler:
+        name: main
+        type: "test"

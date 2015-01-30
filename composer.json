@@ -70,7 +70,7 @@
         ]
     },
     "config": {
-        "bin-dir": "bin",
+        "bin-dir": "vendor/bin",
         "github-oauth": {
             "github.com": "e404bdf27d2529d3a3b94532ab79d019992315d6"
         }
