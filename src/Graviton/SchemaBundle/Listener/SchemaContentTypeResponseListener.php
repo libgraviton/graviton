@@ -2,6 +2,7 @@
 
 namespace Graviton\SchemaBundle\Listener;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -54,9 +55,13 @@ class SchemaContentTypeResponseListener implements ContainerAwareInterface
         // build content-type string
         $contentType = 'application/json; charset=UTF-8';
         if ($request->get('_route') != 'graviton.core.static.main.all') {
+            try {
+                $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
+                $contentType .= sprintf('; profile=%s', $router->generate($schemaRoute, array(), true));
+            } catch (\Exception $e) {
+                return true;
+            }
 
-            $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $contentType .= sprintf('; profile=%s', $router->generate($schemaRoute, array(), true));
         }
 
         // replace content-type if a schema was requested
