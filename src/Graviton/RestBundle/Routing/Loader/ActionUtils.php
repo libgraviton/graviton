@@ -8,9 +8,6 @@ use Symfony\Component\Routing\Route;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class ActionUtils

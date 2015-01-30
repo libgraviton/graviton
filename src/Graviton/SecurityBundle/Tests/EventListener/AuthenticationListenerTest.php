@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  *
  * @category GravitonSecutityBundle
  * @package  Graviton
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class AuthenticationListenerTest extends \PHPUnit_Framework_TestCase

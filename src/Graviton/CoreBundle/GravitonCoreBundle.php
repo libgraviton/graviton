@@ -27,8 +27,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category GravitonCoreBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class GravitonCoreBundle extends Bundle implements GravitonBundleInterface

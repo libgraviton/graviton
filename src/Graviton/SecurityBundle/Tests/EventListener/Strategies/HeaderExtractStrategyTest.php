@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @category GravitonSecurityBundle
  * @package  Graviton
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase

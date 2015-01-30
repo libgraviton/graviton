@@ -9,8 +9,6 @@ use Graviton\RestBundle\Controller\RestController;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Bastian Feder <lapistano@bastian-feder.de>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class RestControllerProxy extends RestController

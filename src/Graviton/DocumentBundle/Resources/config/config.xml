@@ -1,49 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+           http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
            xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
            xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
            xmlns:doctrine_extensions="http://example.org/schema/dic/stof_doctrine_extensions"
-           xsi:schemaLocation="
-        http://symfony.com/schema/dic/services
-        http://symfony.com/schema/dic/services/services-1.0.xsd
-        http://symfony.com/schema/dic/doctrine
-        http://symfony.com/schema/dic/doctrine/doctrine-1.0.xsd
-        http://symfony.com/schema/dic/doctrine/odm/mongodb
-        http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd
-    ">
-   <!-- <doctrine:config>
-        <doctrine:dbal default-connection="default">
-            <doctrine:connection
-                    name="default"
-                    dbname="database"
-                    driver="pdo_sqlite"
-                    memory="true"
-                    charset="UTF8"/>
-        </doctrine:dbal>
+           >
 
-        <doctrine:orm default-entity-manager="default"/>
+    <!-- already in  app/config/config.yml -->
 
+    <!--<doctrine:config>
+      <doctrine:dbal default-connection="default">
+          <doctrine:connection
+                  name="default"
+                  dbname="database"
+                  driver="pdo_sqlite"
+                  memory="true"
+                  charset="UTF8"/>
+      </doctrine:dbal>
+      <doctrine:orm default-entity-manager="default"/>
     </doctrine:config>
     <doctrine_mongodb:config default-database="%mongodb.default.server.db%">
-
-        <doctrine_mongodb:document-manager id="default" database="%mongodb.default.server.db%">
-            <doctrine_mongodb:filter name="softdeleteable" enabled="true"
-                                     class="Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter"/>
-        </doctrine_mongodb:document-manager>
-
-        <doctrine_mongodb:connection id="default" server="%mongodb.default.server.uri%">
-            <doctrine_mongodb:options>
-                <doctrine_mongodb:connect>true</doctrine_mongodb:connect>
-            </doctrine_mongodb:options>
-        </doctrine_mongodb:connection>
-
+      <doctrine_mongodb:document-manager id="default" database="%mongodb.default.server.db%">
+          <doctrine_mongodb:filter name="softdeleteable" enabled="true" class="Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter" />
+      </doctrine_mongodb:document-manager>
+      <doctrine_mongodb:connection id="default" server="%mongodb.default.server.uri%">
+        <doctrine_mongodb:options>
+          <doctrine_mongodb:connect>true</doctrine_mongodb:connect>
+        </doctrine_mongodb:options>
+      </doctrine_mongodb:connection>
     </doctrine_mongodb:config>
-
     <doctrine_extensions:config default-locale="en_US">
-        <doctrine_extensions:mongodb>
-            <doctrine_extensions:document-manager id="default" loggable="true" softdeleteable="true"/>
-        </doctrine_extensions:mongodb>
+      <doctrine_extensions:mongodb>
+        <doctrine_extensions:document-manager id="default" loggable="true" softdeleteable="true" />
+      </doctrine_extensions:mongodb>
     </doctrine_extensions:config>-->
-
 </container>

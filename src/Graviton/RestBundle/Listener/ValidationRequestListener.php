@@ -13,8 +13,6 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
  *
  * @category RestBundle
  * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class ValidationRequestListener

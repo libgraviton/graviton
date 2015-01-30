@@ -15,8 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * @category Graviton
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class GravitonDocumentExtension extends GravitonBundleExtension

@@ -8,8 +8,6 @@ use Symfony\Component\Validator\Constraint;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Dario Nuevo <dario.nuevo@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class Translatable extends Constraint

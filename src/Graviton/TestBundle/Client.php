@@ -11,8 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
  *
  * @category GravitonTestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class Client extends FrameworkClient

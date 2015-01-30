@@ -10,8 +10,6 @@ use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  *
  * @todo fix that updateKernel is not getting tested

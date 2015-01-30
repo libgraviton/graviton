@@ -15,8 +15,6 @@ use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
  *
  * @category Tests
  * @package  GravitonMessagingBundle
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase

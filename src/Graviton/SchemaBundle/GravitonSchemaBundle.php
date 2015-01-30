@@ -2,6 +2,7 @@
 
 namespace Graviton\SchemaBundle;
 
+use Graviton\BundleBundle\GravitonBundleInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -9,10 +10,18 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category GravitonSchemaBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class GravitonSchemaBundle extends Bundle
+class GravitonSchemaBundle extends Bundle implements GravitonBundleInterface
 {
+    /**
+     * return array of new bunde instances
+     *
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
+     */
+    public function getBundles()
+    {
+        return array();
+    }
+
 }

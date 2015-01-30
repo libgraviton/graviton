@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class DocumentModel extends SchemaModel implements ModelInterface

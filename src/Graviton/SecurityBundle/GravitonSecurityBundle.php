@@ -12,8 +12,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category GravitonCoreBundle
  * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface

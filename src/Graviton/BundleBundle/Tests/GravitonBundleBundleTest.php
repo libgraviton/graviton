@@ -12,9 +12,7 @@ use Graviton\CoreBundle\GravitonCoreBundle;
  * GravitonMessagingBundleTest
  *
  * @category Tests
- * @package  GravitonMessagingBundle
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @package  GravitonMessagingBundle$fieldName
  * @link     http://swisscom.com
  */
 class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase

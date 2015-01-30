@@ -9,8 +9,6 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
