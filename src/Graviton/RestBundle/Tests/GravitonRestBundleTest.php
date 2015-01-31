@@ -7,8 +7,8 @@ namespace Graviton\RestBundle\Tests;
 
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
+use Misd\GuzzleBundle\MisdGuzzleBundle;
 
 /**
  * GravitonMessagingBundleTest
@@ -31,6 +31,7 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             new GravitonRestBundle()
         );
     }
+
     /**
      * test getBundles method
      *

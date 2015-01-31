@@ -66,12 +66,15 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <p>Welcome to your new Symfony project.</p>
                         <p>
                             This script will guide you through the basic configuration of your project.
-                            You can also do the same by editing the ‘<strong>app/config/parameters.yml</strong>’ file directly.
+                            You can also do the same by editing the ‘<strong>app/config/parameters.yml</strong>’
+                            file directly.
                         </p>
 
                         <?php if (count($majorProblems)): ?>
                             <h2 class="ko">Major problems</h2>
-                            <p>Major problems have been detected and <strong>must</strong> be fixed before continuing:</p>
+                            <p>
+                                Major problems have been detected and <strong>must</strong> be fixed before continuing:
+                            </p>
                             <ol>
                                 <?php foreach ($majorProblems as $problem): ?>
                                     <li><?php echo $problem->getHelpHtml() ?></li>
@@ -82,8 +85,8 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <?php if (count($minorProblems)): ?>
                             <h2>Recommendations</h2>
                             <p>
-                                <?php if (count($majorProblems)): ?>Additionally, to<?php else: ?>To<?php endif; ?> enhance your Symfony experience,
-                                it’s recommended that you fix the following:
+                                <?php if (count($majorProblems)): ?>Additionally, to<?php else: ?>To<?php endif; ?>
+                                enhance your Symfony experience, it’s recommended that you fix the following:
                             </p>
                             <ol>
                                 <?php foreach ($minorProblems as $problem): ?>
@@ -95,7 +98,8 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
                         <?php if ($symfonyRequirements->hasPhpIniConfigIssue()): ?>
                             <p id="phpini">*
                                 <?php if ($symfonyRequirements->getPhpIniConfigPath()): ?>
-                                    Changes to the <strong>php.ini</strong> file must be done in "<strong><?php echo $symfonyRequirements->getPhpIniConfigPath() ?></strong>".
+                                    Changes to the <strong>php.ini</strong> file must be done in
+                                    "<strong><?php echo $symfonyRequirements->getPhpIniConfigPath() ?></strong>".
                                 <?php else: ?>
                                     To change settings, create a "<strong>php.ini</strong>".
                                 <?php endif; ?>
@@ -108,7 +112,9 @@ $minorProblems = $symfonyRequirements->getFailedRecommendations();
 
                         <ul class="symfony-install-continue">
                             <?php if (!count($majorProblems)): ?>
-                                <li><a href="app_dev.php/_configurator/">Configure your Symfony Application online</a></li>
+                                <li>
+                                    <a href="app_dev.php/_configurator/">Configure your Symfony Application online</a>
+                                </li>
                                 <li><a href="app_dev.php/">Bypass configuration and go to the Welcome page</a></li>
                             <?php endif; ?>
                             <?php if (count($majorProblems) || count($minorProblems)): ?>

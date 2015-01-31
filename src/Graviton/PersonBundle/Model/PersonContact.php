@@ -9,7 +9,9 @@ use Graviton\RestBundle\Model\DocumentModel;
  *
  * @category PersonBundle
  * @package  Graviton
- * @link     http://swisscom.com
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
+ * @link     http://swisscom.ch
  */
 class PersonContact extends DocumentModel
 {

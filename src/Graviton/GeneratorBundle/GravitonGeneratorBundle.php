@@ -23,5 +23,4 @@ class GravitonGeneratorBundle extends Bundle implements GravitonBundleInterface
     {
         return array();
     }
-
 }
