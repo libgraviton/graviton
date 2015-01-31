@@ -64,13 +64,17 @@ class SchemaUtils
         $meta = $repo->getClassMetadata();
 
         foreach ($meta->getFieldNames() as $field) {
-            // @todo replace this exremenly dirty hack (i didn't figure out how to store $ref in mongodb)
-            // we should probably get the info what to do here from meta oder the model...
-            // using 'uri' here won't be sustainable for long
-            // (but i do think oit will be sustainable longer than using value)
+            /**
+             * [nue] here there was a dirty workaround rename uri to $ref..
+             * this is wrong and led to an error on an entity that actually had a field named 'uri'
+             * if somebody wants to expose a field 'uri' as $ref, please use the serializer for that.
+             * that's for what he's there..
+             */
+            /*
             if ($field == 'uri') {
                 $field = '$ref';
             }
+            */
 
             // don't describe deletedDate in schema..
             if ($field == 'deletedDate') {
