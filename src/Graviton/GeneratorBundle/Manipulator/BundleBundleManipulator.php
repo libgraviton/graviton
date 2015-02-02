@@ -62,8 +62,8 @@ class BundleBundleManipulator extends Manipulator
             );
         }
 
-        $namespaces[] = "use ${bundle};";
-        $lines[] = "            new ${shortName}(),";
+        $namespaces[] = "use ${bundle};\n";
+        $lines[] = "            new ${shortName}(),\n";
         $lines = array_merge(
             array_slice($src, 0, 7),
             $namespaces,

@@ -5,8 +5,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Graviton\RestBundle\Validator\Constraints\PostId;
 use Graviton\RestBundle\Validator\Constraints\PutId;
-use Symfony\Component\Validator\ConstraintsotBlank;
-use Symfony\Component\Validator\ConstraintsotNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Mapping\ClassMetadata as SFClassMetaData;
@@ -61,7 +61,7 @@ class JsonInput
      *
      * @param Validator $validator Validator
      *
-     * @return \Graviton\RestBundle\Validation\JsonInput
+     * @return \Graviton\RestBundle\Validator\JsonInput
      */
     public function __construct(Validator $validator)
     {

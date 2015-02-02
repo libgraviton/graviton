@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Graviton\ExceptionBundle\ExceptionotFoundException;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
@@ -485,7 +485,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param mixed $id Record id
      *
-     * @throws \Graviton\ExceptionBundle\ExceptionotFoundException
+     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
      *
      * @return object $record Document object
      */
@@ -494,7 +494,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         if (!($record = $this->getModel()->find($id))) {
-            $e = new NotFoundException("Entry with id ".$id." not found!");
+            $e = new NotFoundException("Entry with id " . $id . " not found!");
             $e->setResponse($response);
             throw $e;
         }

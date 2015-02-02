@@ -56,7 +56,7 @@ class GenerateBundleCommandTest extends BaseTest
                         '--dir' => $tmp,
                         '--format' => 'xml'
                     ),
-                    "Foo/BarBundle",
+                    "Foo/BarBundle\n",
                     array('Foo\BarBundle', 'FooBarBundle', $tmp.'/', 'xml', false)
                 )
             )

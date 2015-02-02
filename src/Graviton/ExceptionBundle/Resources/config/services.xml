@@ -5,10 +5,10 @@
   <parameters>
     <parameter key="kernel.listener.graviton_exception_kernel_exception.class">Graviton\ExceptionBundle\Listener\ExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_validation_exception.class">Graviton\ExceptionBundle\Listener\ValidationExceptionListener</parameter>
-    <parameter key="kernel.listener.graviton_exception_notfound_exception.class">Graviton\ExceptionBundle\ListenerotFoundExceptionListener</parameter>
+    <parameter key="kernel.listener.graviton_exception_notfound_exception.class">Graviton\ExceptionBundle\Listener\NotFoundExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_serialization_exception.class">Graviton\ExceptionBundle\Listener\SerializationExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_deserialization_exception.class">Graviton\ExceptionBundle\Listener\DeserializationExceptionListener</parameter>
-    <parameter key="kernel.listener.graviton_exception_serialization_exception.class">Graviton\ExceptionBundle\ListeneroInputExceptionListener</parameter>
+    <parameter key="kernel.listener.graviton_exception_serialization_exception.class">Graviton\ExceptionBundle\Listener\NoInputExceptionListener</parameter>
   </parameters>
   <services>
     <!-- Validation exception listener -->

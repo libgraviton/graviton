@@ -3,7 +3,7 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Graviton\ExceptionBundle\ExceptionotFoundException;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
  * Listener for not found exceptions

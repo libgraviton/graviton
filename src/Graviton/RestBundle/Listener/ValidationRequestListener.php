@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Graviton\ExceptionBundle\ExceptionoInputException;
+use Graviton\ExceptionBundle\Exception\NoInputException;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -25,15 +25,18 @@ class ValidationRequestListener
     /**
      * Service container
      *
-     * @var Symfony\Component\DependencyInjection\Container
+     * @var \Symfony\Component\DependencyInjection\Container
      */
     private $container;
 
     /**
      * Validate the json input to prevent errors in the following components
      *
-     * @param GetResponseEvent $event Event
+     * @param RestEvent|GetResponseEvent $event Event
      *
+     * @throws NoInputException
+     * @throws ValidationException
+     * @throws \Exception
      * @return void
      */
     public function onKernelRequest(RestEvent $event)
@@ -88,7 +91,7 @@ class ValidationRequestListener
     /**
      * Set the container
      *
-     * @param Symfony\Component\DependencyInjection\Container $container Container
+     * @param \Symfony\Component\DependencyInjection\Container $container Container
      *
      * @return void
      */
