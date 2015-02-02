@@ -19,7 +19,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
  * @author   Bastian Feder <bastian.feder@swisscom.com>
- * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class TranslatableRepository extends DocumentRepository

@@ -15,7 +15,7 @@ use Graviton\I18nBundle\Document\Translatable;
  * @category I18nBundle
  * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class LoadTranslatableData implements FixtureInterface
