@@ -3,7 +3,7 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\ExceptionBundle\ExceptionoInputException;
 
 /**
  * Listener for no input exceptions

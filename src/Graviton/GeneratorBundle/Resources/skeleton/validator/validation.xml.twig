@@ -40,7 +40,7 @@
 
     {% if thisCons is not empty %}
         <property name="{{ field.fieldName }}">
-            {{ thisCons|join("\n") }}
+            {{ thisCons|join("") }}
         </property>
     {% endif %}
 

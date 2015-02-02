@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\ExceptionBundle\ExceptionoInputException;
 
 /**
  * GetResponseListener for parsing Accept-Language headers

@@ -158,7 +158,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                 $findCmd = 'find '.escapeshellarg($scanDir).
                     ' -path \'*/resources/definition*\' -iname \'*.json\'';
 
-                $findFiles = explode("\n", shell_exec($findCmd));
+                $findFiles = explode("", shell_exec($findCmd));
 
                 $filesToWorkOn = array();
                 foreach ($findFiles as $foundFile) {
