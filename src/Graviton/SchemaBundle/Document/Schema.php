@@ -9,9 +9,9 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  *
  * @category GravitonSchemaBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class Schema implements TranslatableDocumentInterface
 {

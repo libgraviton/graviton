@@ -19,8 +19,6 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *
  * @todo     split all the xml handling on services.conf into a Manipulator

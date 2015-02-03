@@ -2,11 +2,11 @@
 
 namespace Graviton\RestBundle;
 
+use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
-use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 
 /**
  * GravitonRestBundle
@@ -14,9 +14,11 @@ use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
  * @category GravitonRestBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonRestBundle extends Bundle implements GravitonBundleInterface
 {
@@ -30,8 +32,8 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-            new JMSSerializerBundle(),
             new MisdGuzzleBundle(),
+            new JMSSerializerBundle(),
             new KnpPaginatorBundle(),
         );
     }

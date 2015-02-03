@@ -10,9 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @category SchemaBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class SchemaModel implements ContainerAwareInterface
 {

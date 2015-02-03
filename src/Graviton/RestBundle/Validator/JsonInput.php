@@ -17,9 +17,12 @@ use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
  *
  * @category GravitonRestBundle
  * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  *
  * @todo     refactor as to not use LegacyValidator that was introduced by the 2.5 bump
  */
@@ -58,7 +61,7 @@ class JsonInput
      *
      * @param Validator $validator Validator
      *
-     * @return \Graviton\RestBundle\Validation\JsonInput
+     * @return \Graviton\RestBundle\Validator\JsonInput
      */
     public function __construct(Validator $validator)
     {

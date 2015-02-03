@@ -9,8 +9,6 @@ use Sensio\Bundle\GeneratorBundle\Generator\Generator;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 abstract class AbstractGenerator extends Generator

@@ -10,8 +10,6 @@ use Graviton\BundleBundle\GravitonBundleInterface;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class BundleBundleManipulator extends Manipulator
