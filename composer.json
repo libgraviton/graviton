@@ -48,6 +48,19 @@
     "autoload": {
         "psr-0": {"": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "libgraviton/swagger-ui",
+                "version": "dev-master",
+                "dist": {
+                    "url": "https://github.com/libgraviton/swagger-ui/archive/master.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
     "require-dev": {
         "libgraviton/codesniffer": "dev-master@dev",
         "phpunit/phpunit": "*",
@@ -79,7 +92,9 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
+        "libgraviton/swagger-ui": "dev-master",
         "graviton/php-rql-parser": "dev-develop"
+
     },
     "config": {
         "github-oauth": {
