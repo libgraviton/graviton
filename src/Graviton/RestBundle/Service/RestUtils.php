@@ -3,6 +3,9 @@
 namespace Graviton\RestBundle\Service;
 
 
+use Graviton\RestBundle\Controller\RestController;
+use Symfony\Component\Routing\Route;
+
 class RestUtils
 {
 
@@ -72,6 +75,30 @@ class RestUtils
                 return is_null($route->getRequirement('id'));
             }
         );
+
+        return $ret;
+    }
+
+    public function getControllerFromRoute(Route $route)
+    {
+        $ret = false;
+        $actionParts = explode(':', $route->getDefault('_controller'));
+
+        if (count($actionParts) == 2) {
+            $ret = $this->container->get($actionParts[0]);
+        }
+
+        return $ret;
+    }
+
+    public function getModelFromRoute(Route $route)
+    {
+        $ret = false;
+        $controller = $this->getControllerFromRoute($route);
+
+        if ($controller instanceof RestController) {
+            $ret = $controller->getModel();
+        }
 
         return $ret;
     }

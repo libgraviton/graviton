@@ -2,6 +2,7 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -45,22 +46,43 @@ class ApidocController implements ContainerAwareInterface
         $ret['schemes'] = array('http');
 
         $restUtils = $this->container->get('graviton.rest.restutils');
+        $schemaUtils = new SchemaUtils();
+
         /** @var $collection \Symfony\Component\Routing\RouteCollection */
         $optionRoutes = $restUtils->getOptionRoutes();
         $routingMap = $restUtils->getServiceRoutingMap();
         $paths = array();
 
         foreach ($routingMap as $contName => $routes) {
+
+            list($app, $bundle, $rest, $document) = explode('.', $contName);
+
             foreach ($routes as $routeName => $route) {
+
+                $thisModel = $restUtils->getModelFromRoute($route);
+                $thisEntityName = str_replace('\\','', get_class($thisModel));
+
+                $schema = SchemaUtils::getModelSchema($thisEntityName, $thisModel, array(), array());
+                //var_dump($schema); die;
+                $ret['definitions'][$thisEntityName] = $schema;
+
                 $thisPattern = $route->getPattern();
                 $thisMethod = $route->getMethods()[0];
 
                 $thisPath = array(
                     'summary' => 'Some summary',
+                    'tags' => array($bundle),
                     'description' => '',
                     'operationId' => $routeName,
                     'consumes' => array('application/json'),
-                    'produces' => array('application/json')
+                    'produces' => array('application/json'),
+                    'parameters' => array(
+                        'in' => 'body',
+                        'name' => 'body',
+                        'description' => '',
+                        'required' => true,
+                        'schema' => array('$ref' => '#/definitions/'.$thisEntityName)
+                    )
                 );
 
                 $paths[$thisPattern][strtolower($thisMethod)] = $thisPath;
