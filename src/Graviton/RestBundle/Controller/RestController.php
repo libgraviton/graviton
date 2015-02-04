@@ -72,7 +72,7 @@ class RestController implements ContainerAwareInterface
     public function getAction($id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+                         ->setStatusCode(Response::HTTP_OK);
 
         $record = $this->findRecord($id);
 
@@ -96,10 +96,10 @@ class RestController implements ContainerAwareInterface
         }
 
         return $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent(
-                $this->serialize($model->findAll($this->getRequest()))
-            );
+                                ->setStatusCode(Response::HTTP_OK)
+                                ->setContent(
+                                    $this->serialize($model->findAll($this->getRequest()))
+                                );
     }
 
     /**
@@ -219,7 +219,7 @@ class RestController implements ContainerAwareInterface
     public function patchAction($id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_NOT_FOUND);
+                         ->setStatusCode(Response::HTTP_NOT_FOUND);
 
         $record = $this->findRecord($id);
 
@@ -432,11 +432,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         try {
-            $content = $this->getSerializer()->serialize(
-                $result,
-                'json',
-                $this->getSerializerContext()
-            );
+            $content = $this->serializeContent($result);
         } catch (\Exception $e) {
             $exception = new SerializationException($e);
             $exception->setResponse($response);
@@ -444,6 +440,26 @@ class RestController implements ContainerAwareInterface
         }
 
         return $content;
+    }
+
+    /**
+     * Public function to serialize stuff according to the serializer rules.
+     * This is public and exists so it can be used from other places..
+     *
+     * @param object $content Any content to serialize
+     *
+     * @throws \Exception
+     *
+     * @return string $content Json content
+     */
+    public function serializeContent($content)
+    {
+        $result = $this->getSerializer()->serialize(
+            $content,
+            'json',
+            $this->getSerializerContext()
+        );
+        return $result;
     }
 
     /**

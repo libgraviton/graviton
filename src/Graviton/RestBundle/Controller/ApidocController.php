@@ -2,6 +2,7 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   Dario Nuevo <dario.nuevo@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -38,6 +39,7 @@ class ApidocController implements ContainerAwareInterface
         $ret['swagger'] = '2.0';
         $ret['info'] = array(
             'description' => 'Description',
+            // @todo this should be a real version - but should it be the version of graviton or which one?
             'version' => '0.1',
             'title' => 'Graviton REST Services'
         );
@@ -45,11 +47,12 @@ class ApidocController implements ContainerAwareInterface
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http');
 
+        /** @var $restUtils RestUtils */
         $restUtils = $this->container->get('graviton.rest.restutils');
-        $schemaUtils = new SchemaUtils();
+        //$schemaUtils = new SchemaUtils();
 
-        /** @var $collection \Symfony\Component\Routing\RouteCollection */
-        $optionRoutes = $restUtils->getOptionRoutes();
+        /** @var $optionRoutes \Symfony\Component\Routing\RouteCollection */
+        //$optionRoutes = $restUtils->getOptionRoutes();
         $routingMap = $restUtils->getServiceRoutingMap();
         $paths = array();
 
@@ -59,39 +62,126 @@ class ApidocController implements ContainerAwareInterface
 
             foreach ($routes as $routeName => $route) {
 
-                $thisModel = $restUtils->getModelFromRoute($route);
-                $thisEntityName = str_replace('\\','', get_class($thisModel));
+                $routeMethod = strtolower($route->getMethods()[0]);
 
-                $schema = SchemaUtils::getModelSchema($thisEntityName, $thisModel, array(), array());
-                //var_dump($schema); die;
-                $ret['definitions'][$thisEntityName] = $schema;
+                // skip PATCH (as for now) & /schema/ stuff
+                if (strpos($route->getPath(), '/schema/') !== false || $routeMethod == 'options' || $routeMethod == 'patch') {
+                    continue;
+                }
+
+                $thisModel = $restUtils->getModelFromRoute($route);
+                $entityClassName = str_replace('\\','', get_class($thisModel));
+
+                $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
+
+                $ret['definitions'][$entityClassName] = json_decode(
+                    $restUtils->getControllerFromRoute($route)->serializeContent($schema), true
+                );
+
+                $isCollectionRequest = true;
+                if (in_array('id', array_keys($route->getRequirements())) === true) {
+                    $isCollectionRequest = false;
+                }
 
                 $thisPattern = $route->getPattern();
-                $thisMethod = $route->getMethods()[0];
+                $entityName = ucfirst($document);
 
                 $thisPath = array(
                     'summary' => 'Some summary',
-                    'tags' => array($bundle),
-                    'description' => '',
+                    'tags' => array(ucfirst($bundle)),
                     'operationId' => $routeName,
                     'consumes' => array('application/json'),
-                    'produces' => array('application/json'),
-                    'parameters' => array(
-                        'in' => 'body',
-                        'name' => 'body',
-                        'description' => '',
-                        'required' => true,
-                        'schema' => array('$ref' => '#/definitions/'.$thisEntityName)
-                    )
+                    'produces' => array('application/json')
                 );
 
-                $paths[$thisPattern][strtolower($thisMethod)] = $thisPath;
+                // meaningful descriptions..
+                switch ($routeMethod) {
+                    case 'get':
+                        if ($isCollectionRequest) {
+                            $thisPath['summary'] = 'Get collection of '.$entityName. ' objects';
+                        } else {
+                            $thisPath['summary'] = 'Get single '.$entityName.' object';
+                        }
+                        break;
+                    case 'post':
+                        $thisPath['summary'] = 'Create new '.$entityName. ' resource';
+                        break;
+                    case 'put':
+                        $thisPath['summary'] = 'Update existing '.$entityName.' resource';
+                        break;
+                    case 'delete':
+                        $thisPath['summary'] = 'Delete existing '.$entityName.' resource';
+                }
+
+                // collection return or not?
+                if (!$isCollectionRequest) {
+                    // add object response
+                    $thisPath['responses'] = array(
+                        200 => array(
+                            'description' => $entityName . ' response',
+                            'schema' => array('$ref' => '#/definitions/' . $entityClassName)
+                        )
+                    );
+
+                    // add id param
+                    $thisPath['parameters'][] = array(
+                        'name' => 'id',
+                        'in' => 'path',
+                        'description' => 'ID of '.$entityName.' item to fetch/update',
+                        'required' => true,
+                        'type' => $schema->getProperty('id')->getType()
+                    );
+                } else {
+                    // add array response
+                    $thisPath['responses'][200] = array(
+                        'description' => $entityName . ' response',
+                        'schema' => array(
+                            'type' => 'array',
+                            'items' => array('$ref' => '#/definitions/' . $entityClassName)
+                        )
+                    );
+                }
+
+                // post body stuff
+                if ($routeMethod == 'put' || $routeMethod == 'post') {
+
+                    // special handling for POST/PUT.. we need to have 2 schemas, one for response, one for request..
+                    // we don't want to have ID in the request body within those requests do we..
+                    // an exception is when id is required..
+                    $incomingEntitySchema = $entityClassName;
+                    if (!in_array('id', $schema->getRequired())) {
+                        $incomingEntitySchema = $incomingEntitySchema.'Incoming';
+                        $incomingSchema = clone $schema;
+                        $incomingSchema->removeProperty('id');
+                        $ret['definitions'][$incomingEntitySchema] = json_decode(
+                            $restUtils->getControllerFromRoute($route)->serializeContent($incomingSchema), true
+                        );
+                    }
+
+                    $thisPath['parameters'][] = array(
+                        'name' => $bundle,
+                        'in' => 'body',
+                        'description' => 'Post',
+                        'required' => true,
+                        'schema' => array('$ref' => '#/definitions/' . $incomingEntitySchema)
+                    );
+
+                    // add error responses..
+                    $thisPath['responses'][400] = array(
+                        'description' => 'Bad request',
+                        'schema' => array(
+                            'type' => 'object'
+                        )
+                    );
+                }
+
+                $paths[$thisPattern][$routeMethod] = $thisPath;
             }
         }
-
+        //die;
         $ret['paths'] = $paths;
-
         $response->setContent(json_encode($ret));
+
         return $response;
     }
 
