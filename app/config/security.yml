@@ -1,7 +1,7 @@
 # you can read more about security in the related section of the documentation
 # http://symfony.com/doc/current/book/security.html
 security:
-    # http://symfony.com/doc/current/book/security.html#encoding-the-user-s-password
+#    # http://symfony.com/doc/current/book/security.html#encoding-the-user-s-password
 #    encoders:
 #        Symfony\Component\Security\Core\User\User: plaintext
 #
@@ -21,10 +21,6 @@ security:
 #    # the main part of the security, where you can set up firewalls
 #    # for specific sections of your app
 #    firewalls:
-#        # disables authentication for assets and the profiler, adapt it according to your needs
-#        dev:
-#            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-#            security: false
 #        # the login page has to be accessible for everybody
 #        demo_login:
 #            pattern:  ^/demo/secured/login$
