@@ -1,0 +1,7 @@
+graviton_rest_routing:
+    resource: "@GravitonRestBundle/Resources/config/routing.xml"
+    prefix: /
+
+graviton_core_routing:
+    resource: "@GravitonCoreBundle/Resources/config/routing.xml"
+    prefix: /

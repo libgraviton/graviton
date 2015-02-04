@@ -15,8 +15,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class GenerateBundleCommand extends SymfonyGenerateBundleCommand

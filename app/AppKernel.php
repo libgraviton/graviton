@@ -5,24 +5,17 @@
 
 namespace Graviton;
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Bundle\TwigBundle\TwigBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
-use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\TestBundle\GravitonTestBundle;
-use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
-use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
-use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * AppKernel
  *
  * @category Graviton
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.com
  */
 class AppKernel extends Kernel
@@ -30,7 +23,7 @@ class AppKernel extends Kernel
     /**
      * bundle loader
      *
-     * @var BundleLoader
+     * @var \Graviton\BundleBundle\Loader\BundleLoader
      */
     protected $bundleLoader;
 
@@ -51,7 +44,7 @@ class AppKernel extends Kernel
     /**
      * set bundle loader
      *
-     * @param BundleLoader $bundleLoader bundle loader
+     * @param \Graviton\BundleBundle\Loader\BundleLoader $bundleLoader bundle loader
      *
      * @return void
      */
@@ -67,19 +60,33 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        if ($this->bundleLoader) {
-            $bundles = $this->bundleLoader->load();
-        }
-        // @todo move these into their own Bundles or remove completely
-        $bundles[] = new SwiftmailerBundle();
-        $bundles[] = new DoctrineBundle();
-        $bundles[] = new TwigBundle();
+        $bundles = array(
+            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new \Symfony\Bundle\TwigBundle\TwigBundle(),
+            new \Symfony\Bundle\MonologBundle\MonologBundle(),
+            new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            new \Symfony\Bundle\AsseticBundle\AsseticBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
+            new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
+        );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
-            $bundles[] = new WebProfilerBundle();
-            $bundles[] = new SensioDistributionBundle();
-            $bundles[] = new SensioGeneratorBundle();
-            $bundles[] = new GravitonTestBundle();
+            $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
+            $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new \Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+            $bundles[] = new \Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+            $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
+        }
+
+        // autoload of Graviton specific bundles.
+        if ($this->bundleLoader) {
+//            $bundles = array_merge($bundles, $this->bundleLoader->load());
+            $bundles = $this->bundleLoader->load($bundles);
         }
 
         return $bundles;
@@ -94,6 +101,6 @@ class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/config_'.$this->getEnvironment().'.xml');
+        $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
     }
 }

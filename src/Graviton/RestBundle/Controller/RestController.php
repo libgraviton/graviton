@@ -23,9 +23,12 @@ use Graviton\RestBundle\Model\PaginatorAwareInterface;
  *
  * @category GravitonRestBundle
  * @package  Graviton
+ * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
  * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class RestController implements ContainerAwareInterface
 {
@@ -491,7 +494,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         if (!($record = $this->getModel()->find($id))) {
-            $e = new NotFoundException("Entry with id ".$id." not found!");
+            $e = new NotFoundException("Entry with id " . $id . " not found!");
             $e->setResponse($response);
             throw $e;
         }

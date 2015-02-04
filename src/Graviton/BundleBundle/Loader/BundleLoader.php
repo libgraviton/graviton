@@ -1,6 +1,6 @@
 <?php
 /**
- * load bundles from bundles implementing GravitonBundleInterface
+ * Loads bundles from list of bundles implementing GravitonBundleInterface
  */
 
 namespace Graviton\BundleBundle\Loader;
@@ -19,8 +19,11 @@ use Graviton\BundleBundle\GravitonBundleInterface;
  * @category GravitonBundleBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
+ * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class BundleLoader
 {
@@ -43,7 +46,7 @@ class BundleLoader
      *
      * @param GravitonBundleBundle $bundleBundle inject kickstart bundle here
      *
-     * @return void
+     * @return \Graviton\BundleBundle\Loader\BundleLoader
      */
     public function __construct(GravitonBundleBundle $bundleBundle)
     {
@@ -51,12 +54,16 @@ class BundleLoader
     }
 
     /**
-     * load bundles from kickstarter bundle
+     * load bundles
+     *
+     * @param \Symfony\Component\HttpKernel\Bundle\Bundle[] $bundles
      *
      * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
-    public function load()
+    public function load(array $bundles)
     {
+        $this->finalBundles = $bundles;
+
         while (!empty($this->bundleStack)) {
             $bundle = array_shift($this->bundleStack);
             $this->addBundle($bundle);
@@ -72,18 +79,21 @@ class BundleLoader
      * adds the results of getBundles to bundleStack if GravitonBundleInterface
      * was implemented.
      *
-     * @param Mixed $bundle various flavours of bundles
+     * @param mixed $bundle various flavours of bundles
      *
      * @return void
      */
     private function addBundle($bundle)
     {
-        if ($bundle instanceof GravitonBundleInterface) {
-            $this->bundleStack = array_merge(
-                $this->bundleStack,
-                $bundle->getBundles()
-            );
+        if (!in_array($bundle, $this->finalBundles)) {
+            if ($bundle instanceof GravitonBundleInterface) {
+                $this->bundleStack = array_merge(
+                    $this->bundleStack,
+                    $bundle->getBundles()
+                );
+            }
+
+            $this->finalBundles[] = $bundle;
         }
-        $this->finalBundles[] = $bundle;
     }
 }

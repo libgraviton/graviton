@@ -7,16 +7,14 @@ namespace Graviton\RestBundle\Tests;
 
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
+use Misd\GuzzleBundle\MisdGuzzleBundle;
 
 /**
  * GravitonMessagingBundleTest
  *
  * @category Tests
  * @package  GravitonMessagingBundle
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
 class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
@@ -33,6 +31,7 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             new GravitonRestBundle()
         );
     }
+
     /**
      * test getBundles method
      *
@@ -41,13 +40,11 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
     public function testGetBundles()
     {
         $sut = new GravitonRestBundle();
-        $expectation = array(
-            new JMSSerializerBundle(),
-            new MisdGuzzleBundle(),
-            new KnpPaginatorBundle(),
-        );
 
         $result = $sut->getBundles();
-        $this->assertEquals($expectation, $result);
+
+        $this->assertContains(new JMSSerializerBundle(), $result, '', false, false);
+        $this->assertContains(new MisdGuzzleBundle(), $result, '', false, false);
+        $this->assertContains(new KnpPaginatorBundle(), $result, '', false, false);
     }
 }
