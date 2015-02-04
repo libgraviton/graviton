@@ -104,6 +104,7 @@ class SchemaUtils
 
             $schema->addProperty($field, $property);
         }
+
         $schema->setRequired($model->getRequiredFields());
 
         return $schema;

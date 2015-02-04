@@ -49,10 +49,6 @@ class ApidocController implements ContainerAwareInterface
 
         /** @var $restUtils RestUtils */
         $restUtils = $this->container->get('graviton.rest.restutils');
-        //$schemaUtils = new SchemaUtils();
-
-        /** @var $optionRoutes \Symfony\Component\Routing\RouteCollection */
-        //$optionRoutes = $restUtils->getOptionRoutes();
         $routingMap = $restUtils->getServiceRoutingMap();
         $paths = array();
 
@@ -65,17 +61,23 @@ class ApidocController implements ContainerAwareInterface
                 $routeMethod = strtolower($route->getMethods()[0]);
 
                 // skip PATCH (as for now) & /schema/ stuff
-                if (strpos($route->getPath(), '/schema/') !== false || $routeMethod == 'options' || $routeMethod == 'patch') {
+                if (strpos(
+                        $route->getPath(),
+                        '/schema/'
+                    ) !== false || $routeMethod == 'options' || $routeMethod == 'patch'
+                ) {
                     continue;
                 }
 
                 $thisModel = $restUtils->getModelFromRoute($route);
-                $entityClassName = str_replace('\\','', get_class($thisModel));
+                $entityClassName = str_replace('\\', '', get_class($thisModel));
 
                 $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
 
                 $ret['definitions'][$entityClassName] = json_decode(
-                    $restUtils->getControllerFromRoute($route)->serializeContent($schema), true
+                    $restUtils->getControllerFromRoute($route)
+                              ->serializeContent($schema),
+                    true
                 );
 
                 $isCollectionRequest = true;
@@ -98,19 +100,19 @@ class ApidocController implements ContainerAwareInterface
                 switch ($routeMethod) {
                     case 'get':
                         if ($isCollectionRequest) {
-                            $thisPath['summary'] = 'Get collection of '.$entityName. ' objects';
+                            $thisPath['summary'] = 'Get collection of ' . $entityName . ' objects';
                         } else {
-                            $thisPath['summary'] = 'Get single '.$entityName.' object';
+                            $thisPath['summary'] = 'Get single ' . $entityName . ' object';
                         }
                         break;
                     case 'post':
-                        $thisPath['summary'] = 'Create new '.$entityName. ' resource';
+                        $thisPath['summary'] = 'Create new ' . $entityName . ' resource';
                         break;
                     case 'put':
-                        $thisPath['summary'] = 'Update existing '.$entityName.' resource';
+                        $thisPath['summary'] = 'Update existing ' . $entityName . ' resource';
                         break;
                     case 'delete':
-                        $thisPath['summary'] = 'Delete existing '.$entityName.' resource';
+                        $thisPath['summary'] = 'Delete existing ' . $entityName . ' resource';
                 }
 
                 // collection return or not?
@@ -127,9 +129,10 @@ class ApidocController implements ContainerAwareInterface
                     $thisPath['parameters'][] = array(
                         'name' => 'id',
                         'in' => 'path',
-                        'description' => 'ID of '.$entityName.' item to fetch/update',
+                        'description' => 'ID of ' . $entityName . ' item to fetch/update',
                         'required' => true,
-                        'type' => $schema->getProperty('id')->getType()
+                        'type' => $schema->getProperty('id')
+                                         ->getType()
                     );
                 } else {
                     // add array response
@@ -150,11 +153,13 @@ class ApidocController implements ContainerAwareInterface
                     // an exception is when id is required..
                     $incomingEntitySchema = $entityClassName;
                     if (!in_array('id', $schema->getRequired())) {
-                        $incomingEntitySchema = $incomingEntitySchema.'Incoming';
+                        $incomingEntitySchema = $incomingEntitySchema . 'Incoming';
                         $incomingSchema = clone $schema;
                         $incomingSchema->removeProperty('id');
                         $ret['definitions'][$incomingEntitySchema] = json_decode(
-                            $restUtils->getControllerFromRoute($route)->serializeContent($incomingSchema), true
+                            $restUtils->getControllerFromRoute($route)
+                                      ->serializeContent($incomingSchema),
+                            true
                         );
                     }
 
@@ -186,18 +191,6 @@ class ApidocController implements ContainerAwareInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
-    /**
      * Get the container object
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
@@ -208,4 +201,15 @@ class ApidocController implements ContainerAwareInterface
         return $this->container;
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
+     *
+     * @return void
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
 }
