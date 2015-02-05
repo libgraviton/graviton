@@ -37,6 +37,7 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~3.0.12",
         "sensio/framework-extra-bundle": "~3.0",
+        "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "*",
         "jms/di-extra-bundle": "~1.3",
@@ -55,7 +56,6 @@
         "libgraviton/swagger-ui": "dev-master"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3",
         "libgraviton/codesniffer": "dev-master@dev",
         "phpunit/phpunit": "*",
         "liip/functional-test-bundle": "@dev",
