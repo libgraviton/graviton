@@ -4,6 +4,7 @@ namespace Graviton\SecurityBundle\User;
 
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -41,6 +42,8 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     public function loadUserByUsername($username)
     {
         // TODO: Implement loadUserByUsername() method.
+
+        $user = new User('foo', 'bar', array('ROLE_GRAVITON_USER'));
     }
 
     /**

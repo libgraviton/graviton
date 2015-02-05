@@ -110,7 +110,7 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthentica
     {
         $this->validateField($header, self::X_HEADER_FIELD);
 
-        return $header->get($field, '');
+        return $header->get(self::X_HEADER_FIELD, '');
     }
 
     /**

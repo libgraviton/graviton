@@ -27,7 +27,7 @@ class ContentLanguageResponseListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $languages = $event->getRequest()->attributes->get('languages');
+        $languages = $event->getRequest()->attributes->get('languages', array());
         $response = $event->getResponse();
         $response->headers->set('Content-Language', implode(', ', $languages));
         $event->setResponse($response);
