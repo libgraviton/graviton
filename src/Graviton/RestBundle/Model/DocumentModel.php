@@ -83,13 +83,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         // *** do we have an RQL expression, do we need to filter data?
         if (count($request->query->all()) > 0) {
-            $queryParser = new Query(urldecode($request->getQueryString()));
+
+            // prefer explicit filter param!
+            if ($request->query->get('filter') != null && strlen($request->query->get('filter')) > 0) {
+                $queryFilter = $request->query->get('filter');
+            } else {
+                $queryFilter = $request->getQueryString();
+            }
+
+            $queryParser = new Query(urldecode($queryFilter));
             $queriable = new MongoOdm($this->repository, $numberPerPage, $startAt);
             $queriable = $queryParser->applyToQueriable($queriable);
             $records = $queriable->getDocuments();
 
             $totalCount = $queriable->getResultCount();
-
         } else {
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $qb = $this->repository
@@ -100,7 +107,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
             $query = $qb->getQuery();
             $totalCount = $query->count();
-            $records = array_values($query->execute()->toArray());
+            $records = array_values(
+                $query->execute()
+                      ->toArray()
+            );
         }
 
         $numPages = (int) ceil($totalCount / $numberPerPage);
@@ -145,7 +155,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * {@inheritDoc}
      *
      * @param string $documentId id of entity to update
-     * @param Object $entity     new enetity
+     * @param Object $entity new enetity
      *
      * @return Object
      */

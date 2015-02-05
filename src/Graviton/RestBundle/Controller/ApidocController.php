@@ -89,7 +89,6 @@ class ApidocController implements ContainerAwareInterface
                 $entityName = ucfirst($document);
 
                 $thisPath = array(
-                    'summary' => 'Some summary',
                     'tags' => array(ucfirst($bundle)),
                     'operationId' => $routeName,
                     'consumes' => array('application/json'),
@@ -100,9 +99,9 @@ class ApidocController implements ContainerAwareInterface
                 switch ($routeMethod) {
                     case 'get':
                         if ($isCollectionRequest) {
-                            $thisPath['summary'] = 'Get collection of ' . $entityName . ' objects';
+                            $thisPath['summary'] = 'Get collection of ' . $entityName . ' resources';
                         } else {
-                            $thisPath['summary'] = 'Get single ' . $entityName . ' object';
+                            $thisPath['summary'] = 'Get single ' . $entityName . ' resources';
                         }
                         break;
                     case 'post':
@@ -122,6 +121,9 @@ class ApidocController implements ContainerAwareInterface
                         200 => array(
                             'description' => $entityName . ' response',
                             'schema' => array('$ref' => '#/definitions/' . $entityClassName)
+                        ),
+                        404 => array(
+                            'description' => 'Resource not found'
                         )
                     );
 
@@ -142,6 +144,35 @@ class ApidocController implements ContainerAwareInterface
                             'type' => 'array',
                             'items' => array('$ref' => '#/definitions/' . $entityClassName)
                         )
+                    );
+
+                    /* not yet ;-(
+                    $thisPath['parameters'][] = array(
+                        'name' => 'filter',
+                        'in' => 'query',
+                        'description' => 'Optional RQL filter',
+                        'required' => false,
+                        'default' => '',
+                        'type' => 'string'
+                    );
+                    */
+
+                    // paging params
+                    $thisPath['parameters'][] = array(
+                        'name' => 'page',
+                        'in' => 'query',
+                        'description' => '(Paging) Page to fetch',
+                        'required' => false,
+                        'default' => 1,
+                        'type' => 'integer'
+                    );
+                    $thisPath['parameters'][] = array(
+                        'name' => 'perPage',
+                        'in' => 'query',
+                        'description' => '(Paging) Items per page',
+                        'required' => false,
+                        'default' => 10,
+                        'type' => 'integer'
                     );
                 }
 
