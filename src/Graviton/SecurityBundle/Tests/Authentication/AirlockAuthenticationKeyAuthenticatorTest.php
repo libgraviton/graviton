@@ -3,6 +3,7 @@
 namespace Graviton\SecurityBundle\Authentication;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * Class AirlockAuthenticationKeyAuthenticatorTest
@@ -16,23 +17,10 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
      */
     public function testCreateToken($headerFieldValue)
     {
-        $securityUserMock =  $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')
-            ->getMockForAbstractClass();
-
         $userProviderMock = $this->getMockBuilder('Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider')
             ->disableOriginalConstructor()
             ->setMethods(array('getUsernameForApiKey', 'loadUserByUsername'))
             ->getMock();
-
-        $userProviderMock
-            ->expects($this->once())
-            ->method('getUsernameForApiKey')
-            ->with($this->equalTo($headerFieldValue))
-            ->will($this->returnValue('tux'));
-        $userProviderMock
-            ->expects($this->once())
-            ->method('loadUserByUsername')
-            ->will($this->returnValue($securityUserMock));
 
         $strategy = $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
             ->setMethods(array('apply'))
@@ -41,7 +29,6 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             ->expects($this->once())
             ->method('apply')
             ->will($this->returnValue($headerFieldValue));
-
 
         $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $strategy);
 
@@ -58,7 +45,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $token
         );
 
-        $this->assertTrue($token->isAuthenticated());
+        $this->assertFalse($token->isAuthenticated());
     }
 
     public function stringProvider()
@@ -72,4 +59,125 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
         );
     }
 
+    public function testAuthenticateToken()
+    {
+        $providerKey = 'some providerKey';
+        $apiKey = 'exampleAuthenticationHeader';
+
+        $securityUserMock =  $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')
+            ->setMethods(array('getRoles'))
+            ->getMockForAbstractClass();
+        $securityUserMock
+            ->expects($this->once())
+            ->method('getRoles')
+            ->will($this->returnValue(array('ROLE_GRAVITON_USER')));
+
+        $userProviderMock = $this->getProviderMock(array('getUsernameForApiKey', 'loadUserByUsername'));
+        $userProviderMock
+            ->expects($this->once())
+            ->method('getUsernameForApiKey')
+            ->with($this->equalTo($apiKey))
+            ->will($this->returnValue('Tux'));
+        $userProviderMock
+            ->expects($this->once())
+            ->method('loadUserByUsername')
+            ->will($this->returnValue($securityUserMock));
+
+        $anonymousToken = new PreAuthenticatedToken(
+            'anon.',
+            $apiKey,
+            $providerKey
+        );
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock());
+
+        $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
+
+        $this->assertInstanceOf(
+            '\Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken',
+            $token
+        );
+
+        $this->assertTrue($token->isAuthenticated());
+    }
+
+    public function testAuthenticateTokenExpectingException()
+    {
+        $providerKey = 'some providerKey';
+        $apiKey = 'exampleAuthenticationHeader';
+
+        $userProviderMock = $this->getProviderMock(array('getUsernameForApiKey', 'loadUserByUsername'));
+        $userProviderMock
+            ->expects($this->once())
+            ->method('getUsernameForApiKey')
+            ->with($this->equalTo($apiKey))
+            ->will($this->returnValue(''));
+
+        $anonymousToken = new PreAuthenticatedToken(
+            'anon.',
+            $apiKey,
+            $providerKey
+        );
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock());
+
+        $this->setExpectedException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
+
+        $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
+    }
+
+    public function testSupportsToken()
+    {
+        $providerKey = 'some providerKey';
+        $apiKey = 'exampleAuthenticationHeader';
+
+        $anonymousToken = new PreAuthenticatedToken(
+            'anon.',
+            $apiKey,
+            $providerKey
+        );
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock());
+
+        $this->assertTrue($authenticator->supportsToken($anonymousToken, $providerKey));
+    }
+
+    public function testOnAuthenticationFailure()
+    {
+        $exceptionMock = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getMessageKey'))
+            ->getMock();
+        $exceptionMock
+            ->expects($this->once())
+            ->method('getMessageKey')
+            ->will($this->returnValue('test_message'));
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock());
+
+        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionMock);
+
+        $this->assertEquals('test_message', $response->getContent());
+        $this->assertEquals(511, $response->getStatusCode());
+    }
+
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|\Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider
+     */
+    private function getProviderMock(array $methods = array())
+    {
+        $userProviderMock = $this->getMockBuilder('Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider')
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+        return $userProviderMock;
+    }
+
+    private function getStrategyMock(array $methods = array('apply'))
+    {
+        return $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
+            ->setMethods($methods)
+            ->getMockForAbstractClass();
+    }
 }

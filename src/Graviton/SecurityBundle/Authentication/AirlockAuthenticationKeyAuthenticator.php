@@ -82,7 +82,7 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthentica
 
         if (!$username) {
             throw new AuthenticationException(
-                sprintf('Airlock authtication key "%s" could not be resolved.', $apiKey)
+                sprintf('Airlock authentication key "%s" could not be resolved.', $apiKey)
             );
         }
 

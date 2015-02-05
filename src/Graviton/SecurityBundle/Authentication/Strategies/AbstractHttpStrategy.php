@@ -49,21 +49,29 @@ abstract class AbstractHttpStrategy implements StrategyInterface
      * @return void
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
-    private function validateField($header, $fieldName)
+    protected function validateField($header, $fieldName)
     {
         $passed = $header->has($fieldName);
 
         // get rid of anything not a valid character
         $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
 
+        // get rid of whitespaces
+        $authInfo = str_replace(array("\r\n", "\n", "\r"), "", trim($authInfo));
+
         if (false !== $passed && !empty($authInfo)) {
             $passed = true;
+        } else {
+            $passed = false;
         }
 
         // get rid of control characters
         if (false !== $passed && $authInfo === preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
             $passed = true;
+        } else {
+            $passed = false;
         }
+
 
         if (false === $passed) {
             throw new HttpException(

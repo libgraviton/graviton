@@ -18,9 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
 {
     /**
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
      */
@@ -59,4 +59,6 @@ class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
             'string with hex chars'          => array("a: \x61, A: \x41")
         );
     }
+
+
 }

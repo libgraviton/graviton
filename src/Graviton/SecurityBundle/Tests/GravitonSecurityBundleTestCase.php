@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class GravitonSecurityBundleTestCase extends WebTestCase
 {
     /**
-     *
+     * Provides a HttpClient base on the Graviton\AppKernel
      *
      * @param array $options
      * @param array $server
