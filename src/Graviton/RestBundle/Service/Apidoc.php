@@ -84,8 +84,7 @@ class Apidoc
                 $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
 
                 $ret['definitions'][$entityClassName] = json_decode(
-                    $this->restUtils->getControllerFromRoute($route)
-                                    ->serializeContent($schema),
+                    $this->restUtils->serializeContent($schema),
                     true
                 );
 
@@ -197,8 +196,7 @@ class Apidoc
                         $incomingSchema = clone $schema;
                         $incomingSchema->removeProperty('id');
                         $ret['definitions'][$incomingEntitySchema] = json_decode(
-                            $this->restUtils->getControllerFromRoute($route)
-                                            ->serializeContent($incomingSchema),
+                            $this->restUtils->serializeContent($incomingSchema),
                             true
                         );
                     }

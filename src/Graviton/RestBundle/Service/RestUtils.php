@@ -65,6 +65,68 @@ class RestUtils
     }
 
     /**
+     * Public function to serialize stuff according to the serializer rules.
+     *
+     * @param object $content Any content to serialize
+     * @param string $format  Which format to serialize into
+     *
+     * @throws \Exception
+     *
+     * @return string $content Json content
+     */
+    public function serializeContent($content, $format = 'json')
+    {
+        $result = $this->getSerializer()->serialize(
+            $content,
+            $format,
+            $this->getSerializerContext()
+        );
+        return $result;
+    }
+
+    /**
+     * Deserialize the given content throw an exception if something went wrong
+     *
+     * @param string $content       Request content
+     * @param string $documentClass Document class
+     * @param string $format        Which format to deserialize from
+     *
+     * @throws \Exception
+     *
+     * @return object $record Document
+     */
+    public function deserializeContent($content, $documentClass, $format = 'json')
+    {
+        $record = $this->getSerializer()->deserialize(
+            $content,
+            $documentClass,
+            $format
+        );
+
+        return $record;
+    }
+
+    /**
+     * Get the serializer
+     *
+     * @return \JMS\Serializer\Serializer
+     */
+    public function getSerializer()
+    {
+        return $this->container->get('graviton.rest.serializer');
+    }
+
+    /**
+     * Get the serializer context
+     *
+     * @return null|\JMS\Serializer\SerializationContext
+     */
+    public function getSerializerContext()
+    {
+        return clone $this->container->get('graviton.rest.serializer.serializercontext');
+    }
+
+    /**
      * It has been deemed that we search for OPTION routes in order to detect our
      * service routes and then derive the rest from them.
      *

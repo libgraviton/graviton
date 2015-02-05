@@ -354,23 +354,13 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Get the serializer
+     * Get RestUtils service
      *
-     * @return \JMS\Serializer\Serializer
+     * @return \Graviton\RestBundle\Service\RestUtils
      */
-    public function getSerializer()
+    public function getRestUtils()
     {
-        return $this->container->get('graviton.rest.serializer');
-    }
-
-    /**
-     * Get the serializer context
-     *
-     * @return null|\JMS\Serializer\SerializationContext
-     */
-    public function getSerializerContext()
-    {
-        return clone $this->container->get('graviton.rest.serializer.serializercontext');
+        return $this->container->get('graviton.rest.restutils');
     }
 
     /**
@@ -432,7 +422,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         try {
-            $content = $this->serializeContent($result);
+            $content = $this->getRestUtils()->serializeContent($result);
         } catch (\Exception $e) {
             $exception = new SerializationException($e);
             $exception->setResponse($response);
@@ -440,26 +430,6 @@ class RestController implements ContainerAwareInterface
         }
 
         return $content;
-    }
-
-    /**
-     * Public function to serialize stuff according to the serializer rules.
-     * This is public and exists so it can be used from other places..
-     *
-     * @param object $content Any content to serialize
-     *
-     * @throws \Exception
-     *
-     * @return string $content Json content
-     */
-    public function serializeContent($content)
-    {
-        $result = $this->getSerializer()->serialize(
-            $content,
-            'json',
-            $this->getSerializerContext()
-        );
-        return $result;
     }
 
     /**
@@ -477,10 +447,9 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         try {
-            $record = $this->getSerializer()->deserialize(
+            $record = $this->getRestUtils()->deserializeContent(
                 $content,
-                $documentClass,
-                'json'
+                $documentClass
             );
         } catch (\Exception $e) {
             // pass the previous exception in this case to get the error message in the handler
