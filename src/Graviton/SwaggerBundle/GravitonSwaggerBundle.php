@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GravitonSwaggerBundle extends Bundle
+class GravitonSwaggerBundle extends Bundle implements GravitonBundleInterface
 {
 
     /**
