@@ -1,19 +1,19 @@
 <?php
 
-namespace Graviton\RestBundle\Service;
+namespace Graviton\SwaggerBundle\Service;
 
 use Graviton\SchemaBundle\SchemaUtils;
 
 /**
  * A service that generates a swagger conform service spec dynamically.
  *
- * @category GravitonRestBundle
+ * @category GravitonSwaggerBundle
  * @package  Graviton
  * @author   Dario Nuevo <dario.nuevo@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class Apidoc
+class Swagger
 {
 
     /**

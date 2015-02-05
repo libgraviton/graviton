@@ -1,8 +1,7 @@
 <?php
 
-namespace Graviton\RestBundle\Controller;
+namespace Graviton\SwaggerBundle\Controller;
 
-use Graviton\RestBundle\Service\Apidoc;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
-class ApidocController implements ContainerAwareInterface
+class IndexController implements ContainerAwareInterface
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
