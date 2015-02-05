@@ -3,12 +3,19 @@
 namespace Graviton\SecurityBundle\User;
 
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-
+/**
+ * Class AirlockAuthenticationKeyUserProvider
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
 {
     /**
@@ -33,11 +40,11 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      *
      * @param string $username The username
      *
-     * @return UserInterface
+     * @return \Symfony\Component\Security\Core\User\UserInterface
      *
-     * @see UsernameNotFoundException
+     * @see \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
      *
-     * @throws UsernameNotFoundException if the user is not found
+     * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException if the user is not found
      */
     public function loadUserByUsername($username)
     {
@@ -54,11 +61,11 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      * object can just be merged into some internal array of users / identity
      * map.
      *
-     * @param UserInterface $user
+     * @param \Symfony\Component\Security\Core\User\UserInterface $user
      *
-     * @return UserInterface
+     * @return \Symfony\Component\Security\Core\User\UserInterface
      *
-     * @throws UnsupportedUserException if the account is not supported
+     * @throws \Symfony\Component\Security\Core\Exception\UnsupportedUserException if the account is not supported
      */
     public function refreshUser(UserInterface $user)
     {
@@ -78,6 +85,6 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      */
     public function supportsClass($class)
     {
-        return 'Symfony\Component\Security\Core\User\User' === $class;
+        return $class instanceof \Symfony\Component\Security\Core\User\UserInterface;
     }
 }

@@ -34,11 +34,19 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             ->method('loadUserByUsername')
             ->will($this->returnValue($securityUserMock));
 
+        $strategy = $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
+            ->setMethods(array('apply'))
+            ->getMockForAbstractClass();
+        $strategy
+            ->expects($this->once())
+            ->method('apply')
+            ->will($this->returnValue($headerFieldValue));
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock);
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $strategy);
 
         $server = array(
-            'HTTP_X_IDP_USERNAMEINHALT' => $headerFieldValue, //"example-authentication-header",
+            'HTTP_X_IDP_USERNAME' => $headerFieldValue, //"example-authentication-header",
         );
 
         $request = new Request(array(), array(), array(), array(), array(), $server);

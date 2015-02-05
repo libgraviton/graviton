@@ -19,15 +19,21 @@
             <tag name="kernel.event_listener" event="kernel.request" method="handle"/>
         </service> -->
 
+    <services>
         <service
                 id="graviton_airlock_authentication_key_user_provider"
                 class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider" />
+
+        <service
+                id="graviton.sercurity.authentication.strategy"
+                class="%graviton.security.authentication.strategy%" />
 
         <service
                 id="graviton_airlock_authentication_key_authenticator"
                 class="Graviton\SecurityBundle\Authentication\AirlockAuthenticationKeyAuthenticator"
         >
             <argument type="service" id="graviton_airlock_authentication_key_user_provider" />
+            <argument type="service" id="graviton.sercurity.authentication.strategy"/>
         </service>
     </services>
 </container>

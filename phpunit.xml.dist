@@ -17,11 +17,9 @@
       <directory>src/*/Bundle/*Bundle/Tests</directory>
     </testsuite>
   </testsuites>
-  <!--
     <php>
-        <server name="KERNEL_DIR" value="/path/to/your/app/" />
+        <server name="KERNEL_DIR" value="/home/graviton/graviton/app" />
     </php>
-    -->
   <filter>
     <whitelist>
       <directory>src</directory>

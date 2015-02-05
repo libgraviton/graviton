@@ -14,6 +14,7 @@ parameters:
     mongodb.default.server.uri: ~
 
     graviton.log.elasticsearch.host: ~
+    graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
 
     vcap.services: SYMFONY__VCAP__SERVICES
 
