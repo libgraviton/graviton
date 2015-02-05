@@ -102,12 +102,13 @@ class RestUtils
         $ret = array();
         foreach ($this->container->get('router')
                                  ->getRouteCollection()
-                                 ->all() as $routeName => $route
-        ) {
+                                 ->all() as $routeName => $route)
+        {
             if (preg_match('/^' . $baseName . '/', $routeName)) {
                 $ret[$routeName] = $route;
             }
         }
+
         return $ret;
     }
 

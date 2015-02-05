@@ -51,28 +51,6 @@ class Apidoc
     }
 
     /**
-     * Basic structure of the spec
-     *
-     * @return array Basic structure
-     */
-    private function getBasicStructure()
-    {
-        $ret = array();
-        $ret['swagger'] = '2.0';
-        $ret['info'] = array(
-            // @todo this should be a real version - but should it be the version of graviton or which one?
-            'version' => '0.1',
-            'title' => 'Graviton REST Services',
-            'description' => 'Testable API Documentation of this Graviton instance.'
-        );
-        $ret['host'] = $_SERVER['HTTP_HOST'];
-        $ret['basePath'] = '/';
-        $ret['schemes'] = array('http');
-
-        return $ret;
-    }
-
-    /**
      * Returns the swagger spec as array
      *
      * @return array Swagger spec
@@ -92,10 +70,10 @@ class Apidoc
                 $routeMethod = strtolower($route->getMethods()[0]);
 
                 // skip PATCH (as for now) & /schema/ stuff
-                if (strpos(
-                        $route->getPath(),
-                        '/schema/'
-                    ) !== false || $routeMethod == 'options' || $routeMethod == 'patch'
+                if (
+                    strpos($route->getPath(), '/schema/') !== false ||
+                    $routeMethod == 'options' ||
+                    $routeMethod == 'patch'
                 ) {
                     continue;
                 }
@@ -247,6 +225,28 @@ class Apidoc
         }
 
         $ret['paths'] = $paths;
+
+        return $ret;
+    }
+
+    /**
+     * Basic structure of the spec
+     *
+     * @return array Basic structure
+     */
+    private function getBasicStructure()
+    {
+        $ret = array();
+        $ret['swagger'] = '2.0';
+        $ret['info'] = array(
+            // @todo this should be a real version - but should it be the version of graviton or which one?
+            'version' => '0.1',
+            'title' => 'Graviton REST Services',
+            'description' => 'Testable API Documentation of this Graviton instance.'
+        );
+        $ret['host'] = $_SERVER['HTTP_HOST'];
+        $ret['basePath'] = '/';
+        $ret['schemes'] = array('http');
 
         return $ret;
     }
