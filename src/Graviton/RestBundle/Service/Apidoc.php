@@ -192,7 +192,7 @@ class Apidoc
                     // we don't want to have ID in the request body within those requests do we..
                     // an exception is when id is required..
                     $incomingEntitySchema = $entityClassName;
-                    if (!in_array('id', $schema->getRequired())) {
+                    if (is_null($schema->getRequired()) || !in_array('id', $schema->getRequired())) {
                         $incomingEntitySchema = $incomingEntitySchema . 'Incoming';
                         $incomingSchema = clone $schema;
                         $incomingSchema->removeProperty('id');
