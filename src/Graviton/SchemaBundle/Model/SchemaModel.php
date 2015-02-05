@@ -89,7 +89,11 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function getTitleOfField($field)
     {
-        return $this->schema->properties->$field->title;
+        $ret = '';
+        if (isset($this->schema->properties->$field->title)) {
+            $ret = $this->schema->properties->$field->title;
+        }
+        return $ret;
     }
 
     /**
@@ -101,7 +105,11 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function getDescriptionOfField($field)
     {
-        return $this->schema->properties->$field->description;
+        $ret = '';
+        if (isset($this->schema->properties->$field->description)) {
+            $ret = $this->schema->properties->$field->description;
+        }
+        return $ret;
     }
 
     /**
