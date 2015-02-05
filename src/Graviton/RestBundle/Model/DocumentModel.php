@@ -85,8 +85,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if (count($request->query->all()) > 0) {
 
             // prefer explicit filter param!
-            if ($request->query->get('filter') != null && strlen($request->query->get('filter')) > 0) {
-                $queryFilter = $request->query->get('filter');
+            if ($request->query->get('q') != null && strlen($request->query->get('q')) > 0) {
+                $queryFilter = $request->query->get('q');
             } else {
                 $queryFilter = $request->getQueryString();
             }
@@ -155,7 +155,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * {@inheritDoc}
      *
      * @param string $documentId id of entity to update
-     * @param Object $entity new enetity
+     * @param Object $entity     new entity
      *
      * @return Object
      */

@@ -5,7 +5,7 @@ use Composer\Autoload\ClassLoader;
 
 /**
  * don't touch this unless you know what you're doing..
- * basically we have to autoloaders provided by Composer.
+ * basically we have two autoloaders provided by Composer.
  * 1) the only one when we are the main project (and we have a vendor/)
  * 2) the one we're *we* are a dependency and we need the upper autoload.php
  */
