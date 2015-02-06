@@ -13,6 +13,19 @@
     "autoload": {
         "psr-0": {"": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "libgraviton/swagger-ui",
+                "version": "dev-master",
+                "dist": {
+                    "url": "https://github.com/libgraviton/swagger-ui/archive/master.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
     "require": {
         "php": "~5.4",
         "symfony/symfony": "2.6.*",
@@ -24,6 +37,7 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~3.0.12",
         "sensio/framework-extra-bundle": "~3.0",
+        "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": "*",
         "jms/di-extra-bundle": "~1.3",
@@ -38,10 +52,10 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
-        "graviton/php-rql-parser": "dev-develop"
+        "graviton/php-rql-parser": "dev-develop",
+        "libgraviton/swagger-ui": "dev-master"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3",
         "libgraviton/codesniffer": "dev-master@dev",
         "phpunit/phpunit": "*",
         "liip/functional-test-bundle": "@dev",
@@ -53,6 +67,7 @@
             "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
         "post-install-cmd": [
+            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -60,6 +75,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
         ],
         "post-update-cmd": [
+            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",

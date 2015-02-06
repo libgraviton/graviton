@@ -18,6 +18,7 @@ use Graviton\PersonBundle\GravitonPersonBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
+use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -60,6 +61,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonLogBundle(),
             new GravitonConsultationBundle(),
             new GravitonSecurityBundle(),
+            new GravitonSwaggerBundle()
         );
     }
 }
