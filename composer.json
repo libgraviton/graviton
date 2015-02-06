@@ -67,16 +67,16 @@
             "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
         "post-install-cmd": [
+            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "sh resources/scripts/swagger-copy.sh",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
         ],
         "post-update-cmd": [
+            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "sh resources/scripts/swagger-copy.sh",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
