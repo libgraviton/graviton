@@ -15,6 +15,7 @@ vendor/
 .idea
 .project
 web/.htaccess
+web/explorer
 mongodata/
 src/GravitonDyn/*
 app/config/parameters_local.xml

@@ -168,6 +168,30 @@ class Schema implements TranslatableDocumentInterface
     }
 
     /**
+     * removes a property
+     *
+     * @param string $name     property name
+     *
+     * @return void
+     */
+    public function removeProperty($name)
+    {
+        unset($this->properties[$name]);
+    }
+
+    /**
+     * returns a property
+     *
+     * @param string $name     property name
+     *
+     * @return Schema property
+     */
+    public function getProperty($name)
+    {
+        return $this->properties[$name];
+    }
+
+    /**
      * get properties
      *
      * @return Schema[]|null

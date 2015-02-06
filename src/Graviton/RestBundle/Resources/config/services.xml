@@ -81,6 +81,11 @@
         <argument type="service" id="graviton.rest.validator"/>
     </service>
 
+    <!-- restUtils service - a service providing some helpers dealing with services -->
+    <service id="graviton.rest.restutils" class="Graviton\RestBundle\Service\RestUtils">
+      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    </service>
+
     <!-- Graviton rest event stuff -->
     <!-- Rest event with scope prototype (get e new event object, every time you get it from the container) -->
     <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" scope="prototype">

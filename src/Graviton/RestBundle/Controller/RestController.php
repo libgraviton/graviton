@@ -72,7 +72,7 @@ class RestController implements ContainerAwareInterface
     public function getAction($id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+                         ->setStatusCode(Response::HTTP_OK);
 
         $record = $this->findRecord($id);
 
@@ -96,10 +96,10 @@ class RestController implements ContainerAwareInterface
         }
 
         return $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent(
-                $this->serialize($model->findAll($this->getRequest()))
-            );
+                                ->setStatusCode(Response::HTTP_OK)
+                                ->setContent(
+                                    $this->serialize($model->findAll($this->getRequest()))
+                                );
     }
 
     /**
@@ -219,7 +219,7 @@ class RestController implements ContainerAwareInterface
     public function patchAction($id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_NOT_FOUND);
+                         ->setStatusCode(Response::HTTP_NOT_FOUND);
 
         $record = $this->findRecord($id);
 
@@ -354,23 +354,13 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Get the serializer
+     * Get RestUtils service
      *
-     * @return \JMS\Serializer\Serializer
+     * @return \Graviton\RestBundle\Service\RestUtils
      */
-    public function getSerializer()
+    public function getRestUtils()
     {
-        return $this->container->get('graviton.rest.serializer');
-    }
-
-    /**
-     * Get the serializer context
-     *
-     * @return null|\JMS\Serializer\SerializationContext
-     */
-    public function getSerializerContext()
-    {
-        return clone $this->container->get('graviton.rest.serializer.serializercontext');
+        return $this->container->get('graviton.rest.restutils');
     }
 
     /**
@@ -432,11 +422,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         try {
-            $content = $this->getSerializer()->serialize(
-                $result,
-                'json',
-                $this->getSerializerContext()
-            );
+            $content = $this->getRestUtils()->serializeContent($result);
         } catch (\Exception $e) {
             $exception = new SerializationException($e);
             $exception->setResponse($response);
@@ -461,10 +447,9 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse();
 
         try {
-            $record = $this->getSerializer()->deserialize(
+            $record = $this->getRestUtils()->deserializeContent(
                 $content,
-                $documentClass,
-                'json'
+                $documentClass
             );
         } catch (\Exception $e) {
             // pass the previous exception in this case to get the error message in the handler
