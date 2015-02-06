@@ -15,7 +15,7 @@ parameters:
 
     graviton.log.elasticsearch.host: ~
 
-    vcap.services: SYMFONY__VCAP__SERVICES
+    vcap.services:
 
     jms_serializer.camel_case_naming_strategy.class: ~
 
