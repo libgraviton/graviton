@@ -41,11 +41,22 @@ parameters:
     graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\MyApiKeyExtractionStrategy
 ```
 
+It is further possible to define the class to be used to load the user object for the authentication process. 
+To be explicit what service to be used for this change the »graviton.authentication.user_provider.model« parameter in
+the parameters.yml file. E.g to:
+ 
+```yml
+parameters:
+    graviton.authentication.user_provider.model: gravitondyn.contract.model.contract
+```
+
+**NOTE**:
+The service referenced in the parameter must implement the »\Graviton\RestBundle\Model\ModelInterface«.
+
 Authorization
 =============
 
 tbd
-
 
 Future things
 -------------

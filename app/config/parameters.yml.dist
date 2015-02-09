@@ -15,6 +15,7 @@ parameters:
 
     graviton.log.elasticsearch.host: ~
     graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+    graviton.authentication.user_provider.model: ~
 
     vcap.services:
 
