@@ -40,4 +40,20 @@ class GravitonSecurityBundleTestCase extends WebTestCase
 
         return $client;
     }
+
+    /**
+     * Attempts to guess the kernel location.
+     *
+     * When the Kernel is located, the file is required.
+     *
+     * @return string The Kernel class name
+     *
+     * @throws \RuntimeException
+     */
+    protected static function getKernelClass()
+    {
+        require_once __DIR__ . '/../../../../app/AppKernel.php';
+
+        return 'AppKernel';
+    }
 }
