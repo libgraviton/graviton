@@ -1,4 +1,5 @@
 imports:
+    - { resource: security_prod.yml }
     - { resource: config.yml }
 
 #framework:
