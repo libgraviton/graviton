@@ -10,21 +10,43 @@ Step 2: Enable the Bundle
 -------------------------
 
 Graviton has it's own way how to register a new bundle in the symfony kernel.
-In order to propagate this bundle the method »\Graviton\SecurityBundle\DependencyInjection\GravitonSecurityExtension::getConfigDir()«
-has to return the absolute path to the the bundle's configuration directory.
+In order to register this bundle it has to be instantiated in the method »\Graviton\CoreBundle\GravitonCoreBundle::getBundles()«.
 
-see \Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension for details.
+```php
+[...]
+   public function getBundles()
+    {
+        return array(
+           [...]
+            new \Graviton\SecurityBundle\GravitonSecurityBundle\GravitonSecurityBundle(),
+            [...]
+        );
+    }    
+
+[...]
+```
 
 Step 3: Configuration
 ---------------------
 
-The Graviton SecurityBundle favors xml configuration over the other possibilities.
+Authentication 
+==============
 
-To configure different event listener strategies use the following template in the environment specific config.xml:
+The authentication part of the bundle does provide the ability by changing the way authentication information are
+provided by Airlock by configuration. 
+The configuration is done by setting the parameter »graviton.security.authentication.strategy« to the class to be used.
  
- ```xml
-     <config xmlns="http://example.org/schema/dic/graviton_security">
+```yml
+parameters:
+    graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\MyApiKeyExtractionStrategy
+```
 
-        <authentication-service><!-- SERVICE ID OF THE LISTENER STRATEGY--></authentication-service>
-    </config>
- ```
+Authorization
+=============
+
+tbd
+
+
+Future things
+-------------
+- add command to find out what strategies are available.
