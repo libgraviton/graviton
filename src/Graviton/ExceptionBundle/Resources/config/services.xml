@@ -8,7 +8,7 @@
     <parameter key="kernel.listener.graviton_exception_notfound_exception.class">Graviton\ExceptionBundle\Listener\NotFoundExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_serialization_exception.class">Graviton\ExceptionBundle\Listener\SerializationExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_deserialization_exception.class">Graviton\ExceptionBundle\Listener\DeserializationExceptionListener</parameter>
-    <parameter key="kernel.listener.graviton_exception_serialization_exception.class">Graviton\ExceptionBundle\Listener\NoInputExceptionListener</parameter>
+    <parameter key="kernel.listener.graviton_exception_noinput_exception.class">Graviton\ExceptionBundle\Listener\NoInputExceptionListener</parameter>
   </parameters>
   <services>
     <!-- Validation exception listener -->
@@ -36,7 +36,7 @@
     </service>
 
     <!-- NoInput exception listener -->
-    <service id="kernel.listener.graviton_exception_noinput_exception" class="%kernel.listener.graviton_exception_deserialization_exception.class%">
+    <service id="kernel.listener.graviton_exception_noinput_exception" class="%kernel.listener.graviton_exception_noinput_exception.class%">
       <call method="setContainer"><argument type="service" id="service_container"></argument></call>
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>

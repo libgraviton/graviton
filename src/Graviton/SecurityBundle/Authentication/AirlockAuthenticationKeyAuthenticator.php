@@ -4,6 +4,7 @@ namespace Graviton\SecurityBundle\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
 use Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,17 +36,25 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthentica
      */
     protected $extractionStrategy;
 
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
 
     /**
      * @param \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider   $userProvider
      * @param \Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface $extractionStrategy
+     * @param \Psr\Log\LoggerInterface                                             $logger
      */
     public function __construct(
         AirlockAuthenticationKeyUserProvider $userProvider,
-        StrategyInterface $extractionStrategy
+        StrategyInterface $extractionStrategy,
+        LoggerInterface $logger
     ) {
         $this->userProvider = $userProvider;
         $this->extractionStrategy = $extractionStrategy;
+        $this->logger = $logger;
     }
 
     /**
@@ -119,7 +128,12 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthentica
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        // todo: log on failure!!
+        $this->logger->warning(
+            $exception->getMessageKey(),
+            array(
+                'data' => $exception->getMessageData(),
+            )
+        );
 
         return new Response(
             $exception->getMessageKey(),

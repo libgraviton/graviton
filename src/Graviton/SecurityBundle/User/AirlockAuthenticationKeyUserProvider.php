@@ -2,8 +2,11 @@
 
 namespace Graviton\SecurityBundle\User;
 
+use Graviton\SecurityBundle\Entities\SecurityContract;
+use GravitonDyn\ContractBundle\Document\Contract;
+use \Graviton\RestBundle\Model\ModelInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -19,17 +22,38 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
 {
     /**
+     * @var \Graviton\RestBundle\Model\ModelInterface
+     */
+    private $documentModel;
+
+    /**
+     * @param \Graviton\RestBundle\Model\ModelInterface $contract
+     */
+    public function __construct(ModelInterface $contract)
+    {
+        $this->documentModel = $contract;
+    }
+
+    /**
+     * Finds a contract based on the provided ApiKey.
+     *
      * @param string $apiKey
      *
-     * @return mixed
+     * @return string
      */
     public function getUsernameForApiKey($apiKey)
     {
-        // Look up the username based on the token in the database, via
-        // an API call, or do something entirely different
-        $username = '';
+        $contractId = '';
 
-        return $username;
+        /** @var \GravitonDyn\ContractBundle\Document\Contract $contract */
+        $contract = $this->documentModel->getRepository()->findOneBy(array('number' => $apiKey));
+
+        if ($contract instanceof Contract) {
+
+            $contractId = $contract->getId();
+        }
+
+        return $contractId;
     }
 
     /**
@@ -38,7 +62,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      * This method must throw UsernameNotFoundException if the user is not
      * found.
      *
-     * @param string $username The username
+     * @param string $contractId
      *
      * @return \Symfony\Component\Security\Core\User\UserInterface
      *
@@ -46,11 +70,20 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      *
      * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException if the user is not found
      */
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($contractId)
     {
-        // TODO: Implement loadUserByUsername() method.
+        // TODO [lapistano] to what is the contract to be mapped against??
 
-        $user = new User('foo', 'bar', array('ROLE_GRAVITON_USER'));
+        /** @var \GravitonDyn\ContractBundle\Document\Contract $contracts */
+        $contract = $this->documentModel->find($contractId);
+
+        if ($contract instanceof Contract) {
+
+            // TODO [lapistano]: map the found contract to whatever ...
+            return new SecurityContract($contract, $this->getContractRoles($contract));
+        }
+
+        throw new UsernameNotFoundException();
     }
 
     /**
@@ -86,5 +119,19 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     public function supportsClass($class)
     {
         return $class instanceof \Symfony\Component\Security\Core\User\UserInterface;
+    }
+
+    /**
+     * Decides the role set the provided contract has.
+     *
+     * @param Contract $contract
+     *
+     * @return array
+     */
+    private function getContractRoles(Contract $contract)
+    {
+        // TODO [lapistano]: implement the ability to decide what roles the contract entity haas.
+
+        return array('ROLE_GRAVITON_USER');
     }
 }
