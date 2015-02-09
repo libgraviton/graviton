@@ -1365,39 +1365,6 @@
             "time": "2015-02-03 08:16:37"
         },
         {
-            "name": "grv/graviton-service-bundle-financing",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "ssh://git@git.swisscom.ch:7999/grv/graviton-service-bundle-financing.git",
-                "reference": "2851ce98fc61da37e981a0cc226c229f7c642b4b"
-            },
-            "require": {
-                "php": "~5.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Graviton": "src/"
-                }
-            },
-            "license": [
-                "GPL"
-            ],
-            "authors": [
-                {
-                    "name": "Dario Nuevo",
-                    "email": "dario.nuevo@swisscom.com"
-                }
-            ],
-            "description": "Financing API package for graviton2",
-            "homepage": "http://www.swisscom.com",
-            "time": "2015-01-21 09:54:08"
-        },
-        {
             "name": "guzzle/guzzle",
             "version": "v3.9.2",
             "source": {
@@ -4637,7 +4604,6 @@
         "php-jsonpatch/php-jsonpatch": 20,
         "graviton/php-rql-parser": 20,
         "libgraviton/swagger-ui": 20,
-        "grv/graviton-service-bundle-financing": 20,
         "libgraviton/codesniffer": 20,
         "liip/functional-test-bundle": 20,
         "phpmd/phpmd": 20,
