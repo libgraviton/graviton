@@ -24,6 +24,10 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "ssh://git@git.swisscom.ch:7999/grv/graviton-service-bundle-financing.git"
         }
     ],
     "require": {
@@ -53,7 +57,8 @@
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
         "graviton/php-rql-parser": "dev-develop",
-        "libgraviton/swagger-ui": "dev-master"
+        "libgraviton/swagger-ui": "dev-master",
+        "grv/graviton-service-bundle-financing": "dev-master"
     },
     "require-dev": {
         "libgraviton/codesniffer": "dev-master@dev",
