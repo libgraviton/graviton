@@ -8,12 +8,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
+use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface as SimplePreAuthInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface as AuthFailureHandlerInterface;
 
 /**
  * Class AirlockApiKeyAuthenticator
@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface
+final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterface, AuthFailureHandlerInterface
 {
     /**
      * @var \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider

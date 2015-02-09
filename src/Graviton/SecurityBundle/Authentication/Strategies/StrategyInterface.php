@@ -24,5 +24,4 @@ interface StrategyInterface
      * @return string
      */
     public function apply(Request $request);
-
 }

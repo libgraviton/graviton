@@ -81,7 +81,7 @@ class SecurityContract implements UserInterface
             "%s %s",
             $this->contract->getCustomer()->getFirstname(),
             $this->contract->getCustomer()->getLastname()
-            );
+        );
     }
 
     /**

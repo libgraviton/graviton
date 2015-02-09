@@ -4,7 +4,6 @@ namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Symfony\Component\HttpFoundation\Request;
 
-
 /**
  * Class HeaderFieldStrategy
  *

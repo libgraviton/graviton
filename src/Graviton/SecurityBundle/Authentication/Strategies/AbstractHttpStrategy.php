@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-
 /**
  * Class AbstractHttpStrategy
  *
@@ -22,9 +21,8 @@ abstract class AbstractHttpStrategy implements StrategyInterface
     /**
      * Extracts information from the a request header field.
      *
-     * @param \Symfony\Component\HttpFoundation\ParameterBag|\Symfony\Component\HttpFoundation\HeaderBag $header    object representation of the request header.
-     *
-     * @param  string                                                                                    $fieldname Name of the field to be read.
+     * @param ParameterBag|HeaderBag $header    object representation of the request header.
+     * @param  string                $fieldname Name of the field to be read.
      *
      * @return string
      */
@@ -43,8 +41,8 @@ abstract class AbstractHttpStrategy implements StrategyInterface
     /**
      * Verifies that the provided header has the expected/mandatory fields.
      *
-     * @param \Symfony\Component\HttpFoundation\ParameterBag|\Symfony\Component\HttpFoundation\HeaderBag $header    object representation of the request header.
-     * @param string                                                                                     $fieldName Name of the header field to be validated.
+     * @param ParameterBag|HeaderBag $header    object representation of the request header.
+     * @param string                 $fieldName Name of the header field to be validated.
      *
      * @return void
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException

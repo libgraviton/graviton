@@ -124,5 +124,4 @@ class NullModel implements ModelInterface
     {
         return '';
     }
-
 }
