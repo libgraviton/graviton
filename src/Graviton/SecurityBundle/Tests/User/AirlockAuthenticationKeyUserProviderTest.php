@@ -2,7 +2,15 @@
 
 namespace Graviton\SecurityBundle\User;
 
-
+/**
+ * Class AirlockAuthenticationKeyUserProviderTest
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetUsernameForApiKey()

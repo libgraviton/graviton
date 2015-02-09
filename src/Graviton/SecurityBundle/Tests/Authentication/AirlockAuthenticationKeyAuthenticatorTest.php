@@ -8,7 +8,11 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 /**
  * Class AirlockAuthenticationKeyAuthenticatorTest
  *
- * @package Graviton\SecurityBundle\Authentication
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
 {

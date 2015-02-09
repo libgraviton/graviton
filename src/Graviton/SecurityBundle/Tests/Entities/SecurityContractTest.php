@@ -4,7 +4,15 @@ namespace Graviton\SecurityBundle\Entities;
 
 use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
 
-
+/**
+ * Class SecurityContractTest
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class SecurityContractTest extends GravitonSecurityBundleTestCase
 {
     /**
