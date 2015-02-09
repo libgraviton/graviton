@@ -13,6 +13,16 @@ namespace Graviton\SecurityBundle\User;
  */
 class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        if (!class_exists('\GravitonDyn\ContractBundle\Document\Contract')) {
+
+            $this->markTestSkipped(
+                'Mandatory generated class not available: \GravitonDyn\ContractBundle\Document\Contract');
+        }
+    }
+
+
     public function testGetUsernameForApiKey()
     {
         $contractDocumentMock = $this->getMockBuilder('\GravitonDyn\ContractBundle\Document\Contract')
