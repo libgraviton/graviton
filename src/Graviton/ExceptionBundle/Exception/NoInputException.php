@@ -1,7 +1,7 @@
 <?php
 /**
  * No input exception class
- * 
+ *
  * PHP Version 5
  *
  * @category GravitonExceptionBundle
