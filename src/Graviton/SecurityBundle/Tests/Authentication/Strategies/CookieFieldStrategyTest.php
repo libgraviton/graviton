@@ -58,6 +58,4 @@ class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
             'string with hex chars'          => array("a: \x61, A: \x41")
         );
     }
-
-
 }

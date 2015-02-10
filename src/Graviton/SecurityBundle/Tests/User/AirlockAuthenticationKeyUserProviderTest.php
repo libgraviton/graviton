@@ -18,7 +18,8 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         if (!class_exists('\GravitonDyn\ContractBundle\Document\Contract')) {
 
             $this->markTestSkipped(
-                'Mandatory generated class not available: \GravitonDyn\ContractBundle\Document\Contract');
+                'Mandatory generated class not available: \GravitonDyn\ContractBundle\Document\Contract'
+            );
         }
     }
 
@@ -65,8 +66,10 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 
         $provider = new AirlockAuthenticationKeyUserProvider($contractModelMock);
 
-        $this->isInstanceOf('\Symfony\Component\Security\Core\User\UserInterface',
-            $provider->loadUserByUsername('Tux'));
+        $this->isInstanceOf(
+            '\Symfony\Component\Security\Core\User\UserInterface',
+            $provider->loadUserByUsername('Tux')
+        );
     }
 
     public function testGetUserByNameExpectingException()

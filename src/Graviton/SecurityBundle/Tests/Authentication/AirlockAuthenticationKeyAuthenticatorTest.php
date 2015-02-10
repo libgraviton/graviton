@@ -104,7 +104,11 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $userProviderMock,
+            $this->getStrategyMock(),
+            $this->logger
+        );
 
         $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
 
@@ -134,7 +138,11 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $userProviderMock,
+            $this->getStrategyMock(),
+            $this->logger
+        );
 
         $this->setExpectedException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
 
@@ -152,7 +160,11 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $this->getProviderMock(),
+            $this->getStrategyMock(),
+            $this->logger
+        );
 
         $this->assertTrue($authenticator->supportsToken($anonymousToken, $providerKey));
     }
@@ -168,7 +180,11 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             ->method('getMessageKey')
             ->will($this->returnValue('test_message'));
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $this->getProviderMock(),
+            $this->getStrategyMock(),
+            $this->logger
+        );
 
         $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionMock);
 
@@ -178,7 +194,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
 
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
     private function getProviderMock(array $methods = array())
     {
@@ -189,6 +205,11 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
         return $userProviderMock;
     }
 
+    /**
+     * @param array $methods
+     *
+     * @return \Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private function getStrategyMock(array $methods = array('apply'))
     {
         return $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
