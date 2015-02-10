@@ -1,7 +1,8 @@
 <?php
 
-namespace Graviton\SecurityBundle\Authentication\Strategies;
+namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
+use Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

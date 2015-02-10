@@ -3,6 +3,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 
+use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
 use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
