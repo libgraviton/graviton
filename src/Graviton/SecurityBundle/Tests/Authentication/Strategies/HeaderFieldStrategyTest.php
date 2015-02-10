@@ -3,7 +3,6 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class HeaderFieldStrategyTest
@@ -17,9 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 class HeaderFieldStrategyTest extends GravitonSecurityBundleTestCase
 {
     /**
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy::apply
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy::apply
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
      */
@@ -45,13 +44,14 @@ class HeaderFieldStrategyTest extends GravitonSecurityBundleTestCase
             $strategy->apply($client->getRequest(), HeaderFieldStrategy::X_HEADER_FIELD)
         );
     }
+
     public function stringProvider()
     {
         return array(
             'plain string, no special chars' => array('exampleAuthenticationHeader'),
-            'string with special chars' => array("$-_.+!*'(),{}|\\^~[]`<>#%;/?:@&=."),
-            'string with octal chars' => array("a: \141, A: \101"),
-            'string with hex chars' => array("a: \x61, A: \x41")
+            'string with special chars'      => array("$-_.+!*'(),{}|\\^~[]`<>#%;/?:@&=."),
+            'string with octal chars'        => array("a: \141, A: \101"),
+            'string with hex chars'          => array("a: \x61, A: \x41")
         );
     }
 }

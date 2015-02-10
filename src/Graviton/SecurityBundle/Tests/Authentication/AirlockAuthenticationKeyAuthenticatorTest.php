@@ -17,11 +17,11 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $_logger;
+    private $logger;
 
     protected function setUp()
     {
-        $this->_logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
+        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
             ->setMethods(array('warning'))
             ->getMockForAbstractClass();
     }
@@ -45,7 +45,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             ->method('apply')
             ->will($this->returnValue($headerFieldValue));
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $strategy, $this->_logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $strategy, $this->logger);
 
         $server = array(
             'HTTP_X_IDP_USERNAME' => $headerFieldValue, //"example-authentication-header",
@@ -104,7 +104,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->_logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->logger);
 
         $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
 
@@ -134,7 +134,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->_logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($userProviderMock, $this->getStrategyMock(), $this->logger);
 
         $this->setExpectedException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
 
@@ -152,7 +152,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $providerKey
         );
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->_logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->logger);
 
         $this->assertTrue($authenticator->supportsToken($anonymousToken, $providerKey));
     }
@@ -168,7 +168,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             ->method('getMessageKey')
             ->will($this->returnValue('test_message'));
 
-        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->_logger);
+        $authenticator = new AirlockAuthenticationKeyAuthenticator($this->getProviderMock(), $this->getStrategyMock(), $this->logger);
 
         $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionMock);
 

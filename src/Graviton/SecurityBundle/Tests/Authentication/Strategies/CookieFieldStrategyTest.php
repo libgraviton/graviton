@@ -4,7 +4,6 @@ namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class CookieFieldStrategyTest
@@ -18,9 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
 {
     /**
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
      */

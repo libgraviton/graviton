@@ -21,12 +21,6 @@ class ModelFactory
     private $container;
 
     /**
-     * @var string
-     */
-    private $serviceId;
-
-
-    /**
      * Constructor of the class.
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
@@ -44,7 +38,7 @@ class ModelFactory
     public function create()
     {
         $serviceId = $this->container->getParameter('graviton.authentication.user_provider.model');
-        $service =  $this->container->get('graviton.authentication.user_provider.model.noop');
+        $service = $this->container->get('graviton.authentication.user_provider.model.noop');
 
         if (!empty($serviceId) && $this->container->has($serviceId)) {
 

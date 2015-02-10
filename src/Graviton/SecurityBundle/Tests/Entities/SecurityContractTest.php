@@ -82,6 +82,4 @@ class SecurityContractTest extends GravitonSecurityBundleTestCase
 
         $this->assertEmpty($entity->eraseCredentials());
     }
-
-
 }

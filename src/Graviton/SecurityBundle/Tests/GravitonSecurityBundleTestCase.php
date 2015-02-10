@@ -2,12 +2,20 @@
 
 namespace Graviton\SecurityBundle\Tests;
 
-
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Class GravitonSecurityBundleTestCase
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class GravitonSecurityBundleTestCase extends WebTestCase
 {
     /**
