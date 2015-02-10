@@ -58,7 +58,7 @@ class BundleGenerator extends AbstractGenerator
             }
         }
 
-        $basename = substr($bundle, 0, -6);
+        $basename = $this->getBundleBaseName($bundle);
         $parameters = array(
             'namespace' => $namespace,
             'bundle' => $bundle,

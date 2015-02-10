@@ -38,6 +38,22 @@ abstract class AbstractGenerator extends Generator
     }
 
     /**
+     * Check for the occurence of "Bundle" in the given name and remove it
+     *
+     * @param String $name Bundle name
+     *
+     * @return string $name Bundle base name
+     */
+    public function getBundleBaseName($name)
+    {
+        if ('bundle' === strtolower(substr($name, -6))) {
+            $name = substr($name, 0, -6);
+        }
+
+        return $name;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * render a new object using twig
