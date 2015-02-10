@@ -47,7 +47,6 @@ class GravitonSecurityExtension extends GravitonBundleExtension
         $config = $this->processConfiguration($configuration, $configs);
 
         if (!empty($config['authentication_services'])) {
-
             $container->setParameter('graviton-security.authentication.services', $config['authentication_services']);
         }
     }

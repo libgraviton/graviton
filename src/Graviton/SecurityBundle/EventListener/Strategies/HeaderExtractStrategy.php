@@ -37,7 +37,6 @@ final class HeaderExtractStrategy implements StrategyInterface
     public function apply($request)
     {
         if (!$request instanceof Request) {
-
             throw new \InvalidArgumentException(
                 'Provided data to be scanned for authentication is not a \Symfony\Component\HttpFoundation\Request',
                 Response::HTTP_BAD_REQUEST
@@ -59,7 +58,6 @@ final class HeaderExtractStrategy implements StrategyInterface
         $info = array();
 
         foreach ($this->mandatoryHeaderFields as $field) {
-
             $this->validateField($header, $field);
 
             $info[$field] = $header->get($field);

@@ -121,11 +121,12 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
                     'http://localhost',
                     array('rel' => 'self')
                 ),
-            'uri plus attributes' => array(
-                '<http://localhost>; rel="schema"; type="urn:uri"',
-                'http://localhost',
-                array('rel' => 'schema', 'type' => 'urn:uri')
-            ),
+                'uri plus attributes' =>
+                array(
+                    '<http://localhost>; rel="schema"; type="urn:uri"',
+                    'http://localhost',
+                    array('rel' => 'schema', 'type' => 'urn:uri')
+                ),
         );
     }
 }

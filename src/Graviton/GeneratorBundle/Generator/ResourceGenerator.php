@@ -116,8 +116,7 @@ class ResourceGenerator extends AbstractGenerator
                 $field['singularName'] = Inflector::singularize($field['fieldName']);
 
                 // add information from our json file (if provided)..
-                if (
-                    $this->json instanceof JsonDefinition &&
+                if ($this->json instanceof JsonDefinition &&
                     $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
                 ) {
                     $fieldInformation = $this->json->getField($field['fieldName'])

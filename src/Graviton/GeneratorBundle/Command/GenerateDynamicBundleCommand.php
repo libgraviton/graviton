@@ -219,7 +219,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
              */
             foreach ($jsonDef->getFields() as $field) {
                 if ($field->isHash() && !$field->isBagOfPrimitives()) {
-
                     // get json for this hash and save to temp file..
                     $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
                     file_put_contents($tempPath, json_encode($field->getDefFromLocal()));

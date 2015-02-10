@@ -38,7 +38,6 @@ class AuthenticationPass implements CompilerPassInterface
         $strategyDefinition = $container->getDefinition('graviton.sercurity.authentication.strategy.collection');
 
         foreach ($strategies as $serviceId) {
-
             $strategyDefinition->addMethodCall('add', array(new Reference($serviceId)));
         }
     }

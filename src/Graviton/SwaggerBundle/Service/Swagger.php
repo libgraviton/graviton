@@ -62,16 +62,13 @@ class Swagger
         $paths = array();
 
         foreach ($routingMap as $contName => $routes) {
-
             list($app, $bundle, $rest, $document) = explode('.', $contName);
 
             foreach ($routes as $routeName => $route) {
-
                 $routeMethod = strtolower($route->getMethods()[0]);
 
                 // skip PATCH (as for now) & /schema/ stuff
-                if (
-                    strpos($route->getPath(), '/schema/') !== false ||
+                if (strpos($route->getPath(), '/schema/') !== false ||
                     $routeMethod == 'options' ||
                     $routeMethod == 'patch'
                 ) {
@@ -186,7 +183,6 @@ class Swagger
 
                 // post body stuff
                 if ($routeMethod == 'put' || $routeMethod == 'post') {
-
                     // special handling for POST/PUT.. we need to have 2 schemas, one for response, one for request..
                     // we don't want to have ID in the request body within those requests do we..
                     // an exception is when id is required..

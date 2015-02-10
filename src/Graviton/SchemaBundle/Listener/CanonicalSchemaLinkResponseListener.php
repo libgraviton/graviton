@@ -51,7 +51,6 @@ class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
     {
         $request = $event->getRequest();
         if ($request->attributes->get('schemaRequest', false)) {
-
             $response = $event->getResponse();
             $router = $this->container->get('router');
             $linkHeader = LinkHeader::fromResponse($response);

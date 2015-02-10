@@ -87,7 +87,6 @@ class GravitonBundleExtension extends Extension implements PrependInterface
         $configuration = parent::getConfiguration($config, $container);
 
         if ($configuration instanceof ConfigurationInterface) {
-
             return $configuration;
         }
 

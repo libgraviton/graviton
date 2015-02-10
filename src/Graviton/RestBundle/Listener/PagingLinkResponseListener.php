@@ -64,7 +64,6 @@ class PagingLinkResponseListener implements ContainerAwareInterface
 
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-
             $this->linkHeader = LinkHeader::fromResponse($response);
 
             $this->generateLinks(

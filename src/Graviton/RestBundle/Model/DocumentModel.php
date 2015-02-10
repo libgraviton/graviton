@@ -83,7 +83,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         // *** do we have an RQL expression, do we need to filter data?
         if (count($request->query->all()) > 0) {
-
             // prefer explicit filter param!
             if ($request->query->get('q') != null && strlen($request->query->get('q')) > 0) {
                 $queryFilter = $request->query->get('q');
