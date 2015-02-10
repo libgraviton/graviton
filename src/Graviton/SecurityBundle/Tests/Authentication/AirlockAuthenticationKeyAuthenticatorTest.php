@@ -70,7 +70,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             'string with special chars' => array("$-_.+!*'(),{}|\\^~[]`<>#%;/?:@&=."),
             'string with octal chars' => array("a: \141, A: \101"),
             'string with hex chars' => array("a: \x61, A: \x41"),
-            'live example' => array("x-idp-10N0000188"),
+            'live example' => array("10N0000188"),
         );
     }
 

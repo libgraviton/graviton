@@ -59,7 +59,8 @@ class AbstractHttpStrategyTest extends GravitonSecurityBundleTestCase
     {
         return array(
             'field not in header' => array(false),
-            'field empty' => array(true, "\n")
+            'field empty' => array(true, "\n"),
+            'field has invalid content (whitespaces)' => array(true, "\n\t\r\n \s"),
         );
     }
 

@@ -55,7 +55,8 @@ abstract class AbstractHttpStrategy implements StrategyInterface
         $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
 
         // get rid of whitespaces
-        $authInfo = str_replace(array("\r\n", "\n", "\r"), "", trim($authInfo));
+        $patterns = array("\r\n", "\n", "\r", "\s", "\t");
+        $authInfo = str_replace($patterns, "", trim($authInfo));
 
         if (false !== $passed && !empty($authInfo)) {
             $passed = true;
