@@ -46,7 +46,7 @@ abstract class AbstractGenerator extends Generator
      */
     public function getBundleBaseName($name)
     {
-        if ('Bundle' === substr($name, -6)) {
+        if ('bundle' === strtolower(substr($name, -6))) {
             $name = substr($name, 0, -6);
         }
 

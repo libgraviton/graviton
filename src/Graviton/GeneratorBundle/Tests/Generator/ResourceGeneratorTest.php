@@ -122,7 +122,8 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array("Graviton\\BundleNameBundle\\"),
-            array("Graviton\\BundleName\\")
+            array("Graviton\\BundleName\\"),
+            array("Graviton\\BundleNamebundle\\"),
         );
     }
 }
