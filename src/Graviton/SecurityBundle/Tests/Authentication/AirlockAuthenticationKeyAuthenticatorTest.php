@@ -2,6 +2,8 @@
 
 namespace Graviton\SecurityBundle\Authentication;
 
+use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
+use Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
@@ -194,7 +196,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
 
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit_Framework_MockObject_MockObject|AirlockAuthenticationKeyUserProvider
      */
     private function getProviderMock(array $methods = array())
     {
@@ -208,7 +210,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
     /**
      * @param array $methods
      *
-     * @return \Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return StrategyInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getStrategyMock(array $methods = array('apply'))
     {
