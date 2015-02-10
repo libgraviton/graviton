@@ -96,7 +96,7 @@ class ResourceGenerator extends AbstractGenerator
         $dir = $bundle->getPath();
 
         //@todo: check if the content of document is postfixed with 'Bundle' before trying to remove it.
-        $basename = substr($document, 0, -6);
+        $basename = $this->getBundleBaseName($document);
 
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
@@ -213,7 +213,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = $bundleParts[0];
-        $shortBundle = substr($bundleParts[1], 0, -6);
+        $shortBundle = $this->getBundleBaseName($bundleParts[1]);
 
         $docName = implode(
             '.',
@@ -287,7 +287,7 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return \DOMDocument
      */
-    private function loadServices($dir)
+    protected function loadServices($dir)
     {
         $services = new \DOMDocument;
         $services->formatOutput = true;
@@ -306,7 +306,7 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return \DOMDocument
      */
-    private function addParam(\DOMDocument $dom, $key, $value)
+    protected function addParam(\DOMDocument $dom, $key, $value)
     {
         $paramNode = $this->addNodeIfMissing($dom, 'parameters');
 
@@ -382,7 +382,7 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return \DOMDocument
      */
-    private function addService(
+    protected function addService(
         $dom,
         $id,
         $parent = null,
