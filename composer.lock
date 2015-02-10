@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a70d8337339ca141622f1fe107977b9d",
+    "hash": "91894c00388d4dd6c39bb287c48ca369",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3549,21 +3549,19 @@
         {
             "name": "libgraviton/codesniffer",
             "version": "dev-develop",
+            "target-dir": "CodeSniffer/Standards/ENTB",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "a55940c757f3c87a7f3ac84f1f426005b784dfc3"
+                "reference": "e67b624211ba21f310fece225cf1ca906823be05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/a55940c757f3c87a7f3ac84f1f426005b784dfc3",
-                "reference": "a55940c757f3c87a7f3ac84f1f426005b784dfc3",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/e67b624211ba21f310fece225cf1ca906823be05",
+                "reference": "e67b624211ba21f310fece225cf1ca906823be05",
                 "shasum": ""
             },
             "type": "phpcs-standard",
-            "extra": {
-                "phpcs-standard": "ENTB"
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause",
@@ -3573,7 +3571,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2015-02-10 14:00:56"
+            "time": "2015-02-10 20:55:41"
         },
         {
             "name": "liip/functional-test-bundle",

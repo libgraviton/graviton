@@ -61,7 +61,7 @@
         "phpmd/phpmd": "@dev",
         "fabpot/php-cs-fixer": "0.4.*@dev",
         "squizlabs/php_codesniffer": "~2.2",
-        "libgraviton/codesniffer": "dev-develop@dev"
+        "libgraviton/codesniffer": "dev-develop"
     },
     "scripts": {
         "post-root-package-install": [
@@ -74,7 +74,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../.."
+            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ],
         "post-update-cmd": [
             "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
@@ -83,7 +83,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../.."
+            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ]
     },
     "config": {
@@ -103,6 +103,9 @@
         },
         "branch-alias": {
             "dev-master": "2.6-dev"
+        },
+        "installer-paths": {
+            "vendor/composer_phpcs": ["libgraviton/codesniffer"]
         }
     }
 }
