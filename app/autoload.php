@@ -24,11 +24,13 @@ use Composer\Autoload\ClassLoader;
 $primaryLoader = __DIR__.'/../vendor/autoload.php';
 $secondaryLoader = __DIR__.'/../../../autoload.php';
 
+// @codingStandardsIgnoreStart
 if (file_exists($primaryLoader)) {
     $loader = require $primaryLoader;
 } else {
     $loader = require $secondaryLoader;
 }
+// @codingStandardsIgnoreEnd
 
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 
