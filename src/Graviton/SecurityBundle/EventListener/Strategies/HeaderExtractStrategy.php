@@ -1,4 +1,15 @@
 <?php
+/**
+ * Class HeaderExtractStrategy
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 
 namespace Graviton\SecurityBundle\EventListener\Strategies;
 
@@ -12,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @category GravitonSecurityBundle
  * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */

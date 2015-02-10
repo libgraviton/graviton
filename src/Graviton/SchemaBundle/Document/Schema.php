@@ -1,4 +1,15 @@
 <?php
+/**
+ * Graviton Schema Document
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSchemaBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\SchemaBundle\Document;
 
@@ -170,7 +181,7 @@ class Schema implements TranslatableDocumentInterface
     /**
      * removes a property
      *
-     * @param string $name     property name
+     * @param string $name property name
      *
      * @return void
      */
@@ -182,7 +193,7 @@ class Schema implements TranslatableDocumentInterface
     /**
      * returns a property
      *
-     * @param string $name     property name
+     * @param string $name property name
      *
      * @return Schema property
      */

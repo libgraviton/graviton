@@ -1,4 +1,15 @@
 <?php
+/**
+ * generator code for resources
+ *
+ * PHP Version 5
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\GeneratorBundle\Generator;
 
@@ -19,6 +30,8 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  *
  * @category GeneratorBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *
  * @todo     split all the xml handling on services.conf into a Manipulator
@@ -314,7 +327,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * add node if missing
      *
-     * @param \DOMDocument &$dom      document
+     * @param \DOMDocument $dom       document
      * @param string       $element   name for new node element
      * @param string       $container name of container tag
      *

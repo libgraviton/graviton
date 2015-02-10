@@ -1,4 +1,15 @@
 <?php
+/**
+ * functional tests for graviton:generate:bundle
+ *
+ * PHP Version 5
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\I18nBundle\Tests\Command;
 
@@ -10,10 +21,7 @@ use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
  *
  * @category GeneratorBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *

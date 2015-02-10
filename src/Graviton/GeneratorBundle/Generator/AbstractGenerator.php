@@ -1,4 +1,15 @@
 <?php
+/**
+ * shared stuff for generators
+ *
+ * PHP Version 5
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\GeneratorBundle\Generator;
 
@@ -9,6 +20,8 @@ use Sensio\Bundle\GeneratorBundle\Generator\Generator;
  *
  * @category GeneratorBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 abstract class AbstractGenerator extends Generator

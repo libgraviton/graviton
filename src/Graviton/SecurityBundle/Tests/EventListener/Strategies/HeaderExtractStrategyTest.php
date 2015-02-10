@@ -1,4 +1,15 @@
 <?php
+/**
+ * Class HeaderExtractStrategyTest
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\SecurityBundle\EventListener\Strategies;
 
@@ -10,15 +21,17 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @category GravitonSecurityBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * test for correct exception
+     *
+     * @return void
+     */
     public function testApplyExpectingException()
     {
         $noRequestObject = new \stdClass();
@@ -33,6 +46,11 @@ class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase
         $strategy->apply($noRequestObject);
     }
 
+    /**
+     * test getId method
+     *
+     * @return void
+     */
     public function testGetId()
     {
         $strategy = new HeaderExtractStrategy();
@@ -45,6 +63,10 @@ class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider stringProvider
+     *
+     * @param string $headerFieldValue example header field string
+     *
+     * @return void
      */
     public function testApply($headerFieldValue)
     {
@@ -59,6 +81,11 @@ class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase
         $strategy->apply($request);
     }
 
+    /**
+     * some strings to test with
+     *
+     * @return string<>
+     */
     public function stringProvider()
     {
         return array(

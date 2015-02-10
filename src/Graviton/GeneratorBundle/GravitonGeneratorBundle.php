@@ -1,4 +1,15 @@
 <?php
+/**
+ * bundle containing various code generators
+ *
+ * PHP Version 5
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\GeneratorBundle;
 
@@ -10,6 +21,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category GeneratorBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class GravitonGeneratorBundle extends Bundle implements GravitonBundleInterface

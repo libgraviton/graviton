@@ -1,4 +1,15 @@
 <?php
+/**
+ * LogBundle configuration
+ *
+ * PHP Version 5
+ *
+ * @category GravitonLogBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\LogBundle\DependencyInjection;
 
@@ -11,6 +22,8 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  *
  * @category GravitonLogBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class GravitonLogExtension extends GravitonBundleExtension

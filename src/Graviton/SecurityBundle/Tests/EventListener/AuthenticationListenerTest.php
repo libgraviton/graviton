@@ -1,4 +1,15 @@
 <?php
+/**
+ * Class AuthenticationListenerTest
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\SecurityBundle\EventListener;
 
@@ -9,7 +20,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 /**
  * Class AuthenticationListenerTest
  *
- * @category GravitonSecutityBundle
+ * @category GravitonSecurityBundle
  * @package  Graviton
  * @author   Lucas Bickel <lucas.bickel@swisscom.com>
  * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
@@ -20,6 +31,11 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class AuthenticationListenerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * test triggering of event
+     *
+     * @return void
+     */
     public function testOnKernelRequest()
     {
         $server = array(

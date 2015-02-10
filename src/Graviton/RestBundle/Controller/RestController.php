@@ -1,4 +1,15 @@
 <?php
+/**
+ * basic rest controller
+ *
+ * PHP Version 5
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\RestBundle\Controller;
 
@@ -23,10 +34,7 @@ use Graviton\RestBundle\Model\PaginatorAwareInterface;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -56,7 +64,6 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-
     public function getContainer()
     {
         return $this->container;

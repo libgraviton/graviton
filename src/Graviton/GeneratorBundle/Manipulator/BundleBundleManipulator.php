@@ -1,4 +1,15 @@
 <?php
+/**
+ * change the code of a GravitonBundleInterface based bundle
+ *
+ * PHP Version 5
+ *
+ * @category GeneratorBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\GeneratorBundle\Manipulator;
 
@@ -10,6 +21,8 @@ use Graviton\BundleBundle\GravitonBundleInterface;
  *
  * @category GeneratorBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class BundleBundleManipulator extends Manipulator

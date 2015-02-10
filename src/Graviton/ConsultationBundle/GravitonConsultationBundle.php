@@ -1,4 +1,15 @@
 <?php
+/**
+ * bundle for consultations
+ *
+ * PHP Version 5
+ *
+ * @category Consultation
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 
 namespace Graviton\ConsultationBundle;
 
@@ -10,7 +21,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @category Consultation
  * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */

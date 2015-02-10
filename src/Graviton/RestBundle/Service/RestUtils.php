@@ -1,4 +1,15 @@
 <?php
+/**
+ * service for RESTy stuff
+ *
+ * PHP Version 5
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
 
 namespace Graviton\RestBundle\Service;
 
@@ -11,7 +22,7 @@ use Symfony\Component\Routing\Route;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */
@@ -155,7 +166,7 @@ class RestUtils
      * So if you pass graviton.cont.action; it will return all route names that start with the same.
      * In our routing naming schema, this means all the routes from the same controller.
      *
-     * @param $baseName string basename
+     * @param string $baseName basename
      *
      * @return array array with matching routes
      */

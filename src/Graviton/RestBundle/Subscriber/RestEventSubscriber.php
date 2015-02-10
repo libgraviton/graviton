@@ -1,4 +1,15 @@
 <?php
+/**
+ * handle graviton.rest.event events
+ *
+ * PHP Version 5
+ *
+ * @category RestBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 namespace Graviton\RestBundle\Subscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -13,10 +24,7 @@ use Graviton\RestBundle\Event\RestEvent;
  *
  * @category RestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */

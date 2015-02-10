@@ -1,4 +1,16 @@
 <?php
+/**
+ * Validation exception class
+ *
+ * PHP Version 5
+ *
+ * @category GravitonExceptionBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
+ */
+
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -10,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @category GravitonExceptionBundle
  * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.com
  */

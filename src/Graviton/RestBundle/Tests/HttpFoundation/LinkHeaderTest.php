@@ -1,4 +1,15 @@
 <?php
+/**
+ * Tests LinkHeader.
+ *
+ * PHP Version 5
+ *
+ * @category GravitonRestBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\RestBundle\Tests\HttpFoundation;
 
@@ -10,10 +21,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  *
  * @category GravitonRestBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -66,6 +74,8 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
      * test building of strings
      *
      * @dataProvider headerStringProvider
+     *
+     * @param string<> $headers headers to test against
      *
      * @return void
      */

@@ -1,6 +1,14 @@
 <?php
 /**
  * Loads bundles from list of bundles implementing GravitonBundleInterface
+ *
+ * PHP Version 5
+ *
+ * @category GravitonBundleBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 
 namespace Graviton\BundleBundle\Loader;
@@ -18,10 +26,7 @@ use Graviton\BundleBundle\GravitonBundleInterface;
  *
  * @category GravitonBundleBundle
  * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -56,7 +61,7 @@ class BundleLoader
     /**
      * load bundles
      *
-     * @param \Symfony\Component\HttpKernel\Bundle\Bundle[] $bundles
+     * @param \Symfony\Component\HttpKernel\Bundle\Bundle[] $bundles pre-loaded bundles
      *
      * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */

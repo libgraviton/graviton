@@ -1,6 +1,14 @@
 <?php
 /**
  * manage and load bundle config.
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSecurityBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.com
  */
 
 namespace Graviton\SecurityBundle\DependencyInjection;
@@ -13,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @category GravitonSecutityBundle
+ * @category GravitonSecurityBundle
  * @package  Graviton
  * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License

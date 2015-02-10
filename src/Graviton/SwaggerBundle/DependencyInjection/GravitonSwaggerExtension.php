@@ -1,4 +1,15 @@
 <?php
+/**
+ * Load configuration for SwaggerBundle
+ *
+ * PHP Version 5
+ *
+ * @category GravitonSwaggerBundle
+ * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 
 namespace Graviton\SwaggerBundle\DependencyInjection;
 
@@ -11,6 +22,7 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  *
  * @category GravitonSwaggerBundle
  * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
