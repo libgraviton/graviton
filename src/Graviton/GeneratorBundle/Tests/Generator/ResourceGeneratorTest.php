@@ -96,8 +96,8 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
              ->method("addParam")
              ->with(
                  $this->equalTo($servicesMock),
-                  $this->equalTo($docName. ".class"),
-                  $this->equalTo($documentNS)
+                 $this->equalTo($docName. ".class"),
+                 $this->equalTo($documentNS)
              )
              ->will($this->returnValue($servicesMock));
 
