@@ -5,6 +5,10 @@ filter:
         - 'web/*'
 before_commands:
     - 'composer install --dev'
+application:
+    dependencies:
+        before:
+            - php app/console cache:warmup
 tools:
     external_code_coverage: true
     php_mess_detector: true
