@@ -1,14 +1,6 @@
 <?php
 /**
  * Graviton AppKernel
- *
- * PHP Version 5
- *
- * @category Graviton
- * @package  Graviton
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/GPL GPL
- * @link     http://swisscom.ch
  */
 
 namespace Graviton;

@@ -2,8 +2,6 @@
 /**
  * autoloader config for graviton
  *
- * PHP Version 5
- *
  * @category Graviton
  * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

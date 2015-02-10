@@ -1,14 +1,6 @@
 <?php
 /**
  * Event that is passed to graviton.rest.event listeners
- *
- * PHP Version 5
- *
- * @category RestBundle
- * @package  Graviton
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
  */
 
 namespace Graviton\RestBundle\Event;
