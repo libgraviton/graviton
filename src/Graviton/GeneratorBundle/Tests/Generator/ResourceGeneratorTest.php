@@ -66,9 +66,9 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $parameters = array(
-                "base" => $base,
-                "document" => "DocumentTest",
-                "bundle" => "MyTestBundle"
+            "base" => $base,
+            "document" => "DocumentTest",
+            "bundle" => "MyTestBundle"
         );
 
         $documentNS = $parameters['base'] . 'Document\\' . $parameters['document'];
@@ -77,7 +77,7 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
         $dir = self::GRAVITON_TMP_DIR;
         $document = "DocumentTest";
 
-        $generator = $this->getMockBuilder("Graviton\GeneratorBundle\Generator\ResourceGeneratorProxy")
+        $generator = $this->getMockBuilder("Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy")
             ->disableOriginalConstructor()
             ->setMethods(array("renderFile", "loadServices", "addParam", "addService"))
             ->getMock();
@@ -97,7 +97,7 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
              ->with(
                  $this->equalTo($servicesMock),
                   $this->equalTo($docName. ".class"),
-                 $this->equalTo($documentNS)
+                  $this->equalTo($documentNS)
              )
              ->will($this->returnValue($servicesMock));
 
@@ -124,30 +124,5 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
             array("Graviton\\BundleNameBundle\\"),
             array("Graviton\\BundleName\\")
         );
-    }
-}
-
-/**
- * ResourceGeneratorProxy
- * Needed to make the generateDocument method public
- *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
- * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
- * @link     http://swisscom.ch
- */
-class ResourceGeneratorProxy extends ResourceGenerator
-{
-    /**
-     * (non-PHPdoc)
-     * @see \Graviton\GeneratorBundle\Generator\ResourceGenerator::generateDocument()
-     */
-    public function generateDocument($parameters, $dir, $document, $withRepository)
-    {
-        return parent::generateDocument($parameters, $dir, $document, $withRepository);
     }
 }
