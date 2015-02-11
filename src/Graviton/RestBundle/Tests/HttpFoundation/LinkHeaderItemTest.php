@@ -99,7 +99,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
      *
      * @param string  $expected   expected string
      * @param string  $uri        uri to base item on
-     * @param array<> $attributes attributes for LinkHeaderItem
+     * @param array[] $attributes attributes for LinkHeaderItem
      *
      * @return void
      */

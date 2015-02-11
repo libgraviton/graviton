@@ -338,7 +338,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      * @param InputInterface  $input      Input
      * @param OutputInterface $output     Output
      *
-     * @return string The exit code
+     * @return integer|null The exit code
      */
     private function generateBundle(
         $namespace,
@@ -371,7 +371,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      * @param array           $args   Arguments
      * @param OutputInterface $output Output
      *
-     * @return string Exit code
+     * @return integer|null Exit code
      */
     private function executeCommand(array $args, OutputInterface $output)
     {

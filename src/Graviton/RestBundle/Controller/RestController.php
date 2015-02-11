@@ -18,6 +18,8 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
+use Graviton\RestBundle\Model\ModelInterface;
+
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -341,7 +343,7 @@ class RestController implements ContainerAwareInterface
      *
      * @throws \Exception in case no model was defined.
      *
-     * @return object $model Model
+     * @return ModelInterface $model Model
      */
     public function getModel()
     {

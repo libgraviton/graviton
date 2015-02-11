@@ -67,7 +67,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider headerStringProvider
      *
-     * @param string<> $headers headers to test against
+     * @param string[] $headers headers to test against
      *
      * @return void
      */

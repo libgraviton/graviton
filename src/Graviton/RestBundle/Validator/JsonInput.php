@@ -206,9 +206,9 @@ class JsonInput
     /**
      * Check an association (embedded documents)
      *
-     * @param string                                     $path             Path to property
-     * @param array                                      $input            Json input
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $documentMetadata Document metadata
+     * @param string        $path             Path to property
+     * @param array         $input            Json input
+     * @param ClassMetadata $documentMetadata Document metadata
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
@@ -254,7 +254,7 @@ class JsonInput
      *
      * @param \Doctrine\ODM\MongoDB\DocumentManager $em Doctrine document manager
      *
-     * @return \Graviton\RestBundle\Validation\JsonInput $this This
+     * @return JsonInput self
      */
     public function setDocumentManager(DocumentManager $em)
     {

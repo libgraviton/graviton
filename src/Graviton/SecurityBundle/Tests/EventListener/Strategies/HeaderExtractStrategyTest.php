@@ -76,7 +76,7 @@ class HeaderExtractStrategyTest extends \PHPUnit_Framework_TestCase
     /**
      * some strings to test with
      *
-     * @return string<>
+     * @return string[]
      */
     public function stringProvider()
     {

@@ -23,8 +23,6 @@ final class SerializationException extends RestException
      *
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
-     *
-     * @return void
      */
     public function __construct($message = "Serialization Error", $prev = null)
     {
