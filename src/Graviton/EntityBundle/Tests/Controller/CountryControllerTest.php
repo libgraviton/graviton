@@ -62,15 +62,15 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page='. $pageNumber .'&per_page=10>; rel="self"',
+            '<http://localhost/entity/country?page='. $pageNumber .'&perPage=10>; rel="self"',
             $linkHeader
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page='. ($pageNumber - 1) .'&per_page=10>; rel="prev"',
+            '<http://localhost/entity/country?page='. ($pageNumber - 1) .'&perPage=10>; rel="prev"',
             $linkHeader
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page='. ($pageNumber + 1) .'&per_page=10>; rel="next"',
+            '<http://localhost/entity/country?page='. ($pageNumber + 1) .'&perPage=10>; rel="next"',
             $linkHeader
         );
     }
@@ -105,15 +105,15 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=26&per_page=10>; rel="last"',
+            '<http://localhost/entity/country?page=26&perPage=10>; rel="last"',
             $linkHeader
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=10>; rel="self"',
+            '<http://localhost/entity/country?page=1&perPage=10>; rel="self"',
             $linkHeader
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=2&per_page=10>; rel="next"',
+            '<http://localhost/entity/country?page=2&perPage=10>; rel="next"',
             $linkHeader
         );
     }
@@ -133,11 +133,11 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=26&per_page=10>; rel="self"',
+            '<http://localhost/entity/country?page=26&perPage=10>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=10>; rel="first"',
+            '<http://localhost/entity/country?page=1&perPage=10>; rel="first"',
             explode(',', $response->headers->get('Link'))
         );
     }
@@ -158,28 +158,28 @@ class CountryControllerTest extends RestTestCase
         $this->assertResponseContentType(self::COL_TYPE, $response);
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=10>; rel="self"',
+            '<http://localhost/entity/country?page=1&perPage=10>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=2&per_page=10>; rel="next"',
+            '<http://localhost/entity/country?page=2&perPage=10>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=26&per_page=10>; rel="last"',
+            '<http://localhost/entity/country?page=26&perPage=10>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
     }
 
     /**
-     * check if per_page param works on collections
+     * check if perPage param works on collections
      *
      * @return void
      */
     public function testFindAllWithPerPageParam()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/entity/country?per_page=20');
+        $client->request('GET', '/entity/country?perPage=20');
 
         $response = $client->getResponse();
 
@@ -188,15 +188,36 @@ class CountryControllerTest extends RestTestCase
         $this->assertEquals(20, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/entity/country?page=1&per_page=20>; rel="self"',
+            '<http://localhost/entity/country?page=1&perPage=20>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=2&per_page=20>; rel="next"',
+            '<http://localhost/entity/country?page=2&perPage=20>; rel="next"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertContains(
-            '<http://localhost/entity/country?page=13&per_page=20>; rel="last"',
+            '<http://localhost/entity/country?page=13&perPage=20>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * check if data gets filtered and self header includes the filter
+     *
+     * @return void
+     */
+    public function testFindAllWithFiltering()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/entity/country?q='.urlencode('eq(capitalCity,Luanda)'));
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(1, count($client->getResults()));
+        $this->assertResponseContentType(self::COL_TYPE, $response);
+
+        $this->assertContains(
+            '<http://localhost/entity/country?q=eq%28capitalCity%2CLuanda%29>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }
