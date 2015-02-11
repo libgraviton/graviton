@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Event\RestEvent;
+use Graviton\RestBundle\Action\ActionFactory;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -56,74 +57,36 @@ class PagingLinkResponseListener implements ContainerAwareInterface
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
-
-        // extract various info from route
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        // only collections have paging
-        if ($routeType == 'all' && $request->attributes->get('paging')) {
-
-            $this->linkHeader = LinkHeader::fromResponse($response);
-
-            $this->generateLinks(
-                $routeName,
-                $request->get('page', 1),
-                $request->attributes->get('numPages'),
-                $request->attributes->get('perPage')
-            );
-            $response->headers->set(
-                'Link',
-                (string) $this->linkHeader
-            );
-        }
-    }
-
-    /**
-     * generate headers for all paging links
-     *
-     * @param string  $route    name of route
-     * @param integer $page     current page
-     * @param integer $numPages number of all pages
-     * @param integer $perPage  number of records per page
-     *
-     * @return void
-     */
-    private function generateLinks($route, $page, $numPages, $perPage)
-    {
-        if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first');
-        }
-        if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev');
-        }
-        if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, $perPage, 'next');
-        }
-        if ($page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last');
-        }
-    }
-
-    /**
-     * generate link header pased on params and type
-     *
-     * @param string  $routeName use with router to generate urls
-     * @param integer $page      page to link to
-     * @param integer $perPage   number of items per page
-     * @param string  $type      rel type of link to generate
-     *
-     * @return string
-     */
-    private function generateLink($routeName, $page, $perPage, $type)
-    {
         $router = $this->container->get('router');
-        $parameters = array('page' => $page);
-        if ($perPage) {
-            $parameters['per_page'] = $perPage;
+        $this->linkHeader = LinkHeader::fromResponse($response);
+
+        $action = ActionFactory::factory($request, $response);
+
+        if ($action->hasFirstPage()) {
+            $url = $action->getFirstPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "first")));
         }
-        $url = $router->generate($routeName, $parameters, true);
-        $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
+
+        if ($action->hasPrevPage()) {
+            $url = $action->getPrevPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "prev")));
+        }
+
+        if ($action->hasNextPage()) {
+            $url = $action->getNextPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "next")));
+        }
+
+        if ($action->hasLastPage()) {
+            $url = $action->getLastPageUrl($router, true);
+            $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => "last")));
+        }
+
+        $response->headers->set(
+            'Link',
+            (string) $this->linkHeader
+        );
+
+        return;
     }
 }

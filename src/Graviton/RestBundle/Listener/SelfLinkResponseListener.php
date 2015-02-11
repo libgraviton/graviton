@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Event\RestEvent;
+use Graviton\RestBundle\Action\ActionFactory;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -52,67 +53,20 @@ class SelfLinkResponseListener implements ContainerAwareInterface
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
-        $router = $this->container->get('router');
-        $linkHeader = LinkHeader::fromResponse($response);
 
-        // extract various info from route
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
+        // Only add header if request was successful
+        if ($response->isSuccessful()) {
+            $router = $this->container->get('router');
 
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4).'get';
-        }
+            $linkHeader = LinkHeader::fromResponse($response);
+            $action = ActionFactory::factory($request, $response);
 
-        /** if the request failed in the RestController, $request will not have an record id in
-         case of a POST and $router->generate() will fail. that's why we catch it and fail silently
-         by not including our header in the response. i hope that's a good compromise. **/
+            if (!is_null(($url = $action->getRefLinkUrl($router, true)))) {
+                $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
 
-        /** Nope, it's not a good compromise...catch and handle it where it happens.
-         *  I will refactory this in another branch*/
-        $addHeader = true;
-        $url = '';
-
-        try {
-            $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
-        } catch (\Exception $e) {
-            $addHeader = false;
-        }
-
-        if ($addHeader) {
-            // append rel=self link to link headers
-            $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'self')));
-
-            // overwrite link headers with new headers
-            $response->headers->set('Link', (string) $linkHeader);
-        }
-    }
-
-    /**
-     * generate parameters for LinkHeaderItem
-     *
-     * @param string  $routeType type of route
-     * @param Request $request   request object
-     *
-     * @return array
-     */
-    private function generateParameters($routeType, Request $request)
-    {
-        // for now we assume that everything except collections has an id
-        // this is also flawed since it does not handle search actions
-        $parameters = array();
-        if ($routeType == 'post') {
-            // handle post request by rewriting self link to newly created resource
-            $parameters = array('id' => $request->get('id'));
-        } elseif ($routeType != 'all') {
-            $parameters = array('id' => $request->get('id'));
-        } elseif ($request->attributes->get('paging')) {
-            $parameters = array('page' => $request->get('page', 1));
-            if ($request->attributes->get('perPage')) {
-                $parameters['per_page'] = $request->attributes->get('perPage');
+                // overwrite link headers with new headers
+                $response->headers->set('Link', (string) $linkHeader);
             }
         }
-
-        return $parameters;
     }
 }

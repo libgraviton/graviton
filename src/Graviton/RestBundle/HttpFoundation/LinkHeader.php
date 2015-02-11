@@ -51,7 +51,12 @@ class LinkHeader
 
                     return $item;
                 },
-                preg_split('/(".+?"|[^,]+)(?:,|$)/', $headerValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)
+                preg_split(
+                    '/(?:([.^,]*),\s*(?=(?:<*)http))|$/',
+                    $headerValue,
+                    0,
+                    PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                )
             )
         );
     }
