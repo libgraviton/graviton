@@ -1,4 +1,7 @@
 <?php
+/**
+ * strategy for validating auth through the x-idp-username header
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -21,6 +24,8 @@ class HeaderFieldStrategy extends AbstractHttpStrategy
     const X_HEADER_FIELD = 'x-idp-username';
 
     /**
+     * @param Request $request request to handle
+     *
      * @return string
      */
     public function apply(Request $request)

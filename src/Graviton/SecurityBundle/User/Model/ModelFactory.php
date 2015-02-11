@@ -26,7 +26,7 @@ class ModelFactory
     /**
      * Constructor of the class.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container symfony container
      */
     public function __construct(ContainerInterface $container)
     {

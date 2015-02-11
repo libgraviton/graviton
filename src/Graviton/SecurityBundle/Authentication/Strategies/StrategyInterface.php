@@ -1,4 +1,7 @@
 <?php
+/**
+ * apply a strategy to a request
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -18,7 +21,7 @@ interface StrategyInterface
     /**
      * Applies the defined strategy on the provided request.
      *
-     * @param Request $request
+     * @param Request $request request to handle
      *
      * @return string
      */

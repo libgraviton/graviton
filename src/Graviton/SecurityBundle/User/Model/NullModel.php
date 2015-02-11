@@ -1,4 +1,7 @@
 <?php
+/**
+ * null model
+ */
 
 namespace Graviton\SecurityBundle\User\Model;
 

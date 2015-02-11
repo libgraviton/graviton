@@ -1,4 +1,7 @@
 <?php
+/**
+ * abstract strategy for checking auth against parts of the request
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 

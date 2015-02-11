@@ -1,4 +1,7 @@
 <?php
+/**
+ * auth interface for authing against an airlock key of some sorts
+ */
 
 namespace Graviton\SecurityBundle\Authentication;
 
@@ -43,9 +46,9 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
 
 
     /**
-     * @param \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider   $userProvider
-     * @param \Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface $extractionStrategy
-     * @param \Psr\Log\LoggerInterface                                             $logger
+     * @param AirlockAuthenticationKeyUserProvider $userProvider       user provider to use
+     * @param StrategyInterface                    $extractionStrategy auth strategy to use
+     * @param \Psr\Log\LoggerInterface             $logger             logger to user for logging errors
      */
     public function __construct(
         AirlockAuthenticationKeyUserProvider $userProvider,
@@ -58,8 +61,8 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
     }
 
     /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $providerKey
+     * @param \Symfony\Component\HttpFoundation\Request $request     request to authenticate
+     * @param string                                    $providerKey provider key to auth with
      *
      * @return \Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken
      */
@@ -78,9 +81,9 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
     /**
      * Tries to authenticate the provided token
      *
-     * @param \Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token
-     * @param \Symfony\Component\Security\Core\User\UserProviderInterface          $userProvider
-     * @param string                                                               $providerKey
+     * @param TokenInterface        $token        token to authenticate
+     * @param UserProviderInterface $userProvider provider to auth against
+     * @param string                $providerKey  key to auth with
      *
      * @return \Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken
      */
@@ -106,8 +109,8 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
     }
 
     /**
-     * @param \Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token
-     * @param string                                                               $providerKey
+     * @param TokenInterface $token       token to check
+     * @param string         $providerKey provider to check against
      *
      * @return bool
      */
@@ -121,8 +124,8 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
      * called by authentication listeners inheriting from
      * AbstractAuthenticationListener.
      *
-     * @param \Symfony\Component\HttpFoundation\Request                          $request
-     * @param \Symfony\Component\Security\Core\Exception\AuthenticationException $exception
+     * @param \Symfony\Component\HttpFoundation\Request                          $request   original request
+     * @param \Symfony\Component\Security\Core\Exception\AuthenticationException $exception exception from auth attempt
      *
      * @return Response The response to return, never null
      */

@@ -1,4 +1,7 @@
 <?php
+/**
+ * security contract entity
+ */
 
 namespace Graviton\SecurityBundle\Entities;
 
@@ -31,8 +34,8 @@ class SecurityContract implements UserInterface
     /**
      * Constructor of the class.
      *
-     * @param Contract $contract
-     * @param Role[]   $roles
+     * @param Contract $contract contract
+     * @param Role[]   $roles    roles for the contract
      */
     public function __construct(Contract $contract, array $roles = array())
     {
@@ -89,6 +92,8 @@ class SecurityContract implements UserInterface
      *
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
+     *
+     * @return void
      */
     public function eraseCredentials()
     {

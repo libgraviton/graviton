@@ -1,4 +1,7 @@
 <?php
+/**
+ * authentification strategy based on a username cookie
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -23,7 +26,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     /**
      * Applies the defined strategy on the provided request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request request to handle
      *
      * @return string
      */

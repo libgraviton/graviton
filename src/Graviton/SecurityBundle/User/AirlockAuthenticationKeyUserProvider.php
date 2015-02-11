@@ -1,4 +1,7 @@
 <?php
+/**
+ * airlock authkey based user provider
+ */
 
 namespace Graviton\SecurityBundle\User;
 
@@ -27,7 +30,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     private $documentModel;
 
     /**
-     * @param \Graviton\RestBundle\Model\ModelInterface $contract
+     * @param \Graviton\RestBundle\Model\ModelInterface $contract contract to use as documentModel
      */
     public function __construct(ModelInterface $contract)
     {
@@ -37,7 +40,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     /**
      * Finds a contract based on the provided ApiKey.
      *
-     * @param string $apiKey
+     * @param string $apiKey key from airlock
      *
      * @return string
      */
@@ -61,7 +64,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      * This method must throw UsernameNotFoundException if the user is not
      * found.
      *
-     * @param string $contractId
+     * @param string $contractId contract id we need a username for
      *
      * @return \Symfony\Component\Security\Core\User\UserInterface
      *
@@ -92,7 +95,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      * object can just be merged into some internal array of users / identity
      * map.
      *
-     * @param \Symfony\Component\Security\Core\User\UserInterface $user
+     * @param \Symfony\Component\Security\Core\User\UserInterface $user user to refresh
      *
      * @return \Symfony\Component\Security\Core\User\UserInterface
      *
@@ -110,7 +113,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     /**
      * Whether this provider supports the given user class.
      *
-     * @param string $class
+     * @param string $class class to check for support
      *
      * @return bool
      */
@@ -122,7 +125,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     /**
      * Decides the role set the provided contract has.
      *
-     * @param Contract $contract
+     * @param Contract $contract provided contract
      *
      * @return array
      */
