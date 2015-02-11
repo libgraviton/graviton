@@ -20,7 +20,6 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 
-
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
  * extra functionality you can extend it and overwrite single/all actions.
