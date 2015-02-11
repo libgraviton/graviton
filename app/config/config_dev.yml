@@ -1,4 +1,5 @@
 imports:
+    - { resource: security_dev.yml }
     - { resource: config.yml }
 
 framework:

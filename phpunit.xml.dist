@@ -7,7 +7,7 @@
     convertErrorsToExceptions   = "true"
     convertNoticesToExceptions  = "true"
     convertWarningsToExceptions = "true"
-    processIsolation            = "false"
+    processIsolation            = "true"
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
     bootstrap                   = "app/bootstrap.php.cache" >
@@ -17,15 +17,15 @@
       <directory>src/*/Bundle/*Bundle/Tests</directory>
     </testsuite>
   </testsuites>
-  <!--
     <php>
-        <server name="KERNEL_DIR" value="/path/to/your/app/" />
+        <!--<server name="KERNEL_DIR" value="/home/graviton/graviton/app" />-->
     </php>
-    -->
   <filter>
     <whitelist>
       <directory>src</directory>
       <exclude>
+        <directory>src/*/*Bundle/Tests</directory>
+        <directory>src/*/*Bundle/*Bundle/Tests</directory>
         <directory>src/*/*Bundle/Resources</directory>
         <directory>src/*/Bundle/*Bundle/Resources</directory>
       </exclude>

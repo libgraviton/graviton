@@ -30,24 +30,4 @@ class GravitonSecurityExtension extends GravitonBundleExtension
     {
         return __DIR__ . '/../Resources/config';
     }
-
-    /**
-     * Loads a specific configuration.
-     *
-     * @param array                                                   $configs   Set of configuration options
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container Parameter vault.
-     *
-     * @return void
-     */
-    public function load(array $configs, ContainerBuilder $container)
-    {
-        parent::load($configs, $container);
-
-        $configuration = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($configuration, $configs);
-
-        if (!empty($config['authentication_services'])) {
-            $container->setParameter('graviton-security.authentication.services', $config['authentication_services']);
-        }
-    }
 }
