@@ -80,7 +80,7 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
      *
      * @param \Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token
      * @param \Symfony\Component\Security\Core\User\UserProviderInterface          $userProvider
-     * @param  string                                                              $providerKey
+     * @param string                                                               $providerKey
      *
      * @return \Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken
      */
@@ -107,7 +107,7 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
 
     /**
      * @param \Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token
-     * @param  string                                                              $providerKey
+     * @param string                                                               $providerKey
      *
      * @return bool
      */

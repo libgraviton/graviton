@@ -1,4 +1,7 @@
 <?php
+/**
+ * security user factory
+ */
 
 namespace Graviton\SecurityBundle\User\Model;
 
@@ -41,7 +44,6 @@ class ModelFactory
         $service = $this->container->get('graviton.authentication.user_provider.model.noop');
 
         if (!empty($serviceId) && $this->container->has($serviceId)) {
-
             $service = $this->container->get($serviceId);
         }
 

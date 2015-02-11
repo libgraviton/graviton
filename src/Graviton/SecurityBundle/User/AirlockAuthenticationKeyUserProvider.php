@@ -49,7 +49,6 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
         $contract = $this->documentModel->getRepository()->findOneBy(array('number' => $apiKey));
 
         if ($contract instanceof Contract) {
-
             $contractId = $contract->getId();
         }
 
@@ -78,7 +77,6 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
         $contract = $this->documentModel->find($contractId);
 
         if ($contract instanceof Contract) {
-
             // TODO [lapistano]: map the found contract to whatever ...
             return new SecurityContract($contract, $this->getContractRoles($contract));
         }

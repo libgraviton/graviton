@@ -22,14 +22,13 @@ abstract class AbstractHttpStrategy implements StrategyInterface
      * Extracts information from the a request header field.
      *
      * @param ParameterBag|HeaderBag $header    object representation of the request header.
-     * @param  string                $fieldname Name of the field to be read.
+     * @param string                 $fieldname Name of the field to be read.
      *
      * @return string
      */
     protected function extractFieldInfo($header, $fieldname)
     {
         if ($header instanceof ParameterBag || $header instanceof HeaderBag) {
-
             $this->validateField($header, $fieldname);
 
             return $header->get($fieldname, '');
