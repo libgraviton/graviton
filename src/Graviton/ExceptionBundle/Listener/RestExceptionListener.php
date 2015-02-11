@@ -42,7 +42,7 @@ abstract class RestExceptionListener
      *
      * @return void
      */
-    abstract public function onKernelException(\GetResponseForExceptionEvent $event);
+    abstract public function onKernelException(GetResponseForExceptionEvent $event);
 
     /**
      * Set the DI container

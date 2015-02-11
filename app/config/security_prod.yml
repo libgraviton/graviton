@@ -1,0 +1,29 @@
+# you can read more about security in the related section of the documentation
+# http://symfony.com/doc/current/book/security.html
+security:
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+
+        graviton_airlock_authentication_key_user_provider:
+            id: graviton_airlock_authentication_key_user_provider
+
+    # the main part of the security, where you can set up firewalls
+    # for specific sections of your app
+    firewalls:
+        # graviton access restriction
+        secured_area:
+            #  no pattern means matches all routes
+            stateless: true
+            simple_preauth:
+                authenticator: graviton_airlock_authentication_key_authenticator
+
+#    # with these settings you can restrict or allow access for different parts
+#    # of your application based on roles, ip, host or methods
+#    # http://symfony.com/doc/current/cookbook/security/access_control.html
+#    access_control:
+#        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+#
+#    # http://symfony.com/doc/current/book/security.html#hierarchical-roles
+#    role_hierarchy:
+#        ROLE_GRAVITON_ADMIN:       ROLE_GRAVITON_USER
+#        ROLE_GRAVITON_SUPER_ADMIN: [ROLE_GRAVITON_USER, ROLE_GRAVITON_ADMIN, ROLE_GRAVITON_ALLOWED_TO_SWITCH]

@@ -120,3 +120,7 @@ Load the fixtures using app/console.
 ``bash
 php app/console doctrine:mongodb:fixtures:load
 ``
+
+# Dedicated bundle information
+
+- [SecurityBundle](src/Graviton/SecurityBundle/README.md)
