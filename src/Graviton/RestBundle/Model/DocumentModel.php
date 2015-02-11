@@ -82,16 +82,14 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         // *** do we have an RQL expression, do we need to filter data?
-        if (count($request->query->all()) > 0) {
+        if ($request->query->get('q') != null && strlen($request->query->get('q')) > 0) {
 
-            // prefer explicit filter param!
-            if ($request->query->get('q') != null && strlen($request->query->get('q')) > 0) {
-                $queryFilter = $request->query->get('q');
-            } else {
-                $queryFilter = $request->getQueryString();
-            }
+            $filter = $request->query->get('q');
 
-            $queryParser = new Query(urldecode($queryFilter));
+            // set filtering attributes on request
+            $request->attributes->set('filtering', true);
+
+            $queryParser = new Query(urldecode($filter));
             $queriable = new MongoOdm($this->repository, $numberPerPage, $startAt);
             $queriable = $queryParser->applyToQueriable($queriable);
             $records = $queriable->getDocuments();
