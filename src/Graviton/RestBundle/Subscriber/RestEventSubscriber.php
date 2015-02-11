@@ -74,15 +74,16 @@ class RestEventSubscriber implements EventSubscriberInterface
     public function onKernelResponse(FilterResponseEvent $event)
     {
         $dispatcher = $event->getDispatcher();
-        $restEvent = $this->getEventObject($event);
+        $dispatcher->dispatch("graviton.rest.response", $event);
 
-        $dispatcher->dispatch("graviton.rest.response", $restEvent);
-
-        // setResponse stops the propagation of this event
-        $response = $restEvent->getResponse()
-            ->prepare($event->getRequest());
-
-        $event->setResponse($response);
+//        $restEvent = $this->getEventObject($event);
+//        $dispatcher->dispatch("graviton.rest.response", $restEvent);
+//
+//        // setResponse stops the propagation of this event
+//        $response = $restEvent->getResponse()
+//            ->prepare($event->getRequest());
+//
+//        $event->setResponse($response);
     }
 
     /**
