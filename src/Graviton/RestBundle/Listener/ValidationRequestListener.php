@@ -32,18 +32,19 @@ class ValidationRequestListener
     /**
      * Validate the json input to prevent errors in the following components
      *
-     * @param RestEvent|GetResponseEvent $event Event
+     * @param RestEvent $event Event
      *
      * @throws NoInputException
      * @throws ValidationException
      * @throws \Exception
-     * @return void
+     * @return RestEvent
      */
     public function onKernelRequest(RestEvent $event)
     {
         // only validate on POST and PUT
         // if patch is required, refactor the method or do something else
         $request = $event->getRequest();
+        // @var Response
         $response = $event->getResponse();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
