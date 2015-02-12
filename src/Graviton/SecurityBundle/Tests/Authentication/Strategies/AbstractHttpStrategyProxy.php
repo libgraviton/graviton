@@ -27,7 +27,7 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
      * @param string $header    header
      * @param string $fieldname field name
      *
-     * @return void
+     * @return string
      */
     public function extractFieldInfo($header, $fieldname)
     {

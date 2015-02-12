@@ -127,7 +127,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      *
      * @param Contract $contract provided contract
      *
-     * @return array
+     * @return string[]
      */
     private function getContractRoles(Contract $contract)
     {

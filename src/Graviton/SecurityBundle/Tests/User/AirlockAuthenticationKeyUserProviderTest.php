@@ -146,7 +146,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * @param array $methods methods to mock
+     * @param string[] $methods methods to mock
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|\GravitonDyn\ContractBundle\Model\Contract
      */

@@ -19,7 +19,7 @@ use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
 class SecurityContractTest extends GravitonSecurityBundleTestCase
 {
     /**
-     * @param array $methods methods to mock
+     * @param string[] $methods methods to mock
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|\GravitonDyn\ContractBundle\Document\Contract
      */
