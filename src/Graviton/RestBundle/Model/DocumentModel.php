@@ -75,10 +75,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int) $request->query->get(
-            'perPage',
-            $request->query->get('per_page', 10)
-        );
+        $numberPerPage = (int) $request->query->get('perPage', 10);
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         // *** do we have an RQL expression, do we need to filter data?
