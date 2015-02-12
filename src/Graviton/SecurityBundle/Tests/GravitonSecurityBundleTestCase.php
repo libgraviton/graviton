@@ -1,4 +1,7 @@
 <?php
+/**
+ * WebTestCase for security tests
+ */
 
 namespace Graviton\SecurityBundle\Tests;
 
@@ -21,8 +24,8 @@ class GravitonSecurityBundleTestCase extends WebTestCase
     /**
      * Provides a HttpClient base on the Graviton\AppKernel
      *
-     * @param array $options
-     * @param array $server
+     * @param array $options environment and debug option for kernel
+     * @param array $server  server params
      *
      * @return \Symfony\Bundle\FrameworkBundle\Client
      */
@@ -60,7 +63,7 @@ class GravitonSecurityBundleTestCase extends WebTestCase
      */
     protected static function getKernelClass()
     {
-        require_once __DIR__ . '/../../../../app/AppKernel.php';
+        include_once __DIR__ . '/../../../../app/AppKernel.php';
 
         return 'AppKernel';
     }

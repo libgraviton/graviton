@@ -1,4 +1,7 @@
 <?php
+/**
+ * check to see if reading from header field works
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -21,6 +24,10 @@ class HeaderFieldStrategyTest extends GravitonSecurityBundleTestCase
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
+     *
+     * @param string $headerFieldValue header to test with
+     *
+     * @return void
      */
     public function testApply($headerFieldValue)
     {
@@ -45,6 +52,9 @@ class HeaderFieldStrategyTest extends GravitonSecurityBundleTestCase
         );
     }
 
+    /**
+     * @return array<string>
+     */
     public function stringProvider()
     {
         return array(

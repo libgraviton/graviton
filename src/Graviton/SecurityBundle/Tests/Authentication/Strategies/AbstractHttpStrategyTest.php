@@ -1,7 +1,9 @@
 <?php
+/**
+ * test abstract strategy
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
-
 
 use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
 use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
@@ -18,6 +20,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AbstractHttpStrategyTest extends GravitonSecurityBundleTestCase
 {
+    /**
+     * check that arguments are required
+     *
+     * @return void
+     */
     public function testExtractFieldInfoExpectingException()
     {
         $strategy = new AbstractHttpStrategyProxy();
@@ -29,6 +36,11 @@ class AbstractHttpStrategyTest extends GravitonSecurityBundleTestCase
 
     /**
      * @dataProvider fieldInfoProvider
+     *
+     * @param boolean $hasField     is field in data
+     * @param string  $fieldContent test content for field
+     *
+     * @return void
      */
     public function testValidateFieldExpectingException($hasField, $fieldContent = '')
     {
@@ -56,6 +68,9 @@ class AbstractHttpStrategyTest extends GravitonSecurityBundleTestCase
         $strategy->validateField($headerMock, $fieldName);
     }
 
+    /**
+     * @return array<string>
+     */
     public function fieldInfoProvider()
     {
         return array(

@@ -1,4 +1,7 @@
 <?php
+/**
+ * test creation of models via model-factory
+ */
 
 namespace Graviton\SecurityBundle\User\Model;
 
@@ -17,6 +20,11 @@ class ModelFactoryTest extends \PHPUnit_Framework_TestCase
      * @dataProvider modelServiceIdProvider
      * @covers \Graviton\SecurityBundle\User\Model\ModelFactory::__construct
      * @covers \Graviton\SecurityBundle\User\Model\ModelFactory::create
+     *
+     * @param string   $serviceId       service id
+     * @param string[] $expectedService resulting class
+     *
+     * @return void
      */
     public function testCreate($serviceId, $expectedService)
     {
@@ -52,6 +60,11 @@ class ModelFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedService, get_class($service));
     }
 
+    /**
+     * provide service ids for testCreate()
+     *
+     * @return string<string>
+     */
     public function modelServiceIdProvider()
     {
         return array(

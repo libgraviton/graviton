@@ -1,4 +1,7 @@
 <?php
+/**
+ * test for airlock based auth user provider
+ */
 
 namespace Graviton\SecurityBundle\User;
 
@@ -13,18 +16,25 @@ namespace Graviton\SecurityBundle\User;
  */
 class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * skip tests if GravitonDyn is not in use
+     *
+     * @return void
+     */
     public function setUp()
     {
-
         if (!file_exists(__DIR__.'/../../../../GravitonDyn/ContractBundle/Document/Contract.php')) {
-
             $this->markTestSkipped(
                 'Mandatory generated class not available: \GravitonDyn\ContractBundle\Document\Contract'
             );
         }
     }
 
-
+    /**
+     * test getting a user by api key
+     *
+     * @return void
+     */
     public function testGetUsernameForApiKey()
     {
         $contractDocumentMock = $this->getMockBuilder('\GravitonDyn\ContractBundle\Document\Contract')
@@ -55,6 +65,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $this->assertSame('515616161648151', $provider->getUsernameForApiKey('51512011'));
     }
 
+    /**
+     * test loading a user by name
+     *
+     * @return void
+     */
     public function testLoadUserByUsername()
     {
         $contractDocumentMock = $this->getMock('\GravitonDyn\ContractBundle\Document\Contract');
@@ -73,6 +88,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         );
     }
 
+    /**
+     * test for not found user by name
+     *
+     * @return void
+     */
     public function testGetUserByNameExpectingException()
     {
         $contractModelMock = $this->getContractModelMock(array('find'));
@@ -88,6 +108,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $provider->loadUserByUsername('515616161648151');
     }
 
+    /**
+     * test for refreshUser being unsupported
+     *
+     * @return void
+     */
     public function testRefreshUser()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());
@@ -98,6 +123,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 
     }
 
+    /**
+     * test supportsClass method
+     *
+     * @return void
+     */
     public function testSupportsClass()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());
@@ -116,7 +146,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * @param array $methods
+     * @param array $methods methods to mock
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|\GravitonDyn\ContractBundle\Model\Contract
      */

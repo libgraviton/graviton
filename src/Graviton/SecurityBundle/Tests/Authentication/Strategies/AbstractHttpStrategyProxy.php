@@ -1,4 +1,7 @@
 <?php
+/**
+ * proxy class for testing abstract strategy
+ */
 
 namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
@@ -18,6 +21,13 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
 {
     /**
      * {@inheritdoc}
+     *
+     * @todo check why fieldname is not camel case here
+     *
+     * @param string $header    header
+     * @param string $fieldname field name
+     *
+     * @return void
      */
     public function extractFieldInfo($header, $fieldname)
     {
@@ -26,6 +36,11 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @param string $header    header
+     * @param string $fieldName field name
+     *
+     * @return void
      */
     public function validateField($header, $fieldName)
     {
@@ -34,6 +49,10 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @param Request $request request
+     *
+     * @return void
      */
     public function apply(Request $request)
     {

@@ -1,4 +1,7 @@
 <?php
+/**
+ * check if reading from cookie works
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -22,6 +25,10 @@ class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
+     *
+     * @param string $fieldValue value to check
+     *
+     * @return void
      */
     public function testApply($fieldValue)
     {
@@ -49,6 +56,9 @@ class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
         $this->assertSame($fieldValue, $strategy->apply($client->getRequest(), CookieFieldStrategy::COOKIE_FIELD));
     }
 
+    /**
+     * @return array<string>
+     */
     public function stringProvider()
     {
         return array(
