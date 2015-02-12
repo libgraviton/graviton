@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "16e654da2260fd1e72cc2d7200e1a014",
+    "hash": "169bd0913a8e232f9ffbd11077fa87d5",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3592,54 +3592,6 @@
             "time": "2014-10-13 12:58:55"
         },
         {
-            "name": "fabpot/php-cs-fixer",
-            "version": "v0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "ff49782b0d87007ec675216f3677644778489d7a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/ff49782b0d87007ec675216f3677644778489d7a",
-                "reference": "ff49782b0d87007ec675216f3677644778489d7a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.6",
-                "sebastian/diff": "1.1.*",
-                "symfony/console": "~2.1",
-                "symfony/filesystem": "~2.1",
-                "symfony/finder": "~2.1"
-            },
-            "bin": [
-                "php-cs-fixer"
-            ],
-            "type": "application",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.4.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\CS": "."
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "A script to automatically fix Symfony Coding Standard",
-            "time": "2014-01-07 09:13:46"
-        },
-        {
             "name": "libgraviton/codesniffer",
             "version": "dev-feature/modernize",
             "target-dir": "CodeSniffer/Standards/ENTB",
@@ -4751,7 +4703,6 @@
         "libgraviton/swagger-ui": 20,
         "liip/functional-test-bundle": 20,
         "phpmd/phpmd": 20,
-        "fabpot/php-cs-fixer": 20,
         "libgraviton/codesniffer": 20
     },
     "prefer-stable": true,
