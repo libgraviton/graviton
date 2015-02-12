@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "54774f986d3b84c34663a834bd9bf2af",
+    "hash": "79c40e7967c118571cf97c0ff8a5f2bd",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2762,17 +2762,17 @@
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.4",
+            "version": "v3.0.5",
             "target-dir": "Sensio/Bundle/FrameworkExtraBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "b3bc3e67c8b6b68b18d727012183520d35ee762a"
+                "reference": "a72ce75a73d86c3593eceed5650b58fd3807a0cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/b3bc3e67c8b6b68b18d727012183520d35ee762a",
-                "reference": "b3bc3e67c8b6b68b18d727012183520d35ee762a",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/a72ce75a73d86c3593eceed5650b58fd3807a0cf",
+                "reference": "a72ce75a73d86c3593eceed5650b58fd3807a0cf",
                 "shasum": ""
             },
             "require": {
@@ -2813,21 +2813,21 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2014-12-02 09:52:52"
+            "time": "2015-02-05 07:39:23"
         },
         {
             "name": "sensio/generator-bundle",
-            "version": "v2.5.2",
+            "version": "v2.5.3",
             "target-dir": "Sensio/Bundle/GeneratorBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioGeneratorBundle.git",
-                "reference": "4b09746520a826a7bf34a466ba31c7d8740fef7e"
+                "reference": "e50108c2133ee5c9c484555faed50c17a61221d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/4b09746520a826a7bf34a466ba31c7d8740fef7e",
-                "reference": "4b09746520a826a7bf34a466ba31c7d8740fef7e",
+                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/e50108c2133ee5c9c484555faed50c17a61221d3",
+                "reference": "e50108c2133ee5c9c484555faed50c17a61221d3",
                 "shasum": ""
             },
             "require": {
@@ -2861,7 +2861,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2015-02-11 07:21:23"
+            "time": "2015-03-17 06:36:52"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -2972,16 +2972,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.3.1",
+            "version": "v5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "c5f963e7f9d6f6438fda4f22d5cc2db296ec621a"
+                "reference": "31454f258f10329ae7c48763eb898a75c39e0a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/c5f963e7f9d6f6438fda4f22d5cc2db296ec621a",
-                "reference": "c5f963e7f9d6f6438fda4f22d5cc2db296ec621a",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/31454f258f10329ae7c48763eb898a75c39e0a9f",
+                "reference": "31454f258f10329ae7c48763eb898a75c39e0a9f",
                 "shasum": ""
             },
             "require": {
@@ -2993,7 +2993,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.3-dev"
+                    "dev-master": "5.4-dev"
                 }
             },
             "autoload": {
@@ -3020,7 +3020,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2014-12-05 14:17:14"
+            "time": "2015-03-14 06:06:39"
         },
         {
             "name": "symfony/assetic-bundle",
@@ -3205,16 +3205,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.6.4",
+            "version": "v2.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "23b647f1e4eeb24a457d3c47f5f5046377d5a3bf"
+                "reference": "80833da9d04b004fa59fd23102e6dfad80c98106"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/23b647f1e4eeb24a457d3c47f5f5046377d5a3bf",
-                "reference": "23b647f1e4eeb24a457d3c47f5f5046377d5a3bf",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/80833da9d04b004fa59fd23102e6dfad80c98106",
+                "reference": "80833da9d04b004fa59fd23102e6dfad80c98106",
                 "shasum": ""
             },
             "require": {
@@ -3278,7 +3278,8 @@
                 "ircmaxell/password-compat": "~1.0",
                 "monolog/monolog": "~1.11",
                 "ocramius/proxy-manager": "~0.4|~1.0",
-                "propel/propel1": "~1.6"
+                "propel/propel1": "~1.6",
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -3317,7 +3318,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2015-02-02 18:02:30"
+            "time": "2015-03-17 14:58:46"
         },
         {
             "name": "twig/extensions",
@@ -3918,12 +3919,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "47cce9883c58970fc2739d90990422e5d0c949bb"
+                "reference": "0af3326435e98143c808ab73b8e96d016987bbfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/47cce9883c58970fc2739d90990422e5d0c949bb",
-                "reference": "47cce9883c58970fc2739d90990422e5d0c949bb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0af3326435e98143c808ab73b8e96d016987bbfb",
+                "reference": "0af3326435e98143c808ab73b8e96d016987bbfb",
                 "shasum": ""
             },
             "require": {
@@ -3985,7 +3986,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-03-02 06:10:41"
+            "time": "2015-03-16 14:58:13"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
