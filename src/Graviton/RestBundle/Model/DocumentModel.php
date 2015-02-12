@@ -81,7 +81,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
         if (!empty($filter)) {
-
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
