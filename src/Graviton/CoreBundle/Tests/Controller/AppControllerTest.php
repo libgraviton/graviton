@@ -78,6 +78,36 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if we can get list of apps, paged and with filters..
+     *
+     * @return void
+     */
+    public function testGetAppWithFilteringAndPaging()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?perPage=1&q='.urlencode('eq(showInMenu,true)'));
+        $response = $client->getResponse();
+
+        $this->assertEquals(1, count($client->getResults()));
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void

@@ -95,22 +95,31 @@ class SelfLinkResponseListener implements ContainerAwareInterface
      * @param Request $request   request object
      *
      * @return array
+     *
+     * @todo we need to refactor this as soon as we add another param, it already mixes paging and filtering too much
      */
     private function generateParameters($routeType, Request $request)
     {
         // for now we assume that everything except collections has an id
         // this is also flawed since it does not handle search actions
         $parameters = array();
+
         if ($routeType == 'post') {
             // handle post request by rewriting self link to newly created resource
             $parameters = array('id' => $request->get('id'));
         } elseif ($routeType != 'all') {
             $parameters = array('id' => $request->get('id'));
-        } elseif ($request->attributes->get('paging')) {
+        }
+
+        if ($routeType == 'all' && $request->attributes->get('paging')) {
             $parameters = array('page' => $request->get('page', 1));
             if ($request->attributes->get('perPage')) {
-                $parameters['per_page'] = $request->attributes->get('perPage');
+                $parameters['perPage'] = $request->attributes->get('perPage');
             }
+        }
+
+        if ($routeType == 'all' && $request->attributes->get('filtering')) {
+            $parameters = array('q' => $request->get('q', ''));
         }
 
         return $parameters;
