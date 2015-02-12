@@ -15,8 +15,8 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 {
     public function setUp()
     {
-        if (!class_exists('\GravitonDyn\ContractBundle\Document\Contract')) {
-
+        if (!is_a('\GravitonDyn\ContractBundle\Document\Contract','PHPUnit_Framework_MockObject_MockObject') ||
+            !class_exists('\GravitonDyn\ContractBundle\Document\Contract')) {
             $this->markTestSkipped(
                 'Mandatory generated class not available: \GravitonDyn\ContractBundle\Document\Contract'
             );
