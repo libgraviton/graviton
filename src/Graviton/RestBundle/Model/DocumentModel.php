@@ -79,9 +79,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         // *** do we have an RQL expression, do we need to filter data?
-        if ($request->query->get('q') != null && strlen($request->query->get('q')) > 0) {
-
-            $filter = $request->query->get('q');
+        $filter = $request->query->get('q');
+        if (!empty($filter)) {
 
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
