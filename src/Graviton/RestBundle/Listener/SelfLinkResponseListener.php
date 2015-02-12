@@ -95,6 +95,8 @@ class SelfLinkResponseListener implements ContainerAwareInterface
      * @param Request $request   request object
      *
      * @return array
+     *
+     * @todo we need to refactor this as soon as we add another param, it already mixes paging and filtering too much
      */
     private function generateParameters($routeType, Request $request)
     {
