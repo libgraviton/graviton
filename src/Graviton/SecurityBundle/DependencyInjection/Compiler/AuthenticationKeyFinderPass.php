@@ -65,5 +65,4 @@ class AuthenticationKeyFinderPass implements CompilerPassInterface
             }
         }
     }
-
 }
