@@ -6,14 +6,16 @@
     <services>
         <service id="graviton_airlock_authentication_key_authenticator"
                  class="Graviton\SecurityBundle\Authentication\AirlockAuthenticationKeyAuthenticator"
-        >
+                >
             <argument type="service" id="graviton_airlock_authentication_key_user_provider"/>
             <!-- This service id is an alias defined in the parameters.yml -->
             <argument type="service" id="graviton.security.authentication.strategy"/>
             <argument type="service" id="logger"/>
         </service>
 
-        <!-- Strategies used by AuthenticationKeyAuthenticator -->
+        <!--
+            Strategies used by AuthenticationKeyAuthenticator
+        -->
         <service id="graviton.security.authentication.strategy.header"
                  class="Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy">
             <tag name="graviton.security.authenticationkey.finder"/>
@@ -24,9 +26,11 @@
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 
-        <!-- Services related to the AuthenticationUserProvider -->
+        <!--
+            Services related to the AuthenticationUserProvider
+        -->
         <service id="graviton.authentication.user_provider.model.factory"
-                 class="Graviton\SecurityBundle\User\Model\ModelFactory" />
+                 class="Graviton\SecurityBundle\User\Model\ModelFactory"/>
 
         <service id="graviton.authentication.user_provider.model"
                  class="Graviton\RestBundle\Model\ModelInterface"
@@ -42,5 +46,16 @@
                  class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider">
             <argument type="service" id="graviton.authentication.user_provider.model"/>
         </service>
+
+        <!--
+            Commands
+        -->
+        <service id="graviton.security.authenticationkey.finder.command"
+                 class="Graviton\SecurityBundle\Command\AuthenticationKeyFinderCommand">
+            <argument type="service" id="service_container"/>
+            <!--<argument type="service" id="console_logger"/>-->
+            <tag name="console.command"/>
+        </service>
+
     </services>
 </container>

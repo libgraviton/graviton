@@ -50,6 +50,9 @@ parameters:
     graviton.authentication.user_provider.model: gravitondyn.contract.model.contract
 ```
 
+In addition there is a command (»graviton:security:authenication:keyfinder:strategies« short: »g:s:a:k:s») gathering a 
+list of authentication key finder strategies (aka services tagged as defined above). 
+
 **NOTE**:
 The service referenced in the parameter must implement the »\Graviton\RestBundle\Model\ModelInterface«.
 
