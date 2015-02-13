@@ -165,6 +165,13 @@ class Swagger
                     );
                     */
 
+                    $thisPath['parameters'][] = array(
+                        'name' => 'q',
+                        'in' => 'query',
+                        'description' => 'Optional RQL filter',
+                        'required' => false,
+                        'type' => 'string'
+                    );
                     // paging params
                     $thisPath['parameters'][] = array(
                         'name' => 'page',
