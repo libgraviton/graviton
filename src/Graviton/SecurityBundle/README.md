@@ -34,11 +34,11 @@ Authentication
 
 The authentication part of the bundle does provide the ability by changing the way authentication information are
 provided by Airlock by configuration. 
-The configuration is done by setting the parameter »graviton.security.authentication.strategy« to the class to be used.
+The configuration is done by setting the parameter »graviton.security.authentication.strategy« to the service to be used.
  
 ```yml
 parameters:
-    graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\MyApiKeyExtractionStrategy
+    graviton.security.authentication.strategy: <SERVICE_ID_OF_MY_AUTHENTICATION_STRATEGY>
 ```
 
 It is further possible to define the class to be used to load the user object for the authentication process. 

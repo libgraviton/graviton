@@ -4,6 +4,27 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="graviton_airlock_authentication_key_authenticator"
+                 class="Graviton\SecurityBundle\Authentication\AirlockAuthenticationKeyAuthenticator"
+        >
+            <argument type="service" id="graviton_airlock_authentication_key_user_provider"/>
+            <!-- This service id is an alias defined in the parameters.yml -->
+            <argument type="service" id="graviton.security.authentication.strategy"/>
+            <argument type="service" id="logger"/>
+        </service>
+
+        <!-- Strategies used by AuthenticationKeyAuthenticator -->
+        <service id="graviton.security.authentication.strategy.header"
+                 class="Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy">
+            <tag name="graviton.security.authenticationkey.finder"/>
+        </service>
+
+        <service id="graviton.security.authentication.strategy.cookie"
+                 class="Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy">
+            <tag name="graviton.security.authenticationkey.finder"/>
+        </service>
+
+        <!-- Services related to the AuthenticationUserProvider -->
         <service id="graviton.authentication.user_provider.model.factory"
                  class="Graviton\SecurityBundle\User\Model\ModelFactory" />
 
@@ -11,36 +32,15 @@
                  class="Graviton\RestBundle\Model\ModelInterface"
                  factory-service="graviton.authentication.user_provider.model.factory"
                  factory-method="create"
-        />
+                />
 
         <service id="graviton.authentication.user_provider.model.noop"
                  class="Graviton\SecurityBundle\User\Model\NullModel"
-        />
-
-        <service id="graviton.security.authentication.strategy.header_field.class"
-                 class="Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy">
-            <tag name="graviton.authentication.airlock.strategy"/>
-        </service>
-
-        <service id="graviton.security.authentication.strategy.cookie_field.class"
-                 class="Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy">
-            <tag name="graviton.authentication.airlock.strategy"/>
-        </service>
+                />
 
         <service id="graviton_airlock_authentication_key_user_provider"
                  class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider">
             <argument type="service" id="graviton.authentication.user_provider.model"/>
-        </service>
-
-        <service id="graviton.sercurity.authentication.strategy"
-                 class="%graviton.security.authentication.strategy%"/>
-
-        <service id="graviton_airlock_authentication_key_authenticator"
-                 class="Graviton\SecurityBundle\Authentication\AirlockAuthenticationKeyAuthenticator"
-        >
-            <argument type="service" id="graviton_airlock_authentication_key_user_provider"/>
-            <argument type="service" id="graviton.sercurity.authentication.strategy"/>
-            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>
