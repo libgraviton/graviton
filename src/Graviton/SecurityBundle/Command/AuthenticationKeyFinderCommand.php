@@ -2,8 +2,6 @@
 
 namespace Graviton\SecurityBundle\Command;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,20 +21,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class AuthenticationKeyFinderCommand extends Command
 {
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var array
      */
     private $strategies = array();
 
-    public function __construct(ContainerInterface $container)
-    {
-        parent::__construct();
 
-        $this->container = $container;
+    /**
+     * @param string $service
+     */
+    public function addService($service)
+    {
+        $this->strategies[] = $service;
+        $this->strategies = array_unique($this->strategies);
     }
 
     /**
@@ -46,7 +42,7 @@ class AuthenticationKeyFinderCommand extends Command
     {
         $this
             ->setName('graviton:security:authenication:keyfinder:strategies')
-            ->setDescription('Greet someone')
+            ->setDescription('Shows a list of available keyfinder strategies.')
             ->addOption(
                 'list',
                 'l',
@@ -66,14 +62,5 @@ class AuthenticationKeyFinderCommand extends Command
             implode(PHP_EOL . "\t* ", $this->strategies) .
             "</info>"
         );
-    }
-
-    /**
-     * @param string $service
-     */
-    public function addService($service)
-    {
-        $this->strategies[] = $service;
-        $this->strategies = array_unique($this->strategies);
     }
 }
