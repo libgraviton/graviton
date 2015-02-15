@@ -52,8 +52,6 @@
         -->
         <service id="graviton.security.authenticationkey.finder.command"
                  class="Graviton\SecurityBundle\Command\AuthenticationKeyFinderCommand">
-            <argument type="service" id="service_container"/>
-            <!--<argument type="service" id="console_logger"/>-->
             <tag name="console.command"/>
         </service>
 
