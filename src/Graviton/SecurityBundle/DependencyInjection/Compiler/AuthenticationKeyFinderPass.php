@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lapistano
- * Date: 13.02.15
- * Time: 10:31
- */
 
 namespace Graviton\SecurityBundle\DependencyInjection\Compiler;
 
@@ -52,10 +46,13 @@ class AuthenticationKeyFinderPass implements CompilerPassInterface
                 );
             } else {
 
+                /** @var \Psr\Log\LoggerInterface $logger*/
                 if ($container->hasDefinition('logger')) {
+
+                    /** @var \Psr\Log\LoggerInterface $logger */
                     $logger = $container->getDefinition('logger');
 
-                    $logger->warming(
+                    $logger->warning(
                         sprintf(
                             'The service (%s) is not registered in the application kernel.',
                             $serviceId
