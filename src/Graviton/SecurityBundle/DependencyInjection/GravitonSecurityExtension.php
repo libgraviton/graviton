@@ -30,4 +30,18 @@ class GravitonSecurityExtension extends GravitonBundleExtension
     {
         return __DIR__ . '/../Resources/config';
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        parent::load($configs, $container);
+
+        // define alias for the strategy to extract the authentication key from the Airlock request.
+        $container->setAlias(
+            'graviton.security.authentication.strategy',
+            $container->getParameter('graviton.security.authentication.strategy')
+        );
+    }
 }
