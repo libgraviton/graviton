@@ -33,7 +33,7 @@ final class HeaderExtractStrategy implements StrategyInterface
     /**
      * Shall enforce the defined strategy to be applied
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request Information to be processed.
+     * @param Request $request Information to be processed.
      *
      * @return array
      */
@@ -52,7 +52,7 @@ final class HeaderExtractStrategy implements StrategyInterface
     /**
      * Extracts every mandatroy field from the request header.
      *
-     * @param \Symfony\Component\HttpFoundation\HeaderBag $header object representation of the request header.
+     * @param HeaderBag $header object representation of the request header.
      *
      * @return array
      */
@@ -72,8 +72,8 @@ final class HeaderExtractStrategy implements StrategyInterface
     /**
      * Verifies that the provided header has the expected/mandatory fields.
      *
-     * @param \Symfony\Component\HttpFoundation\HeaderBag $header    object representation of the request header.
-     * @param string                                      $fieldName Name of the header field to be validated.
+     * @param HeaderBag $header    object representation of the request header.
+     * @param string    $fieldName Name of the header field to be validated.
      *
      * @return void
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
