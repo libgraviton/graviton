@@ -37,6 +37,10 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param ContainerBuilder $container container to add compiler-pass to
+     *
+     * @return void
      */
     public function build(ContainerBuilder $container)
     {

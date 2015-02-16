@@ -33,6 +33,11 @@ class GravitonSecurityExtension extends GravitonBundleExtension
 
     /**
      * {@inheritDoc}
+     *
+     * @param array            $configs   configs to load
+     * @param ContainerBuilder $container builder used to load
+     *
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {

@@ -1,12 +1,13 @@
 <?php
+/**
+ * Class AuthenticationKeyFinderPassTest
+ */
 
 namespace Graviton\SecurityBundle\Tests\DepedencyInjection\Compiler;
 
 use Graviton\SecurityBundle\DependencyInjection\Compiler\AuthenticationKeyFinderPass;
 
 /**
- * Class AuthenticationKeyFinderPassTest
- *
  * @category GravitonSecurityBundle
  * @package  Graviton
  * @author   Bastian Feder <bastian.feder@swisscom.com>
@@ -15,6 +16,11 @@ use Graviton\SecurityBundle\DependencyInjection\Compiler\AuthenticationKeyFinder
  */
 class AuthenticationKeyFinderPassTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * test process method
+     *
+     * @return void
+     */
     public function testProcess()
     {
         $taggedServiceIds = array(
