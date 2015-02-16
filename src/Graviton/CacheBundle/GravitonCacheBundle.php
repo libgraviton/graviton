@@ -9,8 +9,6 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * GravitonCacheBundle
- *
  * @category GravitonCacheBundle
  * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
