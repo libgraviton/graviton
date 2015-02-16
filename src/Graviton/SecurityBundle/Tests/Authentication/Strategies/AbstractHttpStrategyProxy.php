@@ -20,16 +20,14 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
     /**
      * {@inheritdoc}
      *
-     * @todo check why fieldname is not camel case here
-     *
      * @param string $header    header
-     * @param string $fieldname field name
+     * @param string $fieldName field name
      *
      * @return string
      */
-    public function extractFieldInfo($header, $fieldname)
+    public function extractFieldInfo($header, $fieldName)
     {
-        return parent::extractFieldInfo($header, $fieldname);
+        return parent::extractFieldInfo($header, $fieldName);
     }
 
     /**
