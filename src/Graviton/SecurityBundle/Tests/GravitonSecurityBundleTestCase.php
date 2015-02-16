@@ -63,7 +63,9 @@ class GravitonSecurityBundleTestCase extends WebTestCase
      */
     protected static function getKernelClass()
     {
-        include_once __DIR__ . '/../../../../app/AppKernel.php';
+        // @codingStandardsIgnoreStart
+        require_once __DIR__ . '/../../../../app/AppKernel.php';
+        // @codingStandardsIgnoreEnd
 
         return 'AppKernel';
     }

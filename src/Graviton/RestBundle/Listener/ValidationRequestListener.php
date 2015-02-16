@@ -44,7 +44,6 @@ class ValidationRequestListener
         // only validate on POST and PUT
         // if patch is required, refactor the method or do something else
         $request = $event->getRequest();
-        // @var Response
         $response = $event->getResponse();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
