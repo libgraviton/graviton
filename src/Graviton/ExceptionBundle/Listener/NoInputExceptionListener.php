@@ -12,8 +12,6 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
 /**
  * Listener for no input exceptions
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

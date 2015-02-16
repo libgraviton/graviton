@@ -6,8 +6,6 @@
  * variable. Feel free to replace this if you know about a better was to get some basic
  * ENV variables (as injected by bosh or similar) into the containers param stack.
  *
- * @category Graviton
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch

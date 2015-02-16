@@ -14,8 +14,6 @@ use Graviton\EntityBundle\Document\Country;
 /**
  * Load countries from Resources/data/coutries.json into mongodb
  *
- * @category GravitonEntityBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

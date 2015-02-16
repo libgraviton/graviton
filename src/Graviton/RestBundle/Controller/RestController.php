@@ -25,8 +25,6 @@ use Graviton\RestBundle\Model\ModelInterface;
  * extra functionality you can extend it and overwrite single/all actions.
  * You can also extend the model class to add some extra logic before save
  *
- * @category GravitonRestBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

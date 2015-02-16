@@ -17,8 +17,6 @@ use Symfony\Component\Validator\Mapping\ClassMetadata as SFClassMetaData;
 use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
 
 /**
- * @category GravitonRestBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

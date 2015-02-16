@@ -13,8 +13,6 @@ use Graviton\TestBundle\Test\RestTestCase;
  * These tests mainly cover a radable service by way of the country service. They are important
  * since they contain the complete truth about large parts of the API.
  *
- * @category GravitonEntityBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

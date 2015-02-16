@@ -34,8 +34,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  * executed in the same context as the previous generator tools, and also those
  * used the shell (backtick operator to get git name/email for example).
  *
- * @category GeneratorBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

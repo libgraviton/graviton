@@ -12,8 +12,6 @@ use Symfony\Component\Routing\Route;
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
  * based services (meaning rest services).
  *
- * @category GravitonRestBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

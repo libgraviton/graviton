@@ -14,8 +14,6 @@ use Symfony\Component\Validator\ConstraintValidator;
  * differs from the one in the payload. this confused Doctrine ODM massively so we don't want
  * this to go through.
  *
- * @category GravitonRestBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

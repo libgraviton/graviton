@@ -12,8 +12,6 @@ use Graviton\I18nBundle\Document\Translatable;
 /**
  * trigger update of translation loader cache when translatables are updated
  *
- * @category I18nBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

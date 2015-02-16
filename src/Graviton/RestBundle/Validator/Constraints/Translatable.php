@@ -10,8 +10,6 @@ use Symfony\Component\Validator\Constraint;
 /**
  * Constraint for a strict boolean check (not accepting integers of any kind)
  *
- * @category GravitonRestBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

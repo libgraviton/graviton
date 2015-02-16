@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * reformat exception into json so our REST server never returns html
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

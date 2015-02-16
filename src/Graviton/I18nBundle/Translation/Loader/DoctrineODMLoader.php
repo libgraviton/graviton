@@ -13,8 +13,6 @@ use Symfony\Component\Config\Resource\FileResource;
 /**
  * Load translation string from a doctrine-odm repository
  *
- * @category I18nBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
  * This is just a dummy controller for demonstrating
  * the extension of generated bundles..
  *
- * @category GravitonCoreBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch

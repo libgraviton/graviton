@@ -10,8 +10,6 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 /**
  * FilterResponseListener for adding a ETag header.
  *
- * @category GravitonCacheBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
