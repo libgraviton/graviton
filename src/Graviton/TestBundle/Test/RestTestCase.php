@@ -95,8 +95,8 @@ class RestTestCase extends GravitonTestCase
     /**
      * assert that putting a fetched resource fails
      *
-     * @param string                      $url    url
-     * @param \Graviton\TestBundle\Client $client client to use
+     * @param string $url    url
+     * @param Client $client client to use
      *
      * @return void
      */

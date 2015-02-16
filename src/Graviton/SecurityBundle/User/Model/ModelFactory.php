@@ -19,14 +19,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ModelFactory
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     private $container;
 
     /**
      * Constructor of the class.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container symfony container
+     * @param ContainerInterface $container symfony container
      */
     public function __construct(ContainerInterface $container)
     {
