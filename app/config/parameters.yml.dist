@@ -14,10 +14,10 @@ parameters:
     mongodb.default.server.uri: ~
 
     graviton.log.elasticsearch.host: ~
-    graviton.security.authentication.strategy: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
 
-    vcap.services:
+    vcap.services: ~
 
     jms_serializer.camel_case_naming_strategy.class: ~
 
