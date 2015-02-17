@@ -30,7 +30,9 @@
             Services related to the AuthenticationUserProvider
         -->
         <service id="graviton.authentication.user_provider.model.factory"
-                 class="Graviton\SecurityBundle\User\Model\ModelFactory"/>
+                 class="Graviton\SecurityBundle\User\Model\ModelFactory">
+            <argument type="service" id="service_container" />
+        </service>
 
         <service id="graviton.authentication.user_provider.model"
                  class="Graviton\RestBundle\Model\ModelInterface"
