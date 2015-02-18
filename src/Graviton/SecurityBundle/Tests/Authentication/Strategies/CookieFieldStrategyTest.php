@@ -1,7 +1,7 @@
 <?php
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
-;
+
 use Graviton\TestBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
