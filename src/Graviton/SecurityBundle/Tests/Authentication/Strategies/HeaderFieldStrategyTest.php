@@ -2,7 +2,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
+use Graviton\TestBundle\Test\WebTestCase;
 
 /**
  * Class HeaderFieldStrategyTest
@@ -13,7 +13,7 @@ use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class HeaderFieldStrategyTest extends GravitonSecurityBundleTestCase
+class HeaderFieldStrategyTest extends WebTestCase
 {
     /**
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy::apply
