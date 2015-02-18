@@ -47,7 +47,7 @@ the parameters.yml file. E.g to:
  
 ```yml
 parameters:
-    graviton.authentication.user_provider.model: gravitondyn.contract.model.contract
+    graviton.authentication.user_provider.model: gravitondyn.contract.model.contract  # DEFAULT: null
 ```
 
 In addition there is a command (»graviton:security:authenication:keyfinder:strategies« short: »g:s:a:k:s») gathering a 
@@ -60,6 +60,12 @@ Authorization
 =============
 
 tbd
+
+Dependencies
+------------
+- \Graviton\CoreBundle\Repository\AppRepository
+- \Graviton\RestBundle\Model\ModelInterface ( this should be resolved asap)
+- \Symfony\Component\Security\Core\User\UserInterface
 
 Future things
 -------------
