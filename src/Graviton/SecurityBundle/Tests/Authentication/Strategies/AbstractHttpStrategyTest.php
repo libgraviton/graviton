@@ -2,10 +2,8 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-
 use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
-use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
-use Symfony\Component\HttpFoundation\Request;
+use Graviton\TestBundle\Test\WebTestCase;
 
 /**
  * Class AbstractHttpStrategyTest
@@ -16,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class AbstractHttpStrategyTest extends GravitonSecurityBundleTestCase
+class AbstractHttpStrategyTest extends WebTestCase
 {
     public function testExtractFieldInfoExpectingException()
     {
