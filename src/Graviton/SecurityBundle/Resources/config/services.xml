@@ -41,8 +41,11 @@
                 />
 
         <service id="graviton.authentication.user_provider.model.noop"
-                 class="Graviton\SecurityBundle\User\Model\NullModel"
-                />
+                 class="Graviton\SecurityBundle\User\Model\NullModel">
+          <call method="setRepository">
+            <argument type="service" id="graviton.core.repository.app"/>
+          </call>
+        </service>
 
         <service id="graviton_airlock_authentication_key_user_provider"
                  class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider">
