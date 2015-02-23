@@ -36,7 +36,11 @@ class DirStrategy implements StrategyInterface
     public function load($input)
     {
         $directory = new \RecursiveDirectoryIterator($input);
-        $jsonFiles = new \RecursiveRegexIterator($directory, '/.*\/[^_]\w+\.json$/i', \RecursiveRegexIterator::GET_MATCH);
+        $jsonFiles = new \RecursiveRegexIterator(
+            $directory,
+            '/.*\/[^_]\w+\.json$/i',
+            \RecursiveRegexIterator::GET_MATCH
+        );
 
         $results = array();
         foreach ($jsonFiles as $file) {
