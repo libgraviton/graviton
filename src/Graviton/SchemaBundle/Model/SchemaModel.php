@@ -2,7 +2,6 @@
 
 namespace Graviton\SchemaBundle\Model;
 
-use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
