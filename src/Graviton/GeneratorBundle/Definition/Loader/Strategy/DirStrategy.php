@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinitions from a dir
+ * load all JsonDefinitions in a dir except those with _ at the start of their name
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -27,25 +27,39 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * try loading all .json files in a dir except those with at the start of their name
-     *
      * @param string|null $input input from command
      *
      * @return JsonDefinition[]
      */
     public function load($input)
     {
+        $results = array();
+        foreach ($this->getIterator($input)  as $file) {
+            if ($this->checkFile($input, $file)) {
+                $results[] = new JsonDefinition($file[0]);
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * @return IteratorInterface
+     */
+    protected function getIterator($input)
+    {
         $directory = new \RecursiveDirectoryIterator($input);
-        $jsonFiles = new \RecursiveRegexIterator(
+        return new \RecursiveRegexIterator(
             $directory,
             '/.*\/[^_]\w+\.json$/i',
             \RecursiveRegexIterator::GET_MATCH
         );
+    }
 
-        $results = array();
-        foreach ($jsonFiles as $file) {
-            $results[] = new JsonDefinition($file[0]);
-        }
-        return $results;
+    /**
+     * @return true
+     */
+    public function checkFile($input, $file)
+    {
+        return true;
     }
 }

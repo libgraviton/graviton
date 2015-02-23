@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a dir
+ * load JsonDefinition from a dir if json files are in a subdir called resources/definition
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ScanStrategy implements StrategyInterface
+class ScanStrategy extends DirStrategy
 {
     /**
      * @var string
@@ -46,32 +46,29 @@ class ScanStrategy implements StrategyInterface
     }
 
     /**
-     * load from a directory if json files are in a subdir called resources/definition
-     *
      * @param string|null $input input from command
      *
-     * @return JsonDefinition[]
+     * @return IteratorInterface
      */
-    public function load($input)
+    protected function getIterator($input)
     {
-        $testMode = strpos($input, '/Tests/') !== 0;
-
-        // find json files with resources/definition in their path
         $directory = new \RecursiveDirectoryIterator($this->scanDir);
         $iterator = new \RecursiveIteratorIterator($directory);
-        $jsonFiles = new \RegexIterator(
+        return new \RegexIterator(
             $iterator,
             '/.*\/resources\/definition\/[^_].+\.json$/i',
             \RegexIterator::GET_MATCH
         );
+    }
 
-        $results = array();
-        foreach ($jsonFiles as $file) {
-            // skip files in Tests dirs (wasn't easy to do in the regex above to it's here)
-            if ($testMode || !strpos($file[0], '/Tests/')) {
-                $results[] = new JsonDefinition($file[0]);
-            }
-        }
-        return $results;
+    /**
+     * @param string|null $input input from command
+     * @param string|null $input input from command
+     *
+     * @return true
+     */
+    public function checkFile($input, $file)
+    {
+        return (strpos($input, '/Tests/') !== 0) || !strpos($file[0], '/Tests/');
     }
 }
