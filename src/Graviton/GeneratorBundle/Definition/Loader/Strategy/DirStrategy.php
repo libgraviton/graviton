@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a file
+ * load JsonDefinitions from a dir
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -27,7 +27,7 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * load
+     * try loading all .json files in a dir except those with at the start of their name
      *
      * @param string|null $input input from command
      *

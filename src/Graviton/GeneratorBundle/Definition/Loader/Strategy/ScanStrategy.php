@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a file
+ * load JsonDefinition from a dir
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -46,7 +46,7 @@ class ScanStrategy implements StrategyInterface
     }
 
     /**
-     * load
+     * load from a directory if json files are in a subdir called resources/definition
      *
      * @param string|null $input input from command
      *
