@@ -60,7 +60,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonCacheBundle(),
             new GravitonLogBundle(),
             new GravitonSecurityBundle(),
-            new GravitonSwaggerBundle()
+            new GravitonSwaggerBundle(),
         );
     }
 }
