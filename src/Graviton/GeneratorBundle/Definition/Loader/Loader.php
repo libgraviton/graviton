@@ -11,7 +11,7 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader;
 
-use Graviton\GeneratorBundle\Definition\Strategy\StrategyInterface;
+use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -21,6 +21,11 @@ use Graviton\GeneratorBundle\Definition\Strategy\StrategyInterface;
 class Loader implements LoaderInterface
 {
     /**
+     * @var StrategyInterface[]
+     */
+    protected $strategies = array();
+
+    /**
      * add a strategy to the loader
      *
      * @param StrategyInterface $strategy strategy to add
@@ -29,6 +34,7 @@ class Loader implements LoaderInterface
      */
     public function addStrategy(StrategyInterface $strategy)
     {
+        $this->strategies[] = $strategy;
     }
 
     /**
@@ -38,7 +44,12 @@ class Loader implements LoaderInterface
      *
      * @return JsonDefinition[]
      */
-    public function load()
+    public function load($input)
     {
+        foreach ($this->strategies as $strategy) {
+            if ($strategy->accepts($input)) {
+                return $strategy->load($input);
+            }
+        }
     }
 }
