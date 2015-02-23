@@ -165,18 +165,18 @@ class ProductControllerTest extends RestTestCase
      */
     private function assertIsProductSchema(\stdClass $schema)
     {
-        $this->assertEquals('Product', $schema->title->en);
-        $this->assertEquals('A product.', $schema->description->en);
+        $this->assertEquals('Product', $schema->title);
+        $this->assertEquals('A product.', $schema->description);
         $this->assertEquals('object', $schema->type);
 
         $this->assertEquals('integer', $schema->properties->id->type);
-        $this->assertEquals('ID', $schema->properties->id->title->en);
-        $this->assertEquals('Unique identifier for a product.', $schema->properties->id->description->en);
+        $this->assertEquals('ID', $schema->properties->id->title);
+        $this->assertEquals('Unique identifier for a product.', $schema->properties->id->description);
         $this->assertContains('id', $schema->required);
 
         $this->assertEquals('object', $schema->properties->name->type);
-        $this->assertEquals('Name', $schema->properties->name->title->en);
-        $this->assertEquals('Display name for a product.', $schema->properties->name->description->en);
+        $this->assertEquals('Name', $schema->properties->name->title);
+        $this->assertEquals('Display name for a product.', $schema->properties->name->description);
         $this->assertEquals('string', $schema->properties->name->properties->en->type);
         $this->assertContains('name', $schema->required);
     }
