@@ -34,7 +34,7 @@ class DirStrategy implements StrategyInterface
     public function load($input)
     {
         $results = array();
-        foreach ($this->getIterator($input)  as $file) {
+        foreach ($this->getIterator($input) as $file) {
             if ($this->checkFile($input, $file)) {
                 $results[] = new JsonDefinition($file[0]);
             }
