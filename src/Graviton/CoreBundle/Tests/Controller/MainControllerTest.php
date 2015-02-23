@@ -62,7 +62,7 @@ class MainControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="apps"; type="application/json"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
     }
 
@@ -77,6 +77,8 @@ class MainControllerTest extends RestTestCase
         $client->request('GET', '/');
 
         $results = $client->getResults();
+
+        var_dump($results);
 
         $this->assertEquals(
             'Please look at the Link headers of this response for further information.',

@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\Routing\Router;
 
 /**
  * MainController
@@ -63,53 +64,22 @@ class MainController implements ContainerAwareInterface
      */
     public function indexAction()
     {
-        $response = $this->container->get("graviton.rest.response");
-        $response->setStatusCode(Response::HTTP_OK);
+        /** @var \Symfony\Component\Routing\Router $router */
         $router = $this->container->get('router');
 
-        $links = LinkHeader::fromString('');
-        $links->add(
-            new LinkHeaderItem(
-                $router->generate('graviton.core.rest.app.all', array(), true),
-                array(
-                    'rel' => 'apps',
-                    'type' => 'application/json'
-                )
-            )
-        );
-
-        $response->headers->set('Link', (string) $links);
+        /** @var Response $response */
+        $response = $this->container->get("graviton.rest.response");
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
-        $mainPage->services = array();
-
-        $restUtils = $this->container->get('graviton.rest.restutils');
-        $optionRoutes = $restUtils->getOptionRoutes();
-
-        $services = array_map(
-            function ($routeName) use ($router) {
-                list($app, $bundle, $rest, $document) = explode('.', $routeName);
-                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
-
-                return array(
-                    '$ref' => $router->generate($routeName, array(), true),
-                    'profile' => $router->generate($schemaRoute, array(), true),
-                );
-            },
-            array_keys($optionRoutes)
+        $mainPage->services = $this->determineServices(
+            $router,
+            $this->container->get('graviton.rest.restutils')->getOptionRoutes()
         );
 
-        $sortArr = array();
-        foreach ($services as $key => $val) {
-            $sortArr[$key] = $val['$ref'];
-        }
-
-        array_multisort($sortArr, SORT_ASC, $services);
-
-        $mainPage->services = array_values($services);
-
         $response->setContent(json_encode($mainPage));
+        $response->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Link', $this->prepareLinkHeader($router));
 
         // todo: make sure, that the correct content type is set.
         // todo: this should be covered by a kernel.response event listener?
@@ -117,11 +87,62 @@ class MainController implements ContainerAwareInterface
 
         return $response;
 
-        //todo:  use this in case the view layer does work properly again ;)
 //        return $this->render(
 //            'GravitonCoreBundle:Main:index.json.twig',
 //            array('response' => $response->getContent()),
 //            $response
 //        );
+    }
+
+    /**
+     * @param Router $router
+     *
+     * @return string
+     */
+    private function prepareLinkHeader(Router $router)
+    {
+        $links = new LinkHeader(array());
+        $links->add(
+            new LinkHeaderItem(
+                $router->generate('graviton.core.rest.app.all', array(), true),
+                array(
+                    'rel'  => 'apps',
+                    'type' => 'application/json'
+                )
+            )
+        );
+
+        return (string) $links;
+    }
+
+    /**
+     * @param Router $router
+     * @param array $optionRoutes
+     *
+     * @return array
+     */
+    private function determineServices(Router $router, array $optionRoutes)
+    {
+        $sortArr = array();
+        $services = array_map(
+            function ($routeName) use ($router) {
+                list($app, $bundle, $rest, $document) = explode('.', $routeName);
+                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
+
+                return array(
+                    '$ref'    => $router->generate($routeName, array(), true),
+                    'profile' => $router->generate($schemaRoute, array(), true),
+                );
+            },
+            array_keys($optionRoutes)
+        );
+
+        foreach ($services as $key => $val) {
+            $sortArr[$key] = $val['$ref'];
+        }
+
+        array_multisort($sortArr, SORT_ASC, $services);
+
+        return array_values($services);
     }
 }
