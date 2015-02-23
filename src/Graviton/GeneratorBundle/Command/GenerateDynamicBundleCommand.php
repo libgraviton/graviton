@@ -130,19 +130,11 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         // file or folder?
         $jsonPath = $input->getOption('json');
 
-        if (!is_file($jsonPath)) {
+        if (is_file($jsonPath)) {
+            ;
+        } else {
             if (is_dir($jsonPath)) {
-                // search for json files we want..
-                if (substr($jsonPath, -1) != '/') {
-                    $jsonPath .= '/';
-                }
-
-                $filesToWorkOn = array();
-                foreach (scandir($jsonPath) as $jsonFile) {
-                    if (substr($jsonFile, -5) == '.json' && substr($jsonFile, 0, 1) != '_') {
-                        $filesToWorkOn[] = $jsonPath . $jsonFile;
-                    }
-                };
+                ;
             } else {
                 $output->writeln('');
                 $output->writeln('<info>No path given. Searching for "resources/definition" folders..</info>');
