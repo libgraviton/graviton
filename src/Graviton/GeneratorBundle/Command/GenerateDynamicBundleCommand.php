@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Graviton\GeneratorBundle\Definition\Loader\Loader;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -120,12 +121,16 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/'
             . $this->bundleBundleClassname . '.php';
 
+        $filesToWorkOn = $this
+            ->getContainer()
+            ->get('graviton_generator.definition.loader')
+            ->load($input->getOption('json'))
+        ;
+
         // file or folder?
         $jsonPath = $input->getOption('json');
 
-        if (is_file($jsonPath)) {
-            $filesToWorkOn = array($jsonPath);
-        } else {
+        if (!is_file($jsonPath)) {
             if (is_dir($jsonPath)) {
                 // search for json files we want..
                 if (substr($jsonPath, -1) != '/') {
