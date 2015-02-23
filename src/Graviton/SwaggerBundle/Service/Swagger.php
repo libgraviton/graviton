@@ -155,6 +155,8 @@ class Swagger
         }
 
         $ret['definitions']['SchemaModel'] = $this->getSchemaSchema();
+
+        ksort($paths);
         $ret['paths'] = $paths;
 
         return $ret;
@@ -322,4 +324,5 @@ class Swagger
         }
         return $ret;
     }
+
 }
