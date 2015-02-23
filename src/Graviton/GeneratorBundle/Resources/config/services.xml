@@ -6,14 +6,17 @@
     <parameters>
         <parameter key="graviton_generator.definition.loader.class">Graviton\GeneratorBundle\Definition\Loader\Loader</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.file.class">Graviton\GeneratorBundle\Definition\Loader\Loader\Strategy\FileStrategy</parameter>
+        <parameter key="graviton_generator.definition.loader.strategy.dir.class">Graviton\GeneratorBundle\Definition\Loader\Loader\Strategy\DirStrategy</parameter>
     </parameters>
 
     <services>
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
+                <argument type="service" id="graviton_generator.definition.loader.strategy.dir"/>
             </call>
         </service>
         <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%"/>
+        <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%"/>
     </services>
 </container>
