@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\SecurityBundle\Tests\GravitonSecurityBundleTestCase;
+use Graviton\TestBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\BrowserKit\Cookie;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class CookieFieldStrategyTest extends GravitonSecurityBundleTestCase
+class CookieFieldStrategyTest extends WebTestCase
 {
     /**
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply

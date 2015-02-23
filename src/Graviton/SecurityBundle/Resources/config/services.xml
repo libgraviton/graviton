@@ -30,7 +30,9 @@
             Services related to the AuthenticationUserProvider
         -->
         <service id="graviton.authentication.user_provider.model.factory"
-                 class="Graviton\SecurityBundle\User\Model\ModelFactory"/>
+                 class="Graviton\SecurityBundle\User\Model\ModelFactory">
+            <argument type="service" id="service_container" />
+        </service>
 
         <service id="graviton.authentication.user_provider.model"
                  class="Graviton\RestBundle\Model\ModelInterface"
@@ -39,8 +41,11 @@
                 />
 
         <service id="graviton.authentication.user_provider.model.noop"
-                 class="Graviton\SecurityBundle\User\Model\NullModel"
-                />
+                 class="Graviton\SecurityBundle\User\Model\NullModel">
+          <call method="setRepository">
+            <argument type="service" id="graviton.core.repository.app"/>
+          </call>
+        </service>
 
         <service id="graviton_airlock_authentication_key_user_provider"
                  class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider">
