@@ -29,5 +29,5 @@ interface LoaderInterface
      *
      * @return JsonDefinition[]
      */
-    public function load();
+    public function load($input);
 }
