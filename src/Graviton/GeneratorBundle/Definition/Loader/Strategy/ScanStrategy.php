@@ -59,7 +59,11 @@ class ScanStrategy implements StrategyInterface
         // find json files with resources/definition in their path
         $directory = new \RecursiveDirectoryIterator($this->scanDir);
         $iterator = new \RecursiveIteratorIterator($directory);
-        $jsonFiles = new \RegexIterator($iterator, '/.*\/resources\/definition\/[^_].+\.json$/i', \RegexIterator::GET_MATCH);
+        $jsonFiles = new \RegexIterator(
+            $iterator,
+            '/.*\/resources\/definition\/[^_].+\.json$/i',
+            \RegexIterator::GET_MATCH
+        );
 
         $results = array();
         foreach ($jsonFiles as $file) {

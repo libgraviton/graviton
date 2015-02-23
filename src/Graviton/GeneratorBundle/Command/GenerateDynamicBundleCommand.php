@@ -129,7 +129,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
 
         // bundles in mongodb?
         // @todo this should move to loader
-        foreach ($this->getDefinitionsFromMongoDb() AS $mongoDef) {
+        foreach ($this->getDefinitionsFromMongoDb() as $mongoDef) {
             $filesToWorkOn[] = new JsonDefinition($mongoDef);
         }
 
