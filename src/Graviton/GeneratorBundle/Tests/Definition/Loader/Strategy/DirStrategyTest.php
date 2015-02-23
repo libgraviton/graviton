@@ -18,13 +18,11 @@ class DirStrategyTest extends \PHPUnit_Framework_TestCase
     public function testLoadDir()
     {
         $dir = __DIR__.'/dir';
-        $jsonDef = array(
-            new JsonDefinition($dir.'/test1.json'),
-            new JsonDefinition($dir.'/test2.json'),
-        );
 
         $sut = new DirStrategy;
         $this->assertTrue($sut->accepts($dir));
-        $this->assertEquals($jsonDef, $sut->load($dir));
+        $data = $sut->load($dir);
+        $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
+        $this->assertCount(2, $data);
     }
 }
