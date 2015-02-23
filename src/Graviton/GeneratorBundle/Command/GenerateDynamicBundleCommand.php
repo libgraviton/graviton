@@ -127,45 +127,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             ->load($input->getOption('json'))
         ;
 
-        // file or folder?
-        $jsonPath = $input->getOption('json');
-
-        if (is_file($jsonPath)) {
-            ;
-        } else {
-            if (is_dir($jsonPath)) {
-                ;
-            } else {
-                $output->writeln('');
-                $output->writeln('<info>No path given. Searching for "resources/definition" folders..</info>');
-                $output->writeln('');
-
-                // more broad scanning..
-                // normally, we just look in the local 'src' folder.. BUT
-                // if we find 'vendor/graviton/graviton' in our path means, we're inside a composer
-                // dependency ourselves.. in that case, search the entire vendor/ folder.. ;-)
-                // that we, we can find bundles wrapped as separate dependency..
-                $rootDir = $this->getContainer()->get('kernel')->getRootDir();
-                if (strpos($rootDir, 'vendor/graviton/graviton')) {
-                    $scanDir = dirname($this->getContainer()->get('kernel')->getRootDir()).'/../../';
-                } else {
-                    $scanDir = $input->getOption('srcDir').'../';
-                }
-
-                $findCmd = 'find '.escapeshellarg($scanDir).
-                    ' -path \'*/resources/definition*\' -iname \'*.json\'';
-
-                $findFiles = explode("\n", shell_exec($findCmd));
-
-                $filesToWorkOn = array();
-                foreach ($findFiles as $foundFile) {
-                    if (file_exists(trim($foundFile))) {
-                        $filesToWorkOn[] = trim($foundFile);
-                    }
-                }
-            }
-        }
-
         // bundles in mongodb?
         $filesToWorkOn = array_merge($filesToWorkOn, $this->getDefinitionsFromMongoDb());
 
@@ -258,7 +219,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             $arguments = array(
                 'graviton:generate:resource',
                 '--entity' => $bundleName . ':' . $thisIdName,
-                '--json' => $jsonFile,
+                '--json' => $jsonDef->getFilename(),
                 '--format' => 'xml',
                 '--fields' => $this->getFieldString($jsonDef),
                 '--with-repository' => null
@@ -319,7 +280,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
 
             $output->writeln('');
-            $output->writeln(sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonFile));
+            $output->writeln(sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonDef->getFilename()));
             $output->writeln('');
         }
     }

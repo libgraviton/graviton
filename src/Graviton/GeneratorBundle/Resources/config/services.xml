@@ -5,18 +5,29 @@
 
     <parameters>
         <parameter key="graviton_generator.definition.loader.class">Graviton\GeneratorBundle\Definition\Loader\Loader</parameter>
-        <parameter key="graviton_generator.definition.loader.strategy.file.class">Graviton\GeneratorBundle\Definition\Loader\Loader\Strategy\FileStrategy</parameter>
-        <parameter key="graviton_generator.definition.loader.strategy.dir.class">Graviton\GeneratorBundle\Definition\Loader\Loader\Strategy\DirStrategy</parameter>
+        <parameter key="graviton_generator.definition.loader.strategy.file.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy</parameter>
+        <parameter key="graviton_generator.definition.loader.strategy.dir.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy</parameter>
+        <parameter key="graviton_generator.definition.loader.strategy.scan.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy</parameter>
     </parameters>
 
     <services>
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
+            </call>
+            <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.dir"/>
+            </call>
+            <call method="addStrategy">
+                <argument type="service" id="graviton_generator.definition.loader.strategy.scan"/>
             </call>
         </service>
         <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%"/>
         <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%"/>
+        <service id="graviton_generator.definition.loader.strategy.scan" class="%graviton_generator.definition.loader.strategy.scan.class%">
+            <call method="setScanDir">
+                <argument>%kernel.root_dir%/..</argument>
+            </call>
+        </service>
     </services>
 </container>
