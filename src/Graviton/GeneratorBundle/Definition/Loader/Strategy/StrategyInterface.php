@@ -5,6 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
