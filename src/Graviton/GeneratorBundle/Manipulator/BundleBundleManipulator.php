@@ -38,6 +38,8 @@ class BundleBundleManipulator extends Manipulator
      * @return boolean
      *
      * @throws \RuntimeException If bundle is already defined
+     *
+     * @todo numer magic has to go, maybe parse and regenerate?
      */
     public function addBundle($bundle)
     {
@@ -76,6 +78,7 @@ class BundleBundleManipulator extends Manipulator
             array_slice($src, $method->getEndLine() - 2)
         );
 
+        // @todo use symfony to write files
         file_put_contents($this->reflected->getFilename(), implode('', $lines));
 
         return true;

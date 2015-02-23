@@ -11,8 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
- * The workflow is as
- * follows:
+ *
+ * The workflow is as follows:
  *
  * * Generate a BundleBundle, implementing the GravitonBundleInterface
  * * Generate our Bundles per JSON file
@@ -29,6 +29,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * deployment and/or development where a shell is accessible. It should be
  * executed in the same context as the previous generator tools, and also those
  * used the shell (backtick operator to get git name/email for example).
+ *
+ * @todo use symfony/process instead of shell_exec and/or create a new Application in-situ
  *
  * @category GeneratorBundle
  * @package  Graviton
@@ -155,6 +157,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                     $scanDir = $input->getOption('srcDir').'../';
                 }
 
+                // @todo use Symfonys file finder stuff for this!
                 $findCmd = 'find '.escapeshellarg($scanDir).
                     ' -path \'*/resources/definition*\' -iname \'*.json\'';
 
@@ -292,6 +295,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
              * so here we merge the generated validation.xml we saved in the loop before back into the
              * final validation.xml again. the final result should be one validation.xml including all
              * the validation rules for all the documents in this bundle.
+             * @todo we might just make this an option to the resource generator, i probably need to grok why this was in issue
              */
             if (count($this->validationXmlNodes) > 0) {
                 $validationXml = $this->getGeneratedValidationXmlPath($namespace);
@@ -516,6 +520,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
 
             $thisFilename = tempnam(sys_get_temp_dir(), 'mongoBundle_');
+            // @todo use symfony tools to write this
             file_put_contents($thisFilename, json_encode($doc));
 
             $files[] = $thisFilename;

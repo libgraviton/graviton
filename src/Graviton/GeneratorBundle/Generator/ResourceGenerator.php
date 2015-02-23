@@ -97,6 +97,7 @@ class ResourceGenerator extends AbstractGenerator
         $fields = array_map(
             function ($field) {
 
+                // @todo all this mapping needs to go
                 // derive types for serializer from document types
                 $field['serializerType'] = $field['type'];
                 if (substr($field['type'], -2) == '[]') {
@@ -199,6 +200,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $services = $this->loadServices($dir);
 
+        // @todo use twig for the rest of this method
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = $bundleParts[0];
         $shortBundle = $this->getBundleBaseName($bundleParts[1]);
