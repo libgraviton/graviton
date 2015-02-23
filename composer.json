@@ -52,8 +52,9 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "nulpunkt/monolog-elasticsearch-logstashformat": "*",
-        "graviton/php-rql-parser": "dev-develop",
-        "libgraviton/swagger-ui": "dev-master"
+        "graviton/php-rql-parser": "~1.0",
+        "libgraviton/swagger-ui": "dev-master",
+        "exercise/htmlpurifier-bundle": "~0.1"
     },
     "require-dev": {
         "libgraviton/codesniffer": "dev-master@dev",

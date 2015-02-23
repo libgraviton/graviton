@@ -65,13 +65,19 @@ class PagingLinkResponseListener implements ContainerAwareInterface
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
 
+            $additionalParams = array();
+            if ($request->attributes->get('filtering')) {
+                $additionalParams['q'] = $request->get('q', '');
+            }
+
             $this->linkHeader = LinkHeader::fromResponse($response);
 
             $this->generateLinks(
                 $routeName,
                 $request->get('page', 1),
                 $request->attributes->get('numPages'),
-                $request->attributes->get('perPage')
+                $request->attributes->get('perPage'),
+                $additionalParams
             );
             $response->headers->set(
                 'Link',
@@ -83,45 +89,47 @@ class PagingLinkResponseListener implements ContainerAwareInterface
     /**
      * generate headers for all paging links
      *
-     * @param string  $route    name of route
-     * @param integer $page     current page
-     * @param integer $numPages number of all pages
-     * @param integer $perPage  number of records per page
+     * @param string  $route            name of route
+     * @param integer $page             current page
+     * @param integer $numPages         number of all pages
+     * @param integer $perPage          number of records per page
+     * @param array   $additionalParams Optional array of additional params to include
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages, $perPage)
+    private function generateLinks($route, $page, $numPages, $perPage, $additionalParams = array())
     {
         if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first');
+            $this->generateLink($route, 1, $perPage, 'first', $additionalParams);
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev');
+            $this->generateLink($route, $page - 1, $perPage, 'prev', $additionalParams);
         }
         if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, $perPage, 'next');
+            $this->generateLink($route, $page + 1, $perPage, 'next', $additionalParams);
         }
         if ($page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last');
+            $this->generateLink($route, $numPages, $perPage, 'last', $additionalParams);
         }
     }
 
     /**
-     * generate link header pased on params and type
+     * generate link header passed on params and type
      *
-     * @param string  $routeName use with router to generate urls
-     * @param integer $page      page to link to
-     * @param integer $perPage   number of items per page
-     * @param string  $type      rel type of link to generate
+     * @param string  $routeName        use with router to generate urls
+     * @param integer $page             page to link to
+     * @param integer $perPage          number of items per page
+     * @param string  $type             rel type of link to generate
+     * @param array   $additionalParams Optional array of additional params to include
      *
      * @return string
      */
-    private function generateLink($routeName, $page, $perPage, $type)
+    private function generateLink($routeName, $page, $perPage, $type, $additionalParams = array())
     {
         $router = $this->container->get('router');
-        $parameters = array('page' => $page);
+        $parameters = array_merge($additionalParams, array('page' => $page));
         if ($perPage) {
-            $parameters['per_page'] = $perPage;
+            $parameters['perPage'] = $perPage;
         }
         $url = $router->generate($routeName, $parameters, true);
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));

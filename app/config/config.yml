@@ -134,3 +134,12 @@ jms_serializer:
         # class: My\FooBundle\Entity\User
         # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
         auto_detection: true
+
+# Exercise/HTMLPurifierBundle Configuration
+# see: https://github.com/Exercise/HTMLPurifierBundle
+# see: http://htmlpurifier.org/live/configdoc/plain.html
+exercise_html_purifier:
+    default:
+        Cache.SerializerPath: '%kernel.cache_dir%/htmlpurifier'
+    graviton:
+        Core.Encoding: 'UTF-8'

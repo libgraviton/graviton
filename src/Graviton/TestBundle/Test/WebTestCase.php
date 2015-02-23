@@ -1,25 +1,25 @@
 <?php
 
-namespace Graviton\SecurityBundle\Tests;
+namespace Graviton\TestBundle\Test;
 
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymWebTestCase;
 
 /**
- * Class GravitonSecurityBundleTestCase
+ * Base class for tests that need a http client..
  *
- * @category GravitonSecurityBundle
+ * @category GravitonTestBundle
  * @package  Graviton
  * @author   Bastian Feder <bastian.feder@swisscom.com>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GravitonSecurityBundleTestCase extends WebTestCase
+abstract class WebTestCase extends SymWebTestCase
 {
     /**
-     * Provides a HttpClient base on the Graviton\AppKernel
+     * Provides a HttpClient based on the Graviton\AppKernel
      *
      * @param array $options
      * @param array $server
