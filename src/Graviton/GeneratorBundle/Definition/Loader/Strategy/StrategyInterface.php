@@ -19,7 +19,7 @@ interface StrategyInterface
      *
      * @return boolean
      */
-    public function accepts($input);
+    public function supports($input);
 
     /**
      * load

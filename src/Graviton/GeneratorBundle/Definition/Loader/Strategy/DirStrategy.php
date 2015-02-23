@@ -21,7 +21,7 @@ class DirStrategy implements StrategyInterface
      *
      * @return boolean
      */
-    public function accepts($input)
+    public function supports($input)
     {
         return is_dir($input);
     }
@@ -35,7 +35,7 @@ class DirStrategy implements StrategyInterface
     {
         $results = array();
         foreach ($this->getIterator($input) as $file) {
-            if ($this->checkFile($input, $file)) {
+            if ($this->isValid($input, $file)) {
                 $results[] = new JsonDefinition($file[0]);
             }
         }
@@ -43,7 +43,8 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * @return IteratorInterface
+     * @param string|null $input
+     * @return \RecursiveRegexIterator
      */
     protected function getIterator($input)
     {
@@ -56,9 +57,10 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * @return true
+     * @param string|null $input
+     * @return boolean
      */
-    public function checkFile($input, $file)
+    public function isValid($input, $file)
     {
         return true;
     }

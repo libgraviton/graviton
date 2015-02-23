@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Graviton\GeneratorBundle\Definition\Loader\Loader;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..

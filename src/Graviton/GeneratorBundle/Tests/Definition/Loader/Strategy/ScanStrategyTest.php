@@ -23,7 +23,7 @@ class ScanStrategyTest extends \PHPUnit_Framework_TestCase
 
         $sut = new ScanStrategy;
         $sut->setScanDir(__DIR__);
-        $this->assertTrue($sut->accepts(null));
+        $this->assertTrue($sut->supports(null));
         $this->assertEquals($jsonDef, $sut->load(null));
     }
 }

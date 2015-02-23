@@ -20,7 +20,7 @@ class DirStrategyTest extends \PHPUnit_Framework_TestCase
         $dir = __DIR__.'/dir';
 
         $sut = new DirStrategy;
-        $this->assertTrue($sut->accepts($dir));
+        $this->assertTrue($sut->supports($dir));
         $data = $sut->load($dir);
         $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
         $this->assertCount(2, $data);

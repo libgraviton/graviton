@@ -27,7 +27,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
         $strategy
             ->expects($this->once())
-            ->method('accepts')
+            ->method('supports')
             ->with(null)
             ->will($this->returnValue(true))
         ;

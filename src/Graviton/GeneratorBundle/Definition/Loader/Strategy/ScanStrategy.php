@@ -28,7 +28,7 @@ class ScanStrategy extends DirStrategy
     {
         // if we are vendorized we will search all vendor paths
         if (strpos($scanDir, 'vendor/graviton/graviton')) {
-            $scanDir += '/../../';
+            $scanDir .= '/../../';
         }
         $this->scanDir = $scanDir;
     }
@@ -40,7 +40,7 @@ class ScanStrategy extends DirStrategy
      *
      * @return boolean
      */
-    public function accepts($input)
+    public function supports($input)
     {
         return is_null($input);
     }
@@ -48,7 +48,7 @@ class ScanStrategy extends DirStrategy
     /**
      * @param string|null $input input from command
      *
-     * @return IteratorInterface
+     * @return \RegexIterator
      */
     protected function getIterator($input)
     {
@@ -65,9 +65,9 @@ class ScanStrategy extends DirStrategy
      * @param string|null $input input from command
      * @param string|null $input input from command
      *
-     * @return true
+     * @return boolean
      */
-    public function checkFile($input, $file)
+    public function isValid($input, $file)
     {
         return (strpos($input, '/Tests/') !== 0) || !strpos($file[0], '/Tests/');
     }
