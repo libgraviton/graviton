@@ -30,7 +30,6 @@ class ScanStrategy implements StrategyInterface
         if (strpos($scanDir, 'vendor/graviton/graviton')) {
             $scanDir += '/../../';
         }
-        echo 'using scandir '.$scanDir;
         $this->scanDir = $scanDir;
     }
 
@@ -43,7 +42,6 @@ class ScanStrategy implements StrategyInterface
      */
     public function accepts($input)
     {
-            echo 'is nulling';
         return is_null($input);
     }
 
