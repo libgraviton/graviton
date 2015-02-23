@@ -80,11 +80,6 @@ class MainController implements ContainerAwareInterface
 
         $response->headers->set('Link', (string) $links);
 
-        # @todo don't find the composer file like so, use packagist to find and parse it if possible
-        $composerFile = __DIR__.'/../../../../composer.json';
-        $composer = json_decode(file_get_contents($composerFile), true);
-        $response->headers->set('X-Version', $composer['version']);
-
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = array();
