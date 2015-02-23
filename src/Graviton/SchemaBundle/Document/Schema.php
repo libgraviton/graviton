@@ -5,8 +5,6 @@
 
 namespace Graviton\SchemaBundle\Document;
 
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-
 /**
  * Graviton\SchemaBundle\Document\Schema
  *
@@ -14,7 +12,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class Schema implements TranslatableDocumentInterface
+class Schema
 {
     /**
      * @var string
@@ -50,16 +48,6 @@ class Schema implements TranslatableDocumentInterface
      * @var boolean
      */
     protected $translatable;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string[]
-     */
-    public function getTranslatableFields()
-    {
-        return array('title', 'description');
-    }
 
     /**
      * set title

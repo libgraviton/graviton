@@ -321,8 +321,8 @@ class CountryControllerTest extends RestTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('Country', $results->title->en);
-        $this->assertEquals('A country record.', $results->description->en);
+        $this->assertEquals('Country', $results->title);
+        $this->assertEquals('A country record.', $results->description);
         $this->assertEquals('object', $results->type);
 
         $fieldAssertions = array(
@@ -353,8 +353,8 @@ class CountryControllerTest extends RestTestCase
         );
         foreach ($fieldAssertions as $field => $values) {
             $this->assertEquals('string', $results->properties->$field->type);
-            $this->assertEquals($values['description'], $results->properties->$field->description->en);
-            $this->assertEquals($values['title'], $results->properties->$field->title->en);
+            $this->assertEquals($values['description'], $results->properties->$field->description);
+            $this->assertEquals($values['title'], $results->properties->$field->title);
         }
 
         $this->assertContains('id', $results->required);
