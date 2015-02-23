@@ -2,6 +2,7 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\SchemaUtils;
 
 /**
@@ -72,7 +73,6 @@ class Swagger
                 // skip PATCH (as for now) & /schema/ stuff
                 if (
                     strpos($route->getPath(), '/schema/') !== false ||
-                    $routeMethod == 'options' ||
                     $routeMethod == 'patch'
                 ) {
                     continue;
@@ -81,6 +81,7 @@ class Swagger
                 $thisModel = $this->restUtils->getModelFromRoute($route);
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
+                //$schema = SchemaUtils::getModelSchema('Schema', new Schema(), array(), array());
                 $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
 
                 $ret['definitions'][$entityClassName] = json_decode(
@@ -114,6 +115,9 @@ class Swagger
                         break;
                     case 'post':
                         $thisPath['summary'] = 'Create new ' . $entityName . ' resource';
+                        break;
+                    case 'options':
+                        $thisPath['summary'] = 'Get schema information for ' . $entityName . ' resource';
                         break;
                     case 'put':
                         $thisPath['summary'] = 'Update existing ' . $entityName . ' resource';
