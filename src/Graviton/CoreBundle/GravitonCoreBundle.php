@@ -59,7 +59,6 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonPersonBundle(),
             new GravitonCacheBundle(),
             new GravitonLogBundle(),
-            new GravitonConsultationBundle(),
             new GravitonSecurityBundle(),
             new GravitonSwaggerBundle()
         );
