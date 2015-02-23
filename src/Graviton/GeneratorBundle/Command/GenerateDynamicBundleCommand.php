@@ -128,7 +128,10 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         ;
 
         // bundles in mongodb?
-        $filesToWorkOn = array_merge($filesToWorkOn, $this->getDefinitionsFromMongoDb());
+        // @todo this should move to loader
+        foreach ($this->getDefinitionsFromMongoDb() AS $mongoDef) {
+            $filesToWorkOn[] = new JsonDefinition($mongoDef);
+        }
 
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
@@ -137,9 +140,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         /**
          * GENERATE THE BUNDLE(S)
          */
-        foreach ($filesToWorkOn as $jsonFile) {
-            $jsonDef = new JsonDefinition($jsonFile);
-
+        foreach ($filesToWorkOn as $jsonDef) {
             // @todo: resulting thisIdName will not match to SF2 nameing conventions
             // $thisIdName = ucfirst(strtolower($jsonDef->getId()));
 
@@ -441,6 +442,8 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      * Here we look for those and return them as files to be included in the generation process.
      *
      * @return array Bundles
+     *
+     * @todo this should move to loader
      */
     private function getDefinitionsFromMongoDb()
     {
