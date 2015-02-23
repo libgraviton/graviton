@@ -324,5 +324,4 @@ class Swagger
         }
         return $ret;
     }
-
 }
