@@ -29,6 +29,3 @@ tools:
         config:
     php_sim: true
     php_cpd: false
-build_failure_conditions:
-  - 'elements.rating(<= D).exists'
-  - 'project.metric("scrutinizer.test_coverage", < 0.80)'
