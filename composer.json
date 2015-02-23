@@ -22,6 +22,11 @@
                 "dist": {
                     "url": "https://github.com/libgraviton/swagger-ui/archive/master.zip",
                     "type": "zip"
+                },
+                "source": {
+                    "url": "https://github.com/libgraviton/swagger-ui.git",
+                    "type": "git",
+                    "reference": "master"
                 }
             }
         }
