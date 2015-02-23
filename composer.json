@@ -1,5 +1,6 @@
 {
     "name": "graviton/graviton",
+    "version": "0.7.0-dev",
     "license": "MIT",
     "type": "project",
     "description": "The base package for graviton",
