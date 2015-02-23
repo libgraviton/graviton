@@ -2,8 +2,9 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
-use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\Routing\Route;
 
 /**
  * A service that generates a swagger conform service spec dynamically.
@@ -81,7 +82,6 @@ class Swagger
                 $thisModel = $this->restUtils->getModelFromRoute($route);
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
-                //$schema = SchemaUtils::getModelSchema('Schema', new Schema(), array(), array());
                 $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
 
                 $ret['definitions'][$entityClassName] = json_decode(
@@ -98,33 +98,13 @@ class Swagger
                 $entityName = ucfirst($document);
 
                 $thisPath = array(
-                    'tags' => array(ucfirst($bundle)),
+                    'tags' => $this->getPathTags($route),
                     'operationId' => $routeName,
                     'consumes' => array('application/json'),
                     'produces' => array('application/json')
                 );
 
-                // meaningful descriptions..
-                switch ($routeMethod) {
-                    case 'get':
-                        if ($isCollectionRequest) {
-                            $thisPath['summary'] = 'Get collection of ' . $entityName . ' resources';
-                        } else {
-                            $thisPath['summary'] = 'Get single ' . $entityName . ' resources';
-                        }
-                        break;
-                    case 'post':
-                        $thisPath['summary'] = 'Create new ' . $entityName . ' resource';
-                        break;
-                    case 'options':
-                        $thisPath['summary'] = 'Get schema information for ' . $entityName . ' resource';
-                        break;
-                    case 'put':
-                        $thisPath['summary'] = 'Update existing ' . $entityName . ' resource';
-                        break;
-                    case 'delete':
-                        $thisPath['summary'] = 'Delete existing ' . $entityName . ' resource';
-                }
+                $thisPath['summary'] = $this->getSummary($routeMethod, $isCollectionRequest, $entityName);
 
                 // collection return or not?
                 if (!$isCollectionRequest) {
@@ -157,17 +137,6 @@ class Swagger
                             'items' => array('$ref' => '#/definitions/' . $entityClassName)
                         )
                     );
-
-                    /* not yet ;-(
-                    $thisPath['parameters'][] = array(
-                        'name' => 'filter',
-                        'in' => 'query',
-                        'description' => 'Optional RQL filter',
-                        'required' => false,
-                        'default' => '',
-                        'type' => 'string'
-                    );
-                    */
 
                     $thisPath['parameters'][] = array(
                         'name' => 'q',
@@ -229,9 +198,19 @@ class Swagger
                     );
                 }
 
+                if ($routeMethod == 'options') {
+                    $thisPath['responses'][200] = array(
+                        'description' => 'Schema response',
+                        // http://json-schema.org/draft-04/schema
+                        'schema' => array('$ref' => '#/definitions/SchemaModel')
+                    );
+                }
+
                 $paths[$thisPattern][$routeMethod] = $thisPath;
             }
         }
+
+        $ret['definitions']['SchemaModel'] = $this->getSchemaSchema();
 
         $ret['paths'] = $paths;
 
@@ -259,4 +238,69 @@ class Swagger
 
         return $ret;
     }
+
+    /**
+     * Returns the definition of a 'schema' response
+     *
+     * @return stdClass Schema
+     */
+    protected function getSchemaSchema()
+    {
+        $schemaModel = new SchemaModel();
+        return $schemaModel->getSchema();
+    }
+
+    /**
+     * Returns the tags (which influences the grouping visually) for a given route
+     *
+     * @param Route $route route
+     *
+     * @return array Array of tags..
+     */
+    protected function getPathTags(Route $route)
+    {
+        $ret = array();
+        $routeParts = explode('/', $route->getPath());
+        if (isset($routeParts[1])) {
+            $ret[] = ucfirst($routeParts[1]);
+        }
+        return $ret;
+    }
+
+    /**
+     * Returns a meaningful summary depending on certain conditions
+     *
+     * @param string $method              Method
+     * @param bool   $isCollectionRequest If collection request
+     * @param string $entityName          Name of entity
+     *
+     * @return string summary
+     */
+    protected function getSummary($method, $isCollectionRequest, $entityName) {
+        $ret = '';
+        // meaningful descriptions..
+        switch ($method) {
+            case 'get':
+                if ($isCollectionRequest) {
+                    $ret = 'Get collection of ' . $entityName . ' resources';
+                } else {
+                    $ret = 'Get single ' . $entityName . ' resources';
+                }
+                break;
+            case 'post':
+                $ret = 'Create new ' . $entityName . ' resource';
+                break;
+            case 'options':
+                $ret = 'Get schema information for ' . $entityName . ' resource';
+                break;
+            case 'put':
+                $ret = 'Update existing ' . $entityName . ' resource';
+                break;
+            case 'delete':
+                $ret = 'Delete existing ' . $entityName . ' resource';
+        }
+        return $ret;
+    }
+
+
 }
