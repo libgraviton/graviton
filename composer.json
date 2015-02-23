@@ -1,6 +1,5 @@
 {
     "name": "graviton/graviton",
-    "version": "0.7.0-dev",
     "license": "MIT",
     "type": "project",
     "description": "The base package for graviton",
@@ -61,7 +60,7 @@
         "liip/functional-test-bundle": "@dev",
         "phpmd/phpmd": "@dev",
         "squizlabs/php_codesniffer": "~2.2",
-        "libgraviton/codesniffer": "dev-feature/modernize"
+        "libgraviton/codesniffer": "~1.3"
     },
     "scripts": {
         "post-root-package-install": [

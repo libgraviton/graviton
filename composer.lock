@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "065664b0a8c3048258208f7d616bd4e2",
+    "hash": "eccd950aabf9035071c2ada14d2a72fc",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3593,17 +3593,17 @@
         },
         {
             "name": "libgraviton/codesniffer",
-            "version": "dev-feature/modernize",
+            "version": "v1.3.0",
             "target-dir": "CodeSniffer/Standards/ENTB",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "4ad9583eff4a53a0ec17dc4fa2c6bdf7a4a10f1f"
+                "reference": "6f10debdb3de17b241544e28c0e874bb85a948a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/4ad9583eff4a53a0ec17dc4fa2c6bdf7a4a10f1f",
-                "reference": "4ad9583eff4a53a0ec17dc4fa2c6bdf7a4a10f1f",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/6f10debdb3de17b241544e28c0e874bb85a948a8",
+                "reference": "6f10debdb3de17b241544e28c0e874bb85a948a8",
                 "shasum": ""
             },
             "type": "phpcs-standard",
@@ -3616,7 +3616,7 @@
                 "codesniffer",
                 "libgraviton"
             ],
-            "time": "2015-02-16 20:43:53"
+            "time": "2015-02-23 21:52:18"
         },
         {
             "name": "liip/functional-test-bundle",
@@ -4703,8 +4703,7 @@
         "php-jsonpatch/php-jsonpatch": 20,
         "libgraviton/swagger-ui": 20,
         "liip/functional-test-bundle": 20,
-        "phpmd/phpmd": 20,
-        "libgraviton/codesniffer": 20
+        "phpmd/phpmd": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
