@@ -2,6 +2,7 @@
 
 namespace Graviton\SchemaBundle\Model;
 
+use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -73,11 +74,21 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * get description
      *
-     * @return string
+     * @return string Description
      */
     public function getDescription()
     {
         return $this->schema->description;
+    }
+
+    /**
+     * Returns the bare schema
+     *
+     * @return stdClass Schema
+     */
+    public function getSchema()
+    {
+        return $this->schema;
     }
 
     /**
