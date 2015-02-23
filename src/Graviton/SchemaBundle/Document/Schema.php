@@ -57,7 +57,7 @@ class Schema implements TranslatableDocumentInterface
      */
     public function getTranslatableFields()
     {
-        return array('title', 'description');
+        return array();
     }
 
     /**
