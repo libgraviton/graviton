@@ -47,6 +47,11 @@ class XVersionResponseListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        if (!$event->isMasterRequest()) {
+            // don't do anything if it's not the master request
+            return;
+        }
+
         /** @var \Symfony\Component\HttpFoundation\Response $response */
         $response = $event->getResponse();
         $response->headers->set(
