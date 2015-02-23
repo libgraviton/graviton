@@ -2,6 +2,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
@@ -39,7 +41,7 @@ class ValidationRequestListener
      * @throws \Exception
      * @return void
      */
-    public function onKernelRequest(RestEvent $event)
+    public function onKernelRequest(Event $event)
     {
         // only validate on POST and PUT
         // if patch is required, refactor the method or do something else

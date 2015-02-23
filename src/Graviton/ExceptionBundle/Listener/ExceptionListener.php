@@ -29,53 +29,53 @@ class ExceptionListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        $exception = $event->getException();
-        $response = new JsonResponse();
-
-        $message = array();
-        $message['class'] = get_class($exception);
-        $message['message'] = $exception->getMessage();
-        $message['code'] = $exception->getCode();
-        $message['file'] = new \stdClass;
-        $message['file']->path = $exception->getFile();
-        $message['file']->line = $exception->getLine();
-        $message['trace'] = array_map(
-            function ($line) {
-                return $this->prepareTraceLine($line);
-            },
-            $exception->getTrace()
-        );
-
-        $schemaType = 'application/vnd.graviton.schema+json';
-        $schemaUrl = '/core/schema/graviton.exception';
-
-        $headers = array(
-            'Content-Type' => 'application/vnd.graviton.exception+json',
-            'Link' => sprintf(
-                '<%s>; type="%s"; rel="schema"',
-                $schemaType,
-                $schemaUrl
-            )
-
-        );
-
-        // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when available
-        $response->setStatusCode(500);
-
-        if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            // add headers from exception if any exist
-            $headers = array_merge(
-                $exception->getHeaders(),
-                $headers
-            );
-        }
-
-        $response->headers->replace($headers);
-        $response->setData($message);
-
-        $event->setResponse($response);
-        $response->send();
+//        $exception = $event->getException();
+//        $response = new JsonResponse();
+//
+//        $message = array();
+//        $message['class'] = get_class($exception);
+//        $message['message'] = $exception->getMessage();
+//        $message['code'] = $exception->getCode();
+//        $message['file'] = new \stdClass;
+//        $message['file']->path = $exception->getFile();
+//        $message['file']->line = $exception->getLine();
+//        $message['trace'] = array_map(
+//            function ($line) {
+//                return $this->prepareTraceLine($line);
+//            },
+//            $exception->getTrace()
+//        );
+//
+//        $schemaType = 'application/vnd.graviton.schema+json';
+//        $schemaUrl = '/core/schema/graviton.exception';
+//
+//        $headers = array(
+//            'Content-Type' => 'application/vnd.graviton.exception+json',
+//            'Link' => sprintf(
+//                '<%s>; type="%s"; rel="schema"',
+//                $schemaType,
+//                $schemaUrl
+//            )
+//
+//        );
+//
+//        // @todo use JsonResponse::HTTP_INTERNAL_SERVER_ERROR when available
+//        $response->setStatusCode(500);
+//
+//        if ($exception instanceof HttpExceptionInterface) {
+//            $response->setStatusCode($exception->getStatusCode());
+//            // add headers from exception if any exist
+//            $headers = array_merge(
+//                $exception->getHeaders(),
+//                $headers
+//            );
+//        }
+//
+//        $response->headers->replace($headers);
+//        $response->setData($message);
+//
+//        $event->setResponse($response);
+//        $response->send();
     }
 
     /**

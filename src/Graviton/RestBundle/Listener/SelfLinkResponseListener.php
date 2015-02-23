@@ -48,7 +48,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
      *
      * @return void
      */
-    public function onKernelResponse(RestEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();

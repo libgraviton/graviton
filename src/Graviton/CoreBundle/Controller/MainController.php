@@ -43,6 +43,20 @@ class MainController implements ContainerAwareInterface
     }
 
     /**
+     * Renders a view.
+     *
+     * @param string   $view       The view name
+     * @param array    $parameters An array of parameters to pass to the view
+     * @param Response $response   A response instance
+     *
+     * @return Response A Response instance
+     */
+    public function render($view, array $parameters = array(), Response $response = null)
+    {
+        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+    }
+
+    /**
      * create simple start page.
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
@@ -102,6 +116,17 @@ class MainController implements ContainerAwareInterface
 
         $response->setContent(json_encode($mainPage));
 
+        // todo: make sure, that the correct content type is set.
+        // todo: this should be covered by a kernel.response event listener?
+        $response->headers->set('Content-Type', 'application/json');
+
         return $response;
+
+        //todo:  use this in case the view layer does work properly again ;)
+//        return $this->render(
+//            'GravitonCoreBundle:Main:index.json.twig',
+//            array('response' => $response->getContent()),
+//            $response
+//        );
     }
 }
