@@ -34,18 +34,21 @@ class ResourceGenerator extends AbstractGenerator
      * @var Filesystem
      */
     private $filesystem;
+
     /**
      * @var Doctrine
      */
     private $doctrine;
+
     /**
      * @var KernelInterface
      */
     private $kernel;
+
     /**
-     * @var InputInterface
+     * @var boolean
      */
-    private $input;
+    private $needsController;
 
     /**
      * our json file definition
@@ -57,23 +60,23 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param InputInterface  $input      Input
-     * @param Filesystem      $filesystem fs abstraction layer
-     * @param Doctrine        $doctrine   dbal
-     * @param KernelInterface $kernel     app kernel
+     * @param Filesystem      $filesystem  fs abstraction layer
+     * @param Doctrine        $doctrine    dbal
+     * @param KernelInterface $kernel      app kernel
+     * @param boolean         $controller do we need to generate a controller
      *
      * @return ResourceGenerator
      */
     public function __construct(
-        InputInterface $input,
         Filesystem $filesystem,
         Doctrine $doctrine,
-        KernelInterface $kernel
+        KernelInterface $kernel,
+        $controller = true
     ) {
-        $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+        $this->needsController = $controller;
     }
 
     /**
@@ -107,10 +110,8 @@ class ResourceGenerator extends AbstractGenerator
 
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // do we have a json path passed?
-        // @todo let my caller sort the InputOption and inject me a JsonDefinition via setJson()
-        if (!is_null($this->input->getOption('json'))) {
-            $this->json = new JsonDefinition($this->input->getOption('json'));
+        // do we have a json path passed -> fix up it's namespace
+        if ($this->json instanceof JsonDefinition) {
             $this->json->setNamespace($bundleNamespace);
         }
 
@@ -149,7 +150,7 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateFixtures($parameters, $dir, $document);
         }
 
-        if ($this->input->getOption('no-controller') != 'true') {
+        if ($this->needsController) {
             $this->generateController($parameters, $dir, $document);
         }
     }
