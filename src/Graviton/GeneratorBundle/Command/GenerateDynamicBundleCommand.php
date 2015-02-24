@@ -125,8 +125,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $filesToWorkOn = $this
             ->getContainer()
             ->get('graviton_generator.definition.loader')
-            ->load($input->getOption('json'))
-        ;
+            ->load($input->getOption('json'));
 
         // bundles in mongodb?
         // @todo this should move to loader

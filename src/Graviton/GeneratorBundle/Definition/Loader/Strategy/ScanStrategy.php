@@ -21,6 +21,8 @@ class ScanStrategy extends DirStrategy
 
     /**
      * @param string $scanDir dir to scan
+     *
+     * @return void
      */
     public function setScanDir($scanDir)
     {

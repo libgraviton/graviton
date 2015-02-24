@@ -15,6 +15,11 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  */
 class FileStrategyTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * check if loading from a single file works
+     *
+     * @return void
+     */
     public function testLoadReturnsSingleFileArray()
     {
         $file = __DIR__.'/test.json';

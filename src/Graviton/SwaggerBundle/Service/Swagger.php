@@ -61,7 +61,9 @@ class Swagger
     /**
      * sets schemamodel
      *
-     * @param SchemaModel $schemaModel
+     * @param SchemaModel $schemaModel schema model instance
+     *
+     * @return SchemaModel
      */
     public function setSchemaModel($schemaModel)
     {
@@ -86,8 +88,7 @@ class Swagger
                 $routeMethod = strtolower($route->getMethods()[0]);
 
                 // skip PATCH (as for now) & /schema/ stuff
-                if (
-                    strpos($route->getPath(), '/schema/') !== false ||
+                if (strpos($route->getPath(), '/schema/') !== false ||
                     $routeMethod == 'patch'
                 ) {
                     continue;
