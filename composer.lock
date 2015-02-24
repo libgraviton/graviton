@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "391094f03911fc8d2820c17ac93afb31",
+    "hash": "4b76568692cd3559070b250e9ecab3e9",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2240,13 +2240,19 @@
         {
             "name": "libgraviton/swagger-ui",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/swagger-ui.git",
+                "reference": "master"
+            },
             "dist": {
                 "type": "zip",
                 "url": "https://github.com/libgraviton/swagger-ui/archive/master.zip",
                 "reference": null,
                 "shasum": null
             },
-            "type": "library"
+            "type": "library",
+            "time": "2015-02-23 16:41:36"
         },
         {
             "name": "misd/guzzle-bundle",
