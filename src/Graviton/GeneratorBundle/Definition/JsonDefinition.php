@@ -73,6 +73,16 @@ class JsonDefinition
     }
 
     /**
+     * Returns the path of the original file as set in the constructor
+     *
+     * @returns string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
      * Returns the description
      *
      * @return string Description
