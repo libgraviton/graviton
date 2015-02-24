@@ -61,11 +61,11 @@ class ScanStrategy extends DirStrategy
 
     /**
      * @param string|null $input input from command
-     * @param string|null $input input from command
+     * @param array       $file  input from command
      *
      * @return boolean
      */
-    public function isValid($input, $file)
+    protected function isValid($input, $file)
     {
         return (strpos($input, '/Tests/') !== 0) || !strpos($file[0], '/Tests/');
     }

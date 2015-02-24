@@ -57,10 +57,9 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * @param string|null $input
      * @return boolean
      */
-    public function isValid($input, $file)
+    protected function isValid()
     {
         return true;
     }
