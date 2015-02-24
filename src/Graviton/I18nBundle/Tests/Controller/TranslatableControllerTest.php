@@ -17,25 +17,15 @@ use Graviton\TestBundle\Test\RestTestCase;
 class TranslatableControllerTest extends RestTestCase
 {
     /**
-     * @const complete content type string expected on a resouce
-     */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/translatable/';
-
-    /**
      * check for language schema
      *
      * @return void
      */
-    public function testSchema()
+    public function testOptionsHasCors()
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/i18n/translatable', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
-
-        $results = $client->getResults();
-        $response = $client->getResponse();
-
-        $this->assertEquals('A Translatable string available for i18n purposes.', $results->items->description);
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $client->request('OPTIONS', '/i18n/translatable');
+        $this->assertEquals('*', $client->getResponse()->headers->get('Access-Control-Allow-Origin'));
     }
 }
