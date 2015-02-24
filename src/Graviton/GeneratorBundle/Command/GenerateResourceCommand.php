@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

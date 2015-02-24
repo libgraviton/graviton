@@ -110,7 +110,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // do we have a json path passed -> fix up it's namespace
+        // do we have a jsondef passed -> fix up it's namespace
         if ($this->json instanceof JsonDefinition) {
             $this->json->setNamespace($bundleNamespace);
         }
