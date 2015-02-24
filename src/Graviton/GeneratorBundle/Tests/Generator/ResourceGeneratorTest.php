@@ -242,11 +242,10 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
      */
     protected function getSimpleGenerator()
     {
-        $input = $this->getMock('Symfony\Component\Console\Input\InputInterface');
         $filesystem = $this->getMock('Symfony\Component\Filesystem\Filesystem');
         $doctrine = $this->getMock('Symfony\Bridge\Doctrine\RegistryInterface');
         $kernel = $this->getMock('Symfony\Component\HttpKernel\KernelInterface');
 
-        return new ResourceGenerator($input, $filesystem, $doctrine, $kernel);
+        return new ResourceGenerator($filesystem, $doctrine, $kernel);
     }
 }
