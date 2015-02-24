@@ -5,6 +5,8 @@
 
 namespace Graviton\CoreBundle\Service;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * @category GravitonCoreBundle
  * @package  Graviton
@@ -14,10 +16,8 @@ namespace Graviton\CoreBundle\Service;
  */
 class CoreUtils
 {
-    const X_VERSION_DEFAULT = "0.1.0-alpha";
-
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface service_container
      */
     private $container;
 
@@ -35,34 +35,28 @@ class CoreUtils
 
     /**
      * Gets the current version we're running on..
-     *      *
-     * @todo don't find the composer file like so, use packagist to find and parse it if possible
-     * @todo if we're in a wrapper context, use the version of the wrapper, not graviton
      *
      * @return string version
      */
-    public function getVersion()
+    public function getVersion($composerFile = '')
     {
-        $version = self::X_VERSION_DEFAULT;
-        $composerFile = __DIR__ . '/../../../../composer.json';
+        //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
+        $composerFile = !empty($composerFile) ? $composerFile :__DIR__ . '/../../../../composer.json';
 
         if (file_exists($composerFile)) {
 
             $composer = json_decode(file_get_contents($composerFile), true);
 
             if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-                $version = $composer['version'];
+                return $composer['version'];
             } else {
                 $message = sprintf(
-                    'Unable to extract version from composer.json file: %s (%s)',
-                    json_last_error_msg(),
+                    'Unable to extract version from composer.json file (Error code: %s)',
                     json_last_error()
                 );
 
                 throw new \RuntimeException($message);
             }
         }
-
-        return $version;
     }
 }
