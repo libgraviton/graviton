@@ -1,4 +1,7 @@
 <?php
+/**
+ * generator code for resources
+ */
 
 namespace Graviton\GeneratorBundle\Generator;
 
@@ -17,8 +20,8 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  * use some refactoring to duplicate less for that, but this is how i finally
  * got a working version.
  *
- * @category GeneratorBundle
- * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *
  * @todo     split all the xml handling on services.conf into a Manipulator
@@ -116,8 +119,7 @@ class ResourceGenerator extends AbstractGenerator
                 $field['singularName'] = Inflector::singularize($field['fieldName']);
 
                 // add information from our json file (if provided)..
-                if (
-                    $this->json instanceof JsonDefinition &&
+                if ($this->json instanceof JsonDefinition &&
                     $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
                 ) {
                     $fieldInformation = $this->json->getField($field['fieldName'])
@@ -315,7 +317,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * add node if missing
      *
-     * @param \DOMDocument &$dom      document
+     * @param \DOMDocument $dom       document
      * @param string       $element   name for new node element
      * @param string       $container name of container tag
      *

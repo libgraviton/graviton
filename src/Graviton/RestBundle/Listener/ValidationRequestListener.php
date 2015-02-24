@@ -1,4 +1,7 @@
 <?php
+/**
+ * GetResponseListener for parsing Accept-Language headers
+ */
 
 namespace Graviton\RestBundle\Listener;
 
@@ -13,12 +16,7 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
 /**
  * GetResponseListener for parsing Accept-Language headers
  *
- * @category RestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -34,12 +32,12 @@ class ValidationRequestListener
     /**
      * Validate the json input to prevent errors in the following components
      *
-     * @param RestEvent|GetResponseEvent $event Event
+     * @param RestEvent $event Event
      *
      * @throws NoInputException
      * @throws ValidationException
      * @throws \Exception
-     * @return void
+     * @return RestEvent
      */
     public function onKernelRequest(Event $event)
     {

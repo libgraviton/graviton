@@ -1,4 +1,11 @@
 <?php
+/**
+ * main entrypoint for development
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/GPL GPL
+ * @link     http://swisscom.ch
+ */
 
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
@@ -23,7 +30,9 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 }
 */
 
+// @codingStandardsIgnoreStart
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
+// @codingStandardsIgnoreEnd
 Debug::enable();
 
 require_once __DIR__.'/../app/AppKernel.php';

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Class AuthenticationKeyFinderPass
+ */
 
 namespace Graviton\SecurityBundle\DependencyInjection\Compiler;
 
@@ -7,11 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class AuthenticationKeyFinderPass
- *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -20,9 +19,11 @@ class AuthenticationKeyFinderPass implements CompilerPassInterface
     /**
      * You can modify the container here before it is dumped to PHP code.
      *
-     * @param ContainerBuilder $container
-     *
      * @api
+     *
+     * @param ContainerBuilder $container container to look for tags in
+     *
+     * @return void
      */
     public function process(ContainerBuilder $container)
     {
@@ -34,9 +35,7 @@ class AuthenticationKeyFinderPass implements CompilerPassInterface
             = $container->getDefinition('graviton.security.authenticationkey.finder.command');
 
         foreach ($taggedServiceIds as $serviceId => $tags) {
-
             if ($container->hasDefinition($serviceId)) {
-
                 $commandDefinition->addMethodCall(
                     'addService',
                     array(
@@ -45,10 +44,8 @@ class AuthenticationKeyFinderPass implements CompilerPassInterface
                     )
                 );
             } else {
-
                 /** @var \Psr\Log\LoggerInterface $logger*/
                 if ($container->hasDefinition('logger')) {
-
                     /** @var \Psr\Log\LoggerInterface $logger */
                     $logger = $container->getDefinition('logger');
 

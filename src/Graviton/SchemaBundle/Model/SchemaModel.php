@@ -1,4 +1,7 @@
 <?php
+/**
+ * Model based on Graviton\RestBundle\Model\DocumentModel.
+ */
 
 namespace Graviton\SchemaBundle\Model;
 
@@ -8,8 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
- * @category SchemaBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
@@ -37,7 +38,6 @@ class SchemaModel implements ContainerAwareInterface
         $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
 
         if (!file_exists($file)) {
-
             // fallback try on model property (this should be available on some generated classes)
             if (isset($this->_modelPath)) {
                 // try to find schema.json relative to the model involved..
@@ -73,11 +73,21 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * get description
      *
-     * @return string
+     * @return string Description
      */
     public function getDescription()
     {
         return $this->schema->description;
+    }
+
+    /**
+     * Returns the bare schema
+     *
+     * @return stdClass Schema
+     */
+    public function getSchema()
+    {
+        return $this->schema;
     }
 
     /**

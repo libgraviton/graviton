@@ -1,4 +1,11 @@
 <?php
+/**
+ * autoloader config for graviton
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/GPL GPL
+ * @link     http://swisscom.ch
+ */
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Composer\Autoload\ClassLoader;
@@ -13,11 +20,13 @@ use Composer\Autoload\ClassLoader;
 $primaryLoader = __DIR__.'/../vendor/autoload.php';
 $secondaryLoader = __DIR__.'/../../../autoload.php';
 
+// @codingStandardsIgnoreStart
 if (file_exists($primaryLoader)) {
     $loader = require $primaryLoader;
 } else {
     $loader = require $secondaryLoader;
 }
+// @codingStandardsIgnoreEnd
 
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 

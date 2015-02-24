@@ -1,4 +1,7 @@
 <?php
+/**
+ * various code generators
+ */
 
 namespace Graviton\GeneratorBundle\Generator;
 
@@ -11,8 +14,8 @@ use Symfony\Component\DependencyInjection\Container;
  * use some refactoring to duplicate less for that, but this is how i finally
  * got a working version.
  *
- * @category GeneratorBundle
- * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class BundleGenerator extends AbstractGenerator

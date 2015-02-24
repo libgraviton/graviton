@@ -1,4 +1,7 @@
 <?php
+/**
+ * proxy class for testing abstract strategy
+ */
 
 namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
@@ -8,9 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class AbstractHttpStrategyProxy
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -18,14 +19,24 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
 {
     /**
      * {@inheritdoc}
+     *
+     * @param string $header    header
+     * @param string $fieldName field name
+     *
+     * @return string
      */
-    public function extractFieldInfo($header, $fieldname)
+    public function extractFieldInfo($header, $fieldName)
     {
-        return parent::extractFieldInfo($header, $fieldname);
+        return parent::extractFieldInfo($header, $fieldName);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param string $header    header
+     * @param string $fieldName field name
+     *
+     * @return void
      */
     public function validateField($header, $fieldName)
     {
@@ -34,6 +45,10 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @param Request $request request
+     *
+     * @return void
      */
     public function apply(Request $request)
     {

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Basic functional tests for /entity/country.
+ */
 
 namespace Graviton\EntityBundle\Tests\Controller;
 
@@ -7,12 +10,10 @@ use Graviton\TestBundle\Test\RestTestCase;
 /**
  * Basic functional tests for /entity/country.
  *
- * @category GravitonEntityBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * These tests mainly cover a radable service by way of the country service. They are important
+ * since they contain the complete truth about large parts of the API.
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -49,6 +50,10 @@ class CountryControllerTest extends RestTestCase
      * Validates that every request contains an appropiate link header
      *
      * @dataProvider queryStringProvider
+     *
+     * @param string  $queryString query string
+     * @param integer $pageNumber  page number
+     *
      * @return void
      */
     public function testFindAllWithPaging($queryString, $pageNumber)

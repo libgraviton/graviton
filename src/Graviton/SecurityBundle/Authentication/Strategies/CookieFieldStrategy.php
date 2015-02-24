@@ -1,4 +1,7 @@
 <?php
+/**
+ * authentification strategy based on a username cookie
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -7,9 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class CookieFieldStrategy
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -23,7 +24,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     /**
      * Applies the defined strategy on the provided request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request request to handle
      *
      * @return string
      */
