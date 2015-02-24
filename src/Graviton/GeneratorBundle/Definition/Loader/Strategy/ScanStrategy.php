@@ -21,8 +21,6 @@ class ScanStrategy extends DirStrategy
 
     /**
      * @param string $scanDir dir to scan
-     *
-     * @todo this facility used to use $input->getOption('srcDir').'../' in non-vendorized mode. why?
      */
     public function setScanDir($scanDir)
     {
