@@ -204,7 +204,7 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * update xml services 
+     * update xml services
      *
      * @param array   $parameters     twig parameters
      * @param string  $dir            base bundle dir
