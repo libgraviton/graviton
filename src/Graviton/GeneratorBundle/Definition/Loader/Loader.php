@@ -12,6 +12,7 @@
 namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -47,7 +48,7 @@ class Loader implements LoaderInterface
     public function load($input)
     {
         foreach ($this->strategies as $strategy) {
-            if ($strategy->accepts($input)) {
+            if ($strategy->supports($input)) {
                 return $strategy->load($input);
             }
         }

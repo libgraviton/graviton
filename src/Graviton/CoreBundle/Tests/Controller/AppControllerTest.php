@@ -336,7 +336,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType('application/schema+json', $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertEquals('Array of app objects', $results->title->en);
+        $this->assertEquals('Array of app objects', $results->title);
         $this->assertEquals('array', $results->type);
         $this->assertIsAppSchema($results->items);
 
@@ -427,26 +427,26 @@ class AppControllerTest extends RestTestCase
      */
     private function assertIsAppSchema(\stdClass $schema)
     {
-        $this->assertEquals('App', $schema->title->en);
-        $this->assertEquals('A graviton based app.', $schema->description->en);
+        $this->assertEquals('App', $schema->title);
+        $this->assertEquals('A graviton based app.', $schema->description);
         $this->assertEquals('object', $schema->type);
 
         $this->assertEquals('string', $schema->properties->id->type);
-        $this->assertEquals('ID', $schema->properties->id->title->en);
-        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description->en);
+        $this->assertEquals('ID', $schema->properties->id->title);
+        $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
         $this->assertContains('id', $schema->required);
 
         $this->assertEquals('object', $schema->properties->title->type);
-        $this->assertEquals('Title', $schema->properties->title->title->en);
-        $this->assertEquals('Display name for an app.', $schema->properties->title->description->en);
+        $this->assertEquals('Title', $schema->properties->title->title);
+        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
         $this->assertEquals('string', $schema->properties->title->properties->en->type);
         $this->assertContains('title', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);
-        $this->assertEquals('Show in Menu', $schema->properties->showInMenu->title->en);
+        $this->assertEquals('Show in Menu', $schema->properties->showInMenu->title);
         $this->assertEquals(
             'Define if an app should be exposed on the top level menu.',
-            $schema->properties->showInMenu->description->en
+            $schema->properties->showInMenu->description
         );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a file
+ * load all JsonDefinitions in a dir except those with _ at the start of their name
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -21,27 +21,46 @@ class DirStrategy implements StrategyInterface
      *
      * @return boolean
      */
-    public function accepts($input)
+    public function supports($input)
     {
         return is_dir($input);
     }
 
     /**
-     * load
-     *
      * @param string|null $input input from command
      *
      * @return JsonDefinition[]
      */
     public function load($input)
     {
-        $directory = new \RecursiveDirectoryIterator($input);
-        $jsonFiles = new \RecursiveRegexIterator($directory, '/^[^_].+\.json$/i', \RecursiveRegexIterator::GET_MATCH);
-
         $results = array();
-        foreach ($jsonFiles as $file) {
-            $results[] = new JsonDefinition($file[0]);
+        foreach ($this->getIterator($input) as $file) {
+            if ($this->isValid($input, $file)) {
+                $results[] = new JsonDefinition($file[0]);
+            }
         }
         return $results;
+    }
+
+    /**
+     * @param string|null $input
+     * @return \RecursiveRegexIterator
+     */
+    protected function getIterator($input)
+    {
+        $directory = new \RecursiveDirectoryIterator($input);
+        return new \RecursiveRegexIterator(
+            $directory,
+            '/.*\/[^_]\w+\.json$/i',
+            \RecursiveRegexIterator::GET_MATCH
+        );
+    }
+
+    /**
+     * @return boolean
+     */
+    protected function isValid($input, $file)
+    {
+        return true;
     }
 }

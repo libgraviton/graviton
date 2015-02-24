@@ -23,7 +23,7 @@ class FileStrategyTest extends \PHPUnit_Framework_TestCase
         );
 
         $sut = new FileStrategy;
-        $this->assertTrue($sut->accepts($file));
+        $this->assertTrue($sut->supports($file));
         $this->assertEquals($jsonDef, $sut->load($file));
     }
 }

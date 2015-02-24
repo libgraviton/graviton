@@ -2,7 +2,9 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\Routing\Route;
 
 /**
  * A service that generates a swagger conform service spec dynamically.
@@ -25,6 +27,11 @@ class Swagger
      * @var \Graviton\RestBundle\Service\RestUtils
      */
     private $restUtils;
+
+    /**
+     * @var SchemaModel
+     */
+    private $schemaModel;
 
     /**
      * sets the container
@@ -51,6 +58,16 @@ class Swagger
     }
 
     /**
+     * sets schemamodel
+     *
+     * @param SchemaModel $schemaModel
+     */
+    public function setSchemaModel($schemaModel)
+    {
+        $this->schemaModel = $schemaModel;
+    }
+
+    /**
      * Returns the swagger spec as array
      *
      * @return array Swagger spec
@@ -72,7 +89,6 @@ class Swagger
                 // skip PATCH (as for now) & /schema/ stuff
                 if (
                     strpos($route->getPath(), '/schema/') !== false ||
-                    $routeMethod == 'options' ||
                     $routeMethod == 'patch'
                 ) {
                     continue;
@@ -96,100 +112,16 @@ class Swagger
                 $thisPattern = $route->getPattern();
                 $entityName = ucfirst($document);
 
-                $thisPath = array(
-                    'tags' => array(ucfirst($bundle)),
-                    'operationId' => $routeName,
-                    'consumes' => array('application/json'),
-                    'produces' => array('application/json')
+                $thisPath = $this->getBasicPathStructure(
+                    $isCollectionRequest,
+                    $entityName,
+                    $entityClassName,
+                    $schema->getProperty('id')->getType()
                 );
 
-                // meaningful descriptions..
-                switch ($routeMethod) {
-                    case 'get':
-                        if ($isCollectionRequest) {
-                            $thisPath['summary'] = 'Get collection of ' . $entityName . ' resources';
-                        } else {
-                            $thisPath['summary'] = 'Get single ' . $entityName . ' resources';
-                        }
-                        break;
-                    case 'post':
-                        $thisPath['summary'] = 'Create new ' . $entityName . ' resource';
-                        break;
-                    case 'put':
-                        $thisPath['summary'] = 'Update existing ' . $entityName . ' resource';
-                        break;
-                    case 'delete':
-                        $thisPath['summary'] = 'Delete existing ' . $entityName . ' resource';
-                }
-
-                // collection return or not?
-                if (!$isCollectionRequest) {
-                    // add object response
-                    $thisPath['responses'] = array(
-                        200 => array(
-                            'description' => $entityName . ' response',
-                            'schema' => array('$ref' => '#/definitions/' . $entityClassName)
-                        ),
-                        404 => array(
-                            'description' => 'Resource not found'
-                        )
-                    );
-
-                    // add id param
-                    $thisPath['parameters'][] = array(
-                        'name' => 'id',
-                        'in' => 'path',
-                        'description' => 'ID of ' . $entityName . ' item to fetch/update',
-                        'required' => true,
-                        'type' => $schema->getProperty('id')
-                                         ->getType()
-                    );
-                } else {
-                    // add array response
-                    $thisPath['responses'][200] = array(
-                        'description' => $entityName . ' response',
-                        'schema' => array(
-                            'type' => 'array',
-                            'items' => array('$ref' => '#/definitions/' . $entityClassName)
-                        )
-                    );
-
-                    /* not yet ;-(
-                    $thisPath['parameters'][] = array(
-                        'name' => 'filter',
-                        'in' => 'query',
-                        'description' => 'Optional RQL filter',
-                        'required' => false,
-                        'default' => '',
-                        'type' => 'string'
-                    );
-                    */
-
-                    $thisPath['parameters'][] = array(
-                        'name' => 'q',
-                        'in' => 'query',
-                        'description' => 'Optional RQL filter',
-                        'required' => false,
-                        'type' => 'string'
-                    );
-                    // paging params
-                    $thisPath['parameters'][] = array(
-                        'name' => 'page',
-                        'in' => 'query',
-                        'description' => '(Paging) Page to fetch',
-                        'required' => false,
-                        'default' => 1,
-                        'type' => 'integer'
-                    );
-                    $thisPath['parameters'][] = array(
-                        'name' => 'perPage',
-                        'in' => 'query',
-                        'description' => '(Paging) Items per page',
-                        'required' => false,
-                        'default' => 10,
-                        'type' => 'integer'
-                    );
-                }
+                $thisPath['tags'] = $this->getPathTags($route);
+                $thisPath['operationId'] = $routeName;
+                $thisPath['summary'] = $this->getSummary($routeMethod, $isCollectionRequest, $entityName);
 
                 // post body stuff
                 if ($routeMethod == 'put' || $routeMethod == 'post') {
@@ -225,10 +157,21 @@ class Swagger
                     );
                 }
 
+                if ($routeMethod == 'options') {
+                    $thisPath['responses'][200] = array(
+                        'description' => 'Schema response',
+                        // http://json-schema.org/draft-04/schema
+                        'schema' => array('$ref' => '#/definitions/SchemaModel')
+                    );
+                }
+
                 $paths[$thisPattern][$routeMethod] = $thisPath;
             }
         }
 
+        $ret['definitions']['SchemaModel'] = $this->schemaModel->getSchema();
+
+        ksort($paths);
         $ret['paths'] = $paths;
 
         return $ret;
@@ -253,6 +196,136 @@ class Swagger
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http');
 
+        return $ret;
+    }
+
+    /**
+     * Return the basic structure of a path element
+     *
+     * @param bool   $isCollectionRequest if collection request
+     * @param string $entityName          entity name
+     * @param string $entityClassName     class name
+     * @param string $idType              type of id field
+     *
+     * @return array Path spec
+     */
+    protected function getBasicPathStructure($isCollectionRequest, $entityName, $entityClassName, $idType)
+    {
+        $thisPath = array(
+            'consumes' => array('application/json'),
+            'produces' => array('application/json')
+        );
+
+        // collection return or not?
+        if (!$isCollectionRequest) {
+            // add object response
+            $thisPath['responses'] = array(
+                200 => array(
+                    'description' => $entityName . ' response',
+                    'schema' => array('$ref' => '#/definitions/' . $entityClassName)
+                ),
+                404 => array(
+                    'description' => 'Resource not found'
+                )
+            );
+
+            // add id param
+            $thisPath['parameters'][] = array(
+                'name' => 'id',
+                'in' => 'path',
+                'description' => 'ID of ' . $entityName . ' item to fetch/update',
+                'required' => true,
+                'type' => $idType
+            );
+        } else {
+            // add array response
+            $thisPath['responses'][200] = array(
+                'description' => $entityName . ' response',
+                'schema' => array(
+                    'type' => 'array',
+                    'items' => array('$ref' => '#/definitions/' . $entityClassName)
+                )
+            );
+
+            $thisPath['parameters'][] = array(
+                'name' => 'q',
+                'in' => 'query',
+                'description' => 'Optional RQL filter',
+                'required' => false,
+                'type' => 'string'
+            );
+            // paging params
+            $thisPath['parameters'][] = array(
+                'name' => 'page',
+                'in' => 'query',
+                'description' => '(Paging) Page to fetch',
+                'required' => false,
+                'default' => 1,
+                'type' => 'integer'
+            );
+            $thisPath['parameters'][] = array(
+                'name' => 'perPage',
+                'in' => 'query',
+                'description' => '(Paging) Items per page',
+                'required' => false,
+                'default' => 10,
+                'type' => 'integer'
+            );
+        }
+
+        return $thisPath;
+    }
+
+    /**
+     * Returns the tags (which influences the grouping visually) for a given route
+     *
+     * @param Route $route route
+     *
+     * @return array Array of tags..
+     */
+    protected function getPathTags(Route $route)
+    {
+        $ret = array();
+        $routeParts = explode('/', $route->getPath());
+        if (isset($routeParts[1])) {
+            $ret[] = ucfirst($routeParts[1]);
+        }
+        return $ret;
+    }
+
+    /**
+     * Returns a meaningful summary depending on certain conditions
+     *
+     * @param string $method              Method
+     * @param bool   $isCollectionRequest If collection request
+     * @param string $entityName          Name of entity
+     *
+     * @return string summary
+     */
+    protected function getSummary($method, $isCollectionRequest, $entityName)
+    {
+        $ret = '';
+        // meaningful descriptions..
+        switch ($method) {
+            case 'get':
+                if ($isCollectionRequest) {
+                    $ret = 'Get collection of ' . $entityName . ' resources';
+                } else {
+                    $ret = 'Get single ' . $entityName . ' resources';
+                }
+                break;
+            case 'post':
+                $ret = 'Create new ' . $entityName . ' resource';
+                break;
+            case 'options':
+                $ret = 'Get schema information for ' . $entityName . ' resource';
+                break;
+            case 'put':
+                $ret = 'Update existing ' . $entityName . ' resource';
+                break;
+            case 'delete':
+                $ret = 'Delete existing ' . $entityName . ' resource';
+        }
         return $ret;
     }
 }

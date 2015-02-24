@@ -122,17 +122,18 @@ class LanguageControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->assertEquals('A Language available for i18n purposes.', $results->items->description->en);
+        $this->assertEquals('A Language available for i18n purposes.', $results->items->description);
         $this->assertEquals(array('id', 'name'), $results->items->required);
 
         $properties = $results->items->properties;
         $this->assertEquals('string', $properties->id->type);
-        $this->assertEquals('Language Tag', $properties->id->title->en);
-        $this->assertEquals('A RFC2616 language tag.', $properties->id->description->en);
+        $this->assertEquals('Language Tag', $properties->id->title);
+        $this->assertEquals('A RFC2616 language tag.', $properties->id->description);
 
         $this->assertEquals('object', $properties->name->type);
-        $this->assertEquals('Language', $properties->name->title->en);
-        $this->assertEquals('Common name of a language.', $properties->name->description->en);
+        $this->assertEquals('Language', $properties->name->title);
+        $this->assertEquals('Common name of a language.', $properties->name->description);
         $this->assertEquals('string', $properties->name->properties->en->type);
+
     }
 }
