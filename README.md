@@ -12,7 +12,7 @@ Graviton is a symfony2 based REST server.
 ## Install
 
 ```bash
-php composer.phar install
+composer install
 ```
 
 ## Usage
