@@ -1,6 +1,6 @@
 <?php
 /**
- * XVersionResponseListenerTest
+ * Unit tests for the XVersionResponseListener
  */
 
 namespace Graviton\RestBundle\Listener;
