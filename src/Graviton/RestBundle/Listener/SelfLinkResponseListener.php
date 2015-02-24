@@ -50,6 +50,11 @@ class SelfLinkResponseListener implements ContainerAwareInterface
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        if (!$event->isMasterRequest()) {
+            // don't do anything if it's not the master request
+            return;
+        }
+
         $response = $event->getResponse();
         $request = $event->getRequest();
         $router = $this->container->get('router');
