@@ -1,4 +1,7 @@
 <?php
+/**
+ * test resource generator
+ */
 
 namespace Graviton\GeneratorBundle\Generator;
 
@@ -7,12 +10,7 @@ use Graviton;
 /**
  * Test the ResourceGenerator
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
  * @link     http://swisscom.ch
  */
@@ -28,6 +26,8 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
     /**
      * (non-PHPdoc)
      * @see PHPUnit_Framework_TestCase::setUp()
+     *
+     * @return void
      */
     public function setUp()
     {
@@ -42,6 +42,8 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
     /**
      * (non-PHPdoc)
      * @see PHPUnit_Framework_TestCase::tearDown()
+     *
+     * @return void
      */
     public function tearDown()
     {
@@ -58,6 +60,8 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
      * @dataProvider baseNameProvider
      *
      * @param string $base Basepath
+     *
+     * @return void
      */
     public function testGenerateDocument($base)
     {

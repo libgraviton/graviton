@@ -9,11 +9,9 @@ use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
- * GravitonMessagingBundleTest
- *
- * @category Tests
- * @package  GravitonMessagingBundle$fieldName
- * @link     http://swisscom.com
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
 {

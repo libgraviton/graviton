@@ -1,4 +1,8 @@
 <?php
+/**
+ * Listener for validation exceptions
+ */
+
 namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\ValidationException;
@@ -8,11 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Listener for validation exceptions
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class ValidationExceptionListener extends RestExceptionListener
 {

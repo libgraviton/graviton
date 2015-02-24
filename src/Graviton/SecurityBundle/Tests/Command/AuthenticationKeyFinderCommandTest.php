@@ -1,4 +1,7 @@
 <?php
+/**
+ * Class AuthenticationKeyFinderCommandTest
+ */
 
 namespace Graviton\SecurityBundle\Command;
 
@@ -6,17 +9,18 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * Class AuthenticationKeyFinderCommandTest
- *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class AuthenticationKeyFinderCommandTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * test if execute works as intended
+     *
+     * @return void
+     */
     public function testExecute()
     {
         $application = $this->getApplication();
@@ -34,6 +38,11 @@ class AuthenticationKeyFinderCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('some Testservice', $commandTester->getDisplay());
     }
 
+    /**
+     * check if multiple strategies at once work
+     *
+     * @return void
+     */
     public function testExecuteWithMultipleStrategies()
     {
         $application = $this->getApplication();

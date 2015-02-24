@@ -1,4 +1,7 @@
 <?php
+/**
+ * Tests LinkHeaderItem.
+ */
 
 namespace Graviton\RestBundle\Tests\HttpFoundation;
 
@@ -7,12 +10,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 /**
  * Tests LinkHeaderItem.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -41,7 +39,7 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *data provider for »testFromString« to make it more clear what $itemValue caused a test to fail.
+     * data provider for »testFromString« to make it more clear what $itemValue caused a test to fail.
      *
      * @return array
      *
@@ -97,6 +95,10 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider linkHeaderItemParameterProvider
      *
+     * @param string  $expected   expected string
+     * @param string  $uri        uri to base item on
+     * @param array[] $attributes attributes for LinkHeaderItem
+     *
      * @return void
      */
     public function testToString($expected, $uri, array $attributes = array())
@@ -121,11 +123,12 @@ class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
                     'http://localhost',
                     array('rel' => 'self')
                 ),
-            'uri plus attributes' => array(
-                '<http://localhost>; rel="schema"; type="urn:uri"',
-                'http://localhost',
-                array('rel' => 'schema', 'type' => 'urn:uri')
-            ),
+                'uri plus attributes' =>
+                array(
+                    '<http://localhost>; rel="schema"; type="urn:uri"',
+                    'http://localhost',
+                    array('rel' => 'schema', 'type' => 'urn:uri')
+                ),
         );
     }
 }

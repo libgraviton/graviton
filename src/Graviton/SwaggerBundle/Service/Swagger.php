@@ -1,4 +1,7 @@
 <?php
+/**
+ * Generate swagger conform specs.
+ */
 
 namespace Graviton\SwaggerBundle\Service;
 
@@ -9,11 +12,9 @@ use Symfony\Component\Routing\Route;
 /**
  * A service that generates a swagger conform service spec dynamically.
  *
- * @category GravitonSwaggerBundle
- * @package  Graviton
- * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class Swagger
 {
@@ -60,7 +61,9 @@ class Swagger
     /**
      * sets schemamodel
      *
-     * @param SchemaModel $schemaModel
+     * @param SchemaModel $schemaModel schema model instance
+     *
+     * @return SchemaModel
      */
     public function setSchemaModel($schemaModel)
     {
@@ -79,16 +82,13 @@ class Swagger
         $paths = array();
 
         foreach ($routingMap as $contName => $routes) {
-
             list($app, $bundle, $rest, $document) = explode('.', $contName);
 
             foreach ($routes as $routeName => $route) {
-
                 $routeMethod = strtolower($route->getMethods()[0]);
 
                 // skip PATCH (as for now) & /schema/ stuff
-                if (
-                    strpos($route->getPath(), '/schema/') !== false ||
+                if (strpos($route->getPath(), '/schema/') !== false ||
                     $routeMethod == 'patch'
                 ) {
                     continue;
@@ -125,7 +125,6 @@ class Swagger
 
                 // post body stuff
                 if ($routeMethod == 'put' || $routeMethod == 'post') {
-
                     // special handling for POST/PUT.. we need to have 2 schemas, one for response, one for request..
                     // we don't want to have ID in the request body within those requests do we..
                     // an exception is when id is required..

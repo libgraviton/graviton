@@ -1,4 +1,7 @@
 <?php
+/**
+ * Base class for tests that need a http client..
+ */
 
 namespace Graviton\TestBundle\Test;
 
@@ -8,11 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymWebTestCase;
 
 /**
- * Base class for tests that need a http client..
- *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -21,8 +20,10 @@ abstract class WebTestCase extends SymWebTestCase
     /**
      * Provides a HttpClient based on the Graviton\AppKernel
      *
-     * @param array $options
-     * @param array $server
+     * @todo why are we not using createClient from SymWebTestCase? This need fixing or an explanation.
+     *
+     * @param array $options environment and debug option for kernel
+     * @param array $server  server params
      *
      * @return \Symfony\Bundle\FrameworkBundle\Client
      */
@@ -60,7 +61,9 @@ abstract class WebTestCase extends SymWebTestCase
      */
     protected static function getKernelClass()
     {
+        // @codingStandardsIgnoreStart
         require_once __DIR__ . '/../../../../app/AppKernel.php';
+        // @codingStandardsIgnoreEnd
 
         return 'AppKernel';
     }

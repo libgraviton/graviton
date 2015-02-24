@@ -1,4 +1,8 @@
 <?php
+/**
+ * Validation exception class
+ */
+
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -8,11 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Validation exception class
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 final class ValidationException extends RestException
 {

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Class AuthenticationKeyFinderCommand
+ */
 
 namespace Graviton\SecurityBundle\Command;
 
@@ -10,11 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class AuthenticationKeyFinderCommand
- *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -25,9 +24,10 @@ class AuthenticationKeyFinderCommand extends Command
      */
     private $strategies = array();
 
-
     /**
-     * @param string $service
+     * @param string $service add strategy services to show
+     *
+     * @return void
      */
     public function addService($service)
     {
@@ -37,6 +37,8 @@ class AuthenticationKeyFinderCommand extends Command
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -53,6 +55,11 @@ class AuthenticationKeyFinderCommand extends Command
 
     /**
      * {@inheritDoc}
+     *
+     * @param InputInterface  $input  input from cli
+     * @param OutputInterface $output output to cli
+     *
+     * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

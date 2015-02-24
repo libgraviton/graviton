@@ -10,13 +10,9 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
- * AppKernel
- *
- * @category Graviton
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/MIT MIT License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class AppKernel extends Kernel
 {
@@ -86,7 +82,6 @@ class AppKernel extends Kernel
 
         // autoload of Graviton specific bundles.
         if ($this->bundleLoader) {
-//            $bundles = array_merge($bundles, $this->bundleLoader->load());
             $bundles = $this->bundleLoader->load($bundles);
         }
 
