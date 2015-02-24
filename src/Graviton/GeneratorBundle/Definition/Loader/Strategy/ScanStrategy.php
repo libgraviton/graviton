@@ -67,6 +67,7 @@ class ScanStrategy extends DirStrategy
      */
     protected function isValid($input, $file)
     {
-        return (strpos($input, '/Tests/') !== 0) || !strpos($file[0], '/Tests/');
+        $checkFile = str_replace($this->scanDir, '', $file[0]);
+        return strpos($this->scanDir, '/Tests/') || !strpos($checkFile, '/Tests/');
     }
 }
