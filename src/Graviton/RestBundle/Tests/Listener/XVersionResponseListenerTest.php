@@ -7,12 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @dataProvider versionProvider
-     */
-    public function testOnKernelResponse($version, $file = '')
+    public function testOnKernelResponse()
     {
         $response = new Response();
+        $version = '0.1.0-alpha';
 
         $eventDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\FilterResponseEvent')
             ->disableOriginalConstructor()
@@ -34,22 +32,18 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->method('warning')
             ->with($this->contains('Unable to extract version from composer.json file'));
 
-        $listener = new XVersionResponseListener($loggerDouble, $file);
+        $serviceDouble = $this->getMockBuilder('\Graviton\CoreBundle\Service\CoreUtils')
+            ->setMethods(array('getVersion'))
+            ->getMock();
+        $serviceDouble
+            ->expects($this->once())
+            ->method('getVersion')
+            ->will($this->returnValue('0.1.0-alpha'));
+
+        $listener = new XVersionResponseListener($serviceDouble, $loggerDouble);
         $listener->onKernelResponse($eventDouble);
 
         $this->assertEquals($version, $response->headers->get('X-VERSION'));
-    }
-
-    public function versionProvider()
-    {
-        $version = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
-        $version = $version['version'];
-
-        return array(
-            'composer file not found' => array(XVersionResponseListener::X_VERSION_DEFAULT, 'invalidPath'),
-            'composer file found'     => array($version, __DIR__ . '/../../../../../composer.json'),
-            'composer file not set'   => array($version),
-        );
     }
 
     public function testOnKernelResponseOnSubRequest()
@@ -66,8 +60,9 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false));
 
         $loggerDouble = $this->getMockForAbstractClass('\Psr\Log\LoggerInterface');
+        $serviceDouble = $this->getMock('\Graviton\CoreBundle\Service\CoreUtils');
 
-        $listener = new XVersionResponseListener($loggerDouble, '');
+        $listener = new XVersionResponseListener($serviceDouble, $loggerDouble);
         $listener->onKernelResponse($eventDouble);
 
         $this->assertNull($response->headers->get('X-VERSION'));

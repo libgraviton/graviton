@@ -40,8 +40,8 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $version = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
-        $version = $version['version'];
+        $composer = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
+        $version = $composer['version'];
 
         $response = $client->getResponse();
 

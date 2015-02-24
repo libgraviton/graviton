@@ -166,6 +166,7 @@
         <!-- X-Version response listener -->
         <service id="graviton.rest.listener.xversionresponselistener"
                  class="%graviton.rest.listener.xversionresponselistener.class%">
+            <argument type="service" id="graviton.core.utils" />
             <argument type="service" id="logger" />
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
