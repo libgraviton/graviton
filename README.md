@@ -4,10 +4,6 @@
 
 Graviton is a symfony2 based REST server.
 
-## Bundles
-- [SecurityBundle](src/Graviton/SecurityBundle/README.md)
-- [I18nBundle](src/Graviton//I18nBundle/README.md)
-- [EntityBundle](src/Graviton//EntityBundle/README.md)
 
 ## Install
 
@@ -18,7 +14,7 @@ composer install
 ## Usage
 
 ```bash
-sh dev-cleanstart.sh
+./dev-cleanstart.sh
 ```
 
 and
@@ -26,3 +22,23 @@ and
 ```bash
 app/console
 ```
+
+## Documentation
+
+There are some general docs on interacting with the codebase as a whole. 
+
+- [Development](app/Resources/doc/DEVELOPMENT.md)
+- [Deploy](app/Resources/doc/DEPLOY.md)
+
+Some even broader scoped docs in a seperate repo.
+
+- [gravity-platform.github.io](http://gravity-platform.github.io/)
+
+And the bundle readme files which show how to interact with
+the various subsystems.
+
+- [EntityBundle](src/Graviton/EntityBundle/README.md)
+- [GeneratorBundle](src/Graviton/GeneratorBundle/README.md)
+- [I18nBundle](src/Graviton/I18nBundle/README.md)
+- [SecurityBundle](src/Graviton/SecurityBundle/README.md)
+- [TestBundle](src/Graviton/TestBundle/README.md)
