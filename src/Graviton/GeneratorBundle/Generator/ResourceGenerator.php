@@ -60,22 +60,30 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param Filesystem      $filesystem  fs abstraction layer
-     * @param Doctrine        $doctrine    dbal
-     * @param KernelInterface $kernel      app kernel
-     * @param boolean         $controller do we need to generate a controller
+     * @param Filesystem      $filesystem fs abstraction layer
+     * @param Doctrine        $doctrine   dbal
+     * @param KernelInterface $kernel     app kernel
      *
      * @return ResourceGenerator
      */
     public function __construct(
         Filesystem $filesystem,
         Doctrine $doctrine,
-        KernelInterface $kernel,
-        $controller = true
+        KernelInterface $kernel
     ) {
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+    }
+
+    /**
+     * do we need to generate a controller
+     *
+     * @param boolean $needsController flag
+     * @return void
+     */
+    public function setNeedsController($needsController)
+    {
         $this->needsController = $controller;
     }
 

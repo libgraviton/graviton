@@ -80,7 +80,9 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
         $generator = new ResourceGenerator(
             $this->getContainer()->get('filesystem'),
             $this->getContainer()->get('doctrine'),
-            $this->getContainer()->get('kernel'),
+            $this->getContainer()->get('kernel')
+        );
+        $generator->setNeedsController(
             $this->input->getOption('no-controller') == 'true'
         );
         if (!is_null($this->input->getOption('json'))) {
