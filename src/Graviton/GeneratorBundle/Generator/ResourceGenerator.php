@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Bridge\Doctrine\RegistryInterface as Doctrine;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * bundle containing various code generators
@@ -29,26 +31,26 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 class ResourceGenerator extends AbstractGenerator
 {
     /**
-     * @private
+     * @var Filesystem
      */
     private $filesystem;
     /**
-     * @private
+     * @var Doctrine
      */
     private $doctrine;
     /**
-     * @private
+     * @var KernelInterface
      */
     private $kernel;
     /**
-     * @private
+     * @var InputInterface
      */
     private $input;
 
     /**
      * our json file definition
      *
-     * @var JsonDefinition
+     * @var JsonDefinition|null
      */
     private $json = false;
 
@@ -57,17 +59,32 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @param InputInterface $input      Input
      * @param FileSystem     $filesystem fs abstraction layer
-     * @param object         $doctrine   dbal
-     * @param object         $kernel     app kernel
+     * @param Doctrine       $doctrine   dbal
+     * @param Kernel         $kernel     app kernel
      *
      * @return ResourceGenerator
      */
-    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
-    {
+    public function __construct(
+        InputInterface $input,
+        Filesystem $filesystem,
+        Doctrine $doctrine,
+        KernelInterface $kernel
+    ) {
         $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+    }
+
+    /**
+     * inject a json file
+     *
+     * @param JsonDefinition $definition json def to inject
+     * @return void
+     */
+    public function setJson(JsonDefinition $definition)
+    {
+        $this->json = $definition;
     }
 
     /**
@@ -91,6 +108,7 @@ class ResourceGenerator extends AbstractGenerator
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
         // do we have a json path passed?
+        // @todo let my caller sort the InputOption and inject me a JsonDefinition via setJson()
         if (!is_null($this->input->getOption('json'))) {
             $this->json = new JsonDefinition($this->input->getOption('json'));
             $this->json->setNamespace($bundleNamespace);

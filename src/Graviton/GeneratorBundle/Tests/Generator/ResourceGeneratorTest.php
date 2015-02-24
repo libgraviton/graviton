@@ -130,4 +130,123 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
             array("Graviton\\BundleNamebundle\\"),
         );
     }
+
+    /**
+     * test the mapField method used in generate
+     *
+     * @dataProvider mapFieldProvider
+     *
+     * @param array $field  input field
+     * @param array $expect expected outcome
+     *
+     * @return void
+     */
+    public function testMapField($field, $expect)
+    {
+        $sut = $this->getSimpleGenerator();
+        $this->assertEquals($expect, $sut->mapField($field));
+    }
+
+    /**
+     * fields and what their expected to map to
+     *
+     * @return array[]
+     */
+    public function mapFieldProvider()
+    {
+        return array (
+            array(
+                array('type' => 'object', 'fieldName' => 'names'),
+                array('type' => 'object', 'fieldName' => 'names', 'serializerType' => 'array', 'singularName' => 'name')
+            ),
+            array(
+                array('type' => 'string[]', 'fieldName' => 'arrayOfStrings'),
+                array(
+                    'type' => 'string[]',
+                    'fieldName' => 'arrayOfStrings',
+                    'serializerType' => 'array<string>',
+                    'singularName' => 'arrayOfString'
+                )
+            ),
+            array(
+                array('type' => 'array', 'fieldName' => 'hackyArray'),
+                array(
+                    'type' => 'array',
+                    'fieldName' => 'hackyArray',
+                    'serializerType' => 'array<string>',
+                    'singularName' => 'hackyArray'
+                )
+            ),
+        );
+    }
+
+    /**
+     * test data from JsonDefinition
+     *
+     * @dataProvider mapFieldWithJsonDataProvider
+     *
+     * @param array $field    input field
+     * @param array $json     json data mocked as array
+     * @param array $expected expected outcome
+     *
+     * @return void
+     */
+    public function testMapFieldWithJsonData($field, $json, $expected)
+    {
+        $jsonDef = $this
+            ->getMockBuilder('Graviton\GeneratorBundle\Definition\JsonDefinition')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getField'))
+            ->getMock();
+        $fieldDef = $this
+            ->getMockBuilder('Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $fieldDef
+            ->expects($this->once())
+            ->method('getDefAsArray')
+            ->will($this->returnValue($json));
+        $jsonDef
+            ->expects($this->atLeastOnce())
+            ->method('getField')
+            ->will($this->onConsecutiveCalls($fieldDef, $fieldDef, $fieldDef));
+
+        $sut = $this->getSimpleGenerator();
+
+        $sut->setJson($jsonDef);
+        $this->assertEquals($expected, $sut->mapField($field));
+    }
+
+    /**
+     * @return array
+     */
+    public function mapFieldWithJsonDataProvider()
+    {
+        return array(
+            array(
+               array('type' => 'string', 'fieldName' => 'tests'),
+               array('doctrineType' => 'integer', 'fieldName' => 'foo'),
+               array(
+                   'type' => 'integer',
+                   'serializerType' => 'string',
+                   'singularName' => 'test',
+                   'fieldName' => 'foo',
+                   'doctrineType' => 'integer'
+               ),
+            ),
+        );
+    }
+
+    /**
+     * @return ResourceGenerator
+     */
+    protected function getSimpleGenerator()
+    {
+        $input = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        $filesystem = $this->getMock('Symfony\Component\Filesystem\Filesystem');
+        $doctrine = $this->getMock('Symfony\Bridge\Doctrine\RegistryInterface');
+        $kernel = $this->getMock('Symfony\Component\HttpKernel\KernelInterface');
+
+        return new ResourceGenerator($input, $filesystem, $doctrine, $kernel);
+    }
 }
