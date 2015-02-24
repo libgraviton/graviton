@@ -21,7 +21,7 @@ class TranslatableControllerTest extends RestTestCase
      */
     const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/translatable/';
 
-   /**
+    /**
      * check for language schema
      *
      * @return void
@@ -34,7 +34,6 @@ class TranslatableControllerTest extends RestTestCase
 
         $results = $client->getResults();
         $response = $client->getResponse();
-        var_dump($results);
 
         $this->assertEquals('A Translatable string available for i18n purposes.', $results->items->description);
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
