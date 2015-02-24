@@ -253,7 +253,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
              * so here we merge the generated validation.xml we saved in the loop before back into the
              * final validation.xml again. the final result should be one validation.xml including all
              * the validation rules for all the documents in this bundle.
-             * @todo we might just make this an option to the resource generator, i probably need to grok why this was in issue
+             * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
              */
             if (count($this->validationXmlNodes) > 0) {
                 $validationXml = $this->getGeneratedValidationXmlPath($namespace);
