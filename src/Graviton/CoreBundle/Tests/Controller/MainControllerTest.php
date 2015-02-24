@@ -40,7 +40,7 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $version = json_decode(file_get_contents(__DIR__.'/../../../../../composer.json'), true);
+        $version = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
         $version = $version['version'];
 
         $response = $client->getResponse();
@@ -78,8 +78,6 @@ class MainControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        var_dump($results);
-
         $this->assertEquals(
             'Please look at the Link headers of this response for further information.',
             $results->message
@@ -104,4 +102,91 @@ class MainControllerTest extends RestTestCase
         );
         $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
     }
+
+    public function testPrepareLinkHeader()
+    {
+        $routerDouble = $this->getMockBuilder('\Symfony\Component\Routing\Router')
+            ->disableOriginalConstructor()
+            ->setMethods(array('generate'))
+            ->getMock();
+        $routerDouble
+            ->expects($this->once())
+            ->method('generate')
+            ->with(
+                $this->equalTo('graviton.core.rest.app.all'),
+                $this->isType('array'),
+                $this->isType('boolean')
+            )
+            ->will($this->returnValue("http://localhost/core/app"));
+
+        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+            ->setMethods(array('prepareLinkHeader'))
+            ->getProxy();
+
+        $this->assertEquals(
+            '<http://localhost/core/app>; rel="apps"; type="application/json"',
+            $controller->prepareLinkHeader($routerDouble)
+        );
+    }
+
+    public function testDetermineServices()
+    {
+        $services = [
+            [
+                '$ref'    => "http:\/\/localhost\/core\/product",
+                "profile" => "http:\/\/localhost\/schema\/core\/product\/collection"
+            ],
+            [
+                '$ref'    => "http:\/\/localhost\/core\/app",
+                "profile" => "http:\/\/localhost\/schema\/core\/app\/collection"
+            ],
+        ];
+
+        $routerDouble = $this->getMockBuilder('\Symfony\Component\Routing\Router')
+            ->disableOriginalConstructor()
+            ->setMethods(array('generate'))
+            ->getMock();
+        $routerDouble
+            ->expects($this->exactly(4))
+            ->method('generate')
+            ->with(
+                $this->isType('string'),
+                $this->isType('array'),
+                $this->isType('boolean')
+            )
+            ->will(
+                $this->onConsecutiveCalls(
+                    $this->returnValue($services[0]['$ref']),
+                    $this->returnValue($services[0]['profile']),
+                    $this->returnValue($services[1]['$ref']),
+                    $this->returnValue($services[1]['profile'])
+                )
+            );
+
+
+        $optionRoutes = [
+            "graviton.core.rest.app.options" => $routerDouble,
+            "graviton.core.rest.product.options" =>$routerDouble,
+        ];
+
+        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+            ->setMethods(array('determineServices'))
+            ->getProxy();
+
+        $this->assertEquals(
+            [
+                [
+                    '$ref'    => "http:\/\/localhost\/core\/app",
+                    "profile" => "http:\/\/localhost\/schema\/core\/app\/collection"
+                ],
+                [
+                    '$ref'    => "http:\/\/localhost\/core\/product",
+                    "profile" => "http:\/\/localhost\/schema\/core\/product\/collection"
+                ],
+            ],
+            $controller->determineServices($routerDouble, $optionRoutes)
+        );
+}
+
+
 }

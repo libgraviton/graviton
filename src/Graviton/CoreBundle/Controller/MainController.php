@@ -99,7 +99,7 @@ class MainController implements ContainerAwareInterface
      *
      * @return string
      */
-    private function prepareLinkHeader(Router $router)
+    protected function prepareLinkHeader(Router $router)
     {
         $links = new LinkHeader(array());
         $links->add(
@@ -116,12 +116,14 @@ class MainController implements ContainerAwareInterface
     }
 
     /**
+     * Determines what service endpoints are available.
+     *
      * @param Router $router
      * @param array $optionRoutes
      *
      * @return array
      */
-    private function determineServices(Router $router, array $optionRoutes)
+    protected function determineServices(Router $router, array $optionRoutes)
     {
         $sortArr = array();
         $services = array_map(
@@ -143,6 +145,6 @@ class MainController implements ContainerAwareInterface
 
         array_multisort($sortArr, SORT_ASC, $services);
 
-        return array_values($services);
+        return $services;
     }
 }

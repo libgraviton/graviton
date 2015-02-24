@@ -61,7 +61,8 @@
         "phpunit/phpunit": "*",
         "liip/functional-test-bundle": "@dev",
         "phpmd/phpmd": "@dev",
-        "fabpot/php-cs-fixer": "0.4.*@dev"
+        "fabpot/php-cs-fixer": "0.4.*@dev",
+        "lapistano/proxy-object": "~2.1"
     },
     "scripts": {
         "post-root-package-install": [

@@ -2,6 +2,7 @@
 
 namespace Graviton\TestBundle\Test;
 
+use lapistano\ProxyObject\ProxyBuilder;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\Loader\BundleLoader;
@@ -51,5 +52,17 @@ class GravitonTestCase extends WebTestCase
         ini_set('error_reporting', E_ALL);
 
         return $kernel;
+    }
+
+    /**
+     * Provides a proxy object of the provided class.
+     *
+     * @param string $class
+     *
+     * @return ProxyBuilder
+     */
+    public function getProxyBuilder($class)
+    {
+        return new ProxyBuilder($class);
     }
 }
