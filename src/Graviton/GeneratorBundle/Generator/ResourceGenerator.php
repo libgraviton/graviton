@@ -97,46 +97,7 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         // add more info to the fields array
-        $fields = array_map(
-            function ($field) {
-
-                // derive types for serializer from document types
-                $field['serializerType'] = $field['type'];
-                if (substr($field['type'], -2) == '[]') {
-                    $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
-                }
-
-                // @todo this assumtion is a hack and needs fixing
-                if ($field['type'] === 'array') {
-                    $field['serializerType'] = 'array<string>';
-                }
-
-                if ($field['type'] === 'object') {
-                    $field['serializerType'] = 'array';
-                }
-
-                // add singular form
-                $field['singularName'] = Inflector::singularize($field['fieldName']);
-
-                // add information from our json file (if provided)..
-                if ($this->json instanceof JsonDefinition &&
-                    $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
-                ) {
-                    $fieldInformation = $this->json->getField($field['fieldName'])
-                                                   ->getDefAsArray();
-
-                    // in this context, the default type is the doctrine type..
-                    if (isset($fieldInformation['doctrineType'])) {
-                        $fieldInformation['type'] = $fieldInformation['doctrineType'];
-                    }
-
-                    $field = array_merge($field, $fieldInformation);
-                }
-
-                return $field;
-            },
-            $fields
-        );
+        $fields = array_map(array($this, 'mapField'), $fields);
 
         $parameters = array(
             'document' => $document,
@@ -173,6 +134,49 @@ class ResourceGenerator extends AbstractGenerator
         if ($this->input->getOption('no-controller') != 'true') {
             $this->generateController($parameters, $dir, $document);
         }
+    }
+
+    /**
+     * @param array $field field to map
+     * @return array
+     */
+    public function mapField($field)
+    {
+        // @todo all this mapping needs to go
+        // derive types for serializer from document types
+        $field['serializerType'] = $field['type'];
+        if (substr($field['type'], -2) == '[]') {
+            $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
+        }
+
+        // @todo this assumtion is a hack and needs fixing
+        if ($field['type'] === 'array') {
+            $field['serializerType'] = 'array<string>';
+        }
+
+        if ($field['type'] === 'object') {
+            $field['serializerType'] = 'array';
+        }
+
+        // add singular form
+        $field['singularName'] = Inflector::singularize($field['fieldName']);
+
+        // add information from our json file (if provided)..
+        if ($this->json instanceof JsonDefinition &&
+            $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
+        ) {
+            $fieldInformation = $this->json->getField($field['fieldName'])
+                                                   ->getDefAsArray();
+
+            // in this context, the default type is the doctrine type..
+            if (isset($fieldInformation['doctrineType'])) {
+                $fieldInformation['type'] = $fieldInformation['doctrineType'];
+            }
+
+            $field = array_merge($field, $fieldInformation);
+        }
+
+        return $field;
     }
 
     /**
