@@ -1,4 +1,7 @@
 <?php
+/**
+ * test abstract strategy
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -8,14 +11,17 @@ use Graviton\TestBundle\Test\WebTestCase;
 /**
  * Class AbstractHttpStrategyTest
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class AbstractHttpStrategyTest extends WebTestCase
 {
+    /**
+     * check that arguments are required
+     *
+     * @return void
+     */
     public function testExtractFieldInfoExpectingException()
     {
         $strategy = new AbstractHttpStrategyProxy();
@@ -27,6 +33,11 @@ class AbstractHttpStrategyTest extends WebTestCase
 
     /**
      * @dataProvider fieldInfoProvider
+     *
+     * @param boolean $hasField     is field in data
+     * @param string  $fieldContent test content for field
+     *
+     * @return void
      */
     public function testValidateFieldExpectingException($hasField, $fieldContent = '')
     {
@@ -54,6 +65,9 @@ class AbstractHttpStrategyTest extends WebTestCase
         $strategy->validateField($headerMock, $fieldName);
     }
 
+    /**
+     * @return array<string>
+     */
     public function fieldInfoProvider()
     {
         return array(

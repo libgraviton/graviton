@@ -14,6 +14,11 @@ use Graviton\GeneratorBundle\Definition\Loader\Loader;
  */
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * check if strategies are called
+     *
+     * @return void
+     */
     public function testLoadCallsStrategy()
     {
         $jsonDef = array(
@@ -29,15 +34,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('supports')
             ->with(null)
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
 
         $strategy
             ->expects($this->once())
             ->method('load')
             ->with(null)
-            ->will($this->returnValue($jsonDef))
-        ;
+            ->will($this->returnValue($jsonDef));
 
         $sut = new Loader;
         $sut->addStrategy($strategy);

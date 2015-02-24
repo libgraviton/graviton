@@ -1,4 +1,8 @@
 <?php
+/**
+ * Serialization exception class
+ */
+
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -6,11 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Serialization exception class
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 final class SerializationException extends RestException
 {
@@ -19,8 +21,6 @@ final class SerializationException extends RestException
      *
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
-     *
-     * @return void
      */
     public function __construct($message = "Serialization Error", $prev = null)
     {

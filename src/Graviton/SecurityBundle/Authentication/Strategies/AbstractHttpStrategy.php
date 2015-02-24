@@ -1,4 +1,7 @@
 <?php
+/**
+ * abstract strategy for checking auth against parts of the request
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -10,9 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * Class AbstractHttpStrategy
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -22,14 +23,13 @@ abstract class AbstractHttpStrategy implements StrategyInterface
      * Extracts information from the a request header field.
      *
      * @param ParameterBag|HeaderBag $header    object representation of the request header.
-     * @param  string                $fieldname Name of the field to be read.
+     * @param string                 $fieldname Name of the field to be read.
      *
      * @return string
      */
     protected function extractFieldInfo($header, $fieldname)
     {
         if ($header instanceof ParameterBag || $header instanceof HeaderBag) {
-
             $this->validateField($header, $fieldname);
 
             return $header->get($fieldname, '');

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Validator class for json inputs
+ */
+
 namespace Graviton\RestBundle\Validator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -13,14 +17,7 @@ use Symfony\Component\Validator\Mapping\ClassMetadata as SFClassMetaData;
 use Symfony\Component\Validator\Validator\LegacyValidator as Validator;
 
 /**
- * Validator class for json inputs
- *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  *
@@ -206,9 +203,9 @@ class JsonInput
     /**
      * Check an association (embedded documents)
      *
-     * @param string                                     $path             Path to property
-     * @param array                                      $input            Json input
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $documentMetadata Document metadata
+     * @param string        $path             Path to property
+     * @param array         $input            Json input
+     * @param ClassMetadata $documentMetadata Document metadata
      *
      * @return \Symfony\Component\Validator\ConstraintViolationList $violations Violations
      */
@@ -254,7 +251,7 @@ class JsonInput
      *
      * @param \Doctrine\ODM\MongoDB\DocumentManager $em Doctrine document manager
      *
-     * @return \Graviton\RestBundle\Validation\JsonInput $this This
+     * @return JsonInput self
      */
     public function setDocumentManager(DocumentManager $em)
     {

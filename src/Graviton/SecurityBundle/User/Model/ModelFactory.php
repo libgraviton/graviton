@@ -1,4 +1,7 @@
 <?php
+/**
+ * security user factory
+ */
 
 namespace Graviton\SecurityBundle\User\Model;
 
@@ -7,23 +10,21 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class ModelFactory
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class ModelFactory
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     private $container;
 
     /**
      * Constructor of the class.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @param ContainerInterface $container symfony container
      */
     public function __construct(ContainerInterface $container)
     {
@@ -41,7 +42,6 @@ class ModelFactory
         $service = $this->container->get('graviton.authentication.user_provider.model.noop');
 
         if (!empty($serviceId) && $this->container->has($serviceId)) {
-
             $service = $this->container->get($serviceId);
         }
 

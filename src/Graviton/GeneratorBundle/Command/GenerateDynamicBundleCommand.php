@@ -1,4 +1,8 @@
 <?php
+/**
+ * generate dynamic bundles
+ */
+
 namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
@@ -30,9 +34,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * executed in the same context as the previous generator tools, and also those
  * used the shell (backtick operator to get git name/email for example).
  *
- * @category GeneratorBundle
- * @package  Graviton
- * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -123,8 +125,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
         $filesToWorkOn = $this
             ->getContainer()
             ->get('graviton_generator.definition.loader')
-            ->load($input->getOption('json'))
-        ;
+            ->load($input->getOption('json'));
 
         // bundles in mongodb?
         // @todo this should move to loader
@@ -177,7 +178,6 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
              */
             foreach ($jsonDef->getFields() as $field) {
                 if ($field->isHash() && !$field->isBagOfPrimitives()) {
-
                     // get json for this hash and save to temp file..
                     $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
                     file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
@@ -293,7 +293,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      * @param InputInterface  $input      Input
      * @param OutputInterface $output     Output
      *
-     * @return string The exit code
+     * @return integer|null The exit code
      */
     private function generateBundle(
         $namespace,
@@ -326,7 +326,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
      * @param array           $args   Arguments
      * @param OutputInterface $output Output
      *
-     * @return string Exit code
+     * @return integer|null Exit code
      */
     private function executeCommand(array $args, OutputInterface $output)
     {

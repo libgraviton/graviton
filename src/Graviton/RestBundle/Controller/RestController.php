@@ -1,4 +1,7 @@
 <?php
+/**
+ * basic rest controller
+ */
 
 namespace Graviton\RestBundle\Controller;
 
@@ -15,18 +18,14 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
+use Graviton\RestBundle\Model\ModelInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
  * extra functionality you can extend it and overwrite single/all actions.
  * You can also extend the model class to add some extra logic before save
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -56,7 +55,6 @@ class RestController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-
     public function getContainer()
     {
         return $this->container;
@@ -342,7 +340,7 @@ class RestController implements ContainerAwareInterface
      *
      * @throws \Exception in case no model was defined.
      *
-     * @return object $model Model
+     * @return ModelInterface $model Model
      */
     public function getModel()
     {

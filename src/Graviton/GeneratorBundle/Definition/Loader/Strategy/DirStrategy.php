@@ -43,7 +43,7 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
-     * @param string|null $input
+     * @param string|null $input input from command
      * @return \RecursiveRegexIterator
      */
     protected function getIterator($input)
@@ -57,6 +57,8 @@ class DirStrategy implements StrategyInterface
     }
 
     /**
+     * @param string|null $input input value
+     * @param array       $file  matched file
      * @return boolean
      */
     protected function isValid($input, $file)

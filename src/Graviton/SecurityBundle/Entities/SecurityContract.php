@@ -1,4 +1,7 @@
 <?php
+/**
+ * security contract entity
+ */
 
 namespace Graviton\SecurityBundle\Entities;
 
@@ -9,9 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Class SecurityContract
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -31,8 +32,10 @@ class SecurityContract implements UserInterface
     /**
      * Constructor of the class.
      *
-     * @param Contract $contract
-     * @param Role[]   $roles
+     * @param Contract $contract contract
+     * @param Role[]   $roles    roles for the contract
+     *
+     * @return SecurityContract
      */
     public function __construct(Contract $contract, array $roles = array())
     {
@@ -89,6 +92,8 @@ class SecurityContract implements UserInterface
      *
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
+     *
+     * @return void
      */
     public function eraseCredentials()
     {

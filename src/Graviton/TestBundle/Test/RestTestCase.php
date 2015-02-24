@@ -1,4 +1,9 @@
 <?php
+/**
+ * REST test case
+ *
+ * Contains additional helpers for testing RESTful servers
+ */
 
 namespace Graviton\TestBundle\Test;
 
@@ -9,12 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Contains additional helpers for testing RESTful servers
  *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -87,14 +87,13 @@ class RestTestCase extends GravitonTestCase
     {
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
-
     }
 
     /**
      * assert that putting a fetched resource fails
      *
      * @param string $url    url
-     * @param object $client client to use
+     * @param Client $client client to use
      *
      * @return void
      */

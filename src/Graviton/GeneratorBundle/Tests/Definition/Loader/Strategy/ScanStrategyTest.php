@@ -15,6 +15,11 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  */
 class ScanStrategyTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * check loading with null input
+     *
+     * @return void
+     */
     public function testLoadDir()
     {
         $jsonDef = array(

@@ -15,6 +15,11 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  */
 class DirStrategyTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * test loading multiple files from dir
+     *
+     * @return void
+     */
     public function testLoadDir()
     {
         $dir = __DIR__.'/dir';
