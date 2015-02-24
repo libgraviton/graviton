@@ -80,13 +80,11 @@ class MainController implements ContainerAwareInterface
         // todo: this should be covered by a kernel.response event listener?
         $response->headers->set('Content-Type', 'application/json');
 
-        return $response;
-
-//        return $this->render(
-//            'GravitonCoreBundle:Main:index.json.twig',
-//            array('response' => $response->getContent()),
-//            $response
-//        );
+        return $this->render(
+            'GravitonCoreBundle:Main:index.json.twig',
+            array('response' => $response->getContent()),
+            $response
+        );
     }
 
     /**
