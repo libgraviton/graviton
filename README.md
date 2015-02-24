@@ -37,7 +37,6 @@ Some even broader scoped docs in a seperate repo.
 And the bundle readme files which show how to interact with
 the various subsystems.
 
-- [EntityBundle](src/Graviton/EntityBundle/README.md)
 - [GeneratorBundle](src/Graviton/GeneratorBundle/README.md)
 - [I18nBundle](src/Graviton/I18nBundle/README.md)
 - [SecurityBundle](src/Graviton/SecurityBundle/README.md)
