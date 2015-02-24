@@ -50,7 +50,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * our json file definition
      *
-     * @var JsonDefinition|null
+     * @var JsonDefinition|boolean
      */
     private $json = false;
 
@@ -160,7 +160,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     public function mapField($field)
     {
-        // @todo all this mapping needs to go
         // derive types for serializer from document types
         $field['serializerType'] = $field['type'];
         if (substr($field['type'], -2) == '[]') {
