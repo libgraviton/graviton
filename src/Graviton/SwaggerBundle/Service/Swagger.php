@@ -29,6 +29,11 @@ class Swagger
     private $restUtils;
 
     /**
+     * @var SchemaModel
+     */
+    private $schemaModel;
+
+    /**
      * sets the container
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
@@ -50,6 +55,16 @@ class Swagger
     public function setRestUtils($restUtils = null)
     {
         $this->restUtils = $restUtils;
+    }
+
+    /**
+     * sets schemamodel
+     *
+     * @param SchemaModel $schemaModel
+     */
+    public function setSchemaModel($schemaModel)
+    {
+        $this->schemaModel = $schemaModel;
     }
 
     /**
@@ -154,7 +169,7 @@ class Swagger
             }
         }
 
-        $ret['definitions']['SchemaModel'] = $this->getSchemaSchema();
+        $ret['definitions']['SchemaModel'] = $this->schemaModel->getSchema();
 
         ksort($paths);
         $ret['paths'] = $paths;
@@ -259,17 +274,6 @@ class Swagger
         }
 
         return $thisPath;
-    }
-
-    /**
-     * Returns the definition of a 'schema' response
-     *
-     * @return stdClass Schema
-     */
-    protected function getSchemaSchema()
-    {
-        $schemaModel = new SchemaModel();
-        return $schemaModel->getSchema();
     }
 
     /**
