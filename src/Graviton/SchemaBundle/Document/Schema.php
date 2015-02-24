@@ -1,12 +1,13 @@
 <?php
+/**
+ * Graviton Schema Document
+ */
 
 namespace Graviton\SchemaBundle\Document;
 
 /**
  * Graviton\SchemaBundle\Document\Schema
  *
- * @category GravitonSchemaBundle
- * @package  Graviton
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
@@ -158,7 +159,7 @@ class Schema
     /**
      * removes a property
      *
-     * @param string $name     property name
+     * @param string $name property name
      *
      * @return void
      */
@@ -170,7 +171,7 @@ class Schema
     /**
      * returns a property
      *
-     * @param string $name     property name
+     * @param string $name property name
      *
      * @return Schema property
      */

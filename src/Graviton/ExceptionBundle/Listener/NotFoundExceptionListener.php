@@ -1,4 +1,8 @@
 <?php
+/**
+ * '404' listener
+ */
+
 namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -8,11 +12,9 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 /**
  * Listener for not found exceptions
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class NotFoundExceptionListener extends RestExceptionListener
 {

@@ -1,0 +1,40 @@
+{
+  "title": "SchemaModel",
+  "type": "object",
+  "description": "An object containing schema information about a resource",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string",
+      "description": "The title of the property"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string",
+      "description": "The description of the property"
+    },
+    "type": {
+      "title": "Type",
+      "type": "string",
+      "description": "Data type of the property"
+    },
+    "properties": {
+      "title": "Properties",
+      "type": "array",
+      "items": "object",
+      "description": "Array of properties"
+    },
+    "required": {
+      "title": "Required",
+      "type": "array",
+      "items": "object",
+      "description": "Array of required field names"
+    },
+    "translatable": {
+      "title": "Translatable",
+      "type": "boolean",
+      "description": "If property is translatable or not"
+    }
+  },
+  "required": ["title", "description", "type"]
+}

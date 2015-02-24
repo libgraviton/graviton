@@ -1,4 +1,7 @@
 <?php
+/**
+ * Use doctrine odm as backend
+ */
 
 namespace Graviton\RestBundle\Model;
 
@@ -11,12 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Use doctrine odm as backend
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -81,7 +79,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
         if (!empty($filter)) {
-
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 

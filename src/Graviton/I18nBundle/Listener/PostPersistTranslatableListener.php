@@ -1,4 +1,7 @@
 <?php
+/**
+ * trigger update of translation loader cache when translatables are updated
+ */
 
 namespace Graviton\I18nBundle\Listener;
 
@@ -9,12 +12,7 @@ use Graviton\I18nBundle\Document\Translatable;
 /**
  * trigger update of translation loader cache when translatables are updated
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */

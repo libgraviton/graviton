@@ -14,12 +14,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 /**
  * MainController
  *
- * @category GravitonCoreBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -65,11 +60,7 @@ class MainController implements ContainerAwareInterface
         );
 
         $response->headers->set('Link', (string) $links);
-
-        # @todo don't find the composer file like so, use packagist to find and parse it if possible
-        $composerFile = __DIR__.'/../../../../composer.json';
-        $composer = json_decode(file_get_contents($composerFile), true);
-        $response->headers->set('X-Version', $composer['version']);
+        $response->headers->set('X-Version', $this->container->get('graviton.core.utils')->getVersion());
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';

@@ -1,4 +1,7 @@
 <?php
+/**
+ * change the code of a GravitonBundleInterface based bundle
+ */
 
 namespace Graviton\GeneratorBundle\Manipulator;
 
@@ -8,8 +11,8 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 /**
  * change the code of a GravitonBundleInterface based bundle
  *
- * @category GeneratorBundle
- * @package  Graviton
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class BundleBundleManipulator extends Manipulator

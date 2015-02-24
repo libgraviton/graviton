@@ -1,4 +1,7 @@
 <?php
+/**
+ * test security contract (mainly getters and defaults)
+ */
 
 namespace Graviton\SecurityBundle\Entities;
 
@@ -7,16 +10,14 @@ use Graviton\TestBundle\Test\WebTestCase;
 /**
  * Class SecurityContractTest
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class SecurityContractTest extends WebTestCase
 {
     /**
-     * @param array $methods
+     * @param string[] $methods methods to mock
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|\GravitonDyn\ContractBundle\Document\Contract
      */
@@ -28,7 +29,11 @@ class SecurityContractTest extends WebTestCase
             ->getMock();
     }
 
-
+    /**
+     * roles should always return an array
+     *
+     * @return void
+     */
     public function testGetRoles()
     {
         $entity = new SecurityContract($this->getContractMock());
@@ -36,6 +41,11 @@ class SecurityContractTest extends WebTestCase
         $this->assertInternalType('array', $entity->getRoles());
     }
 
+    /**
+     * get password should return empty
+     *
+     * @return void
+     */
     public function testGetPassword()
     {
         $entity = new SecurityContract($this->getContractMock());
@@ -43,6 +53,11 @@ class SecurityContractTest extends WebTestCase
         $this->assertEmpty($entity->getPassword());
     }
 
+    /**
+     * get salt should return empty
+     *
+     * @return void
+     */
     public function testGetSalt()
     {
         $entity = new SecurityContract($this->getContractMock());
@@ -50,6 +65,11 @@ class SecurityContractTest extends WebTestCase
         $this->assertEmpty($entity->getSalt());
     }
 
+    /**
+     * test getting username from contract
+     *
+     * @return void
+     */
     public function testUsername()
     {
         $customerMock = $this->getMockBuilder('\GravitonDyn\CustomerBundle\Document\Customer')
@@ -76,6 +96,11 @@ class SecurityContractTest extends WebTestCase
         $this->assertEquals('Jon Doe', $entity->getUsername());
     }
 
+    /**
+     * test credential removal
+     *
+     * @return void
+     */
     public function testEraeseCredentials()
     {
         $entity = new SecurityContract($this->getContractMock());

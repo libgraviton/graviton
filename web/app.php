@@ -1,4 +1,12 @@
 <?php
+/**
+ * main entrypoint for graviton
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/GPL GPL
+ * @link     http://swisscom.ch
+ */
+
 
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
@@ -6,7 +14,9 @@ use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
+// @codingStandardsIgnoreStart
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
+// @codingStandardsIgnoreEnd
 
 // Enable APC for autoloading to improve performance.
 // You should change the ApcClassLoader first argument to a unique prefix

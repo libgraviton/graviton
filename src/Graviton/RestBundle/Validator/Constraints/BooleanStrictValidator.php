@@ -1,4 +1,7 @@
 <?php
+/**
+ * Validator for a strict boolean check (not accepting integers of any kind)
+ */
 
 namespace Graviton\RestBundle\Validator\Constraints;
 
@@ -8,12 +11,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 /**
  * Validator for a strict boolean check (not accepting integers of any kind)
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Dario Nuevo <Dario.Nuevo@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */

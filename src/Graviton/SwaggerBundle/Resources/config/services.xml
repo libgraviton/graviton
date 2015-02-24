@@ -25,6 +25,9 @@
             <call method="setRestUtils">
                 <argument type="service" id="graviton.rest.restutils"></argument>
             </call>
+            <call method="setSchemaModel">
+                <argument type="service" id="graviton.schema.model.schemamodel"></argument>
+            </call>
         </service>
 
     </services>

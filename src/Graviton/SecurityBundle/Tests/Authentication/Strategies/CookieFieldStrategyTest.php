@@ -1,4 +1,7 @@
 <?php
+/**
+ * check if reading from cookie works
+ */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
@@ -8,9 +11,7 @@ use Symfony\Component\BrowserKit\Cookie;
 /**
  * Class CookieFieldStrategyTest
  *
- * @category GravitonSecurityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -22,6 +23,10 @@ class CookieFieldStrategyTest extends WebTestCase
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
+     *
+     * @param string $fieldValue value to check
+     *
+     * @return void
      */
     public function testApply($fieldValue)
     {
@@ -49,6 +54,9 @@ class CookieFieldStrategyTest extends WebTestCase
         $this->assertSame($fieldValue, $strategy->apply($client->getRequest(), CookieFieldStrategy::COOKIE_FIELD));
     }
 
+    /**
+     * @return array<string>
+     */
     public function stringProvider()
     {
         return array(

@@ -1,4 +1,8 @@
 <?php
+/**
+ * base listener for rest exceptions
+ */
+
 namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -20,11 +24,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Have a look at Symfony\Component\HttpFoundation\Response or Symfony\Component\HttpFoundation\JsonRepsonse
  * to find out how this works
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 abstract class RestExceptionListener
 {

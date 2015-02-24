@@ -13,11 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @category GravitonSecutityBundle
- * @package  Graviton
- * @author   Bastian Feder <bastian.feder@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonSecurityExtension extends GravitonBundleExtension
 {
@@ -33,6 +31,11 @@ class GravitonSecurityExtension extends GravitonBundleExtension
 
     /**
      * {@inheritDoc}
+     *
+     * @param array            $configs   configs to load
+     * @param ContainerBuilder $container builder used to load
+     *
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {

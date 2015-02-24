@@ -1,4 +1,7 @@
 <?php
+/**
+ * Swagger controller.
+ */
 
 namespace Graviton\SwaggerBundle\Controller;
 
@@ -8,11 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * A controller that generates a swagger conform API specification.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Dario Nuevo <dario.nuevo@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class MainController implements ContainerAwareInterface
 {
@@ -41,7 +42,6 @@ class MainController implements ContainerAwareInterface
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-
     public function getContainer()
     {
         return $this->container;

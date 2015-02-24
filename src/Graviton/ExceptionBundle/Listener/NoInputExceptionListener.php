@@ -1,4 +1,8 @@
 <?php
+/**
+ * Listener for no input exceptions
+ */
+
 namespace Graviton\ExceptionBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -8,11 +12,9 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
 /**
  * Listener for no input exceptions
  *
- * @category GravitonExceptionBundle
- * @package  Graviton
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class NoInputExceptionListener extends RestExceptionListener
 {
