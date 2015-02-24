@@ -42,7 +42,7 @@ class BundleBundleManipulator extends Manipulator
      *
      * @throws \RuntimeException If bundle is already defined
      *
-     * @todo numer magic has to go, maybe parse and regenerate?
+     * @todo number magic has to go, maybe parse and regenerate?
      */
     public function addBundle($bundle)
     {

@@ -7,10 +7,8 @@ use Graviton\RestBundle\Controller\RestController;
 /**
  * {{ base }}Controller\{{ document }}Controller
  *
- * @category {{ bundle}}
- * @package  Graviton
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class {{ document }}Controller extends {% if json is defined %}{{ json.getBaseController() }}{% else %}RestController{% endif %}
 {
