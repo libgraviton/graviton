@@ -57,10 +57,10 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param InputInterface $input      Input
-     * @param FileSystem     $filesystem fs abstraction layer
-     * @param Doctrine       $doctrine   dbal
-     * @param Kernel         $kernel     app kernel
+     * @param InputInterface  $input      Input
+     * @param Filesystem      $filesystem fs abstraction layer
+     * @param Doctrine        $doctrine   dbal
+     * @param KernelInterface $kernel     app kernel
      *
      * @return ResourceGenerator
      */
