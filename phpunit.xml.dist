@@ -28,6 +28,8 @@
         <directory>src/*/*Bundle/*Bundle/Tests</directory>
         <directory>src/*/*Bundle/Resources</directory>
         <directory>src/*/Bundle/*Bundle/Resources</directory>
+        <directory>src/*/Bundle/DependencyInjection</directory>
+        <directory>src/*/Bundle/*Bundle/DependencyInjection</directory>
       </exclude>
     </whitelist>
   </filter>
