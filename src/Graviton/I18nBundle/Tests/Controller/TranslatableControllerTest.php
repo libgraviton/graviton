@@ -17,7 +17,7 @@ use Graviton\TestBundle\Test\RestTestCase;
 class TranslatableControllerTest extends RestTestCase
 {
     /**
-     * check for language schema
+     * check that translatable record return correct CORS headers
      *
      * @return void
      */
@@ -25,7 +25,7 @@ class TranslatableControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/i18n/translatable');
-        $this->assertEquals('*', $client->getResponse()->headers->get('Access-Control-Allow-Origin'));
+        $client->request('OPTIONS', '/i18n/translatable/i18n-de-German');
+        $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $client->getResponse());
     }
 }
