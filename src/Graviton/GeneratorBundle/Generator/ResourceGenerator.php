@@ -84,7 +84,7 @@ class ResourceGenerator extends AbstractGenerator
      */
     public function setNeedsController($needsController)
     {
-        $this->needsController = $controller;
+        $this->needsController = $needsController;
     }
 
     /**
