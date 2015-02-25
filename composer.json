@@ -105,5 +105,5 @@
             "vendor/composer_phpcs": ["libgraviton/codesniffer"]
         }
     },
-    "non-feature-branches": ["master", "develop", "support/*"],
+    "non-feature-branches": ["master", "develop", "support/*"]
 }
