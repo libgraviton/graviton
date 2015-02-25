@@ -18,8 +18,8 @@ class GravitonSecurityExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $bundle = new GravitonSecurityExtension();
 
-        $this->assertEquals(
-            __DIR__. '/../Resources/config',
+        $this->assertContains(
+            '/../Resources/config',
             $bundle->getConfigDir()
         );
     }
