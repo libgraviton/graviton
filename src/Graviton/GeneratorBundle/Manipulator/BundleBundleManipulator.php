@@ -36,13 +36,17 @@ class BundleBundleManipulator extends Manipulator
     /**
      * adds a bundle at the end of the existing bundles
      *
+     * The number magic in this method is based on the AppKernel manipulator
+     * in SensioDistributionBundle. While it's not a nice solution it seems
+     * to do the job and I'm having a hard time finding a solution thats not
+     * just as insane as this is. We'll probably end up refactoring this
+     * if it ever make any problems again.
+     *
      * @param string $bundle bundle class name
      *
      * @return boolean
      *
      * @throws \RuntimeException If bundle is already defined
-     *
-     * @todo number magic has to go, maybe parse and regenerate?
      */
     public function addBundle($bundle)
     {
