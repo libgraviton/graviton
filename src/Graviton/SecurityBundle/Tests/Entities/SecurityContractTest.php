@@ -101,10 +101,30 @@ class SecurityContractTest extends WebTestCase
      *
      * @return void
      */
-    public function testEraeseCredentials()
+    public function testEraseCredentials()
     {
         $entity = new SecurityContract($this->getContractMock());
 
         $this->assertEmpty($entity->eraseCredentials());
     }
+
+    /**
+     * test contract number retrieval.
+     *
+     * @return void
+     */
+    public function testGetContractNumber()
+    {
+        $contractDouble =$this->getContractMock(array('getNumber'));
+        $contractDouble
+            ->expects($this->once())
+            ->method('getNumber')
+            ->will($this->returnValue(123456));
+
+        $entity = new SecurityContract($contractDouble);
+
+        $this->assertEquals(123456, $entity->getContractNumber());
+    }
+
+
 }

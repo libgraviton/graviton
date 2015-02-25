@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface as AuthFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
 /**
  * Class AirlockApiKeyAuthenticator
@@ -25,7 +26,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterface, AuthFailureHandlerInterface
+final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterface, AuthFailureHandlerInterface, AuthenticationSuccessHandlerInterface
 {
     /**
      * @var \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider
@@ -139,6 +140,27 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
         return new Response(
             $exception->getMessageKey(),
             Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED
+        );
+    }
+
+    /**
+     * This is called when an interactive authentication attempt succeeds. This
+     * is called by authentication listeners inheriting from
+     * AbstractAuthenticationListener.
+     *
+     * @param Request        $request
+     * @param TokenInterface $token
+     *
+     * @return Response never null
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    {
+        $this->logger->info(
+            sprintf(
+                'Contract (%s (%s)) was successfully recognized.',
+                $token->getUsername(),
+                $token->getUser()->getContractNumber()
+            )
         );
     }
 }

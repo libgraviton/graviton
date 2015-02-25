@@ -98,4 +98,14 @@ class SecurityContract implements UserInterface
     public function eraseCredentials()
     {
     }
+
+    /**
+     * Provides the »IBVertragsnummer« of the current contract.
+     *
+     * @return string
+     */
+    public function getContractNumber()
+    {
+        return $this->contract->getNumber();
+    }
 }
