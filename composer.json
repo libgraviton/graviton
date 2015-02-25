@@ -1,7 +1,7 @@
 {
     "name": "graviton/graviton",
     "version": "0.7.0-dev",
-    "license": "MIT",
+    "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
     "authors": [
@@ -31,7 +31,6 @@
         "php": "~5.4",
         "symfony/symfony": "2.6.*",
         "doctrine/orm": "~2.4",
-        "doctrine/doctrine-bundle": "~1.3",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
@@ -40,7 +39,7 @@
         "sensio/framework-extra-bundle": "~3.0",
         "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
-        "jms/serializer-bundle": "*",
+        "jms/serializer-bundle": ">=0.13 <2",
         "jms/di-extra-bundle": "~1.3",
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
@@ -49,18 +48,15 @@
         "davidbadura/faker-bundle": "~1.0",
         "misd/guzzle-bundle": "~1.0",
         "knplabs/knp-paginator-bundle": "~2.4",
-        "symfony/icu": "~1.0.0",
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
-        "nulpunkt/monolog-elasticsearch-logstashformat": "*",
         "graviton/php-rql-parser": "~1.0",
         "libgraviton/swagger-ui": "dev-master",
         "exercise/htmlpurifier-bundle": "~0.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "liip/functional-test-bundle": "@dev",
-        "phpmd/phpmd": "@dev",
+        "phpunit/phpunit": "~4.6",
+        "liip/functional-test-bundle": "~1.0",
         "squizlabs/php_codesniffer": "~2.2",
         "libgraviton/codesniffer": "~1.3"
     },
@@ -108,5 +104,6 @@
         "installer-paths": {
             "vendor/composer_phpcs": ["libgraviton/codesniffer"]
         }
-    }
+    },
+    "non-feature-branches": ["master", "develop", "support/*"],
 }
