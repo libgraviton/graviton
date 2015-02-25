@@ -16,17 +16,18 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface as AuthFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
 /**
- * Class AirlockApiKeyAuthenticator
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterface, AuthFailureHandlerInterface, AuthenticationSuccessHandlerInterface
+final class AirlockAuthenticationKeyAuthenticator implements
+    SimplePreAuthInterface,
+    AuthenticationFailureHandlerInterface,
+    AuthenticationSuccessHandlerInterface
 {
     /**
      * @var \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider
@@ -123,10 +124,10 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
      * called by authentication listeners inheriting from
      * AbstractAuthenticationListener.
      *
-     * @param \Symfony\Component\HttpFoundation\Request                          $request   original request
-     * @param \Symfony\Component\Security\Core\Exception\AuthenticationException $exception exception from auth attempt
+     * @param Request                 $request   original request
+     * @param AuthenticationException $exception exception from auth attempt
      *
-     * @return Response The response to return, never null
+     * @return Response|null
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
@@ -148,10 +149,10 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
      * is called by authentication listeners inheriting from
      * AbstractAuthenticationListener.
      *
-     * @param Request        $request
-     * @param TokenInterface $token
+     * @param Request        $request Current request to be processed
+     * @param TokenInterface $token   Current token containing the authentication information
      *
-     * @return Response never null
+     * @return Response|null
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {

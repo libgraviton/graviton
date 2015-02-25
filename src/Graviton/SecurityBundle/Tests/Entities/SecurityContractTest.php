@@ -125,6 +125,4 @@ class SecurityContractTest extends WebTestCase
 
         $this->assertEquals(123456, $entity->getContractNumber());
     }
-
-
 }
