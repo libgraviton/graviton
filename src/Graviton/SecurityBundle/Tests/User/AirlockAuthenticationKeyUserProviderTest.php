@@ -28,11 +28,6 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         }
     }
 
-    /**
-     * test getting a user by api key
-     *
-     * @return void
-     */
     public function testGetUsernameForApiKey()
     {
         $contractDocumentMock = $this->getMockBuilder('\GravitonDyn\ContractBundle\Document\Contract')
@@ -63,11 +58,6 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $this->assertSame('515616161648151', $provider->getUsernameForApiKey('51512011'));
     }
 
-    /**
-     * test loading a user by name
-     *
-     * @return void
-     */
     public function testLoadUserByUsername()
     {
         $contractDocumentMock = $this->getMock('\GravitonDyn\ContractBundle\Document\Contract');
@@ -86,11 +76,6 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         );
     }
 
-    /**
-     * test for not found user by name
-     *
-     * @return void
-     */
     public function testGetUserByNameExpectingException()
     {
         $contractModelMock = $this->getContractModelMock(array('find'));
@@ -106,11 +91,6 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $provider->loadUserByUsername('515616161648151');
     }
 
-    /**
-     * test for refreshUser being unsupported
-     *
-     * @return void
-     */
     public function testRefreshUser()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());
@@ -121,11 +101,6 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 
     }
 
-    /**
-     * test supportsClass method
-     *
-     * @return void
-     */
     public function testSupportsClass()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());
