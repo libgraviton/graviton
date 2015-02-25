@@ -16,24 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Here, we generate all "dynamic" Graviton bundles..
  *
- * The workflow is as follows:
- *
- * * Generate a BundleBundle, implementing the GravitonBundleInterface
- * * Generate our Bundles per JSON file
- * * Creating the necessary resources and files inside the newly created
- * bundles.
- * * All that in our own GravitonDyn namespace.
- *
- * Important: Why are we using shell_exec instead of just using the
- * internal API? Well, the main problem is, that we want to add resources (like
- * Documents) to our Bundles *directly* after generating them. Using the
- * internal API, we cannot add resources there using our tools as those Bundles
- * haven't been loaded yet through the AppKernel. Using shell_exec we can do
- * that.. This shouldn't be a dealbreaker as this task is only used on
- * deployment and/or development where a shell is accessible. It should be
- * executed in the same context as the previous generator tools, and also those
- * used the shell (backtick operator to get git name/email for example).
- *
  * @todo use symfony/process instead of shell_exec and/or create a new Application in-situ
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
