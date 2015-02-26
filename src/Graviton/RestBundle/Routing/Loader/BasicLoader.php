@@ -165,7 +165,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig);
         $this->routes->add($resource . '.canonicalIdSchema', $actionOptions);
 
-        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array('id' => '\w+'));
+        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array(), true);
         $this->routes->add($resource . '.idOptions', $actionOptions);
     }
 
