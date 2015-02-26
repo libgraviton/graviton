@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
  */
 class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
 {
-
+    /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
     private $logger;
 
     /**
@@ -27,8 +27,9 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
      */
     protected function setUp()
     {
+        /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-            ->setMethods(array('warning'))
+            ->setMethods(array('warning', 'info'))
             ->getMockForAbstractClass();
     }
 
@@ -215,6 +216,46 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
 
         $this->assertEquals('test_message', $response->getContent());
         $this->assertEquals(511, $response->getStatusCode());
+    }
+
+    /**
+     * @return void
+     */
+    public function testOnAuthenticationSuccess()
+    {
+        $this->logger
+            ->expects($this->once())
+            ->method('info')
+            ->with($this->equalTo('Contract (Jon Doe (1234567)) was successfully recognized.'));
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $this->getProviderMock(),
+            $this->getStrategyMock(),
+            $this->logger
+        );
+
+        $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getContractNumber'))
+            ->getMock();
+        $userDouble
+            ->expects($this->once())
+            ->method('getContractNumber')
+            ->will($this->returnValue('1234567'));
+
+        $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
+            ->setMethods(array('getUsername', 'getUser'))
+            ->getMockForAbstractClass();
+        $tokenDouble
+            ->expects($this->once())
+            ->method('getUsername')
+            ->will($this->returnValue('Jon Doe'));
+        $tokenDouble
+            ->expects($this->once())
+            ->method('getUser')
+            ->will($this->returnValue($userDouble));
+
+        $authenticator->onAuthenticationSuccess(new Request(), $tokenDouble);
     }
 
     /**
