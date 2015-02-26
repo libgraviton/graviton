@@ -159,14 +159,18 @@ class ActionUtils
     /**
      * Get route for OPTIONS requests
      *
-     * @param string $service       service id
-     * @param array  $serviceConfig service configuration
-     * @param array  $parameters    service params
+     * @param string  $service       service id
+     * @param array   $serviceConfig service configuration
+     * @param array   $parameters    service params
+     * @param boolean $useIdPattern  geenrate route with id param
      *
      * @return Route
      */
-    public static function getRouteOptions($service, $serviceConfig, array $parameters = array())
+    public static function getRouteOptions($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
     {
+        if ($useIdPattern) {
+            $parameters['id'] = self::ID_PATTERN;
+        }
         return self::getRoute($service, 'OPTIONS', 'optionsAction', $serviceConfig, $parameters);
     }
 
