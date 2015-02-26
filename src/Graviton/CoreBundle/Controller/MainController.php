@@ -5,11 +5,11 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 
 /**
@@ -36,20 +36,6 @@ class MainController implements ContainerAwareInterface
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
-    }
-
-    /**
-     * Renders a view.
-     *
-     * @param string   $view       The view name
-     * @param array    $parameters An array of parameters to pass to the view
-     * @param Response $response   A response instance
-     *
-     * @return Response A Response instance
-     */
-    public function render($view, array $parameters = array(), Response $response = null)
-    {
-        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
     }
 
     /**
@@ -88,31 +74,10 @@ class MainController implements ContainerAwareInterface
     }
 
     /**
-     * @param Router $router
-     *
-     * @return string
-     */
-    protected function prepareLinkHeader(Router $router)
-    {
-        $links = new LinkHeader(array());
-        $links->add(
-            new LinkHeaderItem(
-                $router->generate('graviton.core.rest.app.all', array(), true),
-                array(
-                    'rel'  => 'apps',
-                    'type' => 'application/json'
-                )
-            )
-        );
-
-        return (string) $links;
-    }
-
-    /**
      * Determines what service endpoints are available.
      *
-     * @param Router $router
-     * @param array $optionRoutes
+     * @param Router $router       Routing information of the current request.
+     * @param array  $optionRoutes List of routing options.
      *
      * @return array
      */
@@ -139,5 +104,42 @@ class MainController implements ContainerAwareInterface
         array_multisort($sortArr, SORT_ASC, $services);
 
         return $services;
+    }
+
+    /**
+     * Prepares the header field containing information about pagination.
+     *
+     * @param Router $router Routing information of the current request.
+     *
+     * @return string
+     */
+    protected function prepareLinkHeader(Router $router)
+    {
+        $links = new LinkHeader(array());
+        $links->add(
+            new LinkHeaderItem(
+                $router->generate('graviton.core.rest.app.all', array(), true),
+                array(
+                    'rel'  => 'apps',
+                    'type' => 'application/json'
+                )
+            )
+        );
+
+        return (string) $links;
+    }
+
+    /**
+     * Renders a view.
+     *
+     * @param string   $view       The view name
+     * @param array    $parameters An array of parameters to pass to the view
+     * @param Response $response   A response instance
+     *
+     * @return Response A Response instance
+     */
+    public function render($view, array $parameters = array(), Response $response = null)
+    {
+        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
     }
 }

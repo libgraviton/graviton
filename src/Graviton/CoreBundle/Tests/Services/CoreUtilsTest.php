@@ -15,7 +15,14 @@ namespace Graviton\CoreBundle\Service;
 class CoreUtilsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @@dataProvider versionAndFileProvider
+     * Verifies the correct behavior of getVersion()
+     *
+     * @dataProvider versionAndFileProvider
+     *
+     * @param string $version  Version string to be used
+     * @param string $filePath Location of the file containing the version information.
+     *
+     * @return void
      */
     public function testGetVersion($version, $filePath = '')
     {
@@ -23,6 +30,11 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($version, $utils->getVersion($filePath));
     }
 
+    /**
+     * Provides test sets for the getVersion() test.
+     *
+     * @return array
+     */
     public function versionAndFileProvider()
     {
         $composer = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
@@ -33,6 +45,11 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * Verifies the correct behavior of getVersion()
+     *
+     * @return void
+     */
     public function testGetDefaultVersion()
     {
         $utils = new CoreUtils();

@@ -28,6 +28,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         }
     }
 
+    /**
+     * Verifies the correct behavior of getUsernameForApiKey()
+     *
+     * @return void
+     */
     public function testGetUsernameForApiKey()
     {
         $contractDocumentMock = $this->getMockBuilder('\GravitonDyn\ContractBundle\Document\Contract')
@@ -58,6 +63,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $this->assertSame('515616161648151', $provider->getUsernameForApiKey('51512011'));
     }
 
+    /**
+     * Verifies the correct behavior of loadUserByUsername()
+     *
+     * @return void
+     */
     public function testLoadUserByUsername()
     {
         $contractDocumentMock = $this->getMock('\GravitonDyn\ContractBundle\Document\Contract');
@@ -76,6 +86,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         );
     }
 
+    /**
+     * Verifies the correct behavior of loadUserByUsername()
+     *
+     * @return void
+     */
     public function testGetUserByNameExpectingException()
     {
         $contractModelMock = $this->getContractModelMock(array('find'));
@@ -91,6 +106,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
         $provider->loadUserByUsername('515616161648151');
     }
 
+    /**
+     * Verifies the correct behavior of refreshUser()
+     *
+     * @return void
+     */
     public function testRefreshUser()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());
@@ -101,6 +121,11 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 
     }
 
+    /**
+     * Verifies the correct behavior of supportsClass()
+     *
+     * @return void
+     */
     public function testSupportsClass()
     {
         $provider = new AirlockAuthenticationKeyUserProvider($this->getContractModelMock());

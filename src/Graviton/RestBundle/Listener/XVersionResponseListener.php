@@ -26,7 +26,10 @@ class XVersionResponseListener
 
 
     /**
-     * @param LoggerInterface $logger
+     * Constructor
+     *
+     * @param CoreUtils       $coreUtils Instance of the CoreUtils class
+     * @param LoggerInterface $logger    Instance of the logger class
      */
     public function __construct(CoreUtils $coreUtils, LoggerInterface $logger)
     {
@@ -37,7 +40,7 @@ class XVersionResponseListener
     /**
      * Adds a X-Version header to the response.
      *
-     * @param FilterResponseEvent $event
+     * @param FilterResponseEvent $event Current emitted event.
      *
      * @return void
      */

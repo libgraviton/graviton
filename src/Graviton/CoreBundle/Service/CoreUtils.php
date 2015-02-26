@@ -17,6 +17,8 @@ class CoreUtils
     /**
      * Gets the current version we're running on..
      *
+     * @param string $composerFile Absolute path to the json file providing version information.
+     *
      * @return string version
      */
     public function getVersion($composerFile = '')
@@ -25,11 +27,9 @@ class CoreUtils
         $composerFile = !empty($composerFile) ? $composerFile : __DIR__ . '/../../../../composer.json';
 
         if (file_exists($composerFile)) {
-
             $composer = json_decode(file_get_contents($composerFile), true);
 
             if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-
                 return $composer['version'];
             } else {
                 $message = sprintf(

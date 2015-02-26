@@ -98,6 +98,11 @@ class MainControllerTest extends RestTestCase
         $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
     }
 
+    /**
+     * Verifies the correct behavior of prepareLinkHeader()
+     *
+     * @return void
+     */
     public function testPrepareLinkHeader()
     {
         $routerDouble = $this->getMockBuilder('\Symfony\Component\Routing\Router')
@@ -124,6 +129,11 @@ class MainControllerTest extends RestTestCase
         );
     }
 
+    /**
+     * Verifies the correct behavior of determineServices()
+     *
+     * @return void
+     */
     public function testDetermineServices()
     {
         $services = [
@@ -160,8 +170,8 @@ class MainControllerTest extends RestTestCase
 
 
         $optionRoutes = [
-            "graviton.core.rest.app.options" => $routerDouble,
-            "graviton.core.rest.product.options" =>$routerDouble,
+            "graviton.core.rest.app.options"     => $routerDouble,
+            "graviton.core.rest.product.options" => $routerDouble,
         ];
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
@@ -181,7 +191,5 @@ class MainControllerTest extends RestTestCase
             ],
             $controller->determineServices($routerDouble, $optionRoutes)
         );
-}
-
-
+    }
 }

@@ -5,11 +5,11 @@
 
 namespace Graviton\TestBundle\Test;
 
+use Graviton\AppKernel;
+use Graviton\BundleBundle\GravitonBundleBundle;
+use Graviton\BundleBundle\Loader\BundleLoader;
 use lapistano\ProxyObject\ProxyBuilder;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
-use Graviton\AppKernel;
-use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\BundleBundle\GravitonBundleBundle;
 
 /**
  * Graviton test case
@@ -38,7 +38,7 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
-        include_once __DIR__.'/../../../../app/AppKernel.php';
+        include_once __DIR__ . '/../../../../app/AppKernel.php';
 
         $env = 'test';
         $debug = true;
@@ -55,7 +55,7 @@ class GravitonTestCase extends WebTestCase
     /**
      * Provides a proxy object of the provided class.
      *
-     * @param string $class
+     * @param string $class Namespaced name of the class to be proxied
      *
      * @return ProxyBuilder
      */

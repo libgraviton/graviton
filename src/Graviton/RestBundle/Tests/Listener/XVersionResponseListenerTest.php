@@ -16,6 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * verifies the correct behavior of the onKernelResponse()
+     *
+     * @return void
+     */
     public function testOnKernelResponse()
     {
         $response = new Response();
@@ -55,6 +60,11 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($version, $response->headers->get('X-VERSION'));
     }
 
+    /**
+     * verifies the correct behavior of the onKernelResponse()
+     *
+     * @return void
+     */
     public function testOnKernelResponseOnSubRequest()
     {
         $response = new Response();
@@ -76,5 +86,4 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($response->headers->get('X-VERSION'));
     }
-
 }

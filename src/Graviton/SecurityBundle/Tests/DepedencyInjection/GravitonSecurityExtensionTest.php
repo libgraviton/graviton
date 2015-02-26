@@ -14,6 +14,11 @@ use Graviton\SecurityBundle\GravitonSecurityBundle;
  */
 class GravitonSecurityExtensionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Verifies the correct behavior of getConfigDir()
+     *
+     * @return void
+     */
     public function testGetConfigDir()
     {
         $bundle = new GravitonSecurityExtension();

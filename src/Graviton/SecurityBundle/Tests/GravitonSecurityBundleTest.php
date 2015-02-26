@@ -5,7 +5,6 @@
 
 namespace Graviton\SecurityBundle;
 
-
 /**
  * Class GravitonSecurityBundleTest
  *
@@ -15,7 +14,11 @@ namespace Graviton\SecurityBundle;
  */
 class GravitonSecurityBundleTest extends \PHPUnit_Framework_TestCase
 {
-
+    /**
+     * Verifies the correct behavior of getBundles()
+     *
+     * @return void
+     */
     public function testGetBundles()
     {
         $bundle = new GravitonSecurityBundle();
@@ -23,6 +26,11 @@ class GravitonSecurityBundleTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($bundle->getBundles());
     }
 
+    /**
+     * Verifies the correct behavior of build()
+     *
+     * @return void
+     */
     public function testBuild()
     {
         $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerBuilder')
