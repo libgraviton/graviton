@@ -1,24 +1,14 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
-    database_driver:   pdo_mysql
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    database_in_memory: true
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
-
     mongodb.default.server.db: db
     mongodb.default.server.uri: ~
 
-    graviton.log.elasticsearch.host: ~
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
 
     generator.bundlebundle.additions: false
 
+    # service info injected by cloudfoundry
     vcap.services: ~
 
     jms_serializer.camel_case_naming_strategy.class: ~
