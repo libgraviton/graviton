@@ -42,6 +42,15 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
                 '\\' . str_replace('/', '', $namespace);
         }
 
+        // added bundles by param..
+        $additions = json_decode(
+            $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+            true
+        );
+        if (is_array($additions)) {
+            $absoluteList = array_merge($absoluteList, $additions);
+        }
+
         $parameters = array(
             'namespace' => str_replace('/', '\\', $bundleBundleNamespace),
             'bundleName' => $bundleName,
