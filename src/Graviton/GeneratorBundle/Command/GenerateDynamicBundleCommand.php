@@ -405,13 +405,15 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
     {
         $dbbGenerator = new DynamicBundleBundleGenerator();
 
-        // add optional bundles by param..
-        $additions = json_decode(
-            $this->getContainer()->getParameter('generator.bundlebundle.additions', false),
-            true
-        );
-        if (is_array($additions)) {
-            $dbbGenerator->setAdditions($additions);
+        // add optional bundles if defined by parameter.
+        if ($this->getContainer()->hasParameter('generator.bundlebundle.additions')) {
+            $additions = json_decode(
+                $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+                true
+            );
+            if (is_array($additions)) {
+                $dbbGenerator->setAdditions($additions);
+            }
         }
 
         $dbbGenerator->generate(
