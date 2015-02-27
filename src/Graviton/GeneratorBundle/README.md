@@ -28,5 +28,21 @@ add descriptions in the fields marked @todo.
 ```bash
 php app/console graviton:generate:dynamicbundle --json
 ```
+The workflow is as follows:
 
-@todo wat do?
+* Generate a BundleBundle, implementing the GravitonBundleInterface
+* Generate our Bundles per JSON file
+* Creating the necessary resources and files inside the newly created bundles.
+* All that in our own GravitonDyn namespace.
+
+Important: Why are we calling subcommand in their own process rather than just using
+symfonys API? The main problem is, that we want to add resources (like
+Documents) to our Bundles *directly* after generating them. Using the
+internal API, we cannot add resources there using our tools as those Bundles
+haven't been loaded yet through the AppKernel. Using ``shell_exec`` or similar
+we can do that.
+
+This shouldn't be a dealbreaker as this task is only used on deployment and/or
+development where a shell is accessible. It should be executed in the same context
+as the previous generator tools, and also those used the shell (backtick operator
+to get git name/email for example).

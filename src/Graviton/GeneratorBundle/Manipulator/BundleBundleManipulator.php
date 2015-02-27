@@ -36,6 +36,12 @@ class BundleBundleManipulator extends Manipulator
     /**
      * adds a bundle at the end of the existing bundles
      *
+     * The number magic in this method is based on the AppKernel manipulator
+     * in SensioDistributionBundle. While it's not a nice solution it seems
+     * to do the job and I'm having a hard time finding a solution thats not
+     * just as insane as this is. We'll probably end up refactoring this
+     * if it ever make any problems again.
+     *
      * @param string $bundle bundle class name
      *
      * @return boolean
@@ -79,6 +85,7 @@ class BundleBundleManipulator extends Manipulator
             array_slice($src, $method->getEndLine() - 2)
         );
 
+        // @todo use symfony to write files
         file_put_contents($this->reflected->getFilename(), implode('', $lines));
 
         return true;

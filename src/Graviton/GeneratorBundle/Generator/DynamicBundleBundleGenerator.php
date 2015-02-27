@@ -20,6 +20,25 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     protected $gravitonSkeletons;
 
     /**
+     * Optional additions to add
+     *
+     * @var array
+     */
+    protected $additions;
+
+    /**
+     * Sets additions
+     *
+     * @param array $additions additions
+     *
+     * @return void
+     */
+    public function setAdditions($additions)
+    {
+        $this->additions = $additions;
+    }
+
+    /**
      * Generate the BundleBundle
      *
      * @param array  $bundleList            List of bundles
@@ -40,6 +59,10 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
         foreach ($bundleList as $namespace) {
             $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .
                 '\\' . str_replace('/', '', $namespace);
+        }
+
+        if (is_array($this->additions)) {
+            $absoluteList = array_merge($absoluteList, $this->additions);
         }
 
         $parameters = array(

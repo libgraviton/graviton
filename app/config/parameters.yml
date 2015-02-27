@@ -20,3 +20,4 @@ parameters:
     graviton.authentication.user_provider.model: null
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     vcap.services: null
+    generator.bundlebundle.additions: false
