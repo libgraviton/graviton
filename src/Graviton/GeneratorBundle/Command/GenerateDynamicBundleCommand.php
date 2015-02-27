@@ -407,7 +407,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
 
         // add optional bundles by param..
         $additions = json_decode(
-            $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+            $this->getContainer()->getParameter('generator.bundlebundle.additions', false),
             true
         );
         if (is_array($additions)) {
