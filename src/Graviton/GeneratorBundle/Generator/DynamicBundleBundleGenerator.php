@@ -20,6 +20,25 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
     protected $gravitonSkeletons;
 
     /**
+     * Optional additions to add
+     *
+     * @var array
+     */
+    protected $additions;
+
+    /**
+     * Sets additions
+     *
+     * @param array $additions additions
+     *
+     * @return void
+     */
+    public function setAdditions($additions)
+    {
+        $this->additions = $additions;
+    }
+
+    /**
      * Generate the BundleBundle
      *
      * @param array  $bundleList            List of bundles
@@ -42,13 +61,8 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
                 '\\' . str_replace('/', '', $namespace);
         }
 
-        // added bundles by param..
-        $additions = json_decode(
-            $this->getContainer()->getParameter('generator.bundlebundle.additions'),
-            true
-        );
-        if (is_array($additions)) {
-            $absoluteList = array_merge($absoluteList, $additions);
+        if (is_array($this->additions)) {
+            $absoluteList = array_merge($absoluteList, $this->additions);
         }
 
         $parameters = array(
