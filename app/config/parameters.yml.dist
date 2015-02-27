@@ -17,8 +17,6 @@ parameters:
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
 
-    generator.bundlebundle.additions: false
-
     vcap.services: ~
 
     jms_serializer.camel_case_naming_strategy.class: ~
