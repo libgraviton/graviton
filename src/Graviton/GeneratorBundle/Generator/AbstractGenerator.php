@@ -24,7 +24,7 @@ abstract class AbstractGenerator extends Generator
     /**
      * Sets an array of directories to look for templates.
      *
-     * The directories must be sorted from the most specific to the most
+     * The directories must be sorted from the most specific to the most generic
      * directory.
      *
      * @param array $gravitonSkeletons An array of skeleton dirs

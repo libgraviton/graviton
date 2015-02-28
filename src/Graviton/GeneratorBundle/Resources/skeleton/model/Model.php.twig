@@ -7,19 +7,16 @@ use Graviton\RestBundle\Model\DocumentModel;
 /**
  * {{ base }}Model\{{ document }}
  *
- * @category {{ bundle }}
- * @package  Graviton
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class {{ document }} extends DocumentModel
 {
 
-/**
-* this helps for fallback logic on outside classes to locate resources
-*
-* @var string
-*/
-protected $_modelPath = __FILE__;
-
+    /**
+     * this helps for fallback logic on outside classes to locate resources
+     *
+     * @var string
+     */
+    protected $_modelPath = __FILE__;
 }
