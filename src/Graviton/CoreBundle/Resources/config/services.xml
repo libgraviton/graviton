@@ -65,10 +65,6 @@
             </call>
         </service>
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
-        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
-        </service>
+        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%" />
     </services>
 </container>

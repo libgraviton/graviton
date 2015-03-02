@@ -5,6 +5,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
@@ -37,26 +39,25 @@ class ValidationRequestListener
      * @throws \Exception
      * @return RestEvent
      */
-    public function onKernelRequest(RestEvent $event)
+    public function onKernelRequest(Event $event)
     {
         // only validate on POST and PUT
-        // if patch is required, refactor the method or do something else
+        // if PATCH is required, refactor the method or do something else
         $request = $event->getRequest();
-        $response = $event->getResponse();
 
         if (in_array($request->getMethod(), array('POST', 'PUT'))) {
             $controller = $event->getController();
 
             // Moved this from RestController to ValidationListener (don't know if necessary)
-            $content = $event->getRequest()->getContent();
+            $content = $request->getContent();
             if (is_resource($content)) {
                 throw new \LogicException('unexpected resource in validation');
             }
 
             // Decode the json from request
-            if (!($input = json_decode($content, true))) {
+            if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
                 $e = new NoInputException();
-                $e->setResponse($response);
+                $e->setResponse($event->getResponse());
                 throw $e;
             }
 
@@ -77,7 +78,7 @@ class ValidationRequestListener
                 $e->setViolations($result);
 
                 // pass the event..???
-                $e->setResponse($response);
+                $e->setResponse($event->getResponse());
 
                 throw $e;
             }
