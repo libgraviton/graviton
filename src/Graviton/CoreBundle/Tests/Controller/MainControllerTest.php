@@ -138,12 +138,12 @@ class MainControllerTest extends RestTestCase
     {
         $services = [
             [
-                '$ref'    => "http:\/\/localhost\/core\/product",
-                "profile" => "http:\/\/localhost\/schema\/core\/product\/collection"
+                '$ref'    => 'http://localhost/core/product',
+                'profile' => 'http://localhost/schema/core/product/collection'
             ],
             [
-                '$ref'    => "http:\/\/localhost\/core\/app",
-                "profile" => "http:\/\/localhost\/schema\/core\/app\/collection"
+                '$ref'    => 'http://localhost/core/app',
+                'profile' => 'http://localhost/schema/core/app/collection'
             ],
         ];
 
@@ -181,12 +181,12 @@ class MainControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 [
-                    '$ref'    => "http:\/\/localhost\/core\/app",
-                    "profile" => "http:\/\/localhost\/schema\/core\/app\/collection"
+                    '$ref'    => 'http://localhost/core/app',
+                    'profile' => 'http://localhost/schema/core/app/collection'
                 ],
                 [
-                    '$ref'    => "http:\/\/localhost\/core\/product",
-                    "profile" => "http:\/\/localhost\/schema\/core\/product\/collection"
+                    '$ref'    => 'http://localhost/core/product',
+                    'profile' => 'http://localhost/schema/core/product/collection'
                 ],
             ],
             $controller->determineServices($routerDouble, $optionRoutes)

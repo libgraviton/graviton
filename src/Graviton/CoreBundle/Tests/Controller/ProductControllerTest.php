@@ -97,7 +97,7 @@ class ProductControllerTest extends RestTestCase
 
         $this->assertInternalType('string', $etag);
 
-        // client ha to be rebuild since the AppKernel will be resetted after a request
+        // client has to be rebuild since the AppKernel will be resetted after a request
         // which will unregister bundles registered by bundle loader.
         $client = static::createRestClient();
         $client->request('GET', '/core/product', array(), array(), array('HTTP_If-None-Match' => $etag));

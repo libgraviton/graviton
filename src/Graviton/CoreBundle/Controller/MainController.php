@@ -5,11 +5,11 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Graviton\RestBundle\HttpFoundation\LinkHeader;
-use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Graviton\RestBundle\HttpFoundation\LinkHeader;
+use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Symfony\Component\Routing\Router;
 
 /**
@@ -22,14 +22,14 @@ use Symfony\Component\Routing\Router;
 class MainController implements ContainerAwareInterface
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface service_container
      */
     private $container;
 
     /**
      * {@inheritdoc}
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
+     * @param ContainerInterface $container service_container
      *
      * @return void
      */
@@ -41,7 +41,7 @@ class MainController implements ContainerAwareInterface
     /**
      * create simple start page.
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @return Response $response Response with result or error
      */
     public function indexAction()
     {
@@ -90,7 +90,7 @@ class MainController implements ContainerAwareInterface
                 $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
 
                 return array(
-                    '$ref'    => $router->generate($routeName, array(), true),
+                    '$ref' => $router->generate($routeName, array(), true),
                     'profile' => $router->generate($schemaRoute, array(), true),
                 );
             },

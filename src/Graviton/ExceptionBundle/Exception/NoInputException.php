@@ -22,7 +22,7 @@ final class NoInputException extends RestException
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
      *
-     * @return \Graviton\ExceptionBundle\Exception\NoInputException
+     * @return NoInputException
      */
     public function __construct($message = "No Content", $prev = null)
     {
