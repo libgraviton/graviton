@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**
@@ -35,12 +36,11 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $composer = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
-        $version = $composer['version'];
+        $composer = new CoreUtils();
 
         $response = $client->getResponse();
 
-        $this->assertEquals($version, $response->headers->get('X-Version'));
+        $this->assertEquals($composer->getVersion(), $response->headers->get('X-Version'));
     }
 
     /**
