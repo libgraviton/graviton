@@ -39,7 +39,6 @@
             </call>
         </service>
 
-
         <service id="graviton.rest.doctrine" alias="doctrine"/>
         <service id="graviton.rest.validator" alias="validator"/>
         <service id="graviton.rest.router" alias="router"/>
@@ -58,9 +57,6 @@
         <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
             <argument type="service" id="graviton.rest.routing.collection"/>
             <argument>%graviton.rest.services%</argument>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
             <tag name="routing.loader"/>
         </service>
 
