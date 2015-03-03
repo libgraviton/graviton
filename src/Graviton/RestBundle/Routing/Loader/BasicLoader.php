@@ -24,11 +24,6 @@ class BasicLoader extends Loader
     private $loaded = false;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var \Symfony\Component\Routing\RouteCollection
      */
     private $routes;
