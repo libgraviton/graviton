@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\RouteCollection;
 
