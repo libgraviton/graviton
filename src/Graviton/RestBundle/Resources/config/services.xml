@@ -14,6 +14,7 @@
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validator\JsonInput</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
+        <parameter key="graviton.rest.services" type="collection"/>
     </parameters>
     <services>
         <!-- Serializer / Serializer context -->
@@ -56,6 +57,7 @@
         <!-- Routing loader -->
         <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
             <argument type="service" id="graviton.rest.routing.collection"/>
+            <argument>%graviton.rest.services%</argument>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

@@ -38,15 +38,22 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     private $routes;
 
     /**
+     * @var array
+     */
+    private $services;
+
+    /**
      * Constructor.
      *
-     * @param \Symfony\Component\Routing\RouteCollection $routes route collection
+     * @param \Symfony\Component\Routing\RouteCollection $routes   route collection
+     * @param array                                      $services configs for all services tagged as graviton.rest
      *
      * @return BasicLoader
      */
-    public function __construct($routes)
+    public function __construct($routes, $services)
     {
         $this->routes = $routes;
+        $this->services = $services;
     }
 
     /**
@@ -63,8 +70,8 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
 
-        $container = $this->getContainerBuilder();
-        foreach ($container->findTaggedServiceIds('graviton.rest') as $service => $serviceConfig) {
+        foreach ($this->services AS $service => $serviceConfig)
+        {
             $this->loadService($service, $serviceConfig);
         }
 
