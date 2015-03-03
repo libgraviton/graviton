@@ -1,10 +1,20 @@
 <?php
+/**
+ * validate finding tagged services
+ *
+ * important because our autorouting hinges on it
+ */
 
 namespace Graviton\RestBundle\Tests\DependencyInjection\Compiler;
 
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
 
-class WebServicesCompilerPassTest extends \PHPUnit_Framework_TestCase
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
+class RestServicesCompilerPassTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * validate that process creates an array parameter

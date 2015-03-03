@@ -70,8 +70,7 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
 
-        foreach ($this->services AS $service => $serviceConfig)
-        {
+        foreach ($this->services as $service => $serviceConfig) {
             $this->loadService($service, $serviceConfig);
         }
 
