@@ -186,12 +186,13 @@ class AppControllerTest extends RestTestCase
      */
     public function testPutApp()
     {
-        $client = static::createRestClient();
-        $client->request('GET', '/core/app/hello');
-
-        $helloApp = $client->getResults();
+        $helloApp = new \stdClass();
+        $helloApp->id = "hello";
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = "Hello World!";
         $helloApp->showInMenu = false;
 
+        $client = static::createRestClient();
         $client->put('/core/app/hello', $helloApp);
 
         $response = $client->getResponse();
@@ -365,6 +366,10 @@ class AppControllerTest extends RestTestCase
         $client->patch('/core/app/hello', $patchString);
 
         $response = $client->getResponse();
+
+        // client ha to be rebuild since the AppKernel will be resetted after a request
+        // which will unregister bundles registered by bundle loader.
+        $client = static::createRestClient();
 
         // get the patched record
         $client->request('GET', '/core/app/hello');

@@ -1,6 +1,6 @@
 imports:
     - { resource: config_dev.yml }
-    - { resource: "../../vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/test.xml" }
+    - { resource: "@FrameworkBundle/Resources/config/test.xml" }
 
 parameters:
     kernel.debug: true

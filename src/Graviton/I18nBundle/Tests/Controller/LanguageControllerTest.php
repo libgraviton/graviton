@@ -34,7 +34,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE.'collection', $response);
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
 
         // we assume that initially all systems will only know of the english lang
         $this->assertcount(1, $results);
@@ -64,16 +64,22 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE.'item', $response);
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
 
         $this->assertEquals('de', $results->id);
 
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 
+        // client has to be rebuild since the AppKernel will be resetted after a request
+        // which will unregister bundles registered by bundle loader.
+        $client = static::createRestClient();
         $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
         $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
 
+        // client has to be rebuild since the AppKernel will be resetted after a request
+        // which will unregister bundles registered by bundle loader.
+        $client = static::createRestClient();
         $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
         $results = $client->getResults();
@@ -81,6 +87,9 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('English', $results->name->en);
         $this->assertEquals('Englisch', $results->name->de);
 
+        // client has to be rebuild since the AppKernel will be resetted after a request
+        // which will unregister bundles registered by bundle loader.
+        $client = static::createRestClient();
         $client->request('GET', '/i18n/translatable/i18n-de-German');
 
         $this->assertEquals('i18n', $client->getResults()->domain);

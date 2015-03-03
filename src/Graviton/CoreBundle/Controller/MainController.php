@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\Routing\Router;
 
 /**
  * MainController
@@ -21,14 +22,14 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 class MainController implements ContainerAwareInterface
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface service_container
      */
     private $container;
 
     /**
      * {@inheritdoc}
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
+     * @param ContainerInterface $container service_container
      *
      * @return void
      */
@@ -40,35 +41,49 @@ class MainController implements ContainerAwareInterface
     /**
      * create simple start page.
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     * @return Response $response Response with result or error
      */
     public function indexAction()
     {
-        $response = $this->container->get("graviton.rest.response");
-        $response->setStatusCode(Response::HTTP_OK);
+        /** @var \Symfony\Component\Routing\Router $router */
         $router = $this->container->get('router');
 
-        $links = LinkHeader::fromString('');
-        $links->add(
-            new LinkHeaderItem(
-                $router->generate('graviton.core.rest.app.all', array(), true),
-                array(
-                    'rel' => 'apps',
-                    'type' => 'application/json'
-                )
-            )
-        );
-
-        $response->headers->set('Link', (string) $links);
-        $response->headers->set('X-Version', $this->container->get('graviton.core.utils')->getVersion());
+        /** @var Response $response */
+        $response = $this->container->get("graviton.rest.response");
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
-        $mainPage->services = array();
+        $mainPage->services = $this->determineServices(
+            $router,
+            $this->container->get('graviton.rest.restutils')->getOptionRoutes()
+        );
 
-        $restUtils = $this->container->get('graviton.rest.restutils');
-        $optionRoutes = $restUtils->getOptionRoutes();
+        $response->setContent(json_encode($mainPage));
+        $response->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Link', $this->prepareLinkHeader($router));
 
+        // todo: make sure, that the correct content type is set.
+        // todo: this should be covered by a kernel.response event listener?
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $this->render(
+            'GravitonCoreBundle:Main:index.json.twig',
+            array('response' => $response->getContent()),
+            $response
+        );
+    }
+
+    /**
+     * Determines what service endpoints are available.
+     *
+     * @param Router $router       Routing information of the current request.
+     * @param array  $optionRoutes List of routing options.
+     *
+     * @return array
+     */
+    protected function determineServices(Router $router, array $optionRoutes)
+    {
+        $sortArr = array();
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
@@ -82,17 +97,49 @@ class MainController implements ContainerAwareInterface
             array_keys($optionRoutes)
         );
 
-        $sortArr = array();
         foreach ($services as $key => $val) {
             $sortArr[$key] = $val['$ref'];
         }
 
         array_multisort($sortArr, SORT_ASC, $services);
 
-        $mainPage->services = array_values($services);
+        return $services;
+    }
 
-        $response->setContent(json_encode($mainPage));
+    /**
+     * Prepares the header field containing information about pagination.
+     *
+     * @param Router $router Routing information of the current request.
+     *
+     * @return string
+     */
+    protected function prepareLinkHeader(Router $router)
+    {
+        $links = new LinkHeader(array());
+        $links->add(
+            new LinkHeaderItem(
+                $router->generate('graviton.core.rest.app.all', array(), true),
+                array(
+                    'rel'  => 'apps',
+                    'type' => 'application/json'
+                )
+            )
+        );
 
-        return $response;
+        return (string) $links;
+    }
+
+    /**
+     * Renders a view.
+     *
+     * @param string   $view       The view name
+     * @param array    $parameters An array of parameters to pass to the view
+     * @param Response $response   A response instance
+     *
+     * @return Response A Response instance
+     */
+    public function render($view, array $parameters = array(), Response $response = null)
+    {
+        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
     }
 }
