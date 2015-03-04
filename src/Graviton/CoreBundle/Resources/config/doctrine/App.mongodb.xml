@@ -6,5 +6,6 @@
     <field fieldName="id" type="string" id="true"/>
     <field fieldName="title" type="string"/>
     <field fieldName="showInMenu" type="boolean"/>
+    <field fieldName="order" type="int"/>
   </document>
 </doctrine-mongo-mapping>
