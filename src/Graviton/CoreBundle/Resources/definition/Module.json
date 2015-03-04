@@ -1,0 +1,49 @@
+{
+    "id": "Module",
+    "description": "A service containing modules that relate to apps",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/configuration/module/",
+        "fixtures": []
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "title": "ID",
+                "description": "Unique identifier for an item."
+            },
+            {
+                "name": "appId",
+                "type": "varchar",
+                "title": "App ID",
+                "description": "ID of an app this module relates to.",
+                "required": true
+            },
+            {
+                "name": "name",
+                "type": "varchar",
+                "title": "Name",
+                "description": "Name of this module",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "path",
+                "type": "varchar",
+                "title": "Path",
+                "description": "A path this module points to.",
+                "translatable": false
+            },
+            {
+                "name": "order",
+                "type": "int",
+                "title": "Order",
+                "description": "Integer for sort order"
+            }
+        ]
+    }
+}
