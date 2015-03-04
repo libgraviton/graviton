@@ -1,4 +1,7 @@
 <?php
+/**
+ * cleans dynamic bundle directory
+ */
 
 namespace Graviton\GeneratorBundle\Command;
 
