@@ -7,9 +7,11 @@ namespace Graviton\RestBundle;
 
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
+use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
 
 /**
  * GravitonRestBundle
@@ -34,5 +36,19 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
             new JMSSerializerBundle(),
             new KnpPaginatorBundle(),
         );
+    }
+
+    /**
+     * load compiler pass rest route loader
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new RestServicesCompilerPass);
     }
 }
