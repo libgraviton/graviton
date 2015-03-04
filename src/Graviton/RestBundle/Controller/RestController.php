@@ -425,8 +425,8 @@ class RestController implements ContainerAwareInterface
     /**
      * Return OPTIONS results.
      *
-     * @param string  $id      ID of record
      * @param Request $request Current http request
+     * @param string  $id      ID of record
      *
      * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
