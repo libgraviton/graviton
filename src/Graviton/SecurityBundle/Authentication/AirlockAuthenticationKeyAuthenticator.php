@@ -16,13 +16,16 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterface
+final class AirlockAuthenticationKeyAuthenticator implements
+    SimplePreAuthInterface,
+    AuthenticationFailureHandlerInterface
 {
     /**
      * @var \Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider
@@ -112,5 +115,23 @@ final class AirlockAuthenticationKeyAuthenticator implements SimplePreAuthInterf
     public function supportsToken(TokenInterface $token, $providerKey)
     {
         return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
+    }
+
+    /**
+     * This is called when an interactive authentication attempt fails. This is
+     * called by authentication listeners inheriting from
+     * AbstractAuthenticationListener.
+     *
+     * @param Request                 $request   original request
+     * @param AuthenticationException $exception exception from auth attempt
+     *
+     * @return Response|null
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        return new Response(
+            $exception->getMessageKey(),
+            Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED
+        );
     }
 }

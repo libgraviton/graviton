@@ -193,6 +193,32 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
     }
 
     /**
+     * @return void
+     */
+    public function testOnAuthenticationFailure()
+    {
+        $exceptionDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getMessageKey'))
+            ->getMock();
+        $exceptionDouble
+            ->expects($this->once())
+            ->method('getMessageKey')
+            ->will($this->returnValue('test_message'));
+
+        $authenticator = new AirlockAuthenticationKeyAuthenticator(
+            $this->getProviderMock(),
+            $this->getStrategyMock(),
+            $this->logger
+        );
+
+        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionDouble);
+
+        $this->assertEquals('test_message', $response->getContent());
+        $this->assertEquals(511, $response->getStatusCode());
+    }
+
+    /**
      * @param string[] $methods methods to mock
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|AirlockAuthenticationKeyUserProvider

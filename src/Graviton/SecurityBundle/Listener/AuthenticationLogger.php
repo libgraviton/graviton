@@ -2,7 +2,6 @@
 /**
  * Defines a set of listeners to be subscribed to authentication events.
  */
-
 namespace Graviton\SecurityBundle\Listener;
 
 use Psr\Log\LoggerInterface;
@@ -26,9 +25,9 @@ class AuthenticationLogger implements EventSubscriberInterface
 
 
     /**
-     * @param LoggerInterface $logger
+     * @param LoggerInterface $logger Logs information somewhere
      */
-    function __construct(LoggerInterface $logger )
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -51,7 +50,7 @@ class AuthenticationLogger implements EventSubscriberInterface
      * called by authentication listeners inheriting from
      * AbstractAuthenticationListener.
      *
-     * @param AuthenticationFailureEvent $event
+     * @param AuthenticationFailureEvent $event Event triggering this callback.
      *
      * @return Response
      */
@@ -66,11 +65,6 @@ class AuthenticationLogger implements EventSubscriberInterface
                 'data' => $exception->getMessageData(),
             )
         );
-
-        return new Response(
-            $exception->getMessageKey(),
-            Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED
-        );
     }
 
     /**
@@ -78,7 +72,7 @@ class AuthenticationLogger implements EventSubscriberInterface
      * is called by authentication listeners inheriting from
      * AbstractAuthenticationListener.
      *
-     * @param AuthenticationEvent $event
+     * @param AuthenticationEvent $event Event triggering this callback.
      *
      * @return void
      */
