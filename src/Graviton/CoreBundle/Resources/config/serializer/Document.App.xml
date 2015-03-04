@@ -4,5 +4,6 @@
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId"/>
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle"/>
     <property name="showInMenu" type="boolean" accessor-getter="getShowInMenu" accessor-setter="setShowInMenu" serialized-name="showInMenu"/>
+    <property name="order" type="integer" accessor-getter="getOrder" accessor-setter="setOrder" serialized-name="order"/>
   </class>
 </serializer>
