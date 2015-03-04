@@ -27,19 +27,11 @@ class LoadAppData implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $helloApp = new App;
-        $helloApp->setId('hello');
-        $helloApp->setTitle('Hello World!');
-        $helloApp->setShowInMenu(true);
-        $helloApp->setOrder(1);
-
-        $manager->persist($helloApp);
-
         $tabletApp = new App;
         $tabletApp->setId('tablet');
         $tabletApp->setTitle('Tablet');
         $tabletApp->setShowInMenu(true);
-        $tabletApp->setOrder(2);
+        $tabletApp->setOrder(1);
 
         $manager->persist($tabletApp);
 
@@ -47,7 +39,7 @@ class LoadAppData implements FixtureInterface
         $adminApp->setId('admin');
         $adminApp->setTitle('Administration');
         $adminApp->setShowInMenu(true);
-        $adminApp->setOrder(3);
+        $adminApp->setOrder(2);
 
         $manager->persist($adminApp);
 

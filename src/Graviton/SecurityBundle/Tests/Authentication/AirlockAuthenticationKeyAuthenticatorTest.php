@@ -197,12 +197,12 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
      */
     public function testOnAuthenticationFailure()
     {
-        $exceptionMock = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
+        $exceptionDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
             ->disableOriginalConstructor()
             ->setMethods(array('getMessageKey'))
             ->getMock();
-        $exceptionMock
-            ->expects($this->exactly(2))
+        $exceptionDouble
+            ->expects($this->once())
             ->method('getMessageKey')
             ->will($this->returnValue('test_message'));
 
@@ -212,50 +212,10 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $this->logger
         );
 
-        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionMock);
+        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionDouble);
 
         $this->assertEquals('test_message', $response->getContent());
         $this->assertEquals(511, $response->getStatusCode());
-    }
-
-    /**
-     * @return void
-     */
-    public function testOnAuthenticationSuccess()
-    {
-        $this->logger
-            ->expects($this->once())
-            ->method('info')
-            ->with($this->equalTo('Contract (Jon Doe (1234567)) was successfully recognized.'));
-
-        $authenticator = new AirlockAuthenticationKeyAuthenticator(
-            $this->getProviderMock(),
-            $this->getStrategyMock(),
-            $this->logger
-        );
-
-        $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getContractNumber'))
-            ->getMock();
-        $userDouble
-            ->expects($this->once())
-            ->method('getContractNumber')
-            ->will($this->returnValue('1234567'));
-
-        $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
-            ->setMethods(array('getUsername', 'getUser'))
-            ->getMockForAbstractClass();
-        $tokenDouble
-            ->expects($this->once())
-            ->method('getUsername')
-            ->will($this->returnValue('Jon Doe'));
-        $tokenDouble
-            ->expects($this->once())
-            ->method('getUser')
-            ->will($this->returnValue($userDouble));
-
-        $authenticator->onAuthenticationSuccess(new Request(), $tokenDouble);
     }
 
     /**

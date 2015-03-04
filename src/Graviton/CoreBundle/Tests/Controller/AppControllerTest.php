@@ -58,22 +58,17 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(3, count($results));
+        $this->assertEquals(2, count($results));
 
-        $this->assertEquals('hello', $results[0]->id);
-        $this->assertEquals('Hello World!', $results[0]->title->en);
+        $this->assertEquals('tablet', $results[0]->id);
+        $this->assertEquals('Tablet', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
         $this->assertEquals(1, $results[0]->order);
 
-        $this->assertEquals('tablet', $results[1]->id);
-        $this->assertEquals('Tablet', $results[1]->title->en);
+        $this->assertEquals('admin', $results[1]->id);
+        $this->assertEquals('Administration', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
         $this->assertEquals(2, $results[1]->order);
-
-        $this->assertEquals('admin', $results[2]->id);
-        $this->assertEquals('Administration', $results[2]->title->en);
-        $this->assertEquals(true, $results[2]->showInMenu);
-        $this->assertEquals(3, $results[2]->order);
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="self"',
@@ -106,7 +101,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=3&perPage=1>; rel="last"',
+            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
 
@@ -194,25 +189,25 @@ class AppControllerTest extends RestTestCase
     public function testPutApp()
     {
         $helloApp = new \stdClass();
-        $helloApp->id = "hello";
+        $helloApp->id = "tablet";
         $helloApp->title = new \stdClass();
-        $helloApp->title->en = "Hello World!";
+        $helloApp->title->en = "Tablet";
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
-        $client->put('/core/app/hello', $helloApp);
+        $client->put('/core/app/tablet', $helloApp);
 
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('hello', $results->id);
-        $this->assertEquals('Hello World!', $results->title->en);
+        $this->assertEquals('tablet', $results->id);
+        $this->assertEquals('Tablet', $results->title->en);
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
-            '<http://localhost/core/app/hello>; rel="self"',
+            '<http://localhost/core/app/tablet>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -244,12 +239,13 @@ class AppControllerTest extends RestTestCase
     public function testDeleteApp()
     {
         $testApp = new \stdClass;
-        $testApp->id = 'hello';
-        $testApp->title = 'Hello World!';
+        $testApp->id = 'tablet';
+        $testApp->title = 'Tablet';
         $testApp->showInMenu = true;
+        $testApp->order = 1;
 
         $client = static::createRestClient();
-        $client->request('DELETE', '/core/app/hello');
+        $client->request('DELETE', '/core/app/tablet');
 
         $response = $client->getResponse();
 
@@ -258,7 +254,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
 
-        $client->request('GET', '/core/app/hello');
+        $client->request('GET', '/core/app/tablet');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
@@ -270,13 +266,13 @@ class AppControllerTest extends RestTestCase
     public function testFailingBooleanValidationOnAppUpdate()
     {
         $helloApp = new \stdClass;
-        $helloApp->id = 'hello';
+        $helloApp->id = 'tablet';
         $helloApp->title = new \stdClass;
-        $helloApp->title->en = 'Hello World!';
+        $helloApp->title->en = 'Tablet';
         $helloApp->showInMenu = 'I am a string and not a boolean.';
 
         $client = static::createRestClient();
-        $client->put('/core/app/hello', $helloApp);
+        $client->put('/core/app/tablet', $helloApp);
 
         $results = $client->getResults();
 
@@ -370,7 +366,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchString = json_decode($patchString);
 
-        $client->patch('/core/app/hello', $patchString);
+        $client->patch('/core/app/tablet', $patchString);
 
         $response = $client->getResponse();
 
@@ -379,19 +375,19 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // get the patched record
-        $client->request('GET', '/core/app/hello');
+        $client->request('GET', '/core/app/tablet');
         $results = $client->getResults();
 
         // check status code (204 No Content)
         $this->assertEquals('204', $response->getStatusCode());
 
         // check record values
-        $this->assertEquals('hello', $results->id);
-        $this->assertEquals('Hello World!', $results->title->en);
+        $this->assertEquals('tablet', $results->id);
+        $this->assertEquals('Tablet', $results->title->en);
         $this->assertFalse($results->showInMenu);
 
         $this->assertContains(
-            '<http://localhost/core/app/hello>; rel="self"',
+            '<http://localhost/core/app/tablet>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }
