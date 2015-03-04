@@ -17,6 +17,7 @@ use Knp\Component\Pager\Paginator;
 use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
@@ -182,9 +183,11 @@ class RestController implements ContainerAwareInterface
     /**
      * Returns all records
      *
+     * @param Request $request Current http request
+     *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function allAction()
+    public function allAction(Request $request)
     {
         $model = $this->getModel();
 
@@ -196,7 +199,7 @@ class RestController implements ContainerAwareInterface
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent(
-                $this->serialize($model->findAll($this->getRequest()))
+                $this->serialize($model->findAll($request))
             );
 
         return $this->render(
@@ -207,28 +210,20 @@ class RestController implements ContainerAwareInterface
     }
 
     /**
-     * Get request
-     *
-     * @return \Symfony\Component\HttpFoundation\Request $request Request object
-     */
-    public function getRequest()
-    {
-        return $this->container->get('graviton.rest.request');
-    }
-
-    /**
      * Writes a new Entry to the database
+     *
+     * @param Request $request Current http request
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
      */
-    public function postAction()
+    public function postAction(Request $request)
     {
         // Get the response object from container
         $response = $this->getResponse();
 
         // Deserialize the request content (throws an exception if something fails)
         $record = $this->deserialize(
-            $this->getRequest()->getContent(),
+            $request->getContent(),
             $this->getModel()->getEntityClass()
         );
 
@@ -244,13 +239,13 @@ class RestController implements ContainerAwareInterface
         $record = $this->getModel()->insertRecord($record);
 
         // store id of new record so we dont need to reparse body later when needed
-        $this->getRequest()->attributes->set('id', $record->getId());
+        $request->attributes->set('id', $record->getId());
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
         $response->setContent($this->serialize($record));
 
-        $routeName = $this->getRequest()->get('_route');
+        $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
@@ -276,7 +271,7 @@ class RestController implements ContainerAwareInterface
      * @param string $content       Request content
      * @param string $documentClass Document class
      *
-     * @throws \Graviton\ExceptionBundle\Exception\DeserializationException
+     * @throws DeserializationException
      *
      * @return object $record Document
      */
@@ -306,7 +301,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Get the router from the dic
      *
-     * @return \Symfony\Bundle\FrameworkBundle\Routing\Router
+     * @return Router
      */
     public function getRouter()
     {
@@ -316,11 +311,12 @@ class RestController implements ContainerAwareInterface
     /**
      * Update a record
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
+     * @return Response $response Result of action with data (if successful)
      */
-    public function putAction($id)
+    public function putAction($id, Request $request)
     {
         $response = $this->getResponse();
 
@@ -329,12 +325,9 @@ class RestController implements ContainerAwareInterface
 
         // Deserialize the content
         $record = $this->deserialize(
-            $this->getRequest()->getContent(),
+            $request->getContent(),
             $this->getModel()->getEntityClass()
         );
-
-        // disabled here, see comment in postAction()..
-        //$this->validateRecord($record);
 
         // And update the record, if everything is ok
         $this->getModel()->updateRecord($id, $record);
@@ -357,7 +350,7 @@ class RestController implements ContainerAwareInterface
      *
      * @param Number $id ID of record
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     * @return Response $response Result of the action
      */
     public function deleteAction($id)
     {
@@ -381,11 +374,18 @@ class RestController implements ContainerAwareInterface
      * We tried to implement the jsonpatch rfc but this is not possible
      * because of doctrine odm / serializer
      *
-     * @param Number $id ID of record
+     * @param Number  $id      ID of record
      *
+     * @param Request $request Current http request
+     *
+     * @throws DeserializationException
+     * @throws NotFoundException
+     * @throws Patch\FailedTestException
+     * @throws SerializationException
+     * @throws \Exception
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function patchAction($id)
+    public function patchAction($id, Request $request)
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -393,7 +393,7 @@ class RestController implements ContainerAwareInterface
         $record = $this->findRecord($id);
 
         // Get the patch params from request
-        $requestContent = $this->getRequest()->getContent();
+        $requestContent = $request->getContent();
 
         if (!is_null($record) && !empty($requestContent)) {
             // get the record as json to handle json-patch
@@ -425,13 +425,14 @@ class RestController implements ContainerAwareInterface
     /**
      * Return OPTIONS results.
      *
-     * @param string $id ID of record
+     * @param string  $id      ID of record
+     * @param Request $request Current http request
      *
+     * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function optionsAction($id = null)
+    public function optionsAction($id = null, Request $request)
     {
-        $request = $this->getRequest();
         $request->attributes->set('schemaRequest', true);
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
