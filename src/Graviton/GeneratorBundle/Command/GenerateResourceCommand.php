@@ -70,12 +70,12 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             $output
         );
 
-        $commandInput = new ArrayInput(array(
+        $arguments = array(
             'command' => 'cache:clear',
             '--no-warmup' => true
-        ));
+        );
         $command = $this->getApplication()->find('cache:clear');
-        if ($command->run($commandInput, $output) == 0) {
+        if ($command->run(new ArrayInput($arguments), $output) == 0) {
             $output->isVerbose() && $output->writeln(
                 'cache cleared'
             );
