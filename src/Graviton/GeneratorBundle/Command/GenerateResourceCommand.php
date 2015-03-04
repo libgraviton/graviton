@@ -76,9 +76,7 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
         );
         $command = $this->getApplication()->find('cache:clear');
         if ($command->run(new ArrayInput($arguments), $output) == 0) {
-            $output->isVerbose() && $output->writeln(
-                'cache cleared'
-            );
+            $output->isVerbose() && $output->writeln('cache cleared');
         }
 
         $output->writeln(
