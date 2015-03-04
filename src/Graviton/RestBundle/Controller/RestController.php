@@ -431,7 +431,7 @@ class RestController implements ContainerAwareInterface
      * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function optionsAction($id = null, Request $request)
+    public function optionsAction(Request $request, $id = null)
     {
         $request->attributes->set('schemaRequest', true);
 
