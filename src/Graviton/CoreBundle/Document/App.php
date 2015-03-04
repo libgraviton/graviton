@@ -32,6 +32,11 @@ class App implements TranslatableDocumentInterface
     protected $showInMenu = false;
 
     /**
+     * @var int sort order
+     */
+    protected $order;
+
+    /**
      * make title translatable
      *
      * @return string[]
@@ -111,5 +116,27 @@ class App implements TranslatableDocumentInterface
     public function getShowInMenu()
     {
         return $this->showInMenu;
+    }
+
+    /**
+     * Get order
+     *
+     * @return int order
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Set order
+     *
+     * @param int $order order
+     *
+     * @return void
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
     }
 }

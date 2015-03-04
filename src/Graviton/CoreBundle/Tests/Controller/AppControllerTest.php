@@ -58,15 +58,22 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(2, count($results));
+        $this->assertEquals(3, count($results));
 
         $this->assertEquals('hello', $results[0]->id);
         $this->assertEquals('Hello World!', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
+        $this->assertEquals(1, $results[0]->order);
 
-        $this->assertEquals('admin', $results[1]->id);
-        $this->assertEquals('Administration', $results[1]->title->en);
+        $this->assertEquals('tablet', $results[1]->id);
+        $this->assertEquals('Tablet', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
+        $this->assertEquals(2, $results[1]->order);
+
+        $this->assertEquals('admin', $results[2]->id);
+        $this->assertEquals('Administration', $results[2]->title->en);
+        $this->assertEquals(true, $results[2]->showInMenu);
+        $this->assertEquals(3, $results[2]->order);
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="self"',
@@ -99,7 +106,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=3&perPage=1>; rel="last"',
             explode(',', $response->headers->get('Link'))
         );
 

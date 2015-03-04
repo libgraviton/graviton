@@ -31,13 +31,23 @@ class LoadAppData implements FixtureInterface
         $helloApp->setId('hello');
         $helloApp->setTitle('Hello World!');
         $helloApp->setShowInMenu(true);
+        $helloApp->setOrder(1);
 
         $manager->persist($helloApp);
+
+        $tabletApp = new App;
+        $tabletApp->setId('tablet');
+        $tabletApp->setTitle('Tablet');
+        $tabletApp->setShowInMenu(true);
+        $tabletApp->setOrder(2);
+
+        $manager->persist($tabletApp);
 
         $adminApp = new App;
         $adminApp->setId('admin');
         $adminApp->setTitle('Administration');
         $adminApp->setShowInMenu(true);
+        $adminApp->setOrder(3);
 
         $manager->persist($adminApp);
 
