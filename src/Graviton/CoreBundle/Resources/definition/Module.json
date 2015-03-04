@@ -3,7 +3,7 @@
   "description": "A service containing modules that relate to apps",
   "service": {
     "readOnly": false,
-    "routerBase": "/configuration/module/",
+    "routerBase": "/core/module/",
     "fixtures": [
       {
         "key": "realEstate",
