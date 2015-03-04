@@ -60,6 +60,10 @@ class JsonDefinition
         }
 
         $this->doc = json_decode(file_get_contents($this->filename));
+
+        if (empty($this->doc)) {
+            throw new \RuntimeException(sprintf('Could not load %s', $filename));
+        }
     }
 
     /**
@@ -69,6 +73,9 @@ class JsonDefinition
      */
     public function getId()
     {
+        if (!property_exists($this->doc, 'id')) {
+            throw new \RuntimeException(sprintf("No id found for document %s", $this->filename));
+        }
         return $this->doc->id;
     }
 
