@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
@@ -19,8 +19,22 @@ use Symfony\Component\Process\Process;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class CleanDynamicBundleCacheCommand extends ContainerAwareCommand
+class CleanDynamicBundleCacheCommand extends Command
 {
+
+    /**
+     * kernel
+     *
+     * @var \Graviton\AppKernel
+     */
+    private $kernel;
+
+    /**
+     * filesystem
+     *
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    private $filesystem;
 
     /**
      * {@inheritDoc}
@@ -38,6 +52,30 @@ class CleanDynamicBundleCacheCommand extends ContainerAwareCommand
     }
 
     /**
+     * set kernel
+     *
+     * @param mixed $kernel kernel
+     *
+     * @return void
+     */
+    public function setKernel($kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
+    /**
+     * set filesystem
+     *
+     * @param mixed $filesystem filesystem
+     *
+     * @return void
+     */
+    public function setFilesystem($filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param InputInterface  $input  input
@@ -48,13 +86,10 @@ class CleanDynamicBundleCacheCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // @todo it was suggested this may/should be moved to app/cache..?
-        $dynamicDir = $this->getContainer()->get('kernel')->getRootDir().'/../src/GravitonDyn/';
+        $dynamicDir = $this->kernel->getRootDir().'/../src/GravitonDyn/';
 
-        $process = new Process('rm -Rf '.escapeshellarg($dynamicDir));
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException($process->getErrorOutput());
+        if ($this->filesystem->exists($dynamicDir)) {
+            $this->filesystem->remove($dynamicDir);
         }
     }
 }

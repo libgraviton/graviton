@@ -29,5 +29,25 @@
                 <argument>%kernel.root_dir%/..</argument>
             </call>
         </service>
+
+        <!-- commands -->
+
+        <!-- clean dynamic bundle command -->
+        <service id="graviton_generator.command.cleandynamicbundle.kernel" alias="kernel"/>
+        <service id="graviton_generator.command.cleandynamicbundle.filesystem"
+                 class="Symfony\Component\Filesystem\Filesystem">
+        </service>
+
+        <service id="graviton_generator.command.cleandynamicbundle"
+                 class="Graviton\GeneratorBundle\Command\CleanDynamicBundleCacheCommand">
+            <call method="setKernel">
+                <argument type="service" id="kernel"/>
+            </call>
+            <call method="setFilesystem">
+                <argument type="service" id="graviton_generator.command.cleandynamicbundle.filesystem"/>
+            </call>
+            <tag name="console.command" />
+        </service>
+
     </services>
 </container>
