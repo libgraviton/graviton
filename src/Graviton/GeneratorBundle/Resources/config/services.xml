@@ -41,10 +41,27 @@
         <service id="graviton_generator.command.cleandynamicbundle"
                  class="Graviton\GeneratorBundle\Command\CleanDynamicBundleCacheCommand">
             <call method="setKernel">
-                <argument type="service" id="kernel"/>
+                <argument type="service" id="graviton_generator.command.cleandynamicbundle.kernel"/>
             </call>
             <call method="setFilesystem">
                 <argument type="service" id="graviton_generator.command.cleandynamicbundle.filesystem"/>
+            </call>
+            <tag name="console.command" />
+        </service>
+
+        <service id="graviton_generator.command.generatedynamicbundle.container" alias="service_container"/>
+        <service id="graviton_generator.command.generatedynamicbundle.process"
+                 class="Symfony\Component\Process\Process">
+            <argument type="string" key="null" />
+        </service>
+
+        <service id="graviton_generator.command.generatedynamicbundle"
+                 class="Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand">
+            <call method="setContainer">
+                <argument type="service" id="graviton_generator.command.generatedynamicbundle.container"/>
+            </call>
+            <call method="setProcess">
+                <argument type="service" id="graviton_generator.command.generatedynamicbundle.process"/>
             </call>
             <tag name="console.command" />
         </service>
