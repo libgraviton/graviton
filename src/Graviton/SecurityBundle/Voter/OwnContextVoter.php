@@ -51,9 +51,9 @@ class OwnContextVoter extends AbstractVoter
      *   a UserInterface object (fully authenticated user)
      *   a string               (anonymously authenticated user)
      *
-     * @param string               $attribute
-     * @param object               $object
-     * @param UserInterface|string $user
+     * @param string               $attribute The attribute to be checked against.
+     * @param object               $object    The object the access shall be granted for.
+     * @param UserInterface|string $user      The user asking for permission.
      *
      * @return bool
      */

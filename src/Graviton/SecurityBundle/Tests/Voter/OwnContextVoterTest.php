@@ -44,6 +44,8 @@ class OwnContextVoterTest extends GravitonTestCase
      *
      * @dataProvider invalidUserProvider
      *
+     * @param object|null $user The user asking for permission.
+     *
      * @return void
      */
     public function testIsGrantedNoValidUser($user)
