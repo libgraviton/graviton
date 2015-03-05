@@ -38,7 +38,7 @@ class ScriptHandler
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
-        $cmd = 'graviton:generate:dynamicbundles --json';
+        $cmd = escapeshellarg('graviton:generate:dynamicbundles').' --json';
 
         self::executeCommand($event, $consolePath, $cmd);
     }
@@ -54,7 +54,7 @@ class ScriptHandler
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
-        $cmd = 'graviton:clean:dynamicbundles';
+        $cmd = escapeshellarg('graviton:clean:dynamicbundles');
 
         self::executeCommand($event, $consolePath, $cmd);
     }
@@ -91,7 +91,7 @@ class ScriptHandler
             $console .= ' --ansi';
         }
 
-        $process = new Process($php.' '.$console.' '.escapeshellarg($cmd), null, null, null, $timeout);
+        $process = new Process($php.' '.$console.' '.$cmd, null, null, null, $timeout);
         $process->run(
             function ($type, $buffer) use ($event) {
                 $event->getIO()->write($buffer, false);
