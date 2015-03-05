@@ -38,7 +38,7 @@
       },
       {
         "name": "comment",
-        "type": "varchar",
+        "type": "class:Graviton\\RestBundle\\Document\\PurifiedHtml",
         "title": "Comment",
         "description": "Comment",
         "required": true
