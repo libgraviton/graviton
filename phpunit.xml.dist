@@ -29,6 +29,8 @@
         <directory>src/*/*Bundle/Resources</directory>
         <directory>src/*/Bundle/*Bundle/Resources</directory>
         <directory>src/*/Bundle/DependencyInjection</directory>
+        <directory>src/Graviton/TestBundle</directory>
+        <directory>src/GravitonDyn</directory>
       </exclude>
     </whitelist>
   </filter>
