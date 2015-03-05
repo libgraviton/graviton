@@ -63,4 +63,19 @@ class GravitonTestCase extends WebTestCase
     {
         return new ProxyBuilder($class);
     }
+
+    /**
+     * Provides a test double for the named calss.
+     *
+     * @param string $class   Full namespace of the class to be doubled
+     * @param array  $methods List of methods to be doubled
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getSimpleTestDouble($class, array $methods = array())
+    {
+        return $this->getMockBuilder($class)
+            ->setMethods($methods)
+            ->getMock();
+    }
 }

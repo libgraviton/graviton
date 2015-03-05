@@ -108,4 +108,14 @@ class SecurityContract implements UserInterface
     {
         return $this->contract->getNumber();
     }
+
+    /**
+     * Provides the embedded contract identified by the authenticator.
+     *
+     * @return Contract
+     */
+    public function getContract()
+    {
+        return $this->contract;
+    }
 }

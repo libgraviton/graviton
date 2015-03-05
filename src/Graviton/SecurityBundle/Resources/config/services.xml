@@ -69,5 +69,14 @@
             <tag name="kernel.event_subscriber" />
         </service>
 
+        <!--
+            Voter services
+        -->
+        <service id="graviton.security.access.own_context_voter"
+            class="Graviton\SecurityBundle\Voter\OwnContextVoter"
+            public="false">
+            <tag name="security.voter" />
+        </service>
+
     </services>
 </container>

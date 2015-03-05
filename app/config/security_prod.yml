@@ -17,6 +17,11 @@ security:
             simple_preauth:
                 authenticator: graviton_airlock_authentication_key_authenticator
 
+    access_decision_manager:
+        # strategy can be: affirmative, unanimous or consensus
+        # see: http://symfony.com/doc/current/components/security/authorization.html#components-security-access-decision-manager
+        strategy: unanimous #every voter has to grant access
+
 #    # with these settings you can restrict or allow access for different parts
 #    # of your application based on roles, ip, host or methods
 #    # http://symfony.com/doc/current/cookbook/security/access_control.html
