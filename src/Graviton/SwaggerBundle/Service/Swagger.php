@@ -193,7 +193,7 @@ class Swagger
         );
         $ret['host'] = $_SERVER['HTTP_HOST'];
         $ret['basePath'] = '/';
-        $ret['schemes'] = array('http');
+        $ret['schemes'] = array('http', 'https');
 
         return $ret;
     }
