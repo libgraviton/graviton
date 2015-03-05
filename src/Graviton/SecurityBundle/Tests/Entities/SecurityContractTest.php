@@ -126,6 +126,11 @@ class SecurityContractTest extends WebTestCase
         $this->assertEquals(123456, $entity->getContractNumber());
     }
 
+    /**
+     * test contract retrieval.
+     *
+     * @return void
+     */
     public function testGetContract()
     {
         $contractDouble = $this->getContractMock();

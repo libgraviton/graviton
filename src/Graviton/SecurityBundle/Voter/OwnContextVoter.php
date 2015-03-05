@@ -67,14 +67,13 @@ class OwnContextVoter implements VoterInterface
      * Determines, if the given object is of type Account and if it in the set of accounts related to the contract.
      *
      * @param Contract $contract The current contract identified by provided the access token.
-     * @param mixed $object      The object to be handled
+     * @param mixed    $object   The object to be handled
      *
      * @return bool
      */
     protected function grantByAccount(Contract $contract, $object)
     {
         if ($object instanceof \GravitonDyn\AccountBundle\Document\Account) {
-
             return $contract->getAccount()->contains($object);
         }
 
@@ -85,14 +84,13 @@ class OwnContextVoter implements VoterInterface
      * Determines, if the given object is of type Customer and if it is related to the contract.
      *
      * @param Contract $contract The current contract identified by provided the access token.
-     * @param mixed $object      The object to be handled
+     * @param mixed    $object   The object to be handled
      *
      * @return bool
      */
     protected function grantByCustomer(Contract $contract, $object)
     {
         if ($object instanceof \GravitonDyn\CustomerBundle\Document\Customer) {
-
             return $contract->getCustomer() == $object;
         }
 

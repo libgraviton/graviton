@@ -17,6 +17,8 @@ class OwnContextVoterTest extends GravitonTestCase
 {
     /**
      * validate supportsAttribute
+     *
+     * @return void
      */
     public function testSupportsAttribute()
     {
@@ -27,6 +29,8 @@ class OwnContextVoterTest extends GravitonTestCase
 
     /**
      * validate supportsClass
+     *
+     * @return void
      */
     public function testSupportsClass()
     {
@@ -37,6 +41,8 @@ class OwnContextVoterTest extends GravitonTestCase
 
     /**
      * validates vote
+     *
+     * @return void
      */
     public function testVote()
     {
@@ -72,6 +78,8 @@ class OwnContextVoterTest extends GravitonTestCase
 
     /**
      * verifies grandByAccount
+     *
+     * @return void
      */
     public function testGrantByAccountGrandAccess()
     {
@@ -81,15 +89,15 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getAccount')
             ->willReturn(new ArrayCollection([new \stdClass]));
 
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
-            ->setMethods(array('grantByAccount'))
-            ->getProxy();
+        $voter = $this->getVoterProxy(array('grantByAccount'));
 
         $this->assertFalse($voter->grantByAccount($contractDouble, new \stdClass));
     }
 
     /**
      * verifies grandByAccount
+     *
+     * @return void
      */
     public function testGrantByAccountDenyAccess()
     {
@@ -103,15 +111,15 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getAccount')
             ->willReturn(new ArrayCollection([$accountDouble]));
 
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
-            ->setMethods(array('grantByAccount'))
-            ->getProxy();
+        $voter = $this->getVoterProxy(array('grantByAccount'));
 
         $this->assertTrue($voter->grantByAccount($contractDouble, $accountDouble));
     }
 
     /**
      * verifies grantByCustomer
+     *
+     * @return void
      */
     public function testGrantByCustomerGrandAccess()
     {
@@ -121,15 +129,15 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getCustomer')
             ->willReturn(new \stdClass);
 
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
-            ->setMethods(array('grantByCustomer'))
-            ->getProxy();
+        $voter = $this->getVoterProxy(array('grantByCustomer'));
 
         $this->assertFalse($voter->grantByCustomer($contractDouble, new \stdClass));
     }
 
     /**
      * verifies grantByCustomer
+     *
+     * @return void
      */
     public function testGrantByCustomerDenyAccess()
     {
@@ -143,20 +151,35 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getCustomer')
             ->willReturn($customerDouble);
 
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
-            ->setMethods(array('grantByCustomer'))
-            ->getProxy();
+        $voter = $this->getVoterProxy(array('grantByCustomer'));
 
         $this->assertTrue($voter->grantByCustomer($contractDouble, $customerDouble));
     }
 
     /**
-     * @param array $methods
+     * Provides test double of the Contract entity.
+     *
+     * @param array $methods Set of methods to be doubled.
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|\GravitonDyn\ContractBundle\Document\Contract
      */
     public function getContractDouble(array $methods = array())
     {
         return $this->getSimpleTestDouble('\GravitonDyn\ContractBundle\Document\Contract', $methods);
+    }
+
+    /**
+     * Provides a proxy instance of the OwnContextVoter.
+     *
+     * @param array $methods Set of methods to be doubled.
+     *
+     * @return object
+     */
+    private function getVoterProxy(array $methods = array())
+    {
+        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
+            ->setMethods($methods)
+            ->getProxy();
+        return $voter;
     }
 }
