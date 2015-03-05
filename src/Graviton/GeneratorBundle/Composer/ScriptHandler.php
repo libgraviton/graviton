@@ -91,7 +91,7 @@ class ScriptHandler
             $console .= ' --ansi';
         }
 
-        $process = new Process($php.' '.$console.' '.$cmd, null, null, null, $timeout);
+        $process = new Process($php.' '.$console.' '.escapeshellarg($cmd), null, null, null, $timeout);
         $process->run(
             function ($type, $buffer) use ($event) {
                 $event->getIO()->write($buffer, false);
