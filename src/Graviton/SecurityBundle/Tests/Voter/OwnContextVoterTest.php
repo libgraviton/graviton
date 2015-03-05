@@ -24,7 +24,7 @@ class OwnContextVoterTest extends GravitonTestCase
     {
         $voter = new OwnContextVoter();
 
-        $this->assertTrue($voter->supportsAttribute('view'));
+        $this->assertTrue($voter->supportsAttribute('VIEW'));
     }
 
     /**
@@ -36,44 +36,68 @@ class OwnContextVoterTest extends GravitonTestCase
     {
         $voter = new OwnContextVoter();
 
-        $this->assertTrue($voter->supportsClass('\stdClass'));
+        $this->assertFalse($voter->supportsClass('\stdClass'));
     }
 
     /**
-     * validates vote
+     * validates isGranted
+     *
+     * @dataProvider invalidUserProvider
      *
      * @return void
      */
-    public function testVote()
+    public function testIsGrantedNoValidUser($user)
+    {
+        $attribute = 'VIEW';
+        $object = new \stdClass();
+
+        $voter = $this->getVoterProxy(array('isGranted'));
+
+        $this->assertFalse($voter->isGranted($attribute, $object, $user));
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidUserProvider()
+    {
+        return array(
+            'null user' => array(null),
+            'some user object' => array(new \stdClass())
+        );
+    }
+
+    /**
+     * validates isGranted
+     *
+     * @return void
+     */
+    public function testIsGranted()
     {
         $object = new \stdClass();
 
-        $contractDouble = $this->getContractDouble(array('getCustomer'));
+        $contractDouble = $this->getContractDouble(array('getAccount', 'getCustomer'));
+        $contractDouble
+            ->expects($this->any())
+            ->method('getAccount')
+            ->willReturn(new ArrayCollection([$object]));
         $contractDouble
             ->expects($this->any())
             ->method('getCustomer')
             ->willReturn($object);
 
-        $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getContract'))
-            ->getMock();
+        $userDouble = $this->getSimpleTestDouble(
+            '\Graviton\SecurityBundle\Entities\SecurityContract',
+            array('getContract')
+        );
         $userDouble
             ->expects($this->once())
             ->method('getContract')
             ->willReturn($contractDouble);
 
-        $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
-            ->setMethods(array('getUser'))
-            ->getMockForAbstractClass();
-        $tokenDouble
-            ->expects($this->once())
-            ->method('getUser')
-            ->willReturn($userDouble);
+        $voter = $this->getVoterProxy(array('isGranted'));
 
-        $voter = new OwnContextVoter();
-
-        $this->assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($tokenDouble, $object, array()));
+        $this->assertFalse($voter->isGranted('VIEW', $object, $userDouble));
     }
 
     /**

@@ -75,6 +75,7 @@ class GravitonTestCase extends WebTestCase
     public function getSimpleTestDouble($class, array $methods = array())
     {
         return $this->getMockBuilder($class)
+            ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
     }

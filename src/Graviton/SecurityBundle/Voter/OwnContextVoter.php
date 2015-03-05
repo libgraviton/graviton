@@ -5,63 +5,71 @@
 namespace Graviton\SecurityBundle\Voter;
 
 use GravitonDyn\ContractBundle\Document\Contract;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\AbstractVoter;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class OwnContextVoter implements VoterInterface
+class OwnContextVoter extends AbstractVoter
 {
     /**
-     * Checks if the voter supports the given attribute.
+     * Return an array of supported classes. This will be called by supportsClass
      *
-     * @param string $attribute An attribute
-     *
-     * @return bool true if this Voter supports the attribute, false otherwise
+     * @return array an array of supported classes, i.e. array('Acme\DemoBundle\Model\Product')
      */
-    public function supportsAttribute($attribute)
+    protected function getSupportedClasses()
     {
-        return true;
+        return array(
+            'GravitonDyn\AccountBundle\Document\Account',
+            'GravitonDyn\CustomerBundle\Document\Customer',
+        );
     }
 
     /**
-     * Checks if the voter supports the given class.
+     * Return an array of supported attributes. This will be called by supportsAttribute
      *
-     * @param string $class A class name
-     *
-     * @return bool true if this Voter can process the class
+     * @return array an array of supported attributes, i.e. array('CREATE', 'READ')
      */
-    public function supportsClass($class)
+    protected function getSupportedAttributes()
     {
-        return true;
+        return array(
+            'VIEW',
+            'CREATE',
+            'EDIT',
+            'DELETE',
+        );
     }
 
     /**
-     * Returns the vote for the given parameters.
+     * Perform a single access check operation on a given attribute, object and (optionally) user
+     * It is safe to assume that $attribute and $object's class pass supportsAttribute/supportsClass
+     * $user can be one of the following:
+     *   a UserInterface object (fully authenticated user)
+     *   a string               (anonymously authenticated user)
      *
-     * This method must return one of the following constants:
-     * ACCESS_GRANTED, ACCESS_DENIED, or ACCESS_ABSTAIN.
+     * @param string               $attribute
+     * @param object               $object
+     * @param UserInterface|string $user
      *
-     * @param TokenInterface $token      A ToketnInterface instance
-     * @param object|null    $object     The object to secure
-     * @param array          $attributes An array of attributes associated with the method being invoked
-     *
-     * @return int either ACCESS_GRANTED, ACCESS_ABSTAIN, or ACCESS_DENIED
+     * @return bool
      */
-    public function vote(TokenInterface $token, $object, array $attributes)
+    protected function isGranted($attribute, $object, $user = null)
     {
+        if (null === $user || !($user instanceof \Graviton\SecurityBundle\Entities\SecurityContract)) {
+            return false;
+        }
+
         /** @var \GravitonDyn\ContractBundle\Document\Contract $contract */
-        $contract = $token->getUser()->getContract();
+        $contract = $user->getContract();
 
-        // $object is an account
-        $grant = $this->grantByAccount($contract, $object)
-            && $this->grantByCustomer($contract, $object);
-
-        return true === $grant ? VoterInterface::ACCESS_ABSTAIN : VoterInterface::ACCESS_DENIED;
+        return $this->grantByAccount($contract, $object)
+            || $this->grantByCustomer($contract, $object);
     }
+
 
     /**
      * Determines, if the given object is of type Account and if it in the set of accounts related to the contract.
