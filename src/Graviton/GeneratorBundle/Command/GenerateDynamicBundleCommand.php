@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\Container;
  * Here, we generate all "dynamic" Graviton bundles..
  *
  * @todo create a new Application in-situ
+ * @todo see if we can get rid of container dependency..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
