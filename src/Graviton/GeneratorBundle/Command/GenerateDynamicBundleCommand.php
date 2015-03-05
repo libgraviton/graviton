@@ -7,28 +7,32 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
  *
- * @todo use symfony/process instead of shell_exec and/or create a new Application in-situ
+ * @todo create a new Application in-situ
+ * @todo see if we can get rid of container dependency..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GenerateDynamicBundleCommand extends ContainerAwareCommand
+class GenerateDynamicBundleCommand extends Command
 {
     private $bundleBundleNamespace;
     private $bundleBundleDir;
     private $bundleBundleClassname;
     private $bundleBundleClassfile;
     private $bundleBundleList = array();
+    private $container;
+    private $process;
 
     /**
      * {@inheritDoc}
@@ -71,6 +75,40 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                  'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
              );
+    }
+
+    /**
+     * set container
+     *
+     * @param mixed $container container
+     *
+     * @return void
+     */
+    public function setContainer($container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * get container
+     *
+     * @return Container container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * Set process
+     *
+     * @param mixed $process process
+     *
+     * @return void
+     */
+    public function setProcess($process)
+    {
+        $this->process = $process;
     }
 
     /**
@@ -341,9 +379,14 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             )
         );
 
-        passthru($cmd, $exitCode);
+        $this->process->setCommandLine($cmd);
+        $this->process->run();
 
-        return $exitCode;
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
+        }
+
+        return $this->process->getExitCode();
     }
 
     /**
