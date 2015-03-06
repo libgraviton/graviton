@@ -145,6 +145,20 @@
                 "translatable": true
             },
             {
+                "name": "emailField",
+                "type": "varchar",
+                "title": "eMail",
+                "description": "A field containing a EMail Constraint",
+                "constraints": [
+                    {
+                        "name": "Email",
+                        "options": {
+                            "strict": "true"
+                        }
+                    }
+                ]
+            },
+            {
                 "name": "someOtherField",
                 "type": "varchar",
                 "title": "Another field",
