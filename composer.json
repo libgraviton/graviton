@@ -52,7 +52,8 @@
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "graviton/php-rql-parser": "~1.0",
         "libgraviton/swagger-ui": "dev-master",
-        "exercise/htmlpurifier-bundle": "~0.1"
+        "exercise/htmlpurifier-bundle": "~0.1",
+        "egulias/email-validator": "~1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
