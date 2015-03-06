@@ -69,11 +69,11 @@
             "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
-            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ],
         "post-update-cmd": [
