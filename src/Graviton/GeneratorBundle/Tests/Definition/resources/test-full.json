@@ -5,6 +5,7 @@
     "readOnly": false,
     "baseController": "\\Graviton\\CoreBundle\\Controller\\ShowcaseExtensionController",
     "routerBase": "/hans/showcase/",
+    "fixtureOrder": "5",
     "fixtures": [
       {
         "id": 500,
@@ -141,6 +142,7 @@
       {
         "name": "testField",
         "type": "varchar",
+        "length": 200,
         "title": "A testing title",
         "description": "A lengthy and detailed description.",
         "required": true,
@@ -200,6 +202,14 @@
         "required": false
       },
       {
+        "name": "unknownType",
+        "type": "unknown",
+        "exposeAs": "unknown",
+        "title": "Wrong type",
+        "description": "Wrong type",
+        "required": false
+      },
+      {
         "name": "contacts",
         "type": "class:Graviton\\PersonBundle\\Document\\PersonContact[]",
         "title": "An array of contact elements..",
@@ -218,6 +228,12 @@
         "required": true,
         "title": "Meaning of the code",
         "description": "Some text to the code.."
+      },
+      {
+        "name": "bag.0",
+        "type": "varchar",
+        "title": "Bag with strings",
+        "description": "Some text"
       },
       {
         "name": "nestedArray.0.name",
