@@ -209,7 +209,11 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function isClassType()
     {
-        return preg_match('/^class\:/', $this->def->type);
+        $ret = false;
+        if (preg_match('/^class\:/', $this->def->type) > 0) {
+            $ret = true;
+        }
+        return $ret;
     }
 
     /**

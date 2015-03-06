@@ -357,8 +357,6 @@ class JsonDefinition
                         if (preg_match('([0-9]+)', $nameParts[1])) {
                             $fieldHierarchy[$nameParts[0]][$nameParts[2]] = $field;
                             $arrayHashes[] = $nameParts[0];
-                        } else {
-                            $fieldHierarchy[$nameParts[0]][$nameParts[1]][$nameParts[2]] = $field;
                         }
                         break;
                 }
