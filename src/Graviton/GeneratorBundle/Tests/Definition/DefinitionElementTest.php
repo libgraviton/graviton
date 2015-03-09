@@ -195,7 +195,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * lcoal def
+     * local def
      *
      * @return void
      */
