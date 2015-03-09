@@ -2,6 +2,7 @@
 namespace Graviton\GeneratorBundle\Definition;
 
 use Exception;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This class represents the json file that defines the structure
@@ -62,7 +63,7 @@ class JsonDefinition
         $this->doc = json_decode(file_get_contents($this->filename));
 
         if (empty($this->doc)) {
-            throw new \RuntimeException(sprintf('Could not load %s', $filename));
+            throw new FileNotFoundException(sprintf('Could not load %s', $filename));
         }
     }
 
@@ -259,22 +260,6 @@ class JsonDefinition
     }
 
     /**
-     * Get target relations which are explictly defined
-     *
-     * @return array relations
-     */
-    public function getRelations()
-    {
-        $ret = array();
-        if (isset($this->doc->target->relations) && is_array($this->doc->target->relations)) {
-            foreach ($this->doc->target->relations as $rel) {
-                $ret[$rel->localProperty] = $rel;
-            }
-        }
-        return $ret;
-    }
-
-    /**
      * Returns the Controller classname this services' controller shout inherit.
      * Defaults to the RestController of the RestBundle of course.
      *
@@ -379,5 +364,21 @@ class JsonDefinition
         }
 
         return $retFields;
+    }
+
+    /**
+     * Get target relations which are explictly defined
+     *
+     * @return array relations
+     */
+    public function getRelations()
+    {
+        $ret = array();
+        if (isset($this->doc->target->relations) && is_array($this->doc->target->relations)) {
+            foreach ($this->doc->target->relations as $rel) {
+                $ret[$rel->localProperty] = $rel;
+            }
+        }
+        return $ret;
     }
 }

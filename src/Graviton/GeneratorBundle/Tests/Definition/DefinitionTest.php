@@ -42,13 +42,13 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     /**
      * invalid handling
      *
-     * @expectedException \RuntimeException
+     * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
      *
      * @return void
      */
     public function testInvalidHandling()
     {
-        $jsonDef = new JsonDefinition($this->invalidPath);
+        new JsonDefinition($this->invalidPath);
     }
     /**
      * inexistent
@@ -59,7 +59,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testInexistentFile()
     {
-        $jsonDef = new JsonDefinition($this->invalidPath.'suffix');
+        new JsonDefinition($this->invalidPath.'suffix');
     }
 
     /**
@@ -72,7 +72,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     public function testNoId()
     {
         $jsonDef = new JsonDefinition($this->noIdPath);
-        $id = $jsonDef->getId();
+        $jsonDef->getId();
     }
 
     /**
