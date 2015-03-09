@@ -102,6 +102,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         $ret['serializerType'] = $this->getTypeSerializer();
         $ret['relType'] = $this->getRelType();
         $ret['isClassType'] = $this->isClassType();
+        $ret['constraints'] = $this->getConstraints();
 
         return $ret;
     }
@@ -208,7 +209,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function isClassType()
     {
-        return preg_match('/^class\:/', $this->def->type);
+        return preg_match('/^class\:/', $this->def->type) > 0;
     }
 
     /**
@@ -219,6 +220,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getLength()
     {
         return $this->def->length;
+    }
+
+    /**
+     * Returns defined Constraints for this field
+     *
+     * @return array Constraints
+     */
+    public function getConstraints()
+    {
+        $ret = array();
+        if (isset($this->def->constraints) && is_array($this->def->constraints)) {
+            $ret = $this->def->constraints;
+        }
+        return $ret;
     }
 
     /**

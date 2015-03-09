@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "da07cd57a86c8d863555206819aedff3",
+    "hash": "caded801d38bde3dc61c76a5e06376e2",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1175,6 +1175,56 @@
                 "orm"
             ],
             "time": "2014-12-16 13:45:01"
+        },
+        {
+            "name": "egulias/email-validator",
+            "version": "1.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/egulias/EmailValidator.git",
+                "reference": "af9417f765623429c9d2a200f0159537e08d1ef3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/af9417f765623429c9d2a200f0159537e08d1ef3",
+                "reference": "af9417f765623429c9d2a200f0159537e08d1ef3",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/lexer": "~1.0",
+                "php": ">= 5.3.3"
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Egulias\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eduardo Gulias Davis"
+                }
+            ],
+            "description": "A library for validating emails",
+            "homepage": "https://github.com/egulias/EmailValidator",
+            "keywords": [
+                "email",
+                "validation",
+                "validator"
+            ],
+            "time": "2015-01-04 22:42:32"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
