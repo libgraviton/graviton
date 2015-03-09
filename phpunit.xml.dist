@@ -28,7 +28,11 @@
         <directory>src/*/*Bundle/*Bundle/Tests</directory>
         <directory>src/*/*Bundle/Resources</directory>
         <directory>src/*/Bundle/*Bundle/Resources</directory>
+        <directory>src/*/Bundle/DependencyInjection</directory>
       </exclude>
     </whitelist>
   </filter>
+  <php>
+    <ini name="error_reporting" value="E_ALL"/>
+  </php>
 </phpunit>

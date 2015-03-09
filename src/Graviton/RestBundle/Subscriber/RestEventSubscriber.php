@@ -4,11 +4,12 @@
  */
 namespace Graviton\RestBundle\Subscriber;
 
+use Graviton\RestBundle\Event\RestEvent;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\EventDispatcher\Event;
-use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * Subscriber for kernel.request and kernel.response events.
@@ -23,9 +24,10 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * DI container
      *
-     * @var Symfony\Component\DependencyInjection\Container
+     * @var Container
      */
     private $container;
+
 
     /**
      * Returns the subscribed events
@@ -42,7 +44,7 @@ class RestEventSubscriber implements EventSubscriberInterface
          */
 
         return array(
-            'kernel.request' => array("onKernelRequest", 0),
+            'kernel.request'  => array("onKernelRequest", 0),
             'kernel.response' => array("onKernelResponse", 0)
         );
     }
@@ -60,51 +62,6 @@ class RestEventSubscriber implements EventSubscriberInterface
         $restEvent = $this->getEventObject($event);
 
         $dispatcher->dispatch("graviton.rest.request", $restEvent);
-    }
-
-    /**
-     * Handler for kernel.response events
-     *
-     * @param FilterResponseEvent $event Event
-     *
-     * @return void
-     */
-    public function onKernelResponse(FilterResponseEvent $event)
-    {
-        $dispatcher = $event->getDispatcher();
-        $restEvent = $this->getEventObject($event);
-
-        $dispatcher->dispatch("graviton.rest.response", $restEvent);
-
-        // setResponse stops the propagation of this event
-        $response = $restEvent->getResponse()
-            ->prepare($event->getRequest());
-
-        $event->setResponse($response);
-    }
-
-    /**
-     * Set the di container
-     *
-     * @param Symfony\Component\DependencyInjection\Container $container DI container
-     *
-     * @return \Graviton\RestBundle\Subscriber\RestEventSubscriber $this This object
-     */
-    public function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
-    }
-
-    /**
-     * Get the di container
-     *
-     * @return \Graviton\RestBundle\Subscriber\Symfony\Component\DependencyInjection\Container $container DI container
-     */
-    public function getContainer()
-    {
-        return $this->container;
     }
 
     /**
@@ -130,5 +87,42 @@ class RestEventSubscriber implements EventSubscriberInterface
         $restEvent->setController($controller);
 
         return $restEvent;
+    }
+
+    /**
+     * Handler for kernel.response events
+     *
+     * @param FilterResponseEvent $event Event
+     *
+     * @return void
+     */
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
+        $dispatcher = $event->getDispatcher();
+        $dispatcher->dispatch("graviton.rest.response", $event);
+    }
+
+    /**
+     * Get the di container
+     *
+     * @return Container $container DI container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * Set the di container
+     *
+     * @param Container $container DI container
+     *
+     * @return RestEventSubscriber $this This object
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }

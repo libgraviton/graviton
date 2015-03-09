@@ -38,6 +38,23 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\Translatable"/>']) %}
     {% endif %}
 
+    {% if field.constraints is defined and field.constraints is not empty %}
+        {% for addedConstraint in field.constraints %}
+            {% set addedCon = '' %}
+            {% set addedCon = addedCon ~ '<constraint name="' ~ addedConstraint.name ~ '">' %}
+
+            {% if addedConstraint.options is defined and addedConstraint.options is not empty %}
+                {% for addedConstraintOption in addedConstraint.options %}
+                    {% set addedCon = addedCon ~ '<option name="' ~ addedConstraintOption.name ~ '">' ~ addedConstraintOption.value ~ '</option>' %}
+                {% endfor %}
+            {% endif %}
+
+            {% set addedCon = addedCon ~ '</constraint>' %}
+
+            {% set thisCons = thisCons|merge([addedCon]) %}
+        {% endfor %}
+    {% endif %}
+
     {% if thisCons is not empty %}
         <property name="{{ field.fieldName }}">
             {{ thisCons|join("\n") }}

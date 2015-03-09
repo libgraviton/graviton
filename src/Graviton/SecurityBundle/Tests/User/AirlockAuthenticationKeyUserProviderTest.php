@@ -29,7 +29,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * test getting a user by api key
+     * Verifies the correct behavior of getUsernameForApiKey()
      *
      * @return void
      */
@@ -64,7 +64,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * test loading a user by name
+     * Verifies the correct behavior of loadUserByUsername()
      *
      * @return void
      */
@@ -87,7 +87,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * test for not found user by name
+     * Verifies the correct behavior of loadUserByUsername()
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * test for refreshUser being unsupported
+     * Verifies the correct behavior of refreshUser()
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * test supportsClass method
+     * Verifies the correct behavior of supportsClass()
      *
      * @return void
      */

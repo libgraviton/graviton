@@ -1,0 +1,13 @@
+{
+  "id": "WrongUri",
+  "description": "WrongUri",
+  "service": {
+    "routerBase": "hans/showcase",
+    "readOnly": true
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": []
+  }
+}

@@ -7,45 +7,32 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
- * The workflow is as
- * follows:
  *
- * * Generate a BundleBundle, implementing the GravitonBundleInterface
- * * Generate our Bundles per JSON file
- * * Creating the necessary resources and files inside the newly created
- * bundles.
- * * All that in our own GravitonDyn namespace.
- *
- * Important: Why are we using shell_exec instead of just using the
- * internal API? Well, the main problem is, that we want to add resources (like
- * Documents) to our Bundles *directly* after generating them. Using the
- * internal API, we cannot add resources there using our tools as those Bundles
- * haven't been loaded yet through the AppKernel. Using shell_exec we can do
- * that.. This shouldn't be a dealbreaker as this task is only used on
- * deployment and/or development where a shell is accessible. It should be
- * executed in the same context as the previous generator tools, and also those
- * used the shell (backtick operator to get git name/email for example).
+ * @todo create a new Application in-situ
+ * @todo see if we can get rid of container dependency..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GenerateDynamicBundleCommand extends ContainerAwareCommand
+class GenerateDynamicBundleCommand extends Command
 {
-
     private $bundleBundleNamespace;
     private $bundleBundleDir;
     private $bundleBundleClassname;
     private $bundleBundleClassfile;
     private $bundleBundleList = array();
+    private $container;
+    private $process;
 
     /**
      * {@inheritDoc}
@@ -88,6 +75,40 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
                  'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
              );
+    }
+
+    /**
+     * set container
+     *
+     * @param mixed $container container
+     *
+     * @return void
+     */
+    public function setContainer($container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * get container
+     *
+     * @return Container container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * Set process
+     *
+     * @param mixed $process process
+     *
+     * @return void
+     */
+    public function setProcess($process)
+    {
+        $this->process = $process;
     }
 
     /**
@@ -250,6 +271,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
              * so here we merge the generated validation.xml we saved in the loop before back into the
              * final validation.xml again. the final result should be one validation.xml including all
              * the validation rules for all the documents in this bundle.
+             * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
              */
             if (count($this->validationXmlNodes) > 0) {
                 $validationXml = $this->getGeneratedValidationXmlPath($namespace);
@@ -357,9 +379,14 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             )
         );
 
-        passthru($cmd, $exitCode);
+        $this->process->setCommandLine($cmd);
+        $this->process->run();
 
-        return $exitCode;
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
+        }
+
+        return $this->process->getExitCode();
     }
 
     /**
@@ -404,6 +431,18 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
     private function generateBundleBundleClass()
     {
         $dbbGenerator = new DynamicBundleBundleGenerator();
+
+        // add optional bundles if defined by parameter.
+        if ($this->getContainer()->hasParameter('generator.bundlebundle.additions')) {
+            $additions = json_decode(
+                $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+                true
+            );
+            if (is_array($additions)) {
+                $dbbGenerator->setAdditions($additions);
+            }
+        }
+
         $dbbGenerator->generate(
             $this->bundleBundleList,
             $this->bundleBundleNamespace,
@@ -476,6 +515,7 @@ class GenerateDynamicBundleCommand extends ContainerAwareCommand
             }
 
             $thisFilename = tempnam(sys_get_temp_dir(), 'mongoBundle_');
+            // @todo use symfony tools to write this
             file_put_contents($thisFilename, json_encode($doc));
 
             $files[] = $thisFilename;

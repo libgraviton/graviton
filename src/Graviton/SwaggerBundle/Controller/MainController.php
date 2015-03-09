@@ -7,6 +7,7 @@ namespace Graviton\SwaggerBundle\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * A controller that generates a swagger conform API specification.
@@ -34,7 +35,11 @@ class MainController implements ContainerAwareInterface
 
         $response->setContent(json_encode($apidocGenerator->getSwaggerSpec()));
 
-        return $response;
+        return $this->render(
+            'GravitonSwaggerBundle:Main:index.json.twig',
+            array('response' => $response->getContent()),
+            $response
+        );
     }
 
     /**
@@ -57,5 +62,19 @@ class MainController implements ContainerAwareInterface
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
+    }
+
+    /**
+     * Renders a view.
+     *
+     * @param string   $view       The view name
+     * @param array    $parameters An array of parameters to pass to the view
+     * @param Response $response   A response instance
+     *
+     * @return Response A Response instance
+     */
+    public function render($view, array $parameters = array(), Response $response = null)
+    {
+        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
     }
 }

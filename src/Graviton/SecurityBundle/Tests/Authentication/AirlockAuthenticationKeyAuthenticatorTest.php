@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
  */
 class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
 {
-
+    /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
     private $logger;
 
     /**
@@ -27,8 +27,9 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
      */
     protected function setUp()
     {
+        /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-            ->setMethods(array('warning'))
+            ->setMethods(array('warning', 'info'))
             ->getMockForAbstractClass();
     }
 
@@ -196,12 +197,12 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
      */
     public function testOnAuthenticationFailure()
     {
-        $exceptionMock = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
+        $exceptionDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
             ->disableOriginalConstructor()
             ->setMethods(array('getMessageKey'))
             ->getMock();
-        $exceptionMock
-            ->expects($this->exactly(2))
+        $exceptionDouble
+            ->expects($this->once())
             ->method('getMessageKey')
             ->will($this->returnValue('test_message'));
 
@@ -211,7 +212,7 @@ class AirlockAuthenticationKeyAuthenticatorTest extends \PHPUnit_Framework_TestC
             $this->logger
         );
 
-        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionMock);
+        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionDouble);
 
         $this->assertEquals('test_message', $response->getContent());
         $this->assertEquals(511, $response->getStatusCode());

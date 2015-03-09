@@ -16,7 +16,7 @@ parameters:
     mongodb.default.server.db: db
     mongodb.default.server.uri: 'mongodb://localhost:27017'
     graviton.log.elasticsearch.host: 'http://elasticsearch.beta.scapp.io:80'
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: null
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     vcap.services: null

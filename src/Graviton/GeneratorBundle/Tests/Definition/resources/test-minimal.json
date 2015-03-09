@@ -1,0 +1,12 @@
+{
+  "id": "NoController",
+  "description": "NoController",
+  "service": {
+    "readOnly": true
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": []
+  }
+}

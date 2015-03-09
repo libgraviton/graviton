@@ -40,10 +40,5 @@
       <call method="setContainer"><argument type="service" id="service_container"></argument></call>
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
-
-    <!-- Default exception listener -->
-    <service id="kernel.listener.graviton_exception_kernel_exception" class="%kernel.listener.graviton_exception_kernel_exception.class%">
-      <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
-    </service>
   </services>
 </container>

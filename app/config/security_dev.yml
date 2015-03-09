@@ -21,7 +21,7 @@
 #            stateless: true
 #            simple_preauth:
 #                authenticator: graviton_airlock_authentication_key_authenticator
-#
+
 #    # with these settings you can restrict or allow access for different parts
 #    # of your application based on roles, ip, host or methods
 #    # http://symfony.com/doc/current/cookbook/security/access_control.html

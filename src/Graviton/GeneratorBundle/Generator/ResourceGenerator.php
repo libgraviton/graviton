@@ -229,6 +229,21 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
+        $this->generateServices($parameters, $dir, $document, $withRepository);
+    }
+
+    /**
+     * update xml services
+     *
+     * @param array   $parameters     twig parameters
+     * @param string  $dir            base bundle dir
+     * @param string  $document       document name
+     * @param boolean $withRepository generate repository class
+     *
+     * @return void
+     */
+    protected function generateServices($parameters, $dir, $document, $withRepository)
+    {
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
