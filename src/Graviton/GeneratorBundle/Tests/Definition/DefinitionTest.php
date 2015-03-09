@@ -15,6 +15,8 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
 class DefinitionTest extends \PHPUnit_Framework_TestCase
 {
 
+    private $emptyPath;
+    private $stringPath;
     private $fullDefPath;
     private $minimalPath;
     private $noIdPath;
@@ -30,6 +32,8 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->emptyPath = __DIR__.'/resources/test-empty.json';
+        $this->stringPath = __DIR__.'/resources/test-string.json';
         $this->fullDefPath = __DIR__.'/resources/test-full.json';
         $this->minimalPath = __DIR__.'/resources/test-minimal.json';
         $this->noIdPath = __DIR__.'/resources/test-noid.json';
@@ -50,6 +54,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     {
         new JsonDefinition($this->invalidPath);
     }
+
     /**
      * inexistent
      *
@@ -60,6 +65,30 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     public function testInexistentFile()
     {
         new JsonDefinition($this->invalidPath.'suffix');
+    }
+
+    /**
+     * empty
+     *
+     * @expectedException \Exception
+     *
+     * @return void
+     */
+    public function testEmptyFile()
+    {
+        new JsonDefinition($this->emptyPath);
+    }
+
+    /**
+     * string file
+     *
+     * @expectedException \Exception
+     *
+     * @return void
+     */
+    public function testStringFile()
+    {
+        new JsonDefinition($this->stringPath);
     }
 
     /**

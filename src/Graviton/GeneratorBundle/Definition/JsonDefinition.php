@@ -62,7 +62,7 @@ class JsonDefinition
 
         $this->doc = json_decode(file_get_contents($this->filename));
 
-        if (empty($this->doc)) {
+        if (empty($this->doc) || !is_object($this->doc)) {
             throw new FileNotFoundException(sprintf('Could not load %s', $filename));
         }
     }
