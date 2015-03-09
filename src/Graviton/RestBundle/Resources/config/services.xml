@@ -165,5 +165,11 @@
             <argument type="service" id="logger" />
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
+
+        <!-- (de)serialization handler for our own types -->
+        <service id="graviton.rest.serializerhandler.purifiedhtml" class="Graviton\RestBundle\Serializer\SerializerHandler">
+            <tag name="jms_serializer.handler" type="Graviton\RestBundle\Document\PurifiedHtml" format="json" />
+        </service>
+
     </services>
 </container>

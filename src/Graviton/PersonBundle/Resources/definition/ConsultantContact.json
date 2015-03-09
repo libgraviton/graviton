@@ -1,0 +1,72 @@
+{
+  "id": "ConsultantContact",
+  "description": "An API allowing to contact consultants.",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/person/contact/consultant/",
+    "baseController": "\\Graviton\\PersonBundle\\Controller\\ConsultantContactController",
+    "fixtures": []
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier for an item."
+      },
+      {
+        "name": "senderName",
+        "type": "varchar",
+        "title": "Sender name",
+        "description": "Name of the contact initiator",
+        "required": true
+      },
+      {
+        "name": "senderEmail",
+        "type": "varchar",
+        "title": "Sender email",
+        "description": "E-Mail of the sender"
+      },
+      {
+        "name": "senderPhone",
+        "type": "varchar",
+        "title": "Sender Phone",
+        "description": "Phone of the sender"
+      },
+      {
+        "name": "comment",
+        "type": "class:Graviton\\RestBundle\\Document\\PurifiedHtml",
+        "title": "Comment",
+        "description": "Comment",
+        "required": true
+      },
+      {
+        "name": "desiredContactDate",
+        "type": "datetime",
+        "title": "Desired Contact Date",
+        "description": "When initiator wants consultant to contact"
+      },
+      {
+        "name": "desiredContactTime",
+        "type": "datetime",
+        "title": "Desired Contact Date",
+        "description": "When initiator wants consultant to contact"
+      },
+      {
+        "name": "additionalData",
+        "type": "object",
+        "title": "Additional data",
+        "description": "Additional submitted data"
+      },
+      {
+        "name": "isProcessed",
+        "type": "boolean",
+        "title": "Is processed",
+        "description": "true if the contact request has been sent."
+      }
+    ]
+  }
+}
