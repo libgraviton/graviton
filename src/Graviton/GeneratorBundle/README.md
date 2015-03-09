@@ -1,6 +1,6 @@
 # Graviton GeneratorBundle
 
-If you are prompted for a config type you should always choose xml
+If you are prompted for a config type you should always choose xml 
 since xml is the only format we are currently supporting. If you
 use other formats, chances are you will have to fix and/or implement
 features that where only added to the xml templates.
