@@ -6,8 +6,6 @@ parameters:
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
 
-    generator.bundlebundle.additions: false
-
     # service info injected by cloudfoundry
     vcap.services: ~
 
