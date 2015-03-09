@@ -14,6 +14,7 @@
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validator\JsonInput</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
+        <parameter key="graviton.rest.services" type="collection"/>
     </parameters>
     <services>
         <!-- Serializer / Serializer context -->
@@ -38,14 +39,10 @@
             </call>
         </service>
 
-
         <service id="graviton.rest.doctrine" alias="doctrine"/>
         <service id="graviton.rest.validator" alias="validator"/>
         <service id="graviton.rest.router" alias="router"/>
-        <service id="graviton.rest.request"
-                 class="%graviton.rest.request.class%"
-                 factory-service="request_stack"
-                 factory-method="getCurrentRequest"/>
+
         <!-- Pagination -->
         <service id="graviton.rest.paginator" alias="knp_paginator"/>
 
@@ -56,9 +53,7 @@
         <!-- Routing loader -->
         <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
             <argument type="service" id="graviton.rest.routing.collection"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
+            <argument>%graviton.rest.services%</argument>
             <tag name="routing.loader"/>
         </service>
 
@@ -72,7 +67,7 @@
         <!-- Model -->
         <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel"/>
 
-        <!-- Response object with scope request (get a new one for each request) -->
+        <!-- Response object wrapper with scope request (get a new one for each request) -->
         <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
         </service>
 

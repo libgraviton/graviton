@@ -47,4 +47,26 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
         $this->assertContains(new MisdGuzzleBundle(), $result, '', false, false);
         $this->assertContains(new KnpPaginatorBundle(), $result, '', false, false);
     }
+
+    /**
+     * Verifies the correct behavior of build()
+     *
+     * @return void
+     */
+    public function testBuild()
+    {
+        $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerBuilder')
+            ->disableOriginalConstructor()
+            ->setMethods(array('addCompilerPass'))
+            ->getMock();
+        $containerDouble
+            ->expects($this->once())
+            ->method('addCompilerPass')
+            ->with(
+                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass')
+            );
+
+        $bundle = new GravitonRestBundle();
+        $bundle->build($containerDouble);
+    }
 }

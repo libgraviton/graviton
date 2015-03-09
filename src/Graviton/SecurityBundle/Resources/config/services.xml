@@ -60,5 +60,14 @@
             <tag name="console.command"/>
         </service>
 
+        <!--
+            Authentication logger
+        -->
+        <service id="graviton.security.authentication.listener"
+                 class="Graviton\SecurityBundle\Listener\AuthenticationLogger">
+            <argument type="service" id="logger" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
     </services>
 </container>

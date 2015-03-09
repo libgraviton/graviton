@@ -5,12 +5,7 @@
 
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -20,7 +15,7 @@ use Symfony\Component\Routing\RouteCollection;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class BasicLoader extends Loader implements ContainerAwareInterface
+class BasicLoader extends Loader
 {
     /**
      * @var boolean
@@ -28,25 +23,27 @@ class BasicLoader extends Loader implements ContainerAwareInterface
     private $loaded = false;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var \Symfony\Component\Routing\RouteCollection
      */
     private $routes;
 
     /**
+     * @var array
+     */
+    private $services;
+
+    /**
      * Constructor.
      *
-     * @param \Symfony\Component\Routing\RouteCollection $routes route collection
+     * @param \Symfony\Component\Routing\RouteCollection $routes   route collection
+     * @param array                                      $services configs for all services tagged as graviton.rest
      *
      * @return BasicLoader
      */
-    public function __construct($routes)
+    public function __construct($routes, $services)
     {
         $this->routes = $routes;
+        $this->services = $services;
     }
 
     /**
@@ -63,61 +60,13 @@ class BasicLoader extends Loader implements ContainerAwareInterface
             throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
 
-        $container = $this->getContainerBuilder();
-        foreach ($container->findTaggedServiceIds('graviton.rest') as $service => $serviceConfig) {
+        foreach ($this->services as $service => $serviceConfig) {
             $this->loadService($service, $serviceConfig);
         }
 
         $this->loaded = true;
 
         return $this->routes;
-    }
-
-    /**
-     * Loads the ContainerBuilder from the cache.
-     *
-     * @return ContainerBuilder
-     *
-     * @throws \LogicException
-     */
-    protected function getContainerBuilder()
-    {
-        if (!is_file(
-            $cachedFile = $this->getContainer()
-                               ->getParameter('debug.container.dump')
-        )
-        ) {
-            throw new \LogicException('Debug information about the container could not be found.');
-        }
-
-        $container = new ContainerBuilder();
-
-        $loader = new XmlFileLoader($container, new FileLocator());
-        $loader->load($cachedFile);
-
-        return $container;
-    }
-
-    /**
-     * get the container
-     *
-     * @return ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * set container
-     *
-     * @param ContainerInterface $container global container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 
     /**

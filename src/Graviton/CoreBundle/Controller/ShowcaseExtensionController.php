@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -35,14 +36,15 @@ class ShowcaseExtensionController extends RestController
      * the basic workflow is to define the entire structure in the json file, then here
      * (overriding) you *only* modify and alter data - don't add new properties.
      *
+     * @param Request $request Current http request
+     *
+     * @throws \Exception
+     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function allAction()
+    public function allAction(Request $request)
     {
-        // to just get parent reponse
-        // $response = parent::allAction();
-
-        $data = $this->getModel()->findAll($this->getRequest());
+        $data = $this->getModel()->findAll($request);
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
