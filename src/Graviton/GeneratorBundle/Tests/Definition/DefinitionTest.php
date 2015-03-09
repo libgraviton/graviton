@@ -46,7 +46,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     /**
      * invalid handling
      *
-     * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
+     * @expectedException \RuntimeException
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     /**
      * inexistent
      *
-     * @expectedException \Exception
+     * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
      *
      * @return void
      */
@@ -70,7 +70,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     /**
      * empty
      *
-     * @expectedException \Exception
+     * @expectedException \RuntimeException
      *
      * @return void
      */
@@ -82,7 +82,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     /**
      * string file
      *
-     * @expectedException \Exception
+     * @expectedException \RuntimeException
      *
      * @return void
      */

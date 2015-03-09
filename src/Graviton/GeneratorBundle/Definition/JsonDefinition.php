@@ -52,7 +52,7 @@ class JsonDefinition
         $this->filename = $filename;
 
         if (!file_exists($this->filename)) {
-            throw new Exception(
+            throw new FileNotFoundException(
                 sprintf(
                     'File %s doesn\'t exist',
                     $this->filename
@@ -63,7 +63,7 @@ class JsonDefinition
         $this->doc = json_decode(file_get_contents($this->filename));
 
         if (empty($this->doc) || !is_object($this->doc)) {
-            throw new FileNotFoundException(sprintf('Could not load %s', $filename));
+            throw new \RuntimeException(sprintf('Could not load %s', $filename));
         }
     }
 
