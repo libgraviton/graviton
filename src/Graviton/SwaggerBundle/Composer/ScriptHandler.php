@@ -1,9 +1,9 @@
 <?php
 /**
- * composer scripthandler
+ * swagger composer scripthandler
  */
 
-namespace Graviton\GeneratorBundle\Composer;
+namespace Graviton\SwaggerBundle\Composer;
 
 use Graviton\CoreBundle\Composer\ScriptHandlerBase;
 use Symfony\Component\Process\Process;
@@ -19,35 +19,35 @@ use Composer\Script\CommandEvent;
  */
 class ScriptHandler extends ScriptHandlerBase
 {
+
     /**
-     * Generates dynamic bundles
+     * Copies swagger-ui to web/explorer
      *
      * @param CommandEvent $event Event
      *
      * @return void
      */
-    public static function generateDynamicBundles(CommandEvent $event)
+    public static function copySwagger(CommandEvent $event)
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:generate:dynamicbundles').' --json';
+        $cmd = escapeshellarg('graviton:swagger:copy');
 
         self::executeCommand($event, $consolePath, $cmd);
     }
 
     /**
-     * Cleans existing dynamic bundles
+     * Generates swagger.json
      *
      * @param CommandEvent $event Event
      *
      * @return void
      */
-    public static function cleanDynamicBundles(CommandEvent $event)
+    public static function generateSwaggerJson(CommandEvent $event)
     {
         $options = self::getOptions($event);
-
         $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:clean:dynamicbundles');
+        $cmd = escapeshellarg('graviton:swagger:generate');
 
         self::executeCommand($event, $consolePath, $cmd);
     }

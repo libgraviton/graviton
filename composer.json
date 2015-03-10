@@ -59,6 +59,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ],
         "post-update-cmd": [
@@ -67,6 +69,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ]
     },
