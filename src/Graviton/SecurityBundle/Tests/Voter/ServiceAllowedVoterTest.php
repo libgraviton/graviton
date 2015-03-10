@@ -13,39 +13,62 @@ use Graviton\TestBundle\Test\GravitonTestCase;
  */
 class ServiceAllowedVoterTest extends GravitonTestCase
 {
-    /**
-     * validate supportsAttribute
-     *
-     * @return void
-     */
-    public function testSupportsAttribute()
-    {
-        $voter = new ServiceAllowedVoter();
+    /** @var array  */
+    private $whitelist = array();
 
-        $this->assertTrue($voter->supportsAttribute('view'));
+    /**
+     * Test setup
+     */
+    protected function setup()
+    {
+        $this->whitelist = array('/app/core');
     }
 
     /**
-     * validate supportsClass
-     *
-     * @return void
+     * verifies getSupportedAttributes()
      */
-    public function testSupportsClass()
+    public function testGetSupportedAttributes()
     {
-        $voter = new ServiceAllowedVoter();
+        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
+            ->setConstructorArgs(array($this->whitelist))
+            ->setMethods(array('getSupportedAttributes'))
+            ->getProxy();
 
-        $this->assertTrue($voter->supportsClass('\stdClass'));
+        $this->assertContains('VIEW', $voter->getSupportedAttributes());
     }
 
     /**
-     * validate supportsClass
-     *
-     * @return void
+     * verifies getSupportedAttributes()
      */
-    public function testVote()
+    public function testGetSupportedClasses()
     {
-        $voter = new ServiceAllowedVoter();
+        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
+            ->setConstructorArgs(array($this->whitelist))
+            ->setMethods(array('getSupportedClasses'))
+            ->getProxy();
 
+        $this->assertContains(
+            'Symfony\Component\HttpFoundation\Request',
+            $voter->getSupportedClasses()
+        );
+    }
 
+    /**
+     * verifies isGranted()
+     */
+    public function testIsGranted()
+    {
+        $request = $this->getSimpleTestDouble('\Symfony\Component\HttpFoundation\Request', array('getPathInfo'));
+        $request
+            ->expects($this->once())
+            ->method('getPathInfo')
+            ->willReturn('/app/core');
+
+        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
+            ->setConstructorArgs(array($this->whitelist))
+            ->setMethods(array('isGranted'))
+            ->getProxy();
+
+        $this->assertTrue($voter->isGranted('VIEW', $request));
     }
 }
