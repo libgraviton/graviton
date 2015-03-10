@@ -13,20 +13,6 @@
     "autoload": {
         "psr-0": {"": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "libgraviton/swagger-ui",
-                "version": "dev-master",
-                "source": {
-                    "url": "https://github.com/libgraviton/swagger-ui.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
-        }
-    ],
     "require": {
         "php": "~5.4",
         "symfony/symfony": "2.6.*",
@@ -51,7 +37,6 @@
         "php-jsonpointer/php-jsonpointer": "1.1.*@dev",
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "graviton/php-rql-parser": "~1.0",
-        "libgraviton/swagger-ui": "dev-master",
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2"
     },
@@ -74,7 +59,6 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ],
@@ -84,7 +68,6 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ]
