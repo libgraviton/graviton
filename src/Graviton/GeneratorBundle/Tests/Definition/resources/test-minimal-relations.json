@@ -1,0 +1,41 @@
+{
+  "id": "Relations",
+  "description": "Relations",
+  "isSubDocument": true,
+  "service": {
+    "routerBase": "/hans/showcase",
+    "readOnly": true
+  },
+  "target": {
+    "indexes": [],
+    "relations": [
+      {
+        "type": "embed",
+        "collectionName": "Entity1",
+        "localProperty": "anotherInt",
+        "localValueField": "anotherInt",
+        "foreignProperty": "_id"
+      },
+      {
+        "type": "ref",
+        "collectionName": "Entity2",
+        "localProperty": "someFloatyDouble",
+        "localValueField": "someFloatyDouble"
+      }
+    ],
+    "fields": [
+      {
+        "name": "anotherInt",
+        "type": "INT",
+        "description": "Just a nice integer",
+        "required": true
+      },
+      {
+        "name": "someFloatyDouble",
+        "type": "double",
+        "title": "Floaty double",
+        "description": "An int with precision.."
+      }
+    ]
+  }
+}

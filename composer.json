@@ -52,7 +52,8 @@
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "graviton/php-rql-parser": "~1.0",
         "libgraviton/swagger-ui": "dev-master",
-        "exercise/htmlpurifier-bundle": "~0.1"
+        "exercise/htmlpurifier-bundle": "~0.1",
+        "egulias/email-validator": "~1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -66,21 +67,25 @@
             "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
         "post-install-cmd": [
-            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ],
         "post-update-cmd": [
-            "sh src/Graviton/SwaggerBundle/Resources/scripts/swagger-copy.sh",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::copySwagger",
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
         ]
     },
