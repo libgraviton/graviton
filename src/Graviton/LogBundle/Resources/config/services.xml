@@ -8,7 +8,7 @@
     <parameter key="graviton.log.elasticsearch.client.class">Elasticsearch\Client</parameter>
     <parameter key="graviton.log.elasticsearch.client.arguments" type="collection">
       <parameter key="hosts" type="collection">
-        <parameter>%graviton.log.elasticsearch.host%</parameter>
+        <parameter>localhost</parameter>
       </parameter>
     </parameter>
   </parameters>

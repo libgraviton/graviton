@@ -10,6 +10,7 @@
                 "id": 500,
                 "anotherInt": 6555488894525,
                 "testField": {"en": "a test string"},
+                "email": "joe@example.com",
                 "someOtherField": {"en": "another good ol' test string"},
                 "aBoolean": false,
                 "optionalBoolean": true,
@@ -73,6 +74,7 @@
                 "id": 600,
                 "anotherInt": 544615898841,
                 "testField": {"en": "some text"},
+                "email": "dave@example-company.com",
                 "someOtherField": {"en": "this is a text from another field"},
                 "aBoolean": true,
                 "someFloatyDouble": 458.114,
@@ -143,6 +145,20 @@
                 "description": "A lengthy and detailed description.",
                 "required": true,
                 "translatable": true
+            },
+            {
+                "name": "email",
+                "type": "varchar",
+                "title": "email",
+                "description": "A field containing a email Constraint",
+                "constraints": [
+                    {
+                        "name": "Email",
+                        "options": [
+                            {"name": "strict", "value": "true"}
+                        ]
+                    }
+                ]
             },
             {
                 "name": "someOtherField",

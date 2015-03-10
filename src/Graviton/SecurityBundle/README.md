@@ -61,6 +61,27 @@ Authorization
 
 Voter
 ~~~~~
+- OwnContextVoter
+Acting on either the Account (GravitonDyn\AccountBundle\Document\Account) or the 
+Customer (GravitonDyn\CustomerBundle\Document\Customer) object, this voter determines depending
+on the provided authentication token, if the current user is granted to proceed or not.
+
+Example:
+
+```php
+$authorizationChecker = $this->container->get('security.authorization_checker');
+$account = $this->container->get('security.token.storage')
+    ->getToken()
+    ->getUser()
+    ->getContract()
+    ->getAccount();
+  
+// $request received from ParameterConverter of the action
+if (false === $authorizationChecker->isGranted('VIEW', $account)) {
+    throw new AccessDeniedException('You are not allowed to be here.');
+}  
+```
+
 - ServiceAllowedVoter
 Acting on the Request object (Symfony\Component\HttpFoundation\Request) this voter determines depending
 on a configured whitelist (graviton.security.services.whitelist), if a service may be called or not.
@@ -74,6 +95,7 @@ parameters:
 ```
 
 Example:
+
 ```php
 
   $authorizationChecker = $this->container->get('security.authorization_checker');

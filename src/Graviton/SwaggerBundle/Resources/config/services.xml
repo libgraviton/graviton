@@ -9,14 +9,6 @@
 
     <services>
 
-        <!-- main controller -->
-        <service id="graviton.swagger.controller.main"
-                 class="%graviton.swagger.controller.main.class%">
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
         <!-- swagger service - a service that generates swagger spec -->
         <service id="graviton.rest.apidoc" class="Graviton\SwaggerBundle\Service\Swagger">
             <call method="setContainer">
@@ -28,6 +20,38 @@
             <call method="setSchemaModel">
                 <argument type="service" id="graviton.schema.model.schemamodel"></argument>
             </call>
+        </service>
+
+        <service id="graviton.swagger.command.swaggercopy.filesystem"
+                 class="Symfony\Component\Filesystem\Filesystem">
+        </service>
+
+        <service id="graviton.swagger.command.swaggercopy"
+                 class="Graviton\SwaggerBundle\Command\SwaggerCopyCommand">
+            <call method="setRootDir">
+                <argument>%kernel.root_dir%</argument>
+            </call>
+            <call method="setFilesystem">
+                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+            </call>
+            <tag name="console.command" />
+        </service>
+
+        <service id="graviton.swagger.command.swaggergenerate"
+                 class="Graviton\SwaggerBundle\Command\SwaggerGenerateCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+            <call method="setRootDir">
+                <argument>%kernel.root_dir%</argument>
+            </call>
+            <call method="setFilesystem">
+                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+            </call>
+            <call method="setApidoc">
+                <argument type="service" id="graviton.rest.apidoc"/>
+            </call>
+            <tag name="console.command" />
         </service>
 
     </services>
