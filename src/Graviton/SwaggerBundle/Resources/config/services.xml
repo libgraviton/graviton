@@ -30,6 +30,21 @@
             </call>
         </service>
 
+        <service id="graviton.swagger.command.swaggercopy.filesystem"
+                 class="Symfony\Component\Filesystem\Filesystem">
+        </service>
+
+        <service id="graviton.swagger.command.swaggercopy"
+                 class="Graviton\SwaggerBundle\Command\SwaggerCopyCommand">
+            <call method="setRootDir">
+                <argument>%kernel.root_dir%</argument>
+            </call>
+            <call method="setFilesystem">
+                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+            </call>
+            <tag name="console.command" />
+        </service>
+
     </services>
 
 </container>
