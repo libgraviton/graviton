@@ -4,6 +4,7 @@ app/bootstrap.php.cache
 app/check.php
 app/SymfonyRequirements.php
 web/bundles
+web/swagger.json
 src/Graviton/I18nBundle/Resources/translations/*.odm
 vendor/
 *.phar
