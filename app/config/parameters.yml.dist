@@ -16,6 +16,7 @@ parameters:
     graviton.log.elasticsearch.host: ~
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
+    graviton.security.services.whitelist: ~
 
     vcap.services: ~
 
