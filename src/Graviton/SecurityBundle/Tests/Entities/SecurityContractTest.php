@@ -115,7 +115,7 @@ class SecurityContractTest extends WebTestCase
      */
     public function testGetContractNumber()
     {
-        $contractDouble =$this->getContractMock(array('getNumber'));
+        $contractDouble = $this->getContractMock(array('getNumber'));
         $contractDouble
             ->expects($this->once())
             ->method('getNumber')
@@ -124,5 +124,18 @@ class SecurityContractTest extends WebTestCase
         $entity = new SecurityContract($contractDouble);
 
         $this->assertEquals(123456, $entity->getContractNumber());
+    }
+
+    /**
+     * test contract retrieval.
+     *
+     * @return void
+     */
+    public function testGetContract()
+    {
+        $contractDouble = $this->getContractMock();
+        $entity = new SecurityContract($contractDouble);
+
+        $this->assertSame($contractDouble, $entity->getContract());
     }
 }

@@ -59,7 +59,28 @@ The service referenced in the parameter must implement the »\Graviton\RestBundl
 Authorization
 =============
 
-tbd
+Voter
+~~~~~
+- OwnContextVoter
+Acting on either the Account (GravitonDyn\AccountBundle\Document\Account) or the 
+Customer (GravitonDyn\CustomerBundle\Document\Customer) object, this voter determines depending
+on the provided authentication token, if the current user is granted to proceed or not.
+
+Example:
+
+```
+$authorizationChecker = $this->container->get('security.authorization_checker');
+$account = $this->container->get('security.token.storage')
+    ->getToken()
+    ->getUser()
+    ->getContract()
+    ->getAccount();
+  
+// $request received from ParameterConverter of the action
+if (false === $authorizationChecker->isGranted('VIEW', $account)) {
+    throw new AccessDeniedException('You are not allowed to be here.');
+}  
+```
 
 Dependencies
 ------------
