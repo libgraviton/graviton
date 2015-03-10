@@ -45,6 +45,23 @@
             <tag name="console.command" />
         </service>
 
+        <service id="graviton.swagger.command.swaggergenerate"
+                 class="Graviton\SwaggerBundle\Command\SwaggerGenerateCommand">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+            <call method="setRootDir">
+                <argument>%kernel.root_dir%</argument>
+            </call>
+            <call method="setFilesystem">
+                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+            </call>
+            <call method="setApidoc">
+                <argument type="service" id="graviton.rest.apidoc"/>
+            </call>
+            <tag name="console.command" />
+        </service>
+
     </services>
 
 </container>
