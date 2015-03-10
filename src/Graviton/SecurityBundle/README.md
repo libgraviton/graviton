@@ -59,7 +59,30 @@ The service referenced in the parameter must implement the »\Graviton\RestBundl
 Authorization
 =============
 
-tbd
+Voter
+~~~~~
+- ServiceAllowedVoter
+Acting on the Request object (Symfony\Component\HttpFoundation\Request) this voter determines depending
+on a configured whitelist (graviton.security.services.whitelist), if a service may be called or not.
+
+```yml
+parameters: 
+  graviton.security.services.whitelist: 
+    main: /
+    core: /core/app
+    products: /core/product 
+```
+
+Example:
+```php
+
+  $authorizationChecker = $this->container->get('security.authorization_checker');
+
+  // $request received from ParameterConverter of the action.
+  if (false === $authorizationChecker->isGranted('VIEW', $request)) {
+    throw new AccessDeniedException('You are not allowed to be here.');
+  }  
+```
 
 Dependencies
 ------------
