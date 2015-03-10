@@ -16,8 +16,8 @@ parameters:
     mongodb.default.server.db: db
     mongodb.default.server.uri: 'mongodb://localhost:27017'
     graviton.log.elasticsearch.host: 'http://elasticsearch.beta.scapp.io:80'
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
-    graviton.authentication.user_provider.model: gravitondyn.contract.model.contract
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
+    graviton.authentication.user_provider.model: null
     graviton.security.services.whitelist:
       main: /
       core: /core/app
