@@ -5,9 +5,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Event\RestEvent;
@@ -19,12 +18,12 @@ use Graviton\RestBundle\Event\RestEvent;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class PagingLinkResponseListener implements ContainerAwareInterface
+class PagingLinkResponseListener
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var Router
      */
-    private $container;
+    private $router;
 
     /**
      * @var \Graviton\RestBundle\HttpFoundation\LinkHeader
@@ -32,15 +31,13 @@ class PagingLinkResponseListener implements ContainerAwareInterface
     private $linkHeader;
 
     /**
-     * {@inheritDoc}
-     *
-     * @param ContainerInterface $container service_container
+     * @param Router $router router
      *
      * @return void
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setRouter($router)
     {
-        $this->container = $container;
+        $this->router = $router;
     }
 
     /**
@@ -123,12 +120,11 @@ class PagingLinkResponseListener implements ContainerAwareInterface
      */
     private function generateLink($routeName, $page, $perPage, $type, $additionalParams = array())
     {
-        $router = $this->container->get('router');
         $parameters = array_merge($additionalParams, array('page' => $page));
         if ($perPage) {
             $parameters['perPage'] = $perPage;
         }
-        $url = $router->generate($routeName, $parameters, true);
+        $url = $this->router->generate($routeName, $parameters, true);
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }
 }

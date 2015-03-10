@@ -5,10 +5,9 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Event\RestEvent;
@@ -20,23 +19,21 @@ use Graviton\RestBundle\Event\RestEvent;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class SelfLinkResponseListener implements ContainerAwareInterface
+class SelfLinkResponseListener
 {
     /**
-     * @private reference to service_container
+     * @var Router
      */
-    private $container;
+    private $router;
 
     /**
-     * {@inheritDoc}
-     *
-     * @param ContainerInterface $container service_container
+     * @param Router $router router
      *
      * @return void
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setRouter(Router $router)
     {
-        $this->container = $container;
+        $this->router = $router;;
     }
 
     /**
@@ -55,7 +52,6 @@ class SelfLinkResponseListener implements ContainerAwareInterface
 
         $response = $event->getResponse();
         $request = $event->getRequest();
-        $router = $this->container->get('router');
         $linkHeader = LinkHeader::fromResponse($response);
 
         // extract various info from route
@@ -77,7 +73,7 @@ class SelfLinkResponseListener implements ContainerAwareInterface
         $url = '';
 
         try {
-            $url = $router->generate($routeName, $this->generateParameters($routeType, $request), true);
+            $url = $this->router->generate($routeName, $this->generateParameters($routeType, $request), true);
         } catch (\Exception $e) {
             $addHeader = false;
         }
