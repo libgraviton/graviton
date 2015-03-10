@@ -77,6 +77,12 @@
             public="false">
             <tag name="security.voter" />
         </service>
+        <service id="graviton.security.access.service_allowed_voter"
+            class="Graviton\SecurityBundle\Voter\ServiceAllowedVoter"
+            public="false">
+            <argument>%graviton.security.services.whitelist%</argument>
+            <tag name="security.voter" />
+        </service>
 
     </services>
 </container>

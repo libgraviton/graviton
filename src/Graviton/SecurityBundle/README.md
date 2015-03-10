@@ -68,7 +68,7 @@ on the provided authentication token, if the current user is granted to proceed 
 
 Example:
 
-```
+```php
 $authorizationChecker = $this->container->get('security.authorization_checker');
 $account = $this->container->get('security.token.storage')
     ->getToken()
@@ -80,6 +80,30 @@ $account = $this->container->get('security.token.storage')
 if (false === $authorizationChecker->isGranted('VIEW', $account)) {
     throw new AccessDeniedException('You are not allowed to be here.');
 }  
+```
+
+- ServiceAllowedVoter
+Acting on the Request object (Symfony\Component\HttpFoundation\Request) this voter determines depending
+on a configured whitelist (graviton.security.services.whitelist), if a service may be called or not.
+
+```yml
+parameters: 
+  graviton.security.services.whitelist: 
+    main: /
+    core: /core/app
+    products: /core/product 
+```
+
+Example:
+
+```php
+
+  $authorizationChecker = $this->container->get('security.authorization_checker');
+
+  // $request received from ParameterConverter of the action.
+  if (false === $authorizationChecker->isGranted('VIEW', $request)) {
+    throw new AccessDeniedException('You are not allowed to be here.');
+  }  
 ```
 
 Dependencies
