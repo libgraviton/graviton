@@ -26,10 +26,8 @@ class SchemaContentTypeResponseListener
 
     /**
      * @param router $router router
-     *
-     * @return void
      */
-    public function setRouter(Router $router)
+    public function __construct(Router $router)
     {
         $this->router = $router;
     }

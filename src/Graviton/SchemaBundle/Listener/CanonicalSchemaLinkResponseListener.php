@@ -27,10 +27,8 @@ class CanonicalSchemaLinkResponseListener
 
     /**
      * @param Router $router router
-     *
-     * @return void
      */
-    public function setRouter($router)
+    public function __construct(Router $router)
     {
         $this->router = $router;
     }

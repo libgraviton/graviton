@@ -107,18 +107,14 @@
         <!-- Paging listener -->
         <service id="graviton.rest.listener.paginglinkresponselistener"
                  class="%graviton.rest.listener.paginglinkresponselistener.class%">
-            <call method="setRouter">
-                <argument type="service" id="router"></argument>
-            </call>
+            <argument type="service" id="router"></argument>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
         <!-- Self link response listener -->
         <service id="graviton.rest.listener.selflinkresponselistener"
                  class="%graviton.rest.listener.selflinkresponselistener.class%">
-            <call method="setRouter">
-                <argument type="service" id="router"></argument>
-            </call>
+            <argument type="service" id="router"></argument>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 

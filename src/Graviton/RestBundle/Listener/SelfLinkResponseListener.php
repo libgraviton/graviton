@@ -28,10 +28,8 @@ class SelfLinkResponseListener
 
     /**
      * @param Router $router router
-     *
-     * @return void
      */
-    public function setRouter(Router $router)
+    public function __construct(Router $router)
     {
         $this->router = $router;
     }
