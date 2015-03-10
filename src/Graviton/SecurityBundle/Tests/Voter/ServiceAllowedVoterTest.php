@@ -18,6 +18,8 @@ class ServiceAllowedVoterTest extends GravitonTestCase
 
     /**
      * Test setup
+     *
+     * @return void
      */
     protected function setup()
     {
@@ -26,6 +28,8 @@ class ServiceAllowedVoterTest extends GravitonTestCase
 
     /**
      * verifies getSupportedAttributes()
+     *
+     * @return void
      */
     public function testGetSupportedAttributes()
     {
@@ -39,6 +43,8 @@ class ServiceAllowedVoterTest extends GravitonTestCase
 
     /**
      * verifies getSupportedAttributes()
+     *
+     * @return void
      */
     public function testGetSupportedClasses()
     {
@@ -55,6 +61,8 @@ class ServiceAllowedVoterTest extends GravitonTestCase
 
     /**
      * verifies isGranted()
+     *
+     * @return void
      */
     public function testIsGranted()
     {
