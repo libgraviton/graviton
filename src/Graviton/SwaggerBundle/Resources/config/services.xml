@@ -9,14 +9,6 @@
 
     <services>
 
-        <!-- main controller -->
-        <service id="graviton.swagger.controller.main"
-                 class="%graviton.swagger.controller.main.class%">
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
         <!-- swagger service - a service that generates swagger spec -->
         <service id="graviton.rest.apidoc" class="Graviton\SwaggerBundle\Service\Swagger">
             <call method="setContainer">
