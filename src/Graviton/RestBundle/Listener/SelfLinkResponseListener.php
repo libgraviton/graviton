@@ -33,7 +33,7 @@ class SelfLinkResponseListener
      */
     public function setRouter(Router $router)
     {
-        $this->router = $router;;
+        $this->router = $router;
     }
 
     /**
