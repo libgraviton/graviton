@@ -85,7 +85,12 @@ class SwaggerCopyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $srcDir = $this->rootDir.'/../vendor/libgraviton/swagger-ui/dist/';
+        if (strpos($this->rootDir, 'vendor') === false) {
+            $srcDir = $this->rootDir.'/../vendor/libgraviton/swagger-ui/dist/';
+        } else {
+            $srcDir = $this->rootDir.'/../../../libgraviton/swagger-ui/dist/';
+        }
+
         $destDir = $this->rootDir.'/../web/explorer/';
 
         $this->filesystem->mirror($srcDir, $destDir);
