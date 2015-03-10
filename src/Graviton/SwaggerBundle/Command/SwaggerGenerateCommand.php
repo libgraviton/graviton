@@ -60,7 +60,7 @@ class SwaggerGenerateCommand extends Command
     {
         parent::configure();
 
-        $this->setName('graviton:swagger:generates')
+        $this->setName('graviton:swagger:generate')
              ->setDescription(
                  'Generates swagger.json in web dir'
              );
