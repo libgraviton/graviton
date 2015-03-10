@@ -191,7 +191,6 @@ class Swagger
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.'
         );
-        $ret['host'] = $_SERVER['HTTP_HOST'];
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');
 
