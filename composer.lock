@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f983b3cc4b841fdc76c08446a5499c9b",
+    "hash": "0ae5c5953f6212dd3e16da0cc1f8000b",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -282,7 +282,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -358,7 +358,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -1450,28 +1450,35 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "1.1.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "dae92e0f8add458cac242aff18d5bc5083750569"
+                "reference": "03786d93db1c10e52ded24dae5a57898967ad6d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/dae92e0f8add458cac242aff18d5bc5083750569",
-                "reference": "dae92e0f8add458cac242aff18d5bc5083750569",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/03786d93db1c10e52ded24dae5a57898967ad6d9",
+                "reference": "03786d93db1c10e52ded24dae5a57898967ad6d9",
                 "shasum": ""
             },
             "require": {
+                "doctrine/lexer": "~1.0",
                 "php": "~5.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "doctrine/data-fixtures": "~1.0",
+                "doctrine/mongodb-odm": "1.0.0-BETA11@dev",
+                "phpunit/phpunit": "*",
+                "squizlabs/php_codesniffer": "~2.2"
+            },
+            "suggest": {
+                "doctrine/mongodb-odm": "Needs ~1.0 if you want to use Graviton\\Rql\\Queriable\\MongoOdm."
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Graviton": "lib/"
+                "psr-4": {
+                    "Graviton\\Rql\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1494,7 +1501,46 @@
                 "rest",
                 "rql"
             ],
-            "time": "2015-02-18 13:10:42"
+            "time": "2015-03-10 23:07:20"
+        },
+        {
+            "name": "graviton/rql-parser-bundle",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
+                "reference": "d027fae99edc097cfcc5c7b55450c918c820541f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/d027fae99edc097cfcc5c7b55450c918c820541f",
+                "reference": "d027fae99edc097cfcc5c7b55450c918c820541f",
+                "shasum": ""
+            },
+            "require": {
+                "graviton/php-rql-parser": "dev-develop"
+            },
+            "require-dev": {
+                "symfony/framework-bundle": "~2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Graviton\\RqlParserBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/GravitonRqlParserBundle/graphs/contributors"
+                }
+            ],
+            "description": "Port of the php-rql-parser into the world of Symfony 2.",
+            "time": "2015-03-11 09:01:41"
         },
         {
             "name": "guzzle/guzzle",
@@ -1726,9 +1772,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -1768,7 +1814,7 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -1985,9 +2031,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2055,9 +2101,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2550,9 +2596,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2600,9 +2646,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -4494,7 +4540,8 @@
         "doctrine/mongodb-odm": 20,
         "doctrine/mongodb-odm-bundle": 20,
         "php-jsonpointer/php-jsonpointer": 20,
-        "php-jsonpatch/php-jsonpatch": 20
+        "php-jsonpatch/php-jsonpatch": 20,
+        "graviton/rql-parser-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
