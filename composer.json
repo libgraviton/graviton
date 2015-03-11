@@ -60,7 +60,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
+            "if [ -f ./vendor/bin/phpcs ]; then ./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards; fi"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -69,7 +69,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
+            "if [ -f ./vendor/bin/phpcs ]; then ./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards; fi"
         ]
     },
     "config": {
