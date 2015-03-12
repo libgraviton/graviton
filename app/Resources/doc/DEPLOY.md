@@ -56,7 +56,7 @@ purposes.
 ## Docker
 
 ```bash
-APP_NAME="graviton-master"
+APP_NAME="graviton"
 
 # install deps
 docker pull graviton/graviton:latest
@@ -81,4 +81,4 @@ This creates the following containers
 
 * ``graviton-app`` containing just the source and vendors
 * ``graviton-fpm`` running container that serves graviton using ``php:fpm``
-* ``gravtion-nginx` webserver in front of fpm to expose graviton
+* ``gravtion-nginx`` webserver in front of fpm to expose graviton
