@@ -9,15 +9,11 @@
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
-      <call method="setContainer">
-        <argument type="service" id="service_container"></argument>
-      </call>
+      <argument type="service" id="router"></argument>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.schema.listener.canonicalschemaresponse" class="%graviton.schema.listener.canonicalschemaresponse.class%">
-      <call method="setContainer">
-        <argument type="service" id="service_container"></argument>
-      </call>
+      <argument type="service" id="router"></argument>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.schema.model.schemamodel" class="%graviton.schema.model.schemamodel.class%">
