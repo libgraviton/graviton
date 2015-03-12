@@ -63,8 +63,8 @@ docker pull graviton/graviton:latest
 docker pull composer/composer:latest
 
 # create app volume container
-docker create --name $APP_NAME graviton:graviton:latest false
+docker create --name $APP_NAME graviton/graviton:latest false
 
 # install deps in app volume container
-docker run --volumes-from $APP_NAME composer/composer
+docker run --volumes-from $APP_NAME --rm composer/composer install
 ```
