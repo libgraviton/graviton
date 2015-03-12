@@ -1,6 +1,8 @@
 # Deploying
 
-Graviton supports Cloudfoundry out of the box.
+Graviton supports Cloudfoundry and Docker out of the box.
+
+## Cloudfoundry 
 
 You need to define a mongodb service before pushing. Check ``manifest.yml`` for it's name and
 redefine as needed.
@@ -50,3 +52,19 @@ php app/console doctrine:mongodb:fixtures:load
 
 You can also connect to your mongodb with other clients for maintenance
 purposes.
+
+## Docker
+
+```bash
+APP_NAME="graviton-master"
+
+# install deps
+docker pull graviton/graviton:latest
+docker pull composer/composer:latest
+
+# create app volume container
+docker create --name $APP_NAME graviton:graviton:latest false
+
+# install deps in app volume container
+docker run --volumes-from $APP_NAME composer/composer
+```
