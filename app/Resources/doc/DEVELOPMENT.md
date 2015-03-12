@@ -14,7 +14,7 @@ You can now start a development server.
 php app/console server:run
 ````
 
-Please run ``./vendor/bin/phpunit`` and ``sh dev-check.sh`` before
+Please run ``./vendor/bin/phpunit`` and ``composer check`` before
 commiting changes to ensure that travis will be ok with your changes.
 
 ## Code Generators
