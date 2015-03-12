@@ -5,9 +5,8 @@
 
 namespace Graviton\SchemaBundle\Listener;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -19,23 +18,19 @@ use Graviton\SchemaBundle\SchemaUtils;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
+class CanonicalSchemaLinkResponseListener
 {
     /**
-     * @private reference to service_container
+     * @var Router $router
      */
-    private $container;
+    private $router;
 
     /**
-     * {@inheritDoc}
-     *
-     * @param ContainerInterface $container service_container
-     *
-     * @return void
+     * @param Router $router router
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(Router $router)
     {
-        $this->container = $container;
+        $this->router = $router;
     }
 
     /**
@@ -50,11 +45,10 @@ class CanonicalSchemaLinkResponseListener implements ContainerAwareInterface
         $request = $event->getRequest();
         if ($request->attributes->get('schemaRequest', false)) {
             $response = $event->getResponse();
-            $router = $this->container->get('router');
             $linkHeader = LinkHeader::fromResponse($response);
 
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $url = $router->generate($routeName, array(), true);
+            $url = $this->router->generate($routeName, array(), true);
 
             // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));
