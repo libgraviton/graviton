@@ -44,7 +44,11 @@ class ShowcaseExtensionController extends RestController
      */
     public function allAction(Request $request)
     {
-        $data = $this->getModel()->findAll($request);
+        $data = array();
+
+        if($this->authorizationChecker->canView($request)) {
+            $data = $this->getModel()->findAll($request);
+        }
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)

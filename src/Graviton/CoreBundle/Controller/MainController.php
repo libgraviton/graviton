@@ -5,37 +5,37 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Graviton\SecurityBundle\Authorizator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 
 /**
- * MainController
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class MainController implements ContainerAwareInterface
+class MainController
 {
     /**
      * @var ContainerInterface service_container
      */
     private $container;
 
+    /** @var Authorizator */
+    private $authorizationChecker;
+
+
     /**
-     * {@inheritdoc}
-     *
-     * @param ContainerInterface $container service_container
-     *
-     * @return void
+     * @param ContainerInterface $container Symfony's DIC
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(ContainerInterface $container, Authorizator $autorizator)
     {
         $this->container = $container;
+        $this->authorizationChecker = $autorizator;
     }
 
     /**
@@ -43,13 +43,20 @@ class MainController implements ContainerAwareInterface
      *
      * @return Response $response Response with result or error
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        /** @var \Symfony\Component\Routing\Router $router */
-        $router = $this->container->get('router');
-
         /** @var Response $response */
         $response = $this->container->get("graviton.rest.response");
+
+        if (false === $this->authorizationChecker->canView($request)) {
+
+            $response->setStatusCode(Response::HTTP_FORBIDDEN);
+
+            return $response;
+        }
+
+        /** @var \Symfony\Component\Routing\Router $router */
+        $router = $this->container->get('router');
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
@@ -120,13 +127,13 @@ class MainController implements ContainerAwareInterface
             new LinkHeaderItem(
                 $router->generate('graviton.core.rest.app.all', array(), true),
                 array(
-                    'rel'  => 'apps',
+                    'rel' => 'apps',
                     'type' => 'application/json'
                 )
             )
         );
 
-        return (string) $links;
+        return (string)$links;
     }
 
     /**

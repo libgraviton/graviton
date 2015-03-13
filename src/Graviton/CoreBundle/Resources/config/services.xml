@@ -9,18 +9,22 @@
         <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
         <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
         <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
+        <parameter key="graviton.core.controller.showcase.class">Graviton\CoreBundle\Controller\ShowcaseExtensionController</parameter>
         <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
     </parameters>
     <services>
-        <service id="graviton.core.controller.main"
-                 class="%graviton.core.controller.main.class%">
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
+        <service id="graviton.core.controller.main" class="%graviton.core.controller.main.class%">
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="graviton.security.authorizator" />
         </service>
+        <service id="graviton.core.controller.showcase"
+                 class="%graviton.core.controller.showcase.class%"
+                 parent="graviton.rest.controller"
+                 scope="request"
+                />
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
                  parent="graviton.rest.controller" scope="request">

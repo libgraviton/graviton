@@ -1,73 +1,40 @@
 <?php
 /**
- * Model based on Graviton\RestBundle\Model\DocumentModel.
+ *
  */
 
 namespace Graviton\SchemaBundle\Model;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Model based on Graviton\RestBundle\Model\DocumentModel.
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class SchemaModel implements ContainerAwareInterface
+class SchemaModel
 {
     /**
-     * object
+     * @var \stdClass
      */
     private $schema;
 
     /**
      * @var ContainerInterface
      */
-    private $container;
+    protected $container;
 
     /**
      * load some schema info for the model
      *
+     * @param ContainerInterface $container Symfony's DIC
+     *
      * @return SchemaModel
      */
-    public function __construct()
-    {
-        list(, $bundle, , $model) = explode('\\', get_called_class());
-        $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
-
-        if (!file_exists($file)) {
-            // fallback try on model property (this should be available on some generated classes)
-            if (isset($this->_modelPath)) {
-                // try to find schema.json relative to the model involved..
-                $file = dirname($this->_modelPath) . '/../Resources/config/schema/' . $model . '.json';
-            }
-
-            if (!file_exists($file)) {
-                throw new \LogicException('Please create the schema file ' . $file);
-            }
-        }
-
-        $this->schema = \json_decode(file_get_contents($file));
-
-        if (is_null($this->schema)) {
-            throw new \LogicException('The file ' . $file . ' doe not contain valid json');
-        }
-    }
-
-    /**
-     * inject container
-     *
-     * @param ContainerInterface $container service container
-     *
-     * @return self
-     */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-
-        return $this;
+        $this->schema = $this->receiveSchema();
     }
 
     /**
@@ -165,5 +132,38 @@ class SchemaModel implements ContainerAwareInterface
         }
 
         return $return;
+    }
+
+    /**
+     * Reads the schema of the calling model
+     *
+     * @return \stdClass
+     *
+     * @throws \LogicException
+     */
+    private function receiveSchema()
+    {
+        list(, $bundle, , $model) = explode('\\', get_called_class());
+        $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
+
+        if (!file_exists($file)) {
+            // fallback try on model property (this should be available on some generated classes)
+            if (isset($this->_modelPath)) {
+                // try to find schema.json relative to the model involved..
+                $file = dirname($this->_modelPath) . '/../Resources/config/schema/' . $model . '.json';
+            }
+
+            if (!file_exists($file)) {
+                throw new \LogicException('Please create the schema file ' . $file);
+            }
+        }
+
+        $schema = json_decode(file_get_contents($file));
+
+        if (is_null($schema)) {
+            throw new \LogicException('The file ' . $file . ' doe not contain valid json');
+        }
+
+        return $schema;
     }
 }

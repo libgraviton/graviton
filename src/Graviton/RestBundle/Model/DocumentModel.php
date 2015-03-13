@@ -6,8 +6,6 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Graviton\Rql\Queriable\MongoOdm;
-use Graviton\Rql\Query;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -54,13 +52,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * create new app model
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository $countries Repository of countries
+     * @param \Doctrine\Common\Persistence\ObjectRepository $repository Repository of countries
      *
-     * @return void
+     * @return \Graviton\RestBundle\Model\DocumentModel
      */
-    public function setRepository(ObjectRepository $countries)
+    public function setRepository(ObjectRepository $repository)
     {
-        $this->repository = $countries;
+        $this->repository = $repository;
+
+        return $this;
     }
 
     /**
@@ -73,8 +73,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int) $request->query->get('perPage', 10);
+        $numberPerPage = (int)$request->query->get('perPage', 10);
         $startAt = ($pageNumber - 1) * $numberPerPage;
+
+        /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
+        $queryBuilder = $this->repository
+            ->createQueryBuilder()
+            ->limit($numberPerPage);
 
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
@@ -82,29 +87,24 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
-            $queryParser = new Query(urldecode($filter));
-            $queriable = new MongoOdm($this->repository, $numberPerPage, $startAt);
-            $queriable = $queryParser->applyToQueriable($queriable);
-            $records = $queriable->getDocuments();
+            // define offset
+            $queryBuilder->skip($startAt);
+            list($query, $records) = $this->doRqlQuery($queryBuilder, $filter);
 
-            $totalCount = $queriable->getResultCount();
+
         } else {
-            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-            $qb = $this->repository
-                ->createQueryBuilder()
-                ->limit($numberPerPage)
-                ->find($this->repository->getDocumentName());
+
+            // TODO [lapistano]: seems the offset is missing for this query.
 
             /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
-            $query = $qb->getQuery();
-            $totalCount = $query->count();
-            $records = array_values(
-                $query->execute()
-                      ->toArray()
-            );
+            $query = $queryBuilder
+                ->find($this->repository->getDocumentName())
+                ->getQuery();
+            $records = array_values($query->execute()->toArray());
         }
 
-        $numPages = (int) ceil($totalCount / $numberPerPage);
+        $totalCount = $query->count();
+        $numPages = (int)ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
@@ -211,5 +211,25 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
         return 'graviton.' . $bundle;
+    }
+
+    /**
+     * Does the actual query using the RQL Bundle.
+     *
+     * @param $queryBuilder
+     * @param $rqlQuery
+     *
+     * @return array
+     */
+    protected function doRqlQuery($queryBuilder, $rqlQuery)
+    {
+        $factory = $this->container->get('graviton.rql.factory');
+
+        $query = $factory
+            ->create('MongoOdm', $rqlQuery, $queryBuilder)
+            ->getQuery();
+        $records = array_values($query->execute()->toArray());
+
+        return array($query, $records);
     }
 }
