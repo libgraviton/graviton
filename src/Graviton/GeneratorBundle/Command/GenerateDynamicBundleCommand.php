@@ -493,7 +493,10 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         $conn = $this->getContainer()->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
-        $collection = $conn->selectCollection('db', $collectionName);
+        $collection = $conn->selectCollection(
+            $this->getContainer()->getParameter('mongodb.default.server.db', 'db'),
+            $collectionName
+        );
         $files = array();
 
         // custom criteria defined?
