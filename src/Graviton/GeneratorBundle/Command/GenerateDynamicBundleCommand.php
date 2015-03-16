@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -24,7 +25,7 @@ use Symfony\Component\DependencyInjection\Container;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GenerateDynamicBundleCommand extends Command
+class GenerateDynamicBundleCommand extends Command implements ContainerAwareInterface
 {
     private $bundleBundleNamespace;
     private $bundleBundleDir;

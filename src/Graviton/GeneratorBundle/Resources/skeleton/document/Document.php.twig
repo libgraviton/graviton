@@ -13,7 +13,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class {{ document }} implements TranslatableDocumentInterface
+class {{ document }} implements TranslatableDocumentInterface{% if interface is defined %}, {{ interface }} {% endif %}
 {
     /**
      * @var MongoId $id
