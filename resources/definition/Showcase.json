@@ -127,9 +127,7 @@
         "indexes": [],
         "relations": [],
         "interfaces": [
-            "\\Graviton\\CoreBundle\\Interfaces\\Document\\GravitonDocumentInterface",
-            "\\Graviton\\CoreBundle\\Interfaces\\Document\\GravitonDocumentInterface1",
-            "\\Graviton\\CoreBundle\\Interfaces\\Document\\GravitonDocumentInterface2"
+            "\\Graviton\\CoreBundle\\Document\\GravitonShowcaseInterface"
         ],
         "fields": [
             {
