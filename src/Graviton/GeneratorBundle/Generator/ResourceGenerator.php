@@ -84,16 +84,15 @@ class ResourceGenerator extends AbstractGenerator
     public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
     {
         $dir = $bundle->getPath();
-
-        //@todo: check if the content of document is postfixed with 'Bundle' before trying to remove it.
         $basename = $this->getBundleBaseName($document);
-
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
+        $interfaces = array();
 
         // do we have a json path passed?
         if (!is_null($this->input->getOption('json'))) {
             $this->json = new JsonDefinition($this->input->getOption('json'));
             $this->json->setNamespace($bundleNamespace);
+            $interfaces = $this->json->getInterfaces();
         }
 
         // add more info to the fields array
@@ -107,7 +106,7 @@ class ResourceGenerator extends AbstractGenerator
                     $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
                 }
 
-                // @todo this assumtion is a hack and needs fixing
+                // @todo this assumption is a hack and needs fixing
                 if ($field['type'] === 'array') {
                     $field['serializerType'] = 'array<string>';
                 }
@@ -148,6 +147,7 @@ class ResourceGenerator extends AbstractGenerator
             'fields' => $fields,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
+            'interfaces' => $interfaces
         );
 
         // some stuff special for the "id" field..

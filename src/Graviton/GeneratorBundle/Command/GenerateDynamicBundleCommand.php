@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -85,7 +86,7 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
      *
      * @return void
      */
-    public function setContainer($container)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }

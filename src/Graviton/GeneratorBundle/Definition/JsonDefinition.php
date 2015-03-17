@@ -40,6 +40,7 @@ class JsonDefinition
      */
     private $namespace;
 
+
     /**
      * Constructor
      *
@@ -380,5 +381,19 @@ class JsonDefinition
             }
         }
         return $ret;
+    }
+
+    /**
+     * Provides the list of interfaces the document shall implement.
+     *
+     * @return array
+     */
+    public function getInterfaces()
+    {
+        if (!empty($this->doc->target->interfaces)) {
+            return $this->doc->target->interfaces;
+        }
+
+        return array();
     }
 }
