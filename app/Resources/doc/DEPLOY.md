@@ -61,7 +61,7 @@ APP_NAME="graviton"
 # install deps
 docker pull graviton/graviton:latest
 docker pull composer/composer:latest
-docker pull php:fpm
+docker pull gravityplatform/php-fpm
 docker pull nginx:latest
 
 # create app volume container
@@ -70,8 +70,8 @@ docker create --name "${APP_NAME}-app" graviton/graviton:latest noop
 # install deps in app volume container
 docker run --volumes-from "${APP_NAME}-app" --rm composer/composer install --ignore-platform-reqs
 
-# start fpm with a funny hack to mount /app at /var/www/html where php:fpm expects it
-docker run --detach --name "${APP_NAME}-fpm" --volume `docker inspect ${APP_NAME}-app | grep "/app.*vfs/dir" | awk '{print $2}' | cut -c 2- | rev | cut -c 2- | rev`:/var/www/html php:fpm
+# start fpm 
+docker run --detach --name "${APP_NAME}-fpm" --volumes-from "${APP_NAME}-app" php:fpm
 
 # run nginx in front of all of this
 docker run --detach --link "${APP_NAME}-fpm":graviton --name "${APP_NAME}-nginx" --publish 80 nginx:latest
@@ -79,6 +79,6 @@ docker run --detach --link "${APP_NAME}-fpm":graviton --name "${APP_NAME}-nginx"
 
 This creates the following containers
 
-* ``graviton-app`` containing just the source and vendors
-* ``graviton-fpm`` running container that serves graviton using ``php:fpm``
+* ``graviton-app`` volume container containing just the source and vendors
+* ``graviton-fpm`` running container that serves graviton using a version of ``php:fpm`` containing a symlink from ``/var/www/html`` to ``/app`` (``/app`` is what ``composer/composer`` expects)
 * ``gravtion-nginx`` webserver in front of fpm to expose graviton
