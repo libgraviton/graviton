@@ -13,6 +13,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -24,7 +27,7 @@ use Symfony\Component\DependencyInjection\Container;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GenerateDynamicBundleCommand extends Command
+class GenerateDynamicBundleCommand extends Command implements ContainerAwareInterface
 {
     private $bundleBundleNamespace;
     private $bundleBundleDir;
@@ -80,11 +83,11 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * set container
      *
-     * @param mixed $container container
+     * @param ContainerInterface $container Symfony dependency injection container
      *
      * @return void
      */
-    public function setContainer($container)
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
     }
@@ -92,23 +95,43 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * get container
      *
+     * @throws \RuntimeException
      * @return Container container
      */
     public function getContainer()
     {
+        if (empty($this->container)) {
+            throw new \RuntimeException('There is no container set. Use setContainer() to define it.');
+        }
+
         return $this->container;
     }
 
     /**
      * Set process
      *
-     * @param mixed $process process
+     * @param Process $process process
      *
      * @return void
      */
-    public function setProcess($process)
+    public function setProcess(Process $process)
     {
         $this->process = $process;
+    }
+
+    /**
+     * Provides the preset Process object.
+     *
+     * @return Process
+     * @throws \RuntimeException
+     */
+    public function getProcess()
+    {
+        if (empty($this->process)) {
+            throw new \RuntimeException('There is no Process set. Use setProcess() to define it.');
+        }
+
+        return $this->process;
     }
 
     /**
@@ -379,14 +402,14 @@ class GenerateDynamicBundleCommand extends Command
             )
         );
 
-        $this->process->setCommandLine($cmd);
-        $this->process->run();
+        $this->getProcess()->setCommandLine($cmd);
+        $this->getProcess()->run();
 
-        if (!$this->process->isSuccessful()) {
-            throw new \RuntimeException($this->process->getErrorOutput());
+        if (!$this->getProcess()->isSuccessful()) {
+            throw new \RuntimeException($this->getProcess()->getErrorOutput());
         }
 
-        return $this->process->getExitCode();
+        return $this->getProcess()->getExitCode();
     }
 
     /**
