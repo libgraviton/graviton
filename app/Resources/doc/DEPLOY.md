@@ -71,7 +71,7 @@ docker create --name "${APP_NAME}-app" graviton/graviton:latest noop
 docker run --volumes-from "${APP_NAME}-app" --rm composer/composer install --ignore-platform-reqs
 
 # start fpm 
-docker run --detach --name "${APP_NAME}-fpm" --volumes-from "${APP_NAME}-app" php:fpm
+docker run --detach --name "${APP_NAME}-fpm" --volumes-from "${APP_NAME}-app" gravityplatform/php-fpm
 
 # run nginx in front of all of this
 docker run --detach --link "${APP_NAME}-fpm":graviton --name "${APP_NAME}-nginx" --publish 80 nginx:latest
