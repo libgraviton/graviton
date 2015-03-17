@@ -66,30 +66,30 @@ class GenerateDynamicBundleCommand extends Command
             InputOption::VALUE_OPTIONAL,
             'Path to the json definition.'
         )
-             ->addOption(
-                 'srcDir',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Src Dir',
-                 dirname(__FILE__) . '/../../../'
-             )
-             ->addOption(
-                 'bundleBundleName',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Which BundleBundle to manipulate to add our stuff',
-                 'GravitonDynBundleBundle'
-             )
-             ->addOption(
-                 'bundleFormat',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Which format',
-                 'xml'
-             )
-             ->setName('graviton:generate:dynamicbundles')
-             ->setDescription(
-                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
+            ->addOption(
+                'srcDir',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Src Dir',
+                dirname(__FILE__) . '/../../../'
+            )
+            ->addOption(
+                'bundleBundleName',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Which BundleBundle to manipulate to add our stuff',
+                'GravitonDynBundleBundle'
+            )
+            ->addOption(
+                'bundleFormat',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Which format',
+                'xml'
+            )
+            ->setName('graviton:generate:dynamicbundles')
+            ->setDescription(
+                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
             );
     }
@@ -254,6 +254,7 @@ class GenerateDynamicBundleCommand extends Command
              * so here we merge the generated validation.xml we saved in the loop before back into the
              * final validation.xml again. the final result should be one validation.xml including all
              * the validation rules for all the documents in this bundle.
+             *
              * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
              */
             if (count($this->validationXmlNodes) > 0) {
@@ -338,7 +339,7 @@ class GenerateDynamicBundleCommand extends Command
         // get path to console from kernel..
         $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
-        $cmd = 'php '.$consolePath.' -n ';
+        $cmd = 'php ' . $consolePath . ' -n ';
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {
