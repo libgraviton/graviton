@@ -13,21 +13,20 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
  *
- * @todo create a new Application in-situ
- * @todo see if we can get rid of container dependency..
+ * @todo     create a new Application in-situ
+ * @todo     see if we can get rid of container dependency..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GenerateDynamicBundleCommand extends Command implements ContainerAwareInterface
+class GenerateDynamicBundleCommand extends Command
 {
     private $bundleBundleNamespace;
     private $bundleBundleDir;
@@ -36,6 +35,21 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
     private $bundleBundleList = array();
     private $container;
     private $process;
+    private $validationXmlNodes;
+
+    /**
+     * @param ContainerInterface $container Symfony dependency injection container
+     * @param Process            $process   Symfony Process component
+     * @param string|null        $name      The name of the command; passing null means it must be set in configure()
+     */
+    public function __construct(ContainerInterface $container, Process $process, $name = null)
+    {
+        parent::__construct($name);
+
+        $this->container = $container;
+        $this->process = $process;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -77,61 +91,7 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
              ->setDescription(
                  'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
-             );
-    }
-
-    /**
-     * set container
-     *
-     * @param ContainerInterface $container Symfony dependency injection container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * get container
-     *
-     * @throws \RuntimeException
-     * @return Container container
-     */
-    public function getContainer()
-    {
-        if (empty($this->container)) {
-            throw new \RuntimeException('There is no container set. Use setContainer() to define it.');
-        }
-
-        return $this->container;
-    }
-
-    /**
-     * Set process
-     *
-     * @param Process $process process
-     *
-     * @return void
-     */
-    public function setProcess(Process $process)
-    {
-        $this->process = $process;
-    }
-
-    /**
-     * Provides the preset Process object.
-     *
-     * @return Process
-     * @throws \RuntimeException
-     */
-    public function getProcess()
-    {
-        if (empty($this->process)) {
-            throw new \RuntimeException('There is no Process set. Use setProcess() to define it.');
-        }
-
-        return $this->process;
+            );
     }
 
     /**
@@ -167,7 +127,7 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
             . $this->bundleBundleClassname . '.php';
 
         $filesToWorkOn = $this
-            ->getContainer()
+            ->container
             ->get('graviton_generator.definition.loader')
             ->load($input->getOption('json'));
 
@@ -375,9 +335,8 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
-
         // get path to console from kernel..
-        $consolePath = $this->getContainer()->get('kernel')->getRootDir().'/console';
+        $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
         $cmd = 'php '.$consolePath.' -n ';
 
@@ -402,14 +361,14 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
             )
         );
 
-        $this->getProcess()->setCommandLine($cmd);
-        $this->getProcess()->run();
+        $this->process->setCommandLine($cmd);
+        $this->process->run();
 
-        if (!$this->getProcess()->isSuccessful()) {
-            throw new \RuntimeException($this->getProcess()->getErrorOutput());
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
         }
 
-        return $this->getProcess()->getExitCode();
+        return $this->process->getExitCode();
     }
 
     /**
@@ -456,9 +415,9 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
         $dbbGenerator = new DynamicBundleBundleGenerator();
 
         // add optional bundles if defined by parameter.
-        if ($this->getContainer()->hasParameter('generator.bundlebundle.additions')) {
+        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
             $additions = json_decode(
-                $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+                $this->container->getParameter('generator.bundlebundle.additions'),
                 true
             );
             if (is_array($additions)) {
@@ -508,32 +467,21 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
      */
     private function getDefinitionsFromMongoDb()
     {
-        $collectionName = $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection');
+        $collectionName = $this->container->getParameter('generator.dynamicbundles.mongocollection');
+        $files = array();
 
         // nothing there..
         if (strlen($collectionName) < 1) {
             return array();
         }
 
-        $conn = $this->getContainer()->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
+        $conn = $this->container->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
         $collection = $conn->selectCollection(
-            $this->getContainer()->getParameter('mongodb.default.server.db', 'db'),
+            $this->container->getParameter('mongodb.default.server.db', 'db'),
             $collectionName
         );
-        $files = array();
 
-        // custom criteria defined?
-        $criteria = json_decode(
-            $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection.criteria'),
-            true
-        );
-
-        if (is_array($criteria)) {
-            $cursor = $collection->find($criteria);
-        } else {
-            // get all
-            $cursor = $collection->find(array());
-        }
+        $cursor = $collection->find($this->determineSearchCriteria());
 
         foreach ($cursor as $doc) {
             if (isset($doc['_id'])) {
@@ -548,5 +496,20 @@ class GenerateDynamicBundleCommand extends Command implements ContainerAwareInte
         }
 
         return $files;
+    }
+
+    /**
+     * Determines search criteria to be used.
+     *
+     * @return array
+     */
+    private function determineSearchCriteria()
+    {
+        $criteria = json_decode(
+            $this->container->getParameter('generator.dynamicbundles.mongocollection.criteria'),
+            true
+        );
+
+        return (is_array($criteria)) ? $criteria : array();
     }
 }
