@@ -1,38 +1,35 @@
 <?php
+/**
+ * Add a Link header to a schema endpoint to a response
+ */
 
 namespace Graviton\SchemaBundle\Listener;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\SchemaBundle\SchemaUtils;
 
 /**
  * Add a Link header to a schema endpoint to a response
  *
- * @category GravitonSchemaBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
-class SchemaContentTypeResponseListener implements ContainerAwareInterface
+class SchemaContentTypeResponseListener
 {
     /**
-     * @private ContainerInterface
+     * @uvar Router
      */
-    private $container;
+    private $router;
 
     /**
-     * inject a service_container
-     *
-     * @param ContainerInterface $container service_container
-     *
-     * @return void
+     * @param router $router router
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(Router $router)
     {
-        $this->container = $container;
+        $this->router = $router;
     }
 
     /**
@@ -49,14 +46,17 @@ class SchemaContentTypeResponseListener implements ContainerAwareInterface
     {
         $request = $event->getRequest();
         $response = $event->getResponse();
-        $router = $this->container->get('router');
 
         // build content-type string
         $contentType = 'application/json; charset=UTF-8';
         if ($request->get('_route') != 'graviton.core.static.main.all') {
+            try {
+                $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
+                $contentType .= sprintf('; profile=%s', $this->router->generate($schemaRoute, array(), true));
+            } catch (\Exception $e) {
+                return true;
+            }
 
-            $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $contentType .= sprintf('; profile=%s', $router->generate($schemaRoute, array(), true));
         }
 
         // replace content-type if a schema was requested

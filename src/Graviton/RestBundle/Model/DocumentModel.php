@@ -1,55 +1,60 @@
 <?php
+/**
+ * Use doctrine odm as backend
+ */
 
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Knp\Component\Pager\Paginator;
+use Graviton\Rql\Queriable\MongoOdm;
+use Graviton\Rql\Query;
+use Graviton\SchemaBundle\Model\SchemaModel;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Use doctrine odm as backend
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
-class DocumentModel implements ModelInterface
+class DocumentModel extends SchemaModel implements ModelInterface
 {
-    /**
-     * @var ObjectRepository
-     */
-    private $repository;
-
-    /**
-     * @var Paginator
-     */
-    private $paginator;
-
     /**
      * @var string
      */
     protected $description;
-
     /**
      * @var string[]
      */
     protected $fieldTitles;
-
     /**
      * @var string[]
      */
     protected $fieldDescriptions;
-
     /**
      * @var string[]
      */
     protected $requiredFields = array();
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectRepository
+     */
+    private $repository;
+
+    /**
+     * get repository instance
+     *
+     * @return \Doctrine\Common\Persistence\ObjectRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
 
     /**
      * create new app model
      *
-     * @param ObjectRepository $countries Repository of countries
+     * @param \Doctrine\Common\Persistence\ObjectRepository $countries Repository of countries
      *
      * @return void
      */
@@ -59,61 +64,54 @@ class DocumentModel implements ModelInterface
     }
 
     /**
-     * get repository instance
-     *
-     * @return ObjectRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
-    /**
-     * set paginator
-     *
-     * @param Paginator $paginator paginator used in collection
-     *
-     * @return void
-     */
-    public function setPaginator(Paginator $paginator)
-    {
-        $this->paginator = $paginator;
-    }
-
-    /**
      * {@inheritDoc}
      *
-     * @param string $id id of entity to find
-     *
-     * @return Object
-     */
-    public function find($id)
-    {
-        return $this->repository->find($id);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param Request $request Request object
+     * @param \Symfony\Component\HttpFoundation\Request $request Request object
      *
      * @return array
      */
-    public function findAll($request)
+    public function findAll(Request $request)
     {
-        $pagination = $this->paginator->paginate(
-            $this->repository->findAll(),
-            $request->query->get('page', 1),
-            10
-        );
+        $pageNumber = $request->query->get('page', 1);
+        $numberPerPage = (int) $request->query->get('perPage', 10);
+        $startAt = ($pageNumber - 1) * $numberPerPage;
 
-        $numPages = (int) ceil($pagination->getTotalItemCount() / $pagination->getItemNumberPerPage());
+        // *** do we have an RQL expression, do we need to filter data?
+        $filter = $request->query->get('q');
+        if (!empty($filter)) {
+            // set filtering attributes on request
+            $request->attributes->set('filtering', true);
+
+            $queryParser = new Query(urldecode($filter));
+            $queriable = new MongoOdm($this->repository, $numberPerPage, $startAt);
+            $queriable = $queryParser->applyToQueriable($queriable);
+            $records = $queriable->getDocuments();
+
+            $totalCount = $queriable->getResultCount();
+        } else {
+            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+            $qb = $this->repository
+                ->createQueryBuilder()
+                ->limit($numberPerPage)
+                ->find($this->repository->getDocumentName());
+
+            /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
+            $query = $qb->getQuery();
+            $totalCount = $query->count();
+            $records = array_values(
+                $query->execute()
+                      ->toArray()
+            );
+        }
+
+        $numPages = (int) ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
+            $request->attributes->set('perPage', $numberPerPage);
         }
 
-        return $pagination->getItems();
+        return $records;
     }
 
     /**
@@ -125,9 +123,9 @@ class DocumentModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
-        $dm = $this->repository->getDocumentManager();
-        $dm->persist($entity);
-        $dm->flush();
+        $manager = $this->repository->getDocumentManager();
+        $manager->persist($entity);
+        $manager->flush();
 
         return $this->find($entity->getId());
     }
@@ -135,16 +133,28 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $id     id of entity to update
-     * @param Object $entity new enetity
+     * @param string $documentId id of entity to find
      *
      * @return Object
      */
-    public function updateRecord($id, $entity)
+    public function find($documentId)
     {
-        $dm = $this->repository->getDocumentManager();
-        $dm->persist($entity);
-        $dm->flush();
+        return $this->repository->find($documentId);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param string $documentId id of entity to update
+     * @param Object $entity     new entity
+     *
+     * @return Object
+     */
+    public function updateRecord($documentId, $entity)
+    {
+        $manager = $this->repository->getDocumentManager();
+        $manager->persist($entity);
+        $manager->flush();
 
         return $entity;
     }
@@ -152,18 +162,19 @@ class DocumentModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $id id of entity to delete
+     * @param string $documentId id of entity to delete
      *
      * @return null|Object
      */
-    public function deleteRecord($id)
+    public function deleteRecord($documentId)
     {
-        $dm = $this->repository->getDocumentManager();
-        $entity = $this->find($id);
+        $manager = $this->repository->getDocumentManager();
+        $entity = $this->find($documentId);
 
         $return = $entity;
         if ($entity) {
-            $dm->remove($entity);
+            $manager->remove($entity);
+            $manager->flush();
             $return = null;
         }
 
@@ -199,50 +210,6 @@ class DocumentModel implements ModelInterface
     {
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
-        return 'graviton.'.$bundle;
-    }
-
-    /**
-     * get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * get title for a given field
-     *
-     * @param string $field field name
-     *
-     * @return string
-     */
-    public function getTitleOfField($field)
-    {
-        return $this->fieldTitles[$field];
-    }
-
-    /**
-     * get description for a given field
-     *
-     * @param string $field field name
-     *
-     * @return string
-     */
-    public function getDescriptionOfField($field)
-    {
-        return $this->fieldDescriptions[$field];
-    }
-
-    /**
-     * get required fields for this object
-     *
-     * @return string[]
-     */
-    public function getRequiredFields()
-    {
-        return $this->requiredFields;
+        return 'graviton.' . $bundle;
     }
 }

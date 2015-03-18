@@ -1,15 +1,14 @@
 <?php
+/**
+ * A translatable document
+ */
 
 namespace Graviton\I18nBundle\Document;
 
 /**
- * A translatable document
- *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 interface TranslatableDocumentInterface
 {

@@ -10,11 +10,9 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 /**
  * App
  *
- * @category GravitonCoreBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class App implements TranslatableDocumentInterface
 {
@@ -32,6 +30,11 @@ class App implements TranslatableDocumentInterface
      * @var boolean show app in menu
      */
     protected $showInMenu = false;
+
+    /**
+     * @var int sort order
+     */
+    protected $order;
 
     /**
      * make title translatable
@@ -113,5 +116,27 @@ class App implements TranslatableDocumentInterface
     public function getShowInMenu()
     {
         return $this->showInMenu;
+    }
+
+    /**
+     * Get order
+     *
+     * @return int order
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Set order
+     *
+     * @param int $order order
+     *
+     * @return void
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
     }
 }

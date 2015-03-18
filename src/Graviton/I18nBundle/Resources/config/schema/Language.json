@@ -1,0 +1,17 @@
+{
+  "description": "A Language available for i18n purposes.",
+  "properties": {
+    "id": {
+      "title": "Language Tag",
+      "description": "A RFC2616 language tag."
+    },
+    "name": {
+      "title": "Language",
+      "description": "Common name of a language."
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ]
+}

@@ -1,0 +1,123 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: services.yml }
+
+# Synfony Framework Configuation
+# see http://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    #esi:             ~
+    #translator:      { fallback: "%locale%" }
+    secret:          "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            true
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        #assets_version: SomeVersionScheme
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        name: graviton
+        # handler_id set to null will use default session handler from php.ini
+        handler_id:  ~
+    fragments:       ~
+#    http_method_override: true
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+# Assetic Configuration
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:        [ ]
+    #java: /usr/bin/java
+    filters:
+        cssrewrite: ~
+        #closure:
+        #    jar: "%kernel.root_dir%/Resources/java/compiler.jar"
+        #yui_css:
+        #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        connections:
+            default:
+# DoctrineMongoDB Configuration
+# see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
+doctrine_mongodb:
+    default_database: "%mongodb.default.server.db%"
+    connections:
+        default:
+            server: "%mongodb.default.server.uri%"
+            options: { connect: true }
+    document_managers:
+        default:
+            mappings:
+                GravitonCoreBundle: ~
+            filters:
+                softdeleteable:
+                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
+                    enabled: true
+
+# StofDoctrineExtensions Configuration
+# see: https://github.com/stof/StofDoctrineExtensionsBundle/blob/master/Resources/doc/index.rst
+stof_doctrine_extensions:
+    default-locale: "en_US"
+    mongodb:
+        default:
+            loggable: true
+            softdeleteable: true
+
+# Swiftmailer Configuration
+#swiftmailer:
+#    transport: "%mailer_transport%"
+#    host:      "%mailer_host%"
+#    username:  "%mailer_user%"
+#    password:  "%mailer_password%"
+#    spool:     { type: memory }
+
+# SensionFrameworkExtraBundle Configuration
+# see: http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
+sensio_framework_extra:
+    router:   { annotations: true }
+    view:     { annotations: true }
+
+# JmsSerializerBundle Configuration
+# see: http://jmsyst.com/bundles/JMSSerializerBundle/master/configuration
+jms_serializer:
+    handlers:
+        datetime:
+            default_format: "Y-m-d\TH:i:sO"
+            default_timezone: "UTC" # defaults to whatever timezone set in php.ini or via date_default_timezone_set
+    metadata:
+        # if you don't want to use auto-detection, you can also define the
+        # namespace prefix and the corresponding directory explicitly
+        directories:
+            any-name:
+                namespace_prefix: "Graviton\\CoreBundle"
+                path: "@GravitonCoreBundle/Resources/config/serializer"
+
+        # Using auto-detection, the mapping files for each bundle will be
+        # expected in the Resources/config/serializer directory.
+        #
+        # Example:
+        # class: My\FooBundle\Entity\User
+        # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
+        auto_detection: true
+
+# Exercise/HTMLPurifierBundle Configuration
+# see: https://github.com/Exercise/HTMLPurifierBundle
+# see: http://htmlpurifier.org/live/configdoc/plain.html
+exercise_html_purifier:
+    default:
+        Cache.SerializerPath: '%kernel.cache_dir%/htmlpurifier'
+    graviton:
+        Core.Encoding: 'UTF-8'

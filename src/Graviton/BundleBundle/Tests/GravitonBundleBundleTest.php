@@ -9,13 +9,9 @@ use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
- * GravitonMessagingBundleTest
- *
- * @category Tests
- * @package  GravitonMessagingBundle
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +28,6 @@ class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
         );
 
         $result = $sut->getBundles();
-        $this->assertEquals($expectation, $result);
         $this->assertInstanceOf(
             '\Graviton\BundleBundle\GravitonBundleInterface',
             $result[0]

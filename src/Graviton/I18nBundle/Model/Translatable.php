@@ -1,4 +1,7 @@
 <?php
+/**
+ * Model based on Graviton\RestBundle\Model\DocumentModel.
+ */
 
 namespace Graviton\I18nBundle\Model;
 
@@ -7,51 +10,10 @@ use Graviton\RestBundle\Model\DocumentModel;
 /**
  * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class Translatable extends DocumentModel
 {
-    /**
-     * the description of the model
-     *
-     * @var string
-     */
-    protected $description = 'A Translatable string available for i18n purposes.';
-
-    /**
-     * titles for fields
-     *
-     * @var string[]
-     */
-    protected $fieldTitles = array(
-        'id' => 'ID',
-        'domain' => 'Domain',
-        'locale' => 'Locale',
-        'original' => 'Source String',
-        'translated' => 'Translated String',
-        'isLocalized' => 'Localized?',
-    );
-
-    /**
-     * descriptions for fields
-     *
-     * @var string[]
-     */
-    protected $fieldDescriptions = array(
-        'id' => 'Internal identifier of a translation string.',
-        'domain' => 'Domain a given string is applicable to.',
-        'locale' => 'Language Locale',
-        'original' => 'Original version of string (usually english).',
-        'translated' => 'Translated version of string.',
-        'isLocalized' => 'Has this record been translated.',
-    );
-
-    /**
-     * @var string[]
-     */
-    protected $requiredFields = array('domain', 'locale', 'original');
 }

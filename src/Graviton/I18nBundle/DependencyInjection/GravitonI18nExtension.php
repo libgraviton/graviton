@@ -1,4 +1,7 @@
 <?php
+/**
+ * I18nBundle DI config
+ */
 
 namespace Graviton\I18nBundle\DependencyInjection;
 
@@ -9,11 +12,9 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonI18nExtension extends GravitonBundleExtension
 {

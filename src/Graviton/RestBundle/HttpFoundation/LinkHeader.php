@@ -1,4 +1,7 @@
 <?php
+/**
+ * Represents a Link header.
+ */
 
 namespace Graviton\RestBundle\HttpFoundation;
 
@@ -7,11 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Represents a Link header.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class LinkHeader
 {
@@ -25,7 +26,7 @@ class LinkHeader
      *
      * @param LinkHeaderItem[] $items link header items
      *
-     * @return LinkHeaderItem
+     * @return \Graviton\RestBundle\HttpFoundation\LinkHeader
      */
     public function __construct(array $items)
     {

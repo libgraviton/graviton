@@ -13,11 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @category Graviton
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonDocumentExtension extends GravitonBundleExtension
 {
@@ -28,7 +26,7 @@ class GravitonDocumentExtension extends GravitonBundleExtension
      */
     public function getConfigDir()
     {
-        return __DIR__.'/../Resources/config';
+        return __DIR__ . '/../Resources/config';
     }
 
     /**
@@ -43,6 +41,19 @@ class GravitonDocumentExtension extends GravitonBundleExtension
     public function prepend(ContainerBuilder $container)
     {
         parent::prepend($container);
+
+        /** [nue]
+         * this is a workaround for a current symfony bug:
+         * https://github.com/symfony/symfony/issues/7555
+         *
+         * we *want* to be able to override any param with our env variables..
+         * so we do again, what the kernel did already here.. ;-)
+         */
+        foreach ($_SERVER as $key => $value) {
+            if (0 === strpos($key, 'SYMFONY__')) {
+                $container->setParameter(strtolower(str_replace('__', '.', substr($key, 9))), $value);
+            }
+        }
 
         // populated from cf's VCAP_SERVICES variable
         $services = $container->getParameter('vcap.services');

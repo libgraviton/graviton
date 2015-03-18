@@ -1,15 +1,16 @@
 <?php
+/**
+ * Graviton\I18nBundle\Document\Language
+ */
 
 namespace Graviton\I18nBundle\Document;
 
 /**
  * Graviton\I18nBundle\Document\Language
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class Language implements TranslatableDocumentInterface
 {

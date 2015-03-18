@@ -1,21 +1,22 @@
 <?php
+/**
+ * translate fields during serialization
+ */
 
 namespace Graviton\I18nBundle\Listener;
 
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * translate fields during serialization
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class I18nSerializationListener
 {
@@ -49,11 +50,11 @@ class I18nSerializationListener
     /**
      * set translator
      *
-     * @param \Symfony\Bundle\FrameworkBundle\Translation\Translator $translator translator
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator translator
      *
      * @return void
      */
-    public function setTranslator(Translator $translator)
+    public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
@@ -68,19 +69,25 @@ class I18nSerializationListener
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-        $this->localizedFields[\spl_object_hash($object)] = array();
-        if ($object instanceof TranslatableDocumentInterface) {
-            foreach ($object->getTranslatableFields() as $field) {
-                $setter = 'set'.ucfirst($field);
-                $getter = 'get'.ucfirst($field);
 
-                // only allow objects that we can update during postSerialize
-                if (method_exists($object, $setter)) {
-                    $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
-                    // remove untranslated field to make space for translation struct
-                    $object->$setter(null);
+        $this->localizedFields[\spl_object_hash($object)] = array();
+
+        try {
+            if ($object instanceof TranslatableDocumentInterface) {
+                foreach ($object->getTranslatableFields() as $field) {
+                    $setter = 'set'.ucfirst($field);
+                    $getter = 'get'.ucfirst($field);
+
+                    // only allow objects that we can update during postSerialize
+                    if (method_exists($object, $setter)) {
+                            $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
+                            // remove untranslated field to make space for translation struct
+                            $object->$setter(null);
+                    }
                 }
             }
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            // @todo if a document references a non-existing document - handle it so it renders to null!
         }
     }
 

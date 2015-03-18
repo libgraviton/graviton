@@ -1,4 +1,7 @@
 <?php
+/**
+ * Tests LinkHeader.
+ */
 
 namespace Graviton\RestBundle\Tests\HttpFoundation;
 
@@ -8,54 +11,81 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 /**
  * Tests LinkHeader.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class LinkHeaderTest extends \PHPUnit_Framework_TestCase
 {
+    const URI = 'http://localhost/test/resource';
+    const ALT_URI = 'http://localhost/test/alternate';
+
     /**
      * test extracting headers from string
      *
+     * @dataProvider headerValueProvider
+     *
+     * @param  string $headerValue String to be transcoded to a \Graviton\RestBundle\HttpFoundation\LinkHeader
      * @return void
+     *
+     * @see headerValueProvider
      */
-    public function testFromString()
+    public function testFromString($headerValue)
     {
-        $uri = 'http://localhost/test/resource';
-        $altUri = 'http://localhost/test/alternate';
-        $tests = array(
-            array("${uri}, ${altUri}"),
-            array("<${uri}>, <${altUri}>"),
-            array("<${uri}>,<${altUri}>"),
-            array("<${uri}>; rel=self, <${altUri}>"),
-            array("<${uri}>; rel=\"self\", <${altUri}>"),
-            array("<${uri}>; rel='self', <${altUri}>"),
-            array("<${uri}>; rel=\"schema\"; type=\"urn:uri\",<${altUri}>"),
+        $linkHeaders = LinkHeader::fromString($headerValue)->all();
+
+        $this->assertCount(2, $linkHeaders);
+
+        $this->assertEquals(self::URI, $linkHeaders[0]->getUri());
+        $this->assertEquals(self::ALT_URI, $linkHeaders[1]->getUri());
+    }
+
+    /**
+     * Data provider for »testFromString« to make it more clear what headerValue caused a test to fail.
+     *
+     * @return array
+     *
+     * @see testFromString
+     */
+    public function headerValueProvider()
+    {
+        return array(
+            'base URI' => array(self::URI . ',' . self::ALT_URI),
+            'base URI encapsulated' => array('<'.self::URI.'>, <'.self::ALT_URI.'>'),
+            'base URI encapsulated no space' => array('<'.self::URI.'>,<'.self::ALT_URI.'>'),
+            'base URI, self linking, double quotes' => array('<'.self::URI.'>; rel="self", <'.self::ALT_URI.'>'),
+            'base URI, self linking, single quotes' => array('<'.self::URI.">; rel='self', <".self::ALT_URI.'>'),
+            'base URI with schema and type, double quotes' =>
+                array('<'.self::URI.'>; rel="schema"; type="urn:uri",<'.self::ALT_URI .'>'),
         );
-        foreach ($tests as $test) {
-            $headerValue = $test[0];
-
-            $linkHeaders = LinkHeader::fromString($headerValue)->all();
-
-            $this->assertCount(2, $linkHeaders);
-
-            $this->assertEquals($uri, $linkHeaders[0]->getUri());
-            $this->assertEquals($altUri, $linkHeaders[1]->getUri());
-        }
     }
 
     /**
      * test building of strings
      *
+     * @dataProvider headerStringProvider
+     *
+     * @param string[] $headers headers to test against
+     *
      * @return void
      */
-    public function testToString()
+    public function testToString($headers)
     {
-        $uri = 'http://localhost/test/resource';
-        $headers = "<${uri}>,<${uri}>";
         $this->assertEquals($headers, (string) LinkHeader::fromString($headers));
+    }
+
+    /**
+     * Data provider for »testToString« to make it more clear what header string caused a test to fail.
+     *
+     * @return array
+     */
+    public function headerStringProvider()
+    {
+        return array(
+            'no items' => array(''),
+            'one item' => array('<'.self::URI.'>'),
+            'two items' => array('<'.self::URI.'>,<'.self::ALT_URI.'>'),
+        );
     }
 
     /**

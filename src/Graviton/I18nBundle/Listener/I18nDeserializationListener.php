@@ -1,4 +1,7 @@
 <?php
+/**
+ * translate fields during serialization
+ */
 
 namespace Graviton\I18nBundle\Listener;
 
@@ -11,11 +14,9 @@ use Graviton\I18nBundle\Model\Translatable as TranslatableModel;
 /**
  * translate fields during serialization
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class I18nDeserializationListener
 {
@@ -73,12 +74,14 @@ class I18nDeserializationListener
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
-                $this->localizedFields[$field] = $data[$field];
-                $defaultValue = \reset($data[$field]);
-                if (array_key_exists('en', $data[$field])) {
-                    $defaultValue = $data[$field]['en'];
+                if (isset($data[$field])) {
+                    $this->localizedFields[$field] = $data[$field];
+                    $defaultValue = \reset($data[$field]);
+                    if (array_key_exists('en', $data[$field])) {
+                        $defaultValue = $data[$field]['en'];
+                    }
+                    $data[$field] = $defaultValue;
                 }
-                $data[$field] = $defaultValue;
             }
             $event->setData($data);
         }
@@ -114,25 +117,27 @@ class I18nDeserializationListener
         }
         $original = $values['en'];
         // @todo change this so it grabs all languages and not negotiated ones
-        $languages = $this->request->attributes->get('languages');
-        \array_walk(
-            $languages,
-            function ($locale) use ($original, $values) {
-                $isLocalized = false;
-                $translated = '';
-                if (array_key_exists($locale, $values)) {
-                    $translated = $values[$locale];
-                    $isLocalized = true;
+        if (isset($this->request)) {
+            $languages = $this->request->attributes->get('languages');
+            \array_walk(
+                $languages,
+                function ($locale) use ($original, $values) {
+                    $isLocalized = false;
+                    $translated = '';
+                    if (array_key_exists($locale, $values)) {
+                        $translated = $values[$locale];
+                        $isLocalized = true;
+                    }
+                    $translatable = new Translatable;
+                    $translatable->setId('i18n-' . $locale . '-' . $original);
+                    $translatable->setLocale($locale);
+                    $translatable->setDomain('i18n');
+                    $translatable->setOriginal($original);
+                    $translatable->setTranslated($translated);
+                    $translatable->setIsLocalized($isLocalized);
+                    $this->translatables->insertRecord($translatable);
                 }
-                $translatable = new Translatable;
-                $translatable->setId('i18n-'.$locale.'-'.$original);
-                $translatable->setLocale($locale);
-                $translatable->setDomain('i18n');
-                $translatable->setOriginal($original);
-                $translatable->setTranslated($translated);
-                $translatable->setIsLocalized($isLocalized);
-                $this->translatables->insertRecord($translatable);
-            }
-        );
+            );
+        }
     }
 }

@@ -1,0 +1,32 @@
+{% extends 'bundle/Bundle.php.twig' %}
+
+{% block use_statements %}
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Graviton\BundleBundle\GravitonBundleInterface;
+{% endblock %}
+
+{% block class_definition %}
+/**
+ * Graviton dynamic BundleBundle - DO NOT MANIPULATE!
+ *
+ * @category GravitonDynBundleBundle
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
+class {{bundleName}} extends Bundle implements GravitonBundleInterface
+{% endblock %}
+{% block class_body %}
+    /**
+     * set up graviton symfony dynamic bundles
+     *
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
+     */
+    public function getBundles()
+    {
+        return array(
+{% for className in bundleClassList %}
+            new {{ className }}(),
+{% endfor %}
+        );
+    }
+{% endblock %}

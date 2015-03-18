@@ -1,22 +1,24 @@
 <?php
+/**
+ * GravitonRestBundle
+ */
 
 namespace Graviton\RestBundle;
 
+use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
-use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
+use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
 
 /**
  * GravitonRestBundle
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonRestBundle extends Bundle implements GravitonBundleInterface
 {
@@ -30,9 +32,23 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-            new JMSSerializerBundle(),
             new MisdGuzzleBundle(),
+            new JMSSerializerBundle(),
             new KnpPaginatorBundle(),
         );
+    }
+
+    /**
+     * load compiler pass rest route loader
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new RestServicesCompilerPass);
     }
 }

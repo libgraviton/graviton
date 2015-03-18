@@ -1,4 +1,7 @@
 <?php
+/**
+ * GetResponseListener for parsing Accept-Language headers
+ */
 
 namespace Graviton\I18nBundle\Listener;
 
@@ -9,16 +12,14 @@ use Graviton\I18nBundle\Repository\LanguageRepository;
 /**
  * GetResponseListener for parsing Accept-Language headers
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class AcceptLanguageRequestListener
 {
     /**
-     * @var Graviton\I18nBundle\Repository\LanguageRepository;
+     * @var LanguageRepository
      */
     private $repository;
 

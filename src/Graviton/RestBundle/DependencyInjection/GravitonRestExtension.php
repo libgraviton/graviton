@@ -1,4 +1,7 @@
 <?php
+/**
+ * load and manage RestBundle config
+ */
 
 namespace Graviton\RestBundle\DependencyInjection;
 
@@ -9,12 +12,9 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
- * @author   Manuel Kipfer <manuel.kipfer@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonRestExtension extends GravitonBundleExtension
 {

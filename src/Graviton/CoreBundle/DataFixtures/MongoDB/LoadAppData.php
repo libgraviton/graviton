@@ -12,11 +12,9 @@ use Graviton\CoreBundle\Document\App;
 /**
  * Load App data fixtures into mongodb
  *
- * @category GravitonCoreBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class LoadAppData implements FixtureInterface
 {
@@ -29,17 +27,19 @@ class LoadAppData implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $helloApp = new App;
-        $helloApp->setId('hello');
-        $helloApp->setTitle('Hello World!');
-        $helloApp->setShowInMenu(true);
+        $tabletApp = new App;
+        $tabletApp->setId('tablet');
+        $tabletApp->setTitle('Tablet');
+        $tabletApp->setShowInMenu(true);
+        $tabletApp->setOrder(1);
 
-        $manager->persist($helloApp);
+        $manager->persist($tabletApp);
 
         $adminApp = new App;
         $adminApp->setId('admin');
         $adminApp->setTitle('Administration');
         $adminApp->setShowInMenu(true);
+        $adminApp->setOrder(2);
 
         $manager->persist($adminApp);
 

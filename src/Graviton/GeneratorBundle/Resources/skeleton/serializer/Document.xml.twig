@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="{{ base }}Document\{{ document }}" exclusion-policy="none">
+
+{% if idField is defined %}
+    <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
+{% else %}
+
+{% if noIdField is not defined %}
+    <property name="id" type="string" accessor-getter="getId"/>
+{% else %}
+    <property name="id" type="string" accessor-getter="getId" exclude="true"/>
+{% endif %}
+
+{% endif %}
+
+    <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
+        <type><![CDATA[DateTime]]></type>
+    </property>
+
+{% for field in fields %}
+
+    {% if field.type == 'boolean' %}
+      {% set getterMethod = "is#{field.fieldName|capitalize}" %}
+    {% else %}
+      {% set getterMethod = "get#{field.fieldName|capitalize}" %}
+    {% endif %}
+
+    <property name="{{ field.fieldName }}" max-depth="5" serialized-name="{{ field.exposedName }}" accessor-getter="{{ getterMethod }}" accessor-setter="set{{ field.fieldName|capitalize }}">
+      <type><![CDATA[{{ field.serializerType }}]]></type>
+    </property>
+{% endfor %}
+  </class>
+</serializer>

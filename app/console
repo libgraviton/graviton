@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-use Graviton\RestBundle\Command\CreateService;
+
 // if you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
 //umask(0000);
@@ -10,12 +10,12 @@ set_time_limit(0);
 require_once __DIR__.'/bootstrap.php.cache';
 require_once __DIR__.'/AppKernel.php';
 
+use Graviton\AppKernel;
+use Graviton\BundleBundle\GravitonBundleBundle;
+use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
-use Graviton\AppKernel;
-use Graviton\BundleBundle\Loader\BundleLoader;
-use Graviton\BundleBundle\GravitonBundleBundle;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');

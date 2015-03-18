@@ -1,4 +1,9 @@
 <?php
+/**
+ * REST test case
+ *
+ * Contains additional helpers for testing RESTful servers
+ */
 
 namespace Graviton\TestBundle\Test;
 
@@ -9,11 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Contains additional helpers for testing RESTful servers
  *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class RestTestCase extends GravitonTestCase
 {
@@ -26,7 +29,7 @@ class RestTestCase extends GravitonTestCase
      * @param array $options An array of options to pass to the createKernel class
      * @param array $server  An array of server parameters
      *
-     * @return Client A Client instance
+     * @return \Graviton\TestBundle\Client A Client instance
      */
     protected static function createRestClient(array $options = array(), array $server = array())
     {
@@ -70,5 +73,37 @@ class RestTestCase extends GravitonTestCase
             $response->headers->get('Content-Type'),
             'Content-Type mismatch in response'
         );
+    }
+
+    /**
+     * assertion for checking cors headers
+     *
+     * @param string $methods  methods to check for
+     * @param object $response response to load headers from
+     *
+     * @return void
+     */
+    public function assertCorsHeaders($methods, $response)
+    {
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals($methods, $response->headers->get('Access-Control-Allow-Methods'));
+    }
+
+    /**
+     * assert that putting a fetched resource fails
+     *
+     * @param string $url    url
+     * @param Client $client client to use
+     *
+     * @return void
+     */
+    public function assertPutFails($url, $client)
+    {
+        $client->request('GET', $url);
+        $client->put($url, $client->getResults());
+
+        $response = $client->getResponse();
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
     }
 }

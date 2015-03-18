@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    {% if json is defined and json.isSubDocument() == true %}
+        {% set docType = "embedded-document" %}
+    {% else %}
+        {% set docType = "document" %}
+    {%  endif %}
+
+  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
+
+  {% if idField is defined %}
+      <field fieldName="id" type="{{ idField.doctrineType }}" id="true"/>
+  {% else %}
+      <field fieldName="id" type="string" id="true"/>
+  {% endif %}
+
+    <field fieldName="deletedDate" type="date" />
+    <gedmo:soft-deleteable field-name="deletedDate" time-aware="true" />
+
+        {% for field in fields %}
+            {% if 'Graviton' in field.type %}
+                {% if field.relType is defined %}{% set relType = field.relType %}{% else %}{% set relType = "reference" %}{% endif %}
+                {% if '[]' in field.type %}
+                    <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}">
+                        <cascade>
+                            <all/>
+                        </cascade>
+                    </{{ relType }}-many>
+                {% else %}
+                    <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
+                        <cascade>
+                            <all/>
+                        </cascade>
+                    </{{ relType }}-one>
+                {% endif %}
+            {% elseif 'Graviton' not in field.type %}
+                {% if field.type == 'object' %}
+                    <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif field.type != 'hash' %}
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+    </{{ docType }}>
+</doctrine-mongo-mapping>

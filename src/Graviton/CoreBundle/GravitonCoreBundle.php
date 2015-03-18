@@ -5,28 +5,32 @@
 
 namespace Graviton\CoreBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\MonologBundle\MonologBundle;
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
-use Graviton\ExceptionBundle\GravitonExceptionBundle;
+use Graviton\CacheBundle\GravitonCacheBundle;
+use Graviton\ConsultationBundle\GravitonConsultationBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\SchemaBundle\GravitonSchemaBundle;
-use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\TestBundle\GravitonTestBundle;
-use Graviton\TaxonomyBundle\GravitonTaxonomyBundle;
+use Graviton\EntityBundle\GravitonEntityBundle;
+use Graviton\ExceptionBundle\GravitonExceptionBundle;
+use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
+use Graviton\LogBundle\GravitonLogBundle;
+use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\RestBundle\GravitonRestBundle;
+use Graviton\SchemaBundle\GravitonSchemaBundle;
+use Graviton\SecurityBundle\GravitonSecurityBundle;
+use Graviton\SwaggerBundle\GravitonSwaggerBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * GravitonCoreBundle
  *
- * @category GravitonCoreBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * WARNING: Don't change me without changing Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
+ *
+ * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  */
 class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
 {
@@ -40,17 +44,18 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-            new FrameworkBundle(),
-            new SecurityBundle(),
-            new MonologBundle(),
-            new SensioFrameworkExtraBundle(),
             new GravitonExceptionBundle(),
             new GravitonDocumentBundle(),
             new GravitonSchemaBundle(),
             new GravitonRestBundle(),
-            new GravitonTestBundle(),
-            new GravitonTaxonomyBundle(),
+            new GravitonEntityBundle(),
             new GravitonI18nBundle(),
+            new GravitonGeneratorBundle(),
+            new GravitonPersonBundle(),
+            new GravitonCacheBundle(),
+            new GravitonLogBundle(),
+            new GravitonSecurityBundle(),
+            new GravitonSwaggerBundle(),
         );
     }
 }

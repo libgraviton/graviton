@@ -1,4 +1,7 @@
 <?php
+/**
+ * Graviton internationalization plugin
+ */
 
 namespace Graviton\I18nBundle;
 
@@ -8,11 +11,9 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 /**
  * Graviton internationalization plugin
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonI18nBundle extends Bundle implements GravitonBundleInterface
 {

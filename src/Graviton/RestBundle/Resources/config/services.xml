@@ -1,114 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <container xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-  <parameters>
-    <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
-    <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
-    <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
-    <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
-    <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
-    <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
-    <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
-    <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
-    <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
-  </parameters>
-  <services>
-    <service id="graviton.rest.serializer" alias="serializer">
-      <call method="setSerializerContext">
-        <argument type="service" id="graviton.rest.serializer.serializercontext"/>
-      </call>
-      <call method="setDeserializerContext">
-        <argument type="service" id="graviton.rest.serializer.deserializercontext"/>
-      </call>
-    </service>
-    <service id="graviton.rest.serializer.serializercontext" class="%graviton.rest.serializer.serializercontext.class%">
-      <call method="setSerializeNull">
-        <argument type="constant">false</argument>
-      </call>
-    </service>
-    <service id="graviton.rest.serializer.deserializercontext" class="%graviton.rest.serializer.deserializercontext.class%">
-      <call method="setSerializeNull">
-        <argument type="constant">true</argument>
-      </call>
-    </service>
-    <service id="graviton.rest.doctrine" alias="doctrine"/>
-    <service id="graviton.rest.validator" alias="validator"/>
-    <service id="graviton.rest.router" alias="router"/>
-    <service id="graviton.rest.request"
-      class="%graviton.rest.request.class%"
-      factory-service="request_stack"
-      factory-method="getCurrentRequest"/>
-    <service id="graviton.rest.paginator" alias="knp_paginator"/>
-    <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
-    <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
-      <argument type="service" id="graviton.rest.routing.collection"/>
-      <call method="setContainer"><argument type="service" id="service_container"/></call>
-      <tag name="routing.loader"/>
-    </service>
-    <service id="graviton.rest.controller" scope="request" abstract="true">
-      <call method="setContainer">
-        <argument type="service" id="service_container"></argument>
-      </call>
-    </service>
-    <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
-      <call method="setContainer">
-        <argument type="service" id="service_container"></argument>
-      </call>
-      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
-    </service>
-    <service id="graviton.rest.listener.paginglinkresponselistener" class="%graviton.rest.listener.paginglinkresponselistener.class%">
-      <call method="setContainer">
-        <argument type="service" id="service_container"></argument>
-      </call>
-      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
-    </service>
-    <service id="graviton.rest.listener.corsresponselistener" class="%graviton.rest.listener.corsresponselistener.class%">
-      <call method="addHeader">
-        <argument>Link</argument>
-      </call>
-      <call method="addHeader">
-        <argument>Accept</argument>
-      </call>
-      <call method="addHeader">
-        <argument>X-Requested-With</argument>
-      </call>
-      <call method="addHeader">
-        <argument>Content-Type</argument>
-      </call>
-      <call method="addHeader">
-        <argument>Origin</argument>
-      </call>
-      <call method="addHeader">
-        <argument>Cache-Control</argument>
-      </call>
-      <call method="addHeader">
-        <argument>ETag</argument>
-      </call>
-      <call method="addHeader">
-        <argument>Date</argument>
-      </call>
-      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
-    </service>
-    <service id="graviton.rest.model" abstract="true">
-      <call method="setPaginator">
-        <argument type="service" id="graviton.rest.paginator"/>
-      </call>
-    </service>
-    <service id="graviton.rest.response" class="%graviton.rest.response.class%" abstract="true">
-    </service>
-    <service id="graviton.rest.response.200" parent="graviton.rest.response">
-      <call method="setStatusCode"><argument>200</argument></call>
-    </service>
-    <service id="graviton.rest.response.201" parent="graviton.rest.response">
-      <call method="setStatusCode"><argument>201</argument></call>
-    </service>
-    <service id="graviton.rest.response.400" parent="graviton.rest.response">
-      <call method="setStatusCode"><argument>400</argument></call>
-    </service>
-    <service id="graviton.rest.response.404" parent="graviton.rest.response">
-      <call method="setStatusCode"><argument>404</argument></call>
-      <call method="setContent"><argument>Not Found</argument></call>
-    </service>
-  </services>
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="graviton.rest.routing.loader.class">Graviton\RestBundle\Routing\Loader\BasicLoader</parameter>
+        <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
+        <parameter key="graviton.rest.listener.selflinkresponselistener.class">Graviton\RestBundle\Listener\SelfLinkResponseListener</parameter>
+        <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
+        <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
+        <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
+        <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
+        <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
+        <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
+        <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validator\JsonInput</parameter>
+        <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
+        <parameter key="graviton.rest.services" type="collection"/>
+    </parameters>
+    <services>
+        <!-- Serializer / Serializer context -->
+        <service id="graviton.rest.serializer" alias="serializer">
+            <call method="setSerializerContext">
+                <argument type="service" id="graviton.rest.serializer.serializercontext"/>
+            </call>
+            <call method="setDeserializerContext">
+                <argument type="service" id="graviton.rest.serializer.deserializercontext"/>
+            </call>
+        </service>
+        <service id="graviton.rest.serializer.serializercontext"
+                 class="%graviton.rest.serializer.serializercontext.class%">
+            <call method="setSerializeNull">
+                <argument type="constant">false</argument>
+            </call>
+        </service>
+        <service id="graviton.rest.serializer.deserializercontext"
+                 class="%graviton.rest.serializer.deserializercontext.class%">
+            <call method="setSerializeNull">
+                <argument type="constant">true</argument>
+            </call>
+        </service>
+
+        <service id="graviton.rest.doctrine" alias="doctrine"/>
+        <service id="graviton.rest.validator" alias="validator"/>
+        <service id="graviton.rest.router" alias="router"/>
+
+        <!-- Pagination -->
+        <service id="graviton.rest.paginator" alias="knp_paginator"/>
+
+        <!-- Routing -->
+        <!-- Routing collection -->
+        <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
+
+        <!-- Routing loader -->
+        <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
+            <argument type="service" id="graviton.rest.routing.collection"/>
+            <argument>%graviton.rest.services%</argument>
+            <tag name="routing.loader"/>
+        </service>
+
+        <!-- Controller -->
+        <service id="graviton.rest.controller" scope="request" abstract="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+        </service>
+
+        <!-- Model -->
+        <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel"/>
+
+        <!-- Response object wrapper with scope request (get a new one for each request) -->
+        <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
+        </service>
+
+        <!-- Validation listener / Json validator -->
+        <service id="graviton.rest.listener.validationrequestlistener"
+                 class="Graviton\RestBundle\Listener\ValidationRequestListener">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+            <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
+        </service>
+
+        <service id="graviton.rest.validation.jsoninput" class="%graviton.rest.validation.jsoninput.class%">
+            <argument type="service" id="graviton.rest.validator"/>
+        </service>
+
+        <!-- restUtils service - a service providing some helpers dealing with services -->
+        <service id="graviton.rest.restutils" class="Graviton\RestBundle\Service\RestUtils">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+        </service>
+
+        <!-- Graviton rest event stuff -->
+        <!-- Rest event with scope prototype (get e new event object, every time you get it from the container) -->
+        <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" scope="prototype">
+        </service>
+
+        <service id="kernel.subscriber.graviton.rest" class="Graviton\RestBundle\Subscriber\RestEventSubscriber">
+            <call method="setContainer">
+                <argument type="service" id="service_container"></argument>
+            </call>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Graviton rest event listeners -->
+        <!-- Paging listener -->
+        <service id="graviton.rest.listener.paginglinkresponselistener"
+                 class="%graviton.rest.listener.paginglinkresponselistener.class%">
+            <argument type="service" id="router"></argument>
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <!-- Self link response listener -->
+        <service id="graviton.rest.listener.selflinkresponselistener"
+                 class="%graviton.rest.listener.selflinkresponselistener.class%">
+            <argument type="service" id="router"></argument>
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <!-- Cors listener (move the addHeader calls somewhere else... -->
+        <service id="graviton.rest.listener.corsresponselistener"
+                 class="%graviton.rest.listener.corsresponselistener.class%">
+            <call method="addHeader">
+                <argument>Link</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Accept</argument>
+            </call>
+            <call method="addHeader">
+                <argument>X-Requested-With</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Content-Type</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Origin</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Cache-Control</argument>
+            </call>
+            <call method="addHeader">
+                <argument>ETag</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Date</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Access-Control-Allow-Methods</argument>
+            </call>
+            <call method="addHeader">
+                <argument>Content-Language</argument>
+            </call>
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <!-- X-Version response listener -->
+        <service id="graviton.rest.listener.xversionresponselistener"
+                 class="%graviton.rest.listener.xversionresponselistener.class%">
+            <argument type="service" id="graviton.core.utils" />
+            <argument type="service" id="logger" />
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+    </services>
 </container>

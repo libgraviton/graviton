@@ -1,17 +1,19 @@
 <?php
+/**
+ * FilterResponseListener for setting up CORS headers.
+ */
 
 namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * FilterResponseListener for setting up CORS headers.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class CorsResponseListener
 {
@@ -21,13 +23,18 @@ class CorsResponseListener
     private $headers = array();
 
     /**
+     * @var string[]
+     */
+    private $allowHeaders = array('Content-Type', 'Content-Language');
+
+    /**
      * add an allowed header
      *
      * @param string $header header to allow
      *
      * @return void
      */
-    public function addheader($header)
+    public function addHeader($header)
     {
         $this->headers[] = $header;
     }
@@ -51,7 +58,6 @@ class CorsResponseListener
             $response->headers->set('Access-Control-Allow-Methods', $corsMethods);
         }
         $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
-
-        $event->setResponse($response);
+        $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->allowHeaders));
     }
 }

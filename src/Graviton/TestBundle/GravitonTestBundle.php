@@ -1,36 +1,31 @@
 <?php
 /**
  * handle unit and functional testing
+ *
+ * Contains additional helpers for testing RESTful servers
  */
 
 namespace Graviton\TestBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * GravitonTestBundle
  *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonTestBundle extends Bundle implements GravitonBundleInterface
 {
     /**
-     * {@inheritDoc}
-     *
-     * set up a bare bones symfony2 context
+     * return array of new bunde instances
      *
      * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
     public function getBundles()
     {
-        return array(
-            new LiipFunctionalTestBundle(),
-        );
+        return array();
     }
 }

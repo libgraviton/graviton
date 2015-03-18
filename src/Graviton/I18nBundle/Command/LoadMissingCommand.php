@@ -1,4 +1,7 @@
 <?php
+/**
+ * generate missing translation entities based on english strings
+ */
 
 namespace Graviton\I18nBundle\Command;
 
@@ -10,11 +13,9 @@ use Graviton\I18nBundle\Document\Translatable;
 /**
  * generate missing translation entities based on english strings
  *
- * @category I18nBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class LoadMissingCommand extends ContainerAwareCommand
 {

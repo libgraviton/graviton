@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\PersonBundle\Document\PersonContact" exclusion-policy="ALL">
+    <property name="id" type="string" accessor-getter="getId" expose="false"/>
+    <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" exclude="false" expose="true"/>
+    <property name="protocol" type="string" accessor-getter="getProtocol" accessor-setter="setProtocol" exclude="false" expose="true"/>
+    <property name="value" type="string" accessor-getter="getValue" accessor-setter="setValue" exclude="false" expose="true"/>
+    <property name="uri" type="string" accessor-getter="getUri" accessor-setter="setUri" exclude="false" expose="true" serialized-name="$ref"/>
+  </class>
+</serializer>

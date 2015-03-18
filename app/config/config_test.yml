@@ -1,0 +1,25 @@
+imports:
+    - { resource: config_dev.yml }
+    - { resource: "@FrameworkBundle/Resources/config/test.xml" }
+
+parameters:
+    kernel.debug: true
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false
+
+swiftmailer:
+    disable_delivery: true
+
+monolog:
+    handler:
+        name: main
+        type: "test"

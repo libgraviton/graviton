@@ -1,4 +1,7 @@
 <?php
+/**
+ * Represents a Link header item.
+ */
 
 namespace Graviton\RestBundle\HttpFoundation;
 
@@ -7,11 +10,9 @@ namespace Graviton\RestBundle\HttpFoundation;
  *
  * Based on Symfony\Component\HttpFoundation\AcceptHeaderItem.
  *
- * @category GravitonRestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class LinkHeaderItem
 {
@@ -31,7 +32,7 @@ class LinkHeaderItem
      * @param string $uri        uri value of item
      * @param array  $attributes array of attributes
      *
-     * @return void
+     * @return \Graviton\RestBundle\HttpFoundation\LinkHeaderItem
      */
     public function __construct($uri, array $attributes = array())
     {
@@ -47,7 +48,7 @@ class LinkHeaderItem
      *
      * @param string $itemValue value of a single link header
      *
-     * @return LinkHeaderItem
+     * @return \Graviton\RestBundle\HttpFoundation\LinkHeaderItem
      */
     public static function fromString($itemValue)
     {
@@ -116,7 +117,9 @@ class LinkHeaderItem
      */
     public function getRel()
     {
-        return $this->getAttribute('rel');
+        $relation = $this->getAttribute('rel');
+
+        return empty($relation) ? '' : $relation;
     }
 
     /**
@@ -137,13 +140,13 @@ class LinkHeaderItem
     /**
      * Get an attribute.
      *
-     * @param string $name attirbute name
+     * @param string $name attribute name
      *
      * @return string
      */
     public function getAttribute($name)
     {
-        return $this->attributes[$name];
+        return empty($this->attributes[$name]) ? '' : $this->attributes[$name];
     }
 
     /**

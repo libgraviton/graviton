@@ -1,19 +1,18 @@
 <?php
+/**
+ * Graviton Schema Document
+ */
 
 namespace Graviton\SchemaBundle\Document;
-
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * Graviton\SchemaBundle\Document\Schema
  *
- * @category GravitonSchemaBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
-class Schema implements TranslatableDocumentInterface
+class Schema
 {
     /**
      * @var string
@@ -49,16 +48,6 @@ class Schema implements TranslatableDocumentInterface
      * @var boolean
      */
     protected $translatable;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string[]
-     */
-    public function getTranslatableFields()
-    {
-        return array('title', 'description');
-    }
 
     /**
      * set title
@@ -113,6 +102,12 @@ class Schema implements TranslatableDocumentInterface
      */
     public function setType($type)
     {
+        if ($type === 'int') {
+            $type = 'integer';
+        }
+        if ($type === 'hash') {
+            $type = 'object';
+        }
         $this->type = $type;
     }
 
@@ -159,6 +154,30 @@ class Schema implements TranslatableDocumentInterface
     public function addProperty($name, $property)
     {
         $this->properties[$name] = $property;
+    }
+
+    /**
+     * removes a property
+     *
+     * @param string $name property name
+     *
+     * @return void
+     */
+    public function removeProperty($name)
+    {
+        unset($this->properties[$name]);
+    }
+
+    /**
+     * returns a property
+     *
+     * @param string $name property name
+     *
+     * @return Schema property
+     */
+    public function getProperty($name)
+    {
+        return $this->properties[$name];
     }
 
     /**

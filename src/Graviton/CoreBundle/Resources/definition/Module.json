@@ -1,0 +1,101 @@
+{
+  "id": "Module",
+  "description": "A service containing modules that relate to apps",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/core/module/",
+    "fixtures": [
+      {
+        "key": "realEstate",
+        "appId": "tablet",
+        "name": {
+          "en": "Real Estate"
+        },
+        "path": "/module/realestate",
+        "order": 1
+      },
+      {
+        "key": "investment",
+        "appId": "tablet",
+        "name": {
+          "en": "Investment"
+        },
+        "path": "/module/investment",
+        "order": 2
+      },
+      {
+        "key": "retirement",
+        "appId": "tablet",
+        "name": {
+          "en": "Retirement"
+        },
+        "path": "/module/retirement",
+        "order": 3
+      },
+      {
+        "key": "requisition",
+        "appId": "tablet",
+        "name": {
+          "en": "Requisition"
+        },
+        "path": "/module/requisition",
+        "order": 4
+      },
+      {
+        "key": "payAndSave",
+        "appId": "tablet",
+        "name": {
+          "en": "Pay & Save"
+        },
+        "path": "/module/payandsave",
+        "order": 5
+      }
+    ]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier for an item."
+      },
+      {
+        "name": "key",
+        "type": "varchar",
+        "title": "Key",
+        "description": "A fixed string identifying this module.",
+        "required": true
+      },
+      {
+        "name": "appId",
+        "type": "varchar",
+        "title": "App ID",
+        "description": "ID of an app this module relates to.",
+        "required": true
+      },
+      {
+        "name": "name",
+        "type": "varchar",
+        "title": "Name",
+        "description": "Name of this module",
+        "required": true,
+        "translatable": true
+      },
+      {
+        "name": "path",
+        "type": "varchar",
+        "title": "Path",
+        "description": "A path this module points to."
+      },
+      {
+        "name": "order",
+        "type": "int",
+        "title": "Order",
+        "description": "Integer for sort order"
+      }
+    ]
+  }
+}

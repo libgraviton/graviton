@@ -1,4 +1,7 @@
 <?php
+/**
+ * Client helper for RESTful tests.
+ */
 
 namespace Graviton\TestBundle;
 
@@ -9,11 +12,9 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
  *
  * This is mainly used during acceptance testing.
  *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class Client extends FrameworkClient
 {
@@ -66,6 +67,24 @@ class Client extends FrameworkClient
     public function put($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
     {
         return $this->request('PUT', $uri, $parameters, $files, $server, json_encode($content));
+    }
+
+    /**
+     * PATCH to an URI.
+     *
+     * @param string $uri        The URI to fetch
+     * @param string $content    The raw body data
+     * @param array  $parameters The Request parameters
+     * @param array  $files      The files
+     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     *
+     * @return \Symfony\Component\DomCrawler\Crawler|null
+     *
+     * @api
+     */
+    public function patch($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
+    {
+        return $this->request('PATCH', $uri, $parameters, $files, $server, json_encode($content));
     }
 
     /**

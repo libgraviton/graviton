@@ -1,22 +1,24 @@
 <?php
+/**
+ * graviton test case
+ */
 
 namespace Graviton\TestBundle\Test;
 
-use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Graviton\AppKernel;
-use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\BundleBundle\GravitonBundleBundle;
+use Graviton\BundleBundle\Loader\BundleLoader;
+use lapistano\ProxyObject\ProxyBuilder;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 /**
  * Graviton test case
  *
  * Override creating a kernel with our custom bundle-bundle routine.
  *
- * @category GravitonTestBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonTestCase extends WebTestCase
 {
@@ -36,7 +38,7 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
-        include_once __DIR__.'/../../../../app/AppKernel.php';
+        include_once __DIR__ . '/../../../../app/AppKernel.php';
 
         $env = 'test';
         $debug = true;
@@ -48,5 +50,33 @@ class GravitonTestCase extends WebTestCase
         ini_set('error_reporting', E_ALL);
 
         return $kernel;
+    }
+
+    /**
+     * Provides a proxy object of the provided class.
+     *
+     * @param string $class Namespaced name of the class to be proxied
+     *
+     * @return ProxyBuilder
+     */
+    public function getProxyBuilder($class)
+    {
+        return new ProxyBuilder($class);
+    }
+
+    /**
+     * Provides a test double for the named calss.
+     *
+     * @param string $class   Full namespace of the class to be doubled
+     * @param array  $methods List of methods to be doubled
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getSimpleTestDouble($class, array $methods = array())
+    {
+        return $this->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
     }
 }

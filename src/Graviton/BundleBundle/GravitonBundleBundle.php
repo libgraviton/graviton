@@ -1,6 +1,6 @@
 <?php
 /**
- * bundle for autoregistering bundles in graviton
+ * Bundle for auto-registration of bundles in graviton
  */
 
 namespace Graviton\BundleBundle;
@@ -9,13 +9,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
- * GravitonBundleBundle
- *
- * @category GravitonBundleBundle
- * @package  Graviton
- * @author   Lucas Bickel <lucas.bickel@swisscom.com>
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.com
+ * @link     http://swisscom.ch
  */
 class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
 {
@@ -31,12 +27,19 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array(
-            new GravitonCoreBundle(),
-            // ie.
-            // new GravitonRestBundle(),
-            // new GravitonMessagingBundle(),
-            // etc... but automated ;)
+        $bundles = array(
+            new GravitonCoreBundle()
         );
+
+        /*** LOOK AFTER DYNAMIC BUNDLEBUNDLE ***/
+
+        // @todo it seems we have no container at this point - how to make this configurable?
+        $dynamicBundleBundle = '\GravitonDyn\BundleBundle\GravitonDynBundleBundle';
+
+        if (class_exists($dynamicBundleBundle)) {
+            $bundles[] = new $dynamicBundleBundle();
+        }
+
+        return $bundles;
     }
 }
