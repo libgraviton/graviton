@@ -230,7 +230,7 @@ class GenerateDynamicBundleCommand extends Command
             );
 
             // controller?
-            if (!$jsonDef->hasController() || $this->isBlacklistedController($jsonDef->getRouterBase())) {
+            if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
                 $arguments['--no-controller'] = 'true';
             }
 
@@ -516,6 +516,7 @@ class GenerateDynamicBundleCommand extends Command
 
     /**
      * Checks an optional environment setting if this $routerBase is whitelisted there.
+     * If something is 'not whitelisted' (return true) means that the controller should not be generated.
      * This serves as a lowlevel possibility to disable the generation of certain controllers.
      * If we have no whitelist defined, we consider that all services should be generated (default).
      *
@@ -523,14 +524,14 @@ class GenerateDynamicBundleCommand extends Command
      *
      * @return bool true if yes, false if not
      */
-    private function isBlacklistedController($routerBase)
+    private function isNotWhitelistedController($routerBase)
     {
-        // if no whitelist is set, we're generating everything..
+        // if no whitelist is set, everything is whitelisted
         if (!$this->container->hasParameter('generator.dynamicbundles.service.whitelist')) {
             return false;
         }
 
-        // if param is there, default is 'yes' - everything is blacklisted..
+        // if param is there our default is 'yes' - everything is not whitelisted by default.
         $ret = true;
 
         $whitelist = json_decode(
@@ -538,7 +539,7 @@ class GenerateDynamicBundleCommand extends Command
             true
         );
 
-        // if in whitelist, it's not blacklisted ;-)
+        // whitelist it if in list..
         if (is_array($whitelist) && in_array($routerBase, $whitelist)) {
             $ret = false;
         }
