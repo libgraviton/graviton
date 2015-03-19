@@ -43,7 +43,7 @@
         <service id="graviton.authentication.user_provider.model.noop"
                  class="Graviton\SecurityBundle\User\Model\NullModel">
           <call method="setRepository">
-            <argument type="service" id="graviton.core.repository.app"/>
+            <argument type="service" id="graviton.core.repository.product"/>
           </call>
         </service>
 
