@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0
+
+This release concludes some months of development without release. It contains heaps
+of backwards incompatible changes. In future we will be doing releases more often.
+
+Trying to summarize this release contains much work in the following areas:
+
+* dynamic-bundle support that we use to generate graviton-based apps
+* a lot of infrastructure work
+* countless fixes and changes
+* much very important stuff
+
 ## 0.6.0
 
 * full i18n support

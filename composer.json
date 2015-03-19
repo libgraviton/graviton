@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.7.0-dev",
+    "version": "0.7.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -59,8 +59,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -68,8 +67,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson",
-            "\"vendor/bin/phpcs\" --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards"
+            "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+        ],
+        "check": [
+            "./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards",
+            "./vendor/bin/phpcs --standard=PSR1 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
+            "./vendor/bin/phpcs --standard=PSR2 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
+            "./vendor/bin/phpcs --standard=ENTB  --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/"
         ]
     },
     "config": {
