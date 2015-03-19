@@ -35,7 +35,7 @@ class AppControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'GravitonDyn\AppBundle\DataFixtures\MongoDB\LoadAppData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
@@ -163,6 +163,7 @@ class AppControllerTest extends RestTestCase
         $testApp->title = new \stdClass;
         $testApp->title->en = 'new Test App';
         $testApp->showInMenu = true;
+        $testApp->order = 3;
 
         $client = static::createRestClient();
         $client->post('/core/app', $testApp);
@@ -174,6 +175,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
+        $this->assertEquals(3, $results->order);
 
         $this->assertContains(
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
@@ -193,6 +195,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->title = new \stdClass();
         $helloApp->title->en = "Tablet";
         $helloApp->showInMenu = false;
+        $helloApp->order = 30;
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -205,6 +208,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('tablet', $results->id);
         $this->assertEquals('Tablet', $results->title->en);
         $this->assertFalse($results->showInMenu);
+        $this->assertEquals(30, $results->order);
 
         $this->assertContains(
             '<http://localhost/core/app/tablet>; rel="self"',
@@ -224,6 +228,8 @@ class AppControllerTest extends RestTestCase
         $isnogudApp->id = 'isnogud';
         $isnogudApp->title = new \stdClass;
         $isnogudApp->title->en = 'I don\'t exist';
+        $isnogudApp->showInMenu = true;
+        $isnogudApp->order = 3;
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -279,7 +285,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         $this->assertEquals('showInMenu', $results[0]->property_path);
-        $this->assertEquals('This value should be of type bool.', $results[0]->message);
+        $this->assertEquals('The value "'.$helloApp->showInMenu.'" is not a valid boolean.', $results[0]->message);
     }
 
     /**
