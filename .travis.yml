@@ -1,14 +1,18 @@
 language: php
 services: mongodb
 before_script:
-  - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - composer install --dev --no-interaction
-  - touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm
-  - wget https://scrutinizer-ci.com/ocular.phar
+- echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+- composer install --dev --no-interaction
+- touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm
+- wget https://scrutinizer-ci.com/ocular.phar
 php:
-  - 5.5
-  - 5.4
+- 5.5
+- 5.4
 script:
-  - ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-  - composer check
+- "./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover"
+- php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+- composer check
+notifications:
+  hipchat:
+    rooms:
+      secure: F5pTVtwBACRIXMdkQ/oE6f5faK3eHvPqDmD7jmAv4vU7Nyog4RN1h1nqa8kJo6fRaRvdbIF5ovAwfdX5nuoMBQqio4FpfpT4jkfFNf5gGEFOlGW3UTQR/8JyoVCEvZ4Wau3OsIouv1U3du9uWvaqHoxIeI9HvnTVinSzu9P4EjE=
