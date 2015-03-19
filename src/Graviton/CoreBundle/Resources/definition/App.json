@@ -1,0 +1,57 @@
+{
+  "id": "App",
+  "description": "A graviton based app.",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/core/app/",
+    "fixtures": [
+      {
+        "id": "tablet",
+        "title": {"en": "Tablet"},
+        "showInMenu": true,
+        "order": 1
+      },
+      {
+        "id": "admin",
+        "title": {"en": "Administration"},
+        "showInMenu": true,
+        "order": 2
+      }
+    ]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier for an app.",
+        "required": true
+      },
+      {
+        "name": "title",
+        "type": "varchar",
+        "title": "Title",
+        "description": "Display name for an app.",
+        "required": true,
+        "translatable": true
+      },
+      {
+        "name": "showInMenu",
+        "type": "boolean",
+        "title": "Show in Menu",
+        "description": "Define if an app should be exposed on the top level menu.",
+        "required": true
+      },
+      {
+        "name": "order",
+        "type": "int",
+        "title": "Order",
+        "description": "A sorting order field.",
+        "required": true
+      }
+    ]
+  }
+}
