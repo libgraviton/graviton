@@ -237,6 +237,16 @@ class ResourceGenerator extends AbstractGenerator
             $parameters['base'] . 'Document\\' . $parameters['document']
         );
 
+
+        $roles = $parameters['json']->getRoles();
+        if (!empty($roles)) {
+            $services = $this->addParam(
+                $services,
+                $docName . '.roles',
+                $parameters['json']->getRoles()
+            );
+        }
+
         $services = $this->addService(
             $services,
             $docName
