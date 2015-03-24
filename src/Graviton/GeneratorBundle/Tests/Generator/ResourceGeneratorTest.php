@@ -65,14 +65,24 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateDocument($base)
     {
-        $servicesMock = $this->getMockBuilder("\DOMDocument")
+        $servicesMock = $this->getMockBuilder("\\DOMDocument")
             ->setMethods(array("saveXml"))
             ->getMock();
+
+        $jsonDefinitionMock = $this->getMockBuilder("\\Graviton\\GeneratorBundle\\Definition\\JsonDefinition")
+            ->disableOriginalConstructor()
+            ->setmethods(array('getRoles'))
+            ->getMock();
+        $jsonDefinitionMock
+            ->expects($this->once())
+            ->method('getRoles')
+            ->willReturn(array());
 
         $parameters = array(
             "base" => $base,
             "document" => "DocumentTest",
-            "bundle" => "MyTestBundle"
+            "bundle" => "MyTestBundle",
+            "json" => $jsonDefinitionMock
         );
 
         $documentNS = $parameters['base'] . 'Document\\' . $parameters['document'];
@@ -81,7 +91,7 @@ class ResourceGeneratorTest extends \PHPUnit_Framework_TestCase
         $dir = self::GRAVITON_TMP_DIR;
         $document = "DocumentTest";
 
-        $generator = $this->getMockBuilder("Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy")
+        $generator = $this->getMockBuilder("Graviton\\GeneratorBundle\\Tests\\Generator\\ResourceGeneratorProxy")
             ->disableOriginalConstructor()
             ->setMethods(array("renderFile", "loadServices", "addParam", "addService"))
             ->getMock();
