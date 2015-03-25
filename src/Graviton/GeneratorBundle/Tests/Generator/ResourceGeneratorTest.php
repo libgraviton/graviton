@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Graviton;
 use Graviton\TestBundle\Test\GravitonTestCase;
 
@@ -75,7 +76,7 @@ class ResourceGeneratorTest extends GravitonTestCase
         $paramKey = 'graviton.test.class';
         $value = 'GravitonDyn\TestBundle\Test';
 
-        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy')
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
             ->disableOriginalConstructor()
             ->setMethods(array('addParam'))
             ->getProxy();
@@ -103,7 +104,7 @@ class ResourceGeneratorTest extends GravitonTestCase
         $paramKey = 'graviton.test.class';
         $value = 'GravitonDyn\TestBundle\Test';
 
-        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy')
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
             ->disableOriginalConstructor()
             ->setMethods(array('addParam'))
             ->getProxy();
@@ -119,7 +120,7 @@ class ResourceGeneratorTest extends GravitonTestCase
      *
      * @return void
      */
-    public function testAddRolesParameter()
+    public function testAddCollectionParam()
     {
         $xml = '<container>' .
             '<parameters>' .
@@ -132,25 +133,116 @@ class ResourceGeneratorTest extends GravitonTestCase
 
         $dom = new \DOMDocument();
         $dom->loadXML('<container/>');
-        $docName = 'graviton.test';
+        $key = 'graviton.test.roles';
         $roles = array('GRAVITON_USER', 'GRAVITON_ADMIN');
 
-        $jsonDefinitionMock = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinition')
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
             ->disableOriginalConstructor()
-            ->setMethods(array('getRoles'))
-            ->getMock();
-        $jsonDefinitionMock
-            ->expects($this->once())
-            ->method('getRoles')
-            ->willReturn($roles);
-
-        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy')
-            ->disableOriginalConstructor()
-            ->setMethods(array('addRolesParameter'))
+            ->setMethods(array('addCollectionParam'))
             ->getProxy();
 
-        $generator->addRolesParameter($dom, $jsonDefinitionMock, $docName);
+        $generator->addCollectionParam($dom, $key, $roles);
         $this->assertXmlStringEqualsXmlString($xml, $dom->saveXML());
+    }
+
+    /**
+     * @return void
+     */
+    public function testLoadServices()
+    {
+        // generate dummy services.xml
+        file_put_contents(
+            self::GRAVITON_TMP_DIR . '/Resources/config/services.xml',
+            '<?xml version="1.0"?><container/>'
+        );
+
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('loadServices'))
+            ->getProxy();
+
+        $services = $generator->loadServices(self::GRAVITON_TMP_DIR);
+
+        $this->assertInstanceOf('\DomDocument', $services);
+        $this->assertSame($services, $generator->loadServices(self::GRAVITON_TMP_DIR));
+    }
+
+    /**
+     * @return void
+     */
+    public function testAddXmlParameter()
+    {
+        $value = 'the fox jumps over the lazy dog.';
+        $key = 'some_document.class';
+        $type = 'string';
+
+        $element = array(
+            'content' => $value,
+            'key' => $key,
+            'type' => strtolower($type),
+        );
+
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('addXmlParameter'))
+            ->setProperties(array('xmlParameters'))
+            ->getProxy();
+
+        $generator->xmlParameters = new ArrayCollection();
+
+        $generator->addXmlParameter($value, $key, $type);
+
+        $this->assertTrue($generator->xmlParameters->contains($element));
+    }
+
+    /**
+     * @return void
+     */
+    public function testGenerateParameters()
+    {
+        // generate dummy services.xml
+        file_put_contents(
+            self::GRAVITON_TMP_DIR . '/Resources/config/services.xml',
+            '<?xml version="1.0"?><container/>'
+        );
+
+        $xml = '<container>' .
+            '<parameters>' .
+            '<parameter key="graviton.test.parameter">some ext</parameter>' .
+            '<parameter key="graviton.test.collection" type="collection">' .
+            '<parameter>item1</parameter>' .
+            '<parameter>item2</parameter>' .
+            '</parameter>' .
+            '</parameters>' .
+            '</container>';
+
+        $parameters = array(
+            array(
+                'content' => 'some ext',
+                'key' => 'graviton.test.parameter',
+                'type' => 'string',
+            ),
+            array(
+                'content' => array('item1', 'item2'),
+                'key' => 'graviton.test.collection',
+                'type' => 'collection',
+            ),
+        );
+
+
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('generateParameters', 'loadServices'))
+            ->setProperties(array('xmlParameters'))
+            ->getProxy();
+
+        $generator->xmlParameters = new ArrayCollection($parameters);
+
+        $generator->generateParameters(self::GRAVITON_TMP_DIR);
+
+        $services = $generator->loadServices(self::GRAVITON_TMP_DIR);
+
+        $this->assertXmlStringEqualsXmlString($xml, $services->saveXML());
     }
 
     /**
@@ -187,7 +279,7 @@ class ResourceGeneratorTest extends GravitonTestCase
 
         $generator = $this->getMockBuilder('\Graviton\GeneratorBundle\Tests\Generator\ResourceGeneratorProxy')
             ->disableOriginalConstructor()
-            ->setMethods(array('renderFile', 'loadServices', 'addParam', 'addService', 'addRolesParameter'))
+            ->setMethods(array('renderFile', 'loadServices', 'addXmlParameter', 'addService'))
             ->getMock();
 
         $generator
@@ -195,29 +287,14 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->method('renderFile');
 
         $generator
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('loadServices')
             ->will($this->returnValue($servicesMock));
 
         $generator
-            ->expects($this->once())
-            ->method('addParam')
-            ->with(
-                $this->equalTo($servicesMock),
-                $this->equalTo($docName . '.class'),
-                $this->equalTo($documentNS)
-            )
-            ->will($this->returnValue($servicesMock));
+            ->expects($this->exactly(2))
+            ->method('addXmlParameter');
 
-        $generator
-            ->expects($this->once())
-            ->method('addRolesParameter')
-            ->with(
-                $this->equalTo($servicesMock),
-                $this->equalTo($jsonDefinitionMock),
-                $this->equalTo($docName)
-            )
-            ->will($this->returnValue($servicesMock));
 
         $generator
             ->expects($this->once())
