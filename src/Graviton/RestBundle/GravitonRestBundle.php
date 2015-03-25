@@ -12,6 +12,7 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
+use Graviton\RestBundle\DependencyInjection\Compiler\ReferenceHandlerCompilerPass;
 
 /**
  * GravitonRestBundle
@@ -50,5 +51,6 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         parent::build($container);
 
         $container->addCompilerPass(new RestServicesCompilerPass);
+        $container->addCompilerPass(new ReferencehandlerCompilerPass);
     }
 }

@@ -123,8 +123,8 @@ class ResourceGenerator extends AbstractGenerator
                 if ($this->json instanceof JsonDefinition &&
                     $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
                 ) {
-                    $fieldInformation = $this->json->getField($field['fieldName'])
-                                                   ->getDefAsArray();
+                    $fieldJson = $this->json->getField($field['fieldName']);
+                    $fieldInformation = $fieldJson->getDefAsArray();
 
                     // in this context, the default type is the doctrine type..
                     if (isset($fieldInformation['doctrineType'])) {
@@ -417,25 +417,30 @@ class ResourceGenerator extends AbstractGenerator
             $this->addCallsToService($calls, $dom, $attrNode);
 
             if ($tag) {
-                $tagNode = $dom->createElement('tag');
-
-                $this->addAttributeToNode('name', $tag, $dom, $tagNode);
+                $tagAttrs = array();
 
                 // get stuff from json definition
                 if ($this->json instanceof JsonDefinition) {
                     // is this read only?
                     if ($this->json->isReadOnlyService()) {
-                        $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
+                        $tagAttrs['read-only'] = 'true';
                     }
 
                     // router base defined?
                     $routerBase = $this->json->getRouterBase();
                     if ($routerBase !== false) {
-                        $this->addAttributeToNode('router-base', $routerBase, $dom, $tagNode);
+                        $tagAttrs['router-base'] = $routerBase;
                     }
                 }
+                $this->addTagToService($tag, $dom, $attrNode, $tagAttrs);
+            }
 
-                $attrNode->appendChild($tagNode);
+            if ($this->json instanceof JsonDefinition) {
+                // is this a reference that should get an external link
+                $tags = $this->json->getTags();
+                foreach ($tags as $tag) {
+                    $this->addTagToService($tag, $dom, $attrNode);
+                }
             }
 
             $this->addArgumentsToService($arguments, $dom, $attrNode);
@@ -529,6 +534,32 @@ class ResourceGenerator extends AbstractGenerator
 
         $node->appendChild($argNode);
     }
+
+    /**
+     * add tag to service
+     *
+     * @param array        $tag  tag to create
+     * @param \DOMDocument $dom  dom document to add to
+     * @param \DOMElement  $node node to use as parent
+     * @param array        $attr attrbutes for tag
+     *
+     * @return \DOMElement
+     */
+    private function addTagToService($tag, $dom, $node, $attr = array())
+    {
+        $tagNode = $dom->createElement('tag');
+
+        $this->addAttributeToNode('name', $tag, $dom, $tagNode);
+
+        foreach ($attr as $name => $value) {
+            $this->addAttributeToNode($name, $value, $dom, $tagNode);
+        }
+
+        $node->appendChild($tagNode);
+
+        return $tagNode;
+    }
+
 
     /**
      * generate serializer part of a resource

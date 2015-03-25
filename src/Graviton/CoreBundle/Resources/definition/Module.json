@@ -79,7 +79,14 @@
   },
   "target": {
     "indexes": [],
-    "relations": [],
+    "relations": [
+      {
+        "type": "embed",
+        "collectionName": "ModuleApp",
+        "localProperty": "app",
+        "localValueField": "app"
+      }
+    ],
     "fields": [
       {
         "name": "id",
@@ -102,10 +109,8 @@
         "required": true
       },
       {
-        "name": "app.ref",
-        "type": "class:Graviton\\CoreBundle\\Document\\App",
-        "title": "App",
-        "description": "Link to app",
+        "name": "app",
+        "type": "class:GravitonDyn\\ModuleAppBundle\\Document\\ModuleApp",
         "required": true
       },
       {

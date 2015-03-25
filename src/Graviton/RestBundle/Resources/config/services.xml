@@ -41,7 +41,9 @@
         </service>
         <service id="graviton.rest.subscriber.referencehandlerevent"
             class="%graviton.rest.subscriber.referencehandlerevent.class%">
+            <factory class="%graviton.rest.subscriber.referencehandlerevent.class%" method="getTypedHandler"/>
             <argument type="service" id="router"/>
+            <argument type="collection" key="graviton.rest.subscriber.referencehandlerevent.types"/>
             <tag name="jms_serializer.subscribing_handler"/>
         </service>
 

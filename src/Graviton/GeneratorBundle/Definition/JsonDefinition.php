@@ -260,6 +260,20 @@ class JsonDefinition
     }
 
     /**
+     * return any additional tags if defined
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        $ret = [];
+        if (!empty($this->doc->service->tags)) {
+            $ret = $this->doc->service->tags;
+        }
+        return $ret;
+    }
+
+    /**
      * Returns the Controller classname this services' controller shout inherit.
      * Defaults to the RestController of the RestBundle of course.
      *

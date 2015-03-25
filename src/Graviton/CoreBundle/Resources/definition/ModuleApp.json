@@ -1,0 +1,25 @@
+{
+  "id": "ModuleApp",
+  "description": "App part of a module",
+    "tags": [
+      "graviton.reference_handler_types"
+    ],
+  "service": {
+    "readOnly": false,
+    "fixtures": [
+    ]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "ref",
+        "type": "class:Graviton\\CoreBundle\\Document\\App",
+        "title": "App",
+        "description": "Link to app",
+        "required": true
+      }
+    ]
+  }
+}

@@ -315,4 +315,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         $this->relType = $relType;
     }
+
+    /**
+     * get tags for a class
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        $tags = array();
+        if ($this->isClassType() && !empty($this->def->tags))
+        {
+            $tags = $this->def->tags;
+        }
+        return $tags;
+    }
+
 }

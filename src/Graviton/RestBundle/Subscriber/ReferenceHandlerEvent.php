@@ -21,7 +21,12 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     /**
      * @var Router
      */
-    protected $router;
+    private $router;
+
+    /**
+     * @var array
+     */
+    private static $types;
 
     /**
      * @param Router $router router used for generating links
@@ -32,18 +37,34 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     }
 
     /**
+     * @param Router $router router used for generating links
+     * @param array $types array of types this handler subscribes to
+     */
+    public static function getTypedHandler(Router $router, array $types)
+    {
+        self::$types = $types;
+        return new self($router);
+    }
+
+    /**
      * @return array
      */
     public static function getSubscribingMethods()
     {
-        return array(
-            array (
-                'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
-                'type' => 'GravitonDyn\ModuleBundle\Document\ModuleApp',
-                'format' => 'json',
-                'method' => 'serialize',
-            )
+        return array();
+        $defaults = array (
+            'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
+            'format' => 'json',
+            'method' => 'serialize',
         );
+
+        $methods = array();
+
+        foreach (self::$types as $type) {
+            $methods[] = array_merge(array('type' => $type), $defaults);
+        }
+
+        return $methods;
     }
 
     /**

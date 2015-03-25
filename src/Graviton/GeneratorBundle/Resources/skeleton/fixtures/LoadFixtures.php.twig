@@ -81,7 +81,7 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
                     if (is_object($val) && isset($val->ref) && isset($val->ref->{'$ref'})) {
                         $setterFunction = 'set'.ucfirst($key);
 
-                        $valueRecord = new \GravitonDyn\ModuleBundle\Document\ModuleApp;
+                        $valueRecord = new \GravitonDyn\ModuleAppBundle\Document\ModuleApp;
                         $valueRecord->setRef($manager->find('Graviton\CoreBundle\Document\App', $val->ref->{'$id'}));
 
                         $thisRecord->$setterFunction($valueRecord);
