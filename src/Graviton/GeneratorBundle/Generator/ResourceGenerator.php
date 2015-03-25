@@ -84,10 +84,7 @@ class ResourceGenerator extends AbstractGenerator
     public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
     {
         $dir = $bundle->getPath();
-
-        //@todo: check if the content of document is postfixed with 'Bundle' before trying to remove it.
         $basename = $this->getBundleBaseName($document);
-
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
         // do we have a json path passed?
@@ -124,7 +121,7 @@ class ResourceGenerator extends AbstractGenerator
                     $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
                 ) {
                     $fieldInformation = $this->json->getField($field['fieldName'])
-                                                   ->getDefAsArray();
+                        ->getDefAsArray();
 
                     // in this context, the default type is the doctrine type..
                     if (isset($fieldInformation['doctrineType'])) {
@@ -237,16 +234,7 @@ class ResourceGenerator extends AbstractGenerator
             $parameters['base'] . 'Document\\' . $parameters['document']
         );
 
-
-        $roles = $parameters['json']->getRoles();
-        if (!empty($roles)) {
-            $services = $this->addParam(
-                $services,
-                $docName . '.roles',
-                $parameters['json']->getRoles()
-            );
-        }
-
+        $services = $this->addRolesParameter($services, $parameters['json'], $docName);
         $services = $this->addService(
             $services,
             $docName
@@ -326,10 +314,7 @@ class ResourceGenerator extends AbstractGenerator
     {
         $paramNode = $this->addNodeIfMissing($dom, 'parameters');
 
-        $xpath = new \DomXpath($dom);
-
-        $nodes = $xpath->query('//parameters/parameter[@key="' . $key . '.class"]');
-        if ($nodes->length < 1) {
+        if (!$this->parameterNodeExists($dom, $key)) {
             $attrNode = $dom->createElement('parameter', $value);
 
             $this->addAttributeToNode('key', $key, $dom, $attrNode);
@@ -339,6 +324,56 @@ class ResourceGenerator extends AbstractGenerator
 
         return $dom;
     }
+
+    /**
+     * Adds a new parameter tag to parameters section reflecting the defined roles.
+     *
+     * @param \DomDocument   $dom            services.xml document to be modified.
+     * @param JsonDefinition $jsonDefinition json configuration, read from resources dir.
+     * @param string         $docName        Name of the document the parameter shall be generated for.
+     *
+     * @return \DomDocument
+     */
+    protected function addRolesParameter(\DomDocument $dom, JsonDefinition $jsonDefinition, $docName)
+    {
+        $paramNode = $this->addNodeIfMissing($dom, 'parameters');
+        $key = $docName . '.roles';
+
+        if (!$this->parameterNodeExists($dom, $key)) {
+            $roles = $jsonDefinition->getRoles();
+
+            if (!empty($roles)) {
+                $rolesNode = $dom->createElement('parameter');
+                $this->addAttributeToNode('key', $key, $dom, $rolesNode);
+
+                foreach ($roles as $role) {
+                    $roleNode = $dom->createElement('role', $role);
+                    $rolesNode->appendChild($roleNode);
+                }
+
+                $paramNode->appendChild($rolesNode);
+            }
+        }
+
+        return $dom;
+    }
+
+    /**
+     * Determines, if the provided key attribute was already claimed by a parameter node.
+     *
+     * @param \DomDocument $dom Current document
+     * @param string       $key Key to be found in document
+     *
+     * @return bool
+     */
+    private function parameterNodeExists(\DomDocument $dom, $key)
+    {
+        $xpath = new \DomXpath($dom);
+        $nodes = $xpath->query('//parameters/parameter[@key="' . $key . '"]');
+
+        return $nodes->length > 0;
+    }
+
 
     /**
      * add node if missing
@@ -352,7 +387,7 @@ class ResourceGenerator extends AbstractGenerator
     private function addNodeIfMissing(&$dom, $element, $container = 'container')
     {
         $container = $dom->getElementsByTagName($container)
-                         ->item(0);
+            ->item(0);
         $nodes = $dom->getElementsByTagName($element);
         if ($nodes->length < 1) {
             $newNode = $dom->createElement($element);
