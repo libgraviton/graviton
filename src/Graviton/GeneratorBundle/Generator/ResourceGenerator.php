@@ -182,7 +182,11 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * @param string $dir
+     * Writes the current services definition to a file.
+     *
+     * @param string $dir base bundle dir
+     *
+     * @return void
      */
     protected function persistServicesXML($dir)
     {
@@ -310,15 +314,15 @@ class ResourceGenerator extends AbstractGenerator
      * Generates the parameters section of the services.xml file.
      *
      * @param string $dir base bundle dir
+     *
+     * @return void
      */
     protected function generateParameters($dir)
     {
         if ($this->xmlParameters->count() > 0) {
-
             $services = $this->loadServices($dir);
 
             foreach ($this->xmlParameters as $parameter) {
-
                 switch ($parameter['type']) {
                     case 'collection':
                         $this->addCollectionParam($services, $parameter['key'], $parameter['content']);
@@ -334,11 +338,13 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * Registers
+     * Registers information to be generated to a parameter tag.
      *
-     * @param mixed  $value
-     * @param string $key
-     * @param string $type
+     * @param mixed  $value Content of the tag
+     * @param string $key   Content of the key attribute
+     * @param string $type  Type of the tag
+     *
+     * @return void
      */
     protected function addXmlParameter($value, $key, $type = 'string')
     {
@@ -367,7 +373,6 @@ class ResourceGenerator extends AbstractGenerator
     protected function loadServices($dir)
     {
         if (empty($this->serviceDOM)) {
-
             $this->serviceDOM = new \DOMDocument;
             $this->serviceDOM->formatOutput = true;
             $this->serviceDOM->preserveWhiteSpace = false;
@@ -407,6 +412,8 @@ class ResourceGenerator extends AbstractGenerator
      * @param \DOMDocument $dom    services.xml document
      * @param string       $key    parameter key
      * @param array        $values parameter value
+     *
+     * @return void
      *
      * @link http://symfony.com/doc/current/book/service_container.html#array-parameters
      */
@@ -466,7 +473,6 @@ class ResourceGenerator extends AbstractGenerator
             $newNode = $dom->createElement($element);
 
             if (!empty($insertBefore)) {
-
                 $xpath = new \DomXpath($dom);
                 $found = $xpath->query($insertBefore);
 
@@ -758,16 +764,9 @@ class ResourceGenerator extends AbstractGenerator
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
 
-//        $services = $this->addParam(
-//            $services,
-//            $paramName . '.class',
-//            $parameters['base'] . 'Controller\\' . $parameters['document'] . 'Controller'
-//        );
-
         $this->addXmlParameter(
             $parameters['base'] . 'Controller\\' . $parameters['document'] . 'Controller',
             $paramName . '.class'
-
         );
 
         $services = $this->addService(
