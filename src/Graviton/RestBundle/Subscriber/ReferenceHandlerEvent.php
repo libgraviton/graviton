@@ -23,11 +23,17 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
      */
     protected $router;
 
+    /**
+     * @param Router $router router used for generating links
+     */
     public function __construct(Router $router)
     {
         $this->router = $router;
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribingMethods()
     {
         return array(
@@ -36,17 +42,17 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
                 'type' => 'GravitonDyn\ModuleBundle\Document\ModuleApp',
                 'format' => 'json',
                 'method' => 'serialize',
-            ),
-            array (
-                'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
-                'type' => 'link',
-                'format' => 'json',
-                'method' => 'deserialize',
-            ),
+            )
         );
     }
 
-    public function serialize(JsonSerializationVisitor $visitor, $document, $type, $context)
+    /**
+     * @param JsonSerializationVisitor $visitor  jms_serializer listener
+     * @param object                   $document document to serialize
+     *
+     * @return object
+     */
+    public function serialize(JsonSerializationVisitor $visitor, $document)
     {
         $id = $document->getRef()->getId();
 
@@ -61,9 +67,5 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
             'id' => $id,
             '$ref' => $link,
         );
-    }
-    public function deserialize(Visitor\ArrayDeserialize $visitor, $document, array $type, Context $context)
-    {
-        return $document;
     }
 }
