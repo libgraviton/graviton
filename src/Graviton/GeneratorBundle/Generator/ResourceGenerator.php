@@ -178,6 +178,9 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateController($parameters, $dir, $document);
         }
 
+        list($prefix, ) = explode('\\', strtolower($bundleNamespace));
+        $this->extractTargetRelations($parameters['json']->getRelations(), $prefix);
+
         $this->generateParameters($dir);
     }
 
@@ -338,6 +341,32 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
+     * Extracts relation information from json definitoin's target section.
+     *
+     * @param array  $relations Set of relations defined.
+     * @param string $prefix    Prefix for the parameter key.
+     *
+     * @return void
+     */
+    protected function extractTargetRelations(array $relations, $prefix)
+    {
+        $params = [];
+
+        foreach ($relations as $name => $relation) {
+            if (empty($relation->path) || empty($relation->collectionName)) {
+                continue;
+            }
+            $collection = strtolower($relation->collectionName);
+            $params[$collection][$name] = $relation->path;
+        }
+
+        foreach ($params as $collection => $items) {
+            $key = sprintf('%s.%s.relations', $prefix, $collection);
+            $this->addXmlParameter($items, $key, 'collection');
+        }
+    }
+
+    /**
      * Registers information to be generated to a parameter tag.
      *
      * @param mixed  $value Content of the tag
@@ -427,15 +456,19 @@ class ResourceGenerator extends AbstractGenerator
                 $this->addAttributeToNode('key', $key, $dom, $rolesNode);
                 $this->addAttributeToNode('type', 'collection', $dom, $rolesNode);
 
-                foreach ($values as $item) {
+                foreach ($values as $id => $item) {
                     $roleNode = $dom->createElement('parameter', $item);
+
+                    if (0 === intval($id)) {
+                        $this->addAttributeToNode('key', $id, $dom, $roleNode);
+                    }
+
                     $rolesNode->appendChild($roleNode);
                 }
 
                 $paramNode->appendChild($rolesNode);
             }
         }
-
     }
 
     /**

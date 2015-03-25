@@ -84,7 +84,8 @@
         "type": "embed",
         "collectionName": "ModuleApp",
         "localProperty": "app",
-        "localValueField": "app"
+        "localValueField": "app",
+        "path": "/core/app/"
       }
     ],
     "fields": [

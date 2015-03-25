@@ -118,31 +118,49 @@ class ResourceGeneratorTest extends GravitonTestCase
     /**
      * Validates behavior of addRolesParameter
      *
+     * @dataProvider collectionParamsProvider
+     *
+     * @param string $xml    expected result
+     * @param array  $params set of parameters
+     *
      * @return void
      */
-    public function testAddCollectionParam()
+    public function testAddCollectionParam($xml, array $params)
     {
-        $xml = '<container>' .
-            '<parameters>' .
-            '<parameter key="graviton.test.roles"  type="collection">' .
-            '<parameter>GRAVITON_USER</parameter>' .
-            '<parameter>GRAVITON_ADMIN</parameter>' .
-            '</parameter>' .
-            '</parameters>' .
-            '</container>';
-
         $dom = new \DOMDocument();
         $dom->loadXML('<container/>');
         $key = 'graviton.test.roles';
-        $roles = array('GRAVITON_USER', 'GRAVITON_ADMIN');
 
         $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
             ->disableOriginalConstructor()
             ->setMethods(array('addCollectionParam'))
             ->getProxy();
 
-        $generator->addCollectionParam($dom, $key, $roles);
+        $generator->addCollectionParam($dom, $key, $params);
         $this->assertXmlStringEqualsXmlString($xml, $dom->saveXML());
+    }
+
+    /**
+     * Provides a set of test cases
+     *
+     * @return array
+     */
+    public function collectionParamsProvider()
+    {
+        return array(
+            'muliple, no key' => array(
+                '<container><parameters><parameter key="graviton.test.roles"  type="collection">' .
+                '<parameter>GRAVITON_USER</parameter><parameter>GRAVITON_ADMIN</parameter></parameter>' .
+                '</parameters></container>',
+                array('GRAVITON_USER', 'GRAVITON_ADMIN')
+            ),
+            'muliple, with key' => array(
+                '<container><parameters><parameter key="graviton.test.roles"  type="collection">' .
+                '<parameter key="user">GRAVITON_USER</parameter><parameter key="admin">GRAVITON_ADMIN</parameter>' .
+                '</parameter></parameters></container>',
+                array('user' => 'GRAVITON_USER', 'admin' => 'GRAVITON_ADMIN')
+            ),
+        );
     }
 
     /**
@@ -243,6 +261,49 @@ class ResourceGeneratorTest extends GravitonTestCase
         $services = $generator->loadServices(self::GRAVITON_TMP_DIR);
 
         $this->assertXmlStringEqualsXmlString($xml, $services->saveXML());
+    }
+
+    /**
+     * @return void
+     */
+    public function testExtractTargetRelations()
+    {
+        $relations = array(
+            'app' => (object) array(
+                'type' => 'embed',
+                'collectionName' => 'ModuleApp',
+                'localProperty' => 'app',
+                'localValueField' => 'app',
+                'path' => '/core/app/'
+            ),
+            'mode' => (object) array(
+                'type' => 'embed',
+                'collectionName' => 'ModuleApp',
+                'localProperty' => 'mode',
+                'localValueField' => 'mode',
+                'path' => '/core/mode/'
+            ),
+        );
+        $prefix = 'graviton.test';
+        $expected = array(
+            'content' => array(
+                'app' => '/core/app/',
+                'mode' => '/core/mode/',
+            ),
+            'key' => $prefix . '.moduleapp.relations' ,
+            'type' => 'collection',
+        );
+
+        $generator = $this->getProxyBuilder('\Graviton\GeneratorBundle\Generator\ResourceGenerator')
+            ->disableOriginalConstructor()
+            ->setMethods(array('extractTargetRelations'))
+            ->setProperties(array('xmlParameters'))
+            ->getProxy();
+
+        $generator->xmlParameters = new ArrayCollection();
+        $generator->extractTargetRelations($relations, $prefix);
+
+        $this->assertTrue($generator->xmlParameters->contains($expected));
     }
 
     /**
