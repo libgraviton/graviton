@@ -123,9 +123,9 @@ class ResourceGeneratorTest extends GravitonTestCase
     {
         $xml = '<container>' .
             '<parameters>' .
-            '<parameter key="graviton.test.roles">' .
-            '<role>GRAVITON_USER</role>' .
-            '<role>GRAVITON_ADMIN</role>' .
+            '<parameter key="graviton.test.roles"  type="collection">' .
+            '<parameter>GRAVITON_USER</parameter>' .
+            '<parameter>GRAVITON_ADMIN</parameter>' .
             '</parameter>' .
             '</parameters>' .
             '</container>';

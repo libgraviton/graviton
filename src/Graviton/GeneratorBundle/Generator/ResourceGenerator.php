@@ -333,6 +333,8 @@ class ResourceGenerator extends AbstractGenerator
      * @param string         $docName        Name of the document the parameter shall be generated for.
      *
      * @return \DomDocument
+     *
+     * @link http://symfony.com/doc/current/book/service_container.html#array-parameters
      */
     protected function addRolesParameter(\DomDocument $dom, JsonDefinition $jsonDefinition, $docName)
     {
@@ -345,9 +347,10 @@ class ResourceGenerator extends AbstractGenerator
             if (!empty($roles)) {
                 $rolesNode = $dom->createElement('parameter');
                 $this->addAttributeToNode('key', $key, $dom, $rolesNode);
+                $this->addAttributeToNode('type', 'collection', $dom, $rolesNode);
 
                 foreach ($roles as $role) {
-                    $roleNode = $dom->createElement('role', $role);
+                    $roleNode = $dom->createElement('parameter', $role);
                     $rolesNode->appendChild($roleNode);
                 }
 
