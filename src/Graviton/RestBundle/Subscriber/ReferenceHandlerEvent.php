@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -82,6 +81,7 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
         list($prefix, $bundle,) = explode('\\', strtolower($type['name']));
         $docName = str_replace('bundle', '', $bundle);
         $parameter = sprintf('%s.%s.relations', $prefix, $docName);
+        $pathInfo = '';
 
         try {
             $relations = $this->parameterBag->get($parameter);
