@@ -5,11 +5,13 @@
 
 namespace Graviton\RestBundle\Subscriber;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\JsonSerializationVisitor;
-use JMS\Serializer\GraphNavigator;
-use JMS\Serializer\Context;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,24 +28,30 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     /**
      * @var array
      */
-    private static $types;
+    private static $types = array();
 
     /**
-     * @param Router $router router used for generating links
+     * @param Router    $router    router used for generating links
+     * @param Container $container Symfony DIC
      */
-    public function __construct(Router $router)
+    public function __construct(Router $router, Container $container)
     {
         $this->router = $router;
+        $this->parameterBag = $container->getParameterBag();
+        $this->container = $container;
     }
 
     /**
-     * @param Router $router router used for generating links
-     * @param array $types array of types this handler subscribes to
+     * @param Router    $router    router used for generating links
+     * @param Container $container Symfony DIC
+     * @param array     $types     array of types this handler subscribes to
+     *
+     * @return \Graviton\RestBundle\Subscriber\ReferenceHandlerEvent
      */
-    public static function getTypedHandler(Router $router, array $types)
+    public static function getTypedHandler(Router $router, Container $container, array $types)
     {
         self::$types = $types;
-        return new self($router);
+        return new self($router, $container);
     }
 
     /**
@@ -52,38 +60,64 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     public static function getSubscribingMethods()
     {
         return array();
-        $defaults = array (
-            'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
-            'format' => 'json',
-            'method' => 'serialize',
-        );
-
-        $methods = array();
-
-        foreach (self::$types as $type) {
-            $methods[] = array_merge(array('type' => $type), $defaults);
-        }
-
-        return $methods;
+        // $defaults = array (
+        //     'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
+        //     'format' => 'json',
+        //     'method' => 'serialize',
+        // );
+        //
+        // $methods = array();
+        //
+        // foreach (self::$types as $type) {
+        //     $methods[] = array_merge(array('type' => $type), $defaults);
+        // }
+        //
+        // return $methods;
     }
 
     /**
      * @param JsonSerializationVisitor $visitor  jms_serializer listener
      * @param object                   $document document to serialize
+     * @param array                    $type     foo??
      *
      * @return object
      */
-    public function serialize(JsonSerializationVisitor $visitor, $document)
+    public function serialize(JsonSerializationVisitor $visitor, $document, $type)
     {
         $id = $document->getRef()->getId();
 
-        $link = $this->router->generate(
-            'graviton.core.rest.app.get',
-            array(
+        try {
+            list($prefix, $bundle,) = explode('\\', strtolower($type['name']));
+            $docName = str_replace('bundle', '', $bundle);
+            $parameter = sprintf('%s.%s.relations', $prefix, $docName);
+
+            $relations = $this->parameterBag->get($parameter);
+            $pathInfo = sprintf('%s%s', array_shift($relations), $id);
+
+            $matcher = $this->router->getMatcher();
+            $route = $matcher->match($pathInfo);
+
+            $link = $this->router->generate(
+                $route['_route'],
+                array(
+                    'id' => $id,
+                ),
+                true
+            );
+
+        } catch (ParameterNotFoundException $e) {
+            return array(
                 'id' => $id,
-            ),
-            true
-        );
+                '$ref' => sprintf('Parameter (%s) is not registered.', $parameter),
+            );
+        } catch (ResourceNotFoundException $e) {
+            return array(
+                'id' => $id,
+                '$ref' => sprintf('Could not resolve route (%s).', $pathInfo),
+            );
+
+        }
+
         return array(
             'id' => $id,
             '$ref' => $link,
