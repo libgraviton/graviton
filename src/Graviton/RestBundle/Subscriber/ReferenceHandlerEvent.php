@@ -31,6 +31,12 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     private static $types = array();
 
     /**
+     * @var \Symfony\Component\DependencyInjection\ParameterBag\ParameterBag
+     */
+    private $parameterBag;
+
+
+    /**
      * @param Router    $router    router used for generating links
      * @param Container $container Symfony DIC
      */
@@ -38,7 +44,6 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     {
         $this->router = $router;
         $this->parameterBag = $container->getParameterBag();
-        $this->container = $container;
     }
 
     /**
@@ -60,22 +65,11 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     public static function getSubscribingMethods()
     {
         return array();
-        // $defaults = array (
-        //     'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
-        //     'format' => 'json',
-        //     'method' => 'serialize',
-        // );
-        //
-        // $methods = array();
-        //
-        // foreach (self::$types as $type) {
-        //     $methods[] = array_merge(array('type' => $type), $defaults);
-        // }
-        //
-        // return $methods;
     }
 
     /**
+     * Renders the reference link.
+     *
      * @param JsonSerializationVisitor $visitor  jms_serializer listener
      * @param object                   $document document to serialize
      * @param array                    $type     foo??
@@ -85,12 +79,11 @@ final class ReferenceHandlerEvent implements SubscribingHandlerInterface
     public function serialize(JsonSerializationVisitor $visitor, $document, $type)
     {
         $id = $document->getRef()->getId();
+        list($prefix, $bundle,) = explode('\\', strtolower($type['name']));
+        $docName = str_replace('bundle', '', $bundle);
+        $parameter = sprintf('%s.%s.relations', $prefix, $docName);
 
         try {
-            list($prefix, $bundle,) = explode('\\', strtolower($type['name']));
-            $docName = str_replace('bundle', '', $bundle);
-            $parameter = sprintf('%s.%s.relations', $prefix, $docName);
-
             $relations = $this->parameterBag->get($parameter);
             $pathInfo = sprintf('%s%s', array_shift($relations), $id);
 
