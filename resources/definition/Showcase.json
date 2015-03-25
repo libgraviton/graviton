@@ -5,6 +5,7 @@
         "readOnly": false,
         "baseController": "\\Graviton\\CoreBundle\\Controller\\ShowcaseExtensionController",
         "routerBase": "/hans/showcase/",
+        "roles": ["GRAVITON_USER"],
         "fixtures": [
             {
                 "id": 500,
