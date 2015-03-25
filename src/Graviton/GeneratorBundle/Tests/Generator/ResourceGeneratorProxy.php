@@ -31,6 +31,19 @@ class ResourceGeneratorProxy extends ResourceGenerator
      */
     public function generateDocument($parameters, $dir, $document, $withRepository)
     {
-        return parent::generateDocument($parameters, $dir, $document, $withRepository);
+        parent::generateDocument($parameters, $dir, $document, $withRepository);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Graviton\GeneratorBundle\Generator\ResourceGenerator::generateDocument()
+     *
+     * @param string $dir base bundle dir
+     *
+     * @return void
+     */
+    public function generateParameters($dir)
+    {
+        parent::generateParameters($dir);
     }
 }

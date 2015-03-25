@@ -395,4 +395,20 @@ class JsonDefinition
         }
         return $ret;
     }
+
+    /**
+     * Provides the role set defined in the service section.
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = array();
+
+         if (!empty($this->doc->service->roles)) {
+             $roles = $this->doc->service->roles;
+         }
+
+        return $roles;
+    }
 }

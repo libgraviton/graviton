@@ -24,6 +24,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     private $wrongUriPath;
     private $subDocumentPath;
     private $relationsPath;
+    private $rolesPath;
 
     /**
      * setup
@@ -41,6 +42,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->wrongUriPath = __DIR__.'/resources/test-minimal-wrong-uri.json';
         $this->subDocumentPath = __DIR__.'/resources/test-minimal-sub.json';
         $this->relationsPath = __DIR__.'/resources/test-minimal-relations.json';
+        $this->rolesPath = __DIR__.'/resources/test-roles.json';
     }
 
     /**
@@ -262,5 +264,17 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $jsonDef = new JsonDefinition($this->wrongUriPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
         $this->assertEquals('/hans/showcase', $jsonDef->getRouterBase());
+    }
+
+    /**
+     * role set definition
+     *
+     * @return void
+     */
+    public function testRoles()
+    {
+        $jsonDef = new JsonDefinition($this->rolesPath);
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
+        $this->assertEquals(array('GRAVITON_USER'), $jsonDef->getRoles());
     }
 }
