@@ -340,6 +340,7 @@ class GenerateDynamicBundleCommand extends Command
         $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
         $cmd = 'php ' . $consolePath . ' -n ';
+        $name = $args[0];
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {
@@ -354,16 +355,40 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         $output->writeln('');
+        $output->writeln(
+            sprintf(
+                '<info>Running %s</info>',
+                $name
+            )
+        );
 
         $output->writeln(
             sprintf(
-                '<comment>Executing "%s"</comment>',
+                '<comment>%s</comment>',
                 $cmd
             )
         );
 
         $this->process->setCommandLine($cmd);
-        $this->process->run();
+        $this->process->run(
+            function ($type, $buffer) use ($output, $cmd) {
+                if (Process::ERR === $type) {
+                    $output->writeln(
+                        sprintf(
+                            '<error>%s</error>',
+                            $buffer
+                        )
+                    );
+                } else {
+                    $output->writeln(
+                        sprintf(
+                            '<comment>%s</comment>',
+                            $buffer
+                        )
+                    );
+                }
+            }
+        );
 
         if (!$this->process->isSuccessful()) {
             throw new \RuntimeException($this->process->getErrorOutput());
