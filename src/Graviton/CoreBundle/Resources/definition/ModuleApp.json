@@ -1,12 +1,12 @@
 {
   "id": "ModuleApp",
   "description": "App part of a module",
-    "tags": [
-      "graviton.reference_handler_types"
-    ],
   "service": {
     "readOnly": false,
     "fixtures": [
+    ],
+    "tags": [
+      "graviton.reference_handler_types"
     ]
   },
   "target": {

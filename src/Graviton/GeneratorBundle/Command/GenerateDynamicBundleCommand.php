@@ -371,7 +371,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $this->process->setCommandLine($cmd);
         $this->process->run(
-            function ($type, $buffer) use ($output, $cmd) {
+            function ($type, $buffer) use ($output) {
                 if (Process::ERR === $type) {
                     $output->writeln(
                         sprintf(
