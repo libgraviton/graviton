@@ -55,13 +55,18 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
         return $this->request(
             'POST',
             $uri,
             $parameters,
             $files,
             $server,
-            $jsonEncode ? json_encode($content) : $content
+            $content
         );
     }
 
@@ -87,13 +92,18 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
         return $this->request(
             'PUT',
             $uri,
             $parameters,
             $files,
             $server,
-            $jsonEncode ? json_encode($content) : $content
+            $content
         );
     }
 
@@ -119,13 +129,18 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
         return $this->request(
             'PATCH',
             $uri,
             $parameters,
             $files,
             $server,
-            $jsonEncode ? json_encode($content) : $content
+            $content
         );
     }
 
