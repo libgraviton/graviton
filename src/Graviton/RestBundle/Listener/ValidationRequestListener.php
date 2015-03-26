@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -57,6 +58,13 @@ class ValidationRequestListener
             // Decode the json from request
             if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
                 $e = new NoInputException();
+                $e->setResponse($event->getResponse());
+                throw $e;
+            }
+
+            // specially check for parse error ($input decodes to null) and report accordingly..
+            if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
+                $e = new MalformedInputException(json_last_error_msg());
                 $e->setResponse($event->getResponse());
                 throw $e;
             }
