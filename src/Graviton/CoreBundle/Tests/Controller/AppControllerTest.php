@@ -226,7 +226,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            'object property name separator &#039;:&#039; expected',
+            'Syntax error, malformed JSON',
             $response->getContent()
         );
 

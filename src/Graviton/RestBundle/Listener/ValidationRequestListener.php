@@ -65,6 +65,7 @@ class ValidationRequestListener
             // specially check for parse error ($input decodes to null) and report accordingly..
             if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
                 $e = new MalformedInputException(json_last_error_msg());
+                $e->setErrorType(json_last_error());
                 $e->setResponse($event->getResponse());
                 throw $e;
             }
