@@ -182,6 +182,37 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if 500 error is reported when posting an malformed input
+     *
+     * @return void
+     */
+    public function testPostMalformedApp()
+    {
+        $testApp = new \stdClass;
+        $testApp->title = new \stdClass;
+        $testApp->title->en = 'new Test App';
+        $testApp->showInMenu = true;
+
+        // malform it ;-)
+        $input = str_replace(":", ";", json_encode($testApp));
+
+        $client = static::createRestClient();
+
+        // make sure this is sent as 'raw' input (not json_encoded again)
+        $client->post('/core/app', $input, array(), array(), array(), false);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'object property name separator &#039;:&#039; expected',
+            $response->getContent()
+        );
+
+        $this->assertEquals(500, $response->getStatusCode());
+
+    }
+
+    /**
      * test updating apps
      *
      * @return void
