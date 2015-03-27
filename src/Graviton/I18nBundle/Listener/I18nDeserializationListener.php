@@ -7,10 +7,7 @@ namespace Graviton\I18nBundle\Listener;
 
 use Graviton\I18NBundle\Service\I18NUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
-use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-use Graviton\I18nBundle\Document\Translatable;
-use Graviton\I18nBundle\Model\Translatable as TranslatableModel;
 
 /**
  * translate fields during serialization
@@ -29,18 +26,18 @@ class I18nDeserializationListener
     /**
      * @var \Graviton\I18nBundle\Service\I18nUtils
      */
-    protected $i18nUtils;
+    protected $intUtils;
 
     /**
-     * set utils
+     * set intUtils (i18nutils)
      *
-     * @param \Graviton\I18NBundle\Service\I18NUtils $i18nUtils utils
+     * @param \Graviton\I18NBundle\Service\I18NUtils $intUtils utils
      *
      * @return void
      */
-    public function setI18nUtils(I18NUtils $i18nUtils)
+    public function setIntUtils(I18NUtils $intUtils)
     {
-        $this->i18nUtils = $i18nUtils;
+        $this->intUtils = $intUtils;
     }
 
     /**
@@ -53,7 +50,7 @@ class I18nDeserializationListener
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $eventClass = $event->getType()['name'];
-        $defaultLanguage = $this->i18nUtils->getDefaultLanguage();
+        $defaultLanguage = $this->intUtils->getDefaultLanguage();
         $object = new $eventClass;
         if ($object instanceof TranslatableDocumentInterface) {
             $data = $event->getData();
@@ -82,7 +79,7 @@ class I18nDeserializationListener
         \array_walk(
             $this->localizedFields,
             function ($values) {
-                $this->i18nUtils->insertTranslatable($values);
+                $this->intUtils->insertTranslatable($values);
             }
         );
     }

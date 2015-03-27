@@ -83,17 +83,14 @@
     <service id="graviton.i18n.translator" alias="translator"/>
     <service id="graviton.i18n.request" class="%graviton.i18n.request.class%" factory-service="request_stack" factory-method="getCurrentRequest"/>
     <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%" scope="request">
-      <call method="setTranslator">
-        <argument type="service" id="graviton.i18n.translator"/>
-      </call>
-      <call method="setRequest">
-        <argument type="service" id="graviton.i18n.request"/>
+      <call method="setIntUtils">
+        <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onpreserialize" direction="serialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
     </service>
     <service id="graviton.i18n.listener.i18ndeserializer" class="%graviton.i18n.listener.i18ndeserializer.class%">
-      <call method="setI18nUtils">
+      <call method="setIntUtils">
         <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" method="onPreDeserialize" direction="deserialization"/>
@@ -104,6 +101,7 @@
              class="%graviton.i18n.utils.class%">
       <!-- this here specifies the 'original' language -->
       <argument type="string">en</argument>
+      <argument type="service" id="graviton.i18n.translator"/>
       <argument type="service" id="graviton.i18n.model.translatable"/>
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="graviton.i18n.request"/>

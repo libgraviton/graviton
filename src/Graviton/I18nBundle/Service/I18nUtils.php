@@ -9,6 +9,7 @@ use Graviton\I18nBundle\Model\Translatable;
 use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -25,6 +26,11 @@ class I18nUtils
      * @var string
      */
     protected $defaultLanguage;
+
+    /**
+     * @var \Symfony\Component\Translation\TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * @var \Graviton\I18nBundle\Model\Translatable
@@ -51,11 +57,13 @@ class I18nUtils
      */
     public function __construct(
         $defaultLanguage,
+        TranslatorInterface $translator,
         Translatable $translatable,
         LanguageRepository $languageRepository,
         Request $request = null
     ) {
         $this->defaultLanguage = $defaultLanguage;
+        $this->translator = $translator;
         $this->translatable = $translatable;
         $this->languageRepository = $languageRepository;
         $this->request = $request;
@@ -114,6 +122,32 @@ class I18nUtils
     }
 
     /**
+     * build a complete translated field
+     *
+     * @param string $value     value to translate
+     * @param bool   $forClient if true, we look at languages header, false we render all languages
+     *
+     * @return array array with translated strings
+     */
+    public function getTranslatedField($value, $forClient = true)
+    {
+        $domain = $this->getTranslatableDomain();
+
+        if ($forClient) {
+            $languages = $this->request->attributes->get('languages');
+        } else {
+            $languages = $this->getLanguages();
+        }
+
+        return array_map(
+            function ($language) use ($value, $domain) {
+                return $this->translator->trans($value, array(), $domain, $language);
+            },
+            $languages
+        );
+    }
+
+    /**
      * [In|Up]serts a Translatable object using an array with language strings.
      *
      * @param array $values array with language strings; key should be language id
@@ -126,8 +160,8 @@ class I18nUtils
         if (!isset($values[$this->getDefaultLanguage()])) {
             throw new \Exception(
                 sprintf(
-                    'Creating new trans strings without "%s" key is not support yet.',
-                    $this->i18nUtils->getDefaultLanguage()
+                    'Creating new Translatable without "%s" key is not support yet.',
+                    $this->getDefaultLanguage()
                 )
             );
         }
