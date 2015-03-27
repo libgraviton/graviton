@@ -5,7 +5,7 @@ parameters:
 
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
-    graviton.security.services.whitelist: ~
+    graviton.security.services.whitelist: []
 
     # service info injected by cloudfoundry
     vcap.services: ~
