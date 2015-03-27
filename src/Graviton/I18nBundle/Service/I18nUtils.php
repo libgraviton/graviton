@@ -50,10 +50,11 @@ class I18nUtils
     /**
      * Constructor
      *
-     * @param $defaultLanguage
-     * @param Translatable $translatable
-     * @param LanguageRepository $languageRepository
-     * @param Request $request
+     * @param string              $defaultLanguage    default language
+     * @param TranslatorInterface $translator         Translator
+     * @param Translatable        $translatable       translatable
+     * @param LanguageRepository  $languageRepository lang repo
+     * @param Request             $request            request
      */
     public function __construct(
         $defaultLanguage,
