@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Graviton\I18NBundle\Service\I18NUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
@@ -36,6 +37,11 @@ class I18nDeserializationListener
     private $translatables;
 
     /**
+     * @var \Graviton\I18nBundle\Service\I18nUtils
+     */
+    protected $i18nUtils;
+
+    /**
      * set request
      *
      * @param \Symfony\Component\HttpFoundation\Request $request request object
@@ -60,6 +66,18 @@ class I18nDeserializationListener
     }
 
     /**
+     * set utils
+     *
+     * @param \Graviton\I18NBundle\Service\I18NUtils $i18nUtils utils
+     *
+     * @return void
+     */
+    public function setI18nUtils(I18NUtils $i18nUtils)
+    {
+        $this->i18nUtils = $i18nUtils;
+    }
+
+    /**
      * remove translateable strings from object
      *
      * @param PreDeserializeEvent $event event
@@ -69,6 +87,7 @@ class I18nDeserializationListener
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $eventClass = $event->getType()['name'];
+        $defaultLanguage = $this->i18nUtils->getDefaultLanguage();
         $object = new $eventClass;
         if ($object instanceof TranslatableDocumentInterface) {
             $data = $event->getData();
@@ -77,8 +96,8 @@ class I18nDeserializationListener
                 if (isset($data[$field])) {
                     $this->localizedFields[$field] = $data[$field];
                     $defaultValue = \reset($data[$field]);
-                    if (array_key_exists('en', $data[$field])) {
-                        $defaultValue = $data[$field]['en'];
+                    if (array_key_exists($defaultLanguage, $data[$field])) {
+                        $defaultValue = $data[$field][$defaultLanguage];
                     }
                     $data[$field] = $defaultValue;
                 }
@@ -111,14 +130,20 @@ class I18nDeserializationListener
      */
     public function createTranslatables($values)
     {
-        if (!array_key_exists('en', $values)) {
-            throw new \Exception('Creating new trans strings w/o en is not support yet.');
+        if (!array_key_exists($this->i18nUtils->getDefaultLanguage(), $values)) {
+            throw new \Exception(
+                sprintf(
+                    'Creating new trans strings w/o "%s" is not support yet.',
+                    $this->i18nUtils->getDefaultLanguage()
+                )
+            );
             // @todo generate convention based keys instead of excepting
         }
+
         $original = $values['en'];
         // @todo change this so it grabs all languages and not negotiated ones
-        if (isset($this->request)) {
-            $languages = $this->request->attributes->get('languages');
+        if ($this->i18nUtils->isTranslatableContext()) {
+            $languages = $this->i18nUtils->getLanguages();
             \array_walk(
                 $languages,
                 function ($locale) use ($original, $values) {
@@ -131,7 +156,7 @@ class I18nDeserializationListener
                     $translatable = new Translatable;
                     $translatable->setId('i18n-' . $locale . '-' . $original);
                     $translatable->setLocale($locale);
-                    $translatable->setDomain('i18n');
+                    $translatable->setDomain($this->i18nUtils->getTranslatableDomain());
                     $translatable->setOriginal($original);
                     $translatable->setTranslated($translated);
                     $translatable->setIsLocalized($isLocalized);
