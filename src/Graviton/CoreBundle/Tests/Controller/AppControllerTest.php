@@ -182,6 +182,58 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if we get a correct return if we post empty.
+     *
+     * @return void
+     */
+    public function testPostEmptyApp()
+    {
+        $client = static::createRestClient();
+
+        // send nothing really..
+        $client->post('/core/app', "", array(), array(), array(), false);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'No input data',
+            $response->getContent()
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * test if 500 error is reported when posting an malformed input
+     *
+     * @return void
+     */
+    public function testPostMalformedApp()
+    {
+        $testApp = new \stdClass;
+        $testApp->title = new \stdClass;
+        $testApp->title->en = 'new Test App';
+        $testApp->showInMenu = true;
+
+        // malform it ;-)
+        $input = str_replace(":", ";", json_encode($testApp));
+
+        $client = static::createRestClient();
+
+        // make sure this is sent as 'raw' input (not json_encoded again)
+        $client->post('/core/app', $input, array(), array(), array(), false);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'Syntax error, malformed JSON',
+            $response->getContent()
+        );
+
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    /**
      * test updating apps
      *
      * @return void
