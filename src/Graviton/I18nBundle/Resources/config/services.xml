@@ -93,12 +93,6 @@
       <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
     </service>
     <service id="graviton.i18n.listener.i18ndeserializer" class="%graviton.i18n.listener.i18ndeserializer.class%">
-      <call method="setTranslatables">
-        <argument type="service" id="graviton.i18n.model.translatable"/>
-      </call>
-      <call method="setRequest">
-        <argument type="service" id="graviton.i18n.request"/>
-      </call>
       <call method="setI18nUtils">
         <argument type="service" id="graviton.18n.utils"/>
       </call>

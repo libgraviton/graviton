@@ -6,6 +6,7 @@
 namespace Graviton\I18nBundle\Service;
 
 use Graviton\I18nBundle\Model\Translatable;
+use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -40,14 +41,31 @@ class I18nUtils
      */
     protected $request;
 
-    public function __construct($defaultLanguage, Translatable $translatable, LanguageRepository $languageRepository, Request $request = null)
-    {
+    /**
+     * Constructor
+     *
+     * @param $defaultLanguage
+     * @param Translatable $translatable
+     * @param LanguageRepository $languageRepository
+     * @param Request $request
+     */
+    public function __construct(
+        $defaultLanguage,
+        Translatable $translatable,
+        LanguageRepository $languageRepository,
+        Request $request = null
+    ) {
         $this->defaultLanguage = $defaultLanguage;
         $this->translatable = $translatable;
         $this->languageRepository = $languageRepository;
         $this->request = $request;
     }
 
+    /**
+     * Returns whether we are in a Translatable context. That means if we can determine a translation domain.
+     *
+     * @return bool true if yes, false if not
+     */
     public function isTranslatableContext()
     {
         return (!is_null($this->getTranslatableDomain()));
@@ -71,11 +89,21 @@ class I18nUtils
         return $ret;
     }
 
+    /**
+     * Returns the default/original language - is set by DIC param
+     *
+     * @return string default language
+     */
     public function getDefaultLanguage()
     {
         return $this->defaultLanguage;
     }
 
+    /**
+     * Returns all languages as a simple flat array
+     *
+     * @return array array of language id's
+     */
     public function getLanguages()
     {
         $languages = array();
@@ -85,12 +113,48 @@ class I18nUtils
         return $languages;
     }
 
-    public function insertTranslatable()
+    /**
+     * [In|Up]serts a Translatable object using an array with language strings.
+     *
+     * @param array $values array with language strings; key should be language id
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function insertTranslatable(array $values)
     {
+        if (!isset($values[$this->getDefaultLanguage()])) {
+            throw new \Exception(
+                sprintf(
+                    'Creating new trans strings without "%s" key is not support yet.',
+                    $this->i18nUtils->getDefaultLanguage()
+                )
+            );
+        }
 
+        $original = $values[$this->getDefaultLanguage()];
+
+        if ($this->isTranslatableContext()) {
+            $languages = $this->getLanguages();
+            \array_walk(
+                $languages,
+                function ($locale) use ($original, $values) {
+                    $isLocalized = false;
+                    $translated = '';
+                    if (array_key_exists($locale, $values)) {
+                        $translated = $values[$locale];
+                        $isLocalized = true;
+                    }
+                    $translatable = new TranslatableDocument();
+                    $translatable->setId('i18n-' . $locale . '-' . $original);
+                    $translatable->setLocale($locale);
+                    $translatable->setDomain($this->getTranslatableDomain());
+                    $translatable->setOriginal($original);
+                    $translatable->setTranslated($translated);
+                    $translatable->setIsLocalized($isLocalized);
+                    $this->translatable->insertRecord($translatable);
+                }
+            );
+        }
     }
-
-
-
-
 }

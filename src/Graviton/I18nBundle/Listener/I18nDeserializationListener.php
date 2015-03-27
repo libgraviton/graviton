@@ -27,43 +27,9 @@ class I18nDeserializationListener
     protected $localizedFields = array();
 
     /**
-     * @var \Symfony\Component\HttpFoundation\Request
-     */
-    protected $request;
-
-    /**
-     * @var \Graviton\I18nBundle\Model\Translatable
-     */
-    private $translatables;
-
-    /**
      * @var \Graviton\I18nBundle\Service\I18nUtils
      */
     protected $i18nUtils;
-
-    /**
-     * set request
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request request object
-     *
-     * @return void
-     */
-    public function setRequest($request)
-    {
-        $this->request = $request;
-    }
-
-    /**
-     * setup storage for translatable strings
-     *
-     * @param \Graviton\I18nBundle\Model\Translatable $translatables model
-     *
-     * @return void
-     */
-    public function setTranslatables(TranslatableModel $translatables)
-    {
-        $this->translatables = $translatables;
-    }
 
     /**
      * set utils
@@ -116,53 +82,8 @@ class I18nDeserializationListener
         \array_walk(
             $this->localizedFields,
             function ($values) {
-                $this->createTranslatables($values);
+                $this->i18nUtils->insertTranslatable($values);
             }
         );
-    }
-
-    /**
-     * create translatables for all the given languages
-     *
-     * @param string[] $values values for multiple languages
-     *
-     * @return void
-     */
-    public function createTranslatables($values)
-    {
-        if (!array_key_exists($this->i18nUtils->getDefaultLanguage(), $values)) {
-            throw new \Exception(
-                sprintf(
-                    'Creating new trans strings w/o "%s" is not support yet.',
-                    $this->i18nUtils->getDefaultLanguage()
-                )
-            );
-            // @todo generate convention based keys instead of excepting
-        }
-
-        $original = $values['en'];
-        // @todo change this so it grabs all languages and not negotiated ones
-        if ($this->i18nUtils->isTranslatableContext()) {
-            $languages = $this->i18nUtils->getLanguages();
-            \array_walk(
-                $languages,
-                function ($locale) use ($original, $values) {
-                    $isLocalized = false;
-                    $translated = '';
-                    if (array_key_exists($locale, $values)) {
-                        $translated = $values[$locale];
-                        $isLocalized = true;
-                    }
-                    $translatable = new Translatable;
-                    $translatable->setId('i18n-' . $locale . '-' . $original);
-                    $translatable->setLocale($locale);
-                    $translatable->setDomain($this->i18nUtils->getTranslatableDomain());
-                    $translatable->setOriginal($original);
-                    $translatable->setTranslated($translated);
-                    $translatable->setIsLocalized($isLocalized);
-                    $this->translatables->insertRecord($translatable);
-                }
-            );
-        }
     }
 }
