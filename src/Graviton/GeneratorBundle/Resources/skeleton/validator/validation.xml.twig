@@ -30,6 +30,14 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\BooleanStrict"/>']) %}
     {% endif %}
 
+    {% if field.type == 'int' %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">integer</option></constraint>']) %}
+    {% endif %}
+
+    {% if field.type == 'float' %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">float</option></constraint>']) %}
+    {% endif %}
+
     {% if field.isClassType is defined and field.isClassType == true %}
         {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
     {% endif %}
