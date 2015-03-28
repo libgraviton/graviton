@@ -103,13 +103,6 @@
         "required": true
       },
       {
-        "name": "appId",
-        "type": "varchar",
-        "title": "App ID",
-        "description": "ID of an app this module relates to.",
-        "required": true
-      },
-      {
         "name": "app",
         "type": "class:GravitonDyn\\ModuleAppBundle\\Document\\ModuleApp",
         "required": true
