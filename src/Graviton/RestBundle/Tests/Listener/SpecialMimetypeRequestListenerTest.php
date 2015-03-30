@@ -1,12 +1,23 @@
 <?php
+/**
+ * Test suite for mimetype registering service
+ */
 
 namespace Graviton\RestBundle\Tests\Listener;
 
 use Graviton\RestBundle\Listener\SpecialMimetypeRequestListener;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class SpecialMimetypeRequestListenerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @return void
+     */
     public function testOnKernelRequest()
     {
         $server = array('HTTP_ACCEPT' => 'application/vnd.com.swisscom.translation+json');
