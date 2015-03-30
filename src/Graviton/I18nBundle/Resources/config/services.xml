@@ -100,7 +100,7 @@
     <service id="graviton.18n.utils"
              class="%graviton.i18n.utils.class%">
       <!-- this here specifies the 'original' language -->
-      <argument type="string">en</argument>
+      <argument type="string">%graviton.translator.default.locale%</argument>
       <argument type="service" id="graviton.i18n.translator"/>
       <argument type="service" id="graviton.i18n.model.translatable"/>
       <argument type="service" id="graviton.i18n.repository.language"/>
