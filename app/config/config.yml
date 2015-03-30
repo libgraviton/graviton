@@ -9,7 +9,7 @@ parameters:
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     #esi:             ~
-    #translator:      { fallback: "%locale%" }
+    translator:      { fallback: "%graviton.translator.default.locale%" }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
