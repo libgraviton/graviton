@@ -29,18 +29,18 @@ class I18nSerializationListener
     /**
      * @var \Graviton\I18nBundle\Service\I18nUtils
      */
-    protected $intUtils;
+    protected $utils;
 
     /**
-     * set intUtils (i18nutils)
+     * set utils (i18nutils)
      *
-     * @param \Graviton\I18NBundle\Service\I18NUtils $intUtils utils
+     * @param \Graviton\I18NBundle\Service\I18NUtils $utils utils
      *
      * @return void
      */
-    public function setIntUtils(I18nUtils $intUtils)
+    public function setUtils(I18nUtils $utils)
     {
-        $this->intUtils = $intUtils;
+        $this->utils = $utils;
     }
 
     /**
@@ -88,7 +88,7 @@ class I18nSerializationListener
         foreach ($this->localizedFields[\spl_object_hash($object)] as $field => $value) {
             $event->getVisitor()->addData(
                 $field,
-                $this->intUtils->getTranslatedField($value)
+                $this->utils->getTranslatedField($value)
             );
         }
     }

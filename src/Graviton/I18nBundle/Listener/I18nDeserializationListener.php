@@ -27,18 +27,18 @@ class I18nDeserializationListener
     /**
      * @var \Graviton\I18nBundle\Service\I18nUtils
      */
-    protected $intUtils;
+    protected $utils;
 
     /**
-     * set intUtils (i18nutils)
+     * set utils (i18nutils)
      *
-     * @param \Graviton\I18NBundle\Service\I18NUtils $intUtils utils
+     * @param \Graviton\I18NBundle\Service\I18NUtils $utils utils
      *
      * @return void
      */
-    public function setIntUtils(I18NUtils $intUtils)
+    public function setUtils(I18NUtils $utils)
     {
-        $this->intUtils = $intUtils;
+        $this->utils = $utils;
     }
 
     /**
@@ -59,7 +59,7 @@ class I18nDeserializationListener
         $object = new $eventClass;
 
         if ($object instanceof TranslatableDocumentInterface) {
-            $defaultLanguage = $this->intUtils->getDefaultLanguage();
+            $defaultLanguage = $this->utils->getDefaultLanguage();
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
@@ -86,7 +86,7 @@ class I18nDeserializationListener
         \array_walk(
             $this->localizedFields,
             function ($values) {
-                $this->intUtils->insertTranslatable($values);
+                $this->utils->insertTranslatable($values);
             }
         );
     }
