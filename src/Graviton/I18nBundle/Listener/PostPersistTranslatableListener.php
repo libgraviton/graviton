@@ -42,13 +42,11 @@ class PostPersistTranslatableListener implements EventSubscriber
             $domain = $object->getDomain();
             $locale = $object->getLocale();
 
-            // @todo faster less blocking operation than using touch()
-            $transDir = __DIR__.'/../Resources/translations/';
-            $triggerFile = $domain.'.'.$locale.'.odm';
+            $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
 
-            if (is_dir($transDir)) {
-                touch($transDir.$triggerFile);
-            }
+            $fp = fopen($triggerFile, 'w');
+            fputs($fp, 'a');
+            fclose($fp);
         }
     }
 }
