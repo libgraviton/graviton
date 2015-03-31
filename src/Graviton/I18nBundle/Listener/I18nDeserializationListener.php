@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\I18NBundle\Service\I18NUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
@@ -50,9 +51,15 @@ class I18nDeserializationListener
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $eventClass = $event->getType()['name'];
-        $defaultLanguage = $this->intUtils->getDefaultLanguage();
+
+        if (!class_exists($eventClass)) {
+            throw new DeserializationException(sprintf('Can\' find class %s to deserialize', $eventClass));
+        }
+
         $object = new $eventClass;
+
         if ($object instanceof TranslatableDocumentInterface) {
+            $defaultLanguage = $this->intUtils->getDefaultLanguage();
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
