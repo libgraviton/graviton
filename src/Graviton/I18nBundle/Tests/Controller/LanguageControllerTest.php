@@ -37,17 +37,13 @@ class LanguageControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
 
         // we assume that initially all systems will only know of the english lang
-        $this->assertcount(3, $results);
+        $this->assertcount(1, $results);
 
         $this->assertEquals('en', $results[0]->id);
+
         $this->assertEquals('en', $response->headers->get('Content-Language'));
+
         $this->assertEquals('English', $results[0]->name->en);
-
-        $this->assertEquals('de', $results[1]->id);
-        $this->assertEquals('German', $results[1]->name->en);
-
-        $this->assertEquals('fr', $results[2]->id);
-        $this->assertEquals('French', $results[2]->name->en);
     }
 
     /**
@@ -110,14 +106,14 @@ class LanguageControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,es'));
+        $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertEquals('en', $response->headers->get('Content-Language'));
         $this->assertEquals('English', $results->name->en);
-        $this->assertFalse(isset($results->name->es));
+        $this->assertFalse(isset($results->name->de));
     }
 
     /**
