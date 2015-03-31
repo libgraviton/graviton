@@ -10,6 +10,7 @@ use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * generator command
@@ -20,6 +21,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateResourceCommand extends GenerateDoctrineEntityCommand
 {
+    /**
+     * @var InputInterface
+     */
+    protected $input;
+
     /**
      * {@inheritDoc}
      *
@@ -63,6 +69,15 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             $input,
             $output
         );
+
+        $arguments = array(
+            'command' => 'cache:clear',
+            '--no-warmup' => true
+        );
+        $command = $this->getApplication()->find('cache:clear');
+        if ($command->run(new ArrayInput($arguments), $output) == 0) {
+            $output->isVerbose() && $output->writeln('cache cleared');
+        }
 
         $output->writeln(
             'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
