@@ -134,6 +134,60 @@ class LanguageControllerTest extends RestTestCase
     }
 
     /**
+     * test to add a language and alter a translatable via other service and check
+     * if the catalogue gets updated accordingly
+     *
+     * @return void
+     */
+    public function testCacheInvalidation()
+    {
+        $newLang = new \stdClass;
+        $newLang->id = 'es';
+        $newLang->name = new \stdClass;
+        $newLang->name->en = 'Spanish';
+
+        $client = static::createRestClient();
+        $client->post('/i18n/language', $newLang);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+
+        // update description for new language
+        $putLang = new \stdClass;
+        $putLang->id = 'es';
+        $putLang->name = new \stdClass;
+        $putLang->name->en = 'Spanish';
+        $putLang->name->es = 'Español';
+
+        $client = static::createRestClient();
+        $client->put('/i18n/language/es', $putLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('Español', $results->name->es);
+        $this->assertEquals('es', $response->headers->get('Content-Language'));
+
+        // now, do it again to see if subsequent changes get reflected properly (triggerfile check)
+        $newPutLang = clone $putLang;
+        $newPutLang->name->es = 'Espanyol'; // this is a catalan way to spell 'Spanish'
+
+        $client = static::createRestClient();
+        $client->put('/i18n/language/es', $newPutLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('Espanyol', $results->name->es);
+        $this->assertEquals('es', $response->headers->get('Content-Language'));
+    }
+
+    /**
      * check that we do not return unknown languages
      *
      * @return void
