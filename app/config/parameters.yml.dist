@@ -3,7 +3,6 @@ parameters:
     mongodb.default.server.db: db
     mongodb.default.server.uri: ~
 
-    graviton.translator.default.locale: en
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
     graviton.security.services.whitelist: ~
