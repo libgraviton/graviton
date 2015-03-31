@@ -47,6 +47,42 @@ class LanguageControllerTest extends RestTestCase
     }
 
     /**
+     * validate that multiple languages work as advertised
+     *
+     * @return void
+     */
+    public function testMultiLangFinding()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData'
+            ),
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/i18n/language');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
+
+        $this->assertcount(3, $results);
+
+        $this->assertEquals('en', $results[0]->id);
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('English', $results[0]->name->en);
+
+        $this->assertEquals('de', $results[1]->id);
+        $this->assertEquals('German', $results[1]->name->en);
+
+        $this->assertEquals('fr', $results[2]->id);
+        $this->assertEquals('French', $results[2]->name->en);
+    }
+
+    /**
      * test add language and request both languages
      *
      * @return void
