@@ -3,7 +3,6 @@ services: mongodb
 before_script:
 - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 - composer install --dev --no-interaction
-- touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm
 - wget https://scrutinizer-ci.com/ocular.phar
 php:
 - hhvm
