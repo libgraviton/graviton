@@ -44,7 +44,7 @@ class PostPersistTranslatableListener implements EventSubscriber
 
             $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
 
-            fclose(fopen($triggerFile, 'a'));
+            fclose(fopen($triggerFile, 'w'));
         }
     }
 }
