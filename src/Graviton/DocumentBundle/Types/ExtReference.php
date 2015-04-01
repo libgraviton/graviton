@@ -5,7 +5,8 @@
 
 namespace Graviton\DocumentBundle\Types;
 
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * based on http://doctrine-mongodb-odm.readthedocs.org/en/latest/reference/basic-mapping.html#custom-mapping-types
@@ -17,13 +18,30 @@ use Doctrine\ODM\MongoDB\Mapping\Types\Type;
 class ExtReference extends Type
 {
     /**
+     * @var Router
+     */
+    var $router;
+
+    /**
+     * inject a router
+     *
+     * This uses setter injection due to the fact that doctrine doesn't do constructor injection
+     *
+     * @param Router $router router
+     */
+    public function setRouter(Router $router)
+    {
+        $this->router = $router;
+    }
+
+    /**
      * get php value when field is used as identifier
      *
      * @param \MongoDBRef $value ref from mongodb
      *
      * @return string
      */
-    public function convertToPHPValue(\MongoDBRef $value)
+    public function convertToPHPValue($value)
     {
         // @todo use router to generate an absolute url from $value
     }
@@ -47,6 +65,9 @@ class ExtReference extends Type
      */
     public function convertToDatabaseValue($value)
     {
+        if (empty($this->touter)) {
+            throw new \RuntimeException('no router injected into '.__CLASS__);
+        }
         // @todo generate these using an injected router
         $collection = 'foo';
         $id = 1234;

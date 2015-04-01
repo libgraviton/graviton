@@ -6,10 +6,12 @@
 namespace Graviton\DocumentBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * GravitonDocumentBundle
@@ -20,6 +22,31 @@ use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
  */
 class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 {
+    /**
+     * initialize bundle
+     */
+    public function __construct()
+    {
+        Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
+    }
+
+    /**
+     * inject services into custom type
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        /* @var $router Router */
+        $router = $this->container->get('router');
+
+        /* @var $type \Graviton\DocumentBundle\Types\ExtReference */
+        $type = Type::getType('extref');
+
+        $type->setRouter($router);
+    }
+
+
     /**
      * {@inheritDoc}
      *
