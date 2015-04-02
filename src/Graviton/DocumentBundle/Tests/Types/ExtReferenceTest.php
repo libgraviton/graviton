@@ -111,6 +111,12 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
 
         $sut = Type::getType('extref');
         $sut->setRouter($this->doubles['router']);
+        $sut->setMapping(
+            [
+                'App' => 'graviton.core.rest.app.get',
+                'Language' => 'graviton.i18n.rest.language.get',
+            ]
+        );
 
         $result = $sut->convertToDatabaseValue($url);
 
@@ -123,8 +129,8 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
     public function mongoRefFromValueProvider()
     {
         return [
-            ['http://localhost/core/app/test', ['$ref' => 'core_app', '$id' => 'test']],
-            ['/core/app/test', ['$ref' => 'core_app', '$id' => 'test']],
+            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
+            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
         ];
     }
 
@@ -160,9 +166,9 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
     public function convertToPHPValueProvider()
     {
         return [
-            [['$ref' => 'core_app', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
+            [['$ref' => 'App', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
             [
-                ['$ref' => 'i18n_language', '$id' => 'en'],
+                ['$ref' => 'Language', '$id' => 'en'],
                 'graviton.i18n.rest.language.get',
                 'http://localhost/i18n/language/en'
             ],

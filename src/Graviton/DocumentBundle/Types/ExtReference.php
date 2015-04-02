@@ -23,6 +23,11 @@ class ExtReference extends Type
     private $router;
 
     /**
+     * @var array
+     */
+    private $mapping;
+
+    /**
      * inject a router
      *
      * This uses setter injection due to the fact that doctrine doesn't do constructor injection
@@ -37,6 +42,18 @@ class ExtReference extends Type
     }
 
     /**
+     * inject collection name to routing service mapping
+     *
+     * @param array $mapping colleciton_name => service_id mapping
+     *
+     * @return void
+     */
+    public function setMapping(array $mapping)
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
      * get php value when field is used as identifier
      *
      * @param \MongoDBRef $value ref from mongodb
@@ -45,9 +62,7 @@ class ExtReference extends Type
      */
     public function convertToPHPValue($value)
     {
-        list($bundle,$type) = explode('_', $value['$ref']);
-        $routeId = implode('.', array('graviton', $bundle, 'rest', $type, 'get'));
-        return $this->router->generate($routeId, ['id' => $value['$id']]);
+        return $this->router->generate($this->mapping[$value['$ref']], ['id' => $value['$id']]);
     }
 
     /**
@@ -95,8 +110,8 @@ class ExtReference extends Type
                 $id = $matches['id'];
 
                 list($routeService) = explode(':', $route->getDefault('_controller'));
-                list(,$bundle,,$name) = explode('.', $routeService);
-                $collection = implode('_', array($bundle, $name));
+                list(,,,$name) = explode('.', $routeService);
+                $collection = ucfirst($name);
             }
         }
         if (empty($collection) || empty($id)) {
