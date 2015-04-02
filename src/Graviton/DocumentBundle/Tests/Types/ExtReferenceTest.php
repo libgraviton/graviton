@@ -32,7 +32,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
 
         $this->doubles['router'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
             ->disableOriginalConstructor()
-            ->setMethods(array('getRouteCollection'))
+            ->setMethods(array('getRouteCollection', 'generate'))
             ->getMock();
 
         $this->doubles['collection'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
@@ -59,6 +59,17 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
                 ],
                 [
                     '_method' => 'GET',
+                ]
+            ),
+            new Route(
+                '/i18n/language/{id}',
+                [
+                    '_controller' => 'graviton.i18n.controller.language:getAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                    'id' => '[a-zA-Z0-9\-_\/]+',
                 ]
             ),
         ];
@@ -112,8 +123,49 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
     public function mongoRefFromValueProvider()
     {
         return [
-            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
+            ['http://localhost/core/app/test', ['$ref' => 'core_app', '$id' => 'test']],
+            ['/core/app/test', ['$ref' => 'core_app', '$id' => 'test']],
+        ];
+    }
+
+    /**
+     * @dataProvider convertToPHPValueProvider
+     *
+     * @param array  $ref     reference as from mongo
+     * @param string $routeId name of route that should get loaded
+     * @param string $url     url we expect to result from the conversion
+     *
+     * @return void
+     */
+    public function testConvertToPHPValue($ref, $routeId, $url)
+    {
+        $this->doubles['router']
+            ->expects($this->once())
+            ->method('generate')
+            ->with(
+                $this->equalTo($routeId),
+                $this->equalTo(array('id' => $ref['$id']))
+            )
+            ->will($this->returnValue($url));
+
+        $sut = Type::getType('extref');
+        $sut->setRouter($this->doubles['router']);
+
+        $this->assertEquals($url, $sut->convertToPHPValue($ref));
+    }
+
+    /**
+     * @return array
+     */
+    public function convertToPHPValueProvider()
+    {
+        return [
+            [['$ref' => 'core_app', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
+            [
+                ['$ref' => 'i18n_language', '$id' => 'en'],
+                'graviton.i18n.rest.language.get',
+                'http://localhost/i18n/language/en'
+            ],
         ];
     }
 }

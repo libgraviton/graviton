@@ -45,7 +45,9 @@ class ExtReference extends Type
      */
     public function convertToPHPValue($value)
     {
-        // @todo use router to generate an absolute url from $value
+        list($bundle,$type) = explode('_', $value['$ref']);
+        $routeId = implode('.', array('graviton', $bundle, 'rest', $type, 'get'));
+        return $this->router->generate($routeId, ['id' => $value['$id']]);
     }
 
     /**
@@ -93,8 +95,8 @@ class ExtReference extends Type
                 $id = $matches['id'];
 
                 list($routeService) = explode(':', $route->getDefault('_controller'));
-                list(,,,$name) = explode('.', $routeService);
-                $collection = ucfirst($name);
+                list(,$bundle,,$name) = explode('.', $routeService);
+                $collection = implode('_', array($bundle, $name));
             }
         }
         if (empty($collection) || empty($id)) {
