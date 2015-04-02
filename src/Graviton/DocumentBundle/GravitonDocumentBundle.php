@@ -46,6 +46,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $type = Type::getType('extref');
 
         $type->setRouter($router);
+        $type->setMapping($this->container->getParameter('graviton.document.type.extref.mapping'));
     }
 
 

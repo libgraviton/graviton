@@ -24,5 +24,19 @@ class ExtRefMappingCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $map = [];
+        $gravitonServices = array_filter(
+            $container->getServiceIds(),
+            function ($id) {
+                return substr($id, 0, 8) == 'graviton' &&
+                    strpos($id, 'controller') !== false &&
+                    $id !== 'graviton.rest.controller';
+            }
+        );
+        foreach ($gravitonServices as $id) {
+            list($ns, $bundle,, $doc) = explode('.', $id);
+            $map[ucfirst($doc)] = implode('.', [$ns, $bundle, 'rest', $doc, 'get']);
+        }
+        $container->setParameter('graviton.document.type.extref.mapping', $map);
     }
 }
