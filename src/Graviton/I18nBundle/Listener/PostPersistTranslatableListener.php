@@ -48,9 +48,15 @@ class PostPersistTranslatableListener implements EventSubscriber
             fclose($fp);
 
             $fp = fopen($triggerFile, 'w');
-
             $fstat = fstat($fp);
-            echo 'FSTAT '.$triggerFile.' - ctime = '.$fstat['ctime'].' / mtime = '.$fstat['mtime'].' / diff = '.($fstat['ctime']-$fstat['mtime']).PHP_EOL;
+
+            $cacheFile = __DIR__.'/../../../../app/cache/dev/translations/catalogue.'.$locale.'.php';
+            $fpcache = fopen($cacheFile, 'w');
+            $fstatcache = fstat($fpcache);
+
+
+            echo PHP_EOL.'FSTAT '.$triggerFile.' - ctime = '.$fstat['ctime'].' / mtime = '.$fstat['mtime'].' / diff = '.($fstat['ctime']-$fstat['mtime']).PHP_EOL;
+            echo PHP_EOL.'FSTATCACHE '.$cacheFile.' - ctime = '.$fstatcache['ctime'].' / mtime = '.$fstatcache['mtime'].' / diff = '.($fstatcache['ctime']-$fstatcache['mtime']).PHP_EOL;
 
             fclose($fp);
         }
