@@ -8,6 +8,7 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
+use Symfony\Component\Finder\Finder;
 
 /**
  * trigger update of translation loader cache when translatables are updated
@@ -39,27 +40,18 @@ class PostPersistTranslatableListener implements EventSubscriber
     {
         $object = $event->getObject();
         if ($object instanceof Translatable) {
-            $domain = $object->getDomain();
             $locale = $object->getLocale();
+            $cacheDirMask = __DIR__.'/../../../../app/cache/*/translations';
 
-            $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            $fp = fopen($triggerFile, 'w');
-            fwrite($fp, time());
-            fclose($fp);
+            $finder = new Finder();
+            $finder
+                ->files()
+                ->in($cacheDirMask)
+                ->name('*.'.$locale.'.*');
 
-            $fp = fopen($triggerFile, 'r');
-            $fstat = fstat($fp);
-            fclose($fp);
-
-            $cacheFile = __DIR__.'/../../../../app/cache/test/translations/catalogue.'.$locale.'.php';
-            $fpcache = fopen($cacheFile, 'r');
-            $fstatcache = fstat($fpcache);
-            fclose($fpcache);
-
-            echo PHP_EOL.'FSTAT '.$triggerFile.' - ctime = '.$fstat['ctime'].' / mtime = '.$fstat['mtime'].' / diff = '.($fstat['ctime']-$fstat['mtime']).PHP_EOL;
-            echo PHP_EOL.'FSTATCACHE '.$cacheFile.' - ctime = '.$fstatcache['ctime'].' / mtime = '.$fstatcache['mtime'].' / diff = '.($fstatcache['ctime']-$fstatcache['mtime']).PHP_EOL;
-
-
+            foreach ($finder as $file) {
+                unlink($file->getRealpath());
+            }
         }
     }
 }
