@@ -47,11 +47,12 @@ class PostPersistTranslatableListener implements EventSubscriber
             fwrite($fp, time());
             fclose($fp);
 
-            $fp = fopen($triggerFile, 'w');
+            $fp = fopen($triggerFile, 'r');
             $fstat = fstat($fp);
+            fclose($fp);
 
             $cacheFile = __DIR__.'/../../../../app/cache/test/translations/catalogue.'.$locale.'.php';
-            $fpcache = fopen($cacheFile, 'w');
+            $fpcache = fopen($cacheFile, 'r');
             $fstatcache = fstat($fpcache);
             fclose($fpcache);
 
