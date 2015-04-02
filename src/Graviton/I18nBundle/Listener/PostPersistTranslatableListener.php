@@ -50,7 +50,7 @@ class PostPersistTranslatableListener implements EventSubscriber
             $fp = fopen($triggerFile, 'w');
             $fstat = fstat($fp);
 
-            $cacheFile = __DIR__.'/../../../../app/cache/dev/translations/catalogue.'.$locale.'.php';
+            $cacheFile = __DIR__.'/../../../../app/cache/test/translations/catalogue.'.$locale.'.php';
             $fpcache = fopen($cacheFile, 'w');
             $fstatcache = fstat($fpcache);
 
