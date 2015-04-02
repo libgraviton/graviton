@@ -12,6 +12,8 @@ use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 
 /**
  * GravitonDocumentBundle
@@ -59,5 +61,19 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
             new StofDoctrineExtensionsBundle(),
             new DoctrineFixturesBundle(),
         );
+    }
+
+    /**
+     * load compiler pass
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ExtRefMappingCompilerPass);
     }
 }
