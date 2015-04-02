@@ -20,7 +20,7 @@ class ExtReference extends Type
     /**
      * @var Router
      */
-    var $router;
+    private $router;
 
     /**
      * inject a router
@@ -28,6 +28,8 @@ class ExtReference extends Type
      * This uses setter injection due to the fact that doctrine doesn't do constructor injection
      *
      * @param Router $router router
+     *
+     * @return void
      */
     public function setRouter(Router $router)
     {
@@ -61,16 +63,43 @@ class ExtReference extends Type
      *
      * @param string $value value of reference as URI
      *
-     * @return mixed
+     * @return array
      */
     public function convertToDatabaseValue($value)
     {
-        if (empty($this->touter)) {
-            throw new \RuntimeException('no router injected into '.__CLASS__);
+        if (empty($this->router)) {
+            throw new \RuntimeException('no router injected into '.__CLasS__);
         }
-        // @todo generate these using an injected router
-        $collection = 'foo';
-        $id = 1234;
+
+        if (substr($value, 0, 4) == 'http') {
+            $value = parse_url($value, PHP_URL_PATH);
+        }
+
+        foreach ($this->router->getRouteCollection()->all() as $route) {
+            $reqs = $route->getRequirements();
+            $keys = array_filter(
+                array_keys($reqs),
+                function ($req) {
+                    return substr($req, 0, 1) !== '_';
+                }
+            );
+            $params = array();
+            foreach ($keys as $key) {
+                $params[$key] = $reqs[$key];
+            }
+
+            $matches = [];
+            if (preg_match($route->compile()->getRegex(), $value, $matches)) {
+                $id = $matches['id'];
+
+                list($routeService) = explode(':', $route->getDefault('_controller'));
+                list(,,,$name) = explode('.', $routeService);
+                $collection = ucfirst($name);
+            }
+        }
+        if (empty($collection) || empty($id)) {
+            throw new \RuntimeException(sprintf('Could not read URL %s', $value));
+        }
         return \MongoDBRef::create($collection, $id);
     }
 }
