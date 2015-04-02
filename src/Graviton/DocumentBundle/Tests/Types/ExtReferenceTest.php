@@ -17,6 +17,11 @@ use Symfony\Component\Routing\Route;
 class ExtReferenceTest extends \PHPUnit_Framework_Testcase
 {
     /**
+     * @var array
+     */
+    private $doubles = [];
+
+    /**
      * setup type we want to test
      *
      * @return void
@@ -24,42 +29,17 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
     public function setUp()
     {
         Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
-    }
 
-    /**
-     * @expectedException RuntimeException
-     *
-     * @return void
-     */
-    public function testExceptWithoutRouter()
-    {
-        $sut = Type::getType('extref');
-
-        $sut->convertToDatabaseValue('');
-    }
-
-    /**
-     * verify that we get a mongodbref
-     *
-     * @dataProvider testMongoRefFromValueProvider
-     *
-     * @param string $url      external link to convert
-     * @param array  $expected expected mogodb ref
-     *
-     * @return void
-     */
-    public function testMongoRefFromValue($url, $expected)
-    {
-        $router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+        $this->doubles['router'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
             ->disableOriginalConstructor()
             ->setMethods(array('getRouteCollection'))
             ->getMock();
 
-        $collection = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
+        $this->doubles['collection'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
             ->setMethods(array('all'))
             ->getMock();
 
-        $routes = [
+        $this->doubles['routes'] = [
             new Route(
                 '/core/app/{id}',
                 [
@@ -82,19 +62,44 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
                 ]
             ),
         ];
+    }
 
-        $router
+    /**
+     * @expectedException RuntimeException
+     *
+     * @return void
+     */
+    public function testExceptWithoutRouter()
+    {
+        $sut = Type::getType('extref');
+
+        $sut->convertToDatabaseValue('');
+    }
+
+    /**
+     * verify that we get a mongodbref
+     *
+     * @dataProvider mongoRefFromValueProvider
+     *
+     * @param string $url      external link to convert
+     * @param array  $expected expected mogodb ref
+     *
+     * @return void
+     */
+    public function testMongoRefFromValue($url, $expected)
+    {
+        $this->doubles['router']
             ->expects($this->once())
             ->method('getRouteCollection')
-            ->will($this->returnValue($collection));
+            ->will($this->returnValue($this->doubles['collection']));
 
-        $collection
+        $this->doubles['collection']
             ->expects($this->once())
             ->method('all')
-            ->will($this->returnValue($routes));
+            ->will($this->returnValue($this->doubles['routes']));
 
         $sut = Type::getType('extref');
-        $sut->setRouter($router);
+        $sut->setRouter($this->doubles['router']);
 
         $result = $sut->convertToDatabaseValue($url);
 
@@ -104,7 +109,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_Testcase
     /**
      * @return array
      */
-    public function testMongoRefFromValueProvider()
+    public function mongoRefFromValueProvider()
     {
         return [
             ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
