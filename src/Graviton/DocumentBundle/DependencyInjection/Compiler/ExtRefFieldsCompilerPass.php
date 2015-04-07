@@ -61,6 +61,10 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
                 ]
             );
 
+            if (!file_exists($file)) {
+                continue;
+            }
+
             $dom = new \DOMDocument;
             $dom->Load($file);
             $xpath = new \DOMXPath($dom);
