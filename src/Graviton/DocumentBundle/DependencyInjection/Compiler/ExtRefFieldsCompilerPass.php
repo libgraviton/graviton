@@ -9,7 +9,6 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -17,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefFieldsCompilerPass implements CompilerPassInterface
+class ExtRefFieldsCompilerPass extends ExtRefCompilerPass
 {
     /**
      * load services
@@ -26,18 +25,9 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
      *
      * @return void
      */
-    public function process(ContainerBuilder $container)
+    public function processServices(ContainerBuilder $container, $services)
     {
-        $map = [];
-        $gravitonServices = array_filter(
-            $container->getServiceIds(),
-            function ($id) {
-                return substr($id, 0, 8) == 'graviton' &&
-                    strpos($id, 'controller') !== false &&
-                    $id !== 'graviton.rest.controller';
-            }
-        );
-        foreach ($gravitonServices as $id) {
+        foreach ($services as $id) {
             list($ns, $bundle,, $doc) = explode('.', $id);
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
