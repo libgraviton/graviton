@@ -72,7 +72,8 @@ class ExtReference extends Type
      */
     public function closureToPHP()
     {
-        // @todo figure out how to inject a router into this string closure stuff
+        // return full value for later processing since we do not have mappings during hydrator generation
+        return '$return = json_encode($value);';
     }
 
     /**
@@ -85,7 +86,7 @@ class ExtReference extends Type
     public function convertToDatabaseValue($value)
     {
         if (empty($this->router)) {
-            throw new \RuntimeException('no router injected into '.__CLasS__);
+            throw new \RuntimeException('no router injected into '.__CLASS__);
         }
 
         if (substr($value, 0, 4) == 'http') {

@@ -175,4 +175,41 @@ class Translatable
     {
         return $this->isLocalized;
     }
+
+    /**
+     * @var string $language url
+     */
+    protected $language;
+
+    /**
+     * Set language
+     *
+     * @param string $language url
+     * @return self
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+        return $this;
+    }
+
+    /**
+     * Get language
+     *
+     * @return string $language
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * Get isLocalized
+     *
+     * @return boolean $isLocalized
+     */
+    public function getIsLocalized()
+    {
+        return $this->isLocalized;
+    }
 }

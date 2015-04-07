@@ -44,6 +44,7 @@ class LoadTranslatableData implements FixtureInterface
         $deEnglish->setOriginal('English');
         $deEnglish->setTranslated('Englisch');
         $deEnglish->setIsLocalized(true);
+        $deEnglish->setLanguage('http://localhost/i18n/language/de');
 
         $manager->persist($deEnglish);
         $manager->flush();
