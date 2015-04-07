@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Route;
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
-class ExtReferenceTest extends \PHPUnit_Framework_Testcase
+class ExtReferenceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var array

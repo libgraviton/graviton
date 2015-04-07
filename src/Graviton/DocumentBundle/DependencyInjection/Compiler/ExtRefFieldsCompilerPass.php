@@ -16,17 +16,19 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefFieldsCompilerPass extends ExtRefCompilerPass
+class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
 {
     /**
      * load services
      *
      * @param ContainerBuilder $container container builder
+     * @param array            $services  services to inspect
      *
      * @return void
      */
     public function processServices(ContainerBuilder $container, $services)
     {
+        $map = [];
         foreach ($services as $id) {
             list($ns, $bundle,, $doc) = explode('.', $id);
             if ($bundle == 'core' && $doc == 'main') {

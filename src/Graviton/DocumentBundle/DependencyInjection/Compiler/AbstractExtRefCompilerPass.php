@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-abstract class ExtRefCompilerPass implements CompilerPassInterface
+abstract class AbstractExtRefCompilerPass implements CompilerPassInterface
 {
     /**
      * load services
@@ -22,9 +22,8 @@ abstract class ExtRefCompilerPass implements CompilerPassInterface
      *
      * @return void
      */
-    public function process(ContainerBuilder $container)
+    public final function process(ContainerBuilder $container)
     {
-        $map = [];
         $gravitonServices = array_filter(
             $container->getServiceIds(),
             function ($id) {
@@ -34,5 +33,17 @@ abstract class ExtRefCompilerPass implements CompilerPassInterface
             }
         );
         $this->processServices($container, $gravitonServices);
+    }
+
+    /**
+     * null implementation of method
+     *
+     * @param ContainerBuilder $container container
+     * @param array            $services  services
+     *
+     * @return void
+     */
+    public function processServices(ContainerBuilder $container, $services)
+    {
     }
 }
