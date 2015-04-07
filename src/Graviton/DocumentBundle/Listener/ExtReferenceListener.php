@@ -13,6 +13,7 @@ namespace Graviton\DocumentBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -32,17 +33,26 @@ class ExtReferenceListener
     private $mapping;
 
     /**
+     * @var Request
+     */
+    private $request;
+
+    /**
      * construct
      *
      * @param RouterInterface $router  symfony router
      * @param array           $mapping map of collection_name => route_id
+     * @param fields          $fields  map of fields to process
+     * @param Request         $request request
      *
      * @return void
      */
-    public function __construct(RouterInterface $router, array $mapping)
+    public function __construct(RouterInterface $router, array $mapping, array $fields, Request $request)
     {
         $this->router = $router;
         $this->mapping = $mapping;
+        $this->fields = $fields;
+        $this->request = $request;
     }
 
     /**
@@ -80,8 +90,10 @@ class ExtReferenceListener
      */
     private function mapItem($item)
     {
-        // @todo build a list of fields in custom type and only loop when this is in place
-        foreach (['language'] as $field) {
+        if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
+            return $item;
+        }
+        foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
             if (is_array($item) && array_key_exists($field, $item)) {
                 $ref = json_decode($item[$field], true);
                 $routeId = $this->mapping[$ref['$ref']];

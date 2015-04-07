@@ -1,6 +1,10 @@
 <?php
 /**
  * build a collection_name to routerId mapping for ExtReference Types
+ *
+ * This is all done the cheap way by just inferring collection names from
+ * the available serviecs that are tagged as rest service. This also means
+ * we need to stick to the naming conventions already there even more.
  */
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;

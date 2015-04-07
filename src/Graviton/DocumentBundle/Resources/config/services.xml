@@ -7,9 +7,11 @@
     </parameters>
     <services>
         <!-- $ref output in responses -->
-        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%">
+        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%" scope="request">
              <argument type="service" id="router" />
              <argument>%graviton.document.type.extref.mapping%</argument>
+             <argument>%graviton.document.type.extref.fields%</argument>
+             <argument type="service" id="request"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
     </services>
