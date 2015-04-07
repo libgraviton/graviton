@@ -11,7 +11,7 @@
              <argument type="service" id="router" />
              <argument>%graviton.document.type.extref.mapping%</argument>
              <argument>%graviton.document.type.extref.fields%</argument>
-             <argument type="service" id="request"/>
+             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
     </services>

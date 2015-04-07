@@ -42,7 +42,6 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
-            $modelId = implode('.', [$ns, $bundle, 'model', $doc]);
 
             $file = implode(
                 '/',

@@ -14,6 +14,7 @@ namespace Graviton\DocumentBundle\Listener;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -33,6 +34,11 @@ class ExtReferenceListener
     private $mapping;
 
     /**
+     * @var array
+     */
+    private $fields;
+
+    /**
      * @var Request
      */
     private $request;
@@ -40,19 +46,17 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param RouterInterface $router  symfony router
-     * @param array           $mapping map of collection_name => route_id
-     * @param fields          $fields  map of fields to process
-     * @param Request         $request request
-     *
-     * @return void
+     * @param RouterInterface $router   symfony router
+     * @param array           $mapping  map of collection_name => route_id
+     * @param fields          $fields   map of fields to process
+     * @param RequestStack    $requests request
      */
-    public function __construct(RouterInterface $router, array $mapping, array $fields, Request $request)
+    public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
     {
         $this->router = $router;
         $this->mapping = $mapping;
         $this->fields = $fields;
-        $this->request = $request;
+        $this->request = $requests->getCurrentRequest();
     }
 
     /**
