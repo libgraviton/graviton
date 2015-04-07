@@ -22,7 +22,7 @@ abstract class AbstractExtRefCompilerPass implements CompilerPassInterface
      *
      * @return void
      */
-    public final function process(ContainerBuilder $container)
+    final public function process(ContainerBuilder $container)
     {
         $gravitonServices = array_filter(
             $container->getServiceIds(),
