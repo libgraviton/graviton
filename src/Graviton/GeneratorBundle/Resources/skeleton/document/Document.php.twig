@@ -64,6 +64,18 @@ class {{ document }} implements TranslatableDocumentInterface
         return $this->id;
     }
 
+    /**
+     * Set id
+     *
+     * @param mixed $id id
+     *
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getDeleteddate()
     {
     return $this->deletedDate;
