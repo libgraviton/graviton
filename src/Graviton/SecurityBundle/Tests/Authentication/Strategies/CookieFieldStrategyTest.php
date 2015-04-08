@@ -51,7 +51,7 @@ class CookieFieldStrategyTest extends WebTestCase
 
         $strategy = new CookieFieldStrategy();
 
-        $this->assertSame($fieldValue, $strategy->apply($client->getRequest(), CookieFieldStrategy::COOKIE_FIELD));
+        $this->assertSame($fieldValue, $strategy->apply($client->getRequest()));
     }
 
     /**

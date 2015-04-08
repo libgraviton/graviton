@@ -282,7 +282,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters['base'] . 'Repository\\' . $parameters['document']
             );
 
-            $services = $this->addService(
+            $this->addService(
                 $services,
                 $repoName,
                 null,
@@ -723,7 +723,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
-        $services = $this->addService(
+        $this->addService(
             $services,
             $paramName,
             'graviton.rest.model',
@@ -768,7 +768,7 @@ class ResourceGenerator extends AbstractGenerator
             $paramName . '.class'
         );
 
-        $services = $this->addService(
+        $this->addService(
             $services,
             $paramName,
             'graviton.rest.controller',

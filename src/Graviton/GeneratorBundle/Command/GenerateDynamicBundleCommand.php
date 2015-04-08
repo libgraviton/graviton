@@ -477,7 +477,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $conn = $this->container->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
         $collection = $conn->selectCollection(
-            $this->container->getParameter('mongodb.default.server.db', 'db'),
+            $this->container->getParameter('mongodb.default.server.db'),
             $collectionName
         );
 
@@ -534,7 +534,7 @@ class GenerateDynamicBundleCommand extends Command
         $ret = true;
 
         $whitelist = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.service.whitelist', array()),
+            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
             true
         );
 

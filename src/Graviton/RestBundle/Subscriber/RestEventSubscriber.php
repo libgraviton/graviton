@@ -76,7 +76,7 @@ class RestEventSubscriber implements EventSubscriberInterface
         $response = $this->container->get("graviton.rest.response");
 
         // get the service name
-        list ($serviceName, $action) = explode(":", $event->getRequest()->get('_controller'));
+        list ($serviceName) = explode(":", $event->getRequest()->get('_controller'));
 
         // get the controller which handles this request
         $controller = $this->container->get($serviceName);
