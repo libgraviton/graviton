@@ -55,6 +55,8 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertEquals(1, count($client->getResults()));
 
+        $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app);
+
         $this->assertContains(
             '<http://localhost/core/module?page=1&perPage=1>; rel="self"',
             explode(',', $response->headers->get('Link'))
@@ -119,7 +121,6 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
         $this->assertEquals($moduleId, $results->id);
         $this->assertEquals('investment', $results->key);
-        $this->assertEquals('http://localhost/core/app/tablet', $results->app);
         $this->assertEquals('/module/investment', $results->path);
         $this->assertEquals(2, $results->order);
 
