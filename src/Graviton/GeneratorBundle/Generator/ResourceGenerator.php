@@ -11,7 +11,6 @@ use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**

@@ -6,8 +6,6 @@
 namespace Graviton\GeneratorBundle\Composer;
 
 use Graviton\CoreBundle\Composer\ScriptHandlerBase;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\PhpExecutableFinder;
 use Composer\Script\CommandEvent;
 
 /**

@@ -7,11 +7,8 @@ namespace Graviton\RestBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
-use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 
 /**
