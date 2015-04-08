@@ -55,7 +55,8 @@ class LanguageControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
             ),
             null,
             'doctrine_mongodb'

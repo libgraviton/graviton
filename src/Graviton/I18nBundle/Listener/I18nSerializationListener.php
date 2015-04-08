@@ -8,8 +8,6 @@ namespace Graviton\I18nBundle\Listener;
 use Graviton\I18nBundle\Service\I18nUtils;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
-use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
