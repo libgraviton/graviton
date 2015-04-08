@@ -41,7 +41,12 @@ class PostPersistTranslatableListener implements EventSubscriber
         $object = $event->getObject();
         if ($object instanceof Translatable) {
             $locale = $object->getLocale();
+            $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
             $cacheDirMask = __DIR__.'/../../../../app/cache/*/translations';
+
+            if (!file_exists($triggerFile)) {
+                touch($triggerFile);
+            }
 
             $finder = new Finder();
             $finder
