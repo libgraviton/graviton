@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Subscriber;
 use Graviton\RestBundle\Event\RestEvent;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -52,13 +53,14 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.request events
      *
-     * @param GetResponseEvent $event Event
+     * @param GetResponseEvent         $event      Event
+     * @param string                   $name       Event name
+     * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(GetResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
-        $dispatcher = $event->getDispatcher();
         $restEvent = $this->getEventObject($event);
 
         $dispatcher->dispatch("graviton.rest.request", $restEvent);
@@ -92,13 +94,14 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.response events
      *
-     * @param FilterResponseEvent $event Event
+     * @param FilterResponseEvent      $event      Event
+     * @param string                   $name       Event name
+     * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
-        $dispatcher = $event->getDispatcher();
         $dispatcher->dispatch("graviton.rest.response", $event);
     }
 
