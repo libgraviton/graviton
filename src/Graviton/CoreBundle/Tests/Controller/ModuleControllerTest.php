@@ -119,7 +119,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
         $this->assertEquals($moduleId, $results->id);
         $this->assertEquals('investment', $results->key);
-        $this->assertEquals('tablet', $results->appId);
+        $this->assertEquals('http://localhost/core/app/tablet', $results->app);
         $this->assertEquals('/module/investment', $results->path);
         $this->assertEquals(2, $results->order);
 
@@ -139,7 +139,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $testModule = new \stdClass;
         $testModule->key = 'test';
-        $testModule->appId = 'testapp';
+        $testModule->app = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -153,7 +153,7 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('testapp', $results->appId);
+        $this->assertEquals('http://localhost/core/app/testapp', $results->app);
         $this->assertEquals(50, $results->order);
 
         $this->assertContains(
@@ -171,7 +171,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $testModule = new \stdClass;
         $testModule->key = 'test';
-        $testModule->appId = 'testapp';
+        $testModule->app = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -211,10 +211,10 @@ class ModuleControllerTest extends RestTestCase
 
         $putModule = new \stdClass();
         $putModule->id = $moduleId;
-        $putModule->key = "test";
-        $putModule->appId = "test";
+        $putModule->key = 'test';
+        $putModule->app = 'http://localhost/core/app/test';
         $putModule->name = new \stdClass();
-        $putModule->name->en = "testerle";
+        $putModule->name->en = 'testerle';
         $putModule->path = '/test/test';
         $putModule->order = 500;
 
@@ -227,7 +227,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals($moduleId, $results->id);
-        $this->assertEquals('test', $results->appId);
+        $this->assertEquals('http://localhost/core/app/test', $results->app);
         $this->assertEquals(500, $results->order);
 
         $this->assertContains(
