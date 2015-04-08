@@ -58,7 +58,7 @@ class DoctrineODMLoader implements LoaderInterface
     public function load($resource, $locale, $domain = 'messages')
     {
         $repository = $this->getRepository();
-        $messages = $repository->findBy(array('domain' => $domain, 'locale' => $locale));
+        $messages = $repository->findBy(array('domain' => $domain, 'locale' => $locale, 'isLocalized' => true));
 
         $catalogue = new MessageCatalogue($locale);
 

@@ -8,6 +8,8 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * trigger update of translation loader cache when translatables are updated
@@ -41,14 +43,23 @@ class PostPersistTranslatableListener implements EventSubscriber
         if ($object instanceof Translatable) {
             $domain = $object->getDomain();
             $locale = $object->getLocale();
-
-            // faster less blocking operation than using touch()
             $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            if (!file_exists($triggerFile)) {
-                touch($triggerFile);
+            $cacheDirMask = __DIR__.'/../../../../app/cache/*/translations';
+
+            $fs = new Filesystem();
+            if (!$fs->exists($triggerFile)) {
+                $fs->touch($triggerFile);
             }
-            $fp = fopen($triggerFile, 'rw');
-            ftruncate($fp, 0);
+
+            $finder = new Finder();
+            $finder
+                ->files()
+                ->in($cacheDirMask)
+                ->name('*.'.$locale.'.*');
+
+            foreach ($finder as $file) {
+                $fs->remove($file->getRealPath());
+            }
         }
     }
 }

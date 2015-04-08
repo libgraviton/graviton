@@ -37,7 +37,7 @@ class Client extends FrameworkClient
      * POSTs to an URI.
      *
      * @param string  $uri        The URI to fetch
-     * @param string  $content    The raw body data
+     * @param mixed   $content    The raw body data
      * @param array   $parameters The Request parameters
      * @param array   $files      The files
      * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
@@ -74,7 +74,7 @@ class Client extends FrameworkClient
      * PUTs to an URI.
      *
      * @param string  $uri        The URI to fetch
-     * @param string  $content    The raw body data
+     * @param mixed   $content    The raw body data
      * @param array   $parameters The Request parameters
      * @param array   $files      The files
      * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
@@ -111,7 +111,7 @@ class Client extends FrameworkClient
      * PATCH to an URI.
      *
      * @param string  $uri        The URI to fetch
-     * @param string  $content    The raw body data
+     * @param mixed   $content    The raw body data
      * @param array   $parameters The Request parameters
      * @param array   $files      The files
      * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
