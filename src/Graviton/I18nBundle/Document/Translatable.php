@@ -202,14 +202,4 @@ class Translatable
     {
         return $this->language;
     }
-
-    /**
-     * Get isLocalized
-     *
-     * @return boolean $isLocalized
-     */
-    public function getIsLocalized()
-    {
-        return $this->isLocalized;
-    }
 }
