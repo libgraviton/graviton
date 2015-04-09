@@ -7,7 +7,12 @@
     "fixtures": [
       {
         "key": "realEstate",
-        "appId": "tablet",
+        "app": {
+            "ref": {
+                "$id": "tablet",
+                "$ref": "App"
+            }
+        },
         "name": {
           "en": "Real Estate"
         },
@@ -16,7 +21,12 @@
       },
       {
         "key": "investment",
-        "appId": "tablet",
+        "app": {
+            "ref": {
+                "$id": "tablet",
+                "$ref": "App"
+            }
+        },
         "name": {
           "en": "Investment"
         },
@@ -25,7 +35,12 @@
       },
       {
         "key": "retirement",
-        "appId": "tablet",
+        "app": {
+            "ref": {
+                "$id": "tablet",
+                "$ref": "App"
+            }
+        },
         "name": {
           "en": "Retirement"
         },
@@ -34,7 +49,12 @@
       },
       {
         "key": "requisition",
-        "appId": "tablet",
+        "app": {
+            "ref": {
+                "$id": "tablet",
+                "$ref": "App"
+            }
+        },
         "name": {
           "en": "Requisition"
         },
@@ -43,7 +63,12 @@
       },
       {
         "key": "payAndSave",
-        "appId": "tablet",
+        "app": {
+            "ref": {
+                "$id": "tablet",
+                "$ref": "App"
+            }
+        },
         "name": {
           "en": "Pay & Save"
         },
@@ -54,7 +79,15 @@
   },
   "target": {
     "indexes": [],
-    "relations": [],
+    "relations": [
+      {
+        "type": "embed",
+        "collectionName": "ModuleApp",
+        "localProperty": "app",
+        "localValueField": "app",
+        "path": "/core/app/"
+      }
+    ],
     "fields": [
       {
         "name": "id",
@@ -70,10 +103,8 @@
         "required": true
       },
       {
-        "name": "appId",
-        "type": "varchar",
-        "title": "App ID",
-        "description": "ID of an app this module relates to.",
+        "name": "app",
+        "type": "class:GravitonDyn\\ModuleAppBundle\\Document\\ModuleApp",
         "required": true
       },
       {

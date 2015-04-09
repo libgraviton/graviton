@@ -35,7 +35,9 @@ class ModuleControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
-                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData'
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
             ),
             null,
             'doctrine_mongodb'
@@ -89,15 +91,16 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
+
         $this->assertEquals(array(), $results);
     }
 
     /**
      * test if we can get an module first by key and then its id (id is dynamic)
      *
-     * @return void
+     * @return string
      */
-    public function testGetModuleWithKeyAndUseId()
+    public function testGetModuleWithKey()
     {
         $client = static::createRestClient();
         $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
@@ -109,22 +112,35 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals(1, count($results));
 
         // get entry by id
-        $moduleId = $results[0]->id;
+        return $results[0]->id;
+    }
 
+    /**
+     * test loading a module by id
+     *
+     * @depends testGetModuleWithKey
+     * @return void
+     */
+     public function getGetModuleWithId($id)
+     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module/'.$moduleId);
+        $client->request('GET', '/core/module/'.$id);
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertEquals($moduleId, $results->id);
+        $this->assertEquals($id, $results->id);
         $this->assertEquals('investment', $results->key);
-        $this->assertEquals('tablet', $results->appId);
+        $this->assertEquals('tablet', $results->app->id);
+        $this->assertEquals(
+            'http://localhost/core/app/tablet',
+            $result->app->{'$ref'}
+        );
         $this->assertEquals('/module/investment', $results->path);
         $this->assertEquals(2, $results->order);
 
         $this->assertContains(
-            '<http://localhost/core/module/'.$moduleId.'>; rel="self"',
+            '<http://localhost/core/module/'.$id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -139,7 +155,8 @@ class ModuleControllerTest extends RestTestCase
     {
         $testModule = new \stdClass;
         $testModule->key = 'test';
-        $testModule->appId = 'testapp';
+        //$testModule->app = new \stdClass();
+        //$testModule->app->id = 'testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -153,7 +170,7 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('testapp', $results->appId);
+        $this->assertEquals('testapp', $results->app->id);
         $this->assertEquals(50, $results->order);
 
         $this->assertContains(
@@ -171,7 +188,8 @@ class ModuleControllerTest extends RestTestCase
     {
         $testModule = new \stdClass;
         $testModule->key = 'test';
-        $testModule->appId = 'testapp';
+        //$testModule->app = new \stdClass;
+        //$testModule->app->id = 'testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -212,7 +230,8 @@ class ModuleControllerTest extends RestTestCase
         $putModule = new \stdClass();
         $putModule->id = $moduleId;
         $putModule->key = "test";
-        $putModule->appId = "test";
+        //$putModule->app = new \stdClass();
+        //$putModule->app->id = "test";
         $putModule->name = new \stdClass();
         $putModule->name->en = "testerle";
         $putModule->path = '/test/test';
@@ -227,7 +246,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals($moduleId, $results->id);
-        $this->assertEquals('test', $results->appId);
+        $this->assertEquals('test', $results->app->id);
         $this->assertEquals(500, $results->order);
 
         $this->assertContains(

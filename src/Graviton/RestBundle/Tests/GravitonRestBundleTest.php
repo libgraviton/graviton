@@ -60,10 +60,11 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('addCompilerPass'))
             ->getMock();
         $containerDouble
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('addCompilerPass')
-            ->with(
-                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass')
+            ->withConsecutive(
+                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass'),
+                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\ReferencehandlerCompilerPass')
             );
 
         $bundle = new GravitonRestBundle();

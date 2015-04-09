@@ -76,6 +76,16 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
                             $thisRecord->$addFunction($this->getReference($subval->$refName.'-'.$subval->$idName));
                         }
                     }
+
+                    // just as cheap attempt at objects
+                    if (is_object($val) && isset($val->ref) && isset($val->ref->{'$ref'})) {
+                        $setterFunction = 'set'.ucfirst($key);
+
+                        $valueRecord = new \GravitonDyn\ModuleAppBundle\Document\ModuleApp;
+                        $valueRecord->setRef($manager->find('Graviton\CoreBundle\Document\App', $val->ref->{'$id'}));
+
+                        $thisRecord->$setterFunction($valueRecord);
+                    }
                 }
 
                 $manager->persist($thisRecord);
