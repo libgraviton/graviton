@@ -91,7 +91,11 @@ class ExtReference extends Type
         }
 
         if (substr($value, 0, 4) == 'http') {
+            $url = $value;
             $value = parse_url($value, PHP_URL_PATH);
+            if ($value === false) {
+                throw new \RuntimeException('No path found in URL '.$url);
+            }
         }
 
         foreach ($this->router->getRouteCollection()->all() as $route) {
