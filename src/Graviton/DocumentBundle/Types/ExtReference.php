@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\Types;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Routing\Route;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
@@ -94,30 +95,52 @@ class ExtReference extends Type
         }
 
         foreach ($this->router->getRouteCollection()->all() as $route) {
-            $reqs = $route->getRequirements();
-            $keys = array_filter(
-                array_keys($reqs),
-                function ($req) {
-                    return substr($req, 0, 1) !== '_';
-                }
-            );
-            $params = array();
-            foreach ($keys as $key) {
-                $params[$key] = $reqs[$key];
+            if (!empty($collection) && !empty($id)) {
+                return \MongoDBRef::create($collection, $id);
             }
-
-            $matches = [];
-            if (preg_match($route->compile()->getRegex(), $value, $matches)) {
-                $id = $matches['id'];
-
-                list($routeService) = explode(':', $route->getDefault('_controller'));
-                list(,,,$name) = explode('.', $routeService);
-                $collection = ucfirst($name);
-            }
+            list($collection, $id) = $this->getDataFromRoute($route, $value);
         }
+
         if (empty($collection) || empty($id)) {
             throw new \RuntimeException(sprintf('Could not read URL %s', $value));
         }
-        return \MongoDBRef::create($collection, $id);
+    }
+
+    /**
+     * get collection and id from route
+     *
+     * @param Route $route route to look at
+     * @param string $value value of reference as URI
+     *
+     * @return array
+     */
+    private function getDataFromRoute(Route $route, $value)
+    {
+        $collection = null;
+        $id = null;
+
+        $reqs = $route->getRequirements();
+        $keys = array_filter(
+            array_keys($reqs),
+            function ($req) {
+                return substr($req, 0, 1) !== '_';
+            }
+        );
+
+        $params = array();
+        foreach ($keys as $key) {
+            $params[$key] = $reqs[$key];
+        }
+
+        $matches = [];
+        if (preg_match($route->compile()->getRegex(), $value, $matches)) {
+            $id = $matches['id'];
+
+            list($routeService) = explode(':', $route->getDefault('_controller'));
+            list(,,,$name) = explode('.', $routeService);
+            $collection = ucfirst($name);
+        }
+
+        return [$collection, $id];
     }
 }
