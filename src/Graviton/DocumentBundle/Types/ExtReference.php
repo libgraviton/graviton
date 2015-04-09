@@ -109,7 +109,7 @@ class ExtReference extends Type
     /**
      * get collection and id from route
      *
-     * @param Route $route route to look at
+     * @param Route  $route route to look at
      * @param string $value value of reference as URI
      *
      * @return array
