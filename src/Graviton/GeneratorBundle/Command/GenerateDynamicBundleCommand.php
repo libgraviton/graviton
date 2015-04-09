@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
@@ -478,7 +477,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $conn = $this->container->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
         $collection = $conn->selectCollection(
-            $this->container->getParameter('mongodb.default.server.db', 'db'),
+            $this->container->getParameter('mongodb.default.server.db'),
             $collectionName
         );
 
@@ -535,7 +534,7 @@ class GenerateDynamicBundleCommand extends Command
         $ret = true;
 
         $whitelist = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.service.whitelist', array()),
+            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
             true
         );
 

@@ -23,9 +23,6 @@ class GravitonBundleBundleTest extends \PHPUnit_Framework_TestCase
     public function testGetBundles()
     {
         $sut = new GravitonBundleBundle();
-        $expectation = array(
-            new GravitonCoreBundle()
-        );
 
         $result = $sut->getBundles();
         $this->assertInstanceOf(

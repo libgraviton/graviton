@@ -11,7 +11,6 @@ use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
@@ -283,7 +282,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters['base'] . 'Repository\\' . $parameters['document']
             );
 
-            $services = $this->addService(
+            $this->addService(
                 $services,
                 $repoName,
                 null,
@@ -724,7 +723,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
-        $services = $this->addService(
+        $this->addService(
             $services,
             $paramName,
             'graviton.rest.model',
@@ -769,7 +768,7 @@ class ResourceGenerator extends AbstractGenerator
             $paramName . '.class'
         );
 
-        $services = $this->addService(
+        $this->addService(
             $services,
             $paramName,
             'graviton.rest.controller',
