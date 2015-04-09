@@ -90,25 +90,39 @@ class ExtReference extends Type
             throw new \RuntimeException('no router injected into '.__CLASS__);
         }
 
-        if (substr($value, 0, 4) == 'http') {
-            $url = $value;
-            $value = parse_url($value, PHP_URL_PATH);
-            if ($value === false) {
-                throw new \RuntimeException('No path found in URL '.$url);
-            }
-        }
+        $path = $this->getPathFromUrl($value);
 
         foreach ($this->router->getRouteCollection()->all() as $route) {
             if (!empty($collection) && !empty($id)) {
                 return \MongoDBRef::create($collection, $id);
             }
-            list($collection, $id) = $this->getDataFromRoute($route, $value);
+            list($collection, $id) = $this->getDataFromRoute($route, $path);
         }
 
         if (empty($collection) || empty($id)) {
             throw new \RuntimeException(sprintf('Could not read URL %s', $value));
         }
     }
+
+    /**
+     * get path from url
+     *
+     * @param string $url url from request
+     *
+     * @return string
+     */
+    private function getPathFromUrl($url)
+    {
+        $ret = $url;
+        if (substr($url, 0, 4) == 'http') {
+            $ret = parse_url($url, PHP_URL_PATH);
+            if ($ret === false) {
+                throw new \RuntimeException('No path found in URL '.$url);
+            }
+        }
+        return $ret;
+    }
+
 
     /**
      * get collection and id from route
