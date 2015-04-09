@@ -336,23 +336,8 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
-        // get path to console from kernel..
-        $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
-
-        $cmd = 'php ' . $consolePath . ' -n ';
         $name = $args[0];
-
-        foreach ($args as $key => $val) {
-            if (strlen($key) > 1) {
-                $cmd .= ' ' . $key;
-            }
-            if (strlen($key) > 1 && !is_null($val)) {
-                $cmd .= '=';
-            }
-            if (strlen($val) > 1) {
-                $cmd .= escapeshellarg($val);
-            }
-        }
+        $cmd = $this->getCmd($args);
 
         $output->writeln('');
         $output->writeln(
@@ -395,6 +380,34 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $this->process->getExitCode();
+    }
+
+    /**
+     * get subcommand
+     *
+     * @param array $args args
+     *
+     * @return string
+     */
+    private function getCmd(array $args)
+    {
+        // get path to console from kernel..
+        $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
+
+        $cmd = 'php ' . $consolePath . ' -n ';
+
+        foreach ($args as $key => $val) {
+            if (strlen($key) > 1) {
+                $cmd .= ' ' . $key;
+            }
+            if (strlen($key) > 1 && !is_null($val)) {
+                $cmd .= '=';
+            }
+            if (strlen($val) > 1) {
+                $cmd .= escapeshellarg($val);
+            }
+        }
+        return $cmd;
     }
 
     /**
