@@ -80,7 +80,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
 
         $provider = new AirlockAuthenticationKeyUserProvider($contractModelMock);
 
-        $this->isInstanceOf(
+        $this->assertInstanceOf(
             '\Symfony\Component\Security\Core\User\UserInterface',
             $provider->loadUserByUsername('Tux')
         );

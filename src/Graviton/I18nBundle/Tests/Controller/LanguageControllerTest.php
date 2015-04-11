@@ -47,6 +47,43 @@ class LanguageControllerTest extends RestTestCase
     }
 
     /**
+     * validate that multiple languages work as advertised
+     *
+     * @return void
+     */
+    public function testMultiLangFinding()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+            ),
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/i18n/language');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
+
+        $this->assertcount(3, $results);
+
+        $this->assertEquals('en', $results[0]->id);
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('English', $results[0]->name->en);
+
+        $this->assertEquals('de', $results[1]->id);
+        $this->assertEquals('German', $results[1]->name->en);
+
+        $this->assertEquals('fr', $results[2]->id);
+        $this->assertEquals('French', $results[2]->name->en);
+    }
+
+    /**
      * test add language and request both languages
      *
      * @return void
@@ -95,6 +132,60 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('i18n', $client->getResults()->domain);
         $this->assertEquals('de', $client->getResults()->locale);
         $this->assertEquals('German', $client->getResults()->original);
+    }
+
+    /**
+     * test to add a language and alter a translatable via other service and check
+     * if the catalogue gets updated accordingly
+     *
+     * @return void
+     */
+    public function testCacheInvalidation()
+    {
+        $newLang = new \stdClass;
+        $newLang->id = 'es';
+        $newLang->name = new \stdClass;
+        $newLang->name->en = 'Spanish';
+
+        $client = static::createRestClient();
+        $client->post('/i18n/language', $newLang);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('en', $response->headers->get('Content-Language'));
+
+        // update description for new language
+        $putLang = new \stdClass;
+        $putLang->id = 'es';
+        $putLang->name = new \stdClass;
+        $putLang->name->en = 'Spanish';
+        $putLang->name->es = 'Español';
+
+        $client = static::createRestClient();
+        $client->put('/i18n/language/es', $putLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('Español', $results->name->es);
+        $this->assertEquals('es', $response->headers->get('Content-Language'));
+
+        // now, do it again to see if subsequent changes get reflected properly (triggerfile check)
+        $newPutLang = clone $putLang;
+        $newPutLang->name->es = 'Espanyol'; // this is a catalan way to spell 'Spanish'
+
+        $client = static::createRestClient();
+        $client->put('/i18n/language/es', $newPutLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertEquals('es', $results->id);
+        $this->assertEquals('Espanyol', $results->name->es);
+        $this->assertEquals('es', $response->headers->get('Content-Language'));
     }
 
     /**

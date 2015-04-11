@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\DependencyInjection\Container;
 use Graviton\RestBundle\Event\RestEvent;
 
 /**

@@ -18,6 +18,7 @@
     <parameter key="graviton.i18n.loader.doctrineodm.class">Graviton\I18nBundle\Translation\Loader\DoctrineODMLoader</parameter>
     <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
+    <parameter key="graviton.i18n.utils.class">Graviton\I18nBundle\Service\I18nUtils</parameter>
   </parameters>
   <services>
     <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
@@ -82,25 +83,30 @@
     <service id="graviton.i18n.translator" alias="translator"/>
     <service id="graviton.i18n.request" class="%graviton.i18n.request.class%" factory-service="request_stack" factory-method="getCurrentRequest"/>
     <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%" scope="request">
-      <call method="setTranslator">
-        <argument type="service" id="graviton.i18n.translator"/>
-      </call>
-      <call method="setRequest">
-        <argument type="service" id="graviton.i18n.request"/>
+      <call method="setUtils">
+        <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onpreserialize" direction="serialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
     </service>
     <service id="graviton.i18n.listener.i18ndeserializer" class="%graviton.i18n.listener.i18ndeserializer.class%">
-      <call method="setTranslatables">
-        <argument type="service" id="graviton.i18n.model.translatable"/>
-      </call>
-      <call method="setRequest">
-        <argument type="service" id="graviton.i18n.request"/>
+      <call method="setUtils">
+        <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" method="onPreDeserialize" direction="deserialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_deserialize" method="onPostDeserialize" direction="deserialization"/>
     </service>
+
+    <service id="graviton.18n.utils"
+             class="%graviton.i18n.utils.class%">
+      <!-- this here specifies the 'original' language -->
+      <argument type="string">%graviton.translator.default.locale%</argument>
+      <argument type="service" id="graviton.i18n.translator"/>
+      <argument type="service" id="graviton.i18n.model.translatable"/>
+      <argument type="service" id="graviton.i18n.repository.language"/>
+      <argument type="service" id="graviton.i18n.request"/>
+    </service>
+
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
     </service>

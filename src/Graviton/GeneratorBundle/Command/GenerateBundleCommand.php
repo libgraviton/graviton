@@ -107,8 +107,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
                     'Confirm automatic update of your core bundle',
                     'yes',
                     '?'
-                ),
-                true
+                )
             );
         }
 
