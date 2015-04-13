@@ -23,8 +23,8 @@ class {{ document }} implements TranslatableDocumentInterface
     protected $id;
 
     /**
-    * @var Date $deletedDate
-    */
+     * @var Date $deletedDate
+     */
     protected $deletedDate;
 
 {% for field in fields %}
@@ -192,13 +192,4 @@ class {{ document }} implements TranslatableDocumentInterface
         return array('{{ translatableFields|join('\',\'') }}');
     }
 
-    /**
-     * $ref deserialization handler
-     *
-     * @todo only insert if needed and make support things that are not called $ref
-     */
-    public function deserializeRef(JsonDeserializationVisitor $visitor, array $data, DeserializationContext $context)
-    {
-        $this->ref = $data['$ref'];
-    }
 }
