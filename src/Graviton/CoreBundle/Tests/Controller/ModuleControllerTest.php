@@ -72,7 +72,7 @@ class ModuleControllerTest extends RestTestCase
 
         // I have no idea why this wont work on travis and am skipping it in those cases
         if (!getenv('TRAVIS_COMMIT')) {
-            $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->ref);
+            $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
         }
     }
 
@@ -143,7 +143,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule = new \stdClass;
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
-        $testModule->app->ref = 'http://localhost/core/app/testapp';
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -157,7 +157,7 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('http://localhost/core/app/testapp', $results->app->ref);
+        $this->assertEquals('http://localhost/core/app/testapp', $results->app->{'$ref'});
         $this->assertEquals(50, $results->order);
 
         $this->assertContains(
@@ -218,7 +218,7 @@ class ModuleControllerTest extends RestTestCase
         $putModule->id = $moduleId;
         $putModule->key = 'test';
         $putModule->app = new \stdClass;
-        $putModule->app->ref = 'http://localhost/core/app/test';
+        $putModule->app->{'$ref'} = 'http://localhost/core/app/test';
         $putModule->name = new \stdClass();
         $putModule->name->en = 'testerle';
         $putModule->path = '/test/test';
@@ -233,7 +233,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals($moduleId, $results->id);
-        $this->assertEquals('http://localhost/core/app/test', $results->app->ref);
+        $this->assertEquals('http://localhost/core/app/test', $results->app->{'$ref'});
         $this->assertEquals(500, $results->order);
 
         $this->assertContains(

@@ -106,7 +106,7 @@ class ExtReferenceListener
                     $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
                 }
 
-            } else if (is_array($item)) {
+            } elseif (is_array($item)) {
                 $item = $this->mapField($item, $field);
             }
         }

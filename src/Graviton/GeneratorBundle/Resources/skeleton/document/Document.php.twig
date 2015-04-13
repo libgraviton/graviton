@@ -4,6 +4,8 @@ namespace {{ base }}Document;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\DeserializationContext;
 
 {% set translatableFields = [] %}
 
@@ -181,13 +183,22 @@ class {{ document }} implements TranslatableDocumentInterface
 {% endfor %}
 
     /**
-    * return translatable field names
-    *
-    * @return string[]
-    */
+     * return translatable field names
+     *
+     * @return string[]
+     */
     public function getTranslatableFields()
     {
         return array('{{ translatableFields|join('\',\'') }}');
     }
 
+    /**
+     * $ref deserialization handler
+     *
+     * @todo only insert if needed and make support things that are not called $ref
+     */
+    public function deserializeRef(JsonDeserializationVisitor $visitor, array $data, DeserializationContext $context)
+    {
+        $this->ref = $data['$ref'];
+    }
 }

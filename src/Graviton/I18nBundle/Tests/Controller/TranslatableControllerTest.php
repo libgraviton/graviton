@@ -41,7 +41,7 @@ class TranslatableControllerTest extends RestTestCase
         $client->request('GET', '/i18n/translatable');
         $results = $client->getResults();
 
-        $this->assertEquals('http://localhost/i18n/language/de', $results[1]->language);
+        $this->assertEquals('http://localhost/i18n/language/de', $results[0]->language);
     }
 
     /**

@@ -67,9 +67,9 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
                 $fields[] = $node->getAttribute('fieldName');
             }
 
-            // @todo make me unhacky
+            // @todo make me unhacky (taking in exposeAs from mapping)
             if ($id == 'gravitondyn.module.controller.module') {
-                $fields[] = 'app.ref';
+                $fields[] = 'app.$ref';
             }
             
             $map[implode('.', [$ns, $bundle, 'rest', $doc, 'get'])] = $fields;

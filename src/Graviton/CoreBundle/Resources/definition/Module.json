@@ -8,7 +8,7 @@
       {
         "key": "realEstate",
         "app": {
-          "ref": "http://localhost/core/app/tablet"
+          "$ref": "http://localhost/core/app/tablet"
         },
         "name": {
           "en": "Real Estate"
@@ -19,7 +19,7 @@
       {
         "key": "investment",
         "app": {
-          "ref": "http://localhost/core/app/tablet"
+          "$ref": "http://localhost/core/app/tablet"
         },
         "name": {
           "en": "Investment"
@@ -30,7 +30,7 @@
       {
         "key": "retirement",
         "app": {
-            "ref": "http://localhost/core/app/tablet"
+          "$ref": "http://localhost/core/app/tablet"
         },
         "name": {
           "en": "Retirement"
@@ -41,7 +41,7 @@
       {
         "key": "requisition",
         "app": {
-          "ref": "http://localhost/core/app/tablet"
+          "$ref": "http://localhost/core/app/tablet"
         },
         "name": {
           "en": "Requisition"
@@ -52,7 +52,7 @@
       {
         "key": "payAndSave",
         "app": {
-          "ref": "http://localhost/core/app/tablet"
+          "$ref": "http://localhost/core/app/tablet"
         },
         "name": {
           "en": "Pay & Save"
@@ -84,7 +84,7 @@
         "type": "extref",
         "title": "Language-Link",
         "description": "Link to language document.",
-        "required": true
+        "exposeAs": "$ref"
       },
       {
         "name": "name",
