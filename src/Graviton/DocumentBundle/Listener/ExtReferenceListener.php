@@ -100,7 +100,6 @@ class ExtReferenceListener
         foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
             if (strpos($field, '.') !== false) {
                 $topLevel = substr($field, 0, strpos($field, '.'));
-                $subLevel = substr($field, strpos($field, '.') + 1);
                 $subField = str_replace($topLevel.'.', '', $field);
                 if (array_key_exists($topLevel, $item)) {
                     $item[$topLevel] = $this->mapField($item[$topLevel], $subField);

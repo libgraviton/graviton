@@ -113,12 +113,11 @@ class ExtReference extends Type
      */
     private function getPathFromUrl($url)
     {
-        $ret = $url;
-        $ret = parse_url($url, PHP_URL_PATH);
-        if ($ret === false) {
+        $path = parse_url($url, PHP_URL_PATH);
+        if ($path === false) {
             throw new \RuntimeException('No path found in URL '.$url);
         }
-        return $ret;
+        return $path;
     }
 
 
