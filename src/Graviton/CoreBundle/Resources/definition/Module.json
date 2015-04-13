@@ -7,7 +7,9 @@
     "fixtures": [
       {
         "key": "realEstate",
-        "app": "http://localhost/core/app/tablet",
+        "app": {
+          "ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Real Estate"
         },
@@ -16,7 +18,9 @@
       },
       {
         "key": "investment",
-        "app": "http://localhost/core/app/tablet",
+        "app": {
+          "ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Investment"
         },
@@ -25,7 +29,9 @@
       },
       {
         "key": "retirement",
-        "app": "http://localhost/core/app/tablet",
+        "app": {
+            "ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Retirement"
         },
@@ -34,7 +40,9 @@
       },
       {
         "key": "requisition",
-        "app": "http://localhost/core/app/tablet",
+        "app": {
+          "ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Requisition"
         },
@@ -43,7 +51,9 @@
       },
       {
         "key": "payAndSave",
-        "app": "http://localhost/core/app/tablet",
+        "app": {
+          "ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Pay & Save"
         },
@@ -70,7 +80,7 @@
         "required": true
       },
       {
-        "name": "app",
+        "name": "app.ref",
         "type": "extref",
         "title": "Language-Link",
         "description": "Link to language document.",

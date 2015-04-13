@@ -98,11 +98,35 @@ class ExtReferenceListener
             return $item;
         }
         foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
-            if (is_array($item) && array_key_exists($field, $item)) {
-                $ref = json_decode($item[$field], true);
-                $routeId = $this->mapping[$ref['$ref']];
-                $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
+            if (strpos($field, '.') !== false) {
+                $topLevel = substr($field, 0, strpos($field, '.'));
+                $subLevel = substr($field, strpos($field, '.') + 1);
+                $subField = str_replace($topLevel.'.', '', $field);
+                if (array_key_exists($topLevel, $item)) {
+                    $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+                }
+
+            } else if (is_array($item)) {
+                $item = $this->mapField($item, $field);
             }
+        }
+        return $item;
+    }
+
+    /**
+     * recursive mapper
+     *
+     * @param array  $item  item to map
+     * @param string $field name of field to map
+     *
+     * @return array
+     */
+    private function mapField($item, $field)
+    {
+        if (array_key_exists($field, $item)) {
+            $ref = json_decode($item[$field], true);
+            $routeId = $this->mapping[$ref['$ref']];
+            $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
         }
         return $item;
     }
