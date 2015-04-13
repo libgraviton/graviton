@@ -34,47 +34,93 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
-
-            $file = implode(
-                '/',
-                [
-                    __DIR__,
-                    '..',
-                    '..',
-                    '..',
-                    '..',
-                    ucfirst($ns),
-                    ucfirst($bundle).'Bundle',
-                    'Resources',
-                    'config',
-                    'doctrine',
-                    ucfirst($doc).'.mongodb.xml'
-                ]
-            );
-
-            if (!file_exists($file)) {
-                continue;
-            }
-
-            $dom = new \DOMDocument;
-            $dom->Load($file);
-            $xpath = new \DOMXPath($dom);
-            $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-            $fieldNodes = $xpath->query("//doctrine:field[@type='extref']");
-
-            $fields = [];
-            foreach ($fieldNodes as $node) {
-                $fields[] = $node->getAttribute('fieldName');
-            }
-
-            // @todo make me unhacky (taking in exposeAs from mapping)
-            if ($id == 'gravitondyn.module.controller.module') {
-                $fields[] = 'app.$ref';
-            }
-            
-            $map[implode('.', [$ns, $bundle, 'rest', $doc, 'get'])] = $fields;
-            $map[implode('.', [$ns, $bundle, 'rest', $doc, 'all'])] = $fields;
+            $this->loadFields($map, $ns, $bundle, $doc);
         }
         $container->setParameter('graviton.document.type.extref.fields', $map);
+    }
+
+    /**
+     * generate fields from services recursivly
+     *
+     * @param array   $map      map to add entries to
+     * @param string  $ns       namespace
+     * @param string  $bundle   bundle name
+     * @param string  $doc      document name
+     * @param boolean $embedded is this an embedded doc, further args are only for embeddeds
+     * @param string  $name     name prefix of document the embedded field belongs to
+     * @param string  $prefix   prefix to add to embedded field name
+     *
+     * @return void
+     */
+    private function loadFields(&$map, $ns, $bundle, $doc, $embedded = false, $name = '', $prefix = '')
+    {
+        $file = implode(
+            '/',
+            [
+                __DIR__,
+                '..',
+                '..',
+                '..',
+                '..',
+                ucfirst($ns),
+                ucfirst($bundle).'Bundle',
+                'Resources',
+                'config',
+                'doctrine',
+                ucfirst($doc).'.mongodb.xml'
+            ]
+        );
+
+        if (!file_exists($file)) {
+            throw new \RuntimeException(sprintf('Could not find file %s', $file));
+            continue;
+        }
+
+        $dom = new \DOMDocument;
+        $dom->Load($file);
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+        $fieldNodes = $xpath->query("//doctrine:field[@type='extref']");
+
+        $fields = [];
+        foreach ($fieldNodes as $node) {
+            // @todo now the ref is hardcoded here and needs to go away
+            if ($node->getattribute('fieldName') == 'ref') {
+                $fields[] = '$'.$node->getAttribute('fieldName');
+            } else {
+                $fields[] = $node->getAttribute('fieldName');
+            }
+        }
+
+        $namePrefix = strtolower(implode('.', [$ns, $bundle, 'rest', $doc, '']));
+
+        $embedNodes = $xpath->query("//doctrine:embed-one");
+        foreach ($embedNodes as $node) {
+            list($subNs, $subBundle,, $subDoc) = explode('\\', $node->getAttribute('target-document'));
+            $prefix = sprintf('%s.', $node->getAttribute('field'));
+
+            // remove trailing Bundle since we are grabbing info from classname and not service id
+            $subBundle = substr($subBundle, 0, -6);
+
+            $this->loadFields($map, $subNs, $subBundle, $subDoc, true, $namePrefix, $prefix);
+        }
+
+        foreach (['get', 'all'] as $suffix) {
+            if ($embedded) {
+                $mapName = $name.$suffix;
+            } else {
+                $mapName = $namePrefix.$suffix;
+            }
+            if (empty($map[$mapName])) {
+                $map[$mapName] = [];
+            }
+            if ($embedded) {
+                foreach ($fields as $field) {
+                    $map[$mapName][] = $prefix.$field;
+                }
+            } else {
+                $map[$mapName] = array_merge($fields, $map[$mapName]);
+            }
+        }
     }
 }
