@@ -83,12 +83,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
 
         $fields = [];
         foreach ($fieldNodes as $node) {
-            // @todo now the ref is hardcoded here and needs to go away
-            if ($node->getattribute('fieldName') == 'ref') {
-                $fields[] = '$'.$node->getAttribute('fieldName');
-            } else {
-                $fields[] = $node->getAttribute('fieldName');
-            }
+            $fields[] = '$'.$node->getAttribute('fieldName');
         }
 
         $namePrefix = strtolower(implode('.', [$ns, $bundle, 'rest', $doc, '']));
