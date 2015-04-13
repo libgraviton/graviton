@@ -72,7 +72,6 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         );
 
         if (!file_exists($file)) {
-            throw new \RuntimeException(sprintf('Could not find file %s', $file));
             continue;
         }
 
