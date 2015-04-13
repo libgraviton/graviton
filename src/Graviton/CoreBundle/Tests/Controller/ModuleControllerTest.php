@@ -176,7 +176,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule = new \stdClass;
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
-        $testModule->app->ref = 'http://localhost/core/app/testapp';
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
