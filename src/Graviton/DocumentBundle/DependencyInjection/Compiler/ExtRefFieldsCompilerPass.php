@@ -72,7 +72,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         );
 
         if (!file_exists($file)) {
-            continue;
+            return;
         }
 
         $dom = new \DOMDocument;
