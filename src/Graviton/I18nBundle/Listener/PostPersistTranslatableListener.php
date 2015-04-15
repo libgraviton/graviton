@@ -62,9 +62,6 @@ class PostPersistTranslatableListener implements EventSubscriber
                     $fs->remove($file->getRealPath());
                 }
             } catch (\InvalidArgumentException $e) {
-                // InvalidArgumentException gets thrown if the translation cache dir doesn't exist.
-                // we tolerate that is it's normal under some circumstances (no cache warmup yet)
-                return true;
             }
         }
     }
