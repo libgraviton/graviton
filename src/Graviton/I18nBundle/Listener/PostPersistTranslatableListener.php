@@ -51,14 +51,19 @@ class PostPersistTranslatableListener implements EventSubscriber
                 $fs->touch($triggerFile);
             }
 
-            $finder = new Finder();
-            $finder
-                ->files()
-                ->in($cacheDirMask)
-                ->name('*.'.$locale.'.*');
+            try {
+                $finder = new Finder();
+                $finder
+                    ->files()
+                    ->in($cacheDirMask)
+                    ->name('*.' . $locale . '.*');
 
-            foreach ($finder as $file) {
-                $fs->remove($file->getRealPath());
+                foreach ($finder as $file) {
+                    $fs->remove($file->getRealPath());
+                }
+            } catch (\InvalidArgumentException $e) {
+                // InvalidArgumentException gets thrown if the translation cache dir doesn't exist.
+                // we ignore it since it's normal under some circumstances (no cache warmup yet)
             }
         }
     }
