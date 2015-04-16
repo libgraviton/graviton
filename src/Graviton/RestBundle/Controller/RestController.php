@@ -74,8 +74,7 @@ class RestController implements ContainerAwareInterface
             ->setStatusCode(Response::HTTP_OK);
 
         $record = $this->findRecord($id);
-
-        $response->setContent($this->serialize($record));
+        $response->setContent($this->serialize($this->onOutputOne($id, $record)));
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
@@ -196,10 +195,12 @@ class RestController implements ContainerAwareInterface
             $model->setPaginator($paginator);
         }
 
+        $records = $this->onOutputAll($model->findAll($request));
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent(
-                $this->serialize($model->findAll($request))
+                $this->serialize($records)
             );
 
         return $this->render(
@@ -236,7 +237,7 @@ class RestController implements ContainerAwareInterface
         //$this->validateRecord($record);
 
         // Insert the new record
-        $record = $this->getModel()->insertRecord($record);
+        $record = $this->getModel()->insertRecord($this->onPost($record));
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
@@ -330,7 +331,7 @@ class RestController implements ContainerAwareInterface
         );
 
         // And update the record, if everything is ok
-        $this->getModel()->updateRecord($id, $record);
+        $this->getModel()->updateRecord($id, $this->onPut($id, $record));
         $response->setStatusCode(Response::HTTP_OK);
 
         // i fetch it here again to prevent some "id" from the payload
@@ -360,6 +361,10 @@ class RestController implements ContainerAwareInterface
         $this->findRecord($id);
 
         $this->getModel()->deleteRecord($id);
+
+        // here, we just call it..
+        $this->onDelete($id);
+
         $response->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
@@ -526,5 +531,68 @@ class RestController implements ContainerAwareInterface
     public function render($view, array $parameters = array(), Response $response = null)
     {
         return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+    }
+
+    /**
+     * Hook-in point for inheriting Controllers for allAction()
+     *
+     * @param array $records Records
+     *
+     * @return array Possibly altered records to output
+     */
+    protected function onOutputAll(array $records)
+    {
+        return $records;
+    }
+
+    /**
+     * Hook-in point for inheriting Controllers for getAction()
+     *
+     * @param int   $id     Record id
+     * @param mixed $record Record
+     *
+     * @return mixed Possibly altered record
+     */
+    protected function onOutputOne($id, $record)
+    {
+        return $record;
+    }
+
+    /**
+     * Hook-in point for inheriting Controllers for postAction()
+     *
+     * @param mixed $record Record
+     *
+     * @return mixed Possibly altered record
+     */
+    protected function onPost($record)
+    {
+        return $record;
+    }
+
+    /**
+     * Hook-in point for inheriting Controllers for putAction()
+     *
+     * @param int   $id     Record id
+     * @param mixed $record Record
+     *
+     * @return mixed Possibly altered record
+     */
+    protected function onPut($id, $record)
+    {
+        return $record;
+    }
+
+    /**
+     * Hook-in point for inheriting Controllers for deleteAction().
+     * This is more like a postDelete hook-in point.
+     *
+     * @param int $id Record id
+     *
+     * @return void
+     */
+    protected function onDelete($id)
+    {
+        return true;
     }
 }
