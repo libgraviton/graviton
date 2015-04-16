@@ -27,6 +27,7 @@
     }
   },
   "required": [
+    "id",
     "domain",
     "locale",
     "original"
