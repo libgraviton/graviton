@@ -38,7 +38,7 @@ class TranslatableLanguage
     /**
      * Set ref
      *
-     * @param extref $ref value of extref
+     * @param string $ref value of extref
      * @return self
      */
     public function setRef($ref)
@@ -50,7 +50,7 @@ class TranslatableLanguage
     /**
      * Get ref
      *
-     * @return extref $ref
+     * @return string $ref
      */
     public function getRef()
     {
