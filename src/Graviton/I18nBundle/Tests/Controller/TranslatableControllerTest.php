@@ -44,7 +44,7 @@ class TranslatableControllerTest extends RestTestCase
         $client->request('GET', '/i18n/translatable');
         $results = $client->getResults();
 
-        $this->assertEquals('http://localhost/i18n/language/de', $results[0]->{'$language'});
+        $this->assertEquals('http://localhost/i18n/language/de', $results[0]->language->{'$ref'});
     }
 
     /**
@@ -59,7 +59,7 @@ class TranslatableControllerTest extends RestTestCase
         $client->request('GET', '/i18n/translatable/i18n-de-English');
         $results = $client->getResults();
 
-        $this->assertEquals('http://localhost/i18n/language/de', $results->{'$language'});
+        $this->assertEquals('http://localhost/i18n/language/de', $results->language->{'$ref'});
     }
 
     /**
@@ -76,13 +76,14 @@ class TranslatableControllerTest extends RestTestCase
         $value->original = 'French';
         $value->translated = 'Französisch';
         $value->isLocalized = true;
-        $value->{'$language'} = 'http://localhost/i18n/language/de';
+        $value->language = new \stdClass;
+        $value->language->{'$ref'} = 'http://localhost/i18n/language/de';
 
         $client = static::createRestClient();
 
         $client->post('/i18n/translatable', $value);
         $results = $client->getResults();
 
-        $this->assertEquals('http://localhost/i18n/language/de', $results->{'$language'});
+        $this->assertEquals('http://localhost/i18n/language/de', $results->language->{'$ref'});
     }
 }

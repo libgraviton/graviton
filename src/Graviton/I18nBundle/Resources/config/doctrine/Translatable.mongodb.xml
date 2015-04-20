@@ -5,11 +5,15 @@
   <document name="Graviton\I18nBundle\Document\Translatable" repository-class="Graviton\I18nBundle\Repository\TranslatableRepository">
     <field fieldName="id" type="string" id="true"/>
     <field fieldName="domain" type="string"/>
-    <field fieldName="language" type="extref"/>
     <field fieldName="locale" type="string"/>
     <field fieldName="original" type="string"/>
     <field fieldName="translated" type="string"/>
     <field fieldName="isLocalized" type="boolean"/>
+    <embed-one field="language" target-document="Graviton\I18nBundle\Document\TranslatableLanguage">
+      <cascade>
+        <all/>
+      </cascade>
+    </embed-one>
     <indexes>
       <index unique="true">
         <key name="domain"/>
