@@ -31,6 +31,9 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         $map = [];
         foreach ($services as $id) {
             list($ns, $bundle,, $doc) = explode('.', $id);
+            if (empty($bundle) || empty($doc)) {
+                continue;
+            }
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
