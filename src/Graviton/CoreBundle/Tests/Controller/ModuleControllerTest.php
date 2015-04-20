@@ -70,10 +70,7 @@ class ModuleControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
 
-        // I have no idea why this wont work on travis and am skipping it in those cases
-        if (!getenv('TRAVIS_COMMIT')) {
-            $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
-        }
+        $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
     }
 
     /**

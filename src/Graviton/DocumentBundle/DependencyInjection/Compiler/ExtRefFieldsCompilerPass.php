@@ -54,6 +54,9 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
      */
     private function loadFields(&$map, $ns, $bundle, $doc, $embedded = false, $name = '', $prefix = '')
     {
+        if ($ns === 'gravitondyn') {
+            $ns = 'GravitonDyn';
+        }
         $file = implode(
             '/',
             [
