@@ -102,7 +102,11 @@ class ExtReferenceListener
                 $topLevel = substr($field, 0, strpos($field, '.'));
                 $subField = str_replace($topLevel.'.', '', $field);
                 if (array_key_exists($topLevel, $item)) {
-                    $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+                    if (substr($subField, 0, 2) === '0.') {
+                        $item[$topLevel] = $this->mapFields($item[$topLevel], $subField);
+                    } else {
+                        $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+                    }
                 }
 
             } elseif (is_array($item)) {
@@ -113,7 +117,24 @@ class ExtReferenceListener
     }
 
     /**
-     * recursive mapper
+     * recursive mapper for embed-many fields
+     *
+     * @param array  $items items to map
+     * @param string $field name of field to map
+     *
+     * @return array
+     */
+    private function mapFields($items, $field)
+    {
+        $field = substr($field, 2);
+        foreach ($items as $key => $item) {
+            $items[$key] = $this->mapField($item, $field);
+        }
+        return $items;
+    }
+
+    /**
+     * recursive mapper for embed-one fields
      *
      * @param array  $item  item to map
      * @param string $field name of field to map

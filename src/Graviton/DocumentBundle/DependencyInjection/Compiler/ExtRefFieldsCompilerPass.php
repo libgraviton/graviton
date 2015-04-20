@@ -91,16 +91,8 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
 
         $namePrefix = strtolower(implode('.', [$ns, $bundle, 'rest', $doc, '']));
 
-        $embedNodes = $xpath->query("//doctrine:embed-one");
-        foreach ($embedNodes as $node) {
-            list($subNs, $subBundle,, $subDoc) = explode('\\', $node->getAttribute('target-document'));
-            $prefix = sprintf('%s.', $node->getAttribute('field'));
-
-            // remove trailing Bundle since we are grabbing info from classname and not service id
-            $subBundle = substr($subBundle, 0, -6);
-
-            $this->loadFields($map, $subNs, $subBundle, $subDoc, true, $namePrefix, $prefix);
-        }
+        $this->loadEmbeddedDocuments($map, $xpath->query('//doctrine:embed-one'), $namePrefix);
+        $this->loadEmbeddedDocuments($map, $xpath->query('//doctrine:embed-many'), $namePrefix, true);
 
         foreach (['get', 'all'] as $suffix) {
             if ($embedded) {
@@ -118,6 +110,33 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
             } else {
                 $map[$mapName] = array_merge($fields, $map[$mapName]);
             }
+        }
+    }
+
+    /**
+     * load fields from embed-* nodes
+     *
+     * @param array        $map        map to add entries to
+     * @param \DomNodeList $embedNodes xpath results with nodes
+     * @param string       $namePrefix name prefix of document the embedded field belongs to
+     * @param boolean      $many       is this an embed-many relationship
+     *
+     * @return void
+     */
+    private function loadEmbeddedDocuments(&$map, $embedNodes, $namePrefix, $many = false)
+    {
+        foreach ($embedNodes as $node) {
+            list($subNs, $subBundle,, $subDoc) = explode('\\', $node->getAttribute('target-document'));
+            $prefix = sprintf('%s.', $node->getAttribute('field'));
+
+            // remove trailing Bundle since we are grabbing info from classname and not service id
+            $subBundle = substr($subBundle, 0, -6);
+
+            if ($many) {
+                $prefix .= '0.';
+            }
+
+            $this->loadFields($map, $subNs, $subBundle, $subDoc, true, $namePrefix, $prefix);
         }
     }
 }
