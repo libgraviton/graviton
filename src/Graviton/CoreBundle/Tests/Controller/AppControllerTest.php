@@ -266,6 +266,58 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * Try to update an app with a non matching ID in GET and req body
+     *
+     * @return void
+     */
+    public function testNonMatchingIdPutApp()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "tablet";
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = "Tablet";
+        $helloApp->showInMenu = false;
+
+        $client = static::createRestClient();
+        $client->put('/core/app/someotherapp', $helloApp);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'Record ID in your payload must be the same',
+            $response->getContent()
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * We had an issue when PUTing without ID would create a new record.
+     * This test ensures that we don't do that, instead we should apply the ID from the GET req.
+     *
+     * @return void
+     */
+    public function testPutAppNoIdInPayload()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = 'New tablet';
+        $helloApp->showInMenu = false;
+
+        $client = static::createRestClient();
+        $client->put('/core/app/tablet', $helloApp);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+
+        $this->assertEquals('tablet', $results->id);
+        $this->assertEquals('New tablet', $results->title->en);
+        $this->assertFalse($results->showInMenu);
+    }
+
+    /**
      * test updating an inexistant document
      *
      * @return void
