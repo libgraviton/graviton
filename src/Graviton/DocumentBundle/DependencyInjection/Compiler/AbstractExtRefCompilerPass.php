@@ -36,14 +36,12 @@ abstract class AbstractExtRefCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * null implementation of method
+     * abstract process method
      *
      * @param ContainerBuilder $container container
      * @param array            $services  services
      *
      * @return void
      */
-    public function processServices(ContainerBuilder $container, $services)
-    {
-    }
+    abstract public function processServices(ContainerBuilder $container, $services);
 }
