@@ -41,6 +41,9 @@
             <call method="setRepository">
                 <argument type="service" id="graviton.core.repository.app"/>
             </call>
+            <call method="setRqlFactory">
+                <argument type="service" id="graviton.rql.factory"/>
+            </call>
         </service>
         <service id="graviton.core.document.app" class="%graviton.core.document.app.class%"/>
         <service id="graviton.core.controller.product"
@@ -62,6 +65,9 @@
                  parent="graviton.rest.model">
             <call method="setRepository">
                 <argument type="service" id="graviton.core.repository.product"/>
+            </call>
+            <call method="setRqlFactory">
+                <argument type="service" id="graviton.rql.factory"/>
             </call>
         </service>
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>

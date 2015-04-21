@@ -729,10 +729,14 @@ class ResourceGenerator extends AbstractGenerator
             'graviton.rest.model',
             null,
             array(
-                array(
+                [
                     'method' => 'setRepository',
                     'service' => $repoName
-                )
+                ],
+                [
+                    'method' => 'setRqlFactory',
+                    'service' => 'graviton.rql.factory',
+                ],
             )
         );
 

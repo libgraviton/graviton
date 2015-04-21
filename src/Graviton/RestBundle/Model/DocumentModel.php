@@ -40,6 +40,21 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $repository;
 
     /**
+     * @var
+     */
+    private $rqlFactory;
+
+    /**
+     * @param RqlFactory $rqlFactory factory object to use
+     *
+     * @return void
+     */
+    public function setRqlFactory($rqlFactory)
+    {
+        $this->rqlFactory = $rqlFactory;
+    }
+
+    /**
      * get repository instance
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
@@ -223,7 +238,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected function doRqlQuery($queryBuilder, $rqlQuery)
     {
-        $factory = $this->container->get('graviton.rql.factory');
+        $factory = $this->rqlFactory;
 
         $query = $factory
             ->create('MongoOdm', $rqlQuery, $queryBuilder)

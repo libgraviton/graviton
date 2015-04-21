@@ -38,6 +38,7 @@
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
+        "graviton/php-rql-parser": "~2.0@alpha",
         "graviton/rql-parser-bundle": "dev-develop"
     },
     "require-dev": {
