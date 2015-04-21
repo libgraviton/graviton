@@ -63,6 +63,13 @@ class ExtReference extends Type
      */
     public function convertToPHPValue($value)
     {
+        if (
+            !array_key_exists('$ref', $value)
+            && !array_key_exists($value['$ref'], $this->mapping)
+            && !array_key_exists('$id', $value)
+        ) {
+            return '';
+        }
         return $this->router->generate($this->mapping[$value['$ref']], ['id' => $value['$id']]);
     }
 
@@ -88,6 +95,9 @@ class ExtReference extends Type
     {
         if (empty($this->router)) {
             throw new \RuntimeException('no router injected into '.__CLASS__);
+        }
+        if (empty($value)) {
+            throw new \RuntimeException('Empty URL in '.__CLASS__);
         }
 
         $path = $this->getPathFromUrl($value);
