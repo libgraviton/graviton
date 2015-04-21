@@ -70,6 +70,7 @@ class AppKernel extends Kernel
             new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle(),
+            new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
