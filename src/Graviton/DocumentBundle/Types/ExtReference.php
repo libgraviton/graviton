@@ -63,8 +63,7 @@ class ExtReference extends Type
      */
     public function convertToPHPValue($value)
     {
-        if (
-            !array_key_exists('$ref', $value)
+        if (!array_key_exists('$ref', $value)
             && !array_key_exists($value['$ref'], $this->mapping)
             && !array_key_exists('$id', $value)
         ) {
