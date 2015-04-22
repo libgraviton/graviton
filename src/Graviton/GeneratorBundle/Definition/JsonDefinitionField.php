@@ -12,6 +12,7 @@ namespace Graviton\GeneratorBundle\Definition;
  */
 class JsonDefinitionField implements DefinitionElementInterface
 {
+    const TYPE_EXTREF = 'extref';
 
     /**
      * Typemap from our source types to doctrine types
@@ -24,7 +25,8 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DECIMAL => 'float',
         self::TYPE_DATETIME => 'date',
         self::TYPE_BOOLEAN => 'boolean',
-        self::TYPE_OBJECT => 'object'
+        self::TYPE_OBJECT => 'object',
+        self::TYPE_EXTREF => 'extref',
     );
 
     private $serializerTypeMap = array(
@@ -35,7 +37,8 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DECIMAL => 'double',
         self::TYPE_DATETIME => 'DateTime',
         self::TYPE_BOOLEAN => 'boolean',
-        self::TYPE_OBJECT => 'array'
+        self::TYPE_OBJECT => 'array',
+        self::TYPE_EXTREF => 'string',
     );
 
     /**

@@ -72,12 +72,13 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertcount(3, $results);
 
-        $this->assertEquals('en', $results[0]->id);
         $this->assertEquals('en', $response->headers->get('Content-Language'));
-        $this->assertEquals('English', $results[0]->name->en);
 
-        $this->assertEquals('de', $results[1]->id);
-        $this->assertEquals('German', $results[1]->name->en);
+        $this->assertEquals('de', $results[0]->id);
+        $this->assertEquals('German', $results[0]->name->en);
+
+        $this->assertEquals('en', $results[1]->id);
+        $this->assertEquals('English', $results[1]->name->en);
 
         $this->assertEquals('fr', $results[2]->id);
         $this->assertEquals('French', $results[2]->name->en);

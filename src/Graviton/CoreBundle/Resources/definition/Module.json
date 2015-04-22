@@ -7,7 +7,9 @@
     "fixtures": [
       {
         "key": "realEstate",
-        "appId": "tablet",
+        "app": {
+          "$ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Real Estate"
         },
@@ -16,7 +18,9 @@
       },
       {
         "key": "investment",
-        "appId": "tablet",
+        "app": {
+          "$ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Investment"
         },
@@ -25,7 +29,9 @@
       },
       {
         "key": "retirement",
-        "appId": "tablet",
+        "app": {
+          "$ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Retirement"
         },
@@ -34,7 +40,9 @@
       },
       {
         "key": "requisition",
-        "appId": "tablet",
+        "app": {
+          "$ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Requisition"
         },
@@ -43,7 +51,9 @@
       },
       {
         "key": "payAndSave",
-        "appId": "tablet",
+        "app": {
+          "$ref": "http://localhost/core/app/tablet"
+        },
         "name": {
           "en": "Pay & Save"
         },
@@ -70,11 +80,11 @@
         "required": true
       },
       {
-        "name": "appId",
-        "type": "varchar",
-        "title": "App ID",
-        "description": "ID of an app this module relates to.",
-        "required": true
+        "name": "app.ref",
+        "type": "extref",
+        "title": "Language-Link",
+        "description": "Link to language document.",
+        "exposeAs": "$ref"
       },
       {
         "name": "name",

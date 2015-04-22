@@ -92,6 +92,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $qb = $this->repository
                 ->createQueryBuilder()
+                // not specifying something to sort on leads to very wierd cases when fetching references
+                ->sort('_id')
                 ->limit($numberPerPage)
                 ->find($this->repository->getDocumentName());
 
