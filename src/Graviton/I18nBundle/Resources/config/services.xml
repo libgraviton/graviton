@@ -7,10 +7,13 @@
     <parameter key="graviton.i18n.controller.translatable.class">Graviton\I18nBundle\Controller\TranslatableController</parameter>
     <parameter key="graviton.i18n.model.language.class">Graviton\I18nBundle\Model\Language</parameter>
     <parameter key="graviton.i18n.model.translatable.class">Graviton\I18nBundle\Model\Translatable</parameter>
+    <parameter key="graviton.i18n.model.translatablelanguage.class">Graviton\I18nBundle\Model\TranslatableLanguage</parameter>
     <parameter key="graviton.i18n.repository.language.class">Graviton\I18nBundle\Repository\LanguageRepository</parameter>
     <parameter key="graviton.i18n.repository.translatable.class">Graviton\I18nBundle\Repository\TranslatableRepository</parameter>
+    <parameter key="graviton.i18n.repository.translatablelanguage.class">Graviton\I18nBundle\Repository\TranslatableLanguageRepository</parameter>
     <parameter key="graviton.i18n.document.language.class">Graviton\I18nBundle\Document\Language</parameter>
     <parameter key="graviton.i18n.document.translatable.class">Graviton\I18nBundle\Document\Translatable</parameter>
+    <parameter key="graviton.i18n.document.translatablelanguage.class">Graviton\I18nBundle\Document\TranslatableLanguage</parameter>
     <parameter key="graviton.i18n.listener.contentlanguageresponse.class">Graviton\I18nBundle\Listener\ContentLanguageResponseListener</parameter>
     <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
@@ -52,6 +55,12 @@
       factory-method="getRepository">
       <argument type="string">GravitonI18nBundle:Translatable</argument>
     </service>
+    <service id="graviton.i18n.repository.translatablelanguage"
+      class="%graviton.i18n.repository.translatablelanguage.class%"
+      factory-service="doctrine_mongodb.odm.default_document_manager"
+      factory-method="getRepository">
+      <argument type="string">GravitonI18nBundle:TranslatableLanguage</argument>
+    </service>
     <service id="graviton.i18n.model.translatable"
       class="%graviton.i18n.model.translatable.class%"
       parent="graviton.rest.model">
@@ -62,7 +71,15 @@
         <argument type="service" id="graviton.rql.factory"/>
       </call>
     </service>
+    <service id="graviton.i18n.model.translatablelanguage"
+      class="%graviton.i18n.model.translatablelanguage.class%"
+      parent="graviton.rest.model">
+      <call method="setRepository">
+        <argument type="service" id="graviton.i18n.repository.translatablelanguage"/>
+      </call>
+    </service>
     <service id="graviton.i18n.document.translatable" class="%graviton.i18n.document.translatable.class%"/>
+    <service id="graviton.i18n.document.translatablelanguage" class="%graviton.i18n.document.translatablelanguage.class%"/>
     <service id="graviton.i18n.controller.translatable"
       class="%graviton.i18n.controller.translatable.class%"
       parent="graviton.rest.controller" scope="request">

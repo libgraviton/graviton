@@ -6,10 +6,15 @@
 namespace Graviton\DocumentBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
+use Doctrine\ODM\MongoDB\Types\Type;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
 
 /**
  * GravitonDocumentBundle
@@ -20,6 +25,32 @@ use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
  */
 class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 {
+    /**
+     * initialize bundle
+     */
+    public function __construct()
+    {
+        Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
+    }
+
+    /**
+     * inject services into custom type
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        /* @var $router Router */
+        $router = $this->container->get('router');
+
+        /* @var $type \Graviton\DocumentBundle\Types\ExtReference */
+        $type = Type::getType('extref');
+
+        $type->setRouter($router);
+        $type->setMapping($this->container->getParameter('graviton.document.type.extref.mapping'));
+    }
+
+
     /**
      * {@inheritDoc}
      *
@@ -32,5 +63,20 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
             new StofDoctrineExtensionsBundle(),
             new DoctrineFixturesBundle(),
         );
+    }
+
+    /**
+     * load compiler pass
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ExtRefMappingCompilerPass);
+        $container->addCompilerPass(new ExtRefFieldsCompilerPass);
     }
 }

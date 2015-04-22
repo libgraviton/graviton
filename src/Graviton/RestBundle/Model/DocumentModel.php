@@ -94,6 +94,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder()
+            // not specifying something to sort on leads to very wierd cases when fetching references
+            ->sort('_id')
             ->limit($numberPerPage);
 
         // *** do we have an RQL expression, do we need to filter data?
@@ -108,8 +110,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
 
         } else {
-
-            // TODO [lapistano]: seems the offset is missing for this query.
+            // @todo [lapistano]: seems the offset is missing for this query.
+            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+            $queryBuilder->find($this->repository->getDocumentName());
 
             /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
             $query = $queryBuilder

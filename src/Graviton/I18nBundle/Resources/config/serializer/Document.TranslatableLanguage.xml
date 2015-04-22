@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\I18nBundle\Document\TranslatableLanguage" exclusion-policy="ALL">
+    <property name="id" type="string" accessor-getter="getId" accessor-setter="setId" expose="false"/>
+    <property name="ref" type="string" serialized-name="$ref" accessor-getter="getRef" accessor-setter="setRef" expose="true"/>
+  </class>
+</serializer>

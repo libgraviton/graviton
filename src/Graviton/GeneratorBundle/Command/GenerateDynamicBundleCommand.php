@@ -335,6 +335,61 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
+        $name = $args[0];
+        $cmd = $this->getCmd($args);
+
+        $output->writeln('');
+        $output->writeln(
+            sprintf(
+                '<info>Running %s</info>',
+                $name
+            )
+        );
+
+        $output->writeln(
+            sprintf(
+                '<comment>%s</comment>',
+                $cmd
+            )
+        );
+
+        $this->process->setCommandLine($cmd);
+        $this->process->run(
+            function ($type, $buffer) use ($output, $cmd) {
+                if (Process::ERR === $type) {
+                    $output->writeln(
+                        sprintf(
+                            '<error>%s</error>',
+                            $buffer
+                        )
+                    );
+                } else {
+                    $output->writeln(
+                        sprintf(
+                            '<comment>%s</comment>',
+                            $buffer
+                        )
+                    );
+                }
+            }
+        );
+
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
+        }
+
+        return $this->process->getExitCode();
+    }
+
+    /**
+     * get subcommand
+     *
+     * @param array $args args
+     *
+     * @return string
+     */
+    private function getCmd(array $args)
+    {
         // get path to console from kernel..
         $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
@@ -351,24 +406,7 @@ class GenerateDynamicBundleCommand extends Command
                 $cmd .= escapeshellarg($val);
             }
         }
-
-        $output->writeln('');
-
-        $output->writeln(
-            sprintf(
-                '<comment>Executing "%s"</comment>',
-                $cmd
-            )
-        );
-
-        $this->process->setCommandLine($cmd);
-        $this->process->run();
-
-        if (!$this->process->isSuccessful()) {
-            throw new \RuntimeException($this->process->getErrorOutput());
-        }
-
-        return $this->process->getExitCode();
+        return $cmd;
     }
 
     /**

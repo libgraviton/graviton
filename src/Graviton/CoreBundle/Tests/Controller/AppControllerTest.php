@@ -60,15 +60,15 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(2, count($results));
 
-        $this->assertEquals('tablet', $results[0]->id);
-        $this->assertEquals('Tablet', $results[0]->title->en);
+        $this->assertEquals('admin', $results[0]->id);
+        $this->assertEquals('Administration', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
-        $this->assertEquals(1, $results[0]->order);
+        $this->assertEquals(2, $results[0]->order);
 
-        $this->assertEquals('admin', $results[1]->id);
-        $this->assertEquals('Administration', $results[1]->title->en);
+        $this->assertEquals('tablet', $results[1]->id);
+        $this->assertEquals('Tablet', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
-        $this->assertEquals(2, $results[1]->order);
+        $this->assertEquals(1, $results[1]->order);
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="self"',
