@@ -33,9 +33,6 @@
       <call method="setModel">
         <argument type="service" id="graviton.entity.model.country"/>
       </call>
-      <call method="setRqlFactory">
-        <argument type="service" id="graviton.rql.factory"/>
-      </call>
       <tag name="graviton.rest" read-only="true"/>
     </service>
     <service id="graviton.entity.repository.country"
@@ -49,6 +46,9 @@
              parent="graviton.rest.model">
       <call method="setRepository">
         <argument type="service" id="graviton.entity.repository.country"/>
+      </call>
+      <call method="setRqlFactory">
+        <argument type="service" id="graviton.rql.factory"/>
       </call>
     </service>
     <service id="graviton.entity.document.country" class="%graviton.entity.document.country.class%"/>
