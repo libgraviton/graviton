@@ -71,6 +71,19 @@
         <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
         </service>
 
+        <!-- Json Request listener -->
+        <service id="graviton.rest.listener.jsonrequestlistener"
+                 class="Graviton\RestBundle\Listener\JsonRequestListener">
+            <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
+        </service>
+
+        <!-- Special mimetypes Request listener -->
+        <service id="graviton.rest.listener.specialmimetypesrequestlistener"
+                 class="Graviton\RestBundle\Listener\SpecialMimetypeRequestListener">
+            <argument type="service" id="service_container"></argument>
+            <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
+        </service>
+
         <!-- Validation listener / Json validator -->
         <service id="graviton.rest.listener.validationrequestlistener"
                  class="Graviton\RestBundle\Listener\ValidationRequestListener">

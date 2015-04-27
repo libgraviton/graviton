@@ -1,0 +1,10 @@
+{
+  "description": "Reference to the language of a translatable.",
+  "properties": {
+    "ref": {
+      "title": "Language-Link",
+      "description": "Link to language document."
+    }
+  },
+  "required": []
+}

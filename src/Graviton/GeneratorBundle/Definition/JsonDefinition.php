@@ -187,16 +187,14 @@ class JsonDefinition
     /**
      * Returns whether this service has fixtures
      *
-     * @param string $fieldName ask for specific field
-     *
      * @return bool true if yes, false if not
      */
-    public function hasFixtures($fieldName = null)
+    public function hasFixtures()
     {
         // default
         $ret = false;
 
-        if (count($this->getFixtures($fieldName)) > 0) {
+        if (count($this->getFixtures()) > 0) {
             $ret = true;
         }
 
@@ -380,5 +378,21 @@ class JsonDefinition
             }
         }
         return $ret;
+    }
+
+    /**
+     * Provides the role set defined in the service section.
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = array();
+
+         if (!empty($this->doc->service->roles)) {
+             $roles = $this->doc->service->roles;
+         }
+
+        return $roles;
     }
 }

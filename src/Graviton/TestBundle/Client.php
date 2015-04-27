@@ -36,55 +36,112 @@ class Client extends FrameworkClient
     /**
      * POSTs to an URI.
      *
-     * @param string $uri        The URI to fetch
-     * @param string $content    The raw body data
-     * @param array  $parameters The Request parameters
-     * @param array  $files      The files
-     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param string  $uri        The URI to fetch
+     * @param mixed   $content    The raw body data
+     * @param array   $parameters The Request parameters
+     * @param array   $files      The files
+     * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param boolean $jsonEncode If $content should be json encoded or not
      *
      * @return \Symfony\Component\DomCrawler\Crawler|null
      *
      * @api
      */
-    public function post($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
-    {
-        return $this->request('POST', $uri, $parameters, $files, $server, json_encode($content));
+    public function post(
+        $uri,
+        $content,
+        array $parameters = array(),
+        array $files = array(),
+        array $server = array(),
+        $jsonEncode = true
+    ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
+        return $this->request(
+            'POST',
+            $uri,
+            $parameters,
+            $files,
+            $server,
+            $content
+        );
     }
 
     /**
      * PUTs to an URI.
      *
-     * @param string $uri        The URI to fetch
-     * @param string $content    The raw body data
-     * @param array  $parameters The Request parameters
-     * @param array  $files      The files
-     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param string  $uri        The URI to fetch
+     * @param mixed   $content    The raw body data
+     * @param array   $parameters The Request parameters
+     * @param array   $files      The files
+     * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param boolean $jsonEncode If $content should be json encoded or not
      *
      * @return \Symfony\Component\DomCrawler\Crawler|null
      *
      * @api
      */
-    public function put($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
-    {
-        return $this->request('PUT', $uri, $parameters, $files, $server, json_encode($content));
+    public function put(
+        $uri,
+        $content,
+        array $parameters = array(),
+        array $files = array(),
+        array $server = array(),
+        $jsonEncode = true
+    ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
+        return $this->request(
+            'PUT',
+            $uri,
+            $parameters,
+            $files,
+            $server,
+            $content
+        );
     }
 
     /**
      * PATCH to an URI.
      *
-     * @param string $uri        The URI to fetch
-     * @param string $content    The raw body data
-     * @param array  $parameters The Request parameters
-     * @param array  $files      The files
-     * @param array  $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param string  $uri        The URI to fetch
+     * @param mixed   $content    The raw body data
+     * @param array   $parameters The Request parameters
+     * @param array   $files      The files
+     * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
+     * @param boolean $jsonEncode If $content should be json encoded or not
      *
      * @return \Symfony\Component\DomCrawler\Crawler|null
      *
      * @api
      */
-    public function patch($uri, $content, array $parameters = array(), array $files = array(), array $server = array())
-    {
-        return $this->request('PATCH', $uri, $parameters, $files, $server, json_encode($content));
+    public function patch(
+        $uri,
+        $content,
+        array $parameters = array(),
+        array $files = array(),
+        array $server = array(),
+        $jsonEncode = true
+    ) {
+
+        if ($jsonEncode) {
+            $content = json_encode($content);
+        }
+
+        return $this->request(
+            'PATCH',
+            $uri,
+            $parameters,
+            $files,
+            $server,
+            $content
+        );
     }
 
     /**

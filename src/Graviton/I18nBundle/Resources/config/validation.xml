@@ -7,4 +7,9 @@
             <constraint name="NotBlank"/>
         </property>
     </class>
+    <class name="Graviton\I18nBundle\Document\Translatable">
+        <property name="id">
+            <constraint name="NotBlank"/>
+        </property>
+    </class>
 </constraint-mapping>

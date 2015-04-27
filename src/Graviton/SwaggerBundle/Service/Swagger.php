@@ -18,7 +18,6 @@ use Symfony\Component\Routing\Route;
  */
 class Swagger
 {
-
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
      */
@@ -82,7 +81,7 @@ class Swagger
         $paths = array();
 
         foreach ($routingMap as $contName => $routes) {
-            list($app, $bundle, $rest, $document) = explode('.', $contName);
+            list(, $bundle,, $document) = explode('.', $contName);
 
             foreach ($routes as $routeName => $route) {
                 $routeMethod = strtolower($route->getMethods()[0]);

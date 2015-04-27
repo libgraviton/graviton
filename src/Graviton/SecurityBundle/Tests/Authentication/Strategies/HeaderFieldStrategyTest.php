@@ -46,7 +46,7 @@ class HeaderFieldStrategyTest extends WebTestCase
 
         $this->assertEquals(
             $headerFieldValue,
-            $strategy->apply($client->getRequest(), HeaderFieldStrategy::X_HEADER_FIELD)
+            $strategy->apply($client->getRequest())
         );
     }
 
