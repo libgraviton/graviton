@@ -9,6 +9,11 @@
     <field fieldName="original" type="string"/>
     <field fieldName="translated" type="string"/>
     <field fieldName="isLocalized" type="boolean"/>
+    <embed-one field="language" target-document="Graviton\I18nBundle\Document\TranslatableLanguage">
+      <cascade>
+        <all/>
+      </cascade>
+    </embed-one>
     <indexes>
       <index unique="true">
         <key name="domain"/>

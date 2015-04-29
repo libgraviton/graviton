@@ -5,6 +5,7 @@
         "readOnly": false,
         "baseController": "\\Graviton\\CoreBundle\\Controller\\ShowcaseExtensionController",
         "routerBase": "/hans/showcase/",
+        "roles": ["GRAVITON_USER"],
         "fixtures": [
             {
                 "id": 500,
@@ -68,7 +69,15 @@
                             "anotherField": "nothing is as it seems"
                         }
                     ]
-                }
+                },
+                "nestedApps": [
+                    {
+                        "$ref": "http://localhost/core/app/tablet"
+                    },
+                    {
+                        "$ref": "http://localhost/core/app/admin"
+                    }
+                ]
             },
             {
                 "id": 600,
@@ -230,6 +239,12 @@
                 "type": "object",
                 "title": "Some data blob",
                 "description": "Unstructured information"
+            },
+            {
+                "name": "nestedApps.0.ref",
+                "type": "extref",
+                "title": "Nested array of apps",
+                "exposeAs": "$ref"
             }
         ]
     }

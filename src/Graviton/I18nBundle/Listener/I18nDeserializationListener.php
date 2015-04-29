@@ -5,11 +5,10 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\I18NBundle\Service\I18NUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
-use Symfony\Component\HttpFoundation\Request;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-use Graviton\I18nBundle\Document\Translatable;
-use Graviton\I18nBundle\Model\Translatable as TranslatableModel;
 
 /**
  * translate fields during serialization
@@ -26,37 +25,20 @@ class I18nDeserializationListener
     protected $localizedFields = array();
 
     /**
-     * @var \Symfony\Component\HttpFoundation\Request
+     * @var \Graviton\I18nBundle\Service\I18nUtils
      */
-    protected $request;
+    protected $utils;
 
     /**
-     * @var \Graviton\I18nBundle\Model\Translatable
-     */
-    private $translatables;
-
-    /**
-     * set request
+     * set utils (i18nutils)
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request request object
+     * @param \Graviton\I18NBundle\Service\I18NUtils $utils utils
      *
      * @return void
      */
-    public function setRequest($request)
+    public function setUtils(I18NUtils $utils)
     {
-        $this->request = $request;
-    }
-
-    /**
-     * setup storage for translatable strings
-     *
-     * @param \Graviton\I18nBundle\Model\Translatable $translatables model
-     *
-     * @return void
-     */
-    public function setTranslatables(TranslatableModel $translatables)
-    {
-        $this->translatables = $translatables;
+        $this->utils = $utils;
     }
 
     /**
@@ -69,16 +51,23 @@ class I18nDeserializationListener
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
         $eventClass = $event->getType()['name'];
+
+        if (!class_exists($eventClass)) {
+            throw new DeserializationException(sprintf('Can\' find class %s to deserialize', $eventClass));
+        }
+
         $object = new $eventClass;
+
         if ($object instanceof TranslatableDocumentInterface) {
+            $defaultLanguage = $this->utils->getDefaultLanguage();
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
                 if (isset($data[$field])) {
                     $this->localizedFields[$field] = $data[$field];
                     $defaultValue = \reset($data[$field]);
-                    if (array_key_exists('en', $data[$field])) {
-                        $defaultValue = $data[$field]['en'];
+                    if (array_key_exists($defaultLanguage, $data[$field])) {
+                        $defaultValue = $data[$field][$defaultLanguage];
                     }
                     $data[$field] = $defaultValue;
                 }
@@ -97,47 +86,8 @@ class I18nDeserializationListener
         \array_walk(
             $this->localizedFields,
             function ($values) {
-                $this->createTranslatables($values);
+                $this->utils->insertTranslatable($values);
             }
         );
-    }
-
-    /**
-     * create translatables for all the given languages
-     *
-     * @param string[] $values values for multiple languages
-     *
-     * @return void
-     */
-    public function createTranslatables($values)
-    {
-        if (!array_key_exists('en', $values)) {
-            throw new \Exception('Creating new trans strings w/o en is not support yet.');
-            // @todo generate convention based keys instead of excepting
-        }
-        $original = $values['en'];
-        // @todo change this so it grabs all languages and not negotiated ones
-        if (isset($this->request)) {
-            $languages = $this->request->attributes->get('languages');
-            \array_walk(
-                $languages,
-                function ($locale) use ($original, $values) {
-                    $isLocalized = false;
-                    $translated = '';
-                    if (array_key_exists($locale, $values)) {
-                        $translated = $values[$locale];
-                        $isLocalized = true;
-                    }
-                    $translatable = new Translatable;
-                    $translatable->setId('i18n-' . $locale . '-' . $original);
-                    $translatable->setLocale($locale);
-                    $translatable->setDomain('i18n');
-                    $translatable->setOriginal($original);
-                    $translatable->setTranslated($translated);
-                    $translatable->setIsLocalized($isLocalized);
-                    $this->translatables->insertRecord($translatable);
-                }
-            );
-        }
     }
 }

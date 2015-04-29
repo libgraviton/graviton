@@ -90,10 +90,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // define offset
             $queryBuilder->skip($startAt);
             list($query, $records) = $this->doRqlQuery($queryBuilder, $filter);
-
-
         } else {
-
             // TODO [lapistano]: seems the offset is missing for this query.
 
             /** @var \Doctrine\ODM\MongoDB\Query\Query $query */

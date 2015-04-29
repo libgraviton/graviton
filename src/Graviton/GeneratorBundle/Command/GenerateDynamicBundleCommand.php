@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
@@ -336,6 +335,61 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
+        $name = $args[0];
+        $cmd = $this->getCmd($args);
+
+        $output->writeln('');
+        $output->writeln(
+            sprintf(
+                '<info>Running %s</info>',
+                $name
+            )
+        );
+
+        $output->writeln(
+            sprintf(
+                '<comment>%s</comment>',
+                $cmd
+            )
+        );
+
+        $this->process->setCommandLine($cmd);
+        $this->process->run(
+            function ($type, $buffer) use ($output, $cmd) {
+                if (Process::ERR === $type) {
+                    $output->writeln(
+                        sprintf(
+                            '<error>%s</error>',
+                            $buffer
+                        )
+                    );
+                } else {
+                    $output->writeln(
+                        sprintf(
+                            '<comment>%s</comment>',
+                            $buffer
+                        )
+                    );
+                }
+            }
+        );
+
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
+        }
+
+        return $this->process->getExitCode();
+    }
+
+    /**
+     * get subcommand
+     *
+     * @param array $args args
+     *
+     * @return string
+     */
+    private function getCmd(array $args)
+    {
         // get path to console from kernel..
         $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
@@ -352,24 +406,7 @@ class GenerateDynamicBundleCommand extends Command
                 $cmd .= escapeshellarg($val);
             }
         }
-
-        $output->writeln('');
-
-        $output->writeln(
-            sprintf(
-                '<comment>Executing "%s"</comment>',
-                $cmd
-            )
-        );
-
-        $this->process->setCommandLine($cmd);
-        $this->process->run();
-
-        if (!$this->process->isSuccessful()) {
-            throw new \RuntimeException($this->process->getErrorOutput());
-        }
-
-        return $this->process->getExitCode();
+        return $cmd;
     }
 
     /**
@@ -478,7 +515,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $conn = $this->container->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
         $collection = $conn->selectCollection(
-            $this->container->getParameter('mongodb.default.server.db', 'db'),
+            $this->container->getParameter('mongodb.default.server.db'),
             $collectionName
         );
 
@@ -535,7 +572,7 @@ class GenerateDynamicBundleCommand extends Command
         $ret = true;
 
         $whitelist = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.service.whitelist', array()),
+            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
             true
         );
 

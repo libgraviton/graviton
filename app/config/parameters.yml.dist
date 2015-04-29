@@ -6,11 +6,10 @@ parameters:
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
     graviton.security.services.whitelist: ~
+    graviton.rest.special_mimetypes: {}
 
     # service info injected by cloudfoundry
     vcap.services: ~
-
-    jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1
