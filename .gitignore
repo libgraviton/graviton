@@ -7,14 +7,6 @@ web/bundles
 web/swagger.json
 src/Graviton/I18nBundle/Resources/translations/*.odm
 vendor/
-*.phar
-*.swp
-*.swo
-.*~
-.buildpath
-.settings/*
-.idea
-.project
 web/.htaccess
 web/explorer
 mongodata/
