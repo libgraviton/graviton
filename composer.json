@@ -38,7 +38,8 @@
         "php-jsonpatch/php-jsonpatch": "1.1.*@dev",
         "graviton/php-rql-parser": "~1.0",
         "exercise/htmlpurifier-bundle": "~0.1",
-        "egulias/email-validator": "~1.2"
+        "egulias/email-validator": "~1.2",
+        "knplabs/knp-gaufrette-bundle": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -46,6 +47,10 @@
         "squizlabs/php_codesniffer": "~2.2",
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "~2.1"
+    },
+    "suggests": {
+        "graviton/s3-file-service-bundle": "to enable the /file/ endpoint that has a S3 backend",
+        "aws/aws-sdk-php": "~2.8 to enable the /file/ data to be stored in S3 (depends on how i implement it)"
     },
     "scripts": {
         "post-root-package-install": [
