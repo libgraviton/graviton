@@ -1,0 +1,29 @@
+{
+  "id": "File",
+  "description": "File storage service",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/file/",
+    "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
+    "fixtures": []
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique file identifier."
+      },
+      {
+        "name": "links.0.ref",
+        "type": "extref",
+        "title": "Link",
+        "description": "Link to any document.",
+        "exposeAs": "$ref"
+      }
+    ]
+  }
+}
