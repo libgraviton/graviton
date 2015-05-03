@@ -130,12 +130,6 @@ class GenerateDynamicBundleCommand extends Command
             ->get('graviton_generator.definition.loader')
             ->load($input->getOption('json'));
 
-        // bundles in mongodb?
-        // @todo this should move to loader
-        foreach ($this->getDefinitionsFromMongoDb() as $mongoDef) {
-            $filesToWorkOn[] = new JsonDefinition($mongoDef);
-        }
-
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
         }
@@ -493,62 +487,6 @@ class GenerateDynamicBundleCommand extends Command
             ' ',
             $ret
         );
-    }
-
-    /**
-     * As an alternative, bundle definitions can be stored in a MongoDB collection.
-     * Here we look for those and return them as files to be included in the generation process.
-     *
-     * @return array Bundles
-     *
-     * @todo this should move to loader
-     */
-    private function getDefinitionsFromMongoDb()
-    {
-        $collectionName = $this->container->getParameter('generator.dynamicbundles.mongocollection');
-        $files = array();
-
-        // nothing there..
-        if (strlen($collectionName) < 1) {
-            return array();
-        }
-
-        $conn = $this->container->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
-        $collection = $conn->selectCollection(
-            $this->container->getParameter('mongodb.default.server.db'),
-            $collectionName
-        );
-
-        $cursor = $collection->find($this->determineSearchCriteria());
-
-        foreach ($cursor as $doc) {
-            if (isset($doc['_id'])) {
-                unset($doc['_id']);
-            }
-
-            $thisFilename = tempnam(sys_get_temp_dir(), 'mongoBundle_');
-            // @todo use symfony tools to write this
-            file_put_contents($thisFilename, json_encode($doc));
-
-            $files[] = $thisFilename;
-        }
-
-        return $files;
-    }
-
-    /**
-     * Determines search criteria to be used.
-     *
-     * @return array
-     */
-    private function determineSearchCriteria()
-    {
-        $criteria = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.mongocollection.criteria'),
-            true
-        );
-
-        return (is_array($criteria)) ? $criteria : array();
     }
 
     /**
