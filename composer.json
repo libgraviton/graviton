@@ -39,7 +39,8 @@
         "graviton/php-rql-parser": "~1.0",
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
-        "knplabs/knp-gaufrette-bundle": "dev-master"
+        "knplabs/knp-gaufrette-bundle": "dev-master",
+        "aws/aws-sdk-php": "~2.7@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -69,6 +70,8 @@
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
+            "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
