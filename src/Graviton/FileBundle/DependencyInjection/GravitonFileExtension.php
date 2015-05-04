@@ -40,11 +40,11 @@ class GravitonFileExtension extends GravitonBundleExtension
         $services = $container->getParameter('vcap.services');
         if (!empty($services)) {
             $services = json_decode($services, true);
-            $s3 = $services['atmoss3'][0]['credentials'];
+            $creds = $services['atmoss3'][0]['credentials'];
 
-            $container->setParameter('graviton.aws_s3.client.endpoint', $s3['accessHost']);
-            $container->setParameter('graviton.aws_s3.client.key', $s3['accessKey']);
-            $container->setParameter('graviton.aws_s3.client.secret', $s3['sharedSecret']);
+            $container->setParameter('graviton.aws_s3.client.endpoint', $creds['accessHost']);
+            $container->setParameter('graviton.aws_s3.client.key', $creds['accessKey']);
+            $container->setParameter('graviton.aws_s3.client.secret', $creds['sharedSecret']);
         } else {
             $container->setParameter(
                 'graviton.aws_s3.client.endpoint',

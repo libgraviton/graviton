@@ -7,16 +7,10 @@
     <parameters>
         <parameter key="graviton.aws_s3.client.class">Aws\S3\S3Client</parameter>
 
-        <parameter key="graviton.aws_s3.client.key"></parameter>
-        <parameter key="graviton.aws_s3.client.secret"></parameter>
-        <parameter key="graviton.aws_s3.client.endpoint"></parameter>
-        <parameter key="graviton.aws_s3.client.region"></parameter>
-
         <parameter key="graviton.aws_s3.client.args" type="collection">
             <parameter key="endpoint">%graviton.aws_s3.client.endpoint%</parameter>
             <parameter key="key">%graviton.aws_s3.client.key%</parameter>
             <parameter key="secret">%graviton.aws_s3.client.secret%</parameter>
-            <parameter key="region">%graviton.aws_s3.client.region%</parameter>
         </parameter>
     </parameters>
     <services>
