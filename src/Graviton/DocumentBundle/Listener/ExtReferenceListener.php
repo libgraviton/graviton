@@ -68,7 +68,9 @@ class ExtReferenceListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if (!$event->isMasterRequest() || empty($event->getResponse()->getContent())) {
+        $content = $event->getResponse()->getContent();
+
+        if (!$event->isMasterRequest() || empty($content)) {
             return;
         }
 
