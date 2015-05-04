@@ -1,7 +1,7 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
-    mongodb.default.server.db: db
-    mongodb.default.server.uri: ~
+    graviton.mongodb.default.server.db: db
+    graviton.mongodb.default.server.uri: ~
 
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
