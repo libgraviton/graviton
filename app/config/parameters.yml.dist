@@ -23,7 +23,7 @@ parameters:
 
     graviton.file.backend: s3
 
-    # grav these from cf env <machine-name>
+    # grab these from cf env <machine-name> on a machine that has s3 added as a service
     graviton.file.s3.endpoint: ~
     graviton.file.s3.key: ~
     graviton.file.s3.secret: ~
