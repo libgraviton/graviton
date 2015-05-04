@@ -20,3 +20,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    graviton.file.backend: s3
+
+    # grav these from cf env <machine-name>
+    graviton.file.s3.endpoint: ~
+    graviton.file.s3.key: ~
+    graviton.file.s3.secret: ~

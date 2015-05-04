@@ -4,13 +4,24 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
+    <parameters>
+        <parameter key="graviton.aws_s3.client.class">Aws\S3\S3Client</parameter>
+
+        <parameter key="graviton.aws_s3.client.key"></parameter>
+        <parameter key="graviton.aws_s3.client.secret"></parameter>
+        <parameter key="graviton.aws_s3.client.endpoint"></parameter>
+        <parameter key="graviton.aws_s3.client.region"></parameter>
+
+        <parameter key="graviton.aws_s3.client.args" type="collection">
+            <parameter key="endpoint">%graviton.aws_s3.client.endpoint%</parameter>
+            <parameter key="key">%graviton.aws_s3.client.key%</parameter>
+            <parameter key="secret">%graviton.aws_s3.client.secret%</parameter>
+            <parameter key="region">%graviton.aws_s3.client.region%</parameter>
+        </parameter>
+    </parameters>
     <services>
-        <service id="graviton_file.example" class="Graviton\FileBundle\Example">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+        <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%" factory-class="%graviton.aws_s3.client.class%" factory-method="factory">
+            <argument>%graviton.aws_s3.client.args%</argument>
         </service>
     </services>
-    -->
 </container>
