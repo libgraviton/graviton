@@ -61,4 +61,28 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals(array(), $results);
     }
+
+    /**
+     * validate that we can post a new file
+     *
+     * @return void
+     */
+    public function testPostNewFile()
+    {
+        $client = static::createRestClient();
+
+        $data = new \stdClass;
+        $data->links = [];
+        $link = new \stdClass;
+        $link->{'$ref'} = 'http://localhost/core/app/tablet';
+        $data->links[] = $link;
+
+        $client->post('/file', $data);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
+    }
 }
