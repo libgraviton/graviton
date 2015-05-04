@@ -63,6 +63,15 @@ class GravitonDocumentExtension extends GravitonBundleExtension
 
             $container->setParameter('mongodb.default.server.uri', $mongo['url']);
             $container->setParameter('mongodb.default.server.db', $mongo['db']);
+        } else {
+            $container->setParameter(
+                'mongodb.default.server.uri',
+                $container->getParameter('graviton.mongodb.default.server.uri')
+            );
+            $container->setParameter(
+                'mongodb.default.server.db',
+                $container->getParameter('graviton.mongodb.default.server.db')
+            );
         }
     }
 }
