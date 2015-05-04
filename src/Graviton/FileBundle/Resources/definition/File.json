@@ -5,7 +5,10 @@
     "readOnly": false,
     "routerBase": "/file/",
     "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
-    "fixtures": []
+    "fixtures": [
+      {
+      }    
+    ]
   },
   "target": {
     "indexes": [],
