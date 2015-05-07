@@ -5,6 +5,7 @@
     "readOnly": false,
     "routerBase": "/file/",
     "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
+    "parent": "graviton.file.controller.file",
     "fixtures": [
       {
       }    
