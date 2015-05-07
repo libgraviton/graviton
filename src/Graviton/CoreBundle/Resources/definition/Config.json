@@ -1,0 +1,61 @@
+{
+    "id": "Config",
+    "description": "A service containing to admin general configuration parameters.",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/config/",
+        "fixtures": [
+            {
+                "id": "123j12j3j123j12j3",
+                "key": "random key",
+                "app_id": "$ref tablet",
+                "defaultValue": "Hello World!",
+                "actualValue": "Welcome World!"
+            }
+        ]
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "title": "ID",
+                "description": "Unique identifier for an item.",
+                "required": true
+            },
+            {
+                "name": "key",
+                "type": "varchar",
+                "title": "Key",
+                "description": "A fixed string identifying this module.",
+                "required": true
+            },
+            {
+                "name": "app_id",
+                "type": "extref",
+                "title": "Application-Link",
+                "description": "Link to a application.",
+                "exposeAs": "$ref",
+                "required": true
+            },
+            {
+                "name": "defaultValue",
+                "type": "varchar",
+                "title": "Default value",
+                "description": "Name of this module",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "actualValue",
+                "type": "varchar",
+                "title": "Current value",
+                "description": "The current value of the parameter.",
+                "required": true,
+                "translatable": true
+            }
+        ]
+    }
+}
