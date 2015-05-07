@@ -48,7 +48,7 @@ class ExtReferenceListener
      *
      * @param RouterInterface $router   symfony router
      * @param array           $mapping  map of collection_name => route_id
-     * @param fields          $fields   map of fields to process
+     * @param array          $fields   map of fields to process
      * @param RequestStack    $requests request
      */
     public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
@@ -92,9 +92,9 @@ class ExtReferenceListener
      *
      * @param array $item item to apply mapping to
      *
-     * @return item
+     * @return array
      */
-    private function mapItem($item)
+    private function mapItem(array $item)
     {
         if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
             return $item;
