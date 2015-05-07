@@ -43,7 +43,7 @@ class ValidationRequestListener
     /**
      * Validate the json input to prevent errors in the following components
      *
-     * @param RestEvent $event Event
+     * @param Event $event Event
      *
      * @throws NoInputException
      * @throws ValidationException
@@ -79,7 +79,7 @@ class ValidationRequestListener
 
             // specially check for parse error ($input decodes to null) and report accordingly..
             if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
-                $e = new MalformedInputException(json_last_error_msg());
+                $e = new MalformedInputException($this->getLastJsonErrorMessage());
                 $e->setErrorType(json_last_error());
                 $e->setResponse($event->getResponse());
                 throw $e;
@@ -108,5 +108,21 @@ class ValidationRequestListener
         }
 
         return $event;
+    }
+
+    /**
+     * Used for backwards compatibility to PHP 5.4
+     *
+     * @return string
+     */
+    private function getLastJsonErrorMessage()
+    {
+        $message = 'Unable to decode JSON string';
+
+        if (function_exists('json_last_error_msg')) {
+            $message = json_last_error_msg();
+        }
+
+        return $message;
     }
 }
