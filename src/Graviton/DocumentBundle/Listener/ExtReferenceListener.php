@@ -11,10 +11,10 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -48,7 +48,7 @@ class ExtReferenceListener
      *
      * @param RouterInterface $router   symfony router
      * @param array           $mapping  map of collection_name => route_id
-     * @param fields          $fields   map of fields to process
+     * @param array           $fields   map of fields to process
      * @param RequestStack    $requests request
      */
     public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
@@ -68,7 +68,9 @@ class ExtReferenceListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if (!$event->isMasterRequest() || empty($event->getResponse()->getContent())) {
+        $content = trim($event->getResponse()->getContent());
+
+        if (!$event->isMasterRequest() || empty($content)) {
             return;
         }
 
@@ -90,9 +92,9 @@ class ExtReferenceListener
      *
      * @param array $item item to apply mapping to
      *
-     * @return item
+     * @return array
      */
-    private function mapItem($item)
+    private function mapItem(array $item)
     {
         if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
             return $item;
@@ -100,7 +102,7 @@ class ExtReferenceListener
         foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
             if (strpos($field, '.') !== false) {
                 $topLevel = substr($field, 0, strpos($field, '.'));
-                $subField = str_replace($topLevel.'.', '', $field);
+                $subField = str_replace($topLevel . '.', '', $field);
                 if (array_key_exists($topLevel, $item)) {
                     if (substr($subField, 0, 2) === '0.') {
                         $item[$topLevel] = $this->mapFields($item[$topLevel], $subField);
@@ -113,6 +115,7 @@ class ExtReferenceListener
                 $item = $this->mapField($item, $field);
             }
         }
+
         return $item;
     }
 
@@ -130,6 +133,7 @@ class ExtReferenceListener
         foreach ($items as $key => $item) {
             $items[$key] = $this->mapField($item, $field);
         }
+
         return $items;
     }
 
@@ -148,6 +152,7 @@ class ExtReferenceListener
             $routeId = $this->mapping[$ref['$ref']];
             $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
         }
+
         return $item;
     }
 }
