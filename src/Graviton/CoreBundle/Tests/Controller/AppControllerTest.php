@@ -225,12 +225,17 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
+        $content = $response->getContent();
         $this->assertContains(
-            'Syntax error, malformed JSON',
-            $response->getContent()
+            'syntax error',
+            strtolower($content)
+        );
+        $this->assertContains(
+            'malformed JSON',
+            $content
         );
 
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     /**
