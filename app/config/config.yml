@@ -128,8 +128,10 @@ exercise_html_purifier:
 
 knp_gaufrette:
     adapters:
-        memory:
-            in_memory: ~
+        local:
+            local:
+                directory:  'app/files'
+                create:     true
         s3:
             aws_s3:
                 service_id: 'graviton.aws_s3.client'

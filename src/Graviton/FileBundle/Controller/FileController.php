@@ -9,6 +9,7 @@ use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Gaufrette\FileSystem;
+use Gaufrette\File;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -41,8 +42,6 @@ class FileController extends RestController
     {
         $response = $this->getResponse();
 
-        // @todo add new file to bucket and store ref in request doc
-
         $entityClass = $this->getModel()->getEntityClass();
         $record = new $entityClass;
 
@@ -51,6 +50,10 @@ class FileController extends RestController
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
+
+        // add file to storage
+        $file = new File($record->getId(), $this->gaufrette);
+        $file->setContent($request->getContent());
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
@@ -77,25 +80,7 @@ class FileController extends RestController
 
         $response = parent::postAction($request);
 
-        var_dump($response);
-
         return $response;
-    }
-
-    /**
-     * Update a record
-     *
-     * @param Number  $id      ID of record
-     * @param Request $request Current http request
-     *
-     * @throws MalformedInputException
-     *
-     * @return Response $response Result of action with data (if successful)
-     */
-    public function putAction($id, Request $request)
-    {
-        // @todo update file in bucket and update ref in request document
-        return parent::putAction($id, $request);
     }
 
     /**
