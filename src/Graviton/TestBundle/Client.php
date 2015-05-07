@@ -163,8 +163,7 @@ class Client extends FrameworkClient
     /**
      * force all requests to be json like.
      *
-     * Always do JSON/RESTful requests using this client. Use the parent Client
-     * if you want to make any other kind of requests!
+     * Do JSON/RESTful requests using this client if the caller has not specified something else.
      *
      * @param object $request Request object
      *
@@ -172,8 +171,12 @@ class Client extends FrameworkClient
      */
     protected function doRequest($request)
     {
-        $request->headers->set('Content-Type', 'application/json; charset=UTF-8');
-        $request->headers->set('Accept', 'application/json');
+        if (!$request->headers->get('Content-Type')) {
+            $request->headers->set('Content-Type', 'application/json; charset=UTF-8');
+        }
+        if (!$request->headers->get('Accept')) {
+            $request->headers->set('Accept', 'application/json');
+        }
 
         return parent::doRequest($request);
     }
