@@ -24,6 +24,11 @@ class Client extends FrameworkClient
     private $results;
 
     /**
+     * @var boolean
+     */
+    private $jsonRequest = true;
+
+    /**
      * return decoded results from a request
      *
      * @return mixed
@@ -55,6 +60,7 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+        $this->jsonRequest = $jsonEncode;
 
         if ($jsonEncode) {
             $content = json_encode($content);
@@ -92,6 +98,7 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+        $this->jsonRequest = $jsonEncode;
 
         if ($jsonEncode) {
             $content = json_encode($content);
@@ -129,6 +136,7 @@ class Client extends FrameworkClient
         array $server = array(),
         $jsonEncode = true
     ) {
+        $this->jsonRequest = $jsonEncode;
 
         if ($jsonEncode) {
             $content = json_encode($content);
@@ -171,12 +179,10 @@ class Client extends FrameworkClient
      */
     protected function doRequest($request)
     {
-        if (!$request->headers->get('Content-Type')) {
+        if ($this->jsonRequest) {
             $request->headers->set('Content-Type', 'application/json; charset=UTF-8');
         }
-        if (!$request->headers->get('Accept')) {
-            $request->headers->set('Accept', 'application/json');
-        }
+        $request->headers->set('Accept', 'application/json');
 
         return parent::doRequest($request);
     }
