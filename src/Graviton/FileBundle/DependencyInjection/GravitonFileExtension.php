@@ -42,10 +42,16 @@ class GravitonFileExtension extends GravitonBundleExtension
             $services = json_decode($services, true);
             $creds = $services['atmoss3'][0]['credentials'];
 
-            $container->setParameter('graviton.aws_s3.client.endpoint', $creds['accessHost']);
+            $container->setParameter('graviton.file.gaufrette.backend', 's3');
+            $container->setParameter('graviton.aws_s3.client.endpoint', sprintf('https://%s', $creds['accessHost']));
             $container->setParameter('graviton.aws_s3.client.key', $creds['accessKey']);
             $container->setParameter('graviton.aws_s3.client.secret', $creds['sharedSecret']);
+            $container->setParameter('graviton.aws_s3.bucket_name', $services['atmoss3'][0]['name']);
         } else {
+            $container->setParameter(
+                'graviton.file.gaufrette.backend',
+                $container->getParameter('graviton.file.backend')
+            );
             $container->setParameter(
                 'graviton.aws_s3.client.endpoint',
                 $container->getParameter('graviton.file.s3.endpoint')
@@ -57,6 +63,10 @@ class GravitonFileExtension extends GravitonBundleExtension
             $container->setParameter(
                 'graviton.aws_s3.client.secret',
                 $container->getParameter('graviton.file.s3.secret')
+            );
+            $container->setParameter(
+                'graviton.aws_s3.bucket_name',
+                $container->getParameter('graviton.file.s3.bucket_name')
             );
         }
     }

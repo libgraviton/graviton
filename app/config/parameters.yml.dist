@@ -28,3 +28,4 @@ parameters:
     graviton.file.s3.endpoint: ~
     graviton.file.s3.key: ~
     graviton.file.s3.secret: ~
+    graviton.file.s3.bucket_name: graviton-dev-bucket
