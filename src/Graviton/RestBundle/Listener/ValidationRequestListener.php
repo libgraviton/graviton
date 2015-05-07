@@ -56,7 +56,11 @@ class ValidationRequestListener
         // if PATCH is required, refactor the method or do something else
         $request = $event->getRequest();
 
-        $isJson = strtolower(substr($request->headers->get('content-type'), 0, 16)) == 'application/json';
+        if (empty($request->getContent())) {
+            $isJson = true;
+        } else {
+            $isJson = strtolower(substr($request->headers->get('content-type'), 0, 16)) == 'application/json';
+        }
         if ($isJson && in_array($request->getMethod(), array('POST', 'PUT'))) {
             $controller = $event->getController();
 
@@ -105,5 +109,4 @@ class ValidationRequestListener
 
         return $event;
     }
-
 }
