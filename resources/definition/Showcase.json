@@ -51,7 +51,7 @@
                     {"name": "element one"},
                     {"name": "element two"}
                 ],
-                "unstructedObject": {
+                "unstructuredObject": {
                     "intField": 17,
                     "stringField": "Tux",
                     "listField": ["Linus", "Gnu"],
@@ -122,7 +122,7 @@
                     {"name": "array element one"},
                     {"name": "array element two"}
                 ],
-                "unstructedObject": {
+                "unstructuredObject": {
                     "intField": 17,
                     "stringField": "some random string",
                     "booleanField": true,
@@ -235,7 +235,7 @@
                 "description": "Some text"
             },
             {
-                "name": "unstructedObject",
+                "name": "unstructuredObject",
                 "type": "object",
                 "title": "Some data blob",
                 "description": "Unstructured information"
