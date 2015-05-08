@@ -24,8 +24,6 @@ class BundleBundleManipulator extends Manipulator
      * constructor
      *
      * @param GravitonBundleInterface $bundle A GravitonBundleInterface instance
-     *
-     * @return BundleBundleManipulator
      */
     public function __construct(GravitonBundleInterface $bundle)
     {

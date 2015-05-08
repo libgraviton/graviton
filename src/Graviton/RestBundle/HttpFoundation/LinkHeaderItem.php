@@ -31,8 +31,6 @@ class LinkHeaderItem
      *
      * @param string $uri        uri value of item
      * @param array  $attributes array of attributes
-     *
-     * @return \Graviton\RestBundle\HttpFoundation\LinkHeaderItem
      */
     public function __construct($uri, array $attributes = array())
     {
