@@ -275,6 +275,24 @@ class JsonDefinition
     }
 
     /**
+     * Returns the parent service to use when adding the service xml
+     *
+     * Defaults to graviton.rest.controller
+     *
+     * @return string base controller
+     */
+    public function getParentService()
+    {
+        $ret = 'graviton.rest.controller';
+
+        if (isset($this->doc->service->parent) && strlen($this->doc->service->parent) > 0) {
+            $ret = $this->doc->service->parent;
+        }
+
+        return $ret;
+    }
+
+    /**
      * Returns a specific field or null
      *
      * @param string $name Field name
