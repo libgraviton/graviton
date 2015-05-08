@@ -88,9 +88,8 @@ class FileControllerTest extends RestTestCase
         $data->links[] = $link;
 
         $client = static::createRestClient();
-        $data = $client->put(sprintf('/file/%s', $data->id), $data);
+        $client->put(sprintf('/file/%s', $data->id), $data);
 
-        $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
@@ -115,7 +114,6 @@ class FileControllerTest extends RestTestCase
         );
 
         $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(201, $response->getStatusCode());
     }

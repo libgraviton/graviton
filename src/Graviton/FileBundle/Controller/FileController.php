@@ -77,10 +77,6 @@ class FileController extends RestController
             array('response' => $response->getContent()),
             $response
         );
-
-        $response = parent::postAction($request);
-
-        return $response;
     }
 
     /**
