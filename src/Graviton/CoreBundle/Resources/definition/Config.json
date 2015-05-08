@@ -44,17 +44,14 @@
                 "name": "defaultValue",
                 "type": "varchar",
                 "title": "Default value",
-                "description": "Name of this module",
-                "required": true,
-                "translatable": true
+                "description": "Name of this module"
             },
             {
                 "name": "actualValue",
                 "type": "varchar",
                 "title": "Current value",
                 "description": "The current value of the parameter.",
-                "required": true,
-                "translatable": true
+                "required": true
             }
         ]
     }
