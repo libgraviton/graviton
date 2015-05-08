@@ -34,8 +34,6 @@ class SecurityContract implements UserInterface
      *
      * @param Contract $contract contract
      * @param Role[]   $roles    roles for the contract
-     *
-     * @return SecurityContract
      */
     public function __construct(Contract $contract, array $roles = array())
     {
