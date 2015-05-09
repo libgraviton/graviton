@@ -55,6 +55,16 @@ class FileController extends RestController
         $file = new File($record->getId(), $this->gaufrette);
         $file->setContent($request->getContent());
 
+        // update record with file metadata
+        $record->setMetadata(
+            [
+                'size' => $file->getSize(),
+                'mtime' => $file->getMtime(),
+                'mime' => $request->headers->get('Content-Type'),
+            ]
+        );
+        $record = $this->getModel()->updateRecord($record->getId(), $record);
+
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
         $response->setContent($this->serialize($record));

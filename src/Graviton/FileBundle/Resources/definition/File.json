@@ -6,10 +6,7 @@
     "routerBase": "/file/",
     "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
     "parent": "graviton.file.controller.file",
-    "fixtures": [
-      {
-      }    
-    ]
+    "fixtures": [{}]
   },
   "target": {
     "indexes": [],
@@ -27,6 +24,27 @@
         "title": "Link",
         "description": "Link to any document.",
         "exposeAs": "$ref"
+      },
+      {
+        "name": "metadata.size",
+        "type": "integer",
+        "title": "File size",
+        "description": "Size of file",
+        "readOnly": true
+      },
+      {
+        "name": "metadata.mtime",
+        "type": "datetime",
+        "title": "Modification Time",
+        "description": "Modification time of file.",
+        "readOnly": true
+      },
+      {
+        "name": "metadata.mime",
+        "type": "string",
+        "title": "MIME Type",
+        "description": "MIME-Type of file.",
+        "readOnly": true
       }
     ]
   }
