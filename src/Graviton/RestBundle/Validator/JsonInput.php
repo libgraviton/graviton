@@ -57,8 +57,6 @@ class JsonInput
      * Constructor
      *
      * @param Validator $validator Validator
-     *
-     * @return \Graviton\RestBundle\Validator\JsonInput
      */
     public function __construct(Validator $validator)
     {

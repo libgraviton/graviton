@@ -63,8 +63,6 @@ class ResourceGenerator extends AbstractGenerator
      * @param FileSystem     $filesystem fs abstraction layer
      * @param object         $doctrine   dbal
      * @param object         $kernel     app kernel
-     *
-     * @return ResourceGenerator
      */
     public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
     {

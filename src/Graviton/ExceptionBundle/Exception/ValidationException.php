@@ -30,8 +30,6 @@ final class ValidationException extends RestException
      *
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
-     *
-     * @return void
      */
     public function __construct($message = "Validation Failed", $prev = null)
     {
