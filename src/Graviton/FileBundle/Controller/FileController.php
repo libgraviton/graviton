@@ -88,6 +88,39 @@ class FileController extends RestController
     }
 
     /**
+     * respond with document if non json mime-type is requested
+     *
+     * @param Request $request Current http request
+     * @param string $id id of file
+     *
+     * @return Response
+     */
+    public function getAction(Request $request, $id)
+    {
+        if (substr(strtolower($request->headers->get('accept')), 0, 16) === 'application/json') {
+            return parent::getAction($request, $id);
+        }
+        $response = $this->getResponse();
+
+        if (!$this->gaufrette->has($id)) {
+            $response->setStatusCode(Response::HTTP_NOT_FOUND);
+            return $response;
+        }
+
+        $record = $this->findRecord($id);
+        $data = $this->gaufrette->read($id);
+
+        $response->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Content-Type', $record->getMetadata()->getMime());
+
+        return $this->render(
+            'GravitonFileBundle:File:index.raw.twig',
+            ['data' => $data],
+            $response
+        );
+    }
+
+    /**
      * Deletes a record
      *
      * @param Number $id ID of record

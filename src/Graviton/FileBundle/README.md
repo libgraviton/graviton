@@ -23,4 +23,7 @@ curl -X PUT \
 ## Retrieving the file
 
 ```bash
+curl -X PUT \
+     -H 'Accept: text/plain' \
+     http://localhost/file/<id>
 ```
