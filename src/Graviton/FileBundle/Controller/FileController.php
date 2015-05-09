@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Gaufrette\FileSystem;
 use Gaufrette\File;
+use GravitonDyn\FileBundle\Document\FileMetadata;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -56,13 +57,10 @@ class FileController extends RestController
         $file->setContent($request->getContent());
 
         // update record with file metadata
-        $record->setMetadata(
-            [
-                'size' => $file->getSize(),
-                'mtime' => $file->getMtime(),
-                'mime' => $request->headers->get('Content-Type'),
-            ]
-        );
+        $meta = new FileMetadata;
+        $meta->setSize((int) $file->getSize())
+            ->setMime($request->headers->get('Content-Type'));
+        $record->setMetadata($meta);
         $record = $this->getModel()->updateRecord($record->getId(), $record);
 
         // Set status code and content

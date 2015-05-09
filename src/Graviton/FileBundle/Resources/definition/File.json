@@ -33,13 +33,6 @@
         "readOnly": true
       },
       {
-        "name": "metadata.mtime",
-        "type": "datetime",
-        "title": "Modification Time",
-        "description": "Modification time of file.",
-        "readOnly": true
-      },
-      {
         "name": "metadata.mime",
         "type": "string",
         "title": "MIME Type",
