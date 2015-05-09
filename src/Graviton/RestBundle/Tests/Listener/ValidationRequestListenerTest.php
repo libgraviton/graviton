@@ -33,7 +33,11 @@ class ValidationRequestListenerTest extends \PHPUnit_Framework_TestCase
             ->method('getRequest')
             ->willReturn($request);
 
-        $listener = new ValidationRequestListener();
+        $validatorDouble = $this->getMockBuilder('\Graviton\RestBundle\Validator\JsonInput')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $listener = new ValidationRequestListener($validatorDouble);
         $listener->onKernelRequest($eventDouble);
 
         $this->assertEquals('html', $request->getRequestFormat());
@@ -74,8 +78,7 @@ class ValidationRequestListenerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $listener = new ValidationRequestListener();
-        $listener->setJsonInput($validatorDouble);
+        $listener = new ValidationRequestListener($validatorDouble);
         $listener->onKernelRequest($eventDouble);
 
         $this->assertEquals('html', $request->getRequestFormat());

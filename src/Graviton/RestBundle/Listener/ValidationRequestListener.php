@@ -29,13 +29,11 @@ class ValidationRequestListener
     private $jsonInput;
 
     /**
-     * Set jsonInput validator
+     * Create ValidationRequestListener with JsonInput validator
      *
      * @param JsonInput $jsonInput json input validator
-     *
-     * @return void
      */
-    public function setJsonInput(JsonInput $jsonInput)
+    public function __construct(JsonInput $jsonInput)
     {
         $this->jsonInput = $jsonInput;
     }

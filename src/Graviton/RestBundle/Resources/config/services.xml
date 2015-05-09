@@ -87,9 +87,7 @@
         <!-- Validation listener / Json validator -->
         <service id="graviton.rest.listener.validationrequestlistener"
                  class="Graviton\RestBundle\Listener\ValidationRequestListener">
-            <call method="setJsonInput">
-                <argument type="service" id="graviton.rest.validation.jsoninput"></argument>
-            </call>
+            <argument type="service" id="graviton.rest.validation.jsoninput"></argument>
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
         </service>
 
