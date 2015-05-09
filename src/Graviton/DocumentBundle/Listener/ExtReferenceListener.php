@@ -74,7 +74,8 @@ class ExtReferenceListener
             return;
         }
 
-        if (substr(strtolower($event->getResponse()), 0, 16) !== 'application/json') {
+        $type = $event->getResponse()->headers->get('Content-Type');
+        if (substr(strtolower($type), 0, 16) !== 'application/json') {
             return;
         }
 
