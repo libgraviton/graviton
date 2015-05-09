@@ -52,9 +52,14 @@ class FileController extends RestController
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
+        $data = $request->getContent();
+        if (is_resource($data)) {
+            throw new \LogigException('/file does not support storing resources');
+        }
+
         // add file to storage
         $file = new File($record->getId(), $this->gaufrette);
-        $file->setContent($request->getContent());
+        $file->setContent($data);
 
         // update record with file metadata
         $meta = new FileMetadata;
