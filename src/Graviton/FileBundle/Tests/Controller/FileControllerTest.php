@@ -125,4 +125,35 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals(201, $response->getStatusCode());
     }
+
+    /**
+     * validate that we can delete a file
+     *
+     * @return void
+     */
+    public function testDeleteFile()
+    {
+        $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
+        $client = static::createRestClient();
+        $client->post(
+            '/file',
+            $fixtureData,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+        $data = $client->getResults();
+        $response = $client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('DELETE', sprintf('/file/%s', $data->id));
+
+        $client = static::createRestClient();
+        $client->request('GET', sprintf('/file/%s', $data->id));
+
+        $response = $client->getResponse();
+        $this->assertEquals(404, $response->getStatusCode());
+    }
 }

@@ -91,7 +91,7 @@ class FileController extends RestController
      * respond with document if non json mime-type is requested
      *
      * @param Request $request Current http request
-     * @param string $id id of file
+     * @param string  $id      id of file
      *
      * @return Response
      */
@@ -129,7 +129,10 @@ class FileController extends RestController
      */
     public function deleteAction($id)
     {
-        // @todo remove doc in bucket prior to delegating to parent
+        if ($this->gaufrette->has($id)) {
+            $data = $this->gaufrette->delete($id);
+        }
+
         return parent::deleteAction($id);
     }
 }
