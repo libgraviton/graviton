@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "20f90f1d0185263adb905250bf1cff51",
+    "hash": "e850e36484701d7f2f1a5d4ffb90b3af",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1666,16 +1666,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v0.1.0-alpha2",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "4b956c6a814a6d11507335b8a9dfe648c9dba71c"
+                "reference": "d745f2423fdbe473ff0d6c9658194f5aa00b5168"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/4b956c6a814a6d11507335b8a9dfe648c9dba71c",
-                "reference": "4b956c6a814a6d11507335b8a9dfe648c9dba71c",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/d745f2423fdbe473ff0d6c9658194f5aa00b5168",
+                "reference": "d745f2423fdbe473ff0d6c9658194f5aa00b5168",
                 "shasum": ""
             },
             "require": {
@@ -1708,7 +1708,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-05-12 11:41:13"
+            "time": "2015-05-13 09:33:08"
         },
         {
             "name": "guzzle/guzzle",
@@ -2780,16 +2780,16 @@
         },
         {
             "name": "php-jsonpatch/php-jsonpatch",
-            "version": "v1.1.0-RC1",
+            "version": "v1.2.0-RC1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/raphaelstolt/php-jsonpatch.git",
-                "reference": "76bbc75faefe0944cf643053eb8232aec06432a2"
+                "reference": "e2dd679bccf4fde4e7c0855244d3f9f059ce7f3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/76bbc75faefe0944cf643053eb8232aec06432a2",
-                "reference": "76bbc75faefe0944cf643053eb8232aec06432a2",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/e2dd679bccf4fde4e7c0855244d3f9f059ce7f3b",
+                "reference": "e2dd679bccf4fde4e7c0855244d3f9f059ce7f3b",
                 "shasum": ""
             },
             "require": {
@@ -2799,7 +2799,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "1.2.x-dev"
                 }
             },
             "autoload": {
@@ -2825,7 +2825,7 @@
                 "json modification",
                 "json patch"
             ],
-            "time": "2014-12-02 20:14:32"
+            "time": "2015-04-27 21:33:56"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -4902,15 +4902,13 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "doctrine/mongodb-odm": 20,
-        "doctrine/mongodb-odm-bundle": 20,
-        "php-jsonpointer/php-jsonpointer": 20,
-        "php-jsonpatch/php-jsonpatch": 20,
+        "doctrine/mongodb-odm": 10,
+        "doctrine/mongodb-odm-bundle": 10,
+        "php-jsonpointer/php-jsonpointer": 5,
+        "php-jsonpatch/php-jsonpatch": 5,
         "graviton/php-rql-parser": 15,
         "graviton/rql-parser-bundle": 15,
-        "knplabs/knp-gaufrette-bundle": 20,
-        "aws/aws-sdk-php": 20,
-        "johnkary/phpunit-speedtrap": 20
+        "knplabs/knp-gaufrette-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
