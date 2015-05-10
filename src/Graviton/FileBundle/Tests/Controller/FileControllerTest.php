@@ -67,7 +67,7 @@ class FileControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testPostFile()
+    public function testPostAndUpdateFile()
     {
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
         $client = static::createRestClient();
@@ -96,7 +96,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
 
         $client = static::createClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'text/plain']);
 
         $results = $client->getResponse()->getContent();
 

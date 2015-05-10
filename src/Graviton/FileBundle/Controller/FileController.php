@@ -102,7 +102,8 @@ class FileController extends RestController
      */
     public function getAction(Request $request, $id)
     {
-        if (substr(strtolower($request->headers->get('accept')), 0, 16) === 'application/json') {
+        $accept = $request->headers->get('accept');
+        if (substr(strtolower($accept), 0, 16) === 'application/json') {
             return parent::getAction($request, $id);
         }
         $response = $this->getResponse();
