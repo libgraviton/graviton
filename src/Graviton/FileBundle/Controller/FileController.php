@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Gaufrette\FileSystem;
 use Gaufrette\File;
 use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -54,7 +55,7 @@ class FileController extends RestController
 
         $data = $request->getContent();
         if (is_resource($data)) {
-            throw new \LogigException('/file does not support storing resources');
+            throw new BadRequestHttpException('/file does not support storing resources');
         }
 
         // add file to storage

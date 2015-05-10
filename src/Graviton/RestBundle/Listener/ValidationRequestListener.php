@@ -11,6 +11,7 @@ use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 use Graviton\RestBundle\Validator\JsonInput;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -65,7 +66,7 @@ class ValidationRequestListener
 
             // Moved this from RestController to ValidationListener (don't know if necessary)
             if (is_resource($content)) {
-                throw new \LogicException('unexpected resource in validation');
+                throw new BadRequestHttpException('unexpected resource in validation');
             }
 
             // Decode the json from request
