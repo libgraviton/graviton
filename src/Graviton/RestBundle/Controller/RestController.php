@@ -312,7 +312,7 @@ class RestController implements ContainerAwareInterface
     /**
      * Update a record
      *
-     * @param Number  $id      ID of record
+     * @param string  $id      ID of record
      * @param Request $request Current http request
      *
      * @throws MalformedInputException
@@ -500,7 +500,7 @@ class RestController implements ContainerAwareInterface
      *
      * @throws \Graviton\ExceptionBundle\Exception\ValidationException
      *
-     * @deprecated
+     * @deprecated What is the successor? Since when is this deprecated?
      *
      * @return void
      */

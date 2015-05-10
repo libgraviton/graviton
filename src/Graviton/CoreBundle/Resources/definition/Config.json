@@ -4,6 +4,7 @@
     "service": {
         "readOnly": false,
         "routerBase": "/core/config/",
+        "baseController": "\\Graviton\\CoreBundle\\Controller\\ConfigController",
         "fixtures": [
             {
                 "id": "123j12j3j123j12j3",
