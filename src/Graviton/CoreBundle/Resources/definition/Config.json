@@ -1,16 +1,26 @@
 {
     "id": "Config",
-    "description": "A service containing to admin general configuration parameters.",
+    "description": "A key-value store for keeping global configuration state.",
     "service": {
         "readOnly": false,
         "routerBase": "/core/config/",
         "fixtures": [
             {
-                "id": "123j12j3j123j12j3",
-                "key": "random key",
-                "app_id": "$ref tablet",
-                "defaultValue": "Hello World!",
-                "actualValue": "Welcome World!"
+                "id": "tablet-hello-message",
+                "key": "hello-message",
+                "app": {
+                    "$ref": "http://localhost/core/app/tablet"
+                },
+                "default": "Hello World!",
+                "value": "Welcome World!"
+            },
+            {
+                "id": "admin-default-page",
+                "key": "default-page",
+                "app": {
+                    "$ref": "http://localhost/core/app/admin"
+                },
+                "default": "/"
             }
         ]
     },
@@ -22,39 +32,36 @@
                 "name": "id",
                 "type": "varchar",
                 "title": "ID",
-                "description": "Unique identifier for an item.",
+                "description": "Unique identifier. Recommended format is <app-name>-<key>.",
                 "required": true
             },
             {
                 "name": "key",
                 "type": "varchar",
                 "title": "Key",
-                "description": "A fixed string identifying this module.",
+                "description": "A fixed string identifying this configuration value.",
                 "required": true
             },
             {
-                "name": "app_id",
+                "name": "app.ref",
                 "type": "extref",
                 "title": "Application-Link",
-                "description": "Link to a application.",
+                "description": "Link to the application this configuration value relates to.",
                 "exposeAs": "$ref",
                 "required": true
             },
             {
-                "name": "defaultValue",
+                "name": "default",
                 "type": "varchar",
-                "title": "Default value",
-                "description": "Name of this module",
-                "required": true,
-                "translatable": true
+                "title": "Default",
+                "description": "Default value of configuration value.",
+                "required": true
             },
             {
-                "name": "actualValue",
+                "name": "value",
                 "type": "varchar",
-                "title": "Current value",
-                "description": "The current value of the parameter.",
-                "required": true,
-                "translatable": true
+                "title": "Value",
+                "description": "Actual value of configuration value."
             }
         ]
     }
