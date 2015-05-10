@@ -9,6 +9,7 @@
         <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
         <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
         <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
+        <parameter key="graviton.core.controller.configuration.class">Graviton\CoreBundle\Controller\ConfigController</parameter>
         <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
@@ -17,6 +18,12 @@
     <services>
         <service id="graviton.core.controller.main"
                  class="%graviton.core.controller.main.class%">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="graviton.core.controller.configuration"
+                 class="%graviton.core.controller.configuration.class%">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
