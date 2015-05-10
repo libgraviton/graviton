@@ -17,9 +17,6 @@
       <directory>src/*/Bundle/*Bundle/Tests</directory>
     </testsuite>
   </testsuites>
-    <php>
-        <!--<server name="KERNEL_DIR" value="/home/graviton/graviton/app" />-->
-    </php>
   <filter>
     <whitelist>
       <directory>src</directory>
@@ -36,4 +33,7 @@
   <php>
     <ini name="error_reporting" value="E_ALL"/>
   </php>
+  <listeners>
+    <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
+  </listeners>
 </phpunit>
