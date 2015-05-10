@@ -54,7 +54,8 @@ class ValidationRequestListener
         // if PATCH is required, refactor the method or do something else
         $request = $event->getRequest();
 
-        if (empty($request->getContent())) {
+        $content = $request->getContent();
+        if (empty($content)) {
             $isJson = true;
         } else {
             $isJson = strtolower(substr($request->headers->get('content-type'), 0, 16)) == 'application/json';
@@ -63,7 +64,6 @@ class ValidationRequestListener
             $controller = $event->getController();
 
             // Moved this from RestController to ValidationListener (don't know if necessary)
-            $content = $request->getContent();
             if (is_resource($content)) {
                 throw new \LogicException('unexpected resource in validation');
             }
