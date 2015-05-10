@@ -136,7 +136,7 @@ class FileController extends RestController
     public function deleteAction($id)
     {
         if ($this->gaufrette->has($id)) {
-            $data = $this->gaufrette->delete($id);
+            $this->gaufrette->delete($id);
         }
 
         return parent::deleteAction($id);
