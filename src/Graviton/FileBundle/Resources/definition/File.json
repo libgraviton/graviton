@@ -1,0 +1,44 @@
+{
+  "id": "File",
+  "description": "File storage service",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/file/",
+    "baseController": "\\Graviton\\FileBundle\\Controller\\FileController",
+    "parent": "graviton.file.controller.file",
+    "fixtures": [{}]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique file identifier."
+      },
+      {
+        "name": "links.0.ref",
+        "type": "extref",
+        "title": "Link",
+        "description": "Link to any document.",
+        "exposeAs": "$ref"
+      },
+      {
+        "name": "metadata.size",
+        "type": "integer",
+        "title": "File size",
+        "description": "Size of file",
+        "readOnly": true
+      },
+      {
+        "name": "metadata.mime",
+        "type": "string",
+        "title": "MIME Type",
+        "description": "MIME-Type of file.",
+        "readOnly": true
+      }
+    ]
+  }
+}

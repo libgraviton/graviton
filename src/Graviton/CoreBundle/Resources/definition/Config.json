@@ -1,0 +1,68 @@
+{
+    "id": "Config",
+    "description": "A key-value store for keeping global configuration state.",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/config/",
+        "fixtures": [
+            {
+                "id": "tablet-hello-message",
+                "key": "hello-message",
+                "app": {
+                    "$ref": "http://localhost/core/app/tablet"
+                },
+                "default": "Hello World!",
+                "value": "Welcome World!"
+            },
+            {
+                "id": "admin-default-page",
+                "key": "default-page",
+                "app": {
+                    "$ref": "http://localhost/core/app/admin"
+                },
+                "default": "/"
+            }
+        ]
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "title": "ID",
+                "description": "Unique identifier. Recommended format is <app-name>-<key>.",
+                "required": true
+            },
+            {
+                "name": "key",
+                "type": "varchar",
+                "title": "Key",
+                "description": "A fixed string identifying this configuration value.",
+                "required": true
+            },
+            {
+                "name": "app.ref",
+                "type": "extref",
+                "title": "Application-Link",
+                "description": "Link to the application this configuration value relates to.",
+                "exposeAs": "$ref",
+                "required": true
+            },
+            {
+                "name": "default",
+                "type": "varchar",
+                "title": "Default",
+                "description": "Default value of configuration value.",
+                "required": true
+            },
+            {
+                "name": "value",
+                "type": "varchar",
+                "title": "Value",
+                "description": "Actual value of configuration value."
+            }
+        ]
+    }
+}

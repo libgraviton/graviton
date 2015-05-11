@@ -65,11 +65,12 @@ class RestController implements ContainerAwareInterface
     /**
      * Returns a single record
      *
-     * @param string $id ID of record
+     * @param Request $request Current http request
+     * @param string  $id      ID of record
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function getAction($id)
+    public function getAction(Request $request, $id)
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);

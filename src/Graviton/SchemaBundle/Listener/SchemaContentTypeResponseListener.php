@@ -47,6 +47,11 @@ class SchemaContentTypeResponseListener
         $request = $event->getRequest();
         $response = $event->getResponse();
 
+        $type = $response->headers->get('Content-Type');
+        if ($type !== null && substr(strtolower($type), 0, 16) !== 'application/json') {
+            return;
+        }
+
         // build content-type string
         $contentType = 'application/json; charset=UTF-8';
         if ($request->get('_route') != 'graviton.core.static.main.all') {

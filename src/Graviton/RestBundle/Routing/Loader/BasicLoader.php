@@ -37,8 +37,6 @@ class BasicLoader extends Loader
      *
      * @param \Symfony\Component\Routing\RouteCollection $routes   route collection
      * @param array                                      $services configs for all services tagged as graviton.rest
-     *
-     * @return BasicLoader
      */
     public function __construct($routes, $services)
     {
