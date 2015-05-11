@@ -115,10 +115,11 @@ class MainController implements ContainerAwareInterface
      */
     protected function prepareLinkHeader(Router $router)
     {
+
         $links = new LinkHeader(array());
         $links->add(
             new LinkHeaderItem(
-                $router->generate('graviton.core.rest.app.all', array(), true),
+                $router->generate('gravitondyn.app.rest.app.all', array(), true),
                 array(
                     'rel'  => 'apps',
                     'type' => 'application/json'

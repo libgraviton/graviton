@@ -29,10 +29,28 @@
 
     },
 {% endfor %}
+{% if idField is defined %}
+    "id": {
+    {% if idField.title is defined %}
+      "title": {{ idField.title|json_encode() }},
+    {% else %}
+      "title": "ID",
+    {% endif %}
+    {% if idField.description is defined %}
+      "description": {{ idField.description|json_encode() }}
+    {% else %}
+      "description": "@todo replace me"
+    {% endif %}
+    }
+    {% if idField.required is defined and idField.required == true %}
+        {% set requiredFields = requiredFields|merge(["id"]) %}
+    {% endif %}
+{% else %}
     "id": {
       "title": "ID",
       "description": "Unique identifier"
     }
+{% endif %}
   },
   "required": {{ requiredFields|json_encode() }}
 }

@@ -4,14 +4,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="graviton.core.controller.main.class">Graviton\CoreBundle\Controller\MainController</parameter>
-        <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
-        <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
-        <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
-        <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
-        <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
-        <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
-        <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
-        <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
     </parameters>
     <services>
@@ -21,50 +13,6 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
-        <service id="graviton.core.controller.app"
-                 class="%graviton.core.controller.app.class%"
-                 parent="graviton.rest.controller" scope="request">
-            <call method="setModel">
-                <argument type="service" id="graviton.core.model.app"/>
-            </call>
-            <tag name="graviton.rest"/>
-        </service>
-        <service id="graviton.core.repository.app"
-                 class="%graviton.core.repository.app.class%"
-                 factory-service="doctrine_mongodb.odm.default_document_manager"
-                 factory-method="getRepository">
-            <argument type="string">GravitonCoreBundle:App</argument>
-        </service>
-        <service id="graviton.core.model.app"
-                 class="%graviton.core.model.app.class%"
-                 parent="graviton.rest.model">
-            <call method="setRepository">
-                <argument type="service" id="graviton.core.repository.app"/>
-            </call>
-        </service>
-        <service id="graviton.core.document.app" class="%graviton.core.document.app.class%"/>
-        <service id="graviton.core.controller.product"
-                 class="%graviton.core.controller.product.class%"
-                 parent="graviton.rest.controller" scope="request">
-            <call method="setModel">
-                <argument type="service" id="graviton.core.model.product"/>
-            </call>
-            <tag name="graviton.rest" read-only="true"/>
-        </service>
-        <service id="graviton.core.repository.product"
-                 class="%graviton.core.repository.product.class%"
-                 factory-service="doctrine_mongodb.odm.default_document_manager"
-                 factory-method="getRepository">
-            <argument type="string">GravitonCoreBundle:Product</argument>
-        </service>
-        <service id="graviton.core.model.product"
-                 class="%graviton.core.model.product.class%"
-                 parent="graviton.rest.model">
-            <call method="setRepository">
-                <argument type="service" id="graviton.core.repository.product"/>
-            </call>
-        </service>
-        <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
         <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%" />
     </services>
 </container>

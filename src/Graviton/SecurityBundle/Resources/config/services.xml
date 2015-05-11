@@ -43,7 +43,8 @@
         <service id="graviton.authentication.user_provider.model.noop"
                  class="Graviton\SecurityBundle\User\Model\NullModel">
           <call method="setRepository">
-            <argument type="service" id="graviton.core.repository.app"/>
+            <!-- @todo point to a real dummy repository -->
+            <argument type="service" id="graviton.i18n.repository.translatable"/>
           </call>
         </service>
 

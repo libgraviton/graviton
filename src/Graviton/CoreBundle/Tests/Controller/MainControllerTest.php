@@ -113,7 +113,7 @@ class MainControllerTest extends RestTestCase
             ->expects($this->once())
             ->method('generate')
             ->with(
-                $this->equalTo('graviton.core.rest.app.all'),
+                $this->equalTo('gravitondyn.app.rest.app.all'),
                 $this->isType('array'),
                 $this->isType('boolean')
             )
