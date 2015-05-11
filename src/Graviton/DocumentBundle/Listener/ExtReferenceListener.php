@@ -74,6 +74,11 @@ class ExtReferenceListener
             return;
         }
 
+        $type = $event->getResponse()->headers->get('Content-Type');
+        if (substr(strtolower($type), 0, 16) !== 'application/json') {
+            return;
+        }
+
         $data = json_decode($event->getResponse()->getContent(), true);
 
         if (is_array($data) && !empty($data) && !is_string(array_keys($data)[0])) {

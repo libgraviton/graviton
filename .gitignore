@@ -14,3 +14,4 @@ src/GravitonDyn/*
 app/config/parameters.yml
 app/config/parameters_local.xml
 bin
+app/files/

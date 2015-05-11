@@ -10,6 +10,8 @@ use Symfony\Component\EventDispatcher\Event;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
 use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\RestBundle\Validator\JsonInput;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -21,11 +23,21 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
 class ValidationRequestListener
 {
     /**
-     * Service container
+     * Validator
      *
-     * @var \Symfony\Component\DependencyInjection\Container
+     * @var JsonInput
      */
-    private $container;
+    private $jsonInput;
+
+    /**
+     * Create ValidationRequestListener with JsonInput validator
+     *
+     * @param JsonInput $jsonInput json input validator
+     */
+    public function __construct(JsonInput $jsonInput)
+    {
+        $this->jsonInput = $jsonInput;
+    }
 
     /**
      * Validate the json input to prevent errors in the following components
@@ -43,13 +55,18 @@ class ValidationRequestListener
         // if PATCH is required, refactor the method or do something else
         $request = $event->getRequest();
 
-        if (in_array($request->getMethod(), array('POST', 'PUT'))) {
+        $content = $request->getContent();
+        if (empty($content)) {
+            $isJson = true;
+        } else {
+            $isJson = strtolower(substr($request->headers->get('content-type'), 0, 16)) == 'application/json';
+        }
+        if ($isJson && in_array($request->getMethod(), array('POST', 'PUT'))) {
             $controller = $event->getController();
 
             // Moved this from RestController to ValidationListener (don't know if necessary)
-            $content = $request->getContent();
             if (is_resource($content)) {
-                throw new \LogicException('unexpected resource in validation');
+                throw new BadRequestHttpException('unexpected resource in validation');
             }
 
             // Decode the json from request
@@ -68,15 +85,14 @@ class ValidationRequestListener
             }
 
             // get the input validator
-            $inputValidator = $this->container->get("graviton.rest.validation.jsoninput");
-            $inputValidator->setRequest($request);
+            $this->jsonInput->setRequest($request);
 
             // get the document manager for this model
             $em = $controller->getModel()->getRepository()->getDocumentManager();
-            $inputValidator->setDocumentManager($em);
+            $this->jsonInput->setDocumentManager($em);
 
             // validate the document
-            $result = $inputValidator->validate($input, $controller->getModel()->getEntityClass());
+            $result = $this->jsonInput->validate($input, $controller->getModel()->getEntityClass());
 
             if ($result->count() > 0) {
                 // $response->send()...
@@ -91,18 +107,6 @@ class ValidationRequestListener
         }
 
         return $event;
-    }
-
-    /**
-     * Set the container
-     *
-     * @param \Symfony\Component\DependencyInjection\Container $container Container
-     *
-     * @return void
-     */
-    public function setContainer($container)
-    {
-        $this->container = $container;
     }
 
     /**

@@ -20,3 +20,12 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # may be either local or s3
+    graviton.file.backend: local
+
+    # grab these from cf env <machine-name> on a machine that has s3 added as a service
+    graviton.file.s3.endpoint: ~
+    graviton.file.s3.key: ~
+    graviton.file.s3.secret: ~
+    graviton.file.s3.bucket_name: graviton-dev-bucket
