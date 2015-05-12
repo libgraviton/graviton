@@ -25,8 +25,6 @@ class LinkHeader
      * Constructor
      *
      * @param LinkHeaderItem[] $items link header items
-     *
-     * @return \Graviton\RestBundle\HttpFoundation\LinkHeader
      */
     public function __construct(array $items)
     {

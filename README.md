@@ -36,9 +36,12 @@ Some even broader scoped docs in a seperate repo.
 The bundle readme files which show how to interact with
 the various subsystems.
 
+- [DocumentBundle](src/Graviton/DocumentBundle/README.md)
+- [EntityBundle](src/Graviton/EntityBundle/Resources/data/README.md)
+- [FileBundle](src/Graviton/FileBundle/README.md)
 - [GeneratorBundle](src/Graviton/GeneratorBundle/README.md)
 - [I18nBundle](src/Graviton/I18nBundle/README.md)
 - [SecurityBundle](src/Graviton/SecurityBundle/README.md)
 - [TestBundle](src/Graviton/TestBundle/README.md)
 
-And not to forget, the all important [CHANGELOG](CHANGELOG.md).
+And not to forget, the all important [CHANGELOG](https://github.com/libgraviton/graviton/releases).

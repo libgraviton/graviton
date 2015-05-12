@@ -7,7 +7,7 @@
     </parameters>
     <services>
         <!-- $ref output in responses -->
-        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%" scope="request">
+        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%">
              <argument type="service" id="router" />
              <argument>%graviton.document.type.extref.mapping%</argument>
              <argument>%graviton.document.type.extref.fields%</argument>

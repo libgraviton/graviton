@@ -48,6 +48,9 @@ class GravitonDocumentExtension extends GravitonBundleExtension
          *
          * we *want* to be able to override any param with our env variables..
          * so we do again, what the kernel did already here.. ;-)
+         *
+         * @todo move this out of file bundle as it is much more global
+         * @todo add proper documentation on this "feature" to a README
          */
         foreach ($_SERVER as $key => $value) {
             if (0 === strpos($key, 'SYMFONY__')) {
@@ -63,6 +66,15 @@ class GravitonDocumentExtension extends GravitonBundleExtension
 
             $container->setParameter('mongodb.default.server.uri', $mongo['url']);
             $container->setParameter('mongodb.default.server.db', $mongo['db']);
+        } else {
+            $container->setParameter(
+                'mongodb.default.server.uri',
+                $container->getParameter('graviton.mongodb.default.server.uri')
+            );
+            $container->setParameter(
+                'mongodb.default.server.db',
+                $container->getParameter('graviton.mongodb.default.server.db')
+            );
         }
     }
 }

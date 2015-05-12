@@ -40,8 +40,6 @@ class BundleLoader
      * create and kickstart BundleLoader
      *
      * @param GravitonBundleBundle $bundleBundle inject kickstart bundle here
-     *
-     * @return \Graviton\BundleBundle\Loader\BundleLoader
      */
     public function __construct(GravitonBundleBundle $bundleBundle)
     {

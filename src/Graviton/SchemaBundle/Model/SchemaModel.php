@@ -29,8 +29,6 @@ class SchemaModel implements ContainerAwareInterface
 
     /**
      * load some schema info for the model
-     *
-     * @return SchemaModel
      */
     public function __construct()
     {

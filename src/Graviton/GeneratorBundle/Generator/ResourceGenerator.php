@@ -63,8 +63,6 @@ class ResourceGenerator extends AbstractGenerator
      * @param FileSystem     $filesystem fs abstraction layer
      * @param object         $doctrine   dbal
      * @param object         $kernel     app kernel
-     *
-     * @return ResourceGenerator
      */
     public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
     {
@@ -163,6 +161,7 @@ class ResourceGenerator extends AbstractGenerator
                 // we leave it in the document though but we don't wanna output it..
                 $parameters['noIdField'] = true;
             }
+            $parameters['parent'] = $this->json->getParentService();
         }
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
@@ -775,7 +774,7 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $services,
             $paramName,
-            'graviton.rest.controller',
+            $parameters['parent'],
             'request',
             array(
                 array(
