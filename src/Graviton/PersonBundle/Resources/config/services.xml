@@ -17,6 +17,7 @@
     <service id="graviton.person.model.personcontact"
              class="%graviton.person.model.personcontact.class%"
              parent="graviton.rest.model">
+      <argument type="service" id="graviton.rql.factory"/>
       <call method="setRepository">
         <argument type="service" id="graviton.person.repository.personcontact"/>
       </call>

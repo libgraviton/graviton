@@ -656,11 +656,23 @@ class ResourceGenerator extends AbstractGenerator
      */
     private function addArgumentToService($argument, $dom, $node)
     {
-        $argNode = $dom->createElement('argument', $argument['value']);
+        $isService = $argument['type'] == 'service';
+
+        if ($isService) {
+            $argNode = $dom->createElement('argument');
+        } else {
+            $argNode = $dom->createElement('argument', $argument['value']);
+        }
 
         $argType = $dom->createAttribute('type');
         $argType->value = $argument['type'];
         $argNode->appendChild($argType);
+
+        if ($isService) {
+            $idArg = $dom->createAttribute('id');
+            $idArg->value = $argument['id'];
+            $argNode->appendChild($idArg);
+        }
 
         $node->appendChild($argNode);
     }
@@ -728,11 +740,18 @@ class ResourceGenerator extends AbstractGenerator
             'graviton.rest.model',
             null,
             array(
-                array(
+                [
                     'method' => 'setRepository',
                     'service' => $repoName
-                )
-            )
+                ],
+            ),
+            null,
+            [
+                [
+                    'type' => 'service',
+                    'id' => 'graviton.rql.factory',
+                ],
+            ]
         );
 
         $this->persistServicesXML($dir);
