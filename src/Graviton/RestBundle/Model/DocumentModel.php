@@ -95,8 +95,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $queryBuilder = $this->repository
             ->createQueryBuilder()
             // not specifying something to sort on leads to very wierd cases when fetching references
-            ->sort('_id')
-            ->limit($numberPerPage);
+            ->sort('_id');
 
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
@@ -104,22 +103,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
-            // define offset
-            $queryBuilder->skip($startAt);
-            list($query, $records) = $this->doRqlQuery($queryBuilder, $filter);
-
+            $queryBuilder = $this->doRqlQuery($queryBuilder, $filter);
 
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
-
-            /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
-            $query = $queryBuilder
-                ->find($this->repository->getDocumentName())
-                ->getQuery();
-            $records = array_values($query->execute()->toArray());
         }
+        // define offset and limit
+        $queryBuilder->skip($startAt);
+        $queryBuilder->limit($numberPerPage);
+
+        // run query
+        $query = $queryBuilder->getQuery();
+        $records = array_values($query->execute()->toArray());
 
         $totalCount = $query->count();
         $numPages = (int)ceil($totalCount / $numberPerPage);
@@ -244,10 +241,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $factory = $this->rqlFactory;
 
         $query = $factory
-            ->create('MongoOdm', $rqlQuery, $queryBuilder)
-            ->getQuery();
-        $records = array_values($query->execute()->toArray());
+            ->create('MongoOdm', $rqlQuery, $queryBuilder);
 
-        return array($query, $records);
+        return $query->getBuilder();
     }
 }
