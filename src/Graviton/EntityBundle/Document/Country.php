@@ -107,7 +107,7 @@ class Country
     /**
      * Set name
      *
-     * @param string $name
+     * @param string $name name
      * @return self
      */
     public function setName($name)
@@ -119,7 +119,7 @@ class Country
     /**
      * Set isoCode
      *
-     * @param string $isoCode
+     * @param string $isoCode ISO Code
      * @return self
      */
     public function setIsoCode($isoCode)
@@ -131,7 +131,7 @@ class Country
     /**
      * Set capitalCity
      *
-     * @param string $capitalCity
+     * @param string $capitalCity Capital City
      * @return self
      */
     public function setCapitalCity($capitalCity)
@@ -143,7 +143,7 @@ class Country
     /**
      * Set longitude
      *
-     * @param string $longitude
+     * @param string $longitude Longitude
      * @return self
      */
     public function setLongitude($longitude)
@@ -155,7 +155,7 @@ class Country
     /**
      * Set latitude
      *
-     * @param string $latitude
+     * @param string $latitude Latitude
      * @return self
      */
     public function setLatitude($latitude)

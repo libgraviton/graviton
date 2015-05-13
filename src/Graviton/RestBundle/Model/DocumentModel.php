@@ -8,6 +8,7 @@ namespace Graviton\RestBundle\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ODM\MongoDB\Query\Builder;
 
 /**
  * Use doctrine odm as backend
@@ -88,7 +89,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int)$request->query->get('perPage', 10);
+        $numberPerPage = (int) $request->query->get('perPage', 10);
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
@@ -119,7 +120,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $records = array_values($query->execute()->toArray());
 
         $totalCount = $query->count();
-        $numPages = (int)ceil($totalCount / $numberPerPage);
+        $numPages = (int) ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
@@ -130,8 +131,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
      *
      * @return Object
@@ -146,8 +145,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param string $documentId id of entity to find
      *
      * @return Object
@@ -231,8 +228,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * Does the actual query using the RQL Bundle.
      *
-     * @param $queryBuilder
-     * @param $rqlQuery
+     * @param Builder $queryBuilder Doctrine ODM QueryBuilder
+     * @param string  $rqlQuery     raw query string
      *
      * @return array
      */
