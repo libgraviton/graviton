@@ -34,11 +34,9 @@
     <service id="graviton.i18n.model.language"
              class="%graviton.i18n.model.language.class%"
              parent="graviton.rest.model">
+      <argument type="service" id="graviton.rql.factory"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.language"/>
-      </call>
-      <call method="setRqlFactory">
-        <argument type="service" id="graviton.rql.factory"/>
       </call>
     </service>
     <service id="graviton.i18n.controller.language"
@@ -64,16 +62,15 @@
     <service id="graviton.i18n.model.translatable"
       class="%graviton.i18n.model.translatable.class%"
       parent="graviton.rest.model">
+      <argument type="service" id="graviton.rql.factory"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatable"/>
-      </call>
-      <call method="setRqlFactory">
-        <argument type="service" id="graviton.rql.factory"/>
       </call>
     </service>
     <service id="graviton.i18n.model.translatablelanguage"
       class="%graviton.i18n.model.translatablelanguage.class%"
       parent="graviton.rest.model">
+      <argument type="service" id="graviton.rql.factory"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatablelanguage"/>
       </call>

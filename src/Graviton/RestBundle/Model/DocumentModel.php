@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use Graviton\RqlParserBundle\Factory;
 
 /**
  * Use doctrine odm as backend
@@ -47,11 +48,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
     /**
      * @param RqlFactory $rqlFactory factory object to use
-     *
-     * @return void
      */
-    public function setRqlFactory($rqlFactory)
+    public function __construct(Factory $rqlFactory)
     {
+        parent::__construct();
         $this->rqlFactory = $rqlFactory;
     }
 
