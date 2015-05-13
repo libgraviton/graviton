@@ -42,7 +42,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $repository;
 
     /**
-     * @var
+     * @var Factory
      */
     private $rqlFactory;
 
