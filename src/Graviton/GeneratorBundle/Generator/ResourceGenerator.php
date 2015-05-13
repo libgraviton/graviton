@@ -660,7 +660,7 @@ class ResourceGenerator extends AbstractGenerator
 
         if ($isService) {
             $argNode = $dom->createElement('argument');
-        } else { 
+        } else {
             $argNode = $dom->createElement('argument', $argument['value']);
         }
 
