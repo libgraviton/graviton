@@ -47,7 +47,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $rqlFactory;
 
     /**
-     * @param RqlFactory $rqlFactory factory object to use
+     * @param Factory $rqlFactory factory object to use
      */
     public function __construct(Factory $rqlFactory)
     {
