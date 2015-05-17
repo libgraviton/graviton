@@ -6,7 +6,6 @@ namespace Graviton\SecurityBundle\Voter;
 
 use GravitonDyn\ContractBundle\Document\Contract;
 use Symfony\Component\Security\Core\Authorization\Voter\AbstractVoter;
-use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**

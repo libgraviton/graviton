@@ -12,13 +12,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
  *
- * @todo create a new Application in-situ
- * @todo see if we can get rid of container dependency..
+ * @todo     create a new Application in-situ
+ * @todo     see if we can get rid of container dependency..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -33,6 +34,21 @@ class GenerateDynamicBundleCommand extends Command
     private $bundleBundleList = array();
     private $container;
     private $process;
+    private $validationXmlNodes;
+
+    /**
+     * @param ContainerInterface $container Symfony dependency injection container
+     * @param Process            $process   Symfony Process component
+     * @param string|null        $name      The name of the command; passing null means it must be set in configure()
+     */
+    public function __construct(ContainerInterface $container, Process $process, $name = null)
+    {
+        parent::__construct($name);
+
+        $this->container = $container;
+        $this->process = $process;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -49,66 +65,32 @@ class GenerateDynamicBundleCommand extends Command
             InputOption::VALUE_OPTIONAL,
             'Path to the json definition.'
         )
-             ->addOption(
-                 'srcDir',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Src Dir',
-                 dirname(__FILE__) . '/../../../'
-             )
-             ->addOption(
-                 'bundleBundleName',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Which BundleBundle to manipulate to add our stuff',
-                 'GravitonDynBundleBundle'
-             )
-             ->addOption(
-                 'bundleFormat',
-                 '',
-                 InputOption::VALUE_OPTIONAL,
-                 'Which format',
-                 'xml'
-             )
-             ->setName('graviton:generate:dynamicbundles')
-             ->setDescription(
-                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
+            ->addOption(
+                'srcDir',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Src Dir',
+                dirname(__FILE__) . '/../../../'
+            )
+            ->addOption(
+                'bundleBundleName',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Which BundleBundle to manipulate to add our stuff',
+                'GravitonDynBundleBundle'
+            )
+            ->addOption(
+                'bundleFormat',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Which format',
+                'xml'
+            )
+            ->setName('graviton:generate:dynamicbundles')
+            ->setDescription(
+                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
                     to a single JSON file or a directory path containing multipl files.'
-             );
-    }
-
-    /**
-     * set container
-     *
-     * @param mixed $container container
-     *
-     * @return void
-     */
-    public function setContainer($container)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * get container
-     *
-     * @return Container container
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Set process
-     *
-     * @param mixed $process process
-     *
-     * @return void
-     */
-    public function setProcess($process)
-    {
-        $this->process = $process;
+            );
     }
 
     /**
@@ -144,15 +126,9 @@ class GenerateDynamicBundleCommand extends Command
             . $this->bundleBundleClassname . '.php';
 
         $filesToWorkOn = $this
-            ->getContainer()
+            ->container
             ->get('graviton_generator.definition.loader')
             ->load($input->getOption('json'));
-
-        // bundles in mongodb?
-        // @todo this should move to loader
-        foreach ($this->getDefinitionsFromMongoDb() as $mongoDef) {
-            $filesToWorkOn[] = new JsonDefinition($mongoDef);
-        }
 
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
@@ -247,7 +223,7 @@ class GenerateDynamicBundleCommand extends Command
             );
 
             // controller?
-            if (!$jsonDef->hasController()) {
+            if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
                 $arguments['--no-controller'] = 'true';
             }
 
@@ -271,6 +247,7 @@ class GenerateDynamicBundleCommand extends Command
              * so here we merge the generated validation.xml we saved in the loop before back into the
              * final validation.xml again. the final result should be one validation.xml including all
              * the validation rules for all the documents in this bundle.
+             *
              * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
              */
             if (count($this->validationXmlNodes) > 0) {
@@ -352,11 +329,65 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function executeCommand(array $args, OutputInterface $output)
     {
+        $name = $args[0];
+        $cmd = $this->getCmd($args);
 
+        $output->writeln('');
+        $output->writeln(
+            sprintf(
+                '<info>Running %s</info>',
+                $name
+            )
+        );
+
+        $output->writeln(
+            sprintf(
+                '<comment>%s</comment>',
+                $cmd
+            )
+        );
+
+        $this->process->setCommandLine($cmd);
+        $this->process->run(
+            function ($type, $buffer) use ($output, $cmd) {
+                if (Process::ERR === $type) {
+                    $output->writeln(
+                        sprintf(
+                            '<error>%s</error>',
+                            $buffer
+                        )
+                    );
+                } else {
+                    $output->writeln(
+                        sprintf(
+                            '<comment>%s</comment>',
+                            $buffer
+                        )
+                    );
+                }
+            }
+        );
+
+        if (!$this->process->isSuccessful()) {
+            throw new \RuntimeException($this->process->getErrorOutput());
+        }
+
+        return $this->process->getExitCode();
+    }
+
+    /**
+     * get subcommand
+     *
+     * @param array $args args
+     *
+     * @return string
+     */
+    private function getCmd(array $args)
+    {
         // get path to console from kernel..
-        $consolePath = $this->getContainer()->get('kernel')->getRootDir().'/console';
+        $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
 
-        $cmd = 'php '.$consolePath.' -n ';
+        $cmd = 'php ' . $consolePath . ' -n ';
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {
@@ -369,24 +400,7 @@ class GenerateDynamicBundleCommand extends Command
                 $cmd .= escapeshellarg($val);
             }
         }
-
-        $output->writeln('');
-
-        $output->writeln(
-            sprintf(
-                '<comment>Executing "%s"</comment>',
-                $cmd
-            )
-        );
-
-        $this->process->setCommandLine($cmd);
-        $this->process->run();
-
-        if (!$this->process->isSuccessful()) {
-            throw new \RuntimeException($this->process->getErrorOutput());
-        }
-
-        return $this->process->getExitCode();
+        return $cmd;
     }
 
     /**
@@ -433,9 +447,9 @@ class GenerateDynamicBundleCommand extends Command
         $dbbGenerator = new DynamicBundleBundleGenerator();
 
         // add optional bundles if defined by parameter.
-        if ($this->getContainer()->hasParameter('generator.bundlebundle.additions')) {
+        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
             $additions = json_decode(
-                $this->getContainer()->getParameter('generator.bundlebundle.additions'),
+                $this->container->getParameter('generator.bundlebundle.additions'),
                 true
             );
             if (is_array($additions)) {
@@ -476,51 +490,35 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * As an alternative, bundle definitions can be stored in a MongoDB collection.
-     * Here we look for those and return them as files to be included in the generation process.
+     * Checks an optional environment setting if this $routerBase is whitelisted there.
+     * If something is 'not whitelisted' (return true) means that the controller should not be generated.
+     * This serves as a lowlevel possibility to disable the generation of certain controllers.
+     * If we have no whitelist defined, we consider that all services should be generated (default).
      *
-     * @return array Bundles
+     * @param string $routerBase router base
      *
-     * @todo this should move to loader
+     * @return bool true if yes, false if not
      */
-    private function getDefinitionsFromMongoDb()
+    private function isNotWhitelistedController($routerBase)
     {
-        $collectionName = $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection');
-
-        // nothing there..
-        if (strlen($collectionName) < 1) {
-            return array();
+        // if no whitelist is set, everything is whitelisted
+        if (!$this->container->hasParameter('generator.dynamicbundles.service.whitelist')) {
+            return false;
         }
 
-        $conn = $this->getContainer()->get('doctrine_mongodb.odm.default_connection')->getMongoClient();
-        $collection = $conn->selectCollection('db', $collectionName);
-        $files = array();
+        // if param is there our default is 'yes' - everything is not whitelisted by default.
+        $ret = true;
 
-        // custom criteria defined?
-        $criteria = json_decode(
-            $this->getContainer()->getParameter('generator.dynamicbundles.mongocollection.criteria'),
+        $whitelist = json_decode(
+            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
             true
         );
 
-        if (is_array($criteria)) {
-            $cursor = $collection->find($criteria);
-        } else {
-            // get all
-            $cursor = $collection->find(array());
+        // whitelist it if in list..
+        if (is_array($whitelist) && in_array($routerBase, $whitelist)) {
+            $ret = false;
         }
 
-        foreach ($cursor as $doc) {
-            if (isset($doc['_id'])) {
-                unset($doc['_id']);
-            }
-
-            $thisFilename = tempnam(sys_get_temp_dir(), 'mongoBundle_');
-            // @todo use symfony tools to write this
-            file_put_contents($thisFilename, json_encode($doc));
-
-            $files[] = $thisFilename;
-        }
-
-        return $files;
+        return $ret;
     }
 }

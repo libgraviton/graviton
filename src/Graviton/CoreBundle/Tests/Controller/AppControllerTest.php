@@ -60,15 +60,15 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(2, count($results));
 
-        $this->assertEquals('tablet', $results[0]->id);
-        $this->assertEquals('Tablet', $results[0]->title->en);
+        $this->assertEquals('admin', $results[0]->id);
+        $this->assertEquals('Administration', $results[0]->title->en);
         $this->assertEquals(true, $results[0]->showInMenu);
-        $this->assertEquals(1, $results[0]->order);
+        $this->assertEquals(2, $results[0]->order);
 
-        $this->assertEquals('admin', $results[1]->id);
-        $this->assertEquals('Administration', $results[1]->title->en);
+        $this->assertEquals('tablet', $results[1]->id);
+        $this->assertEquals('Tablet', $results[1]->title->en);
         $this->assertEquals(true, $results[1]->showInMenu);
-        $this->assertEquals(2, $results[1]->order);
+        $this->assertEquals(1, $results[1]->order);
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="self"',
@@ -182,6 +182,63 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if we get a correct return if we post empty.
+     *
+     * @return void
+     */
+    public function testPostEmptyApp()
+    {
+        $client = static::createRestClient();
+
+        // send nothing really..
+        $client->post('/core/app', "", array(), array(), array(), false);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'No input data',
+            $response->getContent()
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * test if 500 error is reported when posting an malformed input
+     *
+     * @return void
+     */
+    public function testPostMalformedApp()
+    {
+        $testApp = new \stdClass;
+        $testApp->title = new \stdClass;
+        $testApp->title->en = 'new Test App';
+        $testApp->showInMenu = true;
+
+        // malform it ;-)
+        $input = str_replace(":", ";", json_encode($testApp));
+
+        $client = static::createRestClient();
+
+        // make sure this is sent as 'raw' input (not json_encoded again)
+        $client->post('/core/app', $input, array(), array(), array(), false);
+
+        $response = $client->getResponse();
+
+        $content = $response->getContent();
+        $this->assertContains(
+            'syntax error',
+            strtolower($content)
+        );
+        $this->assertContains(
+            'malformed JSON',
+            $content
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
      * test updating apps
      *
      * @return void
@@ -211,6 +268,58 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * Try to update an app with a non matching ID in GET and req body
+     *
+     * @return void
+     */
+    public function testNonMatchingIdPutApp()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "tablet";
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = "Tablet";
+        $helloApp->showInMenu = false;
+
+        $client = static::createRestClient();
+        $client->put('/core/app/someotherapp', $helloApp);
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'Record ID in your payload must be the same',
+            $response->getContent()
+        );
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * We had an issue when PUTing without ID would create a new record.
+     * This test ensures that we don't do that, instead we should apply the ID from the GET req.
+     *
+     * @return void
+     */
+    public function testPutAppNoIdInPayload()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = 'New tablet';
+        $helloApp->showInMenu = false;
+
+        $client = static::createRestClient();
+        $client->put('/core/app/tablet', $helloApp);
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+
+        $this->assertEquals('tablet', $results->id);
+        $this->assertEquals('New tablet', $results->title->en);
+        $this->assertFalse($results->showInMenu);
     }
 
     /**

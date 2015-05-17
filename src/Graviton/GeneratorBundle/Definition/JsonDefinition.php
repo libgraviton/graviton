@@ -187,16 +187,14 @@ class JsonDefinition
     /**
      * Returns whether this service has fixtures
      *
-     * @param string $fieldName ask for specific field
-     *
      * @return bool true if yes, false if not
      */
-    public function hasFixtures($fieldName = null)
+    public function hasFixtures()
     {
         // default
         $ret = false;
 
-        if (count($this->getFixtures($fieldName)) > 0) {
+        if (count($this->getFixtures()) > 0) {
             $ret = true;
         }
 
@@ -271,6 +269,24 @@ class JsonDefinition
 
         if (isset($this->doc->service->baseController) && strlen($this->doc->service->baseController) > 0) {
             $ret = $this->doc->service->baseController;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Returns the parent service to use when adding the service xml
+     *
+     * Defaults to graviton.rest.controller
+     *
+     * @return string base controller
+     */
+    public function getParentService()
+    {
+        $ret = 'graviton.rest.controller';
+
+        if (isset($this->doc->service->parent) && strlen($this->doc->service->parent) > 0) {
+            $ret = $this->doc->service->parent;
         }
 
         return $ret;
@@ -380,5 +396,21 @@ class JsonDefinition
             }
         }
         return $ret;
+    }
+
+    /**
+     * Provides the role set defined in the service section.
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = array();
+
+         if (!empty($this->doc->service->roles)) {
+             $roles = $this->doc->service->roles;
+         }
+
+        return $roles;
     }
 }

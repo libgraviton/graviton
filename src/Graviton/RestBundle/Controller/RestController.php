@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
@@ -64,11 +65,12 @@ class RestController implements ContainerAwareInterface
     /**
      * Returns a single record
      *
-     * @param string $id ID of record
+     * @param Request $request Current http request
+     * @param string  $id      ID of record
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function getAction($id)
+    public function getAction(Request $request, $id)
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
@@ -314,6 +316,8 @@ class RestController implements ContainerAwareInterface
      * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
+     * @throws MalformedInputException
+     *
      * @return Response $response Result of action with data (if successful)
      */
     public function putAction($id, Request $request)
@@ -328,6 +332,17 @@ class RestController implements ContainerAwareInterface
             $request->getContent(),
             $this->getModel()->getEntityClass()
         );
+
+        // handle missing 'id' field in input to a PUT operation
+        // if it is settable on the document, let's set it and move on.. if not, inform the user..
+        if ($record->getId() != $id) {
+            // try to set it..
+            if (is_callable(array($record, 'setId'))) {
+                $record->setId($id);
+            } else {
+                throw new MalformedInputException('No ID was supplied in the request payload.');
+            }
+        }
 
         // And update the record, if everything is ok
         $this->getModel()->updateRecord($id, $record);

@@ -2,11 +2,15 @@ imports:
     - { resource: parameters.yml }
     - { resource: services.yml }
 
+parameters:
+    jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
+    graviton.translator.default.locale: en
+
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     #esi:             ~
-    #translator:      { fallback: "%locale%" }
+    translator:      { fallback: "%graviton.translator.default.locale%" }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -121,3 +125,23 @@ exercise_html_purifier:
         Cache.SerializerPath: '%kernel.cache_dir%/htmlpurifier'
     graviton:
         Core.Encoding: 'UTF-8'
+
+knp_gaufrette:
+    adapters:
+        local:
+            local:
+                directory: '%kernel.root_dir%/files'
+                create: true
+        s3:
+            aws_s3:
+                service_id: 'graviton.aws_s3.client'
+                bucket_name: '%graviton.aws_s3.bucket_name%'
+                options:
+                    create: true
+    filesystems:
+        file_service:
+            adapter: %graviton.file.gaufrette.backend%
+
+eo_airbrake:
+        host: %graviton.errbit.host%
+        api_key: %graviton.errbit.api_key%

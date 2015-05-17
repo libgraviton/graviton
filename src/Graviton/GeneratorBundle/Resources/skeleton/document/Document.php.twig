@@ -4,6 +4,8 @@ namespace {{ base }}Document;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\DeserializationContext;
 
 {% set translatableFields = [] %}
 
@@ -21,8 +23,8 @@ class {{ document }} implements TranslatableDocumentInterface
     protected $id;
 
     /**
-    * @var Date $deletedDate
-    */
+     * @var Date $deletedDate
+     */
     protected $deletedDate;
 
 {% for field in fields %}
@@ -62,6 +64,18 @@ class {{ document }} implements TranslatableDocumentInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set id
+     *
+     * @param mixed $id id
+     *
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getDeleteddate()
@@ -169,10 +183,10 @@ class {{ document }} implements TranslatableDocumentInterface
 {% endfor %}
 
     /**
-    * return translatable field names
-    *
-    * @return string[]
-    */
+     * return translatable field names
+     *
+     * @return string[]
+     */
     public function getTranslatableFields()
     {
         return array('{{ translatableFields|join('\',\'') }}');

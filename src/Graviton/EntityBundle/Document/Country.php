@@ -103,4 +103,64 @@ class Country
     {
         return $this->latitude;
     }
+
+    /**
+     * Set name
+     *
+     * @param string $name name
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Set isoCode
+     *
+     * @param string $isoCode ISO Code
+     * @return self
+     */
+    public function setIsoCode($isoCode)
+    {
+        $this->isoCode = $isoCode;
+        return $this;
+    }
+
+    /**
+     * Set capitalCity
+     *
+     * @param string $capitalCity Capital City
+     * @return self
+     */
+    public function setCapitalCity($capitalCity)
+    {
+        $this->capitalCity = $capitalCity;
+        return $this;
+    }
+
+    /**
+     * Set longitude
+     *
+     * @param string $longitude Longitude
+     * @return self
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    /**
+     * Set latitude
+     *
+     * @param string $latitude Latitude
+     * @return self
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
 }
