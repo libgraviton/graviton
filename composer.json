@@ -98,6 +98,8 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml",
             "env-map": {
+                "graviton.mongodb.default.server.db": "MONGODB_DB",
+                "graviton.mongodb.default.server.uri": "MONGODB_URI",
                 "graviton.errbit.api_key": "ERRBIT_API_KEY",
                 "graviton.errbit.host": "ERRBIT_HOST"
             }
