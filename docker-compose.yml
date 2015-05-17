@@ -1,0 +1,20 @@
+graviton:
+    image: graviton/graviton
+composer:
+    image: composer/composer
+    volumes_from:
+        - graviton
+    command: install --ignore-platform-reqs
+    restart: no
+fpm:
+    image: gravityplatform/php-fpm:develop
+    volumes_from:
+        - graviton
+nginx:
+    image: nginx
+    links:
+        - fpm:graviton
+    volumes:
+        - .docker-config/nginx/defaults.conf:/etc/nginx/conf.d/default.conf
+    ports: 
+        - 80:80
