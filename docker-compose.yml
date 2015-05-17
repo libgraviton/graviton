@@ -13,7 +13,7 @@ fpm:
 nginx:
     image: nginx
     links:
-        - fpm:graviton
+        - fpm:fpm
     volumes:
         - .docker-config/nginx/defaults.conf:/etc/nginx/conf.d/default.conf
     ports: 
