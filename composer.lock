@@ -4,8 +4,54 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3c4157c5268b77bb3ee0914ba1b453f0",
+    "hash": "20f90f1d0185263adb905250bf1cff51",
     "packages": [
+        {
+            "name": "airbrake/airbrake-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/airbrake/airbrake-php.git",
+                "reference": "b2a3f28a8113502d2426003b22c78a2efd333b3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/airbrake/airbrake-php/zipball/b2a3f28a8113502d2426003b22c78a2efd333b3c",
+                "reference": "b2a3f28a8113502d2426003b22c78a2efd333b3c",
+                "shasum": ""
+            },
+            "require-dev": {
+                "php": ">=5.3.3",
+                "phpunit/phpunit": "*",
+                "squizlabs/php_codesniffer": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Airbrake\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Drew Butler",
+                    "email": "hi@dbtlr.com",
+                    "homepage": "http://dbtlr.com"
+                }
+            ],
+            "description": "A PHP 5.3 library for sending errors to the Airbrake.io service.",
+            "homepage": "https://github.com/dbtlr/php-airbrake",
+            "keywords": [
+                "airbrake",
+                "errors",
+                "exceptions",
+                "logging"
+            ],
+            "time": "2015-04-24 21:28:00"
+        },
         {
             "name": "aws/aws-sdk-php",
             "version": "2.8.3",
@@ -1291,6 +1337,54 @@
                 "validator"
             ],
             "time": "2015-04-26 15:49:00"
+        },
+        {
+            "name": "eo/airbrake-bundle",
+            "version": "dev-master",
+            "target-dir": "Eo/AirbrakeBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/eymengunay/EoAirbrakeBundle.git",
+                "reference": "db41e7514b90b56715c82fa14004426bb29170d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/eymengunay/EoAirbrakeBundle/zipball/db41e7514b90b56715c82fa14004426bb29170d3",
+                "reference": "db41e7514b90b56715c82fa14004426bb29170d3",
+                "shasum": ""
+            },
+            "require": {
+                "airbrake/airbrake-php": "dev-master",
+                "symfony/symfony": ">=2.1,<2.7-dev"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Eo\\AirbrakeBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eymen Gunay",
+                    "email": "eymen@egunay.com"
+                }
+            ],
+            "description": "Airbrake.io integration for Symfony2",
+            "keywords": [
+                "airbrake",
+                "errbit",
+                "exception"
+            ],
+            "time": "2014-07-21 16:05:47"
         },
         {
             "name": "exercise/htmlpurifier-bundle",

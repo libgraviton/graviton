@@ -41,7 +41,8 @@
         "graviton/php-rql-parser": "~2.0@alpha",
         "graviton/rql-parser-bundle": "^0.1.0@alpha",
         "knplabs/knp-gaufrette-bundle": "dev-master",
-        "aws/aws-sdk-php": "~2.7@dev"
+        "aws/aws-sdk-php": "~2.7@dev",
+        "eo/airbrake-bundle": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -95,7 +96,11 @@
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
+            "file": "app/config/parameters.yml",
+            "env-map": {
+                "graviton.errbit.api_key": "ERRBIT_API_KEY",
+                "graviton.errbit.host": "ERRBIT_HOST"
+            }
         },
         "branch-alias": {
             "dev-master": "2.6-dev"
