@@ -12,6 +12,7 @@
   </parameters>
   <services>
     <service id="graviton.person.controller.abstractcustomer" abstract="true" parent="graviton.rest.controller" class="%graviton.person.controller.abstractcustomer.class%">
+        <argument type="service" id="graviton.person.repository.customerdiff"/>
     </service>
     <service id="graviton.person.document.customerdiff" class="%graviton.person.document.customerdiff.class%"/>
     <service id="graviton.person.repository.customerdiff"
