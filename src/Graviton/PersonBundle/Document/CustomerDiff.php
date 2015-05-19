@@ -53,10 +53,10 @@ class CustomerDiff
     /**
      * Set date
      *
-     * @param datetime $date
+     * @param DateTime $date date that diff was created
      * @return self
      */
-    public function setDate(\datetime $date)
+    public function setDate(\DateTime $date)
     {
         $this->date = $date;
         return $this;
@@ -75,7 +75,7 @@ class CustomerDiff
     /**
      * Set type
      *
-     * @param string $type
+     * @param string $type type of diff (ie. prospect, ...)
      * @return self
      */
     public function setType($type)
@@ -97,7 +97,7 @@ class CustomerDiff
     /**
      * Set original
      *
-     * @param object $original
+     * @param object $original original version of object
      * @return self
      */
     public function setOriginal($original)
@@ -119,7 +119,7 @@ class CustomerDiff
     /**
      * Set new
      *
-     * @param object $new
+     * @param object $new new version of object
      * @return self
      */
     public function setNew($new)
