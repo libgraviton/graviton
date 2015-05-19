@@ -17,6 +17,7 @@
 namespace Graviton\PersonBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\PersonBundle\Repository\CustomerDiffRepository;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -25,4 +26,16 @@ use Graviton\RestBundle\Controller\RestController;
  */
 abstract class AbstractCustomerController extends RestController
 {
+    /**
+     * @var CustomerDiffRepository
+     */
+    private $diffRepo;
+
+    /**
+     * @param CustomerDiffRepository $diffRepo repo containing customer diffs
+     */
+    public function __construct(CustomerDiffRepository $diffRepo)
+    {
+        $this->diffRepo = $diffRepo;
+    }
 }
