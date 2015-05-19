@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
     <parameter key="graviton.person.controller.abstractcustomer.class">Graviton\PersonBundle\Controller\AbstractCustomerController</parameter>
-    <parameter key="graviton.person.model.customerdiff.class">Graviton\PersonBundle\Model\CustomerDiff</parameter>
     <parameter key="graviton.person.document.customerdiff.class">Graviton\PersonBundle\Document\CustomerDiff</parameter>
     <parameter key="graviton.person.repository.customerdiff.class">Graviton\PersonBundle\Repository\CustomerDiffRepository</parameter>
     <parameter key="graviton.person.repository.personcontact.class">Graviton\PersonBundle\Repository\PersonContactRepository</parameter>
@@ -13,14 +12,6 @@
   </parameters>
   <services>
     <service id="graviton.person.controller.abstractcustomer" abstract="true" parent="graviton.rest.controller" class="%graviton.person.controller.abstractcustomer.class%">
-    </service>
-    <service id="graviton.person.model.customerdiff"
-             class="%graviton.person.model.customerdiff.class%"
-             parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
-      <call method="setRepository">
-        <argument type="service" id="graviton.person.repository.customerdiff"/>
-      </call>
     </service>
     <service id="graviton.person.document.customerdiff" class="%graviton.person.document.customerdiff.class%"/>
     <service id="graviton.person.repository.customerdiff"
