@@ -53,7 +53,7 @@ class CustomerDiff
     /**
      * Set date
      *
-     * @param DateTime $date date that diff was created
+     * @param \DateTime $date date that diff was created
      * @return self
      */
     public function setDate(\DateTime $date)
