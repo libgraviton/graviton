@@ -63,8 +63,6 @@ class ResourceGenerator extends AbstractGenerator
      * @param FileSystem     $filesystem fs abstraction layer
      * @param object         $doctrine   dbal
      * @param object         $kernel     app kernel
-     *
-     * @return ResourceGenerator
      */
     public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
     {
@@ -163,6 +161,7 @@ class ResourceGenerator extends AbstractGenerator
                 // we leave it in the document though but we don't wanna output it..
                 $parameters['noIdField'] = true;
             }
+            $parameters['parent'] = $this->json->getParentService();
         }
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
@@ -657,11 +656,23 @@ class ResourceGenerator extends AbstractGenerator
      */
     private function addArgumentToService($argument, $dom, $node)
     {
-        $argNode = $dom->createElement('argument', $argument['value']);
+        $isService = $argument['type'] == 'service';
+
+        if ($isService) {
+            $argNode = $dom->createElement('argument');
+        } else {
+            $argNode = $dom->createElement('argument', $argument['value']);
+        }
 
         $argType = $dom->createAttribute('type');
         $argType->value = $argument['type'];
         $argNode->appendChild($argType);
+
+        if ($isService) {
+            $idArg = $dom->createAttribute('id');
+            $idArg->value = $argument['id'];
+            $argNode->appendChild($idArg);
+        }
 
         $node->appendChild($argNode);
     }
@@ -729,11 +740,18 @@ class ResourceGenerator extends AbstractGenerator
             'graviton.rest.model',
             null,
             array(
-                array(
+                [
                     'method' => 'setRepository',
                     'service' => $repoName
-                )
-            )
+                ],
+            ),
+            null,
+            [
+                [
+                    'type' => 'service',
+                    'id' => 'graviton.rql.factory',
+                ],
+            ]
         );
 
         $this->persistServicesXML($dir);
@@ -771,7 +789,7 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $services,
             $paramName,
-            'graviton.rest.controller',
+            $parameters['parent'],
             'request',
             array(
                 array(

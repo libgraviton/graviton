@@ -8,6 +8,8 @@ namespace Graviton\RestBundle\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Graviton\RqlParserBundle\Factory;
 
 /**
  * Use doctrine odm as backend
@@ -38,6 +40,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var \Doctrine\Common\Persistence\ObjectRepository
      */
     private $repository;
+
+    /**
+     * @var Factory
+     */
+    private $rqlFactory;
+
+    /**
+     * @param Factory $rqlFactory factory object to use
+     */
+    public function __construct(Factory $rqlFactory)
+    {
+        parent::__construct();
+        $this->rqlFactory = $rqlFactory;
+    }
 
     /**
      * get repository instance
@@ -79,7 +95,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder()
-            ->limit($numberPerPage);
+            // not specifying something to sort on leads to very wierd cases when fetching references
+            ->sort('_id');
 
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
@@ -87,21 +104,23 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
-            // define offset
-            $queryBuilder->skip($startAt);
-            list($query, $records) = $this->doRqlQuery($queryBuilder, $filter);
-        } else {
-            // TODO [lapistano]: seems the offset is missing for this query.
+            $queryBuilder = $this->doRqlQuery($queryBuilder, $filter);
 
-            /** @var \Doctrine\ODM\MongoDB\Query\Query $query */
-            $query = $queryBuilder
-                ->find($this->repository->getDocumentName())
-                ->getQuery();
-            $records = array_values($query->execute()->toArray());
+        } else {
+            // @todo [lapistano]: seems the offset is missing for this query.
+            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+            $queryBuilder->find($this->repository->getDocumentName());
         }
+        // define offset and limit
+        $queryBuilder->skip($startAt);
+        $queryBuilder->limit($numberPerPage);
+
+        // run query
+        $query = $queryBuilder->getQuery();
+        $records = array_values($query->execute()->toArray());
 
         $totalCount = $query->count();
-        $numPages = (int)ceil($totalCount / $numberPerPage);
+        $numPages = (int) ceil($totalCount / $numberPerPage);
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
             $request->attributes->set('numPages', $numPages);
@@ -112,8 +131,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
      *
      * @return Object
@@ -128,8 +145,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param string $documentId id of entity to find
      *
      * @return Object
@@ -213,20 +228,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * Does the actual query using the RQL Bundle.
      *
-     * @param $queryBuilder
-     * @param $rqlQuery
+     * @param Builder $queryBuilder Doctrine ODM QueryBuilder
+     * @param string  $rqlQuery     raw query string
      *
      * @return array
      */
     protected function doRqlQuery($queryBuilder, $rqlQuery)
     {
-        $factory = $this->container->get('graviton.rql.factory');
+        $factory = $this->rqlFactory;
 
         $query = $factory
-            ->create('MongoOdm', $rqlQuery, $queryBuilder)
-            ->getQuery();
-        $records = array_values($query->execute()->toArray());
+            ->create('MongoOdm', $rqlQuery, $queryBuilder);
 
-        return array($query, $records);
+        return $query->getBuilder();
     }
 }
