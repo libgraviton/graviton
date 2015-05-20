@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5e517f484beb88a8f8ff45516b4c2649",
+    "hash": "41954785f796e66ab0c71acf8e366658",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1709,37 +1709,6 @@
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
             "time": "2015-05-13 09:33:08"
-        },
-        {
-            "name": "graviton/test-services-bundle",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/1dfb2cd51a538909ddf6776f8aadab854bb89751",
-                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751",
-                "shasum": ""
-            },
-            "type": "library",
-            "license": [
-                "GPL"
-            ],
-            "authors": [
-                {
-                    "name": "Lucas Bickel",
-                    "email": "lucas.bickel@swisscom.com"
-                }
-            ],
-            "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/master",
-                "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
-            },
-            "time": "2015-05-20 12:31:10"
         },
         {
             "name": "guzzle/guzzle",
@@ -3823,6 +3792,37 @@
     ],
     "packages-dev": [
         {
+            "name": "graviton/test-services-bundle",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
+                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/1dfb2cd51a538909ddf6776f8aadab854bb89751",
+                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751",
+                "shasum": ""
+            },
+            "type": "library",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Lucas Bickel",
+                    "email": "lucas.bickel@swisscom.com"
+                }
+            ],
+            "description": "Graviton service bundle containing some service definitions useful for testing.",
+            "support": {
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/master",
+                "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
+            },
+            "time": "2015-05-20 12:31:10"
+        },
+        {
             "name": "johnkary/phpunit-speedtrap",
             "version": "dev-master",
             "source": {
@@ -4939,8 +4939,7 @@
         "php-jsonpatch/php-jsonpatch": 5,
         "graviton/php-rql-parser": 15,
         "graviton/rql-parser-bundle": 15,
-        "knplabs/knp-gaufrette-bundle": 20,
-        "graviton/test-services-bundle": 20
+        "knplabs/knp-gaufrette-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
