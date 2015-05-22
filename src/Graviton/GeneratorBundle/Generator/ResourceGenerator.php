@@ -104,8 +104,8 @@ class ResourceGenerator extends AbstractGenerator
                 $typeMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper;
                 $field = $typeMapper->map($field);
 
-                // add singular form
-                $field['singularName'] = Inflector::singularize($field['fieldName']);
+                $nameMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper;
+                $field = $nameMapper->map($field);
 
                 // add information from our json file (if provided)..
                 if ($this->json instanceof JsonDefinition &&
