@@ -23,7 +23,7 @@ class FieldJsonMapperTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testMap($field, $json, $expected)
+    public function testMap($field, $def, $expected)
     {
         $sut = new FieldJsonMapper;
 
@@ -41,7 +41,7 @@ class FieldJsonMapperTest extends \PHPUnit_Framework_TestCase
 
         $fieldDouble->expects($this->once())
             ->method('getDefAsArray')
-            ->willReturn($json);
+            ->willReturn($def);
 
         $this->assertEquals($expected, $sut->map($field, $jsonDouble));
     }
