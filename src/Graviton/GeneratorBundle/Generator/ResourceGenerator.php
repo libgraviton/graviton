@@ -107,21 +107,8 @@ class ResourceGenerator extends AbstractGenerator
                 $nameMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper;
                 $field = $nameMapper->map($field);
 
-                // add information from our json file (if provided)..
-                if ($this->json instanceof JsonDefinition &&
-                    $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
-                ) {
-                    $fieldInformation = $this->json->getField($field['fieldName'])
-                        ->getDefAsArray();
-
-                    // in this context, the default type is the doctrine type..
-                    if (isset($fieldInformation['doctrineType'])) {
-                        $fieldInformation['type'] = $fieldInformation['doctrineType'];
-                    }
-
-                    $field = array_merge($field, $fieldInformation);
-                }
-
+                $jsonMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper;
+                $field = $jsonMapper->map($field, $this->json);
                 return $field;
             },
             $fields
