@@ -12,6 +12,7 @@
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_name_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_json_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper</parameter>
+        <parameter key="graviton_generator.resourcegenerator.parameter_builder.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder</parameter>
         <parameter key="graviton_generator.generator.resourcegenerator.class">Graviton\GeneratorBundle\Generator\ResourceGenerator</parameter>
         <parameter key="graviton_generator.command.generateresource.class">Graviton\GeneratorBundle\Command\GenerateResourceCommand</parameter>
     </parameters>
@@ -51,11 +52,14 @@
             </call>
         </service>
 
+        <service id="graviton_generator.resourcegenerator.parameter_builder" class="%graviton_generator.resourcegenerator.parameter_builder.class%"/>
+
         <service id="graviton_generator.generator.resourcegenerator" class="%graviton_generator.generator.resourcegenerator.class%">
             <argument type="service" id="filesystem"/>
             <argument type="service" id="doctrine"/>
             <argument type="service" id="kernel"/>
             <argument type="service" id="graviton_generator.resourcegenerator.field_mapper"/>
+            <argument type="service" id="graviton_generator.resourcegenerator.parameter_builder"/>
         </service>
 
         <!-- commands -->
