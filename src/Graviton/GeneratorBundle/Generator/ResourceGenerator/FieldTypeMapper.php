@@ -1,6 +1,6 @@
 <?php
 /**
- * map fields for ResourceGenerator
+ * map field types for ResourceGenerator
  *
  * Use to generate corresponding serializerTypes from json-def fields.
  */

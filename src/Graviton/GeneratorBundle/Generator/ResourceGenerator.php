@@ -101,20 +101,8 @@ class ResourceGenerator extends AbstractGenerator
             function ($field) {
 
                 // @todo all this mapping needs to go
-                // derive types for serializer from document types
-                $field['serializerType'] = $field['type'];
-                if (substr($field['type'], -2) == '[]') {
-                    $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
-                }
-
-                // @todo this assumtion is a hack and needs fixing
-                if ($field['type'] === 'array') {
-                    $field['serializerType'] = 'array<string>';
-                }
-
-                if ($field['type'] === 'object') {
-                    $field['serializerType'] = 'array';
-                }
+                $typeMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper;
+                $field = $typeMapper->map($field);
 
                 // add singular form
                 $field['singularName'] = Inflector::singularize($field['fieldName']);
