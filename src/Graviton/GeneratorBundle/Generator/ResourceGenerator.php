@@ -99,17 +99,18 @@ class ResourceGenerator extends AbstractGenerator
         // add more info to the fields array
         $fields = array_map(
             function ($field) {
-
                 // @todo all this mapping needs to go
-                $typeMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper;
-                $field = $typeMapper->map($field);
-
-                $nameMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper;
-                $field = $nameMapper->map($field);
-
-                $jsonMapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper;
-                $field = $jsonMapper->map($field, $this->json);
-                return $field;
+                $mapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper;
+                $mapper->addMapper(
+                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper
+                );
+                $mapper->addMapper(
+                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper
+                );
+                $mapper->addMapper(
+                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper
+                );
+                return $jsonMapper->map($field, $this->json);
             },
             $fields
         );
