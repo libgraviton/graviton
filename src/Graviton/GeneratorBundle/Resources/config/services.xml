@@ -55,7 +55,7 @@
             <argument type="service" id="filesystem"/>
             <argument type="service" id="doctrine"/>
             <argument type="service" id="kernel"/>
-            <argument type="service" id="gravitoN_generator.resourcegenerator.field_mapper"/>
+            <argument type="service" id="graviton_generator.resourcegenerator.field_mapper"/>
         </service>
 
         <!-- commands -->
