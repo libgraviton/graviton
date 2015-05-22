@@ -80,10 +80,11 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param Filesystem          $filesystem fs abstraction layer
-     * @param DoctrineRegistry    $doctrine   odm registry
-     * @param HttpKernelInterface $kernel     app kernel
-     * @param FieldMapper         $mapper     field type mapper
+     * @param Filesystem          $filesystem       fs abstraction layer
+     * @param DoctrineRegistry    $doctrine         odm registry
+     * @param HttpKernelInterface $kernel           app kernel
+     * @param FieldMapper         $mapper           field type mapper
+     * @param ParameterBuilder    $parameterBuilder param builder
      */
     public function __construct(
         Filesystem $filesystem,

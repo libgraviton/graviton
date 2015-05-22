@@ -47,7 +47,7 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider buildBasenameParams
      *
-     * @param string $basename   basename
+     * @param string $basename    basename
      * @param string $underscored underscored form of basename
      *
      * @return void
@@ -64,7 +64,7 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @returns void
+     * @return array
      */
     public function buildBasenameParams()
     {
@@ -77,9 +77,12 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider buildJsonParamsIdFieldDefData
      *
+     * @param array|null $idFieldDef field definition or null if not a json def
+     * @param string     $parent     parent service name
+     *
      * @return void
      */
-    public function testBuildJsonParamsIdFieldDef($idFieldDef)
+    public function testBuildJsonParamsIdFieldDef($idFieldDef, $parent = null)
     {
         $sut = new ParameterBuilder;
 
@@ -104,6 +107,13 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
                 ->willReturn($idFieldDef);
         }
 
+        if (!is_null($parent)) {
+            $jsonDefDouble
+                ->expects($this->once())
+                ->method('getParentService')
+                ->willReturn($parent);
+        }
+
         $this->assertEquals($sut, $sut->setParameter('json', $jsonDefDouble));
 
         $parameters = $sut->getParameters();
@@ -111,7 +121,7 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
         if (is_null($idFieldDef)) {
             $idFieldDef = [];
         }
-        $expected = ['json' => $jsonDefDouble];
+        $expected = ['json' => $jsonDefDouble, 'parent' => $parent];
         if ($idFieldDef === []) {
             $expected['noIdField'] = true;
         } else {
@@ -127,7 +137,8 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [null],
-            [['type' => 'string']]
+            [['type' => 'string']],
+            [['type' => 'int'], 'parent.service'],
         ];
     }
 }

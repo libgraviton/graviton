@@ -42,6 +42,7 @@ class ParameterBuilder
                 // we leave it in the document though but we don't wanna output it..
                 $this->parameters['noIdField'] = true;
             }
+            $this->parameters['parent'] = $value->getParentService();
         } else {
             $this->parameters[$name] = $value;
         }
