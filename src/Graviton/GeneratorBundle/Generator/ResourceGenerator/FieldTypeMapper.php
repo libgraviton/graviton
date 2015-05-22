@@ -17,7 +17,7 @@ use Doctrine\Common\Inflector\Inflector;
 class FieldTypeMapper
 {
     /**
-     * @param array $field
+     * @param array $field mappable field with type attribute
      *
      * @return array
      */

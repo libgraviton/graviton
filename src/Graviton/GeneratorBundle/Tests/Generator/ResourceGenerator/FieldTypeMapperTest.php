@@ -3,7 +3,7 @@
  * validate field type mapper
  */
 
-namespace Graviton\GeneratorBundle\Tests\ResourceGenerator;
+namespace Graviton\GeneratorBundle\Tests\Generator\ResourceGenerator;
 
 use \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper;
 
