@@ -93,7 +93,7 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * @param JdonDefinition $json optional JsonDefinition object
+     * @param JsonDefinition $json optional JsonDefinition object
      *
      * @return void
      */
