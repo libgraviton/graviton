@@ -6,9 +6,8 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Inflector\Inflector;
-use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -55,6 +54,10 @@ class ResourceGenerator extends AbstractGenerator
     /** @var \DomDocument */
     private $serviceDOM;
 
+    /**
+     * @var FieldMapper
+     */
+    private $mapper;
 
     /**
      * Instantiates generator object
@@ -63,13 +66,15 @@ class ResourceGenerator extends AbstractGenerator
      * @param FileSystem     $filesystem fs abstraction layer
      * @param object         $doctrine   dbal
      * @param object         $kernel     app kernel
+     * @param FieldMapper    $mapper     field type mapper
      */
-    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
+    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel, FieldMapper $mapper)
     {
         $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+        $this->mapper = $mapper;
         $this->xmlParameters = new ArrayCollection();
     }
 
@@ -97,44 +102,10 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         // add more info to the fields array
+        $mapper = $this->mapper;
         $fields = array_map(
-            function ($field) {
-
-                // @todo all this mapping needs to go
-                // derive types for serializer from document types
-                $field['serializerType'] = $field['type'];
-                if (substr($field['type'], -2) == '[]') {
-                    $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
-                }
-
-                // @todo this assumtion is a hack and needs fixing
-                if ($field['type'] === 'array') {
-                    $field['serializerType'] = 'array<string>';
-                }
-
-                if ($field['type'] === 'object') {
-                    $field['serializerType'] = 'array';
-                }
-
-                // add singular form
-                $field['singularName'] = Inflector::singularize($field['fieldName']);
-
-                // add information from our json file (if provided)..
-                if ($this->json instanceof JsonDefinition &&
-                    $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
-                ) {
-                    $fieldInformation = $this->json->getField($field['fieldName'])
-                        ->getDefAsArray();
-
-                    // in this context, the default type is the doctrine type..
-                    if (isset($fieldInformation['doctrineType'])) {
-                        $fieldInformation['type'] = $fieldInformation['doctrineType'];
-                    }
-
-                    $field = array_merge($field, $fieldInformation);
-                }
-
-                return $field;
+            function ($field) use ($mapper) {
+                return $mapper->map($field, $this->json);
             },
             $fields
         );
