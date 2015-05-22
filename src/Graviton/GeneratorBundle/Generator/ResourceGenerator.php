@@ -62,11 +62,10 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param InputInterface $input      Input
-     * @param FileSystem     $filesystem fs abstraction layer
-     * @param object         $doctrine   dbal
-     * @param object         $kernel     app kernel
-     * @param FieldMapper    $mapper     field type mapper
+     * @param FileSystem  $filesystem fs abstraction layer
+     * @param object      $doctrine   dbal
+     * @param object      $kernel     app kernel
+     * @param FieldMapper $mapper     field type mapper
      */
     public function __construct($filesystem, $doctrine, $kernel, FieldMapper $mapper)
     {
@@ -79,6 +78,8 @@ class ResourceGenerator extends AbstractGenerator
 
     /**
      * @param InputInterface $input input from command
+     *
+     * @return void
      */
     public function setInput(InputInterface $input)
     {
