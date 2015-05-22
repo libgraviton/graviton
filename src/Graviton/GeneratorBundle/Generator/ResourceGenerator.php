@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
