@@ -43,12 +43,14 @@ class ResourceGenerator extends AbstractGenerator
      * @private
      */
     private $input;
+
     /**
      * our json file definition
      *
      * @var JsonDefinition
      */
-    private $json = false;
+    private $json = null;
+
     /** @var ArrayCollection */
     protected $xmlParameters;
     /** @var \DomDocument */
@@ -87,6 +89,16 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
+     * @param JdonDefinition $json optional JsonDefinition object
+     *
+     * @return void
+     */
+    public function setJson(JsonDefinition $json)
+    {
+        $this->json = $json;
+    }
+
+    /**
      * generate the resource with all its bits and parts
      *
      * @param BundleInterface $bundle         bundle
@@ -97,15 +109,18 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
-    {
+    public function generate(
+        BundleInterface $bundle,
+        $document,
+        $format,
+        array $fields,
+        $withRepository
+    ) {
         $dir = $bundle->getPath();
         $basename = $this->getBundleBaseName($document);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // do we have a json path passed?
-        if (!is_null($this->input->getOption('json'))) {
-            $this->json = new JsonDefinition($this->input->getOption('json'));
+        if (!is_null($this->json)) {
             $this->json->setNamespace($bundleNamespace);
         }
 
