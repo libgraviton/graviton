@@ -32,6 +32,6 @@ class FieldMapperTest extends \PHPUnit_Framework_TestCase
         $sut->addMapper($mapperDouble);
         $sut->addMapper($mapperDouble);
 
-        $this->assertEquals($sut->map([], $context), []);
+        $this->assertEquals([], $sut->map([], $context));
     }
 }
