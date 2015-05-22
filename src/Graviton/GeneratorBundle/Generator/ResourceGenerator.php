@@ -8,7 +8,6 @@ namespace Graviton\GeneratorBundle\Generator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
@@ -39,10 +38,6 @@ class ResourceGenerator extends AbstractGenerator
      * @private
      */
     private $kernel;
-    /**
-     * @private
-     */
-    private $input;
 
     /**
      * our json file definition
@@ -81,16 +76,6 @@ class ResourceGenerator extends AbstractGenerator
         $this->kernel = $kernel;
         $this->mapper = $mapper;
         $this->xmlParameters = new ArrayCollection();
-    }
-
-    /**
-     * @param InputInterface $input input from command
-     *
-     * @return void
-     */
-    public function setInput(InputInterface $input)
-    {
-        $this->input = $input;
     }
 
     /**

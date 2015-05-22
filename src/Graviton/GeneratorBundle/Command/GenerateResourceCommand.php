@@ -91,8 +91,6 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
      */
     protected function createGenerator()
     {
-        $this->resourceGenerator->setInput($this->input);
-
         // do we have a json path passed?
         if (!is_null($this->input->getOption('json'))) {
             $this->resourceGenerator->setJson(new JsonDefinition($this->input->getOption('json')));
