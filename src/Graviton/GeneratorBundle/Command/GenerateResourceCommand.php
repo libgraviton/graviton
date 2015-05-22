@@ -80,7 +80,8 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             $this->input,
             $this->getContainer()->get('filesystem'),
             $this->getContainer()->get('doctrine'),
-            $this->getContainer()->get('kernel')
+            $this->getContainer()->get('kernel'),
+            $this->getContainer()->get('graviton_generator.resourcegenerator.field_mapper')
         );
     }
 }

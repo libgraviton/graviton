@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Inflector\Inflector;
 use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -55,6 +56,10 @@ class ResourceGenerator extends AbstractGenerator
     /** @var \DomDocument */
     private $serviceDOM;
 
+    /**
+     * @var FieldMapper
+     */
+    private $mapper;
 
     /**
      * Instantiates generator object
@@ -63,13 +68,15 @@ class ResourceGenerator extends AbstractGenerator
      * @param FileSystem     $filesystem fs abstraction layer
      * @param object         $doctrine   dbal
      * @param object         $kernel     app kernel
+     * @param FieldMapper    $mapper     field type mapper
      */
-    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
+    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel, FieldMapper $mapper)
     {
         $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+        $this->mapper = $mapper;
         $this->xmlParameters = new ArrayCollection();
     }
 
@@ -97,20 +104,10 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         // add more info to the fields array
+        $mapper = $this->mapper;
         $fields = array_map(
-            function ($field) {
-                // @todo all this mapping needs to go
-                $mapper = new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
-                $mapper->addMapper(
-                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper
-                );
-                $mapper->addMapper(
-                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper
-                );
-                $mapper->addMapper(
-                    new \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper
-                );
-                return $jsonMapper->map($field, $this->json);
+            function ($field) use ($mapper) {
+                return $mapper->map($field, $this->json);
             },
             $fields
         );
