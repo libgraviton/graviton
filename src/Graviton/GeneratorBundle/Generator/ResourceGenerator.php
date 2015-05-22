@@ -8,9 +8,11 @@ namespace Graviton\GeneratorBundle\Generator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
 
 /**
  * bundle containing various code generators
@@ -28,30 +30,35 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 class ResourceGenerator extends AbstractGenerator
 {
     /**
-     * @private
+     * @private Filesystem
      */
     private $filesystem;
+
     /**
-     * @private
+     * @private DoctrineRegistry
      */
     private $doctrine;
+
     /**
-     * @private
+     * @private HttpKernelInterface
      */
     private $kernel;
-    /**
-     * @private
-     */
-    private $input;
+
     /**
      * our json file definition
      *
-     * @var JsonDefinition
+     * @var JsonDefinition|null
      */
-    private $json = false;
-    /** @var ArrayCollection */
+    private $json = null;
+
+    /**
+     * @var ArrayCollection
+     */
     protected $xmlParameters;
-    /** @var \DomDocument */
+
+    /**
+     * @var \DomDocument
+     */
     private $serviceDOM;
 
     /**
@@ -60,15 +67,24 @@ class ResourceGenerator extends AbstractGenerator
     private $mapper;
 
     /**
+     * @var boolean
+     */
+    private $generateController = false;
+
+    /**
      * Instantiates generator object
      *
-     * @param FileSystem  $filesystem fs abstraction layer
-     * @param object      $doctrine   dbal
-     * @param object      $kernel     app kernel
-     * @param FieldMapper $mapper     field type mapper
+     * @param Filesystem          $filesystem fs abstraction layer
+     * @param DoctrineRegistry    $doctrine   odm registry
+     * @param HttpKernelInterface $kernel     app kernel
+     * @param FieldMapper         $mapper     field type mapper
      */
-    public function __construct($filesystem, $doctrine, $kernel, FieldMapper $mapper)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        DoctrineRegistry $doctrine,
+        HttpKernelInterface $kernel,
+        FieldMapper $mapper
+    ) {
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
@@ -77,13 +93,23 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * @param InputInterface $input input from command
+     * @param JsonDefinition $json optional JsonDefinition object
      *
      * @return void
      */
-    public function setInput(InputInterface $input)
+    public function setJson(JsonDefinition $json)
     {
-        $this->input = $input;
+        $this->json = $json;
+    }
+
+    /**
+     * @param boolean $generateController should the controller be generated or not
+     *
+     * @return void
+     */
+    public function setGenerateController($generateController)
+    {
+        $this->generateController = $generateController;
     }
 
     /**
@@ -97,15 +123,18 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
-    {
+    public function generate(
+        BundleInterface $bundle,
+        $document,
+        $format,
+        array $fields,
+        $withRepository
+    ) {
         $dir = $bundle->getPath();
         $basename = $this->getBundleBaseName($document);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // do we have a json path passed?
-        if (!is_null($this->input->getOption('json'))) {
-            $this->json = new JsonDefinition($this->input->getOption('json'));
+        if (!is_null($this->json)) {
             $this->json->setNamespace($bundleNamespace);
         }
 
@@ -151,7 +180,7 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateFixtures($parameters, $dir, $document);
         }
 
-        if ($this->input->getOption('no-controller') != 'true') {
+        if ($this->generateController) {
             $this->generateController($parameters, $dir, $document);
         }
 

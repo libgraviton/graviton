@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -90,7 +91,15 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
      */
     protected function createGenerator()
     {
-        $this->resourceGenerator->setInput($this->input);
+        // do we have a json path passed?
+        if (!is_null($this->input->getOption('json'))) {
+            $this->resourceGenerator->setJson(new JsonDefinition($this->input->getOption('json')));
+        }
+
+        $this->resourceGenerator->setGenerateController(
+            $this->input->getOption('no-controller') != 'true'
+        );
+
         return $this->resourceGenerator;
     }
 }
