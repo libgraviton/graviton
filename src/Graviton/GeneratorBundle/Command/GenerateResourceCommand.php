@@ -31,6 +31,7 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     public function __construct(ResourceGenerator $resourceGenerator)
     {
         $this->resourceGenerator = $resourceGenerator;
+        parent::__construct();
     }
 
     /**
