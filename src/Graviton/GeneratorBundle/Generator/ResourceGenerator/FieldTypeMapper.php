@@ -12,14 +12,15 @@ namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FieldTypeMapper
+class FieldTypeMapper implements FieldMapperInterface
 {
     /**
-     * @param array $field mappable field with type attribute
+     * @param array $field   mappable field with type attribute
+     * @param mixed $context context for mapper to check
      *
      * @return array
      */
-    public function map($field)
+    public function map($field, $context = null)
     {
         $field['serializerType'] = $field['type'];
         if (substr($field['type'], -2) == '[]') {

@@ -13,7 +13,7 @@ use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FieldJsonMapper
+class FieldJsonMapper implements FieldMapperInterface
 {
     /**
      * @param array $field   mappable field with type attribute
@@ -21,7 +21,7 @@ class FieldJsonMapper
      *
      * @return array
      */
-    public function map($field, $context)
+    public function map($field, $context = null)
     {
         if ($context instanceof JsonDefinition &&
             $context->getField($field['fieldName']) instanceof DefinitionElementInterface
