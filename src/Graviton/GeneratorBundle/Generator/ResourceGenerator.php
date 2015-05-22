@@ -68,14 +68,21 @@ class ResourceGenerator extends AbstractGenerator
      * @param object         $kernel     app kernel
      * @param FieldMapper    $mapper     field type mapper
      */
-    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel, FieldMapper $mapper)
+    public function __construct($filesystem, $doctrine, $kernel, FieldMapper $mapper)
     {
-        $this->input = $input;
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
         $this->mapper = $mapper;
         $this->xmlParameters = new ArrayCollection();
+    }
+
+    /**
+     * @param InputInterface $input input from command
+     */
+    public function setInput(InputInterface $input)
+    {
+        $this->input = $input;
     }
 
     /**
