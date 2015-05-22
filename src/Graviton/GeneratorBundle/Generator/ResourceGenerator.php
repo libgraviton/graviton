@@ -6,8 +6,6 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Inflector\Inflector;
-use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Symfony\Component\Console\Input\InputInterface;
