@@ -98,6 +98,10 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             $this->resourceGenerator->setJson(new JsonDefinition($this->input->getOption('json')));
         }
 
+        if ($this->input->getOption('no-controller') != 'true') {
+            $this->resourceGenerator->setGenerateController(true);
+        }
+
         return $this->resourceGenerator;
     }
 }

@@ -62,6 +62,11 @@ class ResourceGenerator extends AbstractGenerator
     private $mapper;
 
     /**
+     * @var boolean
+     */
+    private $generateController = false;
+
+    /**
      * Instantiates generator object
      *
      * @param FileSystem  $filesystem fs abstraction layer
@@ -96,6 +101,16 @@ class ResourceGenerator extends AbstractGenerator
     public function setJson(JsonDefinition $json)
     {
         $this->json = $json;
+    }
+
+    /**
+     * @param boolean $generateController should the controller be generated or not
+     *
+     * @return void
+     */
+    public function setGenerateController($generateController)
+    {
+        $this->generateController = $generateController;
     }
 
     /**
@@ -166,7 +181,7 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateFixtures($parameters, $dir, $document);
         }
 
-        if ($this->input->getOption('no-controller') != 'true') {
+        if ($this->generateController) {
             $this->generateController($parameters, $dir, $document);
         }
 
