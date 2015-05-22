@@ -47,7 +47,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * our json file definition
      *
-     * @var JsonDefinition
+     * @var JsonDefinition|null
      */
     private $json = null;
 
