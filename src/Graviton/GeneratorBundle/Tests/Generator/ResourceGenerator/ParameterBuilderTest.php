@@ -26,7 +26,7 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new ParameterBuilder();
 
-        $sut->setParameter($index, $document);
+        $this->assertEquals($sut, $sut->setParameter($index, $document));
         $parameters = $sut->getParameters();
         $this->assertEquals($document, $parameters[$index]);
     }
@@ -56,7 +56,8 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new ParameterBuilder();
 
-        $sut->setParameter('basename', $basename);
+        $this->assertEquals($sut, $sut->setParameter('basename', $basename));
+
         $parameters = $sut->getParameters();
         $this->assertEquals($basename, $parameters['bundle_basename']);
         $this->assertEquals($underscored, $parameters['extension_alias']);
@@ -103,7 +104,7 @@ class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
                 ->willReturn($idFieldDef);
         }
 
-        $sut->setParameter('json', $jsonDefDouble);
+        $this->assertEquals($sut, $sut->setParameter('json', $jsonDefDouble));
 
         $parameters = $sut->getParameters();
 

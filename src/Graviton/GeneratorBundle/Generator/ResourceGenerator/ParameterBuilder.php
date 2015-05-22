@@ -23,6 +23,8 @@ class ParameterBuilder
     /**
      * @param string $name  parameter name
      * @param mixed  $value parameter to set
+     *
+     * @return self
      */
     public function setParameter($name, $value)
     {
@@ -43,6 +45,7 @@ class ParameterBuilder
         } else {
             $this->parameters[$name] = $value;
         }
+        return $this;
     }
 
     /**

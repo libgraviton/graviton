@@ -8,6 +8,7 @@ namespace Graviton\GeneratorBundle\Generator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -72,6 +73,11 @@ class ResourceGenerator extends AbstractGenerator
     private $generateController = false;
 
     /**
+     * @var ParameterBuilder
+     */
+    private $parameterBuilder;
+
+    /**
      * Instantiates generator object
      *
      * @param Filesystem          $filesystem fs abstraction layer
@@ -83,12 +89,14 @@ class ResourceGenerator extends AbstractGenerator
         Filesystem $filesystem,
         DoctrineRegistry $doctrine,
         HttpKernelInterface $kernel,
-        FieldMapper $mapper
+        FieldMapper $mapper,
+        ParameterBuilder $parameterBuilder
     ) {
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
         $this->mapper = $mapper;
+        $this->parameterBuilder = $parameterBuilder;
         $this->xmlParameters = new ArrayCollection();
     }
 
@@ -147,30 +155,15 @@ class ResourceGenerator extends AbstractGenerator
             $fields
         );
 
-        $parameters = array(
-            'document' => $document,
-            'base' => $bundleNamespace,
-            'bundle' => $bundle->getName(),
-            'format' => $format,
-            'json' => $this->json,
-            'fields' => $fields,
-            'bundle_basename' => $basename,
-            'extension_alias' => Container::underscore($basename),
-        );
-
-        // some stuff special for the "id" field..
-        if ($this->json instanceof JsonDefinition) {
-            // if we have data for id field, pass it along
-            $idField = $this->json->getField('id');
-            if (!is_null($idField)) {
-                $parameters['idField'] = $idField->getDefAsArray();
-            } else {
-                // if there is a json file and no id defined - so we don't do one here..
-                // we leave it in the document though but we don't wanna output it..
-                $parameters['noIdField'] = true;
-            }
-            $parameters['parent'] = $this->json->getParentService();
-        }
+        $parameters = $this->parameterBuilder
+            ->setParameter('document', $document)
+            ->setParameter('base', $bundleNamespace)
+            ->setParameter('bundle', $bundle->getName())
+            ->setParameter('format', $format)
+            ->setParameter('json', $this->json)
+            ->setParameter('fields', $fields)
+            ->setParameter('ibasename', $basename)
+            ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
