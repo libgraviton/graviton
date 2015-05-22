@@ -21,6 +21,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GenerateResourceCommand extends GenerateDoctrineEntityCommand
 {
     /**
+     * @var ResourceGenerator
+     */
+    private $resourceGenerator;
+
+    /**
+     * @param ResourceGenerator $resourceGenerator generator to use for resource generation
+     */
+    public function __construct(ResourceGenerator $resourceGenerator)
+    {
+        $this->resourceGenerator = $resourceGenerator;
+        parent::__construct();
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @return void
@@ -76,12 +90,7 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
      */
     protected function createGenerator()
     {
-        return new ResourceGenerator(
-            $this->input,
-            $this->getContainer()->get('filesystem'),
-            $this->getContainer()->get('doctrine'),
-            $this->getContainer()->get('kernel'),
-            $this->getContainer()->get('graviton_generator.resourcegenerator.field_mapper')
-        );
+        $this->resourceGenerator->setInput($this->input);
+        return $this->resourceGenerator;
     }
 }

@@ -12,6 +12,8 @@
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_name_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_json_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper</parameter>
+        <parameter key="graviton_generator.generator.resourcegenerator.class">Graviton\GeneratorBundle\Generator\ResourceGenerator</parameter>
+        <parameter key="graviton_generator.command.generateresource.class">Graviton\GeneratorBundle\Command\GenerateResourceCommand</parameter>
     </parameters>
 
     <services>
@@ -49,7 +51,19 @@
             </call>
         </service>
 
+        <service id="graviton_generator.generator.resourcegenerator" class="%graviton_generator.generator.resourcegenerator.class%">
+            <argument type="service" id="filesystem"/>
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="kernel"/>
+            <argument type="service" id="graviton_generator.resourcegenerator.field_mapper"/>
+        </service>
+
         <!-- commands -->
+
+        <service id="graviton_generator.command.generateresource" class="%graviton_generator.command.generateresource.class%">
+            <argument type="service" id="graviton_generator.generator.resourcegenerator"/>
+            <tag name="console.command"/>
+        </service>
 
         <!-- clean dynamic bundle command -->
         <service id="graviton_generator.command.cleandynamicbundle.kernel" alias="kernel"/>
