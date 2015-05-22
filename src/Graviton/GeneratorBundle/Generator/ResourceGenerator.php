@@ -10,6 +10,9 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
 
 /**
  * bundle containing various code generators
@@ -27,15 +30,17 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 class ResourceGenerator extends AbstractGenerator
 {
     /**
-     * @private
+     * @private Filesystem
      */
     private $filesystem;
+
     /**
-     * @private
+     * @private DoctrineRegistry
      */
     private $doctrine;
+
     /**
-     * @private
+     * @private HttpKernelInterface
      */
     private $kernel;
 
@@ -46,9 +51,14 @@ class ResourceGenerator extends AbstractGenerator
      */
     private $json = null;
 
-    /** @var ArrayCollection */
+    /**
+     * @var ArrayCollection
+     */
     protected $xmlParameters;
-    /** @var \DomDocument */
+
+    /**
+     * @var \DomDocument
+     */
     private $serviceDOM;
 
     /**
@@ -64,13 +74,17 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param FileSystem  $filesystem fs abstraction layer
-     * @param object      $doctrine   dbal
-     * @param object      $kernel     app kernel
-     * @param FieldMapper $mapper     field type mapper
+     * @param Filesystem          $filesystem fs abstraction layer
+     * @param DoctrineRegistry    $doctrine   odm registry
+     * @param HttpKernelInterface $kernel     app kernel
+     * @param FieldMapper         $mapper     field type mapper
      */
-    public function __construct($filesystem, $doctrine, $kernel, FieldMapper $mapper)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        DoctrineRegistry $doctrine,
+        HttpKernelInterface $kernel,
+        FieldMapper $mapper
+    ) {
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
