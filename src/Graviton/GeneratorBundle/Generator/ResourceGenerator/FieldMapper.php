@@ -15,7 +15,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapperInterface;
 class FieldMapper implements FieldMapperInterface
 {
     /**
-     * @var FieldMapperInterface
+     * @var FieldMapperInterface[]
      */
     private $mappers = [];
 
