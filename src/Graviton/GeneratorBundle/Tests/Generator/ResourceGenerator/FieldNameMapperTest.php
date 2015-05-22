@@ -33,7 +33,7 @@ class FieldNameMapperTest extends \PHPUnit_Framework_TestCase
             'fieldName' => $plural,
             'singularName' => $singular
         ];
-        $this->assertEquals($sut->map($field), $expected);
+        $this->assertEquals($expected, $sut->map($field));
     }
 
     /**

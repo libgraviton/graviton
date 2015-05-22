@@ -26,7 +26,7 @@ class FieldTypeMapperTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new FieldTypeMapper;
 
-        $this->assertEquals($sut->map($field), $expected);
+        $this->assertEquals($expected, $sut->map($field));
     }
 
     /**
