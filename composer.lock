@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "41954785f796e66ab0c71acf8e366658",
+    "hash": "2f3f24310e4b9a8f96a4caea78e069b6",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -3793,16 +3793,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751"
+                "reference": "281a8d3e522a8b35cf466484bcc1326ec1b9042c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/1dfb2cd51a538909ddf6776f8aadab854bb89751",
-                "reference": "1dfb2cd51a538909ddf6776f8aadab854bb89751",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/281a8d3e522a8b35cf466484bcc1326ec1b9042c",
+                "reference": "281a8d3e522a8b35cf466484bcc1326ec1b9042c",
                 "shasum": ""
             },
             "type": "library",
@@ -3817,10 +3817,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/master",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/0.2.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-05-20 12:31:10"
+            "time": "2015-05-22 05:14:10"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
