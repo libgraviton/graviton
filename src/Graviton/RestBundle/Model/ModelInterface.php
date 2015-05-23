@@ -42,10 +42,11 @@ interface ModelInterface
      */
     public function find($id);
 
-    /**
+    /**+
      * Find all records
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request Request object
+     * @param Request $request Request object
+     * @param array   $filter  AND clause to narrow result.
      *
      * @return Object[]
      */

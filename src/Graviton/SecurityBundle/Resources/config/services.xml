@@ -13,6 +13,10 @@
             <argument type="service" id="logger"/>
         </service>
 
+        <service id="graviton.security.authorizator" class="Graviton\SecurityBundle\Authorizator">
+            <argument id="security.authorization_checker" type="service" />
+        </service>
+
         <!--
             Strategies used by AuthenticationKeyAuthenticator
         -->

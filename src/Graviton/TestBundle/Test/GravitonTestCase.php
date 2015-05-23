@@ -65,7 +65,7 @@ class GravitonTestCase extends WebTestCase
     }
 
     /**
-     * Provides a test double for the named calss.
+     * Provides a test double for the named class.
      *
      * @param string $class   Full namespace of the class to be doubled
      * @param array  $methods List of methods to be doubled
@@ -78,5 +78,20 @@ class GravitonTestCase extends WebTestCase
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
+    }
+    /**
+     * Provides a test double for the named interface or abstract class.
+     *
+     * @param string $class   Full namespace of the class to be doubled
+     * @param array  $methods List of methods to be doubled
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getInterfaceTestDouble($class, array $methods = array())
+    {
+        return $this->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMockForAbstractClass();
     }
 }

@@ -89,7 +89,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int) $request->query->get('perPage', 10);
+        $numberPerPage = (int)$request->query->get('perPage', 10);
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */

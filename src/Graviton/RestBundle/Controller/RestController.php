@@ -14,9 +14,9 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\SecurityBundle\Authorizator;
 use Knp\Component\Pager\Paginator;
 use Rs\Json\Patch;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +31,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RestController implements ContainerAwareInterface
+class RestController
 {
     private $model;
 
@@ -40,26 +40,17 @@ class RestController implements ContainerAwareInterface
      */
     private $container;
 
-    /**
-     * Get the container object
-     *
-     * @return \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
+    /** @var Authorizator */
+    protected $authorizationChecker;
 
     /**
-     * {@inheritdoc}
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
+     * @param ContainerInterface $container   Symfony's DIC
+     * @param Authorizator       $autorizator AuthorizationChecker
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(ContainerInterface $container, Authorizator $autorizator)
     {
         $this->container = $container;
+        $this->authorizationChecker = $autorizator;
     }
 
     /**
@@ -192,16 +183,22 @@ class RestController implements ContainerAwareInterface
     public function allAction(Request $request)
     {
         $model = $this->getModel();
+        $results = array();
 
         if ($model instanceof PaginatorAwareInterface && !$model->hasPaginator()) {
             $paginator = new Paginator();
             $model->setPaginator($paginator);
         }
 
+
+        if ($this->authorizationChecker->canView($request)) {
+            $results = $model->findAll($request, array());
+        }
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
             ->setContent(
-                $this->serialize($model->findAll($request))
+                $this->serialize($results)
             );
 
         return $this->render(

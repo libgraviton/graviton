@@ -7,6 +7,8 @@
 
 namespace Graviton\TestBundle\Test;
 
+use Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -33,10 +35,22 @@ class RestTestCase extends GravitonTestCase
      */
     protected static function createRestClient(array $options = array(), array $server = array())
     {
+        $cookie = new Cookie(
+            CookieFieldStrategy::COOKIE_FIELD,
+            51512011,
+            time() + 3600 * 24 * 7,
+            '/',
+            null,
+            false,
+            false
+        );
+
         parent::createClient($options, $server);
 
+        /** @var \Graviton\TestBundle\Client $client */
         $client = static::$kernel->getContainer()->get('graviton.test.rest.client');
         $client->setServerParameters($server);
+        $client->getCookieJar()->set($cookie);
 
         return $client;
     }
