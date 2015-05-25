@@ -6,11 +6,11 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Router;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
-use Symfony\Component\Routing\Router;
+use Graviton\RestBundle\Service\RestUtils;
 
 /**
  * MainController
@@ -19,23 +19,41 @@ use Symfony\Component\Routing\Router;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class MainController implements ContainerAwareInterface
+class MainController
 {
     /**
-     * @var ContainerInterface service_container
+     * @var Router
      */
-    private $container;
+    private $router;
 
     /**
-     * {@inheritdoc}
-     *
-     * @param ContainerInterface $container service_container
-     *
-     * @return void
+     * @var Response
      */
-    public function setContainer(ContainerInterface $container = null)
+    private $response;
+
+    /**
+     * @var RestUtils
+     */
+    private $restUtils;
+
+    /**
+     * @var EngineInterface
+     */
+    private $templating;
+
+    /**
+     * @param Router          $router     router
+     * @param Response        $response   prepared response
+     * @param RestUtils       $restUtils  rest-utils from GravitonRestBundle
+     * @param EngineInterface $templating templating-engine
+     *
+     */
+    public function __construct(Router $router, Response $response, RestUtils $restUtils, EngineInterface $templating)
     {
-        $this->container = $container;
+        $this->router = $router;
+        $this->response = $response;
+        $this->restUtils = $restUtils;
+        $this->templating = $templating;
     }
 
     /**
@@ -45,22 +63,17 @@ class MainController implements ContainerAwareInterface
      */
     public function indexAction()
     {
-        /** @var \Symfony\Component\Routing\Router $router */
-        $router = $this->container->get('router');
-
-        /** @var Response $response */
-        $response = $this->container->get("graviton.rest.response");
+        $response = $this->response;
 
         $mainPage = new \stdClass;
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = $this->determineServices(
-            $router,
-            $this->container->get('graviton.rest.restutils')->getOptionRoutes()
+            $this->restUtils->getOptionRoutes()
         );
 
         $response->setContent(json_encode($mainPage));
         $response->setStatusCode(Response::HTTP_OK);
-        $response->headers->set('Link', $this->prepareLinkHeader($router));
+        $response->headers->set('Link', $this->prepareLinkHeader());
 
         // todo: make sure, that the correct content type is set.
         // todo: this should be covered by a kernel.response event listener?
@@ -76,14 +89,14 @@ class MainController implements ContainerAwareInterface
     /**
      * Determines what service endpoints are available.
      *
-     * @param Router $router       Routing information of the current request.
      * @param array  $optionRoutes List of routing options.
      *
      * @return array
      */
-    protected function determineServices(Router $router, array $optionRoutes)
+    protected function determineServices(array $optionRoutes)
     {
         $sortArr = array();
+        $router = $this->router;
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
@@ -109,16 +122,14 @@ class MainController implements ContainerAwareInterface
     /**
      * Prepares the header field containing information about pagination.
      *
-     * @param Router $router Routing information of the current request.
-     *
      * @return string
      */
-    protected function prepareLinkHeader(Router $router)
+    protected function prepareLinkHeader()
     {
         $links = new LinkHeader(array());
         $links->add(
             new LinkHeaderItem(
-                $router->generate('graviton.core.rest.app.all', array(), true),
+                $this->router->generate('graviton.core.rest.app.all', array(), true),
                 array(
                     'rel'  => 'apps',
                     'type' => 'application/json'
@@ -140,6 +151,6 @@ class MainController implements ContainerAwareInterface
      */
     public function render($view, array $parameters = array(), Response $response = null)
     {
-        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+        return $this->templating->renderResponse($view, $parameters, $response);
     }
 }
