@@ -201,4 +201,20 @@ class MainControllerTest extends RestTestCase
             $controller->determineServices($optionRoutes)
         );
     }
+
+    /**
+     * @retrn void
+     */
+    public function testOptionsResponse()
+    {
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/');
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'application/schema+json',
+            $response->headers->get('Content-Type')
+        );
+    }
 }
