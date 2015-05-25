@@ -5,8 +5,12 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Graviton\RestBundle\Controller\RestController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializationContext;
+use Graviton\RestBundle\Controller\RestController;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -16,24 +20,44 @@ use Symfony\Component\Routing\Route;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RestUtils
+final class RestUtils
 {
-
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface
      */
     private $container;
 
     /**
-     * sets the container
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
+     * @var Serializer
      */
-    public function setContainer($container = null)
-    {
+    private $serializer;
+
+    /**
+     * @var SerializationContext
+     */
+    private $serializerContext;
+
+    /**
+     * @var Router
+     */
+    private $router;
+
+    /**
+     * @param ContainerInterface   $container         container
+     * @param Router               $router            router
+     * @param Serializer           $serializer        serializer
+     * @param SerializationContext $serializerContext context for serializer
+     */
+    public function __construct(
+        ContainerInterface $container,
+        Router $router,
+        Serializer $serializer,
+        SerializationContext $serializerContext = null
+    ) {
         $this->container = $container;
+        $this->serializer = $serializer;
+        $this->serializerContext = $serializerContext;
+        $this->router = $router;
     }
 
     /**
@@ -110,11 +134,11 @@ class RestUtils
     /**
      * Get the serializer
      *
-     * @return \JMS\Serializer\Serializer
+     * @return Serializer
      */
     public function getSerializer()
     {
-        return $this->container->get('graviton.rest.serializer');
+        return $this->serializer;
     }
 
     /**
@@ -124,7 +148,7 @@ class RestUtils
      */
     public function getSerializerContext()
     {
-        return clone $this->container->get('graviton.rest.serializer.serializercontext');
+        return clone $this->serializerContext;
     }
 
     /**
@@ -135,7 +159,7 @@ class RestUtils
      */
     public function getOptionRoutes()
     {
-        $router = $this->container->get('router');
+        $router = $this->router;
         $ret = array_filter(
             $router->getRouteCollection()
                    ->all(),
@@ -163,9 +187,9 @@ class RestUtils
     public function getRoutesByBasename($baseName)
     {
         $ret = array();
-        foreach ($this->container->get('router')
-                                 ->getRouteCollection()
-                                 ->all() as $routeName => $route) {
+        foreach ($this->router
+                      ->getRouteCollection()
+                      ->all() as $routeName => $route) {
             if (preg_match('/^' . $baseName . '/', $routeName)) {
                 $ret[$routeName] = $route;
             }
