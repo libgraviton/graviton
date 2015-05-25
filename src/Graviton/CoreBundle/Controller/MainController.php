@@ -89,7 +89,7 @@ class MainController
     /**
      * Determines what service endpoints are available.
      *
-     * @param array  $optionRoutes List of routing options.
+     * @param array $optionRoutes List of routing options.
      *
      * @return array
      */
