@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
-use Graviton\RestBundle\Service\RestUtils;
+use Graviton\RestBundle\Service\RestUtilsInterface;
 
 /**
  * MainController
@@ -42,14 +42,18 @@ class MainController
     private $templating;
 
     /**
-     * @param Router          $router     router
-     * @param Response        $response   prepared response
-     * @param RestUtils       $restUtils  rest-utils from GravitonRestBundle
-     * @param EngineInterface $templating templating-engine
+     * @param Router             $router     router
+     * @param Response           $response   prepared response
+     * @param RestUtilsInterface $restUtils  rest-utils from GravitonRestBundle
+     * @param EngineInterface    $templating templating-engine
      *
      */
-    public function __construct(Router $router, Response $response, RestUtils $restUtils, EngineInterface $templating)
-    {
+    public function __construct(
+        Router $router,
+        Response $response,
+        RestUtilsInterface $restUtils,
+        EngineInterface $templating
+    ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;

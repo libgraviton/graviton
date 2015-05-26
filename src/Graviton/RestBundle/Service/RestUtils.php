@@ -20,7 +20,7 @@ use Graviton\RestBundle\Controller\RestController;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class RestUtils
+final class RestUtils implements RestUtilsInterface
 {
     /**
      * @var ContainerInterface
