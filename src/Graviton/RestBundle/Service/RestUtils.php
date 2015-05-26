@@ -33,7 +33,7 @@ final class RestUtils implements RestUtilsInterface
     private $serializer;
 
     /**
-     * @var SerializationContext
+     * @var null|SerializationContext
      */
     private $serializerContext;
 
@@ -118,7 +118,7 @@ final class RestUtils implements RestUtilsInterface
      *
      * @throws \Exception
      *
-     * @return object $record Document
+     * @return object|array|integer|double|string|boolean $record
      */
     public function deserializeContent($content, $documentClass, $format = 'json')
     {

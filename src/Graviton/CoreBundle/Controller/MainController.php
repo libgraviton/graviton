@@ -32,7 +32,7 @@ class MainController
     private $response;
 
     /**
-     * @var RestUtils
+     * @var RestUtilsInterface
      */
     private $restUtils;
 
