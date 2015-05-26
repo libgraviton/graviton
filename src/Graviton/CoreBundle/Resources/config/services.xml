@@ -17,9 +17,10 @@
     <services>
         <service id="graviton.core.controller.main"
                  class="%graviton.core.controller.main.class%">
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
+             <argument type="service" id="router"/>
+             <argument type="service" id="graviton.rest.response" strict="false"/>
+             <argument type="service" id="graviton.rest.restutils"/>
+             <argument type="service" id="templating"/>
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
