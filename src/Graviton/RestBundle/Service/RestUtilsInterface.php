@@ -20,19 +20,6 @@ use Graviton\RestBundle\Controller\RestController;
 interface RestUtilsInterface
 {
     /**
-     * @param ContainerInterface   $container         container
-     * @param Router               $router            router
-     * @param Serializer           $serializer        serializer
-     * @param SerializationContext $serializerContext context for serializer
-     */
-    public function __construct(
-        ContainerInterface $container,
-        Router $router,
-        Serializer $serializer,
-        SerializationContext $serializerContext = null
-    );
-
-    /**
      * Builds a map of baseroutes (controllers) to its relevant route to the actions.
      * ignores schema stuff.
      *
