@@ -38,6 +38,13 @@
         "title": "MIME Type",
         "description": "MIME-Type of file.",
         "readOnly": true
+      },
+      {
+        "name": "metadata.cTime",
+        "type": "datetime",
+        "title": "Creation date",
+        "description": "Timestamp of file upload",
+        "readOnly": true
       }
     ]
   }

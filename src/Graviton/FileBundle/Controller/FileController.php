@@ -63,9 +63,11 @@ class FileController extends RestController
         $file->setContent($data);
 
         // update record with file metadata
-        $meta = new FileMetadata;
+        $createDatetime = new \DateTime();
+        $meta = new FileMetadata();
         $meta->setSize((int) $file->getSize())
-            ->setMime($request->headers->get('Content-Type'));
+            ->setMime($request->headers->get('Content-Type'))
+            ->setCtime($createDatetime);
         $record->setMetadata($meta);
         $record = $this->getModel()->updateRecord($record->getId(), $record);
 
@@ -78,7 +80,7 @@ class FileController extends RestController
         $routeType = end($routeParts);
 
         if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
+            $routeName = substr($routeName, 0, -4).'get';
         }
 
         $response->headers->set(
