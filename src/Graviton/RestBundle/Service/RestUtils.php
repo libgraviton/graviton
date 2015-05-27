@@ -20,7 +20,7 @@ use Graviton\RestBundle\Controller\RestController;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class RestUtils
+final class RestUtils implements RestUtilsInterface
 {
     /**
      * @var ContainerInterface
@@ -33,7 +33,7 @@ final class RestUtils
     private $serializer;
 
     /**
-     * @var SerializationContext
+     * @var null|SerializationContext
      */
     private $serializerContext;
 
@@ -118,7 +118,7 @@ final class RestUtils
      *
      * @throws \Exception
      *
-     * @return object $record Document
+     * @return object|array|integer|double|string|boolean
      */
     public function deserializeContent($content, $documentClass, $format = 'json')
     {
@@ -144,7 +144,7 @@ final class RestUtils
     /**
      * Get the serializer context
      *
-     * @return null|\JMS\Serializer\SerializationContext
+     * @return SerializationContext
      */
     public function getSerializerContext()
     {

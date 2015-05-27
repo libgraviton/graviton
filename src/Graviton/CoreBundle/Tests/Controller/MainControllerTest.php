@@ -120,7 +120,7 @@ class MainControllerTest extends RestTestCase
             ->will($this->returnValue("http://localhost/core/app"));
 
         $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
-        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtils');
+        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
@@ -174,7 +174,7 @@ class MainControllerTest extends RestTestCase
             );
 
         $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
-        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtils');
+        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
 
         $optionRoutes = [
