@@ -118,7 +118,7 @@ final class RestUtils implements RestUtilsInterface
      *
      * @throws \Exception
      *
-     * @return object|array|integer|double|string|boolean $record
+     * @return object|array|integer|double|string|boolean
      */
     public function deserializeContent($content, $documentClass, $format = 'json')
     {
@@ -144,7 +144,7 @@ final class RestUtils implements RestUtilsInterface
     /**
      * Get the serializer context
      *
-     * @return null|\JMS\Serializer\SerializationContext
+     * @return SerializationContext
      */
     public function getSerializerContext()
     {

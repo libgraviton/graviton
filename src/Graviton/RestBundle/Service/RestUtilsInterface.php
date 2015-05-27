@@ -61,7 +61,7 @@ interface RestUtilsInterface
      *
      * @throws \Exception
      *
-     * @return object $record Document
+     * @return object|array|integer|double|string|boolean
      */
     public function deserializeContent($content, $documentClass, $format = 'json');
 
@@ -75,7 +75,7 @@ interface RestUtilsInterface
     /**
      * Get the serializer context
      *
-     * @return null|\JMS\Serializer\SerializationContext
+     * @return SerializationContext
      */
     public function getSerializerContext();
 
