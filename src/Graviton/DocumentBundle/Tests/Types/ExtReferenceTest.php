@@ -132,7 +132,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
 
         $result = $sut->convertToDatabaseValue($url);
 
-        $this->assertEquals($result, $expected);
+        $this->assertEquals($expected, $result);
     }
 
     /**
