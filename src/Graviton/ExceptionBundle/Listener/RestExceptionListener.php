@@ -5,8 +5,10 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Serializer;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+//use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base listener for rest exceptions
@@ -32,9 +34,24 @@ abstract class RestExceptionListener
     /**
      * Service container
      *
-     * @var ContainerInterface
+     * @var Serializer
      */
-    private $container;
+    private $serializer;
+    /**
+     * 
+     */
+    private $serializerContext;
+
+    /**
+     * Constructor for the RestExceptionlistener
+     *
+     * @param Serializer $serializer
+     */
+    function __construct(Serializer $serializer, SerializationContext $serializationContext)
+    {
+        $this->serializer = $serializer;
+        $this->serializerContext = $serializationContext;
+    }
 
     /**
      * Handle the exception and send the right response
@@ -45,19 +62,6 @@ abstract class RestExceptionListener
      */
     abstract public function onKernelException(GetResponseForExceptionEvent $event);
 
-    /**
-     * Set the DI container
-     *
-     * @param ContainerInterface $container DI container
-     *
-     * @return RestExceptionListener
-     */
-    public function setContainer(ContainerInterface $container)
-    {
-        $this->container = $container;
-
-        return $this;
-    }
 
     /**
      * Get the DI container
@@ -78,12 +82,10 @@ abstract class RestExceptionListener
      */
     public function getSerializedContent($content)
     {
-        $serializer = $this->getContainer()->get('graviton.rest.serializer');
-
         // can't use the same context twice.. maybe scope="prototype" in service.xml would do the trick
-        $serializerContext = clone $this->getContainer()->get('graviton.rest.serializer.serializercontext');
+        $serializerContext = clone $this->serializerContext;
 
-        return $serializer->serialize(
+        return $this->$serializer->serialize(
             $content,
             'json',
             $serializerContext

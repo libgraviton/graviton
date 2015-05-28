@@ -12,32 +12,33 @@
   </parameters>
   <services>
     <!-- Validation exception listener -->
-    <service id="kernel.listener.graviton_exception_validation_exception" class="%kernel.listener.graviton_exception_validation_exception.class%">
-      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    <service id="kernel.listener.graviton_exception_rest_listener" class="%kernel.listener.graviton_exception_validation_exception.class%">
+      <argument type="service" id="graviton.rest.serializer"></argument>
+      <argument type="service" id="graviton.rest.serializer.serializercontext"></argument>
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- NotFound exception listener -->
-    <service id="kernel.listener.graviton_exception_notfound_exception" class="%kernel.listener.graviton_exception_notfound_exception.class%">
-      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    <service id="kernel.listener.graviton_exception_notfound_exception" class="%kernel.listener.graviton_exception_notfound_exception.class%"
+             parent="kernel.listener.graviton_exception_rest_listener">
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- Serialization exception listener -->
-    <service id="kernel.listener.graviton_exception_serialization_exception" class="%kernel.listener.graviton_exception_serialization_exception.class%">
-      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    <service id="kernel.listener.graviton_exception_serialization_exception" class="%kernel.listener.graviton_exception_serialization_exception.class%"
+            parent="kernel.listener.graviton_exception_rest_listener">
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- Deserialization exception listener -->
-    <service id="kernel.listener.graviton_exception_deserialization_exception" class="%kernel.listener.graviton_exception_deserialization_exception.class%">
-      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    <service id="kernel.listener.graviton_exception_deserialization_exception" class="%kernel.listener.graviton_exception_deserialization_exception.class%"
+             parent="kernel.listener.graviton_exception_rest_listener">
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- NoInput exception listener -->
-    <service id="kernel.listener.graviton_exception_noinput_exception" class="%kernel.listener.graviton_exception_noinput_exception.class%">
-      <call method="setContainer"><argument type="service" id="service_container"></argument></call>
+    <service id="kernel.listener.graviton_exception_noinput_exception" class="%kernel.listener.graviton_exception_noinput_exception.class%"
+             parent="kernel.listener.graviton_exception_rest_listener">
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
   </services>
