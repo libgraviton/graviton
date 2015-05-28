@@ -109,9 +109,7 @@
         </service>
 
         <service id="kernel.subscriber.graviton.rest" class="Graviton\RestBundle\Subscriber\RestEventSubscriber">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
+            <argument type="service" id="service_container" />
             <tag name="kernel.event_subscriber"/>
         </service>
 

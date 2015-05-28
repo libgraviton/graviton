@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Graviton\RestBundle\Listener\PagingLinkResponseListener;
 
 /**
  * Subscriber for kernel.request and kernel.response events.
@@ -23,12 +24,23 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 class RestEventSubscriber implements EventSubscriberInterface
 {
     /**
-     * DI container
-     *
-     * @var Container
+     * @var PagingLinkResponseListener
      */
-    private $container;
+    private $listener;
 
+    /**
+     * @var RestEvent
+     */
+    private $restEvent;
+
+    /**
+     * @param $container
+     */
+    public function __construct(PagingLinkResponseListener $listener, RestEvent $restEvent)
+    {
+        $this->listener = $listener;
+        $this->restEvent = $restEvent;
+    }
 
     /**
      * Returns the subscribed events
@@ -75,17 +87,15 @@ class RestEventSubscriber implements EventSubscriberInterface
      */
     private function getEventObject(Event $event)
     {
-        $response = $this->container->get("graviton.rest.response");
-
         // get the service name
         list ($serviceName) = explode(":", $event->getRequest()->get('_controller'));
 
         // get the controller which handles this request
         $controller = $this->container->get($serviceName);
 
-        $restEvent = $this->container->get("graviton.rest.event");
+        $restEvent = $this->restEvent;
         $restEvent->setRequest($event->getRequest());
-        $restEvent->setResponse($response);
+        $restEvent->setResponse($this->listener);
         $restEvent->setController($controller);
 
         return $restEvent;
@@ -103,29 +113,5 @@ class RestEventSubscriber implements EventSubscriberInterface
     public function onKernelResponse(FilterResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
         $dispatcher->dispatch("graviton.rest.response", $event);
-    }
-
-    /**
-     * Get the di container
-     *
-     * @return Container $container DI container
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Set the di container
-     *
-     * @param Container $container DI container
-     *
-     * @return RestEventSubscriber $this This object
-     */
-    public function setContainer(Container $container)
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }
