@@ -162,7 +162,7 @@ class ExtReference extends Type
 
             list($routeService) = explode(':', $route->getDefault('_controller'));
             list($core, $bundle,,$name) = explode('.', $routeService);
-            $serviceName = implode('.' ,[$core, $bundle, 'rest', $name, 'get']);
+            $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
             $collection = array_search($serviceName, $this->mapping);
         }
 
