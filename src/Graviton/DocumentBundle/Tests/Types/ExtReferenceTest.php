@@ -72,6 +72,17 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
                     'id' => '[a-zA-Z0-9\-_\/]+',
                 ]
             ),
+            new Route(
+                '/hans/showcase/{id}',
+                [
+                    '_controller' => 'gravitondyn.showcase.controller.showcase:getAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                    'id' => '[a-zA-Z0-9\-_\/]+',
+                ]
+            ),
         ];
     }
 
@@ -115,12 +126,13 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             [
                 'App' => 'graviton.core.rest.app.get',
                 'Language' => 'graviton.i18n.rest.language.get',
+                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
             ]
         );
 
         $result = $sut->convertToDatabaseValue($url);
 
-        $this->assertEquals($result, $expected);
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -131,6 +143,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
         return [
             ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
             ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
+            ['http://localhost/hans/showcase/blah', ['$ref' => 'ShowCase', '$id' => 'blah']],
         ];
     }
 
