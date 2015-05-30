@@ -559,6 +559,9 @@ class ResourceGenerator extends AbstractGenerator
 
                 // get stuff from json definition
                 if ($this->json instanceof JsonDefinition) {
+                    // id is also name of collection in mongodb
+                    $this->addAttributeToNode('collection', $this->json->getId(), $dom, $tagNode);
+
                     // is this read only?
                     if ($this->json->isReadOnlyService()) {
                         $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
