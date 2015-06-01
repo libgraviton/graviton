@@ -6,9 +6,8 @@
 namespace Graviton\ExceptionBundle\Listener;
 
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-//use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base listener for rest exceptions
@@ -32,25 +31,29 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 abstract class RestExceptionListener
 {
     /**
-     * Service container
+     * Serializer
      *
-     * @var Serializer
+     * @var SerializerInterface
      */
     private $serializer;
+
     /**
-     * 
+     * SerializationContext
+     *
+     * @var SerializationContext
      */
-    private $serializerContext;
+    private $serializationContext;
 
     /**
      * Constructor for the RestExceptionlistener
      *
-     * @param Serializer $serializer
+     * @param SerializerInterface  $serializer           Serializer
+     * @param SerializationContext $serializationContext Serialization context
      */
-    function __construct(Serializer $serializer, SerializationContext $serializationContext)
+    public function __construct(SerializerInterface $serializer, SerializationContext $serializationContext)
     {
         $this->serializer = $serializer;
-        $this->serializerContext = $serializationContext;
+        $this->serializationContext = $serializationContext;
     }
 
     /**
@@ -62,17 +65,6 @@ abstract class RestExceptionListener
      */
     abstract public function onKernelException(GetResponseForExceptionEvent $event);
 
-
-    /**
-     * Get the DI container
-     *
-     * @return ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
     /**
      * Serialize the given content
      *
@@ -83,12 +75,12 @@ abstract class RestExceptionListener
     public function getSerializedContent($content)
     {
         // can't use the same context twice.. maybe scope="prototype" in service.xml would do the trick
-        $serializerContext = clone $this->serializerContext;
+        $serializationContext = clone $this->serializationContext;
 
-        return $this->$serializer->serialize(
+        return $this->serializer->serialize(
             $content,
             'json',
-            $serializerContext
+            $serializationContext
         );
     }
 }
