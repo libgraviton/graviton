@@ -18,7 +18,6 @@
              abstract="true">
       <argument type="service" id="graviton.rest.serializer"></argument>
       <argument type="service" id="graviton.rest.serializer.serializercontext"></argument>
-      <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- NotFound exception listener -->
@@ -31,14 +30,14 @@
     <!-- Validation exception listener -->
     <service id="kernel.listener.graviton_exception_validation_exception"
              class="%kernel.listener.graviton_exception_validation_exception.class%"
-            parent="kernel.listener.graviton_exception_rest_exception">
-
+             parent="kernel.listener.graviton_exception_rest_exception">
+        <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
     <!-- Serialization exception listener -->
     <service id="kernel.listener.graviton_exception_serialization_exception"
              class="%kernel.listener.graviton_exception_serialization_exception.class%"
-            parent="kernel.listener.graviton_exception_rest_exception">
+             parent="kernel.listener.graviton_exception_rest_exception">
       <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 
