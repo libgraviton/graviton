@@ -7,11 +7,7 @@ namespace Graviton\SwaggerBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Process\Process;
 
 /**
  * Generates swagger.json
@@ -22,14 +18,6 @@ use Symfony\Component\Process\Process;
  */
 class SwaggerGenerateCommand extends Command
 {
-
-    /**
-     * container
-     *
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
     /**
      * root dir
      *
@@ -64,18 +52,6 @@ class SwaggerGenerateCommand extends Command
              ->setDescription(
                  'Generates swagger.json in web dir'
              );
-    }
-
-    /**
-     * set container
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer($container)
-    {
-        $this->container = $container;
     }
 
     /**
@@ -129,8 +105,8 @@ class SwaggerGenerateCommand extends Command
          * somewhere Request is needed.. so we need to enter the request scope
          * manually.. maybe there is another possibility for this?
          */
-        $this->container->enterScope('request');
-        $this->container->set('request', new Request(), 'request');
+        //$this->container->enterScope('request');
+        //$this->container->set('request', new Request(), 'request');
 
         $this->filesystem->dumpFile(
             $this->rootDir.'/../web/swagger.json',
