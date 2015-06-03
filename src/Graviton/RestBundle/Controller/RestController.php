@@ -14,13 +14,17 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
 use Rs\Json\Patch;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -31,7 +35,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RestController implements ContainerAwareInterface
+class RestController
 {
     private $model;
 
@@ -39,26 +43,62 @@ class RestController implements ContainerAwareInterface
      * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
      */
     private $container;
-
+    
     /**
-     * Get the container object
-     *
-     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\HttpFoundation\Response
      */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
+    private $response;
+    
     /**
-     * {@inheritdoc}
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
+     * @var \Graviton\RestBundle\Service\RestUtilsInterface
      */
-    public function setContainer(ContainerInterface $container = null)
-    {
+    private $restUtils;
+    
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     */
+    private $router;
+    
+    /**
+     * @var \Graviton\I18nBundle\Repository\LanguageRepository
+     */
+    private $language;
+    
+    /**
+     * @var Symfony\Component\Validator\Validator\ValidatorInterface
+     */
+    private $validator;
+    
+    /**
+     * @var Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine
+     */
+    private $templating;
+    
+    /**
+     * @param Response           $response   Response
+     * @param RestUtilsInterface $restUtils  Rest utils
+     * @param Router             $router     Router
+     * @param LanguageRepository $language   Language
+     * @param ValidatorInterface $validator  Validator
+     * @param TimedTwigEngine    $templating Templating
+     * @param ContainerInterface $container  Container
+     */
+    public function __construct(
+        Response $response,
+        RestUtilsInterface $restUtils,
+        Router $router,
+        LanguageRepository $language,
+        ValidatorInterface $validator,
+        TimedTwigEngine $templating,
+        ContainerInterface $container
+    ) {
+        $this->response = $response;
+        $this->restUtils = $restUtils;
+        $this->router = $router;
+        $this->language = $language;
+        $this->validator = $validator;
+        $this->templating = $templating;
         $this->container = $container;
     }
 
@@ -93,7 +133,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getResponse()
     {
-        return $this->container->get("graviton.rest.response");
+        return $this->response;
     }
 
     /**
@@ -179,7 +219,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getRestUtils()
     {
-        return $this->container->get('graviton.rest.restutils');
+        return $this->restUtils;
     }
 
     /**
@@ -307,7 +347,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getRouter()
     {
-        return $this->container->get('graviton.rest.router');
+        return $this->router;
     }
 
     /**
@@ -462,10 +502,10 @@ class RestController implements ContainerAwareInterface
             function ($language) {
                 return $language->getId();
             },
-            $this->container->get('graviton.i18n.repository.language')->findAll()
+            $this->language->findAll()
         );
 
-        $response = $this->container->get("graviton.rest.response");
+        $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
 
         $schemaMethod = 'getModelSchema';
@@ -526,7 +566,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getValidator()
     {
-        return $this->container->get('graviton.rest.validator');
+        return $this->validator;
     }
 
     /**
@@ -540,6 +580,6 @@ class RestController implements ContainerAwareInterface
      */
     public function render($view, array $parameters = array(), Response $response = null)
     {
-        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+        return $this->templating->renderResponse($view, $parameters, $response);
     }
 }

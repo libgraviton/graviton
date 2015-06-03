@@ -59,9 +59,13 @@
 
         <!-- Controller -->
         <service id="graviton.rest.controller" scope="request" abstract="true">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
+            <argument type="service" id="graviton.rest.response"></argument>
+            <argument type="service" id="graviton.rest.restutils"></argument>
+            <argument type="service" id="graviton.rest.router"></argument>
+            <argument type="service" id="graviton.i18n.repository.language"></argument>
+            <argument type="service" id="graviton.rest.validator"></argument>
+            <argument type="service" id="templating"></argument>
+            <argument type="service" id="service_container"></argument>
         </service>
 
         <!-- Model -->
