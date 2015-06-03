@@ -110,8 +110,8 @@ class SwaggerGenerateCommand extends Command
          //$this->container->set('request', new Request(), 'request');
 
          $this->filesystem->dumpFile(
-            $this->rootDir.'/../web/swagger.json',
-            json_encode($this->apidoc->getSwaggerSpec())
-        );
+             $this->rootDir.'/../web/swagger.json',
+             json_encode($this->apidoc->getSwaggerSpec())
+         );
     }
 }
