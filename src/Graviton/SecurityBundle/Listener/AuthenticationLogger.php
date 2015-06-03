@@ -84,8 +84,9 @@ class AuthenticationLogger implements EventSubscriberInterface
         $token = $event->getAuthenticationToken();
 
         $contractNumber = '?';
-        if ($token->getUser() instanceof SecurityContract) {
-            $contractNumber = $token->getUser()->getContractNumber();
+        $tokenUser = $token->getUser();
+        if ($tokenUser instanceof SecurityContract) {
+            $contractNumber = $tokenUser->getContractNumber();
         }
 
         $this->logger->info(
