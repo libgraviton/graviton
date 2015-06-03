@@ -5,6 +5,7 @@
 
     <parameters>
         <parameter key="graviton.swagger.controller.main.class">Graviton\SwaggerBundle\Controller\MainController</parameter>
+        <parameter key="graviton.swagger.command.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     </parameters>
 
     <services>
@@ -39,9 +40,7 @@
 
         <service id="graviton.swagger.command.swaggergenerate"
                  class="Graviton\SwaggerBundle\Command\SwaggerGenerateCommand">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
+
             <call method="setRootDir">
                 <argument>%kernel.root_dir%</argument>
             </call>
@@ -52,6 +51,11 @@
                 <argument type="service" id="graviton.rest.apidoc"/>
             </call>
             <tag name="console.command" />
+        </service>
+
+        <service id="graviton.swagger.command.request"
+                 class="%graviton.swagger.command.request.class%"
+                 scope="request">
         </service>
 
     </services>
