@@ -5,13 +5,14 @@
 namespace Graviton\RestBundle\Subscriber;
 
 use Graviton\RestBundle\Event\RestEvent;
+use Graviton\RestBundle\Listener\PagingLinkResponseListener;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Graviton\RestBundle\Listener\PagingLinkResponseListener;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Subscriber for kernel.request and kernel.response events.
@@ -34,12 +35,20 @@ class RestEventSubscriber implements EventSubscriberInterface
     private $restEvent;
 
     /**
-     * @param $container
+     * @var ContainerInterface
      */
-    public function __construct(PagingLinkResponseListener $listener, RestEvent $restEvent)
+    private $container;
+
+    /**
+     * @param PagingLinkResponseListener $listener
+     * @param RestEvent                  $restEvent
+     * @param ContainerInterface         $container
+     */
+    public function __construct(PagingLinkResponseListener $listener, RestEvent $restEvent, ContainerInterface $container)
     {
         $this->listener = $listener;
         $this->restEvent = $restEvent;
+        $this->container = $container;
     }
 
     /**
@@ -65,8 +74,8 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.request events
      *
-     * @param GetResponseEvent         $event      Event
-     * @param string                   $name       Event name
+     * @param GetResponseEvent         $event Event
+     * @param string                   $name Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
@@ -104,8 +113,8 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.response events
      *
-     * @param FilterResponseEvent      $event      Event
-     * @param string                   $name       Event name
+     * @param FilterResponseEvent      $event Event
+     * @param string                   $name Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
