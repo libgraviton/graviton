@@ -5,6 +5,8 @@ security:
     providers:
         graviton_airlock_authentication_key_user_provider:
             id: graviton_airlock_authentication_key_user_provider
+        oauth_user_provider:
+            id: hwi_oauth.user.provider
 #
 #    # the main part of the security, where you can set up firewalls
 #    # for specific sections of your app
@@ -16,17 +18,14 @@ security:
 #
 #        # graviton access restriction
         secured_area:
-            anonymous: ~
+            pattern:    ^/
+            anonymous: true
             oauth:
                 resource_owners:
-                    facebook:           "/login/check-facebook"
-                    google:             "/login/check-google"
-                    my_custom_provider: "/login/check-custom"
-                    my_github:          "/login/check-github"
-                login_path:        /login
-                use_forward:       false
-                failure_path:      /login
-
+                    github: github_login
+                login_path: "/login"
+                use_forward: false
+                failure_path: "/login"
                 oauth_user_provider:
                     service: hwi_oauth.user.provider
 #            #  no pattern means matches all routes
@@ -43,6 +42,8 @@ security:
 #    # http://symfony.com/doc/current/cookbook/security/access_control.html
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/connect, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: ROLE_USER }
 #        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
 #
 #    # http://symfony.com/doc/current/book/security.html#hierarchical-roles
