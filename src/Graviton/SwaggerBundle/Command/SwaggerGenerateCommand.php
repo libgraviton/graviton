@@ -8,6 +8,7 @@ namespace Graviton\SwaggerBundle\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Generates swagger.json
@@ -105,10 +106,10 @@ class SwaggerGenerateCommand extends Command
          * somewhere Request is needed.. so we need to enter the request scope
          * manually.. maybe there is another possibility for this?
          */
-        //$this->container->enterScope('request');
-        //$this->container->set('request', new Request(), 'request');
+         //$this->container->enterScope('request');
+         //$this->container->set('request', new Request(), 'request');
 
-        $this->filesystem->dumpFile(
+         $this->filesystem->dumpFile(
             $this->rootDir.'/../web/swagger.json',
             json_encode($this->apidoc->getSwaggerSpec())
         );
