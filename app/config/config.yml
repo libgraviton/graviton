@@ -145,3 +145,13 @@ knp_gaufrette:
 eo_airbrake:
         host: %graviton.errbit.host%
         api_key: %graviton.errbit.api_key%
+
+hwi_oauth:
+    firewall_name: secured_area
+    resource_owners:
+        type:                github
+        client_id:           ""
+        client_secret:       ""
+        scope:               "user:email"
+        options:
+            csrf:            true

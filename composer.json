@@ -48,7 +48,8 @@
         "graviton/rql-parser-bundle": "^0.2@alpha",
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
-        "eo/airbrake-bundle": "~1.0"
+        "eo/airbrake-bundle": "~1.0",
+        "hwi/oauth-bundle": "0.4.*@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
