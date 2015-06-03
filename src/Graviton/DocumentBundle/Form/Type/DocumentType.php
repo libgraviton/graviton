@@ -17,4 +17,34 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  */
 class DocumentType extends AbstractType
 {
+    /**
+     * @var string
+     */
+    private $dataClass;
+
+    /**
+     * @param string $dataClass classname of data class
+     */
+    public function __construct($dataClass)
+    {
+        $this->dataClass = $dataClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return strtolower(strtr($this->dataClass, '\\', '_'));
+    }
+
+    /**
+     * @param OptionsResolverInterface $resolver resolver
+     *
+     * @return void
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(['data_class' => $this->dataClass]);
+    }
 }
