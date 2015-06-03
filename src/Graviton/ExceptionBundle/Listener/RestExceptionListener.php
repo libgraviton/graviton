@@ -5,8 +5,9 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base listener for rest exceptions
@@ -30,11 +31,30 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class RestExceptionListener
 {
     /**
-     * Service container
+     * Serializer
      *
-     * @var ContainerInterface
+     * @var SerializerInterface
      */
-    private $container;
+    private $serializer;
+
+    /**
+     * SerializationContext
+     *
+     * @var SerializationContext
+     */
+    private $serializationContext;
+
+    /**
+     * Constructor for the RestExceptionlistener
+     *
+     * @param SerializerInterface  $serializer           Serializer
+     * @param SerializationContext $serializationContext Serialization context
+     */
+    public function __construct(SerializerInterface $serializer, SerializationContext $serializationContext)
+    {
+        $this->serializer = $serializer;
+        $this->serializationContext = $serializationContext;
+    }
 
     /**
      * Handle the exception and send the right response
@@ -46,30 +66,6 @@ abstract class RestExceptionListener
     abstract public function onKernelException(GetResponseForExceptionEvent $event);
 
     /**
-     * Set the DI container
-     *
-     * @param ContainerInterface $container DI container
-     *
-     * @return RestExceptionListener
-     */
-    public function setContainer(ContainerInterface $container)
-    {
-        $this->container = $container;
-
-        return $this;
-    }
-
-    /**
-     * Get the DI container
-     *
-     * @return ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
      * Serialize the given content
      *
      * @param mixed $content Content
@@ -78,15 +74,13 @@ abstract class RestExceptionListener
      */
     public function getSerializedContent($content)
     {
-        $serializer = $this->getContainer()->get('graviton.rest.serializer');
-
         // can't use the same context twice.. maybe scope="prototype" in service.xml would do the trick
-        $serializerContext = clone $this->getContainer()->get('graviton.rest.serializer.serializercontext');
+        $serializationContext = clone $this->serializationContext;
 
-        return $serializer->serialize(
+        return $this->serializer->serialize(
             $content,
             'json',
-            $serializerContext
+            $serializationContext
         );
     }
 }
