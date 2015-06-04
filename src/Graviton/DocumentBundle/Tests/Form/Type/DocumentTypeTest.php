@@ -15,6 +15,24 @@ use Graviton\DocumentBundle\Form\Type\DocumentType;
 class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var array
+     */
+    private $classMap;
+
+    /**
+     * prepare env for sut
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->classMap = [
+            'graviton.core.controller.app' => 'Graviton\CoreBundle\Document\App',
+            'Graviton\CoreBundle\Document\App' => 'Graviton\CoreBundle\Document\App',
+        ];
+    }
+
+    /**
      * @dataProvider testData
      *
      * @param string $class class name
@@ -24,7 +42,8 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName($class, $name)
     {
-        $sut = new DocumentType($class);
+        $sut = new DocumentType($this->classMap);
+        $sut->initialize($class);
 
         $this->assertEquals($name, $sut->getName());
     }
@@ -42,11 +61,38 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 
         $resolverDouble->expects($this->once())
             ->method('setDefaults')
-            ->with(['data_class' => $class]);
+            ->with(['data_class' => $this->classMap[$class]]);
 
-        $sut = new DocumentType($class);
+        $sut = new DocumentType($this->classMap);
+        $sut->initialize($class);
 
         $sut->setDefaultOptions($resolverDouble);
+    }
+
+    /**
+     * @dataProvider testData
+     *
+     * @param string $class  class name
+     * @param string $name   form name
+     * @param array  $fields fields for builder
+     *
+     * @return void
+     */
+    public function testBuildForm($class, $name, $fields)
+    {
+        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+
+        $i = 0;
+        foreach ($fields as $field) {
+            $builderDouble
+                ->expects($this->at($i++))
+                ->method('add')
+                ->with($field['name'], $field['type'], $field['options']);
+        }
+        $sut = new DocumentType($this->classMap);
+        $sut->initialize($class);
+
+        $sut->buildForm($builderDouble, []);
     }
 
     /**
@@ -55,7 +101,38 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
     public function testData()
     {
         return [
-            ['Graviton\CoreBundle\Document\App', 'graviton_corebundle_document_app'],
+            'build from classname' => [
+                'Graviton\CoreBundle\Document\App',
+                'graviton_corebundle_document_app',
+                [
+                    [
+                        'name' => 'title',
+                        'type' => 'translatable', # alias to i18n form service
+                        'options' => [],
+                    ],
+                    [
+                        'name' => 'showInMenu',
+                        'type' => 'radio',
+                        'options' => [],
+                    ],
+                ],
+            ],
+            'build from service id' => [
+                'graviton.core.controller.app',
+                'graviton_corebundle_document_app',
+                [
+                    [
+                        'name' => 'title',
+                        'type' => 'translatable', # alias to i18n form service
+                        'options' => [],
+                    ],
+                    [
+                        'name' => 'showInMenu',
+                        'type' => 'radio',
+                        'options' => [],
+                    ],
+                ],
+            ],
         ];
     }
 }

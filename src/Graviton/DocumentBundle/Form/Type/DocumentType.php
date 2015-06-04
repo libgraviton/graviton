@@ -23,11 +23,41 @@ class DocumentType extends AbstractType
     private $dataClass;
 
     /**
-     * @param string $dataClass classname of data class
+     * @var array
      */
-    public function __construct($dataClass)
+    private $classMap;
+
+    /**
+     * @param array $classMap array for mappings from service id et al to classname
+     */
+    public function __construct(array $classMap)
     {
-        $this->dataClass = $dataClass;
+        $this->classMap = $classMap;
+    }
+
+    /**
+     * @param string $id identifier of service, maybe be a classname, serviceId
+     *
+     * @return void
+     */
+    public function initialize($id)
+    {
+        if (!array_key_exists($id, $this->classMap)) {
+            throw new \RuntimeException(sprintf('Could not map service %s to class for form generator', $id));
+        }
+        $this->dataClass = $this->classMap[$id];
+    }
+
+    /**
+     * @param FormBuilderInterface $builder form builder
+     * @param array                $options array of options
+     *
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->add('title', 'translatable', []);
+        $builder->add('showInMenu', 'radio', []);
     }
 
     /**
