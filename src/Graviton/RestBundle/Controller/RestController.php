@@ -37,6 +37,9 @@ use Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine;
  */
 class RestController
 {
+    /**
+     * @var \Graviton\RestBundle\Model\ModelInterface
+     */
     private $model;
 
     /**
