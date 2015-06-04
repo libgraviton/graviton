@@ -1,0 +1,13 @@
+imports:
+    - { resource: security.yml }
+
+hwi_oauth:
+    firewall_name: secured_area
+    resource_owners:
+        github:
+            type:                github
+            client_id:           "4495acf8e4aa650814a8"
+            client_secret:       "5754f5b8c4e9e4a10dd55d7d0c89383fa2a1704f"
+            scope:               "user:email"
+            options:
+                csrf:            true
