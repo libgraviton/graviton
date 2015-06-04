@@ -58,8 +58,8 @@
         </service>
 
         <!-- Controller -->
-        <service id="graviton.rest.controller" scope="request" abstract="true">
-            <argument type="service" id="graviton.rest.response"></argument>
+        <service id="graviton.rest.controller" abstract="true">
+            <argument type="service" id="graviton.rest.response" strict="false"></argument>
             <argument type="service" id="graviton.rest.restutils"></argument>
             <argument type="service" id="graviton.rest.router"></argument>
             <argument type="service" id="graviton.i18n.repository.language"></argument>
