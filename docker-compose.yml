@@ -4,6 +4,9 @@ composer:
     image: composer/composer
     volumes_from:
         - graviton
+    environment:
+        MONGODB_DB: 'db'
+        MONGODB_URI: 'mongodb://mongodb:27017'
     command: install --ignore-platform-reqs --no-dev
     restart: no
 prepare:
@@ -14,6 +17,9 @@ prepare:
     restart: no
 mongodb:
     image: mongo
+    volumes:
+        - /var/lib/mongodb:/data
+    command: --smallfiles
 fpm:
     image: gravityplatform/php-fpm:develop
     links:

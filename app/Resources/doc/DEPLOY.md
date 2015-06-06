@@ -70,6 +70,8 @@ Run ``docker-compose``.
 ```bash
 docker-compose up composer
 docker-compose up prepare
+sudo mkdir /var/lib/mongodb
+sudo chown -f 999:999 /var/lib/mongodb
 docker-compose up -d nginx
 ```
 
