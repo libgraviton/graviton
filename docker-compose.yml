@@ -6,6 +6,12 @@ composer:
         - graviton
     command: install --ignore-platform-reqs --no-dev
     restart: no
+prepare:
+    image: composer/composer
+    volumes_from:
+        - graviton
+    command: docker_prepare
+    restart: no
 mongodb:
     image: mongo
 fpm:
