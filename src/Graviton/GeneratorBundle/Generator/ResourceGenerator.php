@@ -559,6 +559,9 @@ class ResourceGenerator extends AbstractGenerator
 
                 // get stuff from json definition
                 if ($this->json instanceof JsonDefinition) {
+                    // id is also name of collection in mongodb
+                    $this->addAttributeToNode('collection', $this->json->getId(), $dom, $tagNode);
+
                     // is this read only?
                     if ($this->json->isReadOnlyService()) {
                         $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
@@ -661,6 +664,10 @@ class ResourceGenerator extends AbstractGenerator
 
         if ($isService) {
             $argNode = $dom->createElement('argument');
+
+            $idArg = $dom->createAttribute('id');
+            $idArg->value = $argument['id'];
+            $argNode->appendChild($idArg);
         } else {
             $argNode = $dom->createElement('argument', $argument['value']);
         }
@@ -668,12 +675,6 @@ class ResourceGenerator extends AbstractGenerator
         $argType = $dom->createAttribute('type');
         $argType->value = $argument['type'];
         $argNode->appendChild($argType);
-
-        if ($isService) {
-            $idArg = $dom->createAttribute('id');
-            $idArg->value = $argument['id'];
-            $argNode->appendChild($idArg);
-        }
 
         $node->appendChild($argNode);
     }

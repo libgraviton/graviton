@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6c848fbbc80b1a9f6ca4bb46df3b6a74",
+    "hash": "9336e3c7c94bb611c104f82a07fc13c7",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1610,16 +1610,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.0-alpha5",
+            "version": "v2.0.0-alpha6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "41867c0d862707e83da42976aa882d1d57bd28ae"
+                "reference": "221fe6bc0ca3ad42be4f53bf36f90ca46a72b881"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/41867c0d862707e83da42976aa882d1d57bd28ae",
-                "reference": "41867c0d862707e83da42976aa882d1d57bd28ae",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/221fe6bc0ca3ad42be4f53bf36f90ca46a72b881",
+                "reference": "221fe6bc0ca3ad42be4f53bf36f90ca46a72b881",
                 "shasum": ""
             },
             "require": {
@@ -1662,7 +1662,7 @@
                 "rest",
                 "rql"
             ],
-            "time": "2015-05-18 10:56:59"
+            "time": "2015-05-28 13:23:09"
         },
         {
             "name": "graviton/rql-parser-bundle",
@@ -2299,7 +2299,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/Gaufrette/zipball/f1734151aecb55b95ed9d6dcfb47b61eb4c753fd",
+                "url": "https://api.github.com/repos/KnpLabs/Gaufrette/zipball/9d52413665284f9c96e0cef399fc14e68ac0aa5a",
                 "reference": "f1734151aecb55b95ed9d6dcfb47b61eb4c753fd",
                 "shasum": ""
             },
@@ -3793,16 +3793,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "281a8d3e522a8b35cf466484bcc1326ec1b9042c"
+                "reference": "79e2faa69c63c787abc5dd91914d82671fa8911e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/281a8d3e522a8b35cf466484bcc1326ec1b9042c",
-                "reference": "281a8d3e522a8b35cf466484bcc1326ec1b9042c",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/79e2faa69c63c787abc5dd91914d82671fa8911e",
+                "reference": "79e2faa69c63c787abc5dd91914d82671fa8911e",
                 "shasum": ""
             },
             "type": "library",
@@ -3817,10 +3817,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/0.2.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.3.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-05-22 05:14:10"
+            "time": "2015-05-28 09:51:08"
         },
         {
             "name": "johnkary/phpunit-speedtrap",

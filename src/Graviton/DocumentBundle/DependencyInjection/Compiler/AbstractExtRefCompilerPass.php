@@ -24,15 +24,10 @@ abstract class AbstractExtRefCompilerPass implements CompilerPassInterface
      */
     final public function process(ContainerBuilder $container)
     {
-        $gravitonServices = array_filter(
-            $container->getServiceIds(),
-            function ($id) {
-                return substr(strtolower($id), 0, 8) == 'graviton' &&
-                    strpos(strtolower($id), 'controller') !== false &&
-                    strtolower($id) !== 'graviton.rest.controller';
-            }
+        $gravitonServices = $container->findTaggedServiceIds(
+            'graviton.rest'
         );
-        $this->processServices($container, $gravitonServices);
+        $this->processServices($container, array_keys($gravitonServices));
     }
 
     /**

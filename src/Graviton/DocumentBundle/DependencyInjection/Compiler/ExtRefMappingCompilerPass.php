@@ -31,7 +31,15 @@ class ExtRefMappingCompilerPass extends AbstractExtRefCompilerPass
         $map = [];
         foreach ($services as $id) {
             list($ns, $bundle,, $doc) = explode('.', $id);
-            $map[ucfirst($doc)] = implode('.', [$ns, $bundle, 'rest', $doc, 'get']);
+
+            $tag = $container->getDefinition($id)->getTag('graviton.rest');
+            if (!empty($tag[0]) && array_key_exists('collection', $tag[0])) {
+                $collection = $tag[0]['collection'];
+            } else {
+                $collection = ucfirst($doc);
+            }
+
+            $map[$collection] = implode('.', [$ns, $bundle, 'rest', $doc, 'get']);
         }
         $container->setParameter('graviton.document.type.extref.mapping', $map);
     }
