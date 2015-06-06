@@ -4,7 +4,7 @@ composer:
     image: composer/composer
     volumes_from:
         - graviton
-    command: install --ignore-platform-reqs
+    command: install --ignore-platform-reqs --no-dev
     restart: no
 mongodb:
     image: mongo
