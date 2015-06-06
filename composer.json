@@ -91,9 +91,9 @@
         ],
         "docker_prepare": [
             "rm -rf app/cache/*",
-            "chown -R 4096 app/cache",
+            "chown -R 33 app/cache",
             "rm -rf app/logs/*",
-            "chown -R 4096 app/logs"
+            "chown -R 33 app/logs"
         ]
     },
     "config": {

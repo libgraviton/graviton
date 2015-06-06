@@ -69,6 +69,7 @@ Run ``docker-compose``.
 
 ```bash
 docker-compose up composer
+docker-compose up prepare
 docker-compose up -d nginx
 ```
 
