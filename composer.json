@@ -94,6 +94,9 @@
             "chown -R 33 app/cache",
             "rm -rf app/logs/*",
             "chown -R 33 app/logs"
+        ],
+        "docker_fixtures": [
+            "app/console doctrine:mongodb:fixtures:load"
         ]
     },
     "config": {
