@@ -1,10 +1,10 @@
 ---
 applications:
-- name: graviton-develop-env
+- name: graviton
   buildpack: https://github.com/dmikusa-pivotal/cf-php-build-pack.git
   services:
-  - graviton-master-mongodb
-  - graviton-master-atmoss3
+  - graviton-dev-mongo
+  - graviton-s3
   paths:
   - composer.json
   - composer.lock
