@@ -11,4 +11,6 @@ applications:
   - app/
   - src/
   - web/
+  env:
+    SYMFONY_ENV: oauth_dev
   memory: 256M
