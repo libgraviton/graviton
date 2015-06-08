@@ -30,12 +30,13 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         );
         foreach (array_keys($gravitonServices) as $id) {
             $service = $container->getDefinition($id);
+            $serviceClass = $service->getClass();
             $classname = $this->getDocumentClassFromControllerClass(
-                $service->getClass()
+                $serviceClass
             );
             $map[$id] = $classname;
             $map[$classname] = $classname;
-            $map[$service->getClass()] = $classname;
+            $map[$serviceClass] = $classname;
         }
         $container->setParameter('graviton.document.form.type.document.service_map', $map);
     }

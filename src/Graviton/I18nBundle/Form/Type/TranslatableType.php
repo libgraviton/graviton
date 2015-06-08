@@ -7,9 +7,7 @@ namespace Graviton\I18nBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -21,7 +19,7 @@ final class TranslatableType extends AbstractType
     /**
      * @var LanguageRepository
      */
-    private $languageRepository;
+    private $languageRepo;
 
     /**
      * @param LanguageRepository $languageRepo repo of available languages

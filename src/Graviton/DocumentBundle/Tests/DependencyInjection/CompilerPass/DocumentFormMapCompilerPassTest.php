@@ -44,7 +44,10 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->method('setParameter')
             ->with(
                 $this->equalTo('graviton.document.form.type.document.service_map'),
-                $this->contains($key)
+                $this->logicalAnd(
+                    $this->arrayHasKey($id),
+                    $this->contains($key)
+                )
             );
 
         $sut = new DocumentFormMapCompilerPass;
@@ -61,12 +64,8 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 'graviton.core.controller.app',
                 'Graviton\CoreBundle\Document\App'
             ],
-            'service to document' => [
-                'graviton.core.document.app',
-                'Graviton\CoreBundle\Document\App'
-            ],
             'controller class to document' => [
-                'Graviton\CoreBundle\Controller\App',
+                'Graviton\CoreBundle\Controller\AppController',
                 'Graviton\CoreBundle\Document\App'
             ],
             'class to document' => [
@@ -89,7 +88,7 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getClassData()
     {

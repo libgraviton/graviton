@@ -20,6 +20,11 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
     private $classMap;
 
     /**
+     * @var array
+     */
+    private $fieldMap;
+
+    /**
      * prepare env for sut
      *
      * @return void
@@ -99,6 +104,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $sut->initialize($class);
 
         $sut->buildForm($builderDouble, []);
+        $this->assertEquals($name, $sut->getName());
     }
 
     /**
