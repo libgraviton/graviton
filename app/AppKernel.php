@@ -72,7 +72,7 @@ class AppKernel extends Kernel
             new \Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
-            new \Eo\AirbrakeBundle\EoAirbrakeBundle()
+            new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {
