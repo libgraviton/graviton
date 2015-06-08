@@ -41,7 +41,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
             $tag = $container->getDefinition($id)->getTag('graviton.rest');
             if (!empty($tag[0]['collection'])) {
                 $doc = $tag[0]['collection'];
-                $bundle = $tag[0]['collection'];
+                $bundle = ucfirst($tag[0]['collection']);
             }
             $this->loadFields($map, $ns, $bundle, $doc);
         }
