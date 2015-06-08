@@ -28,11 +28,18 @@ class DocumentType extends AbstractType
     private $classMap;
 
     /**
-     * @param array $classMap array for mappings from service id et al to classname
+     * @var array
      */
-    public function __construct(array $classMap)
+    private $fieldMap;
+
+    /**
+     * @param array $classMap array for mappings from service id et al to classname
+     * @param array $fieldMap array to map document class names to fields
+     */
+    public function __construct(array $classMap, array $fieldMap)
     {
         $this->classMap = $classMap;
+        $this->fieldMap = $fieldMap;
     }
 
     /**
@@ -56,8 +63,9 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title', 'translatable', []);
-        $builder->add('showInMenu', 'radio', []);
+        foreach ($this->fieldMap[$this->dataClass] as $field) {
+            $builder->add($field[0], $field[1], $field[2]);
+        }
     }
 
     /**

@@ -30,6 +30,12 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
             'graviton.core.controller.app' => 'Graviton\CoreBundle\Document\App',
             'Graviton\CoreBundle\Document\App' => 'Graviton\CoreBundle\Document\App',
         ];
+        $this->fieldMap = [
+            'Graviton\CoreBundle\Document\App' => [
+                ['title', 'translatable', []],
+                ['showInMenu', 'radio', []],
+            ],
+        ];
     }
 
     /**
@@ -42,7 +48,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName($class, $name)
     {
-        $sut = new DocumentType($this->classMap);
+        $sut = new DocumentType($this->classMap, $this->fieldMap);
         $sut->initialize($class);
 
         $this->assertEquals($name, $sut->getName());
@@ -63,7 +69,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
             ->method('setDefaults')
             ->with(['data_class' => $this->classMap[$class]]);
 
-        $sut = new DocumentType($this->classMap);
+        $sut = new DocumentType($this->classMap, $this->fieldMap);
         $sut->initialize($class);
 
         $sut->setDefaultOptions($resolverDouble);
@@ -89,7 +95,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 ->method('add')
                 ->with($field['name'], $field['type'], $field['options']);
         }
-        $sut = new DocumentType($this->classMap);
+        $sut = new DocumentType($this->classMap, $this->fieldMap);
         $sut->initialize($class);
 
         $sut->buildForm($builderDouble, []);
