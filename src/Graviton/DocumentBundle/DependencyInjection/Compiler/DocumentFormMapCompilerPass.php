@@ -35,6 +35,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
             );
             $map[$id] = $classname;
             $map[$classname] = $classname;
+            $map[$service->getClass()] = $classname;
         }
         $container->setParameter('graviton.document.form.type.document.service_map', $map);
     }
@@ -52,6 +53,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         if (substr($documentClass, -10) == 'Controller' && substr($documentClass, -11) != '\\Controller') {
             $documentClass = substr($documentClass, 0, -10);
         }
+        $documentClass = str_replace('.controller.', '.document.', $documentClass);
         return $documentClass;
     }
 }

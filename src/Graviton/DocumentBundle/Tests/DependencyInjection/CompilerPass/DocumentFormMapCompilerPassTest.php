@@ -57,9 +57,22 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
     public function processData()
     {
         return [
-            'controller service to document' => ['graviton.core.controller.app', 'Graviton\CoreBundle\Document\App'],
-            'service to document' => ['graviton.core.document.app', 'Graviton\CoreBundle\Document\App'],
-            'class to document' => ['Graviton\CoreBundle\Document\App', 'Graviton\CoreBundle\Document\App'],
+            'controller service to document' => [
+                'graviton.core.controller.app',
+                'Graviton\CoreBundle\Document\App'
+            ],
+            'service to document' => [
+                'graviton.core.document.app',
+                'Graviton\CoreBundle\Document\App'
+            ],
+            'controller class to document' => [
+                'Graviton\CoreBundle\Controller\App',
+                'Graviton\CoreBundle\Document\App'
+            ],
+            'class to document' => [
+                'Graviton\CoreBundle\Document\App',
+                'Graviton\CoreBundle\Document\App'
+            ],
         ];
     }
 
