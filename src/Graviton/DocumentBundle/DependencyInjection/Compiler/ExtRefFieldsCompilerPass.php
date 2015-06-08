@@ -86,7 +86,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
                     ]
                 )
             )->name(
-                $doc.'.mongodb.xml'
+                ucfirst($doc).'.mongodb.xml'
             );
 
         if ($files->count() != 1) {
