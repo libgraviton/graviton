@@ -1,6 +1,6 @@
 <?php
 /**
- * main entrypoint for development with oauth activated
+ * main entrypoint for graviton; env dependent
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/GPL GPL
@@ -16,15 +16,34 @@ use Symfony\Component\Debug\Debug;
 // @codingStandardsIgnoreStart
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 // @codingStandardsIgnoreEnd
-Debug::enable();
 
 require_once __DIR__.'/../app/AppKernel.php';
 
-$kernel = new AppKernel('oauth_dev', true);
+// check for env
+$env = getenv('SYMFONY_ENV');
+
+if (false === $env) {
+    throw new \Exception('No SYMFONY_ENV provided');
+}
+$activateDebug = false;
+if (strpos($env, 'dev') !== false) {
+    // catch also oauth_dev & co..
+    $activateDebug = true;
+}
+
+if ($activateDebug) {
+    Debug::enable();
+}
+$kernel = new AppKernel($env, $activateDebug);
 
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
-
 $kernel->loadClassCache();
+
+//$kernel = new AppCache($kernel);
+
+// When using the HttpCache, you need to call the method in your front controller
+// instead of relying on the configuration parameter
+// Request::enableHttpMethodParameterOverride();
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
