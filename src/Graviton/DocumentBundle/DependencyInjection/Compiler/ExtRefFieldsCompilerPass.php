@@ -10,6 +10,7 @@
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -37,6 +38,11 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
+            $tag = $container->getDefinition($id)->getTag('graviton.rest');
+            if (!empty($tag[0]['collection'])) {
+                $doc = $tag[0]['collection'];
+                $bundle = $tag[0]['collection'];
+            }
             $this->loadFields($map, $ns, $bundle, $doc);
         }
         $container->setParameter('graviton.document.type.extref.fields', $map);
@@ -60,23 +66,36 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         if (strtolower($ns) === 'gravitondyn') {
             $ns = 'GravitonDyn';
         }
-        $file = implode(
-            '/',
-            [
-                __DIR__,
-                '..',
-                '..',
-                '..',
-                '..',
-                ucfirst($ns),
-                ucfirst($bundle).'Bundle',
-                'Resources',
-                'config',
-                'doctrine',
-                ucfirst($doc).'.mongodb.xml'
-            ]
-        );
+        $finder = new Finder;
+        $files = $finder
+            ->files()
+            ->in(
+                implode(
+                    '/',
+                    [
+                        __DIR__,
+                        '..',
+                        '..',
+                        '..',
+                        '..',
+                        ucfirst($ns),
+                        $bundle.'Bundle',
+                        'Resources',
+                        'config',
+                        'doctrine'
+                    ]
+                )
+            )->name(
+                $doc.'.mongodb.xml'
+            );
 
+        if ($files->count() != 1) {
+            return;
+        }
+        $file = null;
+        foreach ($files as $fileObject) {
+            $file = $fileObject->getRealPath();
+        }
         if (!file_exists($file)) {
             return;
         }
