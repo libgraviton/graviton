@@ -17,6 +17,7 @@
  * If you have custom directory layout, then you have to write your own router
  * and pass it as a value to 'router' option of server:run command.
  *
+ * @link  https://github.com/symfony/FrameworkBundle/blob/2.7/Resources/config/router_dev.php
  * @author: Michał Pipa <michal.pipa.xsolve@gmail.com>
  * @author: Albert Jessurum <ajessu@gmail.com>
  */
