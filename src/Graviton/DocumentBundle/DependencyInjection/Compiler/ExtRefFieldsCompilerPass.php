@@ -79,7 +79,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
                         '..',
                         '..',
                         ucfirst($ns),
-                        $bundle.'Bundle',
+                        ucfirst($bundle).'Bundle',
                         'Resources',
                         'config',
                         'doctrine'
