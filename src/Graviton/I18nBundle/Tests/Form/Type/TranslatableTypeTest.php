@@ -19,7 +19,12 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetParent()
     {
-        $sut = new TranslatableType;
+        $sut = new TranslatableType(
+            $this
+                ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+                ->disableOriginalConstructor()
+                ->getMock()
+        );
         $this->assertEquals('form', $sut->getParent());
     }
 
@@ -28,7 +33,46 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName()
     {
-        $sut = new TranslatableType;
+        $sut = new TranslatableType(
+            $this
+                ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+                ->disableOriginalConstructor()
+                ->getMock()
+        );
         $this->assertEquals('translatable', $sut->getName());
+    }
+
+    /**
+     * @return void
+     */
+    public function testBuildForm()
+    {
+        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $repoDouble = $this
+            ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $langDouble = $this->getMock('Graviton\I18nBundle\Document\Language');
+
+        $repoDouble
+            ->expects($this->once())
+            ->method('findAll')
+            ->willReturn([$langDouble, $langDouble]);
+
+        $langDouble
+            ->method('getId')
+            ->will($this->onConsecutiveCalls('en', 'de'));
+
+        $builderDouble
+            ->expects($this->at(0))
+            ->method('add')
+            ->with('en', 'text', []);
+        $builderDouble
+            ->expects($this->at(1))
+            ->method('add')
+            ->with('de', 'text', []);
+
+        $sut = new TranslatableType($repoDouble);
+        $sut->buildForm($builderDouble, []);
     }
 }
