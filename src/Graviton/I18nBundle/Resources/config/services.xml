@@ -132,6 +132,7 @@
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
     </service>
     <service id="graviton.i18n.form.type.translatable" class="%graviton.i18n.form.type.translatable.class%">
+      <argument type="service" id="graviton.i18n.repository.language"/>
       <tag name="form.type" alias="translatable"/>
     </service>
   </services>
