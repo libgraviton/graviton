@@ -31,9 +31,10 @@ if (is_file($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$_SERVER['SCRIPT_NAME'
 }
 
 $_SERVER = array_merge($_SERVER, $_ENV);
-$_SERVER['SCRIPT_FILENAME'] = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'app_oauth_dev.php';
+$_SERVER['SCRIPT_FILENAME'] = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'app_env.php';
 
-require 'app_oauth_dev.php';
+// let it be handled by ENV
+require 'app_env.php';
 
 error_log(
     sprintf(
