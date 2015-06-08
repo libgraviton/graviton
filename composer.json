@@ -49,7 +49,7 @@
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
         "eo/airbrake-bundle": "~1.0",
-        "hwi/oauth-bundle": "0.4.*@dev"
+        "hwi/oauth-bundle": "~0.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",

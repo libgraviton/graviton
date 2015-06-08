@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e97303eec5e10cec01cf5ca066d8716f",
+    "hash": "324ecc0a517b33940933b12622291992",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1807,29 +1807,28 @@
         },
         {
             "name": "hwi/oauth-bundle",
-            "version": "dev-master",
+            "version": "0.3.8",
             "target-dir": "HWI/Bundle/OAuthBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hwi/HWIOAuthBundle.git",
-                "reference": "2e12c7ab9cf83ce0d3e9d6a98315bbf21ab23ab3"
+                "reference": "faea7fa22628e310a882f7cfba8f3c8dea060c89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/2e12c7ab9cf83ce0d3e9d6a98315bbf21ab23ab3",
-                "reference": "2e12c7ab9cf83ce0d3e9d6a98315bbf21ab23ab3",
+                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/faea7fa22628e310a882f7cfba8f3c8dea060c89",
+                "reference": "faea7fa22628e310a882f7cfba8f3c8dea060c89",
                 "shasum": ""
             },
             "require": {
                 "kriswallsmith/buzz": "~0.7",
                 "php": ">=5.3.3",
-                "symfony/framework-bundle": "~2.3",
+                "symfony/framework-bundle": "~2.1",
                 "symfony/options-resolver": "~2.1",
-                "symfony/security-bundle": "~2.1",
-                "symfony/yaml": "~2.3"
+                "symfony/security-bundle": "~2.1"
             },
             "require-dev": {
-                "doctrine/orm": "~2.3",
+                "doctrine/orm": "~2.2",
                 "symfony/property-access": "~2.5",
                 "symfony/twig-bundle": "~2.1",
                 "symfony/validator": "~2.1"
@@ -1843,12 +1842,12 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.4-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
                 "psr-0": {
-                    "HWI\\Bundle\\OAuthBundle\\": ""
+                    "HWI\\Bundle\\OAuthBundle": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1893,7 +1892,6 @@
                 "foursquare",
                 "github",
                 "google",
-                "hubic",
                 "instagram",
                 "jira",
                 "linkedin",
@@ -1918,7 +1916,7 @@
                 "yahoo",
                 "yandex"
             ],
-            "time": "2015-05-04 07:05:05"
+            "time": "2015-05-04 07:15:14"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -2058,9 +2056,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -3073,9 +3071,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -3123,9 +3121,9 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -5102,8 +5100,7 @@
         "php-jsonpatch/php-jsonpatch": 5,
         "graviton/php-rql-parser": 15,
         "graviton/rql-parser-bundle": 15,
-        "knplabs/knp-gaufrette-bundle": 20,
-        "hwi/oauth-bundle": 20
+        "knplabs/knp-gaufrette-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
