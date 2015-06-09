@@ -27,7 +27,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
      */
     private $typeMap = [
         'string' => 'text',
-        'extref' => 'extref',
+        'extref' => 'url',
         'int' => 'integer',
         'boolean' => 'checkbox',
     ];
@@ -109,6 +109,11 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
     ) {
         $fieldNodes = $xpath->query("//doctrine:field");
 
+        $class = $this->className;
+        if ($name !== '') {
+            $class = $name;
+        }
+
         $finder = new Finder;
         $files = $finder
             ->files()
@@ -119,9 +124,10 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             $json = new JsonDefinition($jsonFile->getRealPath());
         }
 
-        $map[$this->className] = [];
+        $map[$class] = [];
         foreach ($fieldNodes as $node) {
             $fieldName = $node->getAttribute('fieldName');
+            $doctrineType = $node->getAttribute('type');
             $jsonDef = null;
             if (!is_null($json)) {
                 $jsonField = $json->getField($fieldName);
@@ -139,13 +145,20 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             }
 
             $type = 'text';
-            $doctrineType = $node->getAttribute('type');
             if (in_array($fieldName, $translatableFields)) {
                 $type = 'translatable';
             } elseif (array_key_exists($doctrineType, $this->typeMap)) {
                 $type = $this->typeMap[$doctrineType];
             }
-            $map[$this->className][] = [$fieldName, $type, []];
+            $map[$class][] = [$fieldName, $type, []];
+        }
+        $embedNodes = $xpath->query("//doctrine:embed-one");
+        foreach ($embedNodes as $node) {
+            $fieldName = $node->getAttribute('field');
+            $targetDocument = $node->getAttribute('target-document');
+
+            $this->loadEmbeddedDocuments($map, $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"), $targetDocument);
+            $map[$class][] = [$fieldName, 'form', ['data_class' => $targetDocument]];
         }
     }
 }
