@@ -57,7 +57,7 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
         $repoDouble
             ->expects($this->once())
             ->method('findAll')
-            ->willReturn([$langDouble, $langDouble]);
+            ->willReturn([$langDouble, $langDouble, $langDouble]);
 
         $langDouble
             ->method('getId')
@@ -66,7 +66,7 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
         $builderDouble
             ->expects($this->at(0))
             ->method('add')
-            ->with('en', 'text', []);
+            ->with('en', 'text', ['required' => true]);
         $builderDouble
             ->expects($this->at(1))
             ->method('add')

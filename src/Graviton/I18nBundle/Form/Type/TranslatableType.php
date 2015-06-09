@@ -46,7 +46,12 @@ final class TranslatableType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         foreach ($this->languageRepo->findAll() as $language) {
-            $builder->add($language->getId(), 'text', []);
+            $options = [];
+            $id = $language->getId();
+            if ($id == 'en') {
+                $options['required'] = true;
+            }
+            $builder->add($id, 'text', $options);
         }
     }
 }
