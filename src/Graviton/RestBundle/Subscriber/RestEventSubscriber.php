@@ -62,8 +62,9 @@ class RestEventSubscriber implements EventSubscriberInterface
     public function onKernelRequest(GetResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
         $restEvent = $this->getEventObject($event);
-
-        $dispatcher->dispatch("graviton.rest.request", $restEvent);
+        if ($restEvent instanceof RestEvent) {
+            $dispatcher->dispatch("graviton.rest.request", $restEvent);
+        }
     }
 
     /**
@@ -81,14 +82,19 @@ class RestEventSubscriber implements EventSubscriberInterface
         list ($serviceName) = explode(":", $event->getRequest()->get('_controller'));
 
         // get the controller which handles this request
-        $controller = $this->container->get($serviceName);
+        if ($this->container->has($serviceName)) {
+            $controller = $this->container->get($serviceName);
+            $restEvent = $this->container->get("graviton.rest.event");
+            $restEvent->setRequest($event->getRequest());
+            $restEvent->setResponse($response);
+            $restEvent->setController($controller);
 
-        $restEvent = $this->container->get("graviton.rest.event");
-        $restEvent->setRequest($event->getRequest());
-        $restEvent->setResponse($response);
-        $restEvent->setController($controller);
+            $returnEvent = $restEvent;
+        } else {
+            $returnEvent = $event;
+        }
 
-        return $restEvent;
+        return $returnEvent;
     }
 
     /**
