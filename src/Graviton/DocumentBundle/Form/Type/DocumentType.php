@@ -63,8 +63,15 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($this->fieldMap[$this->dataClass] as $field) {
-            $builder->add($field[0], $field[1], $field[2]);
+        $class = $this->dataClass;
+        foreach ($this->fieldMap[$class] as $field) {
+            list($name, $type, $options)  = $field;
+
+            if ($type == 'form') {
+                $type = clone $this;
+                $type->initialize($options['data_class']);
+            }
+            $builder->add($name, $type, $options);
         }
     }
 
