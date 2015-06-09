@@ -28,7 +28,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         $gravitonServices = $container->findTaggedServiceIds(
             'graviton.rest'
         );
-        foreach (array_keys($gravitonServices) as $id) {
+        foreach ($gravitonServices as $id => $tag) {
             $service = $container->getDefinition($id);
             $serviceClass = $service->getClass();
             $classname = $this->getDocumentClassFromControllerClass(
@@ -37,6 +37,19 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
             $map[$id] = $classname;
             $map[$classname] = $classname;
             $map[$serviceClass] = $classname;
+
+            list($ns, $bundle,, $doc) = explode('.', $id);
+            if (empty($bundle) || empty($doc)) {
+                continue;
+            }
+            if ($bundle == 'core' && $doc == 'main') {
+                continue;
+            }
+            if (!empty($tag[0]['collection'])) {
+                $doc = $tag[0]['collection'];
+                $bundle = $tag[0]['collection'];
+            }
+            $this->loadFields($map, $ns, $bundle, $doc);
         }
         $container->setParameter('graviton.document.form.type.document.service_map', $map);
     }
@@ -56,5 +69,41 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         }
         $documentClass = str_replace('.controller.', '.document.', $documentClass);
         return $documentClass;
+    }
+
+    use LoadFieldsTrait;
+
+    /**
+     * @param array        $map      map to add entries to
+     * @param \DOMDOcument $dom      doctrine config dom
+     * @param \DOMXPath    $xpath    xpath access to doctrine config dom
+     * @param string       $ns       namespace
+     * @param string       $bundle   bundle name
+     * @param string       $doc      document name
+     * @param boolean      $embedded is this an embedded doc, further args are only for embeddeds
+     * @param string       $name     name prefix of document the embedded field belongs to
+     * @param string       $prefix   prefix to add to embedded field name
+     *
+     * @return void
+     */
+    protected function loadFieldsFromDOM(
+        array &$map,
+        \DOMDocument $dom,
+        \DOMXPath $xpath,
+        $ns,
+        $bundle,
+        $doc,
+        $embedded,
+        $name = '',
+        $prefix = ''
+    ) {
+        $embedNodes = $xpath->query("//doctrine:embed-one");
+        foreach ($embedNodes as $node) {
+            $fieldName = $node->getAttribute('field');
+            $targetDocument = $node->getAttribute('target-document');
+
+            $this->loadEmbeddedDocuments($map, $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"), $targetDocument);
+            $map[$targetDocument] = $targetDocument;
+        }
     }
 }
