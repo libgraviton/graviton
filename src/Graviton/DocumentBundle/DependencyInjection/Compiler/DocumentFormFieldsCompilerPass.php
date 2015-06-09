@@ -29,7 +29,9 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
         'string' => 'text',
         'extref' => 'url',
         'int' => 'integer',
+        'float' => 'number',
         'boolean' => 'checkbox',
+        'date' => 'datetime',
     ];
 
     /**
@@ -145,12 +147,16 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             }
 
             $type = 'text';
+            $options = [];
             if (in_array($fieldName, $translatableFields)) {
                 $type = 'translatable';
+            } elseif ($doctrineType == 'hash') {
+                $type = 'form';
+                $options['allow_extra_fields'] = true;
             } elseif (array_key_exists($doctrineType, $this->typeMap)) {
                 $type = $this->typeMap[$doctrineType];
             }
-            $map[$class][] = [$fieldName, $type, []];
+            $map[$class][] = [$fieldName, $type, $options];
         }
         $embedNodes = $xpath->query("//doctrine:embed-one");
         foreach ($embedNodes as $node) {
