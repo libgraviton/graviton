@@ -38,7 +38,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $this->fieldMap = [
             'Graviton\CoreBundle\Document\App' => [
                 ['title', 'translatable', []],
-                ['showInMenu', 'radio', []],
+                ['showInMenu', 'checkbox', []],
             ],
         ];
     }
@@ -124,7 +124,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                     ],
                     [
                         'name' => 'showInMenu',
-                        'type' => 'radio',
+                        'type' => 'checkbox',
                         'options' => [],
                     ],
                 ],
@@ -140,7 +140,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                     ],
                     [
                         'name' => 'showInMenu',
-                        'type' => 'radio',
+                        'type' => 'checkbox',
                         'options' => [],
                     ],
                 ],

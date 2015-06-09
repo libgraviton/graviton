@@ -7,7 +7,8 @@ namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Symfony\Component\Finder\Finder;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -20,6 +21,21 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
      * @var array
      */
     private $serviceMap;
+
+    /**
+     * @var array
+     */
+    private $typeMap = [
+        'string' => 'text',
+        'extref' => 'extref',
+        'int' => 'integer',
+        'boolean' => 'checkbox',
+    ];
+
+    /**
+     * @var string
+     */
+    private $className;
 
     /**
      * load services
@@ -37,7 +53,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             'graviton.rest'
         );
         $map = [];
-        foreach (array_keys($gravitonServices) as $id) {
+        foreach ($gravitonServices as $id => $tag) {
             list($ns, $bundle,, $doc) = explode('.', $id);
             if (empty($bundle) || empty($doc)) {
                 continue;
@@ -45,7 +61,22 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
+            if (!empty($tag[0]['collection'])) {
+                $doc = $tag[0]['collection'];
+                $bundle = $tag[0]['collection'];
+            }
+            $this->className  = $container->getParameter(
+                substr(
+                    substr(
+                        $this->serviceMap[strtolower(implode('.', [$ns, $bundle, 'controller', $doc]))],
+                        1
+                    ),
+                    0,
+                    -1
+                )
+            );
             $this->loadFields($map, $ns, $bundle, $doc);
+            $this->className = null;
         }
         $container->setParameter('graviton.document.form.type.document.field_map', $map);
     }
@@ -78,19 +109,43 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
     ) {
         $fieldNodes = $xpath->query("//doctrine:field");
 
-        $className = $this->serviceMap[strtolower(implode('.', [$ns, $bundle, 'controller', $doc]))];
-        $map[$className] = [];
+        $finder = new Finder;
+        $files = $finder
+            ->files()
+            ->in(__DIR__.'/../../../../*/*/Resources/definition')
+            ->name(ucfirst($doc).'.json');
+        $json = null;
+        foreach ($files as $jsonFile) {
+            $json = new JsonDefinition($jsonFile->getRealPath());
+        }
+
+        $map[$this->className] = [];
         foreach ($fieldNodes as $node) {
             $fieldName = $node->getAttribute('fieldName');
-
-            switch ($node->getAttribute('type')) {
-                case 'string':
-                    $type = 'text';
-                    break;
-                default:
-                    $type = 'text';
+            $jsonDef = null;
+            if (!is_null($json)) {
+                $jsonField = $json->getField($fieldName);
+                if (!is_null($jsonField)) {
+                    $jsonDef = $jsonField->getDef();
+                }
             }
-            $map[$className][] = [$fieldName, $type, []];
+            $translatableFields = [];
+            if (in_array(
+                'Graviton\I18nBundle\Document\TranslatableDocumentInterface',
+                array_keys(class_implements($this->className))
+            )) {
+                $fieldInstance = new $this->className;
+                $translatableFields = $fieldInstance->getTranslatableFields();
+            }
+
+            $type = 'text';
+            $doctrineType = $node->getAttribute('type');
+            if (in_array($fieldName, $translatableFields)) {
+                $type = 'translatable';
+            } elseif (array_key_exists($doctrineType, $this->typeMap)) {
+                $type = $this->typeMap[$doctrineType];
+            }
+            $map[$this->className][] = [$fieldName, $type, []];
         }
     }
 }
