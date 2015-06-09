@@ -35,6 +35,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData'
             ),
             null,
