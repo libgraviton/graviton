@@ -6,12 +6,13 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Inflector\Inflector;
-use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\DependencyInjection\Container;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
 
 /**
  * bundle containing various code generators
@@ -29,48 +30,94 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 class ResourceGenerator extends AbstractGenerator
 {
     /**
-     * @private
+     * @private Filesystem
      */
     private $filesystem;
+
     /**
-     * @private
+     * @private DoctrineRegistry
      */
     private $doctrine;
+
     /**
-     * @private
+     * @private HttpKernelInterface
      */
     private $kernel;
-    /**
-     * @private
-     */
-    private $input;
+
     /**
      * our json file definition
      *
-     * @var JsonDefinition
+     * @var JsonDefinition|null
      */
-    private $json = false;
-    /** @var ArrayCollection */
+    private $json = null;
+
+    /**
+     * @var ArrayCollection
+     */
     protected $xmlParameters;
-    /** @var \DomDocument */
+
+    /**
+     * @var \DomDocument
+     */
     private $serviceDOM;
 
+    /**
+     * @var FieldMapper
+     */
+    private $mapper;
+
+    /**
+     * @var boolean
+     */
+    private $generateController = false;
+
+    /**
+     * @var ParameterBuilder
+     */
+    private $parameterBuilder;
 
     /**
      * Instantiates generator object
      *
-     * @param InputInterface $input      Input
-     * @param FileSystem     $filesystem fs abstraction layer
-     * @param object         $doctrine   dbal
-     * @param object         $kernel     app kernel
+     * @param Filesystem          $filesystem       fs abstraction layer
+     * @param DoctrineRegistry    $doctrine         odm registry
+     * @param HttpKernelInterface $kernel           app kernel
+     * @param FieldMapper         $mapper           field type mapper
+     * @param ParameterBuilder    $parameterBuilder param builder
      */
-    public function __construct(InputInterface $input, $filesystem, $doctrine, $kernel)
-    {
-        $this->input = $input;
+    public function __construct(
+        Filesystem $filesystem,
+        DoctrineRegistry $doctrine,
+        HttpKernelInterface $kernel,
+        FieldMapper $mapper,
+        ParameterBuilder $parameterBuilder
+    ) {
         $this->filesystem = $filesystem;
         $this->doctrine = $doctrine;
         $this->kernel = $kernel;
+        $this->mapper = $mapper;
+        $this->parameterBuilder = $parameterBuilder;
         $this->xmlParameters = new ArrayCollection();
+    }
+
+    /**
+     * @param JsonDefinition $json optional JsonDefinition object
+     *
+     * @return void
+     */
+    public function setJson(JsonDefinition $json)
+    {
+        $this->json = $json;
+    }
+
+    /**
+     * @param boolean $generateController should the controller be generated or not
+     *
+     * @return void
+     */
+    public function setGenerateController($generateController)
+    {
+        $this->generateController = $generateController;
     }
 
     /**
@@ -84,85 +131,39 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function generate(BundleInterface $bundle, $document, $format, array $fields, $withRepository)
-    {
+    public function generate(
+        BundleInterface $bundle,
+        $document,
+        $format,
+        array $fields,
+        $withRepository
+    ) {
         $dir = $bundle->getPath();
         $basename = $this->getBundleBaseName($document);
         $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
-        // do we have a json path passed?
-        if (!is_null($this->input->getOption('json'))) {
-            $this->json = new JsonDefinition($this->input->getOption('json'));
+        if (!is_null($this->json)) {
             $this->json->setNamespace($bundleNamespace);
         }
 
         // add more info to the fields array
+        $mapper = $this->mapper;
         $fields = array_map(
-            function ($field) {
-
-                // @todo all this mapping needs to go
-                // derive types for serializer from document types
-                $field['serializerType'] = $field['type'];
-                if (substr($field['type'], -2) == '[]') {
-                    $field['serializerType'] = sprintf('array<%s>', substr($field['type'], 0, -2));
-                }
-
-                // @todo this assumtion is a hack and needs fixing
-                if ($field['type'] === 'array') {
-                    $field['serializerType'] = 'array<string>';
-                }
-
-                if ($field['type'] === 'object') {
-                    $field['serializerType'] = 'array';
-                }
-
-                // add singular form
-                $field['singularName'] = Inflector::singularize($field['fieldName']);
-
-                // add information from our json file (if provided)..
-                if ($this->json instanceof JsonDefinition &&
-                    $this->json->getField($field['fieldName']) instanceof DefinitionElementInterface
-                ) {
-                    $fieldInformation = $this->json->getField($field['fieldName'])
-                        ->getDefAsArray();
-
-                    // in this context, the default type is the doctrine type..
-                    if (isset($fieldInformation['doctrineType'])) {
-                        $fieldInformation['type'] = $fieldInformation['doctrineType'];
-                    }
-
-                    $field = array_merge($field, $fieldInformation);
-                }
-
-                return $field;
+            function ($field) use ($mapper) {
+                return $mapper->map($field, $this->json);
             },
             $fields
         );
 
-        $parameters = array(
-            'document' => $document,
-            'base' => $bundleNamespace,
-            'bundle' => $bundle->getName(),
-            'format' => $format,
-            'json' => $this->json,
-            'fields' => $fields,
-            'bundle_basename' => $basename,
-            'extension_alias' => Container::underscore($basename),
-        );
-
-        // some stuff special for the "id" field..
-        if ($this->json instanceof JsonDefinition) {
-            // if we have data for id field, pass it along
-            $idField = $this->json->getField('id');
-            if (!is_null($idField)) {
-                $parameters['idField'] = $idField->getDefAsArray();
-            } else {
-                // if there is a json file and no id defined - so we don't do one here..
-                // we leave it in the document though but we don't wanna output it..
-                $parameters['noIdField'] = true;
-            }
-            $parameters['parent'] = $this->json->getParentService();
-        }
+        $parameters = $this->parameterBuilder
+            ->setParameter('document', $document)
+            ->setParameter('base', $bundleNamespace)
+            ->setParameter('bundle', $bundle->getName())
+            ->setParameter('format', $format)
+            ->setParameter('json', $this->json)
+            ->setParameter('fields', $fields)
+            ->setParameter('basename', $basename)
+            ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
@@ -172,7 +173,7 @@ class ResourceGenerator extends AbstractGenerator
             $this->generateFixtures($parameters, $dir, $document);
         }
 
-        if ($this->input->getOption('no-controller') != 'true') {
+        if ($this->generateController) {
             $this->generateController($parameters, $dir, $document);
         }
 
@@ -558,6 +559,9 @@ class ResourceGenerator extends AbstractGenerator
 
                 // get stuff from json definition
                 if ($this->json instanceof JsonDefinition) {
+                    // id is also name of collection in mongodb
+                    $this->addAttributeToNode('collection', $this->json->getId(), $dom, $tagNode);
+
                     // is this read only?
                     if ($this->json->isReadOnlyService()) {
                         $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
@@ -660,6 +664,10 @@ class ResourceGenerator extends AbstractGenerator
 
         if ($isService) {
             $argNode = $dom->createElement('argument');
+
+            $idArg = $dom->createAttribute('id');
+            $idArg->value = $argument['id'];
+            $argNode->appendChild($idArg);
         } else {
             $argNode = $dom->createElement('argument', $argument['value']);
         }
@@ -667,12 +675,6 @@ class ResourceGenerator extends AbstractGenerator
         $argType = $dom->createAttribute('type');
         $argType->value = $argument['type'];
         $argNode->appendChild($argType);
-
-        if ($isService) {
-            $idArg = $dom->createAttribute('id');
-            $idArg->value = $argument['id'];
-            $argNode->appendChild($idArg);
-        }
 
         $node->appendChild($argNode);
     }

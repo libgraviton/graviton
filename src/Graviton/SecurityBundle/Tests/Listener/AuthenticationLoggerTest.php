@@ -113,4 +113,38 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
 
         $logger->onAuthenticationSuccess($eventDouble);
     }
+
+    /**
+     * @return void
+     */
+    public function testOnAuthenticationSuccessNonContract()
+    {
+        $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
+                            ->setMethods(array('getUser'))
+                            ->getMockForAbstractClass();
+        $tokenDouble
+            ->expects($this->once())
+            ->method('getUsername')
+            ->willReturn('johnny');
+
+        $eventDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Event\AuthenticationEvent')
+                            ->disableOriginalConstructor()
+                            ->setMethods(array('getAuthenticationToken'))
+                            ->getMock();
+        $eventDouble
+            ->expects($this->once())
+            ->method('getAuthenticationToken')
+            ->willReturn($tokenDouble);
+
+        $this->logger
+            ->expects($this->once())
+            ->method('info')
+            ->with(
+                $this->equalTo('Entity (johnny (?)) was successfully recognized.')
+            );
+
+        $logger = new AuthenticationLogger($this->logger);
+
+        $logger->onAuthenticationSuccess($eventDouble);
+    }
 }

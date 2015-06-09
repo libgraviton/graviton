@@ -119,13 +119,18 @@ class MainControllerTest extends RestTestCase
             )
             ->will($this->returnValue("http://localhost/core/app"));
 
+        $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
+        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
+        $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+            ->setConstructorArgs([$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble])
             ->setMethods(array('prepareLinkHeader'))
             ->getProxy();
 
         $this->assertEquals(
             '<http://localhost/core/app>; rel="apps"; type="application/json"',
-            $controller->prepareLinkHeader($routerDouble)
+            $controller->prepareLinkHeader()
         );
     }
 
@@ -168,6 +173,9 @@ class MainControllerTest extends RestTestCase
                 )
             );
 
+        $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
+        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
+        $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
 
         $optionRoutes = [
             "graviton.core.rest.app.options"     => $routerDouble,
@@ -175,6 +183,7 @@ class MainControllerTest extends RestTestCase
         ];
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+            ->setConstructorArgs([$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble])
             ->setMethods(array('determineServices'))
             ->getProxy();
 
@@ -189,7 +198,7 @@ class MainControllerTest extends RestTestCase
                     'profile' => 'http://localhost/schema/core/product/collection'
                 ],
             ],
-            $controller->determineServices($routerDouble, $optionRoutes)
+            $controller->determineServices($optionRoutes)
         );
     }
 }

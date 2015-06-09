@@ -4,9 +4,11 @@
  */
 namespace Graviton\SecurityBundle\Listener;
 
+use Graviton\SecurityBundle\Entities\SecurityContract;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\AuthenticationEvents;
 use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
@@ -81,11 +83,17 @@ class AuthenticationLogger implements EventSubscriberInterface
         /** @var \Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token */
         $token = $event->getAuthenticationToken();
 
+        $contractNumber = '?';
+        $tokenUser = $token->getUser();
+        if ($tokenUser instanceof SecurityContract) {
+            $contractNumber = $tokenUser->getContractNumber();
+        }
+
         $this->logger->info(
             sprintf(
                 'Entity (%s (%s)) was successfully recognized.',
                 $token->getUsername(),
-                $token->getUser()->getContractNumber()
+                $contractNumber
             )
         );
     }
