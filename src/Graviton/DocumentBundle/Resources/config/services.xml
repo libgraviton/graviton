@@ -18,6 +18,7 @@
         <!-- dynamic form builder -->
         <service id="graviton.document.form.type.document" class="%graviton.document.form.type.document.class%">
             <argument>%graviton.document.form.type.document.service_map%</argument>
+            <argument>%graviton.document.form.type.document.field_map%</argument>
         </service>
     </services>
 </container>
