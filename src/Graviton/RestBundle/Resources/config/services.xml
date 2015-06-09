@@ -59,6 +59,12 @@
 
         <!-- Controller -->
         <service id="graviton.rest.controller" scope="request" abstract="true">
+            <call method="setFormFactory">
+                <argument type="service" id="form.factory"/>
+            </call>
+            <call method="setFormType">
+                <argument type="service" id="graviton.document.form.type.document"/>
+            </call>
             <call method="setContainer">
                 <argument type="service" id="service_container"></argument>
             </call>

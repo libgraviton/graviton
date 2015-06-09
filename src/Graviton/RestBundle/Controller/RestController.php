@@ -14,6 +14,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Knp\Component\Pager\Paginator;
 use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -21,6 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Form\FormFactory;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -39,6 +41,36 @@ class RestController implements ContainerAwareInterface
      * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
      */
     private $container;
+
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
+
+    /**
+     * @var DocumentType
+     */
+    private $formType;
+
+    /**
+     * @param FormFactory $formFactory form factory
+     *
+     * @return void
+     */
+    public function setFormFactory(FormFactory $formFactory)
+    {
+        $this->formFactory = $formFactory;
+    }
+
+    /**
+     * @param DocumentType $formType generic form
+     *
+     * @return void
+     */
+    public function setFormType(DocumentType $formType)
+    {
+        $this->formType = $formType;
+    }
 
     /**
      * Get the container object
@@ -223,6 +255,14 @@ class RestController implements ContainerAwareInterface
         // Get the response object from container
         $response = $this->getResponse();
 
+        list($service) = explode(':', $request->attributes->get('_controller'));
+        $this->formType->initialize($service);
+        $form = $this->formFactory->create($this->formType);
+        $form->handleRequest($request);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true));
+        if (!$form->isValid()) {
+            throw new ValidationException($form->getErrorsAsString(), $error);
+        }
         // Deserialize the request content (throws an exception if something fails)
         $record = $this->deserialize(
             $request->getContent(),
