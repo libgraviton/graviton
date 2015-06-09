@@ -157,7 +157,11 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             $fieldName = $node->getAttribute('field');
             $targetDocument = $node->getAttribute('target-document');
 
-            $this->loadEmbeddedDocuments($map, $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"), $targetDocument);
+            $this->loadEmbeddedDocuments(
+                $map,
+                $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
+                $targetDocument
+            );
             $map[$class][] = [$fieldName, 'form', ['data_class' => $targetDocument]];
         }
     }
