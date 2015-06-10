@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -74,7 +74,7 @@ class RestController
     private $validator;
     
     /**
-     * @var Symfony\Bundle\TwigBundle\Debug\TimedTwigEngine
+     * @var Symfony\Bundle\FrameworkBundle\Templating\EngineInterface
      */
     private $templating;
     
@@ -84,7 +84,7 @@ class RestController
      * @param Router             $router     Router
      * @param LanguageRepository $language   Language
      * @param ValidatorInterface $validator  Validator
-     * @param TimedTwigEngine    $templating Templating
+     * @param EngineInterface    $templating Templating
      * @param ContainerInterface $container  Container
      */
     public function __construct(
@@ -93,7 +93,7 @@ class RestController
         Router $router,
         LanguageRepository $language,
         ValidatorInterface $validator,
-        TimedTwigEngine $templating,
+        EngineInterface $templating,
         ContainerInterface $container
     ) {
         $this->response = $response;
