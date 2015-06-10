@@ -6,7 +6,6 @@
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Base rest exception class
