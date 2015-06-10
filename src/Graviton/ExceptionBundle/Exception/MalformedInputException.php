@@ -32,7 +32,7 @@ final class MalformedInputException extends RestException
      */
     public function __construct($message = "Malformed input", $prev = null)
     {
-        parent::__construct($message, Response::HTTP_INTERNAL_SERVER_ERROR, $prev);
+        parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $prev);
     }
 
     /**

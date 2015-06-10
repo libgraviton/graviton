@@ -33,7 +33,7 @@ final class ValidationException extends RestException
      */
     public function __construct($message = "Validation Failed", $prev = null)
     {
-        parent::__construct($message, Response::HTTP_BAD_REQUEST, $prev);
+        parent::__construct(Response::HTTP_BAD_REQUEST, $message, $prev);
     }
 
     /**
