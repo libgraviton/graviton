@@ -38,43 +38,43 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 class RestController
 {
     /**
-     * @var \Graviton\RestBundle\Model\ModelInterface
+     * @var ModelInterface
      */
     private $model;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface service_container
      */
     private $container;
     
     /**
-     * @var \Symfony\Component\HttpFoundation\Response
+     * @var Response
      */
     private $response;
     
     /**
      *
-     * @var \Graviton\RestBundle\Service\RestUtilsInterface
+     * @var RestUtilsInterface
      */
     private $restUtils;
     
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router
+     * @var Router
      */
     private $router;
     
     /**
-     * @var \Graviton\I18nBundle\Repository\LanguageRepository
+     * @var LanguageRepository
      */
     private $language;
     
     /**
-     * @var Symfony\Component\Validator\Validator\ValidatorInterface
+     * @var ValidatorInterface
      */
     private $validator;
     
     /**
-     * @var Symfony\Bundle\FrameworkBundle\Templating\EngineInterface
+     * @var EngineInterface
      */
     private $templating;
     
@@ -103,6 +103,19 @@ class RestController
         $this->validator = $validator;
         $this->templating = $templating;
         $this->container = $container;
+    }
+
+
+    /**
+     * Get the container object
+     *
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     *
+     * @obsolete
+     */
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     /**
