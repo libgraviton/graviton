@@ -109,25 +109,22 @@
         <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" scope="prototype">
         </service>
 
-        <service id="graviton.rest.event.subscriber"
-                 class="%graviton.rest.event.subscriber.class%">
-            <argument type="service" id="graviton.rest.listener.paginglinkresponselistener" />
-            <argument type="service" id="graviton.rest.event" />
+        <service id="graviton.rest.event.subscriber" class="%graviton.rest.event.subscriber.class%">
+            <argument type="service" id="graviton.rest.response" strict="false" />
+            <argument type="service" id="graviton.rest.event" strict="false" />
             <argument type="service" id="service_container" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Graviton rest event listeners -->
         <!-- Paging listener -->
-        <service id="graviton.rest.listener.paginglinkresponselistener"
-                 class="%graviton.rest.listener.paginglinkresponselistener.class%">
+        <service id="graviton.rest.listener.paginglinkresponselistener" class="%graviton.rest.listener.paginglinkresponselistener.class%">
             <argument type="service" id="router"></argument>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
         <!-- Self link response listener -->
-        <service id="graviton.rest.listener.selflinkresponselistener"
-                 class="%graviton.rest.listener.selflinkresponselistener.class%">
+        <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
             <argument type="service" id="router"></argument>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>

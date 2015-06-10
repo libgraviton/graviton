@@ -5,8 +5,7 @@
 namespace Graviton\RestBundle\Subscriber;
 
 use Graviton\RestBundle\Event\RestEvent;
-use Graviton\RestBundle\Listener\PagingLinkResponseListener;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -25,9 +24,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RestEventSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var PagingLinkResponseListener
+     * @var Response
      */
-    private $listener;
+    private $response;
 
     /**
      * @var RestEvent
@@ -40,13 +39,13 @@ class RestEventSubscriber implements EventSubscriberInterface
     private $container;
 
     /**
-     * @param PagingLinkResponseListener $listener
-     * @param RestEvent                  $restEvent
-     * @param ContainerInterface         $container
+     * @param Response           $response  Response
+     * @param RestEvent          $restEvent Rest event
+     * @param ContainerInterface $container Container
      */
-    public function __construct(PagingLinkResponseListener $listener, RestEvent $restEvent, ContainerInterface $container)
+    public function __construct(Response $response, RestEvent $restEvent, ContainerInterface $container)
     {
-        $this->listener = $listener;
+        $this->response = $response;
         $this->restEvent = $restEvent;
         $this->container = $container;
     }
@@ -74,8 +73,8 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.request events
      *
-     * @param GetResponseEvent         $event Event
-     * @param string                   $name Event name
+     * @param GetResponseEvent         $event      Event
+     * @param string                   $name       Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
@@ -104,7 +103,7 @@ class RestEventSubscriber implements EventSubscriberInterface
 
         $restEvent = $this->restEvent;
         $restEvent->setRequest($event->getRequest());
-        $restEvent->setResponse($this->listener);
+        $restEvent->setResponse($this->response);
         $restEvent->setController($controller);
 
         return $restEvent;
@@ -113,8 +112,8 @@ class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.response events
      *
-     * @param FilterResponseEvent      $event Event
-     * @param string                   $name Event name
+     * @param FilterResponseEvent      $event      Event
+     * @param string                   $name       Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
