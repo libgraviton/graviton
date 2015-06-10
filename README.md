@@ -22,18 +22,6 @@ and
 app/console
 ```
 
-## Custom Environments
-
-Some bundles (as `SecurityBundle`) support custom environments (please refer to their documentation for specifics).
-
-To support other environments then the standard ones, Graviton provides an `ENV` aware router you can use like this:
-
-```bash
-SYMFONY_ENV=<customEnv> php app/console --router=src/Graviton/CoreBundle/Resources/config/router_env.php server:run
-```
-
-Graviton also respects the `SYMFONY_ENV` environment variable when invocated by `app.php` (i.e. in a webserver context).
-
 ## Documentation
 
 There are some general docs on interacting with the codebase as a whole. 
