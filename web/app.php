@@ -8,6 +8,7 @@
  */
 
 use Graviton\AppKernel;
+use Graviton\AppCache;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,7 @@ $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 // @codingStandardsIgnoreEnd
 
 require_once __DIR__.'/../app/AppKernel.php';
+require_once __DIR__.'/../app/AppCache.php';
 
 // check for env
 $env = getenv('SYMFONY_ENV');
@@ -40,7 +42,9 @@ $kernel = new AppKernel($env, $activateDebug);
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 $kernel->loadClassCache();
 
-//$kernel = new AppCache($kernel);
+if (!$activateDebug) {
+    $kernel = new AppCache($kernel);
+}
 
 // When using the HttpCache, you need to call the method in your front controller
 // instead of relying on the configuration parameter
