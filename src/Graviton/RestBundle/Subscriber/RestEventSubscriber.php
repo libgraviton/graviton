@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RestEventSubscriber implements EventSubscriberInterface
+final class RestEventSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Response
