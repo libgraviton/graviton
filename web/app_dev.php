@@ -25,4 +25,4 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 */
 
 putenv('SYMFONY_ENV=dev');
-require_once 'app_env.php';
+require_once 'app.php';
