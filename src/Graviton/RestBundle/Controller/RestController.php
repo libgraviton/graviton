@@ -578,7 +578,7 @@ class RestController
     /**
      * Get the validator
      *
-     * @return \Symfony\Component\Validator\Validator
+     * @return ValidatorInterface
      */
     public function getValidator()
     {
