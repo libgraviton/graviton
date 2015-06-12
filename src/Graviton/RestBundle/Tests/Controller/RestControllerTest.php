@@ -43,29 +43,7 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
 
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
 
-        $controller = new RestControllerProxy(
-            $this
-                ->getMock('\Symfony\Component\HttpFoundation\Response'),
-            $this
-                ->getMock('\Graviton\RestBundle\Service\RestUtilsInterface'),
-            $this
-                ->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
-                ->disableOriginalConstructor()
-                ->getMock(),
-            $this
-                ->getMockBuilder('\Graviton\I18nBundle\Repository\LanguageRepository')
-                ->disableOriginalConstructor()
-                ->getMock(),
-            $validatorMock,
-            $this
-                ->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Templating\EngineInterface')
-                ->disableOriginalConstructor()
-                ->getMock(),
-            $this
-                ->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
-                ->disableOriginalConstructor()
-                ->getMock()
-        );
+        $controller = $this->getRestControllerProxy($validatorMock);
 
         $this->setExpectedException('\Graviton\ExceptionBundle\Exception\ValidationException');
 
@@ -99,6 +77,20 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
 
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
 
+        $controller = $this->getRestControllerProxy($validatorMock);
+
+        $this->assertNull($controller->validateRecord($record));
+    }
+
+    /**
+     * Get a RestControllerProxy
+     *
+     * @param \PHPUnit_Framework_MockObject_MockObject $validatorMock Mock of a ValidatorInterface
+     *
+     * @return RestControllerProxy
+     */
+    public function getRestControllerProxy($validatorMock)
+    {
         $controller = new RestControllerProxy(
             $this
                 ->getMock('\Symfony\Component\HttpFoundation\Response'),
@@ -122,7 +114,6 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock()
         );
-
-        $this->assertNull($controller->validateRecord($record));
+        return $controller;
     }
 }
