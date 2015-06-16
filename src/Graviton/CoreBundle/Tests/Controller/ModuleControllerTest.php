@@ -178,7 +178,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
-        $testModule->order = false;
+        $testModule->order = 'clearly a string';
 
         $client = static::createRestClient();
         $client->post('/core/module', $testModule);
@@ -186,10 +186,10 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertEquals('order', $results[0]->property_path);
-        $this->assertEquals('This value should be of type integer.', $results[0]->message);
-
         $this->assertEquals(400, $response->getStatusCode());
+
+        $this->assertContains('order', $results[0]->property_path);
+        $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
     /**

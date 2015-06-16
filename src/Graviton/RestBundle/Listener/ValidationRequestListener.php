@@ -83,27 +83,6 @@ class ValidationRequestListener
                 $e->setResponse($event->getResponse());
                 throw $e;
             }
-
-            // get the input validator
-            $this->jsonInput->setRequest($request);
-
-            // get the document manager for this model
-            $em = $controller->getModel()->getRepository()->getDocumentManager();
-            $this->jsonInput->setDocumentManager($em);
-
-            // validate the document
-            $result = $this->jsonInput->validate($input, $controller->getModel()->getEntityClass());
-
-            if ($result->count() > 0) {
-                // $response->send()...
-                $e = new ValidationException("Validation failed");
-                $e->setViolations($result);
-
-                // pass the event..???
-                $e->setResponse($event->getResponse());
-
-                throw $e;
-            }
         }
 
         return $event;

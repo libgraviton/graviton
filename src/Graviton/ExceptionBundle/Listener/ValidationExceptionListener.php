@@ -8,6 +8,7 @@ namespace Graviton\ExceptionBundle\Listener;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormErrorIterator;
 
 /**
  * Listener for validation exceptions
@@ -28,14 +29,40 @@ class ValidationExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof ValidationException) {
+            $content = $this->getErrorMessages($exception->getErrors());
             // Set status code and content
             $response = $exception->getResponse()
+            $response = new Response();
+            $response
                 ->setStatusCode(Response::HTTP_BAD_REQUEST)
                 ->setContent(
-                    $this->getSerializedContent($exception->getViolations())
+                    $this->getSerializedContent($content)
                 );
 
             $event->setResponse($response);
         }
+    }
+
+    /**
+     * @param FormErrorIterator $errors errors
+     *
+     * @return array
+     */
+    private function getErrorMessages(FormErrorIterator $errors)
+    {
+        $content = [];
+        foreach ($errors as $error) {
+            if ($error instanceof FormErrorIterator) {
+                $content = array_merge($content, $this->getErrorMessages($error));
+                continue;
+            }
+
+                var_dump(get_class($error->getCause()));
+            $content[] = [
+                'property_path' => $error->getCause()->getPropertyPath(),
+                'message' => $error->getMessage(),
+            ];
+        }
+        return $content;
     }
 }

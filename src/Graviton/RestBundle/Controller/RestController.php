@@ -314,23 +314,17 @@ class RestController
         $this->formType->initialize($service);
         $form = $this->formFactory->create($this->formType);
         $form->handleRequest($request);
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true));
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
         if (!$form->isValid()) {
-            throw new ValidationException($form->getErrorsAsString(), $error);
+            throw new ValidationException("Validation failed", $form->getErrors(true));
+        } else {
+            $record = $form->getData();
         }
         // Deserialize the request content (throws an exception if something fails)
         $record = $this->deserialize(
             $request->getContent(),
             $this->getModel()->getEntityClass()
         );
-
-        /*
-         * [nue]: it should be safe to *not* validate here again as the ValidationListener did
-         * that already.. i'm leaving it here to remember ourselves that it was just disabled here..
-         * if it turns out ok, remove it completely.. re-validation makes it harder as we have
-         * some special constraints that are better validated directly on the json input..
-         */
-        //$this->validateRecord($record);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -587,31 +581,6 @@ class RestController
             array('response' => $response->getContent()),
             $response
         );
-    }
-
-    /**
-     * Validate a record and throw a 400 error if not valid
-     *
-     * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
-     *
-     * @throws \Graviton\ExceptionBundle\Exception\ValidationException
-     *
-     * @deprecated
-     *
-     * @return void
-     */
-    protected function validateRecord($record)
-    {
-        // Re-validate record after serialization (we don't trust the serializer...)
-        $violations = $this->getValidator()->validate($record);
-
-        if ($violations->count() > 0) {
-            $e = new ValidationException('Validation failed');
-            $e->setViolations($violations);
-            $e->setResponse($this->getResponse());
-
-            throw $e;
-        }
     }
 
     /**

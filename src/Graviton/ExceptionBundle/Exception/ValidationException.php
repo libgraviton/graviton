@@ -5,9 +5,9 @@
 
 namespace Graviton\ExceptionBundle\Exception;
 
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormError;
 
 /**
  * Validation exception class
@@ -21,42 +21,30 @@ final class ValidationException extends RestException
     /**
      * Violations
      *
-     * @var \Symfony\Component\Validator\ConstraintViolationListInterface
+     * @var FormErrorIterator
      */
-    private $violations;
+    private $errors;
 
     /**
      * Constructor
      *
-     * @param string     $message Error message
-     * @param \Exception $prev    Previous Exception
+     * @param string            $message Error message
+     * @param FormErrorIterator $errors  Errors from form
      */
-    public function __construct($message = "Validation Failed", $prev = null)
+    public function __construct($message, FormErrorIterator $errors)
     {
-        parent::__construct(Response::HTTP_BAD_REQUEST, $message, $prev);
+        if (empty($message)) {
+            $message = 'Validation failed';
+        }
+        $this->errors = $errors;
+        parent::__construct(Response::HTTP_BAD_REQUEST, $message);
     }
 
     /**
-     * Set violations
-     *
-     * @param \Symfony\Component\Validator\ConstraintViolationList $violations Violation list
-     *
-     * @return \Graviton\ExceptionBundle\Exception\ValidationException $this This
+     * @return FormErrorIterator
      */
-    public function setViolations(ConstraintViolationListInterface $violations)
+    public function getErrors()
     {
-        $this->violations = $violations;
-
-        return $this;
-    }
-
-    /**
-     * Get violation list
-     *
-     * @return ConstraintViolationList $violations violations
-     */
-    public function getViolations()
-    {
-        return $this->violations;
+        return $this->errors;
     }
 }
