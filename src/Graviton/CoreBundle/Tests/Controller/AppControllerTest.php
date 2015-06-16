@@ -378,7 +378,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->id = 'tablet';
         $helloApp->title = new \stdClass;
         $helloApp->title->en = 'Tablet';
-        $helloApp->showInMenu = 'I am a string and not a boolean.';
+        $helloApp->showInMenu = [];
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -387,8 +387,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertEquals('showInMenu', $results[0]->property_path);
-        $this->assertEquals('This value should be of type bool.', $results[0]->message);
+        $this->assertContains('showInMenu', $results[0]->property_path);
+        $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
     /**

@@ -417,9 +417,9 @@ class RestController
         $this->formType->initialize($service);
         $form = $this->formFactory->create($this->formType);
         $form->handleRequest($request);
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true));
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
         if (!$form->isValid()) {
-            throw new ValidationException($form->getErrorsAsString(), $form->getErrors());
+            throw new ValidationException('Validation failed', $form->getErrors(true));
         } else {
             $record = $form->getData();
         }
