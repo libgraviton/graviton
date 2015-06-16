@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DirStrategy implements StrategyInterface
+class DirStrategy implements StrategyInterface, DirStrategyInterface
 {
     /**
      * may the strategy handle this input
@@ -61,7 +61,7 @@ class DirStrategy implements StrategyInterface
      * @param array       $file  matched file
      * @return boolean
      */
-    protected function isValid($input, $file)
+    public function isValid($input, $file)
     {
         return true;
     }

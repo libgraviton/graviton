@@ -102,10 +102,10 @@ class ExtReference extends Type
         $path = $this->getPathFromUrl($value);
 
         foreach ($this->router->getRouteCollection()->all() as $route) {
+            list($collection, $id) = $this->getDataFromRoute($route, $path);
             if (!empty($collection) && !empty($id)) {
                 return \MongoDBRef::create($collection, $id);
             }
-            list($collection, $id) = $this->getDataFromRoute($route, $path);
         }
 
         if (empty($collection) || empty($id)) {
@@ -161,8 +161,9 @@ class ExtReference extends Type
             $id = $matches['id'];
 
             list($routeService) = explode(':', $route->getDefault('_controller'));
-            list(,,,$name) = explode('.', $routeService);
-            $collection = ucfirst($name);
+            list($core, $bundle,,$name) = explode('.', $routeService);
+            $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
+            $collection = array_search($serviceName, $this->mapping);
         }
 
         return [$collection, $id];

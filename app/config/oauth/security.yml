@@ -1,0 +1,28 @@
+# you can read more about security in the related section of the documentation
+# http://symfony.com/doc/current/book/security.html
+security:
+#    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        default:
+            id: hwi_oauth.user.provider
+
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        secured_area:
+            pattern:    ^/
+            anonymous: true
+            oauth:
+                resource_owners:
+                    github: github_login
+                login_path: "/connect/github"
+                use_forward: true
+                failure_path: "/connect/github"
+                oauth_user_provider:
+                    service: hwi_oauth.user.provider
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/connect, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/swagger.json, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: ROLE_USER }

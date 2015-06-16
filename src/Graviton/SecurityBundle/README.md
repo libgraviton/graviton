@@ -1,13 +1,10 @@
-Installation
-============
+# Installation
 
-Step 1: Download the Bundle
----------------------------
+## Step 1: Download the Bundle
 
 This bundle is part of the graviton library.
 
-Step 2: Enable the Bundle
--------------------------
+## Step 2: Enable the Bundle
 
 Graviton has it's own way how to register a new bundle in the symfony kernel.
 In order to register this bundle it has to be instantiated in the method »\Graviton\CoreBundle\GravitonCoreBundle::getBundles()«.
@@ -26,11 +23,18 @@ In order to register this bundle it has to be instantiated in the method »\Grav
 [...]
 ```
 
-Step 3: Configuration
----------------------
+## Step 3: Configuration
 
-Authentication 
-==============
+### Authentication
+
+Graviton supports multiple Authentication schemes, each of one can be activated by switching to a corresponding Symfony
+environment.
+
+Environment name  | What it contains
+------------- | -------------
+oauth_dev  | Standard `dev` environment with activated oauth security
+
+#### A*rlock
 
 The authentication part of the bundle does provide the ability by changing the way authentication information are
 provided by Airlock by configuration. 
@@ -56,11 +60,10 @@ list of authentication key finder strategies (aka services tagged as defined abo
 **NOTE**:
 The service referenced in the parameter must implement the »\Graviton\RestBundle\Model\ModelInterface«.
 
-Authorization
-=============
+### Authorization
 
-Voter
-~~~~~
+#### Voter
+
 - OwnContextVoter
 Acting on either the Account (GravitonDyn\AccountBundle\Document\Account) or the 
 Customer (GravitonDyn\CustomerBundle\Document\Customer) object, this voter determines depending
@@ -106,12 +109,12 @@ Example:
   }  
 ```
 
-Dependencies
-------------
+# Dependencies
+
 - \Graviton\CoreBundle\Repository\AppRepository
 - \Graviton\RestBundle\Model\ModelInterface ( this should be resolved asap)
 - \Symfony\Component\Security\Core\User\UserInterface
 
-Future things
--------------
+# Future things
+
 - add command to find out what strategies are available.

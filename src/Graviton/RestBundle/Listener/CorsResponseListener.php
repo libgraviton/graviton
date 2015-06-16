@@ -25,7 +25,7 @@ class CorsResponseListener
     /**
      * @var string[]
      */
-    private $allowHeaders = array('Content-Type', 'Content-Language');
+    private $allowHeaders = array('Content-Type', 'Content-Language', 'If-None-Match');
 
     /**
      * add an allowed header
