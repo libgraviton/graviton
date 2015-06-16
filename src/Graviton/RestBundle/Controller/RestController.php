@@ -413,6 +413,17 @@ class RestController
     {
         $response = $this->getResponse();
 
+        list($service) = explode(':', $request->attributes->get('_controller'));
+        $this->formType->initialize($service);
+        $form = $this->formFactory->create($this->formType);
+        $form->handleRequest($request);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true));
+        if (!$form->isValid()) {
+            throw new ValidationException($form->getErrorsAsString(), $form->getErrors());
+        } else {
+            $record = $form->getData();
+        }
+
         // does it really exist??
         $this->findRecord($id);
 
