@@ -31,7 +31,6 @@ class ValidationExceptionListener extends RestExceptionListener
         if (($exception = $event->getException()) instanceof ValidationException) {
             $content = $this->getErrorMessages($exception->getErrors());
             // Set status code and content
-            $response = $exception->getResponse()
             $response = new Response();
             $response
                 ->setStatusCode(Response::HTTP_BAD_REQUEST)
