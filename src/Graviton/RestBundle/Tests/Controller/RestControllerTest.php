@@ -5,6 +5,8 @@
 
 namespace Graviton\RestBundle\Tests\Controller;
 
+use Graviton\RestBundle\Controller\RestController;
+
 /**
  * Tests RestController.
  *
@@ -14,7 +16,6 @@ namespace Graviton\RestBundle\Tests\Controller;
  */
 class RestControllerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Verifies that the SUT throws a specific exception, in case a validation fails.
      *
@@ -24,20 +25,15 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
     {
         $constraintViolationListMock =
             $this->getMockBuilder('\Symfony\Component\Validator\ConstraintViolationListInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('count'))
-            ->getMockForAbstractClass();
+                ->disableOriginalConstructor()
+                ->setMethods(array('count'))
+                ->getMockForAbstractClass();
         $constraintViolationListMock
             ->expects($this->once())
             ->method('count')
             ->will($this->returnValue(1));
 
-        $responseMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Response')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $validatorMock = $this->getMockBuilder('\Symfony\Component\Validator\ValidatorInterface')
-            ->disableOriginalConstructor()
+        $validatorMock = $this->getMockBuilder('\Symfony\Component\Validator\Validator\ValidatorInterface')
             ->setMethods(array('validate'))
             ->getMockForAbstractClass();
         $validatorMock
@@ -45,24 +41,9 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
             ->method('validate')
             ->will($this->returnValue($constraintViolationListMock));
 
-        $containerMock = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
-            ->setMethods(array('get'))
-            ->getMockForAbstractClass();
-        $containerMock
-            ->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('graviton.rest.validator'))
-            ->will($this->returnValue($validatorMock));
-        $containerMock
-            ->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('graviton.rest.response'))
-            ->will($this->returnValue($responseMock));
-
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
 
-        $controller = new RestControllerProxy();
-        $controller->setContainer($containerMock);
+        $controller = $this->getRestControllerProxy($validatorMock);
 
         $this->setExpectedException('\Graviton\ExceptionBundle\Exception\ValidationException');
 
@@ -78,16 +59,15 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
     {
         $constraintViolationListMock =
             $this->getMockBuilder('\Symfony\Component\Validator\ConstraintViolationListInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('count'))
-            ->getMockForAbstractClass();
+                ->disableOriginalConstructor()
+                ->setMethods(array('count'))
+                ->getMockForAbstractClass();
         $constraintViolationListMock
             ->expects($this->once())
             ->method('count')
             ->will($this->returnValue(0));
 
-        $validatorMock = $this->getMockBuilder('\Symfony\Component\Validator\ValidatorInterface')
-            ->disableOriginalConstructor()
+        $validatorMock = $this->getMockBuilder('\Symfony\Component\Validator\Validator\ValidatorInterface')
             ->setMethods(array('validate'))
             ->getMockForAbstractClass();
         $validatorMock
@@ -95,20 +75,45 @@ class RestControllerTest extends \PHPUnit_Framework_TestCase
             ->method('validate')
             ->will($this->returnValue($constraintViolationListMock));
 
-        $containerMock = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
-            ->setMethods(array('get'))
-            ->getMockForAbstractClass();
-        $containerMock
-            ->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('graviton.rest.validator'))
-            ->will($this->returnValue($validatorMock));
-
         $record = $this->getMock('\Graviton\CoreBundle\Document\App');
 
-        $controller = new RestControllerProxy();
-        $controller->setContainer($containerMock);
+        $controller = $this->getRestControllerProxy($validatorMock);
 
         $this->assertNull($controller->validateRecord($record));
+    }
+
+    /**
+     * Get a RestControllerProxy
+     *
+     * @param \PHPUnit_Framework_MockObject_MockObject $validatorMock Mock of a ValidatorInterface
+     *
+     * @return RestControllerProxy
+     */
+    public function getRestControllerProxy($validatorMock)
+    {
+        $controller = new RestControllerProxy(
+            $this
+                ->getMock('\Symfony\Component\HttpFoundation\Response'),
+            $this
+                ->getMock('\Graviton\RestBundle\Service\RestUtilsInterface'),
+            $this
+                ->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this
+                ->getMockBuilder('\Graviton\I18nBundle\Repository\LanguageRepository')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $validatorMock,
+            $this
+                ->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Templating\EngineInterface')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this
+                ->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
+                ->disableOriginalConstructor()
+                ->getMock()
+        );
+        return $controller;
     }
 }

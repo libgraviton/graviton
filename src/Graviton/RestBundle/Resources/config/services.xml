@@ -14,6 +14,7 @@
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validator\JsonInput</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
+        <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
     </parameters>
     <services>
@@ -58,15 +59,19 @@
         </service>
 
         <!-- Controller -->
-        <service id="graviton.rest.controller" scope="request" abstract="true">
+        <service id="graviton.rest.controller" abstract="true">
+            <argument type="service" id="graviton.rest.response" strict="false"/>
+            <argument type="service" id="graviton.rest.restutils"/>
+            <argument type="service" id="graviton.rest.router"/>
+            <argument type="service" id="graviton.i18n.repository.language"/>
+            <argument type="service" id="graviton.rest.validator"/>
+            <argument type="service" id="templating"/>
+            <argument type="service" id="service_container"/>
             <call method="setFormFactory">
                 <argument type="service" id="form.factory"/>
             </call>
             <call method="setFormType">
                 <argument type="service" id="graviton.document.form.type.document"/>
-            </call>
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
             </call>
         </service>
 
@@ -74,8 +79,7 @@
         <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel"/>
 
         <!-- Response object wrapper with scope request (get a new one for each request) -->
-        <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request">
-        </service>
+        <service id="graviton.rest.response" class="%graviton.rest.response.class%" scope="request"/>
 
         <!-- Json Request listener -->
         <service id="graviton.rest.listener.jsonrequestlistener"
@@ -86,14 +90,14 @@
         <!-- Special mimetypes Request listener -->
         <service id="graviton.rest.listener.specialmimetypesrequestlistener"
                  class="Graviton\RestBundle\Listener\SpecialMimetypeRequestListener">
-            <argument type="service" id="service_container"></argument>
+            <argument type="service" id="service_container"/>
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
         </service>
 
         <!-- Validation listener / Json validator -->
         <service id="graviton.rest.listener.validationrequestlistener"
                  class="Graviton\RestBundle\Listener\ValidationRequestListener">
-            <argument type="service" id="graviton.rest.validation.jsoninput"></argument>
+            <argument type="service" id="graviton.rest.validation.jsoninput"/>
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
         </service>
 
@@ -103,7 +107,7 @@
 
         <!-- restUtils service - a service providing some helpers dealing with services -->
         <service id="graviton.rest.restutils" class="Graviton\RestBundle\Service\RestUtils">
-            <argument type="service" id="service_container"></argument>
+            <argument type="service" id="service_container"/>
             <argument type="service" id="router"/>
             <argument type="service" id="graviton.rest.serializer"/>
             <argument type="service" id="graviton.rest.serializer.serializercontext"/>
@@ -114,25 +118,23 @@
         <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" scope="prototype">
         </service>
 
-        <service id="kernel.subscriber.graviton.rest" class="Graviton\RestBundle\Subscriber\RestEventSubscriber">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
+        <service id="graviton.rest.event.subscriber" class="%graviton.rest.event.subscriber.class%">
+            <argument type="service" id="graviton.rest.response" strict="false" />
+            <argument type="service" id="graviton.rest.event" strict="false" />
+            <argument type="service" id="service_container" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Graviton rest event listeners -->
         <!-- Paging listener -->
-        <service id="graviton.rest.listener.paginglinkresponselistener"
-                 class="%graviton.rest.listener.paginglinkresponselistener.class%">
-            <argument type="service" id="router"></argument>
+        <service id="graviton.rest.listener.paginglinkresponselistener" class="%graviton.rest.listener.paginglinkresponselistener.class%">
+            <argument type="service" id="router"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
         <!-- Self link response listener -->
-        <service id="graviton.rest.listener.selflinkresponselistener"
-                 class="%graviton.rest.listener.selflinkresponselistener.class%">
-            <argument type="service" id="router"></argument>
+        <service id="graviton.rest.listener.selflinkresponselistener" class="%graviton.rest.listener.selflinkresponselistener.class%">
+            <argument type="service" id="router"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
@@ -175,8 +177,8 @@
         <!-- X-Version response listener -->
         <service id="graviton.rest.listener.xversionresponselistener"
                  class="%graviton.rest.listener.xversionresponselistener.class%">
-            <argument type="service" id="graviton.core.utils" />
-            <argument type="service" id="logger" />
+            <argument type="service" id="graviton.core.utils"/>
+            <argument type="service" id="logger"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
     </services>
