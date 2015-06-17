@@ -10,7 +10,6 @@ use Symfony\Component\EventDispatcher\Event;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\RestBundle\Event\RestEvent;
 use Graviton\ExceptionBundle\Exception\NoInputException;
-use Graviton\RestBundle\Validator\JsonInput;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -22,23 +21,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class ValidationRequestListener
 {
-    /**
-     * Validator
-     *
-     * @var JsonInput
-     */
-    private $jsonInput;
-
-    /**
-     * Create ValidationRequestListener with JsonInput validator
-     *
-     * @param JsonInput $jsonInput json input validator
-     */
-    public function __construct(JsonInput $jsonInput)
-    {
-        $this->jsonInput = $jsonInput;
-    }
-
     /**
      * Validate the json input to prevent errors in the following components
      *

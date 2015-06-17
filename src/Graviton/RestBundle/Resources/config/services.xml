@@ -12,7 +12,6 @@
         <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
         <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
-        <parameter key="graviton.rest.validation.jsoninput.class">Graviton\RestBundle\Validator\JsonInput</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
@@ -97,12 +96,7 @@
         <!-- Validation listener / Json validator -->
         <service id="graviton.rest.listener.validationrequestlistener"
                  class="Graviton\RestBundle\Listener\ValidationRequestListener">
-            <argument type="service" id="graviton.rest.validation.jsoninput"/>
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
-        </service>
-
-        <service id="graviton.rest.validation.jsoninput" class="%graviton.rest.validation.jsoninput.class%">
-            <argument type="service" id="graviton.rest.validator"/>
         </service>
 
         <!-- restUtils service - a service providing some helpers dealing with services -->
