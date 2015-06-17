@@ -109,5 +109,18 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
             );
             $map[$targetDocument] = $targetDocument;
         }
+        $embedNodes = $xpath->query("//doctrine:embed-many");
+        foreach ($embedNodes as $node) {
+            $fieldName = $node->getAttribute('field');
+            $targetDocument = $node->getAttribute('target-document');
+
+            $this->loadEmbeddedDocuments(
+                $map,
+                $xpath->query("//doctrine:embed-many[@field='".$fieldName."']"),
+                $targetDocument,
+                true
+            );
+            $map[$targetDocument] = $targetDocument;
+        }
     }
 }
