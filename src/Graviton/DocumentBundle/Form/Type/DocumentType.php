@@ -74,6 +74,8 @@ class DocumentType extends AbstractType
                 $subType = clone $this;
                 $subType->initialize($options['options']['data_class']);
                 $options['type'] = $subType;
+                $options['allow_add'] = true;
+                $options['allow_delete'] = true;
             }
             }
             $builder->add($name, $type, $options);
