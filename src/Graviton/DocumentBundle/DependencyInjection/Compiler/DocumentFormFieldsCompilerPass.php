@@ -116,27 +116,11 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             $class = $name;
         }
 
-        $finder = new Finder;
-        $files = $finder
-            ->files()
-            ->in(__DIR__.'/../../../../*/*/Resources/definition')
-            ->name(ucfirst($doc).'.json');
-        $json = null;
-        foreach ($files as $jsonFile) {
-            $json = new JsonDefinition($jsonFile->getRealPath());
-        }
-
         $map[$class] = [];
         foreach ($fieldNodes as $node) {
             $fieldName = $node->getAttribute('fieldName');
             $doctrineType = $node->getAttribute('type');
-            $jsonDef = null;
-            if (!is_null($json)) {
-                $jsonField = $json->getField($fieldName);
-                if (!is_null($jsonField)) {
-                    $jsonDef = $jsonField->getDef();
-                }
-            }
+
             $translatableFields = [];
             if (in_array(
                 'Graviton\I18nBundle\Document\TranslatableDocumentInterface',
