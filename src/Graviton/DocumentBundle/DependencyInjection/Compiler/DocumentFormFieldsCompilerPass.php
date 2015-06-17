@@ -27,7 +27,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
      */
     private $typeMap = [
         'string' => 'text',
-        'extref' => 'url',
+        'extref' => 'extref',
         'int' => 'integer',
         'float' => 'number',
         'boolean' => 'checkbox',
