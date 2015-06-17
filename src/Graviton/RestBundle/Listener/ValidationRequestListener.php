@@ -83,6 +83,13 @@ class ValidationRequestListener
                 $e->setResponse($event->getResponse());
                 throw $e;
             }
+
+            if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
+                // we need to check for id mismatches....
+                if ($request->attributes->get('id') != $input['id']) {
+                    throw new BadRequestHttpException('Record ID in your payload must be the same');
+                }
+            }
         }
 
         return $event;
