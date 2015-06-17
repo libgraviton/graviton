@@ -97,30 +97,20 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         $name = '',
         $prefix = ''
     ) {
-        $embedNodes = $xpath->query("//doctrine:embed-one");
-        foreach ($embedNodes as $node) {
-            $fieldName = $node->getAttribute('field');
-            $targetDocument = $node->getAttribute('target-document');
+        foreach (['//doctrine:embed-one', '//doctrine-embed-many'] as $basePath) {
+            $embedNodes = $xpath->query($basePath);
+            foreach ($embedNodes as $node) {
+                $fieldName = $node->getAttribute('field');
+                $targetDocument = $node->getAttribute('target-document');
 
-            $this->loadEmbeddedDocuments(
-                $map,
-                $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
-                $targetDocument
-            );
-            $map[$targetDocument] = $targetDocument;
-        }
-        $embedNodes = $xpath->query("//doctrine:embed-many");
-        foreach ($embedNodes as $node) {
-            $fieldName = $node->getAttribute('field');
-            $targetDocument = $node->getAttribute('target-document');
-
-            $this->loadEmbeddedDocuments(
-                $map,
-                $xpath->query("//doctrine:embed-many[@field='".$fieldName."']"),
-                $targetDocument,
-                true
-            );
-            $map[$targetDocument] = $targetDocument;
+                $this->loadEmbeddedDocuments(
+                    $map,
+                    $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
+                    $targetDocument,
+                    $basePath == '//doctrine:embed-many'
+                );
+                $map[$targetDocument] = $targetDocument;
+            }
         }
     }
 }
