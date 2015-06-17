@@ -77,7 +77,6 @@ class DocumentType extends AbstractType
                 $options['allow_add'] = true;
                 $options['allow_delete'] = true;
             }
-            }
             $builder->add($name, $type, $options);
         }
     }
