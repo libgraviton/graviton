@@ -56,7 +56,6 @@ class ValidationExceptionListener extends RestExceptionListener
                 continue;
             }
 
-                var_dump(get_class($error->getCause()));
             $content[] = [
                 'property_path' => $error->getCause()->getPropertyPath(),
                 'message' => $error->getMessage(),
