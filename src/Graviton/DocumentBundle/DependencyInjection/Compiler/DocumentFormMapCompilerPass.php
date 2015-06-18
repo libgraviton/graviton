@@ -97,7 +97,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         $name = '',
         $prefix = ''
     ) {
-        foreach (['//doctrine:embed-one', '//doctrine-embed-many'] as $basePath) {
+        foreach (['//doctrine:embed-one', '//doctrine:embed-many'] as $basePath) {
             $embedNodes = $xpath->query($basePath);
             foreach ($embedNodes as $node) {
                 $fieldName = $node->getAttribute('field');
@@ -105,7 +105,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
 
                 $this->loadEmbeddedDocuments(
                     $map,
-                    $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
+                    $xpath->query(sprintf("%s[@field='%s']", $basePath, $fieldName)),
                     $targetDocument,
                     $basePath == '//doctrine:embed-many'
                 );

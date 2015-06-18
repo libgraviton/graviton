@@ -66,12 +66,8 @@
             <argument type="service" id="graviton.rest.validator"/>
             <argument type="service" id="templating"/>
             <argument type="service" id="form.factory"/>
+            <argument type="service" id="graviton.document.form.type.document"/>
             <argument type="service" id="service_container"/>
-            <call method="setFormFactory">
-            </call>
-            <call method="setFormType">
-                <argument type="service" id="graviton.document.form.type.document"/>
-            </call>
         </service>
 
         <!-- Model -->
