@@ -48,7 +48,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
      */
     final public function process(ContainerBuilder $container)
     {
-        $this->serviceMap = $container->getParameter(
+        $this->serviceMap = (array) $container->getParameter(
             'graviton.document.form.type.document.service_map'
         );
         $gravitonServices = $container->findTaggedServiceIds(
