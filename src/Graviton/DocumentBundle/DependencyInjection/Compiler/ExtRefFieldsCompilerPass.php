@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
 {
+    use LoadFieldsTrait;
+
     /**
      * load services
      *
@@ -46,8 +48,6 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         }
         $container->setParameter('graviton.document.type.extref.fields', $map);
     }
-
-    use LoadFieldsTrait;
 
     /**
      * @param array        $map      map to add entries to

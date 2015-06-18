@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class DocumentFormMapCompilerPass implements CompilerPassInterface
 {
+    use LoadFieldsTrait;
+
     /**
      * load services
      *
@@ -70,8 +72,6 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
         $documentClass = str_replace('.controller.', '.document.', $documentClass);
         return $documentClass;
     }
-
-    use LoadFieldsTrait;
 
     /**
      * @param array        $map      map to add entries to

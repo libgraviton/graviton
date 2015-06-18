@@ -17,6 +17,8 @@ use Graviton\GeneratorBundle\Definition\JsonDefinition;
  */
 class DocumentFormFieldsCompilerPass implements CompilerPassInterface
 {
+    use LoadFieldsTrait;
+
     /**
      * @var array
      */
@@ -82,8 +84,6 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
         }
         $container->setParameter('graviton.document.form.type.document.field_map', $map);
     }
-
-    use LoadFieldsTrait;
 
     /**
      * @param array        $map      map to add entries to
