@@ -135,9 +135,9 @@ trait LoadFieldsTrait
      */
     protected function getInfoFromTag(array $tags, $doc, $bundle)
     {
-        if (!empty($tag[0]['collection'])) {
-            $doc = $tag[0]['collection'];
-            $bundle = ucfirst($tag[0]['collection']);
+        if (!empty($tags[0]['collection'])) {
+            $doc = $tags[0]['collection'];
+            $bundle = ucfirst($tags[0]['collection']);
         }
         return [$doc, $bundle];
     }
