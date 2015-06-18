@@ -71,25 +71,23 @@ trait LoadFieldsTrait
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
 
-        $this->loadFieldsFromDOM($map, $dom, $xpath, $ns, $bundle, $doc, $embedded, $name, $prefix);
+        $this->loadFieldsFromDOM($map, $xpath, $ns, $bundle, $doc, $embedded, $name, $prefix);
     }
 
     /**
-     * @param array        $map      map to add entries to
-     * @param \DOMDOcument $dom      doctrine config dom
-     * @param \DOMXPath    $xpath    xpath access to doctrine config dom
-     * @param string       $ns       namespace
-     * @param string       $bundle   bundle name
-     * @param string       $doc      document name
-     * @param boolean      $embedded is this an embedded doc, further args are only for embeddeds
-     * @param string       $name     name prefix of document the embedded field belongs to
-     * @param string       $prefix   prefix to add to embedded field name
+     * @param array     $map      map to add entries to
+     * @param \DOMXPath $xpath    xpath access to doctrine config dom
+     * @param string    $ns       namespace
+     * @param string    $bundle   bundle name
+     * @param string    $doc      document name
+     * @param boolean   $embedded is this an embedded doc, further args are only for embeddeds
+     * @param string    $name     name prefix of document the embedded field belongs to
+     * @param string    $prefix   prefix to add to embedded field name
      *
      * @return void
      */
     abstract protected function loadFieldsFromDOM(
         array &$map,
-        \DOMDocument $dom,
         \DOMXPath $xpath,
         $ns,
         $bundle,
