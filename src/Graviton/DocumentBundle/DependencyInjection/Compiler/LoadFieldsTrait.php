@@ -123,4 +123,22 @@ trait LoadFieldsTrait
             $this->loadFields($map, $subNs, $subBundle, $subDoc, true, $namePrefix, $prefix);
         }
     }
+
+    /**
+     * get doc/bundle tuple from first tag in collection if available
+     *
+     * @param array  $tags   array of tags
+     * @param string $doc    default doc name
+     * @param string $bundle default bundle name
+     *
+     * @return array
+     */
+    protected function getInfoFromTag(array $tags, $doc, $bundle)
+    {
+        if (!empty($tag[0]['collection'])) {
+            $doc = $tag[0]['collection'];
+            $bundle = ucfirst($tag[0]['collection']);
+        }
+        return [$doc, $bundle];
+    }
 }

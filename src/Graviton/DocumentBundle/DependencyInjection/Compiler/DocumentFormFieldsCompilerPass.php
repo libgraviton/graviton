@@ -63,10 +63,8 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             if ($bundle == 'core' && $doc == 'main') {
                 continue;
             }
-            if (!empty($tag[0]['collection'])) {
-                $doc = $tag[0]['collection'];
-                $bundle = $tag[0]['collection'];
-            }
+            list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
+
             $this->className  = $container->getParameter(
                 substr(
                     substr(

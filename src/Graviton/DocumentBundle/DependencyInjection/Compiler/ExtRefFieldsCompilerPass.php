@@ -40,10 +40,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements Loa
                 continue;
             }
             $tag = $container->getDefinition($id)->getTag('graviton.rest');
-            if (!empty($tag[0]['collection'])) {
-                $doc = $tag[0]['collection'];
-                $bundle = ucfirst($tag[0]['collection']);
-            }
+            list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
             $this->loadFields($map, $ns, $bundle, $doc);
         }
         $container->setParameter('graviton.document.type.extref.fields', $map);
