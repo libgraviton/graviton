@@ -65,9 +65,9 @@
             <argument type="service" id="graviton.i18n.repository.language"/>
             <argument type="service" id="graviton.rest.validator"/>
             <argument type="service" id="templating"/>
+            <argument type="service" id="form.factory"/>
             <argument type="service" id="service_container"/>
             <call method="setFormFactory">
-                <argument type="service" id="form.factory"/>
             </call>
             <call method="setFormType">
                 <argument type="service" id="graviton.document.form.type.document"/>

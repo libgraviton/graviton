@@ -65,26 +65,6 @@ class RestController
     private $formType;
 
     /**
-     * @param FormFactory $formFactory form factory
-     *
-     * @return void
-     */
-    public function setFormFactory(FormFactory $formFactory)
-    {
-        $this->formFactory = $formFactory;
-    }
-
-    /**
-     * @param DocumentType $formType generic form
-     *
-     * @return void
-     */
-    public function setFormType(DocumentType $formType)
-    {
-        $this->formType = $formType;
-    }
-
-    /**
      * @var RestUtilsInterface
      */
     private $restUtils;
@@ -110,13 +90,15 @@ class RestController
     private $templating;
     
     /**
-     * @param Response           $response   Response
-     * @param RestUtilsInterface $restUtils  Rest utils
-     * @param Router             $router     Router
-     * @param LanguageRepository $language   Language
-     * @param ValidatorInterface $validator  Validator
-     * @param EngineInterface    $templating Templating
-     * @param ContainerInterface $container  Container
+     * @param Response           $response    Response
+     * @param RestUtilsInterface $restUtils   Rest utils
+     * @param Router             $router      Router
+     * @param LanguageRepository $language    Language
+     * @param ValidatorInterface $validator   Validator
+     * @param EngineInterface    $templating  Templating
+     * @param FormFactory        $formFactory form factory
+     * @param DocumentType       $formType    generic form
+     * @param ContainerInterface $container   Container
      */
     public function __construct(
         Response $response,
@@ -125,6 +107,8 @@ class RestController
         LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
+        FormFactory $formFactory,
+        DocumentType $formType,
         ContainerInterface $container
     ) {
         $this->response = $response;
@@ -133,6 +117,8 @@ class RestController
         $this->language = $language;
         $this->validator = $validator;
         $this->templating = $templating;
+        $this->formFactory = $formFactory;
+        $this->formType = $formType;
         $this->container = $container;
     }
 
