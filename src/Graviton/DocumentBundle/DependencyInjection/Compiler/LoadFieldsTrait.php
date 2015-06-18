@@ -86,7 +86,7 @@ trait LoadFieldsTrait
      *
      * @return void
      */
-    abstract protected function loadFieldsFromDOM(
+    abstract public function loadFieldsFromDOM(
         array &$map,
         \DOMXPath $xpath,
         $ns,

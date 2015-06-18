@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
+class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements LoadFieldsInterface
 {
     use LoadFieldsTrait;
 
@@ -61,7 +61,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
      *
      * @return void
      */
-    protected function loadFieldsFromDOM(
+    public function loadFieldsFromDOM(
         array &$map,
         \DOMXPath $xpath,
         $ns,

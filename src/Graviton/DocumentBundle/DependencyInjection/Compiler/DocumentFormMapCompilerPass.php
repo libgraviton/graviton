@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DocumentFormMapCompilerPass implements CompilerPassInterface
+class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsInterface
 {
     use LoadFieldsTrait;
 
@@ -85,7 +85,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface
      *
      * @return void
      */
-    protected function loadFieldsFromDOM(
+    public function loadFieldsFromDOM(
         array &$map,
         \DOMXPath $xpath,
         $ns,
