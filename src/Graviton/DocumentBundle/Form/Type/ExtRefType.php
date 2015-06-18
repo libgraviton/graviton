@@ -23,39 +23,6 @@ use Graviton\DocumentBundle\Form\DataTransformer\ExtRefToMongoRefTransformer;
 class ExtRefType extends AbstractType
 {
     /**
-     * construct
-     *
-     * @param RouterInterface $router   symfony router
-     * @param array           $mapping  map of collection_name => route_id
-     * @param array           $fields   map of fields to process
-     * @param RequestStack    $requests request
-     */
-    public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
-    {
-        $this->router = $router;
-        $this->mapping = $mapping;
-        $this->fields = $fields;
-        $this->request = $requests->getCurrentRequest();
-    }
-
-    /**
-     * @param FormBuilderInterface $builder form builder
-     * @param array                $options configuration for builder
-     *
-     * @return void
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $transformer = new ExtRefToMongoRefTransformer(
-            $this->router,
-            $this->mapping,
-            $this->fields,
-            $this->request
-        );
-        $builder->addViewTransformer($transformer);
-    }
-
-    /**
      * @param OptionsResolver $resolver option resolver
      *
      * @return void

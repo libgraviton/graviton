@@ -17,10 +17,6 @@
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
         <service id="graviton.document.form.type.extref" class="%graviton.document.form.type.extref.class%">
-             <argument type="service" id="router" />
-             <argument>%graviton.document.type.extref.mapping%</argument>
-             <argument>%graviton.document.type.extref.fields%</argument>
-             <argument type="service" id="request_stack"/>
             <tag name="form.type" alias="extref"/>
         </service>
         <!-- dynamic form builder -->
