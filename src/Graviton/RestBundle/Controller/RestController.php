@@ -310,9 +310,8 @@ class RestController
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        // Set status code and content
+        // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setContent($this->serialize($record));
 
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
@@ -327,11 +326,7 @@ class RestController
             $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
+        return $response;
     }
 
     /**
