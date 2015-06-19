@@ -53,13 +53,18 @@ class ValidationExceptionListener extends RestExceptionListener
         foreach ($errors as $error) {
             if ($error instanceof FormErrorIterator) {
                 $content = array_merge($content, $this->getErrorMessages($error));
-                continue;
+            } elseif ($error instanceof FormError) {
+                $cause = $error->getCause();
+                if (!$cause) {
+                    $path = 'unknkown';
+                } else {
+                    $path = $cause->getPropertyPath();
+                }
+                $content[] = [
+                    'property_path' => $path,
+                    'message' => $error->getMessage(),
+                ];
             }
-
-            $content[] = [
-                'property_path' => $error->getCause()->getPropertyPath(),
-                'message' => $error->getMessage(),
-            ];
         }
         return $content;
     }
