@@ -166,15 +166,21 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/core/app', $testApp);
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
+        // we sent a location header so we don't want a body
+        $this->assertEquals(null, $results);
+        $this->assertContains('/core/app', $response->headers->get('Location'));
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-
         $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
-
         $this->assertContains(
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))

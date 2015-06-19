@@ -98,7 +98,10 @@ class LanguageControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/i18n/language', $newLang);
+        $response = $client->getResponse();
 
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -150,6 +153,10 @@ class LanguageControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/i18n/language', $newLang);
+        $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $response = $client->getResponse();
         $results = $client->getResults();
 
