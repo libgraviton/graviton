@@ -272,14 +272,11 @@ class RestController
         }
 
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent(
-                $this->serialize($model->findAll($request))
-            );
+            ->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($model->findAll($request))],
             $response
         );
     }
@@ -423,14 +420,9 @@ class RestController
         $this->getModel()->updateRecord($id, $record);
         $response->setStatusCode(Response::HTTP_OK);
 
-        // i fetch it here again to prevent some "id" from the payload
-        // visibly overriding the one provided by GET. just to make sure
-        // we really give the client back what he actually saved.
-        $response->setContent($this->serialize($record));
-
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -548,7 +540,6 @@ class RestController
             $schemaMethod = 'getCollectionSchema';
         }
         $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
-        $response->setContent($this->serialize($schema));
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -564,7 +555,7 @@ class RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($schema)],
             $response
         );
     }
