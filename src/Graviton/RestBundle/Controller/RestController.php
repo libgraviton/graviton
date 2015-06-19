@@ -384,7 +384,6 @@ class RestController
 
         $this->checkJsonRequest($request, $response);
 
-        $form = $this->getForm($request);
         $record = $this->checkForm(
             $this->getForm($request),
             $request
@@ -657,8 +656,6 @@ class RestController
      */
     private function checkForm(FormInterface $form, Request $request)
     {
-        $record = false;
-
         $form->handleRequest($request);
         $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
 
