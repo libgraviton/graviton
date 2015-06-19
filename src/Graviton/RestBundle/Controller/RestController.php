@@ -388,7 +388,7 @@ class RestController
 
         $this->checkJsonRequest($request, $response);
 
-        $form->getForm($request);
+        $form = $this->getForm($request);
         $form->handleRequest($request);
         $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
         if (!$form->isValid()) {
