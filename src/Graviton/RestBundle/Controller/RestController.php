@@ -17,7 +17,6 @@ use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
-use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -432,59 +431,6 @@ class RestController
 
         $this->getModel()->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_OK);
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
-    }
-
-    /**
-     * Patch a record (partial update) -> DO NOT USE THIS (or refactor it...)
-     * We tried to implement the jsonpatch rfc but this is not possible
-     * because of doctrine odm / serializer
-     *
-     * @param Number  $id      ID of record
-     *
-     * @param Request $request Current http request
-     *
-     * @throws DeserializationException
-     * @throws NotFoundException
-     * @throws Patch\FailedTestException
-     * @throws SerializationException
-     * @throws \Exception
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
-     */
-    public function patchAction($id, Request $request)
-    {
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_NOT_FOUND);
-
-        $record = $this->findRecord($id);
-
-        // Get the patch params from request
-        $requestContent = $request->getContent();
-
-        if (!is_null($record) && !empty($requestContent)) {
-            // get the record as json to handle json-patch
-            $jsonString = $this->serialize($record);
-
-            // Now replace existing values with the new ones
-            $patch = new Patch($jsonString, $requestContent);
-
-            $newRecord = $this->deserialize(
-                $patch->apply(),
-                $this->getModel()->getEntityClass()
-            );
-
-            // disabled here, see comment in postAction()..
-            //$this->validateRecord($newRecord);
-
-            $this->getModel()->updateRecord($id, $newRecord);
-            //$response = $this->container->get('graviton.rest.response.204');
-            $response->setStatusCode(Response::HTTP_NO_CONTENT);
-        }
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',

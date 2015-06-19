@@ -41,7 +41,6 @@
         "misd/guzzle-bundle": "~1.0",
         "knplabs/knp-paginator-bundle": "~2.4",
         "php-jsonpointer/php-jsonpointer": "~1.1@rc",
-        "php-jsonpatch/php-jsonpatch": "~1.1@rc",
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": "~2.0@alpha",

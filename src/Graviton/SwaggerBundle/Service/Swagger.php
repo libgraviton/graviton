@@ -86,10 +86,8 @@ class Swagger
             foreach ($routes as $routeName => $route) {
                 $routeMethod = strtolower($route->getMethods()[0]);
 
-                // skip PATCH (as for now) & /schema/ stuff
-                if (strpos($route->getPath(), '/schema/') !== false ||
-                    $routeMethod == 'patch'
-                ) {
+                // skip /schema/ stuff
+                if (strpos($route->getPath(), '/schema/') !== false) {
                     continue;
                 }
 
