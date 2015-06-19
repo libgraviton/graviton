@@ -9,6 +9,7 @@ use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormError;
 
 /**
  * Listener for validation exceptions
