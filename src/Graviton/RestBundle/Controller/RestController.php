@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -294,15 +295,10 @@ class RestController
         $response = $this->getResponse();
 
         $this->checkJsonRequest($request, $response);
-
-        $form = $this->getForm($request);
-        $form->handleRequest($request);
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
-        if (!$form->isValid()) {
-            throw new ValidationException("Validation failed", $form->getErrors(true));
-        } else {
-            $record = $form->getData();
-        }
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
+        );
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -389,13 +385,10 @@ class RestController
         $this->checkJsonRequest($request, $response);
 
         $form = $this->getForm($request);
-        $form->handleRequest($request);
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
-        if (!$form->isValid()) {
-            throw new ValidationException('Validation failed', $form->getErrors(true));
-        } else {
-            $record = $form->getData();
-        }
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
+        );
 
         // does it really exist??
         $this->findRecord($id);
@@ -636,12 +629,35 @@ class RestController
 
     /**
      * @param Request $request request
-     * @return DynamicForm
+     *
+     * @return \Symfony\Component\Form\Form
      */
     private function getForm(Request $request)
     {
         list($service) = explode(':', $request->attributes->get('_controller'));
         $this->formType->initialize($service);
         return $this->formFactory->create($this->formType);
+    }
+
+    /**
+     * @param FormInterface $form    form to check
+     * @param Request       $request data request
+     *
+     * @return mixed
+     */
+    private function checkForm(FormInterface $form, Request $request)
+    {
+        $record = false;
+
+        $form->handleRequest($request);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
+
+        if (!$form->isValid()) {
+            throw new ValidationException("Validation failed", $form->getErrors(true));
+        } else {
+            $record = $form->getData();
+        }
+
+        return $record;
     }
 }
