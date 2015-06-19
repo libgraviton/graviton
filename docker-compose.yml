@@ -27,6 +27,7 @@ appserver:
     environment:
         MONGODB_DB: 'db'
         MONGODB_URI: 'mongodb://mongodb:27017'
+        SYMFONY_ENV: prod
     volumes_from:
         - app
 webserver:
