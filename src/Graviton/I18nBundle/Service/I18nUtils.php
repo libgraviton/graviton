@@ -7,6 +7,7 @@ namespace Graviton\I18nBundle\Service;
 
 use Graviton\I18nBundle\Model\Translatable;
 use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
+use Graviton\I18nBundle\Document\TranslatableLanguage;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -187,6 +188,9 @@ class I18nUtils
                     $translatable->setOriginal($original);
                     $translatable->setTranslated($translated);
                     $translatable->setIsLocalized($isLocalized);
+                    $translatableLang = new TranslatableLanguage();
+                    $translatableLang->setRef('/i18n/language/'.$locale);
+                    $translatable->setLanguage($translatableLang);
                     $this->translatable->insertRecord($translatable);
                 }
             );
