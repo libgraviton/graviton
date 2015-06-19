@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Exception;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -14,8 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class NotFoundException extends RestException
+final class NotFoundException extends NotFoundHttpException implements RestExceptionInterface
 {
+    use RestExceptionTrait;
+
     /**
      * Constructor
      *
@@ -24,6 +27,6 @@ final class NotFoundException extends RestException
      */
     public function __construct($message = "Not Found", $prev = null)
     {
-        parent::__construct($message, Response::HTTP_NOT_FOUND, $prev);
+        parent::__construct($message, $prev);
     }
 }

@@ -6,8 +6,14 @@
 namespace Graviton\FileBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\I18nBundle\Repository\LanguageRepository;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Gaufrette\FileSystem;
 use Gaufrette\File;
 use GravitonDyn\FileBundle\Document\FileMetadata;
@@ -26,10 +32,34 @@ class FileController extends RestController
     private $gaufrette;
 
     /**
-     * @param FileSystem $gaufrette file system abstraction layer for s3 and more
+     * @param Response           $response   Response
+     * @param RestUtilsInterface $restUtils  Rest utils
+     * @param Router             $router     Router
+     * @param LanguageRepository $language   Language
+     * @param ValidatorInterface $validator  Validator
+     * @param EngineInterface    $templating Templating
+     * @param ContainerInterface $container  Container
+     * @param FileSystem         $gaufrette  file system abstraction layer for s3 and more
      */
-    public function __construct(Filesystem $gaufrette)
-    {
+    public function __construct(
+        Response $response,
+        RestUtilsInterface $restUtils,
+        Router $router,
+        LanguageRepository $language,
+        ValidatorInterface $validator,
+        EngineInterface $templating,
+        ContainerInterface $container,
+        Filesystem $gaufrette
+    ) {
+        parent::__construct(
+            $response,
+            $restUtils,
+            $router,
+            $language,
+            $validator,
+            $templating,
+            $container
+        );
         $this->gaufrette = $gaufrette;
     }
 
