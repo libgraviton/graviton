@@ -55,9 +55,17 @@ final class TranslatableType extends AbstractType
     {
         $builder->addViewTransformer($this->transformer);
 
-        foreach ($this->utils->getLanguages() as $language) {
+        $languages = $this->utils->getLanguages();
+        $default = $this->utils->getDefaultLanguage();
+
+        // handle what happens when no languages exist in db yet
+        if (!in_array($default, $languages)) {
+            $languages[] = $default;
+        }
+
+        foreach ($languages as $language) {
             $options = [];
-            if ($language == 'en') {
+            if ($language == $default) {
                 $options['required'] = true;
             }
             $builder->add($language, 'text', $options);

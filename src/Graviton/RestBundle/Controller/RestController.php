@@ -391,7 +391,13 @@ class RestController
         );
 
         // does it really exist??
-        $this->findRecord($id);
+        $upsert = false;
+        try {
+            $this->findRecord($id);
+        } catch (NotFoundException $e) {
+            // who cares, we'll upsert it
+            $upsert = true;
+        }
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -405,7 +411,11 @@ class RestController
         }
 
         // And update the record, if everything is ok
-        $this->getModel()->updateRecord($id, $record);
+        if ($upsert) {
+            $this->getModel()->insertRecord($record);
+        } else {
+            $this->getModel()->updateRecord($id, $record);
+        }
         $response->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
