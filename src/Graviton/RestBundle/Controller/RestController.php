@@ -585,7 +585,7 @@ class RestController
      * @param Request  $request  request
      * @param Response $response response
      *
-     * @return boolean
+     * @return void
      */
     private function checkJsonRequest(Request $request, Response $response)
     {

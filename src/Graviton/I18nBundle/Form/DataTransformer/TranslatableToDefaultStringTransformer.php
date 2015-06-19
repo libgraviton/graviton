@@ -30,11 +30,13 @@ class TranslatableToDefaultStringTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transforms an object (translatable) to a string (default).
+     * return as array
      *
-     * @param  Translatable|null $translatable translatable object
+     * the value returned here will be translated by the i18n listener later on
      *
-     * @return string
+     * @param  Translatable|null $translatable value from model
+     *
+     * @return array
      */
     public function transform($translatable)
     {
@@ -48,11 +50,14 @@ class TranslatableToDefaultStringTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transforms a string (default) to an object (Translatable).
+     * return simple string
      *
-     * @param  string $default default en vaue
+     * all we want to store after going through a for is a simple string. If there
+     * are any other languages being sent, this is where they get stored.
      *
-     * @return Translatable|null
+     * @param  array $default value from client
+     *
+     * @return string
      *
      * @throws TransformationFailedException
      */
