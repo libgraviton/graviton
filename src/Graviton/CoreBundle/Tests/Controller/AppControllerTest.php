@@ -329,11 +329,11 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * test updating an inexistant document
+     * test updating an inexistant document (upsert)
      *
      * @return void
      */
-    public function testPutInexistantApp()
+    public function testUpsertApp()
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
@@ -343,7 +343,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
 
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     /**
