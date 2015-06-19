@@ -7,7 +7,8 @@ namespace Graviton\I18nBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
+use Graviton\I18nBundle\Service\I18nUtils;
+use Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -17,16 +18,23 @@ use Graviton\I18nBundle\Repository\LanguageRepository;
 final class TranslatableType extends AbstractType
 {
     /**
-     * @var LanguageRepository
+     * @var I18nUtils
      */
-    private $languageRepo;
+    private $utils;
 
     /**
-     * @param LanguageRepository $languageRepo repo of available languages
+     * @var TranslatableToDefaultStringTransformer
      */
-    public function __construct(LanguageRepository $languageRepo)
+    private $transformer;
+
+    /**
+     * @param I18nUtils                              $utils       i18n utils for various needs
+     * @param TranslatableToDefaultStringTransformer $transformer form transformer
+     */
+    public function __construct(I18nUtils $utils, TranslatableToDefaultStringTransformer $transformer)
     {
-        $this->languageRepo = $languageRepo;
+        $this->utils = $utils;
+        $this->transformer = $transformer;
     }
 
     /**
@@ -45,13 +53,14 @@ final class TranslatableType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($this->languageRepo->findAll() as $language) {
+        $builder->addViewTransformer($this->transformer);
+
+        foreach ($this->utils->getLanguages() as $language) {
             $options = [];
-            $id = $language->getId();
-            if ($id == 'en') {
+            if ($language == 'en') {
                 $options['required'] = true;
             }
-            $builder->add($id, 'text', $options);
+            $builder->add($language, 'text', $options);
         }
     }
 }

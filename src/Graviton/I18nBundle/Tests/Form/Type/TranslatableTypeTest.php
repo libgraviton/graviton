@@ -21,7 +21,11 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new TranslatableType(
             $this
-                ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+                ->getMockBuilder('Graviton\I18nBundle\Service\I18nUtils')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this
+                ->getMockBuilder('Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer')
                 ->disableOriginalConstructor()
                 ->getMock()
         );
@@ -35,7 +39,11 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new TranslatableType(
             $this
-                ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+                ->getMockBuilder('Graviton\I18nBundle\Service\I18nUtils')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this
+                ->getMockBuilder('Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer')
                 ->disableOriginalConstructor()
                 ->getMock()
         );
@@ -47,32 +55,34 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuildForm()
     {
-        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
-        $repoDouble = $this
-            ->getMockBuilder('Graviton\I18nBundle\Repository\LanguageRepository')
+        $utilsDouble = $this
+            ->getMockBuilder('Graviton\I18nBundle\Service\I18nUtils')
             ->disableOriginalConstructor()
             ->getMock();
-        $langDouble = $this->getMock('Graviton\I18nBundle\Document\Language');
 
-        $repoDouble
+        $utilsDouble
             ->expects($this->once())
-            ->method('findAll')
-            ->willReturn([$langDouble, $langDouble, $langDouble]);
+            ->method('getLanguages')
+            ->willReturn(['en', 'de']);
 
-        $langDouble
-            ->method('getId')
-            ->will($this->onConsecutiveCalls('en', 'de'));
+        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
 
-        $builderDouble
-            ->expects($this->at(0))
-            ->method('add')
-            ->with('en', 'text', ['required' => true]);
         $builderDouble
             ->expects($this->at(1))
             ->method('add')
+            ->with('en', 'text', ['required' => true]);
+        $builderDouble
+            ->expects($this->at(2))
+            ->method('add')
             ->with('de', 'text', []);
 
-        $sut = new TranslatableType($repoDouble);
+        $sut = new TranslatableType(
+            $utilsDouble,
+            $this
+                ->getMockBuilder('Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer')
+                ->disableOriginalConstructor()
+                ->getMock()
+        );
         $sut->buildForm($builderDouble, []);
     }
 }

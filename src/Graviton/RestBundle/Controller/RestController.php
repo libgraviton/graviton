@@ -152,11 +152,9 @@ class RestController
 
         $record = $this->findRecord($id);
 
-        $response->setContent($this->serialize($record));
-
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -310,11 +308,6 @@ class RestController
         } else {
             $record = $form->getData();
         }
-        // Deserialize the request content (throws an exception if something fails)
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
-        );
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -418,12 +411,6 @@ class RestController
 
         // does it really exist??
         $this->findRecord($id);
-
-        // Deserialize the content
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
-        );
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -618,7 +605,7 @@ class RestController
      *
      * @return boolean
      */
-    public function checkJsonRequest(Request $request, Response $response)
+    private function checkJsonRequest(Request $request, Response $response)
     {
         $content = $request->getContent();
 
@@ -663,5 +650,16 @@ class RestController
         }
 
         return $message;
+    }
+
+    /**
+     * @param Request $request request
+     * @return DynamicForm
+     */
+    private function getForm(Request $request)
+    {
+        list($service) = explode(':', $request->attributes->get('_controller'));
+        $this->formType->initialize($service);
+        $this->formFactory->create($this->formType);
     }
 }
