@@ -106,30 +106,26 @@ class LanguageControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
-
         $this->assertEquals('de', $results->id);
-
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 
-        // client has to be rebuild since the AppKernel will be resetted after a request
-        // which will unregister bundles registered by bundle loader.
         $client = static::createRestClient();
         $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
-
         $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
 
-        // client has to be rebuild since the AppKernel will be resetted after a request
-        // which will unregister bundles registered by bundle loader.
         $client = static::createRestClient();
         $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
-
         $results = $client->getResults();
 
         $this->assertEquals('English', $results->name->en);
         $this->assertEquals('Englisch', $results->name->de);
 
-        // client has to be rebuild since the AppKernel will be resetted after a request
-        // which will unregister bundles registered by bundle loader.
+        $client = static::createRestClient();
+        $client->request('GET', '/i18n/translatable/i18n-en-German');
+        $this->assertEquals('i18n', $client->getResults()->domain);
+        $this->assertEquals('en', $client->getResults()->locale);
+        $this->assertEquals('German', $client->getResults()->original);
+
         $client = static::createRestClient();
         $client->request('GET', '/i18n/translatable/i18n-de-German');
 

@@ -67,9 +67,7 @@ class TranslatableToDefaultStringTransformer implements DataTransformerInterface
         if (!isset($default[$defaultLang])) {
             throw new TransformationFailedException(sprintf('Value must contain "%s" string', $defaultLang));
         }
-        if (count($default) > 1) {
-            $this->utils->insertTranslatable($default);
-        }
+        $this->utils->insertTranslatable($default);
         return $default[$defaultLang];
     }
 }
