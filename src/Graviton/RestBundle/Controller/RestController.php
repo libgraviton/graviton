@@ -298,9 +298,7 @@ class RestController
 
         $this->checkJsonRequest($request, $response);
 
-        list($service) = explode(':', $request->attributes->get('_controller'));
-        $this->formType->initialize($service);
-        $form = $this->formFactory->create($this->formType);
+        $form = $this->getForm($request);
         $form->handleRequest($request);
         $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
         if (!$form->isValid()) {
@@ -398,9 +396,7 @@ class RestController
 
         $this->checkJsonRequest($request, $response);
 
-        list($service) = explode(':', $request->attributes->get('_controller'));
-        $this->formType->initialize($service);
-        $form = $this->formFactory->create($this->formType);
+        $form->getForm($request);
         $form->handleRequest($request);
         $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
         if (!$form->isValid()) {
