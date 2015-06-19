@@ -68,12 +68,29 @@ chmod +x /opt/bin/docker-compose
 Run ``docker-compose``.
 
 ```bash
-docker-compose up composer
-docker-compose up prepare
+docker-compose run --rm install
+docker-compose run --rm prepare
 sudo mkdir /var/lib/mongodb
 sudo chown -f 999:999 /var/lib/mongodb
-docker-compose up -d nginx
+docker-compose up -d webserver
 ```
+
+### Create a vendorized image
+
+```bash
+docker commit graviton/graviton:vendorized
+```
+
+May be used as follows without running install or prepare.
+
+```bash
+sed -i -e 's@graviton:lastest@graviton:vendorized@' docker-compose.yml
+docker-compose up -d webserver
+```
+You will most likely want to override ``/app/app/config/parameters.yml`` for you local
+environment. This and other things are best done by managing a local version of
+``docker-compose.yml`` for each deploy.
+
 
 ### Manually
 
