@@ -10,6 +10,8 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\ExceptionBundle\Exception\NoInputException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
@@ -296,6 +298,8 @@ class RestController
         // Get the response object from container
         $response = $this->getResponse();
 
+        $this->checkJsonRequest($request, $response);
+
         list($service) = explode(':', $request->attributes->get('_controller'));
         $this->formType->initialize($service);
         $form = $this->formFactory->create($this->formType);
@@ -398,6 +402,8 @@ class RestController
     public function putAction($id, Request $request)
     {
         $response = $this->getResponse();
+
+        $this->checkJsonRequest($request, $response);
 
         list($service) = explode(':', $request->attributes->get('_controller'));
         $this->formType->initialize($service);
@@ -602,5 +608,60 @@ class RestController
     public function render($view, array $parameters = array(), Response $response = null)
     {
         return $this->templating->renderResponse($view, $parameters, $response);
+    }
+
+    /**
+     * validate raw json input
+     *
+     * @param Request  $request  request
+     * @param Response $response response
+     *
+     * @return boolean
+     */
+    public function checkJsonRequest(Request $request, Response $response)
+    {
+        $content = $request->getContent();
+
+        if (is_resource($content)) {
+            throw new BadRequestHttpException('unexpected resource in validation');
+        }
+
+        // Decode the json from request
+        if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
+            $e = new NoInputException();
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        // specially check for parse error ($input decodes to null) and report accordingly..
+        if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
+            $e = new MalformedInputException($this->getLastJsonErrorMessage());
+            $e->setErrorType(json_last_error());
+            $e->setResponse($response);
+            //$e->setResponse($event->getResponse());
+            throw $e;
+        }
+
+        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
+            // we need to check for id mismatches....
+            if ($request->attributes->get('id') != $input['id']) {
+                throw new BadRequestHttpException('Record ID in your payload must be the same');
+            }
+        }
+    }
+    /**
+     * Used for backwards compatibility to PHP 5.4
+     *
+     * @return string
+     */
+    private function getLastJsonErrorMessage()
+    {
+        $message = 'Unable to decode JSON string';
+
+        if (function_exists('json_last_error_msg')) {
+            $message = json_last_error_msg();
+        }
+
+        return $message;
     }
 }

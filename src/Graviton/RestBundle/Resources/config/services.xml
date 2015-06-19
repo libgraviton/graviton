@@ -89,12 +89,6 @@
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
         </service>
 
-        <!-- Validation listener / Json validator -->
-        <service id="graviton.rest.listener.validationrequestlistener"
-                 class="Graviton\RestBundle\Listener\ValidationRequestListener">
-            <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
-        </service>
-
         <!-- restUtils service - a service providing some helpers dealing with services -->
         <service id="graviton.rest.restutils" class="Graviton\RestBundle\Service\RestUtils">
             <argument type="service" id="service_container"/>
