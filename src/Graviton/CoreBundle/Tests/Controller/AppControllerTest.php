@@ -462,62 +462,6 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * Test various permutations of the PATCH method
-     *
-     * @param string $patchString json-patch to apply
-     *
-     * @return void
-     *
-     * @dataProvider patchMethodTests
-     */
-    public function testPatchApp($patchString)
-    {
-        $client = static::createRestClient();
-        $patchString = json_decode($patchString);
-
-        $client->patch('/core/app/tablet', $patchString);
-
-        $response = $client->getResponse();
-
-        // client ha to be rebuild since the AppKernel will be resetted after a request
-        // which will unregister bundles registered by bundle loader.
-        $client = static::createRestClient();
-
-        // get the patched record
-        $client->request('GET', '/core/app/tablet');
-        $results = $client->getResults();
-
-        // check status code (204 No Content)
-        $this->assertEquals('204', $response->getStatusCode());
-
-        // check record values
-        $this->assertEquals('tablet', $results->id);
-        $this->assertEquals('Tablet', $results->title->en);
-        $this->assertFalse($results->showInMenu);
-
-        $this->assertContains(
-            '<http://localhost/core/app/tablet>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-    }
-
-    /**
-     * various ways to test PATH
-     *
-     * All of these should set showInMenu to false on the /core/app/hello record while never
-     * creating any duplicate items.
-     *
-     * @return array
-     */
-    public function patchMethodTests()
-    {
-        return array(
-            array('[{"op":"replace","path":"/showInMenu","value":false}]'),
-            array('[{"op":"add","path":"/showInMenu","value":false}]'),
-        );
-    }
-
-    /**
      * check if response looks like schema
      *
      * @param object $response response
