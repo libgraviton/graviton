@@ -12,5 +12,5 @@ applications:
   - src/
   - web/
   env:
-    SYMFONY_ENV: dev
+    SYMFONY_ENV: prod
   memory: 256M
