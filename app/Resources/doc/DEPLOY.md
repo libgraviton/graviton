@@ -77,14 +77,17 @@ docker-compose up -d webserver
 
 ### Create a vendorized image
 
+The following is to be run in a graviton working copy on a PHP build machine.
+
 ```bash
-docker commit graviton_app_1 graviton/graviton:vendorized
+composer install
+docker-compose build vendorized
 ```
 
-May be used as follows without running install or prepare.
+It may be used as follows without running install or prepare.
 
 ```bash
-sed -i -e 's@image: graviton/graviton@image: graviton/graviton:vendorized@' docker-compose.yml
+sed -i -e 's/- app$/- vendorized/' docker-compose.yml
 docker-compose up -d webserver
 ```
 You will most likely want to override ``/app/app/config/parameters.yml`` for you local
