@@ -115,44 +115,6 @@ class Client extends FrameworkClient
     }
 
     /**
-     * PATCH to an URI.
-     *
-     * @param string  $uri        The URI to fetch
-     * @param mixed   $content    The raw body data
-     * @param array   $parameters The Request parameters
-     * @param array   $files      The files
-     * @param array   $server     The server parameters (HTTP headers are referenced with a HTTP_ prefix as PHP does)
-     * @param boolean $jsonEncode If $content should be json encoded or not
-     *
-     * @return \Symfony\Component\DomCrawler\Crawler|null
-     *
-     * @api
-     */
-    public function patch(
-        $uri,
-        $content,
-        array $parameters = array(),
-        array $files = array(),
-        array $server = array(),
-        $jsonEncode = true
-    ) {
-        $this->jsonRequest = $jsonEncode;
-
-        if ($jsonEncode) {
-            $content = json_encode($content);
-        }
-
-        return $this->request(
-            'PATCH',
-            $uri,
-            $parameters,
-            $files,
-            $server,
-            $content
-        );
-    }
-
-    /**
      * prepare a deserialized copy of a json response
      *
      * @param object $response Response containing our return value as raw json

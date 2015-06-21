@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1bfb713a5de95cc7588d43849158ae8e",
+    "hash": "d5fcc5f80a7ecfcf91ad0846b9706b79",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -2947,55 +2947,6 @@
             "time": "2015-03-09 09:58:04"
         },
         {
-            "name": "php-jsonpatch/php-jsonpatch",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/raphaelstolt/php-jsonpatch.git",
-                "reference": "ad56ad31e20a8778bfafed865b7b09f7f4276c21"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/ad56ad31e20a8778bfafed865b7b09f7f4276c21",
-                "reference": "ad56ad31e20a8778bfafed865b7b09f7f4276c21",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0",
-                "php-jsonpointer/php-jsonpointer": "1.1.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Rs\\Json": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Raphael Stolt",
-                    "email": "raphael.stolt@gmail.com",
-                    "homepage": "http://raphaelstolt.blogspot.com"
-                }
-            ],
-            "description": "Implementation of JSON Patch (http://tools.ietf.org/html/rfc6902)",
-            "homepage": "https://github.com/raphaelstolt/php-jsonpatch",
-            "keywords": [
-                "json",
-                "json modification",
-                "json patch"
-            ],
-            "time": "2015-05-20 23:08:19"
-        },
-        {
             "name": "php-jsonpointer/php-jsonpointer",
             "version": "v1.1.0",
             "source": {
@@ -5057,7 +5008,6 @@
         "doctrine/mongodb-odm": 10,
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
-        "php-jsonpatch/php-jsonpatch": 5,
         "graviton/php-rql-parser": 15,
         "graviton/rql-parser-bundle": 15,
         "knplabs/knp-gaufrette-bundle": 20

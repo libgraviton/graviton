@@ -20,7 +20,6 @@ use Graviton\RestBundle\Controller\RestController;
 use Graviton\PersonBundle\Repository\CustomerDiffRepository;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
-use Rs\Json\Patch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
