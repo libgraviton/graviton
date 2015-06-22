@@ -28,6 +28,7 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
         $serviceDouble = $this->getMock('Symfony\Component\DependencyInjection\Definition');
 
         $containerDouble
+            ->expects($this->once())
             ->method('findTaggedServiceIds')
             ->willReturn($this->taggedServicesData());
 
