@@ -113,6 +113,12 @@ trait LoadFieldsTrait
             list($subNs, $subBundle,, $subDoc) = explode('\\', $node->getAttribute('target-document'));
             $prefix = sprintf('%s.', $node->getAttribute('field'));
 
+            if (substr($subBundle, -6) == 'Bundle') {
+                throw new \RuntimeException(
+                    'target-document must be in a bundle that adheres to symfony standards'
+                );
+            }
+
             // remove trailing Bundle since we are grabbing info from classname and not service id
             $subBundle = substr($subBundle, 0, -6);
 
