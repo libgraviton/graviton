@@ -170,7 +170,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         // we sent a location header so we don't want a body
-        $this->assertEquals(null, $results);
+        $this->assertNull($results);
         $this->assertContains('/core/app', $response->headers->get('Location'));
 
         $client = static::createRestClient();
