@@ -78,9 +78,11 @@ trait LoadFieldsTrait
                 ucfirst($doc).'.mongodb.xml'
             );
 
+        // we only want to find exactly one file
         if ($files->count() != 1) {
             return;
         }
+        // array_pop would have been nice but won't work here, some day I'll look into iterators or whatnot
         $file = null;
         foreach ($files as $fileObject) {
             $file = $fileObject->getRealPath();
