@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\Form\FormFactory;
+use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Gaufrette\FileSystem;
 use Gaufrette\File;
 use GravitonDyn\FileBundle\Document\FileMetadata;
@@ -32,14 +34,16 @@ class FileController extends RestController
     private $gaufrette;
 
     /**
-     * @param Response           $response   Response
-     * @param RestUtilsInterface $restUtils  Rest utils
-     * @param Router             $router     Router
-     * @param LanguageRepository $language   Language
-     * @param ValidatorInterface $validator  Validator
-     * @param EngineInterface    $templating Templating
-     * @param ContainerInterface $container  Container
-     * @param FileSystem         $gaufrette  file system abstraction layer for s3 and more
+     * @param Response           $response    Response
+     * @param RestUtilsInterface $restUtils   Rest utils
+     * @param Router             $router      Router
+     * @param LanguageRepository $language    Language
+     * @param ValidatorInterface $validator   Validator
+     * @param EngineInterface    $templating  Templating
+     * @param FormFactory        $formFactory form factory
+     * @param DocumentType       $formType    generic form
+     * @param ContainerInterface $container   Container
+     * @param FileSystem         $gaufrette   file system abstraction layer for s3 and more
      */
     public function __construct(
         Response $response,
@@ -48,6 +52,8 @@ class FileController extends RestController
         LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
+        FormFactory $formFactory,
+        DocumentType $formType,
         ContainerInterface $container,
         Filesystem $gaufrette
     ) {
@@ -58,6 +64,8 @@ class FileController extends RestController
             $language,
             $validator,
             $templating,
+            $formFactory,
+            $formType,
             $container
         );
         $this->gaufrette = $gaufrette;

@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\Form\FormFactory;
+use Graviton\DocumentBundle\Form\Type\DocumentType;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -39,14 +41,16 @@ abstract class AbstractCustomerController extends RestController
     private $diffRepo;
 
     /**
-     * @param Response               $response   Response
-     * @param RestUtilsInterface     $restUtils  Rest utils
-     * @param Router                 $router     Router
-     * @param LanguageRepository     $language   Language
-     * @param ValidatorInterface     $validator  Validator
-     * @param EngineInterface        $templating Templating
-     * @param ContainerInterface     $container  Container
-     * @param CustomerDiffRepository $diffRepo   repo containing customer diffs
+     * @param Response               $response    Response
+     * @param RestUtilsInterface     $restUtils   Rest utils
+     * @param Router                 $router      Router
+     * @param LanguageRepository     $language    Language
+     * @param ValidatorInterface     $validator   Validator
+     * @param EngineInterface        $templating  Templating
+     * @param FormFactory            $formFactory form factory
+     * @param DocumentType           $formType    generic form
+     * @param ContainerInterface     $container   Container
+     * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
      */
     public function __construct(
         Response $response,
@@ -55,6 +59,8 @@ abstract class AbstractCustomerController extends RestController
         LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
+        FormFactory $formFactory,
+        DocumentType $formType,
         ContainerInterface $container,
         CustomerDiffRepository $diffRepo
     ) {
@@ -65,6 +71,8 @@ abstract class AbstractCustomerController extends RestController
             $language,
             $validator,
             $templating,
+            $formFactory,
+            $formType,
             $container
         );
         $this->diffRepo = $diffRepo;

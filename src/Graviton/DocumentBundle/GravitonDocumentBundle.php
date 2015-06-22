@@ -15,6 +15,8 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
 
 /**
  * GravitonDocumentBundle
@@ -78,5 +80,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 
         $container->addCompilerPass(new ExtRefMappingCompilerPass);
         $container->addCompilerPass(new ExtRefFieldsCompilerPass);
+        $container->addCompilerPass(new DocumentFormMapCompilerPass);
+        $container->addCompilerPass(new DocumentFormFieldsCompilerPass);
     }
 }

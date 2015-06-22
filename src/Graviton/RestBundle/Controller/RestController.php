@@ -10,10 +10,13 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\ExceptionBundle\Exception\NoInputException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
@@ -21,6 +24,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -52,7 +57,16 @@ class RestController
     private $response;
     
     /**
-     *
+     * @var FormFactory
+     */
+    private $formFactory;
+
+    /**
+     * @var DocumentType
+     */
+    private $formType;
+
+    /**
      * @var RestUtilsInterface
      */
     private $restUtils;
@@ -78,13 +92,15 @@ class RestController
     private $templating;
     
     /**
-     * @param Response           $response   Response
-     * @param RestUtilsInterface $restUtils  Rest utils
-     * @param Router             $router     Router
-     * @param LanguageRepository $language   Language
-     * @param ValidatorInterface $validator  Validator
-     * @param EngineInterface    $templating Templating
-     * @param ContainerInterface $container  Container
+     * @param Response           $response    Response
+     * @param RestUtilsInterface $restUtils   Rest utils
+     * @param Router             $router      Router
+     * @param LanguageRepository $language    Language
+     * @param ValidatorInterface $validator   Validator
+     * @param EngineInterface    $templating  Templating
+     * @param FormFactory        $formFactory form factory
+     * @param DocumentType       $formType    generic form
+     * @param ContainerInterface $container   Container
      */
     public function __construct(
         Response $response,
@@ -93,6 +109,8 @@ class RestController
         LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
+        FormFactory $formFactory,
+        DocumentType $formType,
         ContainerInterface $container
     ) {
         $this->response = $response;
@@ -101,6 +119,8 @@ class RestController
         $this->language = $language;
         $this->validator = $validator;
         $this->templating = $templating;
+        $this->formFactory = $formFactory;
+        $this->formType = $formType;
         $this->container = $container;
     }
 
@@ -132,11 +152,9 @@ class RestController
 
         $record = $this->findRecord($id);
 
-        $response->setContent($this->serialize($record));
-
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -254,14 +272,11 @@ class RestController
         }
 
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent(
-                $this->serialize($model->findAll($request))
-            );
+            ->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($model->findAll($request))],
             $response
         );
     }
@@ -278,19 +293,11 @@ class RestController
         // Get the response object from container
         $response = $this->getResponse();
 
-        // Deserialize the request content (throws an exception if something fails)
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
+        $this->checkJsonRequest($request, $response);
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
         );
-
-        /*
-         * [nue]: it should be safe to *not* validate here again as the ValidationListener did
-         * that already.. i'm leaving it here to remember ourselves that it was just disabled here..
-         * if it turns out ok, remove it completely.. re-validation makes it harder as we have
-         * some special constraints that are better validated directly on the json input..
-         */
-        //$this->validateRecord($record);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -298,9 +305,8 @@ class RestController
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        // Set status code and content
+        // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setContent($this->serialize($record));
 
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
@@ -315,11 +321,7 @@ class RestController
             $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -379,14 +381,21 @@ class RestController
     {
         $response = $this->getResponse();
 
-        // does it really exist??
-        $this->findRecord($id);
+        $this->checkJsonRequest($request, $response);
 
-        // Deserialize the content
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
         );
+
+        // does it really exist??
+        $upsert = false;
+        try {
+            $this->findRecord($id);
+        } catch (NotFoundException $e) {
+            // who cares, we'll upsert it
+            $upsert = true;
+        }
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -400,17 +409,16 @@ class RestController
         }
 
         // And update the record, if everything is ok
-        $this->getModel()->updateRecord($id, $record);
+        if ($upsert) {
+            $this->getModel()->insertRecord($record);
+        } else {
+            $this->getModel()->updateRecord($id, $record);
+        }
         $response->setStatusCode(Response::HTTP_OK);
-
-        // i fetch it here again to prevent some "id" from the payload
-        // visibly overriding the one provided by GET. just to make sure
-        // we really give the client back what he actually saved.
-        $response->setContent($this->serialize($record));
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -475,7 +483,6 @@ class RestController
             $schemaMethod = 'getCollectionSchema';
         }
         $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
-        $response->setContent($this->serialize($schema));
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -491,34 +498,9 @@ class RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($schema)],
             $response
         );
-    }
-
-    /**
-     * Validate a record and throw a 400 error if not valid
-     *
-     * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
-     *
-     * @throws \Graviton\ExceptionBundle\Exception\ValidationException
-     *
-     * @deprecated
-     *
-     * @return void
-     */
-    protected function validateRecord($record)
-    {
-        // Re-validate record after serialization (we don't trust the serializer...)
-        $violations = $this->getValidator()->validate($record);
-
-        if ($violations->count() > 0) {
-            $e = new ValidationException('Validation failed');
-            $e->setViolations($violations);
-            $e->setResponse($this->getResponse());
-
-            throw $e;
-        }
     }
 
     /**
@@ -543,5 +525,92 @@ class RestController
     public function render($view, array $parameters = array(), Response $response = null)
     {
         return $this->templating->renderResponse($view, $parameters, $response);
+    }
+
+    /**
+     * validate raw json input
+     *
+     * @param Request  $request  request
+     * @param Response $response response
+     *
+     * @return void
+     */
+    private function checkJsonRequest(Request $request, Response $response)
+    {
+        $content = $request->getContent();
+
+        if (is_resource($content)) {
+            throw new BadRequestHttpException('unexpected resource in validation');
+        }
+
+        // Decode the json from request
+        if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
+            $e = new NoInputException();
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        // specially check for parse error ($input decodes to null) and report accordingly..
+        if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
+            $e = new MalformedInputException($this->getLastJsonErrorMessage());
+            $e->setErrorType(json_last_error());
+            $e->setResponse($response);
+            //$e->setResponse($event->getResponse());
+            throw $e;
+        }
+
+        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
+            // we need to check for id mismatches....
+            if ($request->attributes->get('id') != $input['id']) {
+                throw new BadRequestHttpException('Record ID in your payload must be the same');
+            }
+        }
+    }
+    /**
+     * Used for backwards compatibility to PHP 5.4
+     *
+     * @return string
+     */
+    private function getLastJsonErrorMessage()
+    {
+        $message = 'Unable to decode JSON string';
+
+        if (function_exists('json_last_error_msg')) {
+            $message = json_last_error_msg();
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param Request $request request
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    private function getForm(Request $request)
+    {
+        list($service) = explode(':', $request->attributes->get('_controller'));
+        $this->formType->initialize($service);
+        return $this->formFactory->create($this->formType);
+    }
+
+    /**
+     * @param FormInterface $form    form to check
+     * @param Request       $request data request
+     *
+     * @return mixed
+     */
+    private function checkForm(FormInterface $form, Request $request)
+    {
+        $form->handleRequest($request);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
+
+        if (!$form->isValid()) {
+            throw new ValidationException($form->getErrors(true));
+        } else {
+            $record = $form->getData();
+        }
+
+        return $record;
     }
 }

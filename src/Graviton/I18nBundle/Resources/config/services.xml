@@ -22,6 +22,8 @@
     <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
     <parameter key="graviton.i18n.utils.class">Graviton\I18nBundle\Service\I18nUtils</parameter>
+    <parameter key="graviton.i18n.form.transformer.translatabletodefaultstring.class">Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer</parameter>
+    <parameter key="graviton.i18n.form.type.translatable.class">Graviton\I18nBundle\Form\Type\TranslatableType</parameter>
   </parameters>
   <services>
     <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
@@ -129,6 +131,14 @@
 
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
+    </service>
+    <service id="graviton.i18n.form.transformer.translatabletodefaultstring" class="%graviton.i18n.form.transformer.translatabletodefaultstring.class%">
+      <argument type="service" id="graviton.18n.utils"/>
+    </service>
+    <service id="graviton.i18n.form.type.translatable" class="%graviton.i18n.form.type.translatable.class%">
+      <argument type="service" id="graviton.18n.utils"/>
+      <argument type="service" id="graviton.i18n.form.transformer.translatabletodefaultstring"/>
+      <tag name="form.type" alias="translatable"/>
     </service>
   </services>
 </container>
