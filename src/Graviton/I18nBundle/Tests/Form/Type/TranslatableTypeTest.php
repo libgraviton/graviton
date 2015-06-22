@@ -72,13 +72,12 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
         $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
 
         $builderDouble
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('add')
-            ->with('en', 'text', ['required' => true]);
-        $builderDouble
-            ->expects($this->at(2))
-            ->method('add')
-            ->with('de', 'text', []);
+            ->withConsecutive(
+                [$this->equalTo('en'), $this->equalTo('text'), $this->equalTo(['required' => true])],
+                [$this->equalTo('de'), $this->equalTo('text'), $this->equalTo([])]
+            );
 
         $sut = new TranslatableType(
             $utilsDouble,
