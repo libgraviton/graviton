@@ -240,6 +240,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $query = $factory
             ->create('MongoOdm', $rqlQuery, $queryBuilder);
 
-        return $query->getBuilder();
+        return $query->buildQuery();
     }
 }
