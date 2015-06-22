@@ -18,6 +18,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements LoadFieldsInterface
 {
+    /**
+     * @see \Graviton\DocumentBundle\DependencyInjection\Compiler\LoadFieldsTrait
+     */
     use LoadFieldsTrait;
 
     /**

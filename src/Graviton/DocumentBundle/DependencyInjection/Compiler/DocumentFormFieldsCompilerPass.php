@@ -15,6 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadFieldsInterface
 {
+    /**
+     * @see \Graviton\DocumentBundle\DependencyInjection\Compiler\LoadFieldsTrait
+     */
     use LoadFieldsTrait;
 
     /**
