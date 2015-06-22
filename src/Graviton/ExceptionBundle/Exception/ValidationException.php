@@ -28,14 +28,11 @@ final class ValidationException extends RestException
     /**
      * Constructor
      *
-     * @param string            $message Error message
      * @param FormErrorIterator $errors  Errors from form
+     * @param string            $message Error message
      */
-    public function __construct($message, FormErrorIterator $errors)
+    public function __construct(FormErrorIterator $errors, $message = 'Validation failed')
     {
-        if (empty($message)) {
-            $message = 'Validation failed';
-        }
         $this->errors = $errors;
         parent::__construct(Response::HTTP_BAD_REQUEST, $message);
     }

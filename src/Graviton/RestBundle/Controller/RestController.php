@@ -660,7 +660,7 @@ class RestController
         $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
 
         if (!$form->isValid()) {
-            throw new ValidationException("Validation failed", $form->getErrors(true));
+            throw new ValidationException($form->getErrors(true));
         } else {
             $record = $form->getData();
         }
