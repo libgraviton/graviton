@@ -89,9 +89,8 @@
       <tag name="kernel.event_listener" event="kernel.response" method="onkernelresponse"/>
     </service>
     <service id="graviton.i18n.listener.acceptlanguagerequest" class="%graviton.i18n.listener.acceptlanguagerequest.class%">
-      <call method="setRepository">
-        <argument type="service" id="graviton.i18n.repository.language"/>
-      </call>
+      <argument type="service" id="graviton.i18n.repository.language"/>
+      <argument type="string">%graviton.translator.default.locale%</argument>
       <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
     </service>
     <service id="graviton.i18n.loader.doctrineodm" class="%graviton.i18n.loader.doctrineodm.class%">
