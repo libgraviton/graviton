@@ -33,7 +33,10 @@ class AppKernel extends Kernel
      */
     public function __construct($environment, $debug)
     {
-        date_default_timezone_set('UTC');
+        $configuredTimeZone = ini_get('date.timezone');
+        if (empty($configuredTimeZone)) {
+            date_default_timezone_set('UTC');
+        }
         parent::__construct($environment, $debug);
     }
 

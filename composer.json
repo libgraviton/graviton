@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.12.1",
+    "version": "0.13.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": "~5.4",
+        "php": ">=5.4",
         "symfony/symfony": "~2.6.5",
         "doctrine/orm": "~2.4",
         "twig/extensions": "~1.0",
@@ -41,7 +41,6 @@
         "misd/guzzle-bundle": "~1.0",
         "knplabs/knp-paginator-bundle": "~2.4",
         "php-jsonpointer/php-jsonpointer": "~1.1@rc",
-        "php-jsonpatch/php-jsonpatch": "~1.1@rc",
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": "~2.0@alpha",
@@ -89,6 +88,15 @@
             "./vendor/bin/phpcs --standard=PSR1 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
             "./vendor/bin/phpcs --standard=PSR2 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
             "./vendor/bin/phpcs --standard=ENTB  --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/"
+        ],
+        "docker_prepare": [
+            "rm -rf app/cache/*",
+            "chown -R 33 app/cache",
+            "rm -rf app/logs/*",
+            "chown -R 33 app/logs"
+        ],
+        "docker_fixtures": [
+            "app/console doctrine:mongodb:fixtures:load"
         ]
     },
     "config": {
@@ -106,6 +114,8 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml",
             "env-map": {
+                "graviton.mongodb.default.server.db": "MONGODB_DB",
+                "graviton.mongodb.default.server.uri": "MONGODB_URI",
                 "graviton.errbit.api_key": "ERRBIT_API_KEY",
                 "graviton.errbit.host": "ERRBIT_HOST"
             }

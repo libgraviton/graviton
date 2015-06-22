@@ -24,15 +24,20 @@ class AcceptLanguageRequestListener
     private $repository;
 
     /**
+     * @var string
+     */
+    private $defaultLocale;
+
+    /**
      * set language repository used for getting available languages
      *
-     * @param LanguageRepository $repository repo
-     *
-     * @return void
+     * @param LanguageRepository $repository    repo
+     * @param string             $defaultLocale default locale to return if no language given in request
      */
-    public function setRepository(LanguageRepository $repository)
+    public function __construct(LanguageRepository $repository, $defaultLocale)
     {
         $this->repository = $repository;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -61,6 +66,9 @@ class AcceptLanguageRequestListener
                 $this->repository->findAll()
             )
         );
+        if (empty($languages)) {
+            $languages[$this->defaultLocale] = $this->defaultLocale;
+        }
 
         $request->attributes->set('languages', $languages);
 

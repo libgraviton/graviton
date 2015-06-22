@@ -19,17 +19,5 @@ class AbstractCustomerControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInstanciateController()
     {
-        $diffRepoDouble = $this->getMockBuilder('Graviton\PersonBundle\Repository\CustomerDiffRepository')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $stub = $this->getMockForAbstractClass(
-            'Graviton\PersonBundle\Controller\AbstractCustomerController',
-            [
-                $diffRepoDouble
-            ]
-        );
-
-        $this->assertInstanceOf('Graviton\RestBundle\Controller\RestController', $stub);
     }
 }

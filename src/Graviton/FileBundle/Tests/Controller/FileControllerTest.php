@@ -101,6 +101,22 @@ class FileControllerTest extends RestTestCase
         $results = $client->getResponse()->getContent();
 
         $this->assertEquals($fixtureData, $results);
+
+        $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
+
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $results = $client->getResults();
+
+        $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+
+        $data->links = [];
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $results = $client->getResults();
+
+        $this->assertEmpty($results->links);
+
     }
 
     /**

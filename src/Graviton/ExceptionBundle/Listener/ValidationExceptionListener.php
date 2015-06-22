@@ -8,6 +8,8 @@ namespace Graviton\ExceptionBundle\Listener;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormError;
 
 /**
  * Listener for validation exceptions
@@ -28,14 +30,43 @@ class ValidationExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof ValidationException) {
+            $content = $this->getErrorMessages($exception->getErrors());
             // Set status code and content
-            $response = $exception->getResponse()
+            $response = new Response();
+            $response
                 ->setStatusCode(Response::HTTP_BAD_REQUEST)
                 ->setContent(
-                    $this->getSerializedContent($exception->getViolations())
+                    $this->getSerializedContent($content)
                 );
 
             $event->setResponse($response);
         }
+    }
+
+    /**
+     * @param FormErrorIterator $errors errors
+     *
+     * @return array
+     */
+    private function getErrorMessages(FormErrorIterator $errors)
+    {
+        $content = [];
+        foreach ($errors as $error) {
+            if ($error instanceof FormErrorIterator) {
+                $content = array_merge($content, $this->getErrorMessages($error));
+            } elseif ($error instanceof FormError) {
+                $cause = $error->getCause();
+                if (!$cause) {
+                    $path = 'unknkown';
+                } else {
+                    $path = $cause->getPropertyPath();
+                }
+                $content[] = [
+                    'property_path' => $path,
+                    'message' => $error->getMessage(),
+                ];
+            }
+        }
+        return $content;
     }
 }
