@@ -113,7 +113,7 @@ trait LoadFieldsTrait
             list($subNs, $subBundle,, $subDoc) = explode('\\', $node->getAttribute('target-document'));
             $prefix = sprintf('%s.', $node->getAttribute('field'));
 
-            if (substr($subBundle, -6) == 'Bundle') {
+            if (substr($subBundle, -6) != 'Bundle') {
                 throw new \RuntimeException(
                     'target-document must be in a bundle that adheres to symfony standards'
                 );
