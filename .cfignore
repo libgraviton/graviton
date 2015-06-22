@@ -4,3 +4,6 @@ app/log
 *.phar
 mongodata
 .git
+docker-compose.yml
+Dockerfile
+.docker-config/

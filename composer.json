@@ -88,6 +88,15 @@
             "./vendor/bin/phpcs --standard=PSR1 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
             "./vendor/bin/phpcs --standard=PSR2 --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/",
             "./vendor/bin/phpcs --standard=ENTB  --ignore='src/GravitonDyn/*' --ignore='app/cache/*' --ignore='app/check.php' --ignore='app/SymfonyRequirements.php' --ignore='web/check.php' --ignore='web/config.php' --ignore='app/AppCache.php' --ignore='*.css' --ignore='*.js' src/ app/ web/"
+        ],
+        "docker_prepare": [
+            "rm -rf app/cache/*",
+            "chown -R 33 app/cache",
+            "rm -rf app/logs/*",
+            "chown -R 33 app/logs"
+        ],
+        "docker_fixtures": [
+            "app/console doctrine:mongodb:fixtures:load"
         ]
     },
     "config": {
@@ -105,6 +114,8 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml",
             "env-map": {
+                "graviton.mongodb.default.server.db": "MONGODB_DB",
+                "graviton.mongodb.default.server.uri": "MONGODB_URI",
                 "graviton.errbit.api_key": "ERRBIT_API_KEY",
                 "graviton.errbit.host": "ERRBIT_HOST"
             }

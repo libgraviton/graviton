@@ -1,0 +1,51 @@
+app:
+    image: graviton/graviton
+install:
+    image: composer/composer
+    volumes_from:
+        - app
+    environment:
+        MONGODB_DB: 'db'
+        MONGODB_URI: 'mongodb://mongodb:27017'
+    command: install --ignore-platform-reqs --no-dev
+    restart: no
+prepare:
+    image: composer/composer
+    volumes_from:
+        - app
+    command: docker_prepare
+    restart: no
+database:
+    image: mongo
+    volumes:
+        - /var/lib/mongodb:/data
+    command: --smallfiles
+appserver:
+    image: gravityplatform/php-fpm:develop
+    links:
+        - database:mongodb
+    environment:
+        MONGODB_DB: 'db'
+        MONGODB_URI: 'mongodb://mongodb:27017'
+        SYMFONY_ENV: prod
+    volumes_from:
+        - app
+webserver:
+    image: nginx
+    links:
+        - appserver:fpm
+    volumes:
+        - .docker-config/nginx/defaults.conf:/etc/nginx/conf.d/default.conf
+    ports:
+        - 80:80
+vendorized:
+    build: .
+fixtures:
+    image: composer/composer
+    volumes_from:
+        - app
+    environment:
+        MONGODB_DB: 'db'
+        MONGODB_URI: 'mongodb://mongodb:27017'
+    command: docker_fixtures
+    restart: no
