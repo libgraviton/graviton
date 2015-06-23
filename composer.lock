@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e302b41936b9004e272cb7cbbe48ada5",
+    "hash": "17dbb25443d68d8b7aad1a844be58b86",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1615,6 +1615,70 @@
                 "uploadable"
             ],
             "time": "2015-02-24 21:41:37"
+        },
+        {
+            "name": "graviton/deploy-scripts",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/deploy-scripts.git",
+                "reference": "f88f2185510252b0962908192d464e916707b3dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/deploy-scripts/zipball/f88f2185510252b0962908192d464e916707b3dc",
+                "reference": "f88f2185510252b0962908192d464e916707b3dc",
+                "shasum": ""
+            },
+            "require": {
+                "incenteev/composer-parameter-handler": "^2.1",
+                "symfony/config": "^2.6",
+                "symfony/console": "^2.6",
+                "symfony/process": "^2.6"
+            },
+            "require-dev": {
+                "libgraviton/codesniffer": "~1.3",
+                "phpunit/phpunit": "~4.6",
+                "squizlabs/php_codesniffer": "~2.2"
+            },
+            "bin": [
+                "bin/deploy"
+            ],
+            "type": "library",
+            "extra": {
+                "incenteev-parameters": {
+                    "parameter-key": "deploy-scripts",
+                    "file": "app/config/deploy.yml",
+                    "env-map": {
+                        "cf_bin": "CF_BIN",
+                        "cf_process_timeout": "CF_PROCESS_TIMEOUT",
+                        "cf_api_url": "CF_API_URL",
+                        "cf_username": "CF_USERNAME",
+                        "cf_password": "CF_PASSWORD",
+                        "cf_org": "CF_ORG",
+                        "cf_space": "CF_SPACE",
+                        "cf_domain": "CF_DOMAIN",
+                        "cf_services": "CF_SERVICES"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Graviton\\Deployment\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/deploy-scripts/graphs/contributors"
+                }
+            ],
+            "description": "low level deploy helpers",
+            "time": "2015-06-23 12:18:19"
         },
         {
             "name": "graviton/php-rql-parser",
