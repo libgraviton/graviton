@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "90caf6b42ed059d35acc256ca1523bc5",
+    "hash": "1b4a6f2384fe4825bb492272f475aa3b",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1620,7 +1620,7 @@
         },
         {
             "name": "graviton/deploy-scripts",
-            "version": "dev-master",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/deploy-scripts.git",
