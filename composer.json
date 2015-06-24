@@ -127,13 +127,15 @@
                 "file": "app/config/deploy.yml",
                 "env-map": {
                     "cf_bin": "CF_BIN",
+                    "cf_process_timeout": "CF_PROCESS_TIMEOUT",
                     "cf_api_url": "CF_API_URL",
                     "cf_username": "CF_USERNAME",
                     "cf_password": "CF_PASSWORD",
                     "cf_org": "CF_ORG",
                     "cf_space": "CF_SPACE",
                     "cf_domain": "CF_DOMAIN",
-                    "cf_services": "CF_SERVICES"
+                    "cf_services": "CF_SERVICES",
+                    "cf_environment_vars": "CF_ENVIRONMENT_VARS"
                 }
             }
         ],
