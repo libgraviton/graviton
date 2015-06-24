@@ -48,7 +48,8 @@
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
         "eo/airbrake-bundle": "~1.0",
-        "hwi/oauth-bundle": "~0.3"
+        "hwi/oauth-bundle": "~0.3",
+        "graviton/deploy-scripts": ">=0.2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -111,15 +112,31 @@
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml",
-            "env-map": {
-                "graviton.mongodb.default.server.db": "MONGODB_DB",
-                "graviton.mongodb.default.server.uri": "MONGODB_URI",
-                "graviton.errbit.api_key": "ERRBIT_API_KEY",
-                "graviton.errbit.host": "ERRBIT_HOST"
+        "incenteev-parameters": [
+            {
+                "file": "app/config/parameters.yml",
+                "env-map": {
+                    "graviton.mongodb.default.server.db": "MONGODB_DB",
+                    "graviton.mongodb.default.server.uri": "MONGODB_URI",
+                    "graviton.errbit.api_key": "ERRBIT_API_KEY",
+                    "graviton.errbit.host": "ERRBIT_HOST"
+                }
+            },
+            {
+                "parameter-key": "deploy-scripts",
+                "file": "app/config/deploy.yml",
+                "env-map": {
+                    "cf_bin": "CF_BIN",
+                    "cf_api_url": "CF_API_URL",
+                    "cf_username": "CF_USERNAME",
+                    "cf_password": "CF_PASSWORD",
+                    "cf_org": "CF_ORG",
+                    "cf_space": "CF_SPACE",
+                    "cf_domain": "CF_DOMAIN",
+                    "cf_services": "CF_SERVICES"
+                }
             }
-        },
+        ],
         "branch-alias": {
             "dev-master": "2.6-dev"
         },
