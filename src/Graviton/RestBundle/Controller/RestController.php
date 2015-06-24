@@ -477,6 +477,7 @@ class RestController
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
+        $response->setPublic();
 
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
