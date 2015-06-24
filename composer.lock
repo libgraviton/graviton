@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3f75e5b968f3337443a84bd30019f120",
+    "hash": "1b4a6f2384fe4825bb492272f475aa3b",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -1620,16 +1620,16 @@
         },
         {
             "name": "graviton/deploy-scripts",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/deploy-scripts.git",
-                "reference": "f88f2185510252b0962908192d464e916707b3dc"
+                "reference": "391e02fc031c523b68521570b824324c6cd80bdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/deploy-scripts/zipball/f88f2185510252b0962908192d464e916707b3dc",
-                "reference": "f88f2185510252b0962908192d464e916707b3dc",
+                "url": "https://api.github.com/repos/libgraviton/deploy-scripts/zipball/391e02fc031c523b68521570b824324c6cd80bdf",
+                "reference": "391e02fc031c523b68521570b824324c6cd80bdf",
                 "shasum": ""
             },
             "require": {
@@ -1680,7 +1680,7 @@
                 }
             ],
             "description": "low level deploy helpers",
-            "time": "2015-06-23 12:18:19"
+            "time": "2015-06-24 12:59:01"
         },
         {
             "name": "graviton/php-rql-parser",
