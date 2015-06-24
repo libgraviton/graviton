@@ -166,15 +166,21 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/core/app', $testApp);
+        $response = $client->getResponse();
+        $results = $client->getResults();
 
+        // we sent a location header so we don't want a body
+        $this->assertNull($results);
+        $this->assertContains('/core/app', $response->headers->get('Location'));
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-
         $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
-
         $this->assertContains(
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
@@ -323,11 +329,11 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * test updating an inexistant document
+     * test updating an inexistant document (upsert)
      *
      * @return void
      */
-    public function testPutInexistantApp()
+    public function testUpsertApp()
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
@@ -337,7 +343,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
 
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -378,7 +384,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->id = 'tablet';
         $helloApp->title = new \stdClass;
         $helloApp->title->en = 'Tablet';
-        $helloApp->showInMenu = 'I am a string and not a boolean.';
+        $helloApp->showInMenu = [];
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -387,8 +393,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertEquals('showInMenu', $results[0]->property_path);
-        $this->assertEquals('This value should be of type bool.', $results[0]->message);
+        $this->assertContains('showInMenu', $results[0]->property_path);
+        $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
     /**
@@ -458,62 +464,6 @@ class AppControllerTest extends RestTestCase
         $this->assertContains(
             '<http://localhost/schema/core/app/collection>; rel="canonical"',
             explode(',', $response->headers->get('Link'))
-        );
-    }
-
-    /**
-     * Test various permutations of the PATCH method
-     *
-     * @param string $patchString json-patch to apply
-     *
-     * @return void
-     *
-     * @dataProvider patchMethodTests
-     */
-    public function testPatchApp($patchString)
-    {
-        $client = static::createRestClient();
-        $patchString = json_decode($patchString);
-
-        $client->patch('/core/app/tablet', $patchString);
-
-        $response = $client->getResponse();
-
-        // client ha to be rebuild since the AppKernel will be resetted after a request
-        // which will unregister bundles registered by bundle loader.
-        $client = static::createRestClient();
-
-        // get the patched record
-        $client->request('GET', '/core/app/tablet');
-        $results = $client->getResults();
-
-        // check status code (204 No Content)
-        $this->assertEquals('204', $response->getStatusCode());
-
-        // check record values
-        $this->assertEquals('tablet', $results->id);
-        $this->assertEquals('Tablet', $results->title->en);
-        $this->assertFalse($results->showInMenu);
-
-        $this->assertContains(
-            '<http://localhost/core/app/tablet>; rel="self"',
-            explode(',', $response->headers->get('Link'))
-        );
-    }
-
-    /**
-     * various ways to test PATH
-     *
-     * All of these should set showInMenu to false on the /core/app/hello record while never
-     * creating any duplicate items.
-     *
-     * @return array
-     */
-    public function patchMethodTests()
-    {
-        return array(
-            array('[{"op":"replace","path":"/showInMenu","value":false}]'),
-            array('[{"op":"add","path":"/showInMenu","value":false}]'),
         );
     }
 

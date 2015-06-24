@@ -5,6 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Exception;
 
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -14,8 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-final class MalformedInputException extends RestException
+final class MalformedInputException extends BadRequestHttpException implements RestExceptionInterface
 {
+    use RestExceptionTrait;
+
     private $errorTypes = array(
         JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
         JSON_ERROR_STATE_MISMATCH => 'Underflow or modes mismatch',
@@ -32,7 +35,7 @@ final class MalformedInputException extends RestException
      */
     public function __construct($message = "Malformed input", $prev = null)
     {
-        parent::__construct($message, Response::HTTP_INTERNAL_SERVER_ERROR, $prev);
+        parent::__construct($message, $prev, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**

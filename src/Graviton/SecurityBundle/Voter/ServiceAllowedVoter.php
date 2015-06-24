@@ -21,7 +21,7 @@ class ServiceAllowedVoter extends AbstractVoter
     /**
      * @param array $whiteList Set of services to be allowed to be called.
      */
-    public function __construct(array $whiteList = array())
+    public function __construct($whiteList = array())
     {
         $this->whitelist = $whiteList;
     }

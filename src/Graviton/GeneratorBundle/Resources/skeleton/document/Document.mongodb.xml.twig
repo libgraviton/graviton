@@ -18,9 +18,6 @@
       <field fieldName="id" type="string" id="true"/>
   {% endif %}
 
-      <field fieldName="deletedDate" type="date" />
-      <gedmo:soft-deleteable field-name="deletedDate" time-aware="true" />
-
         {% for field in fields %}
             {% if 'Graviton' in field.type %}
                 {% if field.relType is defined %}{% set relType = field.relType %}{% else %}{% set relType = "reference" %}{% endif %}

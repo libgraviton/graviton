@@ -35,6 +35,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $this->loadFixtures(
             array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData'
             ),
             null,
@@ -148,7 +149,10 @@ class ModuleControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/core/module', $testModule);
+        $response = $client->getResponse();
 
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -177,7 +181,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
-        $testModule->order = false;
+        $testModule->order = 'clearly a string';
 
         $client = static::createRestClient();
         $client->post('/core/module', $testModule);
@@ -185,10 +189,10 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertEquals('order', $results[0]->property_path);
-        $this->assertEquals('This value should be of type integer.', $results[0]->message);
-
         $this->assertEquals(400, $response->getStatusCode());
+
+        $this->assertContains('order', $results[0]->property_path);
+        $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
     /**

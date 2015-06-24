@@ -1,0 +1,14 @@
+# this file contains the main configuration for the library
+deploy-scripts:
+  cf_bin: cf
+  cf_process_timeout: 600
+  cf_api_url: 'https://api.appcloud-nova.swisscom.com'
+  cf_username: ~
+  cf_password: ~
+  cf_org: ~
+  cf_space: dev
+  cf_domain: 'nova.scapp.io'
+  cf_services:
+    mongodb: advanced
+    atmoss3: free
+  cf_environment_vars: { "ERRBIT_API_KEY": "", "ERRBIT_HOST": "errbit.nova.scapp.io" }

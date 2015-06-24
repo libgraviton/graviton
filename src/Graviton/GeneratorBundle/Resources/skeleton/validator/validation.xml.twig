@@ -42,10 +42,6 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
     {% endif %}
 
-    {% if field.translatable is defined and field.translatable == true %}
-        {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\Translatable"/>']) %}
-    {% endif %}
-
     {% if field.constraints is defined and field.constraints is not empty %}
         {% for addedConstraint in field.constraints %}
             {% set addedCon = '' %}

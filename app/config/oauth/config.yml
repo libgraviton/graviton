@@ -1,0 +1,13 @@
+imports:
+    - { resource: security.yml }
+
+hwi_oauth:
+    firewall_name: secured_area
+    resource_owners:
+        github:
+            type:                github
+            client_id:           "%graviton.security.oauth.github.client_id%"
+            client_secret:       "%graviton.security.oauth.github.client_secret%"
+            scope:               "user:email"
+            options:
+                csrf:            true

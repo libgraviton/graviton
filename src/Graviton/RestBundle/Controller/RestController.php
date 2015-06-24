@@ -10,17 +10,25 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\ExceptionBundle\Exception\NoInputException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use Graviton\DocumentBundle\Form\Type\DocumentType;
+use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
-use Rs\Json\Patch;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -31,35 +39,102 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RestController implements ContainerAwareInterface
+class RestController
 {
+    /**
+     * @var ModelInterface
+     */
     private $model;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
+     * @var ContainerInterface service_container
      */
     private $container;
+    
+    /**
+     * @var Response
+     */
+    private $response;
+    
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
+
+    /**
+     * @var DocumentType
+     */
+    private $formType;
+
+    /**
+     * @var RestUtilsInterface
+     */
+    private $restUtils;
+    
+    /**
+     * @var Router
+     */
+    private $router;
+    
+    /**
+     * @var LanguageRepository
+     */
+    private $language;
+    
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+    
+    /**
+     * @var EngineInterface
+     */
+    private $templating;
+    
+    /**
+     * @param Response           $response    Response
+     * @param RestUtilsInterface $restUtils   Rest utils
+     * @param Router             $router      Router
+     * @param LanguageRepository $language    Language
+     * @param ValidatorInterface $validator   Validator
+     * @param EngineInterface    $templating  Templating
+     * @param FormFactory        $formFactory form factory
+     * @param DocumentType       $formType    generic form
+     * @param ContainerInterface $container   Container
+     */
+    public function __construct(
+        Response $response,
+        RestUtilsInterface $restUtils,
+        Router $router,
+        LanguageRepository $language,
+        ValidatorInterface $validator,
+        EngineInterface $templating,
+        FormFactory $formFactory,
+        DocumentType $formType,
+        ContainerInterface $container
+    ) {
+        $this->response = $response;
+        $this->restUtils = $restUtils;
+        $this->router = $router;
+        $this->language = $language;
+        $this->validator = $validator;
+        $this->templating = $templating;
+        $this->formFactory = $formFactory;
+        $this->formType = $formType;
+        $this->container = $container;
+    }
+
 
     /**
      * Get the container object
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     *
+     * @obsolete
      */
     public function getContainer()
     {
         return $this->container;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 
     /**
@@ -77,11 +152,9 @@ class RestController implements ContainerAwareInterface
 
         $record = $this->findRecord($id);
 
-        $response->setContent($this->serialize($record));
-
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -93,7 +166,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getResponse()
     {
-        return $this->container->get("graviton.rest.response");
+        return $this->response;
     }
 
     /**
@@ -179,7 +252,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getRestUtils()
     {
-        return $this->container->get('graviton.rest.restutils');
+        return $this->restUtils;
     }
 
     /**
@@ -199,14 +272,11 @@ class RestController implements ContainerAwareInterface
         }
 
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK)
-            ->setContent(
-                $this->serialize($model->findAll($request))
-            );
+            ->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($model->findAll($request))],
             $response
         );
     }
@@ -223,19 +293,11 @@ class RestController implements ContainerAwareInterface
         // Get the response object from container
         $response = $this->getResponse();
 
-        // Deserialize the request content (throws an exception if something fails)
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
+        $this->checkJsonRequest($request, $response);
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
         );
-
-        /*
-         * [nue]: it should be safe to *not* validate here again as the ValidationListener did
-         * that already.. i'm leaving it here to remember ourselves that it was just disabled here..
-         * if it turns out ok, remove it completely.. re-validation makes it harder as we have
-         * some special constraints that are better validated directly on the json input..
-         */
-        //$this->validateRecord($record);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -243,9 +305,8 @@ class RestController implements ContainerAwareInterface
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        // Set status code and content
+        // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setContent($this->serialize($record));
 
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
@@ -260,11 +321,7 @@ class RestController implements ContainerAwareInterface
             $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -307,7 +364,7 @@ class RestController implements ContainerAwareInterface
      */
     public function getRouter()
     {
-        return $this->container->get('graviton.rest.router');
+        return $this->router;
     }
 
     /**
@@ -324,14 +381,21 @@ class RestController implements ContainerAwareInterface
     {
         $response = $this->getResponse();
 
-        // does it really exist??
-        $this->findRecord($id);
+        $this->checkJsonRequest($request, $response);
 
-        // Deserialize the content
-        $record = $this->deserialize(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
+        $record = $this->checkForm(
+            $this->getForm($request),
+            $request
         );
+
+        // does it really exist??
+        $upsert = false;
+        try {
+            $this->findRecord($id);
+        } catch (NotFoundException $e) {
+            // who cares, we'll upsert it
+            $upsert = true;
+        }
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -345,17 +409,16 @@ class RestController implements ContainerAwareInterface
         }
 
         // And update the record, if everything is ok
-        $this->getModel()->updateRecord($id, $record);
+        if ($upsert) {
+            $this->getModel()->insertRecord($record);
+        } else {
+            $this->getModel()->updateRecord($id, $record);
+        }
         $response->setStatusCode(Response::HTTP_OK);
-
-        // i fetch it here again to prevent some "id" from the payload
-        // visibly overriding the one provided by GET. just to make sure
-        // we really give the client back what he actually saved.
-        $response->setContent($this->serialize($record));
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($record)],
             $response
         );
     }
@@ -376,59 +439,6 @@ class RestController implements ContainerAwareInterface
 
         $this->getModel()->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_OK);
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
-    }
-
-    /**
-     * Patch a record (partial update) -> DO NOT USE THIS (or refactor it...)
-     * We tried to implement the jsonpatch rfc but this is not possible
-     * because of doctrine odm / serializer
-     *
-     * @param Number  $id      ID of record
-     *
-     * @param Request $request Current http request
-     *
-     * @throws DeserializationException
-     * @throws NotFoundException
-     * @throws Patch\FailedTestException
-     * @throws SerializationException
-     * @throws \Exception
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
-     */
-    public function patchAction($id, Request $request)
-    {
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_NOT_FOUND);
-
-        $record = $this->findRecord($id);
-
-        // Get the patch params from request
-        $requestContent = $request->getContent();
-
-        if (!is_null($record) && !empty($requestContent)) {
-            // get the record as json to handle json-patch
-            $jsonString = $this->serialize($record);
-
-            // Now replace existing values with the new ones
-            $patch = new Patch($jsonString, $requestContent);
-
-            $newRecord = $this->deserialize(
-                $patch->apply(),
-                $this->getModel()->getEntityClass()
-            );
-
-            // disabled here, see comment in postAction()..
-            //$this->validateRecord($newRecord);
-
-            $this->getModel()->updateRecord($id, $newRecord);
-            //$response = $this->container->get('graviton.rest.response.204');
-            $response->setStatusCode(Response::HTTP_NO_CONTENT);
-        }
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
@@ -462,10 +472,10 @@ class RestController implements ContainerAwareInterface
             function ($language) {
                 return $language->getId();
             },
-            $this->container->get('graviton.i18n.repository.language')->findAll()
+            $this->language->findAll()
         );
 
-        $response = $this->container->get("graviton.rest.response");
+        $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
 
         $schemaMethod = 'getModelSchema';
@@ -473,7 +483,6 @@ class RestController implements ContainerAwareInterface
             $schemaMethod = 'getCollectionSchema';
         }
         $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
-        $response->setContent($this->serialize($schema));
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -489,44 +498,19 @@ class RestController implements ContainerAwareInterface
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            ['response' => $this->serialize($schema)],
             $response
         );
     }
 
     /**
-     * Validate a record and throw a 400 error if not valid
-     *
-     * @param \Graviton\RestBundle\Model\DocumentModel|\Graviton\CoreBundle\Document\App $record Record
-     *
-     * @throws \Graviton\ExceptionBundle\Exception\ValidationException
-     *
-     * @deprecated
-     *
-     * @return void
-     */
-    protected function validateRecord($record)
-    {
-        // Re-validate record after serialization (we don't trust the serializer...)
-        $violations = $this->getValidator()->validate($record);
-
-        if ($violations->count() > 0) {
-            $e = new ValidationException('Validation failed');
-            $e->setViolations($violations);
-            $e->setResponse($this->getResponse());
-
-            throw $e;
-        }
-    }
-
-    /**
      * Get the validator
      *
-     * @return \Symfony\Component\Validator\Validator
+     * @return ValidatorInterface
      */
     public function getValidator()
     {
-        return $this->container->get('graviton.rest.validator');
+        return $this->validator;
     }
 
     /**
@@ -540,6 +524,93 @@ class RestController implements ContainerAwareInterface
      */
     public function render($view, array $parameters = array(), Response $response = null)
     {
-        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+        return $this->templating->renderResponse($view, $parameters, $response);
+    }
+
+    /**
+     * validate raw json input
+     *
+     * @param Request  $request  request
+     * @param Response $response response
+     *
+     * @return void
+     */
+    private function checkJsonRequest(Request $request, Response $response)
+    {
+        $content = $request->getContent();
+
+        if (is_resource($content)) {
+            throw new BadRequestHttpException('unexpected resource in validation');
+        }
+
+        // Decode the json from request
+        if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
+            $e = new NoInputException();
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        // specially check for parse error ($input decodes to null) and report accordingly..
+        if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
+            $e = new MalformedInputException($this->getLastJsonErrorMessage());
+            $e->setErrorType(json_last_error());
+            $e->setResponse($response);
+            //$e->setResponse($event->getResponse());
+            throw $e;
+        }
+
+        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
+            // we need to check for id mismatches....
+            if ($request->attributes->get('id') != $input['id']) {
+                throw new BadRequestHttpException('Record ID in your payload must be the same');
+            }
+        }
+    }
+    /**
+     * Used for backwards compatibility to PHP 5.4
+     *
+     * @return string
+     */
+    private function getLastJsonErrorMessage()
+    {
+        $message = 'Unable to decode JSON string';
+
+        if (function_exists('json_last_error_msg')) {
+            $message = json_last_error_msg();
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param Request $request request
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    private function getForm(Request $request)
+    {
+        list($service) = explode(':', $request->attributes->get('_controller'));
+        $this->formType->initialize($service);
+        return $this->formFactory->create($this->formType);
+    }
+
+    /**
+     * @param FormInterface $form    form to check
+     * @param Request       $request data request
+     *
+     * @return mixed
+     */
+    private function checkForm(FormInterface $form, Request $request)
+    {
+        $form->handleRequest($request);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
+
+        if (!$form->isValid()) {
+            throw new ValidationException($form->getErrors(true));
+        } else {
+            $record = $form->getData();
+        }
+
+        return $record;
     }
 }

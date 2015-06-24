@@ -82,6 +82,10 @@ class TranslatableControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         $client->post('/i18n/translatable', $value);
+        $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
 
         $this->assertEquals('http://localhost/i18n/language/de', $results->language->{'$ref'});

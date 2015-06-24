@@ -16,8 +16,11 @@ framework:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
     form:            true
-    csrf_protection: ~
-    validation:      { enable_annotations: true }
+    csrf_protection: false
+    validation:
+        enabled:              true
+        enable_annotations:   false
+
     templating:
         engines: ['twig']
         #assets_version: SomeVersionScheme
@@ -64,6 +67,8 @@ doctrine_mongodb:
             options: { connect: true }
     document_managers:
         default:
+            retry_connect: 3
+            retry_query: 1
             mappings:
                 GravitonCoreBundle: ~
             filters:

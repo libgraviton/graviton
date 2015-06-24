@@ -5,8 +5,11 @@ parameters:
 
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
     graviton.authentication.user_provider.model: ~
-    graviton.security.services.whitelist: ~
+    graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
+
+    graviton.security.oauth.github.client_id: ~
+    graviton.security.oauth.github.client_secret: ~
 
     # service info injected by cloudfoundry
     vcap.services: ~
