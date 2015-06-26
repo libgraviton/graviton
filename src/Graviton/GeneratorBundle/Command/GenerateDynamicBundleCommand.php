@@ -239,7 +239,7 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generate the actual Bundle
      *
-     * @param OutputInterface $output Instance to sent text to be displayed on stout.
+     * @param OutputInterface $output     Instance to sent text to be displayed on stout.
      * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
      * @param string          $bundleName Name of the bundle the entity shall be generated for.
      */
@@ -513,13 +513,14 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * @param       $namespace
+     * renders and stores the validation.xml file of a bundle.
      *
-     * @param array $validationXmlNodes
+     * @param string $location           Location where to store the file.
+     * @param array  $validationXmlNodes List of nodes to be added to the validation set.
      *
      * @return string
      */
-    private function generateValidationXml($namespace, array $validationXmlNodes = array())
+    private function generateValidationXml($location, array $validationXmlNodes = array())
     {
         /**
          * what are we doing here?
@@ -533,7 +534,7 @@ class GenerateDynamicBundleCommand extends Command
          * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
          */
         if (count($validationXmlNodes) > 0) {
-            $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+            $validationXml = $this->getGeneratedValidationXmlPath($location);
             if (file_exists($validationXml)) {
                 $doc = new \DOMDocument();
                 $doc->formatOutput = true;
