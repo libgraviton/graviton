@@ -51,6 +51,7 @@ class JsonDefinition
     {
         $this->filename = $filename;
 
+        // TODO [lapistano]: THIS SHALL NOT BE HERE!!
         if (!file_exists($this->filename)) {
             throw new FileNotFoundException(
                 sprintf(

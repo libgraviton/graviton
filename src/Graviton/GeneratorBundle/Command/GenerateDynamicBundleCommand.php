@@ -10,7 +10,6 @@ use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
@@ -27,14 +26,31 @@ use Symfony\Component\Process\Process;
  */
 class GenerateDynamicBundleCommand extends Command
 {
+    const BUNDLE_NAME_MASK = 'GravitonDyn/%sBundle';
+
+    /** @var  string */
     private $bundleBundleNamespace;
+
+    /** @var  string */
     private $bundleBundleDir;
+
+    /** @var  string */
     private $bundleBundleClassname;
+
+    /** @var  string */
     private $bundleBundleClassfile;
+
+    /** @var  array */
     private $bundleBundleList = array();
+
+    /** @var ContainerInterface */
     private $container;
+
+    /** @var Process */
     private $process;
-    private $validationXmlNodes;
+
+    /** @var \Graviton\GeneratorBundle\Definition\Loader\LoaderInterface */
+    private $definitionLoader;
 
     /**
      * @param ContainerInterface $container Symfony dependency injection container
@@ -47,6 +63,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $this->container = $container;
         $this->process = $process;
+        $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
     }
 
 
@@ -89,7 +106,7 @@ class GenerateDynamicBundleCommand extends Command
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
-                    to a single JSON file or a directory path containing multipl files.'
+                    to a single JSON file or a directory path containing multiple files.'
             );
     }
 
@@ -103,32 +120,21 @@ class GenerateDynamicBundleCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $bundleNameMask = 'GravitonDyn/%sBundle';
-
         /**
          * GENERATE THE BUNDLEBUNDLE
          */
-        $namespace = sprintf(
-            $bundleNameMask,
-            'Bundle'
-        );
-        $bundleName = str_replace(
-            '/',
-            '',
-            $namespace
-        );
+        $namespace = sprintf(self::BUNDLE_NAME_MASK, 'Bundle');
+
+        // GravitonDynBundleBundle
+        $bundleName = str_replace('/', '', $namespace);
 
         // bundlebundle stuff..
         $this->bundleBundleNamespace = $namespace;
         $this->bundleBundleDir = $input->getOption('srcDir') . $namespace;
         $this->bundleBundleClassname = $bundleName;
-        $this->bundleBundleClassfile = $this->bundleBundleDir . '/'
-            . $this->bundleBundleClassname . '.php';
+        $this->bundleBundleClassfile = $this->bundleBundleDir . '/' . $this->bundleBundleClassname . '.php';
 
-        $filesToWorkOn = $this
-            ->container
-            ->get('graviton_generator.definition.loader')
-            ->load($input->getOption('json'));
+        $filesToWorkOn = $this->definitionLoader->load($input->getOption('json'));
 
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
@@ -142,145 +148,124 @@ class GenerateDynamicBundleCommand extends Command
             // $thisIdName = ucfirst(strtolower($jsonDef->getId()));
 
             $thisIdName = $jsonDef->getId();
-            $namespace = sprintf(
-                $bundleNameMask,
-                $thisIdName
-            );
+            $namespace = sprintf(self::BUNDLE_NAME_MASK, $thisIdName);
 
             $jsonDef->setNamespace($namespace);
 
             $bundleName = str_replace('/', '', $namespace);
-
-            $genStatus = $this->generateBundle(
-                $namespace,
-                $bundleName,
-                $input,
-                $output
-            );
-
-            if ($genStatus !== 0) {
-                throw new \LogicException('Create bundle call failed, see above. Exiting.');
-            }
-
             $this->bundleBundleList[] = $namespace;
 
-            // re-generate our bundlebundle..
-            $this->generateBundleBundleClass();
+            try {
+                $this->generateBundle($namespace, $bundleName, $input, $output);
+                $this->generateBundleBundleClass();
+                $this->generateSubResources($output, $jsonDef, $bundleName, $namespace);
+                $this->generateMainResource($output, $jsonDef, $bundleName, $thisIdName);
 
-            // here we collect main class nodes from validation.xml files
-            $this->validationXmlNodes = array();
 
-            /**
-             * GENERATE SUB-RESOURCES (HASHES)..
-             */
-            foreach ($jsonDef->getFields() as $field) {
-                if ($field->isHash() && !$field->isBagOfPrimitives()) {
-                    // get json for this hash and save to temp file..
-                    $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
-                    file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
+                // look for validation.xml and save it from over-writing ;-)
+                // we basically get the xml content that was generated in order to save them later..
+                // here we collect main class nodes from validation.xml files
+                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+                $validationXmlNodes = array();
 
-                    $arguments = array(
-                        'graviton:generate:resource',
-                        '--entity' => $bundleName . ':' . $field->getClassName(),
-                        '--format' => 'xml',
-                        '--json' => $tempPath,
-                        '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
-                        '--with-repository' => null,
-                        '--no-controller' => 'true'
-                    );
-
-                    $genStatus = $this->executeCommand(
-                        $arguments,
-                        $output
-                    );
-
-                    // throw away the temp json ;-)
-                    unlink($tempPath);
-
-                    if ($genStatus !== 0) {
-                        throw new \LogicException('Create subresource call failed, see above. Exiting.');
-                    }
-
-                    // look for validation.xml and save it from over-writing ;-)
-                    // we basically get the xml content that was generated in order to save them later..
-                    $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-                    if (file_exists($validationXml)) {
-                        $this->validationXmlNodes[] = file_get_contents($validationXml);
-                    }
+                if (file_exists($filename)) {
+                    $validationXmlNodes[] = file_get_contents($validationXml);
                 }
+
+                $this->generateValidationXml($namespace, $validationXmlNodes);
+
+                $output->writeln('');
+                $output->writeln(
+                    sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonDef->getFilename())
+                );
+                $output->writeln('');
+            } catch (\Exception $e) {
+                $output->writeln(
+                    sprintf('<error>%s</error>', $e->getMessage())
+                );
+
+                // remove failed bundle from list
+                array_pop($this->bundleBundleList);
             }
+        }
+    }
 
-            /**
-             * GENERATE THE MAIN RESOURCE(S)
-             */
-            $arguments = array(
-                'graviton:generate:resource',
-                '--entity' => $bundleName . ':' . $thisIdName,
-                '--json' => $jsonDef->getFilename(),
-                '--format' => 'xml',
-                '--fields' => $this->getFieldString($jsonDef),
-                '--with-repository' => null
-            );
+    /**
+     * Generate Bundle entities
+     *
+     * @param OutputInterface $output     Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
+     * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     */
+    protected function generateSubResources(
+        OutputInterface $output,
+        JsonDefinition $jsonDef,
+        $bundleName
+    ) {
+        /**
+         * @var \Graviton\GeneratorBundle\Definition\DefinitionElementInterface $field
+         */
+        foreach ($jsonDef->getFields() as $field) {
+            if ($field->isHash() && !$field->isBagOfPrimitives()) {
+                // get json for this hash and save to temp file..
+                $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
+                file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
 
-            // controller?
-            if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
-                $arguments['--no-controller'] = 'true';
-            }
+                $arguments = array(
+                    'graviton:generate:resource',
+                    '--entity' => $bundleName . ':' . $field->getClassName(),
+                    '--format' => 'xml',
+                    '--json' => $tempPath,
+                    '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
+                    '--with-repository' => null,
+                    '--no-controller' => 'true'
+                );
 
-            // don't generate if no fields..
-            if (strlen($arguments['--fields']) > 0) {
                 $genStatus = $this->executeCommand(
                     $arguments,
                     $output
                 );
+
+                // throw away the temp json ;-)
+                unlink($tempPath);
+
+                if ($genStatus !== 0) {
+                    throw new \LogicException('Create subresource call failed, see above. Exiting.');
+                }
             }
+        }
+    }
+
+    /**
+     * Generate the actual Bundle
+     *
+     * @param OutputInterface $output Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
+     * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     */
+    protected function generateMainResource(OutputInterface $output, JsonDefinition $jsonDef, $bundleName)
+    {
+        $arguments = array(
+            'graviton:generate:resource',
+            '--entity' => $bundleName . ':' . $jsonDef->getId(),
+            '--json' => $jsonDef->getFilename(),
+            '--format' => 'xml',
+            '--fields' => $this->getFieldString($jsonDef),
+            '--with-repository' => null
+        );
+
+        // controller?
+        if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
+            $arguments['--no-controller'] = 'true';
+        }
+
+        // don't generate if no fields..
+        if (strlen($arguments['--fields']) > 0) {
+            $genStatus = $this->executeCommand($arguments, $output);
 
             if ($genStatus !== 0) {
                 throw new \LogicException('Create resource call failed, see above. Exiting.');
             }
-
-            /**
-             * what are we doing here?
-             * well, when we started to generate our subclasses (hashes in our own service) as own
-             * Document classes, i had the problem that the validation.xml always got overwritten by the
-             * console task. sadly, validation.xml is one file for all classes in the bundle.
-             * so here we merge the generated validation.xml we saved in the loop before back into the
-             * final validation.xml again. the final result should be one validation.xml including all
-             * the validation rules for all the documents in this bundle.
-             *
-             * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
-             */
-            if (count($this->validationXmlNodes) > 0) {
-                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-                if (file_exists($validationXml)) {
-                    $doc = new \DOMDocument();
-                    $doc->formatOutput = true;
-                    $doc->preserveWhiteSpace = false;
-                    $doc->load($validationXml);
-
-                    foreach ($this->validationXmlNodes as $xmlNode) {
-                        $mergeDoc = new \DOMDocument();
-                        $mergeDoc->formatOutput = true;
-                        $mergeDoc->preserveWhiteSpace = false;
-                        $mergeDoc->loadXML($xmlNode);
-
-                        $importNode = $mergeDoc->getElementsByTagNameNS(
-                            'http://symfony.com/schema/dic/constraint-mapping',
-                            'class'
-                        )->item(0);
-
-                        $importNode = $doc->importNode($importNode, true);
-                        $doc->documentElement->appendChild($importNode);
-                    }
-
-                    // generate new validation.xml
-                    $doc->save($validationXml);
-                }
-            }
-
-            $output->writeln('');
-            $output->writeln(sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonDef->getFilename()));
-            $output->writeln('');
         }
     }
 
@@ -313,10 +298,14 @@ class GenerateDynamicBundleCommand extends Command
             '--structure' => null
         );
 
-        return $this->executeCommand(
+        $genStatus = $this->executeCommand(
             $arguments,
             $output
         );
+
+        if ($genStatus !== 0) {
+            throw new \LogicException('Create bundle call failed, see above. Exiting.');
+        }
     }
 
     /**
@@ -400,6 +389,7 @@ class GenerateDynamicBundleCommand extends Command
                 $cmd .= escapeshellarg($val);
             }
         }
+
         return $cmd;
     }
 
@@ -430,7 +420,7 @@ class GenerateDynamicBundleCommand extends Command
      *
      * @return string path
      */
-    public function getGeneratedValidationXmlPath($namespace)
+    private function getGeneratedValidationXmlPath($namespace)
     {
         return dirname(__FILE__) . '/../../../' . $namespace . '/Resources/config/validation.xml';
     }
@@ -520,5 +510,60 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $ret;
+    }
+
+    /**
+     * @param       $namespace
+     *
+     * @param array $validationXmlNodes
+     *
+     * @return string
+     */
+    private function generateValidationXml($namespace, array $validationXmlNodes = array())
+    {
+        /**
+         * what are we doing here?
+         * well, when we started to generate our subclasses (hashes in our own service) as own
+         * Document classes, i had the problem that the validation.xml always got overwritten by the
+         * console task. sadly, validation.xml is one file for all classes in the bundle.
+         * so here we merge the generated validation.xml we saved in the loop before back into the
+         * final validation.xml again. the final result should be one validation.xml including all
+         * the validation rules for all the documents in this bundle.
+         *
+         * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
+         */
+        if (count($validationXmlNodes) > 0) {
+            $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+            if (file_exists($validationXml)) {
+                $doc = new \DOMDocument();
+                $doc->formatOutput = true;
+                $doc->preserveWhiteSpace = false;
+                $doc->load($validationXml);
+
+                foreach ($validationXmlNodes as $xmlNode) {
+                    $mergeDoc = new \DOMDocument();
+                    $mergeDoc->formatOutput = true;
+                    $mergeDoc->preserveWhiteSpace = false;
+                    $mergeDoc->loadXML($xmlNode);
+
+                    $importNode = $mergeDoc->getElementsByTagNameNS(
+                        'http://symfony.com/schema/dic/constraint-mapping',
+                        'class'
+                    )->item(0);
+
+                    $importNode = $doc->importNode($importNode, true);
+                    $doc->documentElement->appendChild($importNode);
+                }
+
+                // generate new validation.xml
+                $doc->save($validationXml);
+
+                return $validationXml;
+            }
+
+            return $validationXml;
+        }
+
+        return $validationXml;
     }
 }
