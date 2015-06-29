@@ -52,6 +52,9 @@ class GenerateDynamicBundleCommand extends Command
     /** @var \Graviton\GeneratorBundle\Definition\Loader\LoaderInterface */
     private $definitionLoader;
 
+    /** @var \Symfony\Component\HttpKernel\KernelInterface */
+    private $kernel;
+
     /**
      * @param ContainerInterface $container Symfony dependency injection container
      * @param Process            $process   Symfony Process component
@@ -64,8 +67,8 @@ class GenerateDynamicBundleCommand extends Command
         $this->container = $container;
         $this->process = $process;
         $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
+        $this->kernel = $this->container->get('kernel');
     }
-
 
     /**
      * {@inheritDoc}
@@ -374,7 +377,7 @@ class GenerateDynamicBundleCommand extends Command
     private function getCmd(array $args)
     {
         // get path to console from kernel..
-        $consolePath = $this->container->get('kernel')->getRootDir() . '/console';
+        $consolePath = $this->kernel->getRootDir() . '/console';
 
         $cmd = 'php ' . $consolePath . ' -n ';
 
@@ -399,6 +402,8 @@ class GenerateDynamicBundleCommand extends Command
      * @param string $namespace Namespace, ie GravitonDyn\ShowcaseBundle
      *
      * @return \SimpleXMLElement The element
+     *
+     * @deprecated is this really used?
      */
     public function getGeneratedValidationXml($namespace)
     {

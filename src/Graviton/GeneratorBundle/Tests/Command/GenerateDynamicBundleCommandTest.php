@@ -114,6 +114,67 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
+     * @return void
+     */
+    public function testGenerateSubResources()
+    {
+        $elementDefinitionDouble = $this->getDefinitionElementDouble();
+        $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
+            ->getMock();
+        $kernelDouble
+            ->expects($this->once())
+            ->method('getRootDir')
+            ->willReturn('app');
+
+        $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(array('get'))
+            ->getMockForAbstractClass();
+        $containerDouble
+            ->expects($this->exactly(2))
+            ->method('get')
+            ->willReturnOnConsecutiveCalls($elementDefinitionDouble, $kernelDouble);
+
+        $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processDouble
+            ->expects($this->once())
+            ->method('setCommandLine')
+            ->with('app/console graviton:generate:dynamicbundles --json');
+        $processDouble
+            ->expects($this->once())
+            ->method('run');
+        $processDouble
+            ->expects($this->once())
+            ->method('isSuccessful')
+            ->willReturn(true);
+        $processDouble
+            ->expects($this->once())
+            ->method('getExitCode')
+            ->willReturn(0);
+
+        $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
+            ->getMockForAbstractClass();
+        $outputDouble
+            ->expects($this->any())
+            ->method('writeln');
+
+        $isHash = true;
+        $isBagOfPrimitives = false;
+        $jsonField = $this->getDefinitionElementDouble($isHash, $isBagOfPrimitives);
+
+        /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
+        $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
+            ->setConstructorArgs(array($containerDouble, $processDouble))
+            ->setMethods(array('generateSubResources'))
+            ->getProxy();
+
+        $command->generateSubResources($outputDouble, $this->getJsonDefDouble(array($jsonField)), 'MyTestBundle');
+
+    }
+
+    /**
      * @param $outputDouble
      * @param $jsonDefDouble
      */
