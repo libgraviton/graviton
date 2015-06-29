@@ -32,8 +32,11 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->setMethods(array('setCommandLine', 'run', 'isSuccessful', 'getErrorOutput', 'getExitCode'))
             ->getMock();
 
+        $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
+            ->getMock();
+
         $commando = new GenerateDynamicBundleCommand(
-            $this->getContainerDouble($loaderDouble),
+            $this->getContainerDouble($loaderDouble, $kernelDouble),
             $processDouble
         );
 
@@ -57,20 +60,18 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getContainerDouble($loaderDouble)
+    public function getContainerDouble($loaderDouble, $kernelDouble)
     {
-        $container = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
+        $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
             ->disableOriginalConstructor()
             ->setMethods(array('get'))
             ->getMockForAbstractClass();
-
-        $container
-            ->expects($this->once())
+        $containerDouble
+            ->expects($this->exactly(2))
             ->method('get')
-            ->with('graviton_generator.definition.loader')
-            ->willReturn($loaderDouble);
+            ->willReturnOnConsecutiveCalls($loaderDouble, $kernelDouble);
 
-        return $container;
+        return $containerDouble;
     }
 
     /**
@@ -81,7 +82,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
             ->getMockForAbstractClass();
 
-        $isHash = true;
+        $isHash = false;
         $jsonField = $this->getDefinitionElementDouble($isHash);
 
         $this->exectueGenerateSubresources($outputDouble, $this->getJsonDefDouble(array($jsonField)));
@@ -126,14 +127,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->method('getRootDir')
             ->willReturn('app');
 
-        $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('get'))
-            ->getMockForAbstractClass();
-        $containerDouble
-            ->expects($this->exactly(2))
-            ->method('get')
-            ->willReturnOnConsecutiveCalls($elementDefinitionDouble, $kernelDouble);
+        $containerDouble = $this->getContainerDouble($elementDefinitionDouble, $kernelDouble);
 
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
