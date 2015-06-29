@@ -27,11 +27,11 @@ class XmlManipulator
     /**
      * Gathers the provides nodes in a collection to be added to a xml string later.
      *
-     * @param array $nodes Xml data to be inserted in to a xml document.
+     * @param string $nodes Xml data to be inserted in to a xml document.
      *
      * @return XmlManipulator
      */
-    public function addNodes(array $nodes)
+    public function addNodes($nodes)
     {
         if (!empty($nodes)) {
             $this->nodes[] = $nodes;
@@ -59,7 +59,7 @@ class XmlManipulator
                 'class'
             )->item(0);
 
-            $importNode = $doc->importNode($importNode, true);
+            $importNode = $this->document->importNode($importNode, true);
             $this->document->documentElement->appendChild($importNode);
         }
 
