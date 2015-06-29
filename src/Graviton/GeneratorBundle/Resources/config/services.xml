@@ -15,6 +15,7 @@
         <parameter key="graviton_generator.resourcegenerator.parameter_builder.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder</parameter>
         <parameter key="graviton_generator.generator.resourcegenerator.class">Graviton\GeneratorBundle\Generator\ResourceGenerator</parameter>
         <parameter key="graviton_generator.command.generateresource.class">Graviton\GeneratorBundle\Command\GenerateResourceCommand</parameter>
+        <parameter key="graviton_generator.manipulator.xml_file.class">Graviton\GeneratorBundle\Manipulator\File\XmlManipulator</parameter>
     </parameters>
 
     <services>
@@ -32,7 +33,7 @@
         <service id="graviton_generator.resourcegenerator.field_type_mapper" class="%graviton_generator.resourcegenerator.field_type_mapper.class%"/>
         <service id="graviton_generator.resourcegenerator.field_name_mapper" class="%graviton_generator.resourcegenerator.field_name_mapper.class%"/>
         <service id="graviton_generator.resourcegenerator.field_json_mapper" class="%graviton_generator.resourcegenerator.field_json_mapper.class%"/>
-        
+
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
@@ -61,6 +62,8 @@
             <argument type="service" id="graviton_generator.resourcegenerator.field_mapper"/>
             <argument type="service" id="graviton_generator.resourcegenerator.parameter_builder"/>
         </service>
+
+        <service id="graviton_generator.manipulator.xml_file" class="%graviton_generator.manipulator.xml_file.class%"/>
 
         <!-- commands -->
 
@@ -96,6 +99,7 @@
                  class="Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand">
             <argument type="service" id="graviton_generator.command.generatedynamicbundle.container"/>
             <argument type="service" id="graviton_generator.command.generatedynamicbundle.process"/>
+            <argument type="service" id="graviton_generator.manipulator.xml_file"/>
             <tag name="console.command" />
         </service>
 

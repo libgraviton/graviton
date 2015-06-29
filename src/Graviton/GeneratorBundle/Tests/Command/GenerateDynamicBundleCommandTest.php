@@ -32,12 +32,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->setMethods(array('setCommandLine', 'run', 'isSuccessful', 'getErrorOutput', 'getExitCode'))
             ->getMock();
 
-        $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
-            ->getMock();
+        $kernelDouble = $this->getMock('\Symfony\Component\HttpKernel\KernelInterface');
+        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $commando = new GenerateDynamicBundleCommand(
             $this->getContainerDouble($loaderDouble, $kernelDouble),
-            $processDouble
+            $processDouble,
+            $xmlManipulatorDouble
         );
 
         $application = new Application();
@@ -84,8 +85,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
 
         $isHash = false;
         $jsonField = $this->getDefinitionElementDouble($isHash);
+        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
-        $this->exectueGenerateSubresources($outputDouble, $this->getJsonDefDouble(array($jsonField)));
+        $this->exectueGenerateSubresources(
+            $outputDouble,
+            $this->getJsonDefDouble(array($jsonField)),
+            $xmlManipulatorDouble
+        );
     }
 
     /**
@@ -99,8 +105,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $isHash = true;
         $isBagOfPrimitives = true;
         $jsonField = $this->getDefinitionElementDouble($isHash, $isBagOfPrimitives);
+        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
-        $this->exectueGenerateSubresources($outputDouble, $this->getJsonDefDouble(array($jsonField)));
+        $this->exectueGenerateSubresources(
+            $outputDouble,
+            $this->getJsonDefDouble(array($jsonField)),
+            $xmlManipulatorDouble
+        );
     }
 
     /**
@@ -110,8 +121,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     {
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
             ->getMockForAbstractClass();
+        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
-        $this->exectueGenerateSubresources($outputDouble, $this->getJsonDefDouble());
+        $this->exectueGenerateSubresources(
+            $outputDouble,
+            $this->getJsonDefDouble(),
+            $xmlManipulatorDouble
+        );
     }
 
     /**
@@ -135,13 +151,21 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
             ->getMockForAbstractClass();
 
+        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
+
         /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
         $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
-            ->setConstructorArgs(array($containerDouble, $processDouble))
+            ->setConstructorArgs(array($containerDouble, $processDouble, $xmlManipulatorDouble))
             ->setMethods(array('generateSubResources'))
             ->getProxy();
 
-        $command->generateSubResources($outputDouble, $this->getJsonDefDouble(array($jsonField)), 'MyTestBundle');
+        $command->generateSubResources(
+            $outputDouble,
+            $this->getJsonDefDouble(array($jsonField)),
+            $xmlManipulatorDouble,
+            'MyTestBundle',
+            '\MyNamespace\Test'
+        );
 
     }
 
@@ -149,7 +173,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      * @param $outputDouble
      * @param $jsonDefDouble
      */
-    public function exectueGenerateSubresources($outputDouble, $jsonDefDouble)
+    public function exectueGenerateSubresources($outputDouble, $jsonDefDouble, $xmlManipulatorDouble)
     {
         /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
         $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
@@ -157,7 +181,14 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->setMethods(array('generateSubResources'))
             ->getProxy();
 
-        $command->generateSubResources($outputDouble, $jsonDefDouble, 'MyTestBundle');
+        $command->generateSubResources(
+            $outputDouble,
+            $jsonDefDouble,
+            $xmlManipulatorDouble,
+            array(),
+            'MyTestBundle',
+            '\MyNamespace\Test'
+        );
     }
 
     /**
@@ -207,7 +238,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->method('isHash')
             ->willReturn($isHash);
 
-        if(true === $isHash) {
+        if (true === $isHash) {
             $jsonField
                 ->expects($this->once())
                 ->method('isBagOfPrimitives')
@@ -218,11 +249,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
                 $jsonField
                     ->expects($this->once())
                     ->method('getDefFromLocal')
-                    ->willReturn([
+                    ->willReturn(
+                        [
                             "id" => "myClass",
                             "target" => ["fields" => []],
                             'isSubDocument' => true
-                        ]);
+                        ]
+                    );
             }
         }
 
