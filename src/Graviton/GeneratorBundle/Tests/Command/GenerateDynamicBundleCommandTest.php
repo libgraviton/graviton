@@ -119,44 +119,21 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     public function testGenerateSubResources()
     {
-        $elementDefinitionDouble = $this->getDefinitionElementDouble();
+        $jsonField = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
         $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
             ->getMock();
-        $kernelDouble
-            ->expects($this->once())
-            ->method('getRootDir')
-            ->willReturn('app');
 
-        $containerDouble = $this->getContainerDouble($elementDefinitionDouble, $kernelDouble);
+        $containerDouble = $this->getContainerDouble($jsonField, $kernelDouble);
 
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
             ->getMock();
-        $processDouble
-            ->expects($this->once())
-            ->method('setCommandLine')
-            ->with('app/console graviton:generate:dynamicbundles --json');
-        $processDouble
-            ->expects($this->once())
-            ->method('run');
-        $processDouble
-            ->expects($this->once())
-            ->method('isSuccessful')
-            ->willReturn(true);
-        $processDouble
-            ->expects($this->once())
-            ->method('getExitCode')
-            ->willReturn(0);
 
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
             ->getMockForAbstractClass();
-        $outputDouble
-            ->expects($this->any())
-            ->method('writeln');
-
-        $isHash = true;
-        $isBagOfPrimitives = false;
-        $jsonField = $this->getDefinitionElementDouble($isHash, $isBagOfPrimitives);
 
         /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
         $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
@@ -235,6 +212,18 @@ class GenerateDynamicBundleCommandTest extends BaseTest
                 ->expects($this->once())
                 ->method('isBagOfPrimitives')
                 ->willReturn($isBagOfPrimitives);
+
+            if (false === $isBagOfPrimitives) {
+
+                $jsonField
+                    ->expects($this->once())
+                    ->method('getDefFromLocal')
+                    ->willReturn([
+                            "id" => "myClass",
+                            "target" => ["fields" => []],
+                            'isSubDocument' => true
+                        ]);
+            }
         }
 
         return $jsonField;
