@@ -78,7 +78,4 @@ class XmlManipulatorTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertAttributeEmpty('nodes', $manip);
     }
-
-
 }
-
