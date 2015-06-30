@@ -122,6 +122,8 @@ class XmlManipulator
     {
         if ($errno == E_WARNING && (substr_count($errstr, "DOMDocument::loadXML()") > 0)) {
             throw new ManipulatorException('Failed to load the provided xml string into a DomDocument');
+        } elseif ($errno == E_WARNING && (substr_count($errstr, "DOMDocument::save()") > 0)) {
+            throw new ManipulatorException('Failed to save document to the filesystem.');
         } else {
             return false;
         }
