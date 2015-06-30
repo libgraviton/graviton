@@ -82,7 +82,10 @@ class SchemaUtils
         if (class_exists($entityName)) {
             $documentClass = new $entityName();
             if ($documentClass instanceof TranslatableDocumentInterface) {
-                $translatableFields = $documentClass->getTranslatableFields();
+                $translatableFields = array_merge(
+                    $documentClass->getTranslatableFields(),
+                    $documentClass->getPreTranslatedFields()
+                );
             }
         }
 

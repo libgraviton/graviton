@@ -8,6 +8,7 @@ use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\DeserializationContext;
 
 {% set translatableFields = [] %}
+{% set preTranslatedFields = [] %}
 
 /**
  * {{ base }}Document\{{ document }}
@@ -87,6 +88,10 @@ class {{ document }} implements TranslatableDocumentInterface
 
     {% if field.translatable is defined and field.translatable == true %}
         {% set translatableFields = translatableFields|merge([field.fieldName]) %}
+    {% endif %}
+
+    {% if field.pretranslated is defined and field.pretranslated == true %}
+        {% set preTranslatedFields = preTranslatedFields|merge([field.fieldName]) %}
     {% endif %}
 
     /**
@@ -190,6 +195,16 @@ class {{ document }} implements TranslatableDocumentInterface
     public function getTranslatableFields()
     {
         return array('{{ translatableFields|join('\',\'') }}');
+    }
+
+    /**
+     * return pretranslated field names
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields()
+    {
+        return array('{{ preTranslatedFields|join('\',\'') }}');
     }
 
 }

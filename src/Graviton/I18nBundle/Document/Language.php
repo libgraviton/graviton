@@ -25,6 +25,16 @@ class Language implements TranslatableDocumentInterface
     }
 
     /**
+     * return pretranslated fields
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields()
+    {
+        return array();
+    }
+
+    /**
      * @var string $id
      */
     protected $id;
