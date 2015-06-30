@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
-use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
+use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -49,8 +48,8 @@ class GenerateDynamicBundleCommand extends Command
     /** @var ContainerInterface */
     private $container;
 
-    /** @var Process */
-    private $process;
+    /** @var CommandRunner */
+    private $runner;
 
     /** @var \Graviton\GeneratorBundle\Definition\Loader\LoaderInterface */
     private $definitionLoader;
@@ -61,26 +60,39 @@ class GenerateDynamicBundleCommand extends Command
     /** @var XmlManipulator */
     private $xmlManipulator;
 
+    /** @var array */
+    private $bundleAdditions = [];
+
 
     /**
      * @param ContainerInterface $container      Symfony dependency injection container
-     * @param Process            $process        Symfony Process component
+     * @param CommandRunner      $runner         Runs a console command.
      * @param XmlManipulator     $xmlManipulator Helper to change the content of a xml file.
-     * @param string|null        $name           The name of the command; passing null means it must be set in configure()
+     * @param string|null        $name           The name of the command; passing null means it must be set in
+     *                                           configure()
      */
     public function __construct(
         ContainerInterface $container,
-        Process $process,
+        CommandRunner $runner,
         XmlManipulator $xmlManipulator,
         $name = null
     ) {
         parent::__construct($name);
 
-        $this->container = $container;
-        $this->process = $process;
+        $this->runner = $runner;
         $this->xmlManipulator = $xmlManipulator;
+
+        // TODO [lapistano]: somethigg to get rid of in the future.
+        $this->container = $container;
         $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
         $this->kernel = $this->container->get('kernel');
+
+        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
+            $this->bundleAdditions = json_decode(
+                $this->container->getParameter('generator.bundlebundle.additions'),
+                true
+            );
+        }
     }
 
     /**
@@ -170,7 +182,7 @@ class GenerateDynamicBundleCommand extends Command
 
             try {
                 $this->generateBundle($namespace, $bundleName, $input, $output);
-                $this->generateBundleBundleClass();
+                $this->generateBundleBundleClass($this->bundleAdditions);
                 $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
                 $this->generateMainResource($output, $jsonDef, $bundleName, $thisIdName);
                 $this->generateValidationXml($this->xmlManipulator, $this->getGeneratedValidationXmlPath($namespace));
@@ -194,11 +206,14 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generate Bundle entities
      *
-     * @param OutputInterface              $output         Instance to sent text to be displayed on stout.
-     * @param JsonDefinition               $jsonDef        Configuration to be generated the entity from.
-     * @param XmlManipulator               $xmlManipulator Helper to safe the validation xml file.
-     * @param string                       $bundleName     Name of the bundle the entity shall be generated for.
-     * @param string                       $namespace
+     * @param OutputInterface $output         Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef        Configuration to be generated the entity from.
+     * @param XmlManipulator  $xmlManipulator Helper to safe the validation xml file.
+     * @param string          $bundleName     Name of the bundle the entity shall be generated for.
+     * @param string          $namespace      Absolute path to the bundle root dir.
+     *
+     * @return void
+     * @throws \Exception
      */
     protected function generateSubResources(
         OutputInterface $output,
@@ -235,7 +250,7 @@ class GenerateDynamicBundleCommand extends Command
 
                     // throw away the temp json ;-)
                     unlink($tempPath);
-                } catch (\LogicException $e) {
+                } catch (\Exception $e) {
                     // throw away the temp json ;-)
                     unlink($tempPath);
 
@@ -251,6 +266,8 @@ class GenerateDynamicBundleCommand extends Command
      * @param OutputInterface $output     Instance to sent text to be displayed on stout.
      * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
      * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     *
+     * @return void
      */
     protected function generateMainResource(OutputInterface $output, JsonDefinition $jsonDef, $bundleName)
     {
@@ -270,10 +287,13 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
+     * Gathers data for the command to run.
+     *
      * @param array           $arguments
      * @param OutputInterface $output
      * @param JsonDefinition  $jsonDef
      *
+     * @return void
      * @throws \LogicException
      */
     private function generateResource(array $arguments, OutputInterface $output, JsonDefinition $jsonDef)
@@ -283,12 +303,7 @@ class GenerateDynamicBundleCommand extends Command
             $arguments['--no-controller'] = 'true';
         }
 
-        $genStatus = $this->executeCommand($arguments, $output);
-
-        if ($genStatus !== 0) {
-            throw new \LogicException('Create resource call failed, see above. Exiting.');
-        }
-
+        $this->runner->executeCommand($arguments, $output, 'Create resource call failed, see above. Exiting.');
     }
 
     /**
@@ -299,7 +314,9 @@ class GenerateDynamicBundleCommand extends Command
      * @param InputInterface  $input      Input
      * @param OutputInterface $output     Output
      *
-     * @return integer|null The exit code
+     * @return void
+     *
+     * @throws \LogicException
      */
     private function generateBundle(
         $namespace,
@@ -319,121 +336,37 @@ class GenerateDynamicBundleCommand extends Command
             '--structure' => null
         );
 
-        $genStatus = $this->executeCommand(
+        $this->runner->executeCommand(
             $arguments,
-            $output
+            $output,
+            'Create bundle call failed, see above. Exiting.'
         );
-
-        if ($genStatus !== 0) {
-            throw new \LogicException('Create bundle call failed, see above. Exiting.');
-        }
     }
 
     /**
-     * Executes a app/console command
+     * Generates our BundleBundle for dynamic bundles.
+     * It basically replaces the Bundle main class that got generated
+     * by the Sensio bundle task and it includes all of our bundles there.
      *
-     * @param array           $args   Arguments
-     * @param OutputInterface $output Output
+     * @param array $additions
      *
-     * @return integer|null Exit code
+     * @return void
      */
-    private function executeCommand(array $args, OutputInterface $output)
+    private function generateBundleBundleClass($additions)
     {
-        $name = $args[0];
-        $cmd = $this->getCmd($args);
+        $dbbGenerator = new DynamicBundleBundleGenerator();
 
-        $output->writeln('');
-        $output->writeln(
-            sprintf(
-                '<info>Running %s</info>',
-                $name
-            )
-        );
-
-        $output->writeln(
-            sprintf(
-                '<comment>%s</comment>',
-                $cmd
-            )
-        );
-
-        $this->process->setCommandLine($cmd);
-        $this->process->run(
-            function ($type, $buffer) use ($output, $cmd) {
-                if (Process::ERR === $type) {
-                    $output->writeln(
-                        sprintf(
-                            '<error>%s</error>',
-                            $buffer
-                        )
-                    );
-                } else {
-                    $output->writeln(
-                        sprintf(
-                            '<comment>%s</comment>',
-                            $buffer
-                        )
-                    );
-                }
-            }
-        );
-
-        if (!$this->process->isSuccessful()) {
-            throw new \RuntimeException($this->process->getErrorOutput());
+        // add optional bundles if defined by parameter.
+        if (!empty($additions) && is_array($additions)) {
+            $dbbGenerator->setAdditions($additions);
         }
 
-        return $this->process->getExitCode();
-    }
-
-    /**
-     * get subcommand
-     *
-     * @param array $args args
-     *
-     * @return string
-     */
-    private function getCmd(array $args)
-    {
-        // get path to console from kernel..
-        $consolePath = $this->kernel->getRootDir() . '/console';
-
-        $cmd = 'php ' . $consolePath . ' -n ';
-
-        foreach ($args as $key => $val) {
-            if (strlen($key) > 1) {
-                $cmd .= ' ' . $key;
-            }
-            if (strlen($key) > 1 && !is_null($val)) {
-                $cmd .= '=';
-            }
-            if (strlen($val) > 1) {
-                $cmd .= escapeshellarg($val);
-            }
-        }
-
-        return $cmd;
-    }
-
-    /**
-     * Returns an XMLElement from a generated validation.xml that was generated during Resources generation.
-     *
-     * @param string $namespace Namespace, ie GravitonDyn\ShowcaseBundle
-     *
-     * @return \SimpleXMLElement The element
-     *
-     * @deprecated is this really used?
-     */
-    public function getGeneratedValidationXml($namespace)
-    {
-        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
-        if (file_exists($validationXmlPath)) {
-            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
-            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
-        } else {
-            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
-        }
-
-        return $validationXml;
+        $dbbGenerator->generate(
+            $this->bundleBundleList,
+            $this->bundleBundleNamespace,
+            $this->bundleBundleClassname,
+            $this->bundleBundleClassfile
+        );
     }
 
     /**
@@ -446,36 +379,6 @@ class GenerateDynamicBundleCommand extends Command
     private function getGeneratedValidationXmlPath($namespace)
     {
         return dirname(__FILE__) . '/../../../' . $namespace . '/Resources/config/validation.xml';
-    }
-
-    /**
-     * Generates our BundleBundle for dynamic bundles.
-     * It basically replaces the Bundle main class that got generated
-     * by the Sensio bundle task and it includes all of our bundles there.
-     *
-     * @return void
-     */
-    private function generateBundleBundleClass()
-    {
-        $dbbGenerator = new DynamicBundleBundleGenerator();
-
-        // add optional bundles if defined by parameter.
-        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
-            $additions = json_decode(
-                $this->container->getParameter('generator.bundlebundle.additions'),
-                true
-            );
-            if (is_array($additions)) {
-                $dbbGenerator->setAdditions($additions);
-            }
-        }
-
-        $dbbGenerator->generate(
-            $this->bundleBundleList,
-            $this->bundleBundleNamespace,
-            $this->bundleBundleClassname,
-            $this->bundleBundleClassfile
-        );
     }
 
     /**
@@ -558,5 +461,29 @@ class GenerateDynamicBundleCommand extends Command
                 ->renderDocument(file_get_contents($location))
                 ->saveDocument($location);
         }
+    }
+
+    /**
+     * Returns an XMLElement from a generated validation.xml that was generated during Resources generation.
+     *
+     * @param string $namespace Namespace, ie GravitonDyn\ShowcaseBundle
+     *
+     * @return \SimpleXMLElement The element
+     *
+     * @deprecated is this really used?
+     */
+    public function getGeneratedValidationXml($namespace)
+    {
+        throw new \RuntimeException('<info>A deprecated method was called: ' . __METHOD__ . '</info>');
+
+//        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
+//        if (file_exists($validationXmlPath)) {
+//            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
+//            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
+//        } else {
+//            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
+//        }
+//
+//        return $validationXml;
     }
 }

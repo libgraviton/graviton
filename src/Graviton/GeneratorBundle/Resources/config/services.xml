@@ -16,6 +16,7 @@
         <parameter key="graviton_generator.generator.resourcegenerator.class">Graviton\GeneratorBundle\Generator\ResourceGenerator</parameter>
         <parameter key="graviton_generator.command.generateresource.class">Graviton\GeneratorBundle\Command\GenerateResourceCommand</parameter>
         <parameter key="graviton_generator.manipulator.xml_file.class">Graviton\GeneratorBundle\Manipulator\File\XmlManipulator</parameter>
+        <parameter key="graviton_generator.command_runner.class">Graviton\GeneratorBundle\CommandRunner</parameter>
     </parameters>
 
     <services>
@@ -64,6 +65,11 @@
         </service>
 
         <service id="graviton_generator.manipulator.xml_file" class="%graviton_generator.manipulator.xml_file.class%"/>
+
+        <service id="graviton_generator.command_runner" class="%graviton_generator.command_runner.class%">
+            <argument type="service" id="graviton_generator.command.cleandynamicbundle.kernel"/>
+            <argument type="service" id="graviton_generator.command.generatedynamicbundle.process"/>
+        </service>
 
         <!-- commands -->
 
