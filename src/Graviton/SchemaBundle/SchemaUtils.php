@@ -54,25 +54,16 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
+
+
         // add pre translated fields
-        $translatableFields = array_merge($translatableFields, $model->getPreTranslatedFields());
+        $translatableFields = array_merge($translatableFields, array());
 
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
 
         foreach ($meta->getFieldNames() as $field) {
-            /**
-             * [nue] here there was a dirty workaround rename uri to $ref..
-             * this is wrong and led to an error on an entity that actually had a field named 'uri'
-             * if somebody wants to expose a field 'uri' as $ref, please use the serializer for that.
-             * that's for what he's there..
-             */
-            /*
-            if ($field == 'uri') {
-                $field = '$ref';
-            }
-            */
 
             // don't describe deletedDate in schema..
             if ($field == 'deletedDate') {
