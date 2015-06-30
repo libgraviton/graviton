@@ -62,5 +62,23 @@ class XmlManipulatorTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\Graviton\GeneratorBundle\Manipulator\ManipulatorException');
         $manip->saveDocument("");
     }
+
+    /**
+     * @return void
+     */
+    public function testReset()
+    {
+        $manip = new XmlManipulator();
+        $manip->addNodes('<tag>foo</tag>');
+
+        $this->assertAttributeEquals(array('<tag>foo</tag>'), 'nodes', $manip);
+        $this->assertInstanceOf(
+            '\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator',
+            $manip->reset()
+        );
+        $this->assertAttributeEmpty('nodes', $manip);
+    }
+
+
 }
 
