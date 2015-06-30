@@ -43,17 +43,15 @@ class SchemaUtils
      *
      * @param string   $modelName          name of model
      * @param object   $model              model
-     * @param string[] $translatableFields fields that get translated on the fly
-     * @param string[] $languages          languages
      *
      * @return Schema
      */
-    public function getCollectionSchema($modelName, $model, $translatableFields, $languages)
+    public function getCollectionSchema($modelName, $model)
     {
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
-        $collectionSchema->setItems(self::getModelSchema($modelName, $model, $translatableFields, $languages));
+        $collectionSchema->setItems(self::getModelSchema($modelName, $model));
 
         return $collectionSchema;
     }
