@@ -4,6 +4,7 @@
  */
 
 namespace Graviton\CoreBundle\Document;
+
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**

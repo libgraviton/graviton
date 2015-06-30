@@ -29,7 +29,7 @@ class SchemaUtils
     /**
      * sets the language repository
      *
-     * @param LanguageRepository $languageRepository
+     * @param LanguageRepository $languageRepository repository
      *
      * @return void
      */
@@ -41,8 +41,8 @@ class SchemaUtils
     /**
      * get schema for an array of models
      *
-     * @param string   $modelName          name of model
-     * @param object   $model              model
+     * @param string $modelName name of model
+     * @param object $model     model
      *
      * @return Schema
      */
@@ -97,7 +97,6 @@ class SchemaUtils
         );
 
         foreach ($meta->getFieldNames() as $field) {
-
             // don't describe deletedDate in schema..
             if ($field == 'deletedDate') {
                 continue;
@@ -166,7 +165,7 @@ class SchemaUtils
      *
      * @return string schema route name
      */
-    static public function getSchemaRouteName($routeName)
+    public static function getSchemaRouteName($routeName)
     {
         $routeParts = explode('.', $routeName);
 

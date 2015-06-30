@@ -77,7 +77,7 @@ class Swagger
     /**
      * set SchemaUtils
      *
-     * @param SchemaUtils $schemaUtils
+     * @param SchemaUtils $schemaUtils schema utils
      *
      * @return void
      */

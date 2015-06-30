@@ -149,5 +149,4 @@ class SchemaModel implements ContainerAwareInterface
     {
         return $this->schema->required;
     }
-
 }

@@ -51,8 +51,8 @@ abstract class AbstractCustomerController extends RestController
      * @param FormFactory            $formFactory form factory
      * @param DocumentType           $formType    generic form
      * @param ContainerInterface     $container   Container
-     * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
      * @param SchemaUtils            $schemaUtils Schema utils
+     * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
      */
     public function __construct(
         Response $response,
