@@ -20,6 +20,7 @@ use Graviton\RestBundle\Controller\RestController;
 use Graviton\PersonBundle\Repository\CustomerDiffRepository;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
+use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -51,6 +52,7 @@ abstract class AbstractCustomerController extends RestController
      * @param DocumentType           $formType    generic form
      * @param ContainerInterface     $container   Container
      * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
+     * @param SchemaUtils            $schemaUtils Schema utils
      */
     public function __construct(
         Response $response,
@@ -62,6 +64,7 @@ abstract class AbstractCustomerController extends RestController
         FormFactory $formFactory,
         DocumentType $formType,
         ContainerInterface $container,
+        SchemaUtils $schemaUtils,
         CustomerDiffRepository $diffRepo
     ) {
         parent::__construct(
@@ -73,7 +76,8 @@ abstract class AbstractCustomerController extends RestController
             $templating,
             $formFactory,
             $formType,
-            $container
+            $container,
+            $schemaUtils
         );
         $this->diffRepo = $diffRepo;
     }
