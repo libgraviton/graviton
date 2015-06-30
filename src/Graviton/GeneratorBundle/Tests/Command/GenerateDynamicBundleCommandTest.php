@@ -89,9 +89,10 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
+     * @dataProvider definitionElementConfigProvider
      * @return void
      */
-    public function testGenerateSubResourcesFieldNotAHash()
+    public function testGenerateSubResourcesWithElementDefinition()
     {
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
             ->getMockForAbstractClass();
@@ -108,22 +109,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @return void
+     * @return array
      */
-    public function testGenerateSubResourcesFieldABapOfPrimitives()
+    public function definitionElementConfigProvider()
     {
-        $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
-            ->getMockForAbstractClass();
-
-        $isHash = true;
-        $isBagOfPrimitives = true;
-        $jsonField = $this->getDefinitionElementDouble($isHash, $isBagOfPrimitives);
-        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
-
-        $this->executeGenerateSubresources(
-            $outputDouble,
-            $this->getJsonDefDouble(array($jsonField)),
-            $xmlManipulatorDouble
+        return array(
+            'is no hash and no bag of primitives' => array(false, false),
+            'is hash and bag of primitives' => array(true, true),
         );
     }
 
