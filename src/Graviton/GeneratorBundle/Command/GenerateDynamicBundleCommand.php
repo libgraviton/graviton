@@ -289,9 +289,9 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Gathers data for the command to run.
      *
-     * @param array           $arguments
-     * @param OutputInterface $output
-     * @param JsonDefinition  $jsonDef
+     * @param array           $arguments Set of cli arguments passed to the command
+     * @param OutputInterface $output    Output channel to send messages to.
+     * @param JsonDefinition  $jsonDef   Configuration of the service
      *
      * @return void
      * @throws \LogicException
@@ -348,7 +348,7 @@ class GenerateDynamicBundleCommand extends Command
      * It basically replaces the Bundle main class that got generated
      * by the Sensio bundle task and it includes all of our bundles there.
      *
-     * @param array $additions
+     * @param array $additions List of additional bundles
      *
      * @return void
      */
@@ -453,6 +453,8 @@ class GenerateDynamicBundleCommand extends Command
      *
      * @param XmlManipulator $xmlManipulator Helper to safe the validation xml file.
      * @param string         $location       Location where to store the file.
+     *
+     * @return void
      */
     private function generateValidationXml(XmlManipulator $xmlManipulator, $location)
     {
@@ -474,16 +476,14 @@ class GenerateDynamicBundleCommand extends Command
      */
     public function getGeneratedValidationXml($namespace)
     {
-        throw new \RuntimeException('<info>A deprecated method was called: ' . __METHOD__ . '</info>');
+        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
+        if (file_exists($validationXmlPath)) {
+            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
+            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
+        } else {
+            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
+        }
 
-//        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
-//        if (file_exists($validationXmlPath)) {
-//            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
-//            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
-//        } else {
-//            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
-//        }
-//
-//        return $validationXml;
+        return $validationXml;
     }
 }

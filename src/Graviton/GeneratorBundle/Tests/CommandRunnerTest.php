@@ -6,7 +6,6 @@ namespace Graviton\GeneratorBundle\Tests;
 
 use Graviton\GeneratorBundle\CommandRunner;
 
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -14,7 +13,9 @@ use Graviton\GeneratorBundle\CommandRunner;
  */
 class CommandRunnerTest extends \PHPUnit_Framework_TestCase
 {
-
+    /**
+     * @return void
+     */
     public function testExecuteCommand()
     {
         $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')

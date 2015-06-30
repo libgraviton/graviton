@@ -4,7 +4,7 @@
  */
 namespace Graviton\GeneratorBundle\Manipulator\File;
 
-use Graviton\GeneratorBundle\Manipulator\ManuipulatorException;
+use Graviton\GeneratorBundle\Manipulator\ManipulatorException;
 
 /**
  * change the code of a xml file
@@ -18,7 +18,7 @@ class XmlManipulator
     /** @var string */
     private $options = LIBXML_NOBLANKS;
 
-    /** @var array  */
+    /** @var array */
     private $nodes = [];
 
     /** @var  \DomDocument */
@@ -43,7 +43,7 @@ class XmlManipulator
     /**
      * Renders the gathered nodes into a XML document.
      *
-     * @param string $xml
+     * @param string $xml Text to be imported to a DomDocument.
      *
      * @return XmlManipulator
      */
@@ -67,15 +67,18 @@ class XmlManipulator
     }
 
     /**
-     * @param string $path
+     * Stores the current document to the file system.
+     *
+     * @param string $path Location of the file to be stored.
+     *
+     * @return void
      */
     public function saveDocument($path)
     {
-        set_error_handler(array($this, 'HandleXmlError'));
+        set_error_handler(array($this, 'handleXmlError'));
         $this->document->save($path);
         restore_error_handler();
     }
-
 
     /**
      * Loads the provides file into a DomDocument;
@@ -99,7 +102,7 @@ class XmlManipulator
             $options = $this->options;
         }
 
-        set_error_handler(array($this, 'HandleXmlError'));
+        set_error_handler(array($this, 'handleXmlError'));
         $doc->loadXml($xml, $options);
         restore_error_handler();
 
@@ -109,22 +112,18 @@ class XmlManipulator
     /**
      * Handles any error while reading the xml into a DomDocument
      *
-     * @param string $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param string $errline
+     * @param string $errno  Error code
+     * @param string $errstr Error message
      *
+     * @throws ManipulatorException
      * @return false
-     *
-     * @throws ManuipulatorException
      */
-    public function HandleXmlError($errno, $errstr, $errfile, $errline)
+    public function handleXmlError($errno, $errstr)
     {
         if ($errno == E_WARNING && (substr_count($errstr, "DOMDocument::loadXML()") > 0)) {
-            throw new ManuipulatorException('Failed to load the provided xml string into a DomDocument');
+            throw new ManipulatorException('Failed to load the provided xml string into a DomDocument');
         } else {
             return false;
         }
     }
-
 }

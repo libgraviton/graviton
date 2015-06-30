@@ -11,6 +11,11 @@ use Sensio\Bundle\GeneratorBundle\Tests\Command\GenerateBundleCommandTest as Bas
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class GenerateDynamicBundleCommandTest extends BaseTest
 {
     /**
@@ -62,6 +67,11 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
+     * Provides a test double of the service container.
+     *
+     * @param object $loaderDouble test double for a definition loader
+     * @param object $kernelDouble test double of the SF2 kernel
+     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     public function getContainerDouble($loaderDouble, $kernelDouble)
@@ -79,7 +89,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @eturn void
+     * @return void
      */
     public function testGenerateSubResourcesFieldNotAHash()
     {
@@ -98,7 +108,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @eturn void
+     * @return void
      */
     public function testGenerateSubResourcesFieldABapOfPrimitives()
     {
@@ -118,7 +128,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @eturn void
+     * @return void
      */
     public function testGenerateSubResourcesFieldNoFields()
     {
@@ -177,8 +187,12 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @param $outputDouble
-     * @param $jsonDefDouble
+     * @param object $outputDouble         test double for the output stgream
+     * @param object $jsonDefDouble        test double for the json configuration
+     * @param object $xmlManipulatorDouble test double for the manipulator
+     *
+     * @throws \Exception
+     * @return void
      */
     public function executeGenerateSubresources($outputDouble, $jsonDefDouble, $xmlManipulatorDouble)
     {
@@ -209,7 +223,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @param array $fields
+     * @param array $fields set of field to be configured
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
@@ -229,8 +243,8 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @param bool $isHash
-     * @param bool $isBagOfPrimitives
+     * @param bool $isHash            Indicates if the double imitates a hash value
+     * @param bool $isBagOfPrimitives Indicates if the double imitates a set of primitive var types
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
@@ -252,7 +266,6 @@ class GenerateDynamicBundleCommandTest extends BaseTest
                 ->willReturn($isBagOfPrimitives);
 
             if (false === $isBagOfPrimitives) {
-
                 $jsonField
                     ->expects($this->once())
                     ->method('getDefFromLocal')
