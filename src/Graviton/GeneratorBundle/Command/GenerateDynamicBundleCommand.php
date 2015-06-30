@@ -200,6 +200,8 @@ class GenerateDynamicBundleCommand extends Command
                 // remove failed bundle from list
                 array_pop($this->bundleBundleList);
             }
+
+            $this->xmlManipulator->reset();
         }
     }
 

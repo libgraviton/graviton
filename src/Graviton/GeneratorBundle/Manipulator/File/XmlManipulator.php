@@ -41,6 +41,18 @@ class XmlManipulator
     }
 
     /**
+     * Resets the current instance
+     *
+     * @return $this
+     */
+    public function reset()
+    {
+        $this->nodes = [];
+
+        return $this;
+    }
+
+    /**
      * Renders the gathered nodes into a XML document.
      *
      * @param string $xml Text to be imported to a DomDocument.
