@@ -6,6 +6,7 @@
 namespace Graviton\SchemaBundle;
 
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\SchemaBundle\Document\Schema;
 
 /**
@@ -17,6 +18,26 @@ use Graviton\SchemaBundle\Document\Schema;
  */
 class SchemaUtils
 {
+
+    /**
+     * language repository
+     *
+     * @var LanguageRepository repository
+     */
+    private $languageRepository;
+
+    /**
+     * sets the language repository
+     *
+     * @param LanguageRepository $languageRepository
+     *
+     * @return void
+     */
+    public function setLanguageRepository($languageRepository)
+    {
+        $this->languageRepository = $languageRepository;
+    }
+
     /**
      * get schema for an array of models
      *
@@ -27,7 +48,7 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public static function getCollectionSchema($modelName, $model, $translatableFields, $languages)
+    public function getCollectionSchema($modelName, $model, $translatableFields, $languages)
     {
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
@@ -40,14 +61,12 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string   $modelName          name of mode to generate schema for
-     * @param object   $model              model to generate schema for
-     * @param string[] $translatableFields fields that get translated on the fly
-     * @param string[] $languages          languages
+     * @param string $modelName name of mode to generate schema for
+     * @param object $model     model to generate schema for
      *
      * @return Schema
      */
-    public static function getModelSchema($modelName, $model, $translatableFields, $languages)
+    public function getModelSchema($modelName, $model)
     {
         // build up schema data
         $schema = new Schema;
@@ -68,6 +87,13 @@ class SchemaUtils
                 $translatableFields = $documentClass->getTranslatableFields();
             }
         }
+
+        $languages = array_map(
+            function ($language) {
+                return $language->getId();
+            },
+            $this->languageRepository->findAll()
+        );
 
         foreach ($meta->getFieldNames() as $field) {
 
@@ -113,7 +139,7 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public static function makeTranslatable(Schema $property, $languages)
+    public function makeTranslatable(Schema $property, $languages)
     {
         $property->setType('object');
         $property->setTranslatable(true);
@@ -139,7 +165,7 @@ class SchemaUtils
      *
      * @return string schema route name
      */
-    public static function getSchemaRouteName($routeName)
+    static public function getSchemaRouteName($routeName)
     {
         $routeParts = explode('.', $routeName);
 

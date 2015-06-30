@@ -12,7 +12,6 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -70,6 +69,11 @@ class RestController
      * @var RestUtilsInterface
      */
     private $restUtils;
+
+    /**
+     * @var SchemaUtils
+     */
+    private $schemaUtils;
     
     /**
      * @var Router
@@ -101,6 +105,7 @@ class RestController
      * @param FormFactory        $formFactory form factory
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
+     * @param SchemaUtils        $schemaUtils Schema utils
      */
     public function __construct(
         Response $response,
@@ -111,7 +116,8 @@ class RestController
         EngineInterface $templating,
         FormFactory $formFactory,
         DocumentType $formType,
-        ContainerInterface $container
+        ContainerInterface $container,
+        SchemaUtils $schemaUtils
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
@@ -122,6 +128,7 @@ class RestController
         $this->formFactory = $formFactory;
         $this->formType = $formType;
         $this->container = $container;
+        $this->schemaUtils = $schemaUtils;
     }
 
 
@@ -464,13 +471,6 @@ class RestController
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
         $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
 
-        $languages = array_map(
-            function ($language) {
-                return $language->getId();
-            },
-            $this->language->findAll()
-        );
-
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
         $response->setPublic();
@@ -479,7 +479,7 @@ class RestController
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod = 'getCollectionSchema';
         }
-        $schema = SchemaUtils::$schemaMethod($modelName, $model, array(), $languages);
+        $schema = $this->schemaUtils->$schemaMethod($modelName, $model);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';

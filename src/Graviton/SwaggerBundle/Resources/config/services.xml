@@ -20,6 +20,9 @@
             <call method="setSchemaModel">
                 <argument type="service" id="graviton.schema.model.schemamodel"></argument>
             </call>
+            <call method="setSchemaUtils">
+                <argument type="service" id="graviton.schema.utils"></argument>
+            </call>
         </service>
 
         <service id="graviton.swagger.command.swaggercopy.filesystem"

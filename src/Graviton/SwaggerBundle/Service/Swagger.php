@@ -34,6 +34,11 @@ class Swagger
     private $schemaModel;
 
     /**
+     * @var SchemaUtils
+     */
+    private $schemaUtils;
+
+    /**
      * sets the container
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
@@ -62,11 +67,23 @@ class Swagger
      *
      * @param SchemaModel $schemaModel schema model instance
      *
-     * @return SchemaModel
+     * @return void
      */
     public function setSchemaModel($schemaModel)
     {
         $this->schemaModel = $schemaModel;
+    }
+
+    /**
+     * set SchemaUtils
+     *
+     * @param SchemaUtils $schemaUtils
+     *
+     * @return void
+     */
+    public function setSchemaUtils($schemaUtils)
+    {
+        $this->schemaUtils = $schemaUtils;
     }
 
     /**
@@ -94,7 +111,7 @@ class Swagger
                 $thisModel = $this->restUtils->getModelFromRoute($route);
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
-                $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
+                $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel);
 
                 $ret['definitions'][$entityClassName] = json_decode(
                     $this->restUtils->serializeContent($schema),
