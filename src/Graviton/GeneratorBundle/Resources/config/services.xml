@@ -104,7 +104,7 @@
         <service id="graviton_generator.command.generatedynamicbundle"
                  class="Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand">
             <argument type="service" id="graviton_generator.command.generatedynamicbundle.container"/>
-            <argument type="service" id="graviton_generator.command.generatedynamicbundle.process"/>
+            <argument type="service" id="graviton_generator.command_runner"/>
             <argument type="service" id="graviton_generator.manipulator.xml_file"/>
             <tag name="console.command" />
         </service>
