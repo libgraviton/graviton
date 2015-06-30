@@ -11,6 +11,6 @@
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
-    <property name="translatable" accessor-getter="isTranslatable" accessor-setter="setTranslatable" expose="true"/>
+    <property name="translatable" accessor-getter="isTranslatable" accessor-setter="setTranslatable" expose="true" serialized-name="x-translatable"/>
   </class>
 </serializer>

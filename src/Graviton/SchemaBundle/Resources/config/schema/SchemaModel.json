@@ -30,7 +30,7 @@
       "items": "object",
       "description": "Array of required field names"
     },
-    "translatable": {
+    "x-translatable": {
       "title": "Translatable",
       "type": "boolean",
       "description": "If property is translatable or not"
