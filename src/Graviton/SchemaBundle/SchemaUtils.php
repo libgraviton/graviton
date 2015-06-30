@@ -5,6 +5,7 @@
 
 namespace Graviton\SchemaBundle;
 
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\SchemaBundle\Document\Schema;
 
 /**
@@ -54,14 +55,19 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
-
-
-        // add pre translated fields
-        $translatableFields = array_merge($translatableFields, array());
-
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
+
+        // look for translatables in document class
+        $entityName = $repo->getClassName();
+        $translatableFields = array();
+        if (class_exists($entityName)) {
+            $documentClass = new $entityName();
+            if ($documentClass instanceof TranslatableDocumentInterface) {
+                $translatableFields = $documentClass->getTranslatableFields();
+            }
+        }
 
         foreach ($meta->getFieldNames() as $field) {
 

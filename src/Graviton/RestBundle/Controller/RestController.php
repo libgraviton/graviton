@@ -464,10 +464,6 @@ class RestController
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
         $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
 
-        $translatableFields = array();
-        if ($document instanceof TranslatableDocumentInterface) {
-            $translatableFields = $document->getTranslatableFields();
-        }
         $languages = array_map(
             function ($language) {
                 return $language->getId();
@@ -483,7 +479,7 @@ class RestController
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod = 'getCollectionSchema';
         }
-        $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
+        $schema = SchemaUtils::$schemaMethod($modelName, $model, array(), $languages);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
