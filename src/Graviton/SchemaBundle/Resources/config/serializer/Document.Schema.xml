@@ -4,6 +4,7 @@
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle" expose="true"/>
     <property name="description" type="string" accessor-getter="getDescription" accessor-setter="setDescription" expose="true"/>
     <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
+    <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
     <property name="properties" accessor-getter="getProperties" expose="true">
       <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
@@ -11,6 +12,5 @@
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
-    <property name="translatable" accessor-getter="isTranslatable" accessor-setter="setTranslatable" expose="true" serialized-name="x-translatable"/>
   </class>
 </serializer>

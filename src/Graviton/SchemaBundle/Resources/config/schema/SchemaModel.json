@@ -16,24 +16,28 @@
     "type": {
       "title": "Type",
       "type": "string",
-      "description": "Data type of the property"
+      "description": "Primitive data type of the property"
+    },
+    "format": {
+      "title": "Format",
+      "type": "string",
+      "description": "Data format of this property"
     },
     "properties": {
       "title": "Properties",
       "type": "array",
-      "items": "object",
+      "items": {
+        "type": "object"
+      },
       "description": "Array of properties"
     },
     "required": {
       "title": "Required",
       "type": "array",
-      "items": "object",
+      "items": {
+        "type": "string"
+      },
       "description": "Array of required field names"
-    },
-    "x-translatable": {
-      "title": "Translatable",
-      "type": "boolean",
-      "description": "If property is translatable or not"
     }
   },
   "required": ["title", "description", "type"]

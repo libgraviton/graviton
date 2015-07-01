@@ -30,6 +30,11 @@ class Schema
     protected $type;
 
     /**
+     * @var string
+     */
+    protected $format;
+
+    /**
      * @var Schema
      */
     protected $items;
@@ -48,6 +53,34 @@ class Schema
      * @var boolean
      */
     protected $translatable;
+
+    /**
+     * these are the BSON primitive types.
+     * http://json-schema.org/latest/json-schema-core.html#anchor8
+     * every type set *not* in this set will be carried over to 'format'
+     *
+     * @var string[]
+     */
+    protected $primitiveTypes = array(
+        'array',
+        'boolean',
+        'integer',
+        'number',
+        'null',
+        'object',
+        'string'
+    );
+
+    /**
+     * known non-primitive types we map to primitives here.
+     * the type itself is set to the format.
+     *
+     * @var string[]
+     */
+    protected $specialTypeMapping = array(
+        'extref' => 'string',
+        'translatable' => 'object'
+    );
 
     /**
      * set title
@@ -108,17 +141,50 @@ class Schema
         if ($type === 'hash') {
             $type = 'object';
         }
-        $this->type = $type;
+
+        // handle non-primitive types
+        if (!in_array($type, $this->primitiveTypes)) {
+            $setType = 'string';
+            if (isset($this->specialTypeMapping[$type])) {
+                $setType = $this->specialTypeMapping[$type];
+            }
+            $this->type = $setType;
+            $this->setFormat($type);
+        } else {
+            $this->type = $type;
+        }
     }
 
     /**
      * get type
      *
-     * @return string
+     * @return string type
      */
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * get format
+     *
+     * @return string format
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * sets format
+     *
+     * @param string $format format
+     *
+     * @return void
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
     }
 
     /**
@@ -233,7 +299,11 @@ class Schema
      */
     public function setTranslatable($translatable)
     {
-        $this->translatable = $translatable;
+        if ($translatable == true) {
+            $this->setType('translatable');
+        } else {
+            $this->setType('string');
+        }
     }
 
     /**
@@ -243,6 +313,11 @@ class Schema
      */
     public function isTranslatable()
     {
-        return $this->translatable;
+        $ret = false;
+        if ($this->getFormat() == 'translatable') {
+            $ret = true;
+        }
+
+        return $ret;
     }
 }
