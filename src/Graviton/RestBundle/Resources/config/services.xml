@@ -62,7 +62,6 @@
             <argument type="service" id="graviton.rest.response" strict="false"/>
             <argument type="service" id="graviton.rest.restutils"/>
             <argument type="service" id="graviton.rest.router"/>
-            <argument type="service" id="graviton.i18n.repository.language"/>
             <argument type="service" id="graviton.rest.validator"/>
             <argument type="service" id="templating"/>
             <argument type="service" id="form.factory"/>

@@ -6,9 +6,7 @@
 namespace Graviton\FileBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\RestBundle\Service\RestUtils;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +37,6 @@ class FileController extends RestController
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param LanguageRepository $language    Language
      * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
      * @param FormFactory        $formFactory form factory
@@ -52,7 +49,6 @@ class FileController extends RestController
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
         FormFactory $formFactory,
@@ -65,7 +61,6 @@ class FileController extends RestController
             $response,
             $restUtils,
             $router,
-            $language,
             $validator,
             $templating,
             $formFactory,

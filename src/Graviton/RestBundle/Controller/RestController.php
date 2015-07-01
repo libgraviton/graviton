@@ -17,7 +17,6 @@ use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,12 +48,12 @@ class RestController
      * @var ContainerInterface service_container
      */
     private $container;
-    
+
     /**
      * @var Response
      */
     private $response;
-    
+
     /**
      * @var FormFactory
      */
@@ -74,32 +73,26 @@ class RestController
      * @var SchemaUtils
      */
     private $schemaUtils;
-    
+
     /**
      * @var Router
      */
     private $router;
-    
-    /**
-     * @var LanguageRepository
-     */
-    private $language;
-    
+
     /**
      * @var ValidatorInterface
      */
     private $validator;
-    
+
     /**
      * @var EngineInterface
      */
     private $templating;
-    
+
     /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param LanguageRepository $language    Language
      * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
      * @param FormFactory        $formFactory form factory
@@ -111,7 +104,6 @@ class RestController
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
         FormFactory $formFactory,
@@ -122,7 +114,6 @@ class RestController
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->language = $language;
         $this->validator = $validator;
         $this->templating = $templating;
         $this->formFactory = $formFactory;
@@ -469,7 +460,6 @@ class RestController
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
-        $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
