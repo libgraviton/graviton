@@ -179,8 +179,7 @@ class FileController extends RestController
         if (substr(strtolower($contentType), 0, 16) === 'application/json') {
             return parent::putAction($id, $request);
         }
-
-        $response = $this->getResponse();
+        
         $record = $this->findRecord($id);
 
         $file = new File($id, $this->gaufrette);
@@ -191,11 +190,8 @@ class FileController extends RestController
 
         $this->getModel()->updateRecord($id, $record);
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($record)],
-            $response
-        );
+        return parent::getAction($request, $id);
+
     }
 
 
