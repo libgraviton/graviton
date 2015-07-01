@@ -5,6 +5,8 @@
 
 namespace Graviton\SchemaBundle;
 
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\SchemaBundle\Document\Schema;
 
 /**
@@ -16,22 +18,38 @@ use Graviton\SchemaBundle\Document\Schema;
  */
 class SchemaUtils
 {
+
+    /**
+     * language repository
+     *
+     * @var LanguageRepository repository
+     */
+    private $languageRepository;
+
+    /**
+     * Constructor
+     *
+     * @param LanguageRepository $languageRepository repository
+     */
+    public function __construct(LanguageRepository $languageRepository)
+    {
+        $this->languageRepository = $languageRepository;
+    }
+
     /**
      * get schema for an array of models
      *
-     * @param string   $modelName          name of model
-     * @param object   $model              model
-     * @param string[] $translatableFields fields that get translated on the fly
-     * @param string[] $languages          languages
+     * @param string $modelName name of model
+     * @param object $model     model
      *
      * @return Schema
      */
-    public static function getCollectionSchema($modelName, $model, $translatableFields, $languages)
+    public function getCollectionSchema($modelName, $model)
     {
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
-        $collectionSchema->setItems(self::getModelSchema($modelName, $model, $translatableFields, $languages));
+        $collectionSchema->setItems(self::getModelSchema($modelName, $model));
 
         return $collectionSchema;
     }
@@ -39,14 +57,12 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string   $modelName          name of mode to generate schema for
-     * @param object   $model              model to generate schema for
-     * @param string[] $translatableFields fields that get translated on the fly
-     * @param string[] $languages          languages
+     * @param string $modelName name of mode to generate schema for
+     * @param object $model     model to generate schema for
      *
      * @return Schema
      */
-    public static function getModelSchema($modelName, $model, $translatableFields, $languages)
+    public function getModelSchema($modelName, $model)
     {
         // build up schema data
         $schema = new Schema;
@@ -54,26 +70,31 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
-        // add pre translated fields
-        $translatableFields = array_merge($translatableFields, $model->getPreTranslatedFields());
-
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
 
-        foreach ($meta->getFieldNames() as $field) {
-            /**
-             * [nue] here there was a dirty workaround rename uri to $ref..
-             * this is wrong and led to an error on an entity that actually had a field named 'uri'
-             * if somebody wants to expose a field 'uri' as $ref, please use the serializer for that.
-             * that's for what he's there..
-             */
-            /*
-            if ($field == 'uri') {
-                $field = '$ref';
+        // look for translatables in document class
+        $entityName = $repo->getClassName();
+        $translatableFields = array();
+        if (class_exists($entityName)) {
+            $documentClass = new $entityName();
+            if ($documentClass instanceof TranslatableDocumentInterface) {
+                $translatableFields = array_merge(
+                    $documentClass->getTranslatableFields(),
+                    $documentClass->getPreTranslatedFields()
+                );
             }
-            */
+        }
 
+        $languages = array_map(
+            function ($language) {
+                return $language->getId();
+            },
+            $this->languageRepository->findAll()
+        );
+
+        foreach ($meta->getFieldNames() as $field) {
             // don't describe deletedDate in schema..
             if ($field == 'deletedDate') {
                 continue;
@@ -87,13 +108,13 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems(self::getModelSchema($field, $propertyModel, $translatableFields, $languages));
+                $property->setItems(self::getModelSchema($field, $propertyModel));
                 $property->setType('array');
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = self::getModelSchema($field, $propertyModel, $translatableFields, $languages);
+                $property = self::getModelSchema($field, $propertyModel);
             }
 
             if (in_array($field, $translatableFields)) {
@@ -116,7 +137,7 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public static function makeTranslatable(Schema $property, $languages)
+    public function makeTranslatable(Schema $property, $languages)
     {
         $property->setType('object');
         $property->setTranslatable(true);

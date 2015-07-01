@@ -47,6 +47,16 @@ class App implements TranslatableDocumentInterface
     }
 
     /**
+     * return pretranslated fields
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields()
+    {
+        return array();
+    }
+
+    /**
      * Set id
      *
      * @param string $id id for new document

@@ -272,4 +272,26 @@ class ModuleControllerTest extends RestTestCase
         $client->request('GET', '/core/module/'.$moduleId);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
+
+    /**
+     * test getting collection schema.
+     * i avoid retesting everything (covered in /core/app), this test only
+     * asserts translatable & extref representation
+     *
+     * @return void
+     */
+    public function testGetModuleCollectionSchemaInformationFormat()
+    {
+        $client = static::createRestClient();
+
+        $client->request('OPTIONS', '/core/module');
+        $results = $client->getResults();
+
+        $this->assertEquals('object', $results->items->properties->name->type);
+        $this->assertEquals('translatable', $results->items->properties->name->format);
+
+        $this->assertEquals('object', $results->items->properties->app->type);
+        $this->assertEquals('string', $results->items->properties->app->properties->ref->type);
+        $this->assertEquals('extref', $results->items->properties->app->properties->ref->format);
+    }
 }

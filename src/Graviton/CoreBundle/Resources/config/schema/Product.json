@@ -13,8 +13,5 @@
   "required": [
     "id",
     "name"
-  ],
-  "pretranslated": [
-    "name"
   ]
 }

@@ -6,6 +6,7 @@
     <parameter key="graviton.schema.listener.schematyperesponse.class">Graviton\SchemaBundle\Listener\SchemaContentTypeResponseListener</parameter>
     <parameter key="graviton.schema.listener.canonicalschemaresponse.class">Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener</parameter>
     <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
+    <parameter key="graviton.schema.service.schemautils.class">Graviton\SchemaBundle\SchemaUtils</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -20,6 +21,9 @@
       <call method="setContainer">
         <argument type="service" id="service_container"></argument>
       </call>
+    </service>
+    <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
+      <argument type="service" id="graviton.i18n.repository.language"/>
     </service>
   </services>
 </container>

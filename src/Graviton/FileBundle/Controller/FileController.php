@@ -7,7 +7,7 @@ namespace Graviton\FileBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
+use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,36 +37,36 @@ class FileController extends RestController
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param LanguageRepository $language    Language
      * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
      * @param FormFactory        $formFactory form factory
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
+     * @param SchemaUtils        $schemaUtils schema utils
      * @param FileSystem         $gaufrette   file system abstraction layer for s3 and more
      */
     public function __construct(
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
         FormFactory $formFactory,
         DocumentType $formType,
         ContainerInterface $container,
+        SchemaUtils $schemaUtils,
         Filesystem $gaufrette
     ) {
         parent::__construct(
             $response,
             $restUtils,
             $router,
-            $language,
             $validator,
             $templating,
             $formFactory,
             $formType,
-            $container
+            $container,
+            $schemaUtils
         );
         $this->gaufrette = $gaufrette;
     }
