@@ -30,8 +30,6 @@ class SchemaUtils
      * Constructor
      *
      * @param LanguageRepository $languageRepository repository
-     *
-     * @return SchemaUtils
      */
     public function __construct(LanguageRepository $languageRepository)
     {
@@ -110,13 +108,13 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems(self::getModelSchema($field, $propertyModel, $translatableFields, $languages));
+                $property->setItems(self::getModelSchema($field, $propertyModel));
                 $property->setType('array');
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = self::getModelSchema($field, $propertyModel, $translatableFields, $languages);
+                $property = self::getModelSchema($field, $propertyModel);
             }
 
             if (in_array($field, $translatableFields)) {

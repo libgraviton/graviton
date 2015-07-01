@@ -5,9 +5,11 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -41,8 +43,6 @@ class Swagger
      * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
      * @param SchemaUtils $schemaUtils schema utils
-     *
-     * @return Swagger
      */
     public function __construct(
         RestUtils $restUtils,
@@ -77,6 +77,15 @@ class Swagger
                 }
 
                 $thisModel = $this->restUtils->getModelFromRoute($route);
+                if ($thisModel === false) {
+                    throw new \LogicException(
+                        sprintf(
+                            'Could not resolve route "%s" to model',
+                            $routeName
+                        )
+                    );
+                }
+
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
                 $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel);
