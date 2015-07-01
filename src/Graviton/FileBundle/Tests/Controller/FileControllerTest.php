@@ -103,12 +103,15 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals($fixtureData, $results);
 
         $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
+        $filename = "test.txt";
+        $data->metadata->filename = $filename;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertEquals($filename, $results->metadata->filename);
 
         $data->links = [];
         $client = static::createRestClient();
