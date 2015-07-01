@@ -50,21 +50,7 @@ class JsonDefinition
     public function __construct($filename)
     {
         $this->filename = $filename;
-
-        if (!file_exists($this->filename)) {
-            throw new FileNotFoundException(
-                sprintf(
-                    'File %s doesn\'t exist',
-                    $this->filename
-                )
-            );
-        }
-
-        $this->doc = json_decode(file_get_contents($this->filename));
-
-        if (empty($this->doc) || !is_object($this->doc)) {
-            throw new \RuntimeException(sprintf('Could not load %s', $filename));
-        }
+        $this->doc = $this->loadJson($filename);
     }
 
     /**
@@ -412,5 +398,28 @@ class JsonDefinition
          }
 
         return $roles;
+    }
+
+    /**
+     * Extracts json definitions from the given file.
+     *
+     * @param string $filename Absolute path to a json definition file.
+     *
+     * @throws \RuntimeException
+     * @return \stdClass
+     */
+    public function loadJson($filename)
+    {
+        if (!file_exists($this->filename)) {
+            throw new FileNotFoundException(sprintf('File %s doesn\'t exist', $this->filename));
+        }
+
+        // @TODO: \Graviton\RestBundle\Controller\RestController::checkJsonRequest shall do what is necessary here.
+        $doc = json_decode(file_get_contents($this->filename));
+        if (empty($doc) || !is_object($doc)) {
+            throw new \RuntimeException(sprintf('Could not load %s', $filename));
+        }
+
+        return $doc;
     }
 }

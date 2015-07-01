@@ -1,0 +1,40 @@
+{
+    "id": "TestDefinition",
+    "description": "Whatever test",
+    "service": {
+        "routerBase": "/test/definition/",
+        "roles": ["GRAVITON_USER"],
+        "fixtures": [
+            {
+                "id": 500,
+                "anotherInt": 6555488894525,
+                "testField": {"en": "a test string"}
+            }
+        ]
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "description": "Unique identifier for an item."
+            },
+            {
+                "name": "anotherInt",
+                "type": "INT",
+                "description": "Just a nice integer",
+                "required": true
+            },
+            {
+                "name": "testField",
+                "type": "varchar",
+                "title": "A testing title",
+                "description": "A lengthy and detailed description.",
+                "required": true,
+                "translatable": true
+            }
+        ]
+    }
+}
