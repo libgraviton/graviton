@@ -5,6 +5,7 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\Routing\Route;
@@ -18,10 +19,6 @@ use Symfony\Component\Routing\Route;
  */
 class Swagger
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
-     */
-    private $container;
 
     /**
      * @var \Graviton\RestBundle\Service\RestUtils
@@ -39,50 +36,21 @@ class Swagger
     private $schemaUtils;
 
     /**
-     * sets the container
+     * Constructor
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
-     */
-    public function setContainer($container = null)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * sets restUtils
-     *
-     * @param \Graviton\RestBundle\Service\RestUtils $restUtils rest utils
-     *
-     * @return void
-     */
-    public function setRestUtils($restUtils = null)
-    {
-        $this->restUtils = $restUtils;
-    }
-
-    /**
-     * sets schemamodel
-     *
+     * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
-     *
-     * @return void
-     */
-    public function setSchemaModel($schemaModel)
-    {
-        $this->schemaModel = $schemaModel;
-    }
-
-    /**
-     * set SchemaUtils
-     *
      * @param SchemaUtils $schemaUtils schema utils
      *
-     * @return void
+     * @return Swagger
      */
-    public function setSchemaUtils($schemaUtils)
-    {
+    public function __construct(
+        RestUtils $restUtils,
+        SchemaModel $schemaModel,
+        SchemaUtils $schemaUtils
+    ) {
+        $this->restUtils = $restUtils;
+        $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
     }
 

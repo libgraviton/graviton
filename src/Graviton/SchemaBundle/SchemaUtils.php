@@ -27,13 +27,13 @@ class SchemaUtils
     private $languageRepository;
 
     /**
-     * sets the language repository
+     * Constructor
      *
      * @param LanguageRepository $languageRepository repository
      *
-     * @return void
+     * @return SchemaUtils
      */
-    public function setLanguageRepository($languageRepository)
+    public function __construct(LanguageRepository $languageRepository)
     {
         $this->languageRepository = $languageRepository;
     }

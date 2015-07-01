@@ -11,18 +11,9 @@
 
         <!-- swagger service - a service that generates swagger spec -->
         <service id="graviton.rest.apidoc" class="Graviton\SwaggerBundle\Service\Swagger">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
-            <call method="setRestUtils">
-                <argument type="service" id="graviton.rest.restutils"></argument>
-            </call>
-            <call method="setSchemaModel">
-                <argument type="service" id="graviton.schema.model.schemamodel"></argument>
-            </call>
-            <call method="setSchemaUtils">
-                <argument type="service" id="graviton.schema.utils"></argument>
-            </call>
+            <argument type="service" id="graviton.rest.restutils"></argument>
+            <argument type="service" id="graviton.schema.model.schemamodel"></argument>
+            <argument type="service" id="graviton.schema.utils"></argument>
         </service>
 
         <service id="graviton.swagger.command.swaggercopy.filesystem"

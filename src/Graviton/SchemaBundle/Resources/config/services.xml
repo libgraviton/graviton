@@ -23,9 +23,7 @@
       </call>
     </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
-      <call method="setLanguageRepository">
-        <argument type="service" id="graviton.i18n.repository.language"></argument>
-      </call>
+      <argument type="service" id="graviton.i18n.repository.language"/>
     </service>
   </services>
 </container>
