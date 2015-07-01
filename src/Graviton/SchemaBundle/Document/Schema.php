@@ -299,7 +299,7 @@ class Schema
      */
     public function setTranslatable($translatable)
     {
-        if ($translatable == true) {
+        if ($translatable === true) {
             $this->setType('translatable');
         } else {
             $this->setType('string');
