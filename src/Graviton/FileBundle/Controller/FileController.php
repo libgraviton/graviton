@@ -166,6 +166,40 @@ class FileController extends RestController
     }
 
     /**
+     * Update a record
+     *
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function putAction($id, Request $request)
+    {
+        $contentType = $request->headers->get('Content-Type');
+        if (substr(strtolower($contentType), 0, 16) === 'application/json') {
+            return parent::putAction($id, $request);
+        }
+
+        $response = $this->getResponse();
+        $record = $this->findRecord($id);
+
+        $file = new File($id, $this->gaufrette);
+        $file->setContent($request->getContent());
+        $record->getMetadata()
+            ->setSize((int) $file->getSize())
+            ->setMime($contentType);
+
+        $this->getModel()->updateRecord($id, $record);
+
+        return $this->render(
+            'GravitonRestBundle:Main:index.json.twig',
+            ['response' => $this->serialize($record)],
+            $response
+        );
+    }
+
+
+    /**
      * Deletes a record
      *
      * @param Number $id ID of record
