@@ -91,17 +91,9 @@ class FileController extends RestController
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        $data = $request->getContent();
-        if (is_resource($data)) {
-            throw new BadRequestHttpException('/file does not support storing resources');
-        }
-
-        // add file to storage
-        $file = new File($record->getId(), $this->gaufrette);
-        $file->setContent($data);
-
+        $file = $this->saveFile($record->getId(), $request->getContent());
         // update record with file metadata
-        $meta = new FileMetadata;
+        $meta = new FileMetadata();
         $meta->setSize((int) $file->getSize())
             ->setMime($request->headers->get('Content-Type'));
         $record->setMetadata($meta);
@@ -116,7 +108,7 @@ class FileController extends RestController
         $routeType = end($routeParts);
 
         if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
+            $routeName = substr($routeName, 0, -4).'get';
         }
 
         $response->headers->set(
@@ -149,6 +141,7 @@ class FileController extends RestController
 
         if (!$this->gaufrette->has($id)) {
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
+
             return $response;
         }
 
@@ -179,11 +172,11 @@ class FileController extends RestController
         if (substr(strtolower($contentType), 0, 16) === 'application/json') {
             return parent::putAction($id, $request);
         }
-        
+
         $record = $this->findRecord($id);
 
-        $file = new File($id, $this->gaufrette);
-        $file->setContent($request->getContent());
+        $file = $this->saveFile($id, $request->getContent());
+
         $record->getMetadata()
             ->setSize((int) $file->getSize())
             ->setMime($contentType);
@@ -209,5 +202,26 @@ class FileController extends RestController
         }
 
         return parent::deleteAction($id);
+    }
+
+    /**
+     * Save or update a file
+     *
+     * @param $id   Number ID of file
+     * @param $data String content to save
+     *
+     * @return Gaufrette\File $file the saved file
+     *
+     * @throws BadRequestHttpException
+     */
+    private function saveFile($id, $data)
+    {
+        if (is_resource($data)) {
+            throw new BadRequestHttpException('/file does not support storing resources');
+        }
+        $file = new File($id, $this->gaufrette);
+        $file->setContent($data);
+
+        return $file;
     }
 }
