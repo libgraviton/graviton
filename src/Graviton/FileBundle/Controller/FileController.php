@@ -207,8 +207,8 @@ class FileController extends RestController
     /**
      * Save or update a file
      *
-     * @param $id   Number ID of file
-     * @param $data String content to save
+     * @param Number $id   ID of file
+     * @param String $data content to save
      *
      * @return Gaufrette\File $file the saved file
      *
