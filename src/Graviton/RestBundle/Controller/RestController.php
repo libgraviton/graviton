@@ -11,7 +11,6 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
-use GravitonDyn\CustomerBundle\Document\Customer;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
@@ -599,7 +598,7 @@ class RestController
     /**
      * @param FormInterface $form    form to check
      * @param Request       $request data request
-     *l
+     *
      * @return mixed
      */
     private function checkForm(FormInterface $form, Request $request)
