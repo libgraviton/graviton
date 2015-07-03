@@ -18,4 +18,11 @@ interface TranslatableDocumentInterface
      * @return string[]
      */
     public function getTranslatableFields();
+
+    /**
+     * return all pretranslated fields
+     *
+     * @return string[]
+     */
+    public function getPreTranslatedFields();
 }

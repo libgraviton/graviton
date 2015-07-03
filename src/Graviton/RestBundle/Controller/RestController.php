@@ -12,13 +12,11 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,12 +48,12 @@ class RestController
      * @var ContainerInterface service_container
      */
     private $container;
-    
+
     /**
      * @var Response
      */
     private $response;
-    
+
     /**
      * @var FormFactory
      */
@@ -70,58 +68,58 @@ class RestController
      * @var RestUtilsInterface
      */
     private $restUtils;
-    
+
+    /**
+     * @var SchemaUtils
+     */
+    private $schemaUtils;
+
     /**
      * @var Router
      */
     private $router;
-    
-    /**
-     * @var LanguageRepository
-     */
-    private $language;
-    
+
     /**
      * @var ValidatorInterface
      */
     private $validator;
-    
+
     /**
      * @var EngineInterface
      */
     private $templating;
-    
+
     /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param LanguageRepository $language    Language
      * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
      * @param FormFactory        $formFactory form factory
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
+     * @param SchemaUtils        $schemaUtils Schema utils
      */
     public function __construct(
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
         FormFactory $formFactory,
         DocumentType $formType,
-        ContainerInterface $container
+        ContainerInterface $container,
+        SchemaUtils $schemaUtils
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->language = $language;
         $this->validator = $validator;
         $this->templating = $templating;
         $this->formFactory = $formFactory;
         $this->formType = $formType;
         $this->container = $container;
+        $this->schemaUtils = $schemaUtils;
     }
 
 
@@ -462,27 +460,16 @@ class RestController
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
         $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
-        $document = $this->container->get(implode('.', array($app, $module, 'document', $modelName)));
-
-        $translatableFields = array();
-        if ($document instanceof TranslatableDocumentInterface) {
-            $translatableFields = $document->getTranslatableFields();
-        }
-        $languages = array_map(
-            function ($language) {
-                return $language->getId();
-            },
-            $this->language->findAll()
-        );
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
+        $response->setPublic();
 
         $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
             $schemaMethod = 'getCollectionSchema';
         }
-        $schema = SchemaUtils::$schemaMethod($modelName, $model, $translatableFields, $languages);
+        $schema = $this->schemaUtils->$schemaMethod($modelName, $model);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -602,8 +589,7 @@ class RestController
      */
     private function checkForm(FormInterface $form, Request $request)
     {
-        $form->handleRequest($request);
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), false);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), true);
 
         if (!$form->isValid()) {
             throw new ValidationException($form->getErrors(true));

@@ -88,12 +88,16 @@ class FileControllerTest extends RestTestCase
         $link->{'$ref'} = 'http://localhost/core/app/tablet';
         $data->links[] = $link;
 
+        $filename = "test.txt";
+        $data->metadata->filename = $filename;
+
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertEquals($filename, $results->metadata->filename);
 
         $client = static::createClient();
         $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'text/plain']);
@@ -171,5 +175,44 @@ class FileControllerTest extends RestTestCase
 
         $response = $client->getResponse();
         $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    /**
+     * validate that we can update the content from a file
+     *
+     * @return void
+     */
+    public function testUpdateFileContent()
+    {
+        $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
+        $contentType = 'text/plain';
+        $newData = "This is a new text!!!";
+        $client = static::createRestClient();
+        $client->post(
+            '/file',
+            $fixtureData,
+            [],
+            [],
+            ['CONTENT_TYPE' => $contentType],
+            false
+        );
+        $retData = $client->getResults();
+        $this->assertEquals(201, $client->getResponse()->getStatusCode());
+        $this->assertEquals(strlen($fixtureData), $retData->metadata->size);
+        $this->assertEquals($contentType, $retData->metadata->mime);
+
+        $client = static::createRestClient();
+        $client->put(
+            sprintf('/file/%s', $retData->id),
+            $newData,
+            [],
+            [],
+            ['CONTENT_TYPE' => $contentType],
+            false
+        );
+        $retData = $client->getResults();
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(strlen($newData), $retData->metadata->size);
+        $this->assertEquals($contentType, $retData->metadata->mime);
     }
 }

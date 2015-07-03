@@ -19,7 +19,7 @@ namespace Graviton\PersonBundle\Controller;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\PersonBundle\Repository\CustomerDiffRepository;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\I18nBundle\Repository\LanguageRepository;
+use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -44,36 +44,36 @@ abstract class AbstractCustomerController extends RestController
      * @param Response               $response    Response
      * @param RestUtilsInterface     $restUtils   Rest utils
      * @param Router                 $router      Router
-     * @param LanguageRepository     $language    Language
      * @param ValidatorInterface     $validator   Validator
      * @param EngineInterface        $templating  Templating
      * @param FormFactory            $formFactory form factory
      * @param DocumentType           $formType    generic form
      * @param ContainerInterface     $container   Container
+     * @param SchemaUtils            $schemaUtils Schema utils
      * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
      */
     public function __construct(
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        LanguageRepository $language,
         ValidatorInterface $validator,
         EngineInterface $templating,
         FormFactory $formFactory,
         DocumentType $formType,
         ContainerInterface $container,
+        SchemaUtils $schemaUtils,
         CustomerDiffRepository $diffRepo
     ) {
         parent::__construct(
             $response,
             $restUtils,
             $router,
-            $language,
             $validator,
             $templating,
             $formFactory,
             $formType,
-            $container
+            $container,
+            $schemaUtils
         );
         $this->diffRepo = $diffRepo;
     }

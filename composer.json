@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.13.0",
+    "version": "0.14.1",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -44,19 +44,19 @@
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": "~2.0@alpha",
-        "graviton/rql-parser-bundle": "^0.3",
+        "graviton/rql-parser-bundle": ">=0.5.0",
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.3",
-        "graviton/deploy-scripts": ">=0.2.0"
+        "graviton/deploy-scripts": ">=0.2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
         "liip/functional-test-bundle": "~1.0",
         "squizlabs/php_codesniffer": "~2.2",
         "libgraviton/codesniffer": "~1.3",
-        "lapistano/proxy-object": "~2.1",
+        "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
         "graviton/test-services-bundle": "^0.3"
     },
@@ -83,6 +83,9 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+        ],
+        "configure": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "check": [
             "./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards",
@@ -127,13 +130,15 @@
                 "file": "app/config/deploy.yml",
                 "env-map": {
                     "cf_bin": "CF_BIN",
+                    "cf_process_timeout": "CF_PROCESS_TIMEOUT",
                     "cf_api_url": "CF_API_URL",
                     "cf_username": "CF_USERNAME",
                     "cf_password": "CF_PASSWORD",
                     "cf_org": "CF_ORG",
                     "cf_space": "CF_SPACE",
                     "cf_domain": "CF_DOMAIN",
-                    "cf_services": "CF_SERVICES"
+                    "cf_services": "CF_SERVICES",
+                    "cf_environment_vars": "CF_ENVIRONMENT_VARS"
                 }
             }
         ],
