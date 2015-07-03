@@ -46,18 +46,18 @@
         "readOnly": true
       },
       {
-        "name": "metadata.filename",
-        "type": "string",
-        "title": "file name",
-        "description": "file name",
-        "required": true
-      },
-      {
         "name": "metadata.cTime",
         "type": "datetime",
         "title": "Creation date",
         "description": "Timestamp of file upload",
         "readOnly": true
+      },
+      {
+        "name": "metadata.filename",
+        "type": "string",
+        "title": "file name",
+        "description": "file name",
+        "required": true
       }
     ]
   }
