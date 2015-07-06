@@ -3,7 +3,7 @@
  * Constraint for a strict boolean check (not accepting integers of any kind)
  */
 
-namespace Graviton\RestBundle\Validator\Constraints;
+namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
 
 use Symfony\Component\Validator\Constraint;
 
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraint;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class BooleanStrict extends Constraint
+class ReadOnly extends Constraint
 {
 
     /**
@@ -22,5 +22,5 @@ class BooleanStrict extends Constraint
      *
      * @var string
      */
-    public $message = 'The value "%string%" is not a valid boolean.';
+    public $message = 'The value "%string%" is read only.';
 }
