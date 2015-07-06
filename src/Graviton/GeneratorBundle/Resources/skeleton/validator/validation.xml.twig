@@ -26,6 +26,12 @@
         {% endif %}
     {% endif %}
 
+    {% if field.readOnly is defined %}
+
+        {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\ReadOnly\\ReadOnly"/>']) %}
+
+    {% endif %}
+
     {% if field.type == 'boolean' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\BooleanStrict"/>']) %}
     {% endif %}
