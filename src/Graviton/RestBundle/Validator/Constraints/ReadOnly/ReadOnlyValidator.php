@@ -1,6 +1,6 @@
 <?php
 /**
- * Validator for a strict boolean check (not accepting integers of any kind)
+ * Validator for read only check
  */
 
 namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * Validator for a strict boolean check (not accepting integers of any kind)
+ * Validator for read only
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -19,7 +19,7 @@ class ReadOnlyValidator extends ConstraintValidator
 {
 
     /**
-     * Check strictly for boolean
+     * Checks read only
      *
      * @param string     $value      Input value
      * @param Constraint $constraint Constraint instance

@@ -1,6 +1,6 @@
 <?php
 /**
- * Constraint for a strict boolean check (not accepting integers of any kind)
+ * Constraint for a read only
  */
 
 namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
@@ -8,7 +8,7 @@ namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Constraint for a strict boolean check (not accepting integers of any kind)
+ * Constraint for read only
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
