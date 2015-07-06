@@ -71,6 +71,9 @@ class DocumentType extends AbstractType
 
             if ($type == 'form') {
                 $type = clone $this;
+                if (!isset($options['data_class'])) {
+                    $options['data_class'] = 'stdclass';
+                }
                 $type->initialize($options['data_class']);
             } elseif ($type == 'collection' && $options['type'] == 'form') {
                 $subType = clone $this;

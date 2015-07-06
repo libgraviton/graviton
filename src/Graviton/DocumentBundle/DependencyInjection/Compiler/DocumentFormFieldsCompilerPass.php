@@ -81,6 +81,9 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             $this->loadFields($map, $ns, $bundle, $doc);
             $this->className = null;
         }
+        if (!isset($map['stdclass'])) {
+            $map['stdclass'] = [];
+        }
         $container->setParameter('graviton.document.form.type.document.field_map', $map);
     }
 
