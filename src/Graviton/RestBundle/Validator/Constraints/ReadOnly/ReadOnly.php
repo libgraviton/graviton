@@ -24,6 +24,11 @@ class ReadOnly extends Constraint
      */
     public $message = 'The value "%string%" is read only.';
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     */
     public function validatedBy()
     {
         return 'graviton.rest.validator.readonly';

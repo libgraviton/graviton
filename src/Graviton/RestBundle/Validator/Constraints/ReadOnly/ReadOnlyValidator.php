@@ -18,12 +18,18 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class ReadOnlyValidator extends ConstraintValidator
 {
-    private $em;
+    private $dm;
 
-
-    public function __construct(DocumentManager $em){
-        $this->em = $em;
+    /**
+     * Creates a new ReadOnlyValidator instance
+     *
+     * @param DocumentManager $dm Document manager
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
     }
+
     /**
      * Checks read only
      *
