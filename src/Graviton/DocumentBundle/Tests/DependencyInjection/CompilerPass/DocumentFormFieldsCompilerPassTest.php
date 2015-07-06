@@ -47,7 +47,7 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->method('setParameter')
             ->with(
                 $this->equalTo('graviton.document.form.type.document.field_map'),
-                ['stdclass' => 'stdclass']
+                ['stdclass' => []]
             );
 
         $sut = new DocumentFormFieldsCompilerPass;
