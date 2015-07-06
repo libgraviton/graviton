@@ -1,15 +1,16 @@
 <?php
 /**
- * Validator for a strict boolean check (not accepting integers of any kind)
+ * Validator for read only
  */
 
 namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * Validator for a strict boolean check (not accepting integers of any kind)
+ * Validator for read only
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -17,9 +18,14 @@ use Symfony\Component\Validator\ConstraintValidator;
  */
 class ReadOnlyValidator extends ConstraintValidator
 {
+    private $em;
 
+
+    public function __construct(DocumentManager $em){
+        $this->em = $em;
+    }
     /**
-     * Check strictly for boolean
+     * Checks read only
      *
      * @param string     $value      Input value
      * @param Constraint $constraint Constraint instance
@@ -28,24 +34,13 @@ class ReadOnlyValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-      //  $test = get_class($value);
-        if (true) {
-            $id = $this->context->getObject();
-            $t = get_class($id);
-            $c = str_replace("\\",".", $t);
-            $a = new $t();
-            $q = $this->get($c);
-          //  $b = $a->find(102);
-           // $id = "102";
-//            $model = $this->context->getMetadata()->getPropertyValue();
-//            if (!($record = $this->getModel()->find($id))) {
-//                $e = new NotFoundException("Entry with id " . $id . " not found!");
-//                $e->setResponse($response);
-//                throw $e;
-//            }
-//            $this->context->buildViolation($constraint->message)
-//                          ->setParameter('%string%', $this->context->getPropertyPath())
-//                          ->addViolation();
+        $recordId = $this->context->getObject()->getId();
+        $recordClass = get_class($this->context->getObject());
+
+        if ($this->em->find($recordClass, $recordId)) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('%string%', $this->context->getPropertyPath())
+                ->addViolation();
         }
     }
 }
