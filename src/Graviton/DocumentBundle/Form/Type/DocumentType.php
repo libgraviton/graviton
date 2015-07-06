@@ -70,10 +70,8 @@ class DocumentType extends AbstractType
                 $type = clone $this;
                 $type->initialize($options['data_class']);
             } elseif ($type === 'date' || $type == 'datetime') {
-                echo 'got form type and making string of it';
                 $options['widget'] = 'single_text';
                 $options['input'] = 'string';
-                $options['invalid_message'] = 'lerrooooooor';
             } elseif ($type == 'collection' && $options['type'] == 'form') {
                 $subType = clone $this;
                 $subType->initialize($options['options']['data_class']);
