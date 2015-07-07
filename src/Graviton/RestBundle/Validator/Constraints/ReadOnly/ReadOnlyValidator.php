@@ -40,11 +40,19 @@ class ReadOnlyValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
+        $submittedData = $this->context->getRoot()->getData();
+
         // if the structure is nested it can't access the id via getObject()
-        $recordClass = get_class($this->context->getRoot()->getData());
+        $recordClass = get_class($submittedData);
         $recordId = $this->context->getRoot()->getData()->getId();
 
-        if ($this->dm->find($recordClass, $recordId)) {
+        $record = $this->dm->find($recordClass, $recordId);
+
+        $path = explode('.', $this->context->getPropertyPath());
+
+        $storedValue = $record->{'get' . $path[1]}()->{'get' . $path[2]}();
+
+        if ($record && $value !== $storedValue) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('%string%', $this->context->getPropertyPath())
                 ->addViolation();
