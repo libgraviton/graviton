@@ -220,7 +220,7 @@ class LanguageControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/schema/i18n/language/collection', [], [], ['HTTP_ACCEPT_LANGUAGE' => 'en,de']);
 
         $results = $client->getResults();
 
