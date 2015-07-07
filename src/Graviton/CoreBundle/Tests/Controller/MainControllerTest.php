@@ -203,7 +203,7 @@ class MainControllerTest extends RestTestCase
     }
 
     /**
-     * @retrn void
+     * @return void
      */
     public function testOptionsResponse()
     {
@@ -213,8 +213,8 @@ class MainControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            'application/schema+json',
-            $response->headers->get('Content-Type')
+            'If-None-Match',
+            $response->headers->get('Access-Control-Allow-Headers')
         );
     }
 }
