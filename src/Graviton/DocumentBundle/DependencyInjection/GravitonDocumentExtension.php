@@ -57,24 +57,5 @@ class GravitonDocumentExtension extends GravitonBundleExtension
                 $container->setParameter(strtolower(str_replace('__', '.', substr($key, 9))), $value);
             }
         }
-
-        // populated from cf's VCAP_SERVICES variable
-        $services = $container->getParameter('vcap.services');
-        if (!empty($services)) {
-            $services = json_decode($services, true);
-            $mongo = $services['mongodb-2.2'][0]['credentials'];
-
-            $container->setParameter('mongodb.default.server.uri', $mongo['url']);
-            $container->setParameter('mongodb.default.server.db', $mongo['db']);
-        } else {
-            $container->setParameter(
-                'mongodb.default.server.uri',
-                $container->getParameter('graviton.mongodb.default.server.uri')
-            );
-            $container->setParameter(
-                'mongodb.default.server.db',
-                $container->getParameter('graviton.mongodb.default.server.db')
-            );
-        }
     }
 }

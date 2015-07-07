@@ -5,8 +5,11 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
+use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -18,10 +21,6 @@ use Symfony\Component\Routing\Route;
  */
 class Swagger
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface service_container
-     */
-    private $container;
 
     /**
      * @var \Graviton\RestBundle\Service\RestUtils
@@ -34,39 +33,25 @@ class Swagger
     private $schemaModel;
 
     /**
-     * sets the container
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container service_container
-     *
-     * @return void
+     * @var SchemaUtils
      */
-    public function setContainer($container = null)
-    {
-        $this->container = $container;
-    }
+    private $schemaUtils;
 
     /**
-     * sets restUtils
+     * Constructor
      *
-     * @param \Graviton\RestBundle\Service\RestUtils $restUtils rest utils
-     *
-     * @return void
-     */
-    public function setRestUtils($restUtils = null)
-    {
-        $this->restUtils = $restUtils;
-    }
-
-    /**
-     * sets schemamodel
-     *
+     * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
-     *
-     * @return SchemaModel
+     * @param SchemaUtils $schemaUtils schema utils
      */
-    public function setSchemaModel($schemaModel)
-    {
+    public function __construct(
+        RestUtils $restUtils,
+        SchemaModel $schemaModel,
+        SchemaUtils $schemaUtils
+    ) {
+        $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
+        $this->schemaUtils = $schemaUtils;
     }
 
     /**
@@ -92,9 +77,18 @@ class Swagger
                 }
 
                 $thisModel = $this->restUtils->getModelFromRoute($route);
+                if ($thisModel === false) {
+                    throw new \LogicException(
+                        sprintf(
+                            'Could not resolve route "%s" to model',
+                            $routeName
+                        )
+                    );
+                }
+
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
-                $schema = SchemaUtils::getModelSchema($entityClassName, $thisModel, array(), array());
+                $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel);
 
                 $ret['definitions'][$entityClassName] = json_decode(
                     $this->restUtils->serializeContent($schema),

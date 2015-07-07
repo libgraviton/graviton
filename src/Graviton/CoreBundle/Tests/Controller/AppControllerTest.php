@@ -499,6 +499,7 @@ class AppControllerTest extends RestTestCase
         $this->assertContains('id', $schema->required);
 
         $this->assertEquals('object', $schema->properties->title->type);
+        $this->assertEquals('translatable', $schema->properties->title->format);
         $this->assertEquals('Title', $schema->properties->title->title);
         $this->assertEquals('Display name for an app.', $schema->properties->title->description);
         $this->assertEquals('string', $schema->properties->title->properties->en->type);

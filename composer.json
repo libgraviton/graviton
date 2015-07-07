@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.14.1",
+    "version": "0.15.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -83,6 +83,9 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
+        ],
+        "configure": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "check": [
             "./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards",

@@ -149,19 +149,4 @@ class SchemaModel implements ContainerAwareInterface
     {
         return $this->schema->required;
     }
-
-    /**
-     * get pretranslated fields for this object
-     *
-     * @return string[]
-     */
-    public function getPreTranslatedFields()
-    {
-        $return = array();
-        if (isset($this->schema->pretranslated)) {
-            $return = $this->schema->pretranslated;
-        }
-
-        return $return;
-    }
 }
