@@ -121,6 +121,12 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEmpty($results->links);
 
+        $data->metadata->size = 1;
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $results = $client->getResults();
+
+        $this->assertEquals('The value "data.metadata.size" is read only.', $results[0]->message);
     }
 
     /**
