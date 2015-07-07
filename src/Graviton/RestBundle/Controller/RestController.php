@@ -449,15 +449,13 @@ class RestController
      * Return OPTIONS results.
      *
      * @param Request $request Current http request
-     * @param string  $id      ID of record
      *
      * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function optionsAction(Request $request, $id = null)
+    public function optionsAction(Request $request)
     {
-        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-        $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
+        list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
