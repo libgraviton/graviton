@@ -7,9 +7,11 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -62,6 +64,10 @@ class GenerateDynamicBundleCommand extends Command
 
     /** @var array */
     private $bundleAdditions = [];
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
 
     /**
@@ -85,6 +91,7 @@ class GenerateDynamicBundleCommand extends Command
         // TODO [lapistano]: somethigg to get rid of in the future.
         $this->container = $container;
         $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
+        $this->serializer = $this->container->get('jms_serializer');
         $this->kernel = $this->container->get('kernel');
 
         if ($this->container->hasParameter('generator.bundlebundle.additions')) {
@@ -189,7 +196,7 @@ class GenerateDynamicBundleCommand extends Command
 
                 $output->writeln('');
                 $output->writeln(
-                    sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonDef->getFilename())
+                    sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
                 );
                 $output->writeln('');
             } catch (\Exception $e) {
@@ -225,38 +232,25 @@ class GenerateDynamicBundleCommand extends Command
         $namespace
     ) {
         foreach ($jsonDef->getFields() as $field) {
-            if ($field->isHash() && !$field->isBagOfPrimitives()) {
-                // get json for this hash and save to temp file..
-                $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
-                file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
+            if ($field instanceof JsonDefinitionHash && !$field->isBagOfPrimitives()) {
+                $hashDefinition = $field->getDefFromLocal();
 
                 $arguments = array(
                     'graviton:generate:resource',
                     '--entity' => $bundleName . ':' . $field->getClassName(),
                     '--format' => 'xml',
-                    '--json' => $tempPath,
-                    '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
+                    '--json' => $this->serializer->serialize($hashDefinition->getDef(), 'json'),
+                    '--fields' => $this->getFieldString($hashDefinition),
                     '--with-repository' => null,
                     '--no-controller' => 'true'
                 );
+                $this->generateResource($arguments, $output, $jsonDef);
 
-                try {
-                    $this->generateResource($arguments, $output, $jsonDef);
-
-                    // look for validation.xml and save it from over-writing ;-)
-                    // we basically get the xml content that was generated in order to save them later..
-                    $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-                    if (file_exists($validationXml)) {
-                        $xmlManipulator->addNodes(file_get_contents($validationXml));
-                    }
-
-                    // throw away the temp json ;-)
-                    unlink($tempPath);
-                } catch (\Exception $e) {
-                    // throw away the temp json ;-)
-                    unlink($tempPath);
-
-                    throw $e;
+                // look for validation.xml and save it from over-writing ;-)
+                // we basically get the xml content that was generated in order to save them later..
+                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+                if (file_exists($validationXml)) {
+                    $xmlManipulator->addNodes(file_get_contents($validationXml));
                 }
             }
         }
@@ -278,7 +272,7 @@ class GenerateDynamicBundleCommand extends Command
             $arguments = array(
                 'graviton:generate:resource',
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
-                '--json' => $jsonDef->getFilename(),
+                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
                 '--format' => 'xml',
                 '--fields' => $this->getFieldString($jsonDef),
                 '--with-repository' => null

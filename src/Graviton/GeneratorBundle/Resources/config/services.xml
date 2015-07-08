@@ -87,6 +87,7 @@
 
         <service id="graviton_generator.command.generateresource" class="%graviton_generator.command.generateresource.class%">
             <argument type="service" id="graviton_generator.generator.resourcegenerator"/>
+            <argument type="service" id="graviton_generator.definition.loader"/>
             <tag name="console.command"/>
         </service>
 

@@ -6,7 +6,7 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineEntityCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,13 +25,23 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
      * @var ResourceGenerator
      */
     private $resourceGenerator;
+    /**
+     * @var LoaderInterface
+     */
+    private $definitionLoader;
+    /**
+     * @var InputInterface
+     */
+    private $input;
 
     /**
      * @param ResourceGenerator $resourceGenerator generator to use for resource generation
+     * @param LoaderInterface $definitionLoader JSON definition loaded
      */
-    public function __construct(ResourceGenerator $resourceGenerator)
+    public function __construct(ResourceGenerator $resourceGenerator, LoaderInterface $definitionLoader)
     {
         $this->resourceGenerator = $resourceGenerator;
+        $this->definitionLoader = $definitionLoader;
         parent::__construct();
     }
 
@@ -92,8 +102,11 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
     protected function createGenerator()
     {
         // do we have a json path passed?
-        if (!is_null($this->input->getOption('json'))) {
-            $this->resourceGenerator->setJson(new JsonDefinition($this->input->getOption('json')));
+        if ($this->input->getOption('json') !== null) {
+            $definitions = $this->definitionLoader->load($this->input->getOption('json'));
+            if (count($definitions) > 0) {
+                $this->resourceGenerator->setJson($definitions[0]);
+            }
         }
 
         $this->resourceGenerator->setGenerateController(
