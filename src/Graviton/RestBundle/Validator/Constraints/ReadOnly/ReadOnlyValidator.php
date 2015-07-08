@@ -59,6 +59,13 @@ class ReadOnlyValidator extends ConstraintValidator
         }
     }
 
+    /**
+     * Gets the stored value from a path
+     *
+     * @param $path   Value path
+     * @param $record Record
+     * @return mixed
+     */
     public function getStoredValueByPath($path, $record)
     {
         $path = explode('.', $path);
