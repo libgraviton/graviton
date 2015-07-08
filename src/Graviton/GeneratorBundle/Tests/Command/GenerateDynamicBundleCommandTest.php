@@ -32,6 +32,14 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->method('load')
             ->willReturn(array());
 
+        $serializerDouble = $this->getMockBuilder('JMS\\Serializer\\SerializerInterface')
+            ->setMethods(['serialize', 'deserialize'])
+            ->getMockForAbstractClass();
+        $serializerDouble
+            ->expects($this->never())
+            ->method('serialize')
+            ->willReturn(__METHOD__);
+
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
             ->setMethods(array('setCommandLine', 'run', 'isSuccessful', 'getErrorOutput', 'getExitCode'))
@@ -44,7 +52,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $commando = new GenerateDynamicBundleCommand(
-            $this->getContainerDouble($loaderDouble, $kernelDouble),
+            $this->getContainerDouble($loaderDouble, $serializerDouble, $kernelDouble),
             $runnerDouble,
             $xmlManipulatorDouble
         );
@@ -70,20 +78,27 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      * Provides a test double of the service container.
      *
      * @param object $loaderDouble test double for a definition loader
+     * @param object $serializerDouble test double for a serializer
      * @param object $kernelDouble test double of the SF2 kernel
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getContainerDouble($loaderDouble, $kernelDouble)
+    public function getContainerDouble($loaderDouble, $serializerDouble, $kernelDouble)
     {
         $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
             ->disableOriginalConstructor()
             ->setMethods(array('get'))
             ->getMockForAbstractClass();
         $containerDouble
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('get')
-            ->willReturnOnConsecutiveCalls($loaderDouble, $kernelDouble);
+            ->willReturnCallback(function ($id) use ($loaderDouble, $serializerDouble, $kernelDouble) {
+                return [
+                    'graviton_generator.definition.loader' => $loaderDouble,
+                    'jms_serializer' => $serializerDouble,
+                    'kernel' => $kernelDouble,
+                ][$id];
+            });
 
         return $containerDouble;
     }
@@ -140,14 +155,27 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     public function testGenerateSubResources()
     {
-        $jsonField = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
+        $jsonField = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinitionHash')
             ->disableOriginalConstructor()
+            ->setMethods(['isBagOfPrimitives'])
+            ->getMock();
+        $jsonField->expects($this->any())
+            ->method('isBagOfPrimitives')
+            ->will($this->returnValue(true));
+
+
+        $serializerDouble = $this->getMockBuilder('JMS\\Serializer\\SerializerInterface')
+            ->setMethods(['serialize', 'deserialize'])
             ->getMockForAbstractClass();
+        $serializerDouble
+            ->expects($this->never())
+            ->method('serialize')
+            ->willReturn(__METHOD__);
 
         $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
             ->getMock();
 
-        $containerDouble = $this->getContainerDouble($jsonField, $kernelDouble);
+        $containerDouble = $this->getContainerDouble($jsonField, $serializerDouble, $kernelDouble);
 
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -246,10 +274,6 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->disableOriginalConstructor()
             ->setMethods(array('isHash', 'isBagOfPrimitives', 'getClassName', 'getDefFromLocal'))
             ->getMockForAbstractClass();
-        $jsonField
-            ->expects($this->once())
-            ->method('isHash')
-            ->willReturn($isHash);
 
         if (true === $isHash) {
             $jsonField
