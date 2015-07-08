@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Target">
+        <property name="indexes"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Index&gt;"
+                  serialized-name="indexes"/>
+        <property name="relations"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Relation&gt;"
+                  serialized-name="relations"/>
+        <property name="fields"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Field&gt;"
+                  serialized-name="fields"/>
+    </class>
+</serializer>

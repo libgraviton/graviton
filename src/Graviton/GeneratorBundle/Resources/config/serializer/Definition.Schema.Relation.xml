@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Relation">
+        <property name="type"
+                  type="string"
+                  serialized-name="type"/>
+        <property name="collectionName"
+                  type="string"
+                  serialized-name="collectionName"/>
+        <property name="localProperty"
+                  type="string"
+                  serialized-name="localProperty"/>
+        <property name="localValueField"
+                  type="string"
+                  serialized-name="localValueField"/>
+        <property name="foreignProperty"
+                  type="string"
+                  serialized-name="foreignProperty"/>
+    </class>
+</serializer>
