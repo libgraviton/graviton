@@ -121,6 +121,10 @@ class SchemaUtils
                 $property = self::makeTranslatable($property, $languages);
             }
 
+            if ($meta->getTypeOfField($field) === 'extref' && substr($field, 0, 1) !== '$') {
+                $field = '$' . $field;
+            }
+
             $schema->addProperty($field, $property);
         }
 
