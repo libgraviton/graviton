@@ -94,6 +94,8 @@ class SchemaUtils
             $this->languageRepository->findAll()
         );
 
+        $prev = null;
+        
         foreach ($meta->getFieldNames() as $field) {
             // don't describe deletedDate in schema..
             if ($field == 'deletedDate') {
@@ -125,7 +127,13 @@ class SchemaUtils
                 $field = '$' . $field;
             }
 
+            if ($prev === 'id' && $field === '$ref') {
+                $schema->removeProperty($prev);
+            }
+
             $schema->addProperty($field, $property);
+
+            $prev = $field;
         }
 
         $schema->setRequired($model->getRequiredFields());
