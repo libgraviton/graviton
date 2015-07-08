@@ -181,7 +181,7 @@ class ActionUtils
         );
 
         $requirements = array(
-            '_method' => 'GET',
+            '_method' => 'GET|OPTIONS',
         );
 
         $route = new Route($pattern, $defaults, $requirements);
