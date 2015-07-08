@@ -135,8 +135,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             if (in_array($fieldName, $translatableFields)) {
                 $type = 'translatable';
             } elseif ($doctrineType == 'hash') {
-                $type = 'form';
-                $options['allow_extra_fields'] = true;
+                $type = 'freeform';
             } elseif (array_key_exists($doctrineType, $this->typeMap)) {
                 $type = $this->typeMap[$doctrineType];
             }
