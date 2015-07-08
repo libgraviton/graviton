@@ -291,7 +291,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('translatable', $results->items->properties->name->format);
 
         $this->assertEquals('object', $results->items->properties->app->type);
-        $this->assertEquals('string', $results->items->properties->app->properties->ref->type);
-        $this->assertEquals('extref', $results->items->properties->app->properties->ref->format);
+        $this->assertEquals('string', $results->items->properties->app->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $results->items->properties->app->properties->{'$ref'}->format);
     }
 }

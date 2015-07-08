@@ -48,6 +48,9 @@ class DocumentType extends AbstractType
      */
     public function initialize($id)
     {
+        if (is_null($id)) {
+            throw new \RunTimeException(__CLASS__.'::initialize called with NULL id');
+        }
         if (!array_key_exists($id, $this->classMap)) {
             throw new \RuntimeException(sprintf('Could not map service %s to class for form generator', $id));
         }
@@ -68,6 +71,9 @@ class DocumentType extends AbstractType
 
             if ($type == 'form') {
                 $type = clone $this;
+                if (!isset($options['data_class'])) {
+                    $options['data_class'] = 'stdclass';
+                }
                 $type->initialize($options['data_class']);
             } elseif ($type === 'date' || $type == 'datetime') {
                 $options['widget'] = 'single_text';
