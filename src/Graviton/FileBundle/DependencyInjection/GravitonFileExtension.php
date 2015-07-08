@@ -37,7 +37,7 @@ class GravitonFileExtension extends GravitonBundleExtension
         parent::prepend($container);
 
         // populated from cf's VCAP_SERVICES variable
-        $services = $container->getParameter('vcap.services');
+        $services = getenv('VCAP_SERVICES');
         if (!empty($services)) {
             $services = json_decode($services, true);
             $creds = $services['atmoss3'][0]['credentials'];
