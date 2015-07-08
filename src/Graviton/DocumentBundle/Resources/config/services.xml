@@ -6,6 +6,7 @@
         <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
+        <parameter key="graviton.document.form.type.freeform.class">Graviton\DocumentBundle\Form\Type\FreeForm</parameter>
     </parameters>
     <services>
         <!-- $ref output in responses -->
@@ -23,6 +24,10 @@
         <service id="graviton.document.form.type.document" class="%graviton.document.form.type.document.class%">
             <argument>%graviton.document.form.type.document.service_map%</argument>
             <argument>%graviton.document.form.type.document.field_map%</argument>
+        </service>
+        <!-- freeform form type -->
+        <service id="graviton.document.form.type.freeform" class="%graviton.document.form.type.freeform.class%">
+          <tag name="form.type" alias="freeform" />
         </service>
     </services>
 </container>
