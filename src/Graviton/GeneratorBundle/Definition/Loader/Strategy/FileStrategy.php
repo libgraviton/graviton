@@ -5,21 +5,15 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FileStrategy implements StrategyInterface
+class FileStrategy extends AbstractStrategy
 {
     /**
-     * may the strategy handle this input
-     *
-     * @param string|null $input input from command
-     *
-     * @return boolean
+     * @inheritdoc
      */
     public function supports($input)
     {
@@ -27,16 +21,12 @@ class FileStrategy implements StrategyInterface
     }
 
     /**
-     * load
-     *
-     * @param string|null $input input from command
-     *
-     * @return JsonDefinition[]
+     * @inheritdoc
      */
-    public function load($input)
+    protected function getJsonDefinitions($input)
     {
-        return array(
-            new JsonDefinition($input),
-        );
+        return [
+            file_get_contents($input),
+        ];
     }
 }

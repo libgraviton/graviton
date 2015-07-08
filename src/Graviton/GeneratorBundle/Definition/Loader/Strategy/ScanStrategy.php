@@ -5,8 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -34,11 +32,7 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * may the strategy handle this input
-     *
-     * @param string|null $input input from command
-     *
-     * @return boolean
+     * @inheritdoc
      */
     public function supports($input)
     {
@@ -46,11 +40,9 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @param string|null $input input from command
-     *
-     * @return \RegexIterator
+     * @inheritdoc
      */
-    protected function getIterator($input)
+    protected function getIterator($dirname)
     {
         $directory = new \RecursiveDirectoryIterator($this->scanDir);
         $iterator = new \RecursiveIteratorIterator($directory);
@@ -62,10 +54,7 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @param string|null $input input from command
-     * @param array       $file  input from command
-     *
-     * @return boolean
+     * @inheritdoc
      */
     public function isValid($input, $file)
     {

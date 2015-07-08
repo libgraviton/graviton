@@ -5,21 +5,15 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DirStrategy implements StrategyInterface, DirStrategyInterface
+class DirStrategy extends AbstractStrategy implements DirStrategyInterface
 {
     /**
-     * may the strategy handle this input
-     *
-     * @param string|null $input input from command
-     *
-     * @return boolean
+     * @inheritdoc
      */
     public function supports($input)
     {
@@ -27,42 +21,37 @@ class DirStrategy implements StrategyInterface, DirStrategyInterface
     }
 
     /**
-     * @param string|null $input input from command
-     *
-     * @return JsonDefinition[]
+     * @inheritdoc
      */
-    public function load($input)
+    public function getJsonDefinitions($input)
     {
-        $results = array();
+        $results = [];
         foreach ($this->getIterator($input) as $file) {
             if ($this->isValid($input, $file)) {
-                $results[] = new JsonDefinition($file[0]);
+                $results[] = file_get_contents($file[0]);
             }
         }
         return $results;
     }
 
     /**
-     * @param string|null $input input from command
-     * @return \RecursiveRegexIterator
-     */
-    protected function getIterator($input)
-    {
-        $directory = new \RecursiveDirectoryIterator($input);
-        return new \RecursiveRegexIterator(
-            $directory,
-            '/.*\/[^_]\w+\.json$/i',
-            \RecursiveRegexIterator::GET_MATCH
-        );
-    }
-
-    /**
-     * @param string|null $input input value
-     * @param array       $file  matched file
-     * @return boolean
+     * @inheritdoc
      */
     public function isValid($input, $file)
     {
         return true;
+    }
+
+    /**
+     * @param string $dirname input value
+     * @return \Iterator matched files
+     */
+    protected function getIterator($dirname)
+    {
+        return new \RecursiveRegexIterator(
+            new \RecursiveDirectoryIterator($dirname),
+            '/.*\/[^_]\w+\.json$/i',
+            \RecursiveRegexIterator::GET_MATCH
+        );
     }
 }

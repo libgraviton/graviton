@@ -46,9 +46,14 @@
                 <argument type="service" id="graviton_generator.definition.loader.strategy.scan"/>
             </call>
         </service>
-        <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%"/>
-        <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%"/>
+        <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%">
+            <argument type="service" id="jms_serializer"/>
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%">
+            <argument type="service" id="jms_serializer"/>
+        </service>
         <service id="graviton_generator.definition.loader.strategy.scan" class="%graviton_generator.definition.loader.strategy.scan.class%">
+            <argument type="service" id="jms_serializer"/>
             <call method="setScanDir">
                 <argument>%kernel.root_dir%/..</argument>
             </call>
