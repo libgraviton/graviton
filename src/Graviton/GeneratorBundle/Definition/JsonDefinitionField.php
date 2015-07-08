@@ -51,7 +51,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Our definition
      *
-     * @var \stdClass
+     * @var Schema\Field
      */
     private $def;
 
@@ -65,9 +65,9 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Constructor
      *
-     * @param \stdClass $def Definition
+     * @param Schema\Field $def Definition
      */
-    public function __construct($def)
+    public function __construct(Schema\Field $def)
     {
         $this->def = $def;
     }
@@ -75,7 +75,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Returns the definition
      *
-     * @return \stdClass definition
+     * @return Schema\Field definition
      */
     public function getDef()
     {
@@ -89,7 +89,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getName()
     {
-        return $this->def->name;
+        return $this->def->getName();
     }
 
     /**
@@ -99,15 +99,23 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getDefAsArray()
     {
-        $ret = (array) $this->def;
-        $ret['exposedName'] = $this->getExposedName();
-        $ret['doctrineType'] = $this->getTypeDoctrine();
-        $ret['serializerType'] = $this->getTypeSerializer();
-        $ret['relType'] = $this->getRelType();
-        $ret['isClassType'] = $this->isClassType();
-        $ret['constraints'] = $this->getConstraints();
+        return [
+            'name'              => $this->def->getName(),
+            'type'              => $this->def->getType(),
+            'length'            => $this->def->getLength(),
+            'title'             => $this->def->getTitle(),
+            'description'       => $this->def->getDescription(),
+            'exposeAs'          => $this->def->getExposeAs(),
+            'required'          => $this->def->getRequired(),
+            'translatable'      => $this->def->getTranslatable(),
 
-        return $ret;
+            'exposedName'       => $this->getExposedName(),
+            'doctrineType'      => $this->getTypeDoctrine(),
+            'serializerType'    => $this->getTypeSerializer(),
+            'relType'           => $this->getRelType(),
+            'isClassType'       => $this->isClassType(),
+            'constraints'       => $this->getConstraints(),
+        ];
     }
 
     /**
@@ -139,13 +147,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getExposedName()
     {
-        $ret = $this->def->name;
-
-        if (isset($this->def->exposeAs) && strlen($this->def->exposeAs) > 0) {
-            $ret = $this->def->exposeAs;
-        }
-
-        return $ret;
+        return $this->def->getExposeAs() === null ? $this->def->getName() : $this->def->getExposeAs();
     }
 
     /**
@@ -155,7 +157,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        $thisType = $this->def->type;
+        $thisType = $this->def->getType();
         if ($this->isClassType()) {
             $thisType = $this->getClassName();
         } else {
@@ -199,7 +201,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     {
         $ret = null;
         if ($this->isClassType()) {
-            $ret = str_replace('class:', '', $this->def->type);
+            $ret = str_replace('class:', '', $this->def->getType());
         }
 
         return $ret;
@@ -212,7 +214,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function isClassType()
     {
-        return preg_match('/^class\:/', $this->def->type) > 0;
+        return preg_match('/^class\:/', $this->def->getType()) > 0;
     }
 
     /**
@@ -222,21 +224,17 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getLength()
     {
-        return $this->def->length;
+        return $this->def->getLength();
     }
 
     /**
      * Returns defined Constraints for this field
      *
-     * @return array Constraints
+     * @return Schema\Constraint[] Constraints
      */
     public function getConstraints()
     {
-        $ret = array();
-        if (isset($this->def->constraints) && is_array($this->def->constraints)) {
-            $ret = $this->def->constraints;
-        }
-        return $ret;
+        return $this->def->getConstraints();
     }
 
     /**
@@ -246,13 +244,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getDescription()
     {
-        // not mandatory..
-        $ret = '';
-        if (isset($this->def->description)) {
-            $ret = $this->def->description;
-        }
-
-        return $ret;
+        return $this->def->getDescription() === null ? '' : $this->def->getDescription();
     }
 
     /**

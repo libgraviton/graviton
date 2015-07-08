@@ -1,9 +1,6 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
-use Exception;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-
 /**
  * This class represents the json file that defines the structure
  * of a mongo collection that exists and serves as a base to generate
@@ -18,20 +15,12 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
  */
 class JsonDefinition
 {
-
     /**
-     * Path to our json file
+     * Schema
      *
-     * @var string
+     * @var Schema\Definition
      */
-    private $filename;
-
-    /**
-     * Deserialized json
-     *
-     * @var \stdClass
-     */
-    private $doc;
+    private $def;
 
     /**
      * Composed namespace of this definition, must be explicitly set
@@ -43,14 +32,19 @@ class JsonDefinition
     /**
      * Constructor
      *
-     * @param string $filename Path to the json file
-     *
-     * @throws Exception
+     * @param Schema\Definition $definition
      */
-    public function __construct($filename)
+    public function __construct(Schema\Definition $definition)
     {
-        $this->filename = $filename;
-        $this->doc = $this->loadJson($filename);
+        $this->def = $definition;
+    }
+
+    /**
+     * @return Schema\Definition
+     */
+    public function getDef()
+    {
+        return $this->def;
     }
 
     /**
@@ -60,20 +54,11 @@ class JsonDefinition
      */
     public function getId()
     {
-        if (!property_exists($this->doc, 'id')) {
-            throw new \RuntimeException(sprintf("No id found for document %s", $this->filename));
+        if ($this->def->getId() === null) {
+            throw new \RuntimeException('No id found for document');
         }
-        return $this->doc->id;
-    }
 
-    /**
-     * Returns the path of the original file as set in the constructor
-     *
-     * @returns string
-     */
-    public function getFilename()
-    {
-        return $this->filename;
+        return $this->def->getId();
     }
 
     /**
@@ -83,12 +68,7 @@ class JsonDefinition
      */
     public function getDescription()
     {
-        $ret = '';
-        if (isset($this->doc->description)) {
-            $ret = $this->doc->description;
-        }
-
-        return $ret;
+        return $this->def->getDescription();
     }
 
     /**
@@ -99,12 +79,8 @@ class JsonDefinition
      */
     public function hasController()
     {
-        $hasController = true;
-        if (!isset($this->doc->service) || (isset($this->doc->service)) && !isset($this->doc->service->routerBase)) {
-            $hasController = false;
-        }
-
-        return $hasController;
+        return $this->def->getService() !== null &&
+            $this->def->getService()->getRouterBase() !== null;
     }
 
     /**
@@ -117,11 +93,7 @@ class JsonDefinition
      */
     public function isSubDocument()
     {
-        $ret = false;
-        if (isset($this->doc->isSubDocument) && $this->doc->isSubDocument == true) {
-            $ret = true;
-        }
-        return $ret;
+        return $this->def->getIsSubDocument();
     }
 
     /**
@@ -160,14 +132,11 @@ class JsonDefinition
      */
     public function isReadOnlyService()
     {
-        // default
-        $ret = false;
-
-        if (isset($this->doc->service->readOnly) && (bool) $this->doc->service->readOnly === true) {
-            $ret = true;
+        if ($this->def->getService() === null) {
+            return false;
         }
 
-        return $ret;
+        return $this->def->getService()->getReadOnly();
     }
 
     /**
@@ -177,14 +146,7 @@ class JsonDefinition
      */
     public function hasFixtures()
     {
-        // default
-        $ret = false;
-
-        if (count($this->getFixtures()) > 0) {
-            $ret = true;
-        }
-
-        return $ret;
+        return count($this->getFixtures()) > 0;
     }
 
     /**
@@ -194,14 +156,11 @@ class JsonDefinition
      */
     public function getFixtures()
     {
-        // default
-        $ret = array();
-
-        if (isset($this->doc->service->fixtures) && is_array($this->doc->service->fixtures)) {
-            $ret = $this->doc->service->fixtures;
+        if ($this->def->getService() === null) {
+            return [];
         }
 
-        return $ret;
+        return $this->def->getService()->getFixtures();
     }
 
     /**
@@ -212,12 +171,12 @@ class JsonDefinition
      */
     public function getFixtureOrder()
     {
-        // default
-        $ret = 100;
-        if (isset($this->doc->service->fixtureOrder)) {
-            $ret = (int) $this->doc->service->fixtureOrder;
+        if ($this->def->getService() === null ||
+            $this->def->getService()->getFixtureOrder() === null) {
+            return 100;
         }
-        return $ret;
+
+        return $this->def->getService()->getFixtureOrder();
     }
 
     /**
@@ -227,20 +186,20 @@ class JsonDefinition
      */
     public function getRouterBase()
     {
-        $ret = false;
-
-        if (isset($this->doc->service->routerBase) && strlen($this->doc->service->routerBase) > 0) {
-            $ret = $this->doc->service->routerBase;
-            if (substr($ret, 0, 1) != '/') {
-                $ret = '/' . $ret;
-            }
-
-            if (substr($ret, -1) == '/') {
-                $ret = substr($ret, 0, -1);
-            }
+        if ($this->def->getService() === null ||
+            $this->def->getService()->getRouterBase() === null) {
+            return false;
         }
 
-        return $ret;
+        $routerBase = $this->def->getService()->getRouterBase();
+        if (substr($routerBase, 0, 1) !== '/') {
+            $routerBase = '/' . $routerBase;
+        }
+        if (substr($routerBase, -1) === '/') {
+            $routerBase = substr($routerBase, 0, -1);
+        }
+
+        return $routerBase;
     }
 
     /**
@@ -251,13 +210,12 @@ class JsonDefinition
      */
     public function getBaseController()
     {
-        $ret = 'RestController';
-
-        if (isset($this->doc->service->baseController) && strlen($this->doc->service->baseController) > 0) {
-            $ret = $this->doc->service->baseController;
+        if ($this->def->getService() === null ||
+            $this->def->getService()->getBaseController() === null) {
+            return 'RestController';
         }
 
-        return $ret;
+        return $this->def->getService()->getBaseController();
     }
 
     /**
@@ -269,13 +227,12 @@ class JsonDefinition
      */
     public function getParentService()
     {
-        $ret = 'graviton.rest.controller';
-
-        if (isset($this->doc->service->parent) && strlen($this->doc->service->parent) > 0) {
-            $ret = $this->doc->service->parent;
+        if ($this->def->getService() === null ||
+            $this->def->getService()->getParent() === null) {
+            return 'graviton.rest.controller';
         }
 
-        return $ret;
+        return $this->def->getService()->getParent();
     }
 
     /**
@@ -287,15 +244,13 @@ class JsonDefinition
      */
     public function getField($name)
     {
-        $ret = null;
         foreach ($this->getFields() as $field) {
-            if ($field->getName() == $name) {
-                $ret = $field;
-                break;
+            if ($field->getName() === $name) {
+                return $field;
             }
         }
 
-        return $ret;
+        return null;
     }
 
     /**
@@ -305,25 +260,30 @@ class JsonDefinition
      */
     public function getFields()
     {
-        $fields = array();
+        if ($this->def->getTarget() === null) {
+            return [];
+        }
+
+        $result = [];
+
+        $fields = [];
         $relations = $this->getRelations();
 
-        foreach ($this->doc->target->fields as $field) {
+        foreach ($this->def->getTarget()->getFields() as $field) {
             $field = new JsonDefinitionField($field);
             $fields[$field->getName()] = $field;
 
             // embed rel?
-            if (isset($relations[$field->getName()]->type)) {
-                if ($relations[$field->getName()]->type == 'embed') {
-                    $fields[$field->getName()]->setRelType($field::REL_TYPE_EMBED);
+            if (isset($relations[$field->getName()])) {
+                if ($relations[$field->getName()]->getType() === 'embed') {
+                    $field->setRelType(JsonDefinitionField::REL_TYPE_EMBED);
                 }
             }
         }
 
         // object generation (dot-notation parsing)
-        $fieldHierarchy = array();
-        $retFields = array();
-        $arrayHashes = array();
+        $fieldHierarchy = [];
+        $arrayHashes = [];
         foreach ($fields as $fieldName => $field) {
             if (strpos($fieldName, '.') !== false) {
                 $nameParts = explode('.', $fieldName);
@@ -348,40 +308,44 @@ class JsonDefinition
                         break;
                 }
             } else {
-                $retFields[$fieldName] = $field;
+                $result[$fieldName] = $field;
             }
         }
 
         foreach ($fieldHierarchy as $fieldName => $subElements) {
-            $retFields[$fieldName] = new JsonDefinitionHash(
+            $hashField = new JsonDefinitionHash(
                 $fieldName,
                 $subElements
             );
-            $retFields[$fieldName]->setParent($this);
-            $retFields[$fieldName]->setRelType(JsonDefinitionHash::REL_TYPE_EMBED);
+            $hashField->setParent($this);
+            $hashField->setRelType(JsonDefinitionHash::REL_TYPE_EMBED);
 
             if (in_array($fieldName, $arrayHashes)) {
-                $retFields[$fieldName]->setIsArrayHash(true);
+                $hashField->setIsArrayHash(true);
             }
+            $result[$fieldName] = $hashField;
         }
 
-        return $retFields;
+        return $result;
     }
 
     /**
      * Get target relations which are explictly defined
      *
-     * @return array relations
+     * @return Schema\Relation[] relations
      */
     public function getRelations()
     {
-        $ret = array();
-        if (isset($this->doc->target->relations) && is_array($this->doc->target->relations)) {
-            foreach ($this->doc->target->relations as $rel) {
-                $ret[$rel->localProperty] = $rel;
-            }
+        if ($this->def->getTarget() === null) {
+            return [];
         }
-        return $ret;
+
+        $relations = [];
+        foreach ($this->def->getTarget()->getRelations() as $relation) {
+            $relations[$relation->getLocalProperty()] = $relation;
+        }
+
+        return $relations;
     }
 
     /**
@@ -391,35 +355,10 @@ class JsonDefinition
      */
     public function getRoles()
     {
-        $roles = array();
-
-         if (!empty($this->doc->service->roles)) {
-             $roles = $this->doc->service->roles;
-         }
-
-        return $roles;
-    }
-
-    /**
-     * Extracts json definitions from the given file.
-     *
-     * @param string $filename Absolute path to a json definition file.
-     *
-     * @throws \RuntimeException
-     * @return \stdClass
-     */
-    public function loadJson($filename)
-    {
-        if (!file_exists($this->filename)) {
-            throw new FileNotFoundException(sprintf('File %s doesn\'t exist', $this->filename));
+        if ($this->def->getService() === null) {
+            return [];
         }
 
-        // @TODO: \Graviton\RestBundle\Controller\RestController::checkJsonRequest shall do what is necessary here.
-        $doc = json_decode(file_get_contents($this->filename));
-        if (empty($doc) || !is_object($doc)) {
-            throw new \RuntimeException(sprintf('Could not load %s', $filename));
-        }
-
-        return $doc;
+        return $this->def->getService()->getRoles();
     }
 }
