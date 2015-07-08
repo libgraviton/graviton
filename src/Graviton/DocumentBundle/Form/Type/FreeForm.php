@@ -18,7 +18,9 @@ class FreeForm extends AbstractType
     /**
      * {@inheritdoc
      *
-     * @param OptionsResolver $resolver
+     * @param OptionsResolver $resolver resolver
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
