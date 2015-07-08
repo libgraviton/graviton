@@ -70,7 +70,9 @@ class ReadOnlyValidator extends ConstraintValidator
     {
         $path = explode('.', $path);
 
-        for ($i = 1; $i < count($path); $i++) {
+        $pathCount = count($path);
+
+        for ($i = 1; $i < $pathCount; $i++) {
             if (is_int($path[$i])) {
                 $record = $record[$path[$i]];
             } else {
