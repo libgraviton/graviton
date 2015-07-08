@@ -48,14 +48,29 @@ class ReadOnlyValidator extends ConstraintValidator
 
         $record = $this->dm->find($recordClass, $recordId);
 
-        $path = explode('.', $this->context->getPropertyPath());
+        if ($record) {
+            $storedValue = $this->getStoredValueByPath($this->context->getPropertyPath(), $record);
 
-        $storedValue = $record->{'get' . $path[1]}()->{'get' . $path[2]}();
-
-        if ($record && $value !== $storedValue) {
-            $this->context->buildViolation($constraint->message)
-                ->setParameter('%string%', $this->context->getPropertyPath())
-                ->addViolation();
+            if ($value !== $storedValue) {
+                $this->context->buildViolation($constraint->message)
+                    ->setParameter('%string%', $this->context->getPropertyPath())
+                    ->addViolation();
+            }
         }
+    }
+
+    public function getStoredValueByPath($path, $record)
+    {
+        $path = explode('.', $path);
+
+        for ($i = 1; $i < count($path); $i++) {
+            if (is_int($path[$i])) {
+                $record = $record[$path[$i]];
+            } else {
+                $record = $record->{'get' . $path[$i]}();
+            }
+        }
+
+        return $record;
     }
 }
