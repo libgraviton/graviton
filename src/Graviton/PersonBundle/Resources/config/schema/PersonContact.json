@@ -1,5 +1,5 @@
 {
-  "description": "Contact informationj for a person.",
+  "description": "Contact information for a person.",
   "properties": {
     "id": {
       "title": "ID",
@@ -17,7 +17,7 @@
       "title": "Contact value",
       "description": "Protocol specific value to contact."
     },
-    "$ref": {
+    "uri": {
       "title": "URI",
       "description": "URI of Contact."
     }

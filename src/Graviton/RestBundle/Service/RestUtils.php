@@ -167,6 +167,9 @@ final class RestUtils implements RestUtilsInterface
                 if ($route->getRequirement('_method') != 'OPTIONS') {
                     return false;
                 }
+                if ($route->getPath() == '/') {
+                    return false;
+                }
 
                 return is_null($route->getRequirement('id'));
             }

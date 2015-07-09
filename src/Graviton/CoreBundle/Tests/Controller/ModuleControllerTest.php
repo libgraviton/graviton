@@ -284,7 +284,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/core/module');
+        $client->request('GET', '/schema/core/module/collection');
         $results = $client->getResults();
 
         $this->assertEquals('object', $results->items->properties->name->type);

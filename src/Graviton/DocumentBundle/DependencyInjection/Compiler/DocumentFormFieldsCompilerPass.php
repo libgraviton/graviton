@@ -141,26 +141,27 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             }
             $map[$class][] = [$fieldName, $type, $options];
         }
-        $embedNodes = $xpath->query("//doctrine:embed-one");
+
+        $embedNodes = $xpath->query("//*[self::doctrine:embed-one or self::doctrine:reference-one]");
         foreach ($embedNodes as $node) {
             $fieldName = $node->getAttribute('field');
             $targetDocument = $node->getAttribute('target-document');
 
             $this->loadEmbeddedDocuments(
                 $map,
-                $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
+                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
                 $targetDocument
             );
             $map[$class][] = [$fieldName, 'form', ['data_class' => $targetDocument]];
         }
-        $embedNodes = $xpath->query("//doctrine:embed-many");
+        $embedNodes = $xpath->query("////*[self::doctrine:embed-many or self::doctrine:reference-many]");
         foreach ($embedNodes as $node) {
             $fieldName = $node->getAttribute('field');
             $targetDocument = $node->getAttribute('target-document');
 
             $this->loadEmbeddedDocuments(
                 $map,
-                $xpath->query("//doctrine:embed-many[@field='".$fieldName."']"),
+                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
                 $targetDocument,
                 true
             );
