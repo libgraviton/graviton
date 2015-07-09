@@ -129,9 +129,8 @@ class SchemaUtils
         }
 
         $requiredFields = $model->getRequiredFields();
-        $countFields = count($requiredFields);
-        for ($index = 0; $index < $countFields; $index++) {
-            if ($requiredFields[$index] === 'ref') {
+        foreach ($requiredFields as $index => $requiredField) {
+            if ($requiredField === 'ref') {
                 $requiredFields[$index] = '$' . $requiredFields[$index];
             }
         }
