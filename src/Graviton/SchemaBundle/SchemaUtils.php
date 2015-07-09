@@ -128,7 +128,15 @@ class SchemaUtils
             $schema->addProperty($field, $property);
         }
 
-        $schema->setRequired($model->getRequiredFields());
+        $requiredFields = $model->getRequiredFields();
+        foreach ($requiredFields as $index => $requiredField) {
+            if ($requiredField === 'ref') {
+                $requiredFields[$index] = '$' . $requiredFields[$index];
+            }
+        }
+
+        $schema->setRequired($requiredFields);
+
 
         return $schema;
     }
