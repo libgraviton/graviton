@@ -5,6 +5,6 @@
     <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" exclude="false" expose="true"/>
     <property name="protocol" type="string" accessor-getter="getProtocol" accessor-setter="setProtocol" exclude="false" expose="true"/>
     <property name="value" type="string" accessor-getter="getValue" accessor-setter="setValue" exclude="false" expose="true"/>
-    <property name="uri" type="string" accessor-getter="getUri" accessor-setter="setUri" exclude="false" expose="true" serialized-name="$ref"/>
+    <property name="uri" type="string" accessor-getter="getUri" accessor-setter="setUri" exclude="false" expose="true"/>
   </class>
 </serializer>
