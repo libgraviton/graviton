@@ -409,14 +409,7 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertIsSchemaResponse($response);
-        $this->assertIsAppSchema($client->getResults());
         $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
-
-        $this->assertContains(
-            '<http://localhost/schema/core/app/item>; rel="canonical"',
-            explode(',', $response->headers->get('Link'))
-        );
     }
 
     /**
@@ -442,7 +435,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/core/app');
+        $client->request('GET', '/schema/core/app/collection');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -462,7 +455,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertContains(
-            '<http://localhost/schema/core/app/collection>; rel="canonical"',
+            '<http://localhost/schema/core/app/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }

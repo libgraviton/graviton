@@ -109,8 +109,14 @@ class BasicLoader extends Loader
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection');
         $this->routes->add($resource . '.canonicalSchema', $actionOptions);
 
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection', true);
+        $this->routes->add($resource . '.canonicalSchemaOptions', $actionOptions);
+
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig);
         $this->routes->add($resource . '.canonicalIdSchema', $actionOptions);
+
+        $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'item', true);
+        $this->routes->add($resource . '.canonicalIdSchemaOptions', $actionOptions);
 
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array(), true);
         $this->routes->add($resource . '.idOptions', $actionOptions);

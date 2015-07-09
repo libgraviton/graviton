@@ -117,12 +117,10 @@ class ProductControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertIsSchemaResponse($response);
-        $this->assertIsProductSchema($client->getResults());
         $this->assertCorsHeaders('GET, OPTIONS', $response);
 
         $this->assertContains(
-            '<http://localhost/schema/core/product/item>; rel="canonical"',
+            '<http://localhost/core/product/1>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
     }

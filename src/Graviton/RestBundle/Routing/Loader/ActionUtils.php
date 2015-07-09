@@ -164,24 +164,32 @@ class ActionUtils
     /**
      * Get canonical route for schema requests
      *
-     * @param string $service       service id
-     * @param array  $serviceConfig service configuration
-     * @param string $type          service type (item or collection)
+     * @param string  $service       service id
+     * @param array   $serviceConfig service configuration
+     * @param string  $type          service type (item or collection)
+     * @param boolean $option        render a options route
      *
      * @return Route
      */
-    public static function getCanonicalSchemaRoute($service, $serviceConfig, $type = 'item')
+    public static function getCanonicalSchemaRoute($service, $serviceConfig, $type = 'item', $option = false)
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
         $pattern = '/schema' . $pattern . '/' . $type;
 
+        $action = 'schemaAction';
+        $method = 'GET';
+        if ($option !== false) {
+            $action = 'optionsAction';
+            $method = 'OPTIONS';
+        }
+
         $defaults = array(
-            '_controller' => $service . ':optionsAction',
+            '_controller' => $service . ':' . $action,
             '_format' => '~',
         );
 
         $requirements = array(
-            '_method' => 'GET',
+            '_method' => $method,
         );
 
         $route = new Route($pattern, $defaults, $requirements);
