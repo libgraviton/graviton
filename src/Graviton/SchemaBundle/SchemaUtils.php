@@ -131,6 +131,9 @@ class SchemaUtils
                 $schema->removeProperty($prev);
             }
 
+            if ($field === '$ref') {
+                $schema->removeProperty('id');
+            }
             $schema->addProperty($field, $property);
 
             $prev = $field;
