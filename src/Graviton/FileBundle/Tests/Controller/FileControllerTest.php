@@ -117,7 +117,11 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($fixtureData, $results);
 
+        // change link and add second link
         $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
+        $link = new \stdClass;
+        $link->{'$ref'} = 'http://localhost/core/app/web';
+        $data->links[] = $link;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
@@ -129,7 +133,23 @@ class FileControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertEquals($data->links[1]->{'$ref'}, $results->links[1]->{'$ref'});
 
+        // remove a link
+        unset($data->links[1]);
+
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $results = $client->getResults();
+
+        $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertCount(1, $results->links);
+
+        // remove last link
         $data->links = [];
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
