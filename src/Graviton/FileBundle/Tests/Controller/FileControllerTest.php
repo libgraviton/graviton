@@ -112,27 +112,16 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($fixtureData, $results);
 
-        var_dump($data);
-
         $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
-
-        var_dump($data);
-
-        echo "--------------".PHP_EOL;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
         $response = $client->getResponse();
 
-        var_dump($response->headers->get('Location'));
-
         // re-fetch
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
-
-        var_dump($results);
-        die;
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
 
@@ -230,8 +219,15 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
-        $retData = $client->getResults();
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $retData = $client->getResults();
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(strlen($fixtureData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
 
@@ -244,6 +240,11 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
+        $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+
         $retData = $client->getResults();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(strlen($newData), $retData->metadata->size);
