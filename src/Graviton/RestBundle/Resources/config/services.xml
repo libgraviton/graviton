@@ -156,6 +156,9 @@
             <call method="addHeader">
                 <argument>Content-Language</argument>
             </call>
+            <call method="addHeader">
+                <argument>Location</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
