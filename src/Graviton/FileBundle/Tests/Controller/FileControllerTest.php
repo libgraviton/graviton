@@ -79,6 +79,7 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
+        $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 

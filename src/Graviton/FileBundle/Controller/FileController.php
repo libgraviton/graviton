@@ -101,7 +101,6 @@ class FileController extends RestController
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setContent($this->serialize($record));
 
         $routeName = $request->get('_route');
         $routeParts = explode('.', $routeName);
@@ -115,12 +114,7 @@ class FileController extends RestController
             'Location',
             $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
+        return $response;
     }
 
     /**
