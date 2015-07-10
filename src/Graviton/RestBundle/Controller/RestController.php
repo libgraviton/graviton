@@ -420,10 +420,7 @@ class RestController
         $response->setStatusCode(Response::HTTP_OK);
 
         $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'put') {
+        if (substr($routeName, 0, -4) == '.put') {
             $routeName = substr($routeName, 0, -3) . 'get';
         }
 
