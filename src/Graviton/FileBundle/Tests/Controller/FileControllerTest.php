@@ -79,9 +79,13 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
-        $data = $client->getResults();
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $response = $client->getResponse();
+        $data = $client->getResults();
 
         $data->links = [];
         $link = new \stdClass;
@@ -97,7 +101,7 @@ class FileControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        // re-fetch object with location header
+        // re-fetch object from Location header
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
