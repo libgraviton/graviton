@@ -245,6 +245,25 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     *
+     */
+    public function testPostWithId()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = 101;
+        $helloApp->name = "tubel";
+
+        $client = static::createRestClient();
+        $client->post('/person/customer', $helloApp);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals('Can not be given on a POST request. Do a PUT request instead to update an existing record.', json_decode($response->getContent())[0]->message);
+
+
+
+    }
+    /**
      * test updating apps
      *
      * @return void
