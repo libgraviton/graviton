@@ -183,8 +183,26 @@ class FileController extends RestController
 
         $this->getModel()->updateRecord($id, $record);
 
-        return parent::getAction($request, $id);
+        // store id of new record so we dont need to reparse body later when needed
+        $request->attributes->set('id', $record->getId());
 
+        $response = $this->getResponse();
+        $response->setStatusCode(Response::HTTP_OK);
+
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
+
+        if ($routeType == 'put') {
+            $routeName = substr($routeName, 0, -3) . 'get';
+        }
+
+        $response->headers->set(
+            'Location',
+            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+        );
+
+        return $response;
     }
 
 
