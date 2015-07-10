@@ -92,8 +92,14 @@ class FileControllerTest extends RestTestCase
         $data->metadata->filename = $filename;
 
         $client = static::createRestClient();
+
         $client->put(sprintf('/file/%s', $data->id), $data);
 
+        $response = $client->getResponse();
+
+        // re-fetch object with location header
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
@@ -106,17 +112,39 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($fixtureData, $results);
 
+        var_dump($data);
+
         $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
+
+        var_dump($data);
+
+        echo "--------------".PHP_EOL;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+
+        var_dump($response->headers->get('Location'));
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
+
+        var_dump($results);
+        die;
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
 
         $data->links = [];
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+
         $results = $client->getResults();
 
         $this->assertEmpty($results->links);

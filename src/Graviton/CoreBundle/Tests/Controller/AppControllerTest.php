@@ -263,17 +263,23 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        // we sent a location header so we don't want a body
+        $this->assertNull($results);
+        $this->assertContains('/core/app', $response->headers->get('Location'));
 
-        $this->assertEquals('tablet', $results->id);
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
         $this->assertEquals('Tablet', $results->title->en);
         $this->assertFalse($results->showInMenu);
-
         $this->assertContains(
-            '<http://localhost/core/app/tablet>; rel="self"',
+            '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+
     }
 
     /**
@@ -321,7 +327,13 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        // we sent a location header so we don't want a body
+        $this->assertNull($results);
+        $this->assertContains('/core/app', $response->headers->get('Location'));
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $results = $client->getResults();
 
         $this->assertEquals('tablet', $results->id);
         $this->assertEquals('New tablet', $results->title->en);
