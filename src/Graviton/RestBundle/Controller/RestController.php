@@ -412,13 +412,27 @@ class RestController
         } else {
             $this->getModel()->updateRecord($id, $record);
         }
+
+        // store id of new record so we dont need to reparse body later when needed
+        $request->attributes->set('id', $record->getId());
+
+        // Set status code
         $response->setStatusCode(Response::HTTP_OK);
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($record)],
-            $response
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
+
+        if ($routeType == 'put') {
+            $routeName = substr($routeName, 0, -3) . 'get';
+        }
+
+        $response->headers->set(
+            'Location',
+            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
+
+        return $response;
     }
 
     /**
@@ -475,7 +489,7 @@ class RestController
         return $response;
     }
 
- 
+
     /**
      * Return schema GET results.
      *
