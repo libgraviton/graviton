@@ -85,7 +85,6 @@ class FileControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
-        $response = $client->getResponse();
         $data = $client->getResults();
 
         $data->links = [];
