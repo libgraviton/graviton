@@ -229,6 +229,10 @@ class ModuleControllerTest extends RestTestCase
         $client->put('/core/module/'.$moduleId, $putModule);
 
         $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
