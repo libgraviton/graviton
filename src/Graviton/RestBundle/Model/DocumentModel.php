@@ -114,13 +114,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $queryBuilder->limit($numberPerPage);
 
         /**
-         * apply our default sort *after* rql so it's not the dominant one.
-         * doing it first will *disable* all sorting after as they are stacked.
-         * this one only disables to sort id,desc - but it's the best we can do right now.
+         * add a default sort on id if none was specified earlier
          *
-         * [not specifying something to sort on leads to very weird cases when fetching references]
+         * not specifying something to sort on leads to very weird cases when fetching references
          */
-        $queryBuilder->sort('_id');
+        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->sort('_id');
+        }
 
         // run query
         $query = $queryBuilder->getQuery();
