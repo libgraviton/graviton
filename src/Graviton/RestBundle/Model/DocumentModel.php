@@ -94,9 +94,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
-            ->createQueryBuilder()
-            // not specifying something to sort on leads to very wierd cases when fetching references
-            ->sort('_id');
+            ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
@@ -114,6 +112,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // define offset and limit
         $queryBuilder->skip($startAt);
         $queryBuilder->limit($numberPerPage);
+
+        /**
+         * add a default sort on id if none was specified earlier
+         *
+         * not specifying something to sort on leads to very weird cases when fetching references
+         */
+        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->sort('_id');
+        }
 
         // run query
         $query = $queryBuilder->getQuery();
