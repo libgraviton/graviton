@@ -211,9 +211,13 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
-        $data = $client->getResults();
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $data = $client->getResults();
 
         $client = static::createRestClient();
         $client->request('DELETE', sprintf('/file/%s', $data->id));
