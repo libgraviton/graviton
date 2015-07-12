@@ -165,7 +165,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function updateRecord($documentId, $entity)
     {
         $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
+        $entity = $manager->merge($entity);
         $manager->flush();
 
         return $entity;
