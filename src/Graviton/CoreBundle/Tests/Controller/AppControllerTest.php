@@ -305,6 +305,30 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * tests if an error is returned when a id is send in a post
+     *
+     * @return void
+     */
+    public function testPostWithId()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = 101;
+        $helloApp->name = "tubel";
+
+        $client = static::createRestClient();
+        $client->post('/person/customer', $helloApp);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(
+            'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
+            json_decode($response->getContent())[0]->message
+        );
+
+
+
+    }
+    /**
      * test updating apps
      *
      * @return void
