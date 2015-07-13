@@ -123,6 +123,23 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/core/app?perPage=2&q='.urlencode('limit(1)'));
         $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
     }
 
     /**

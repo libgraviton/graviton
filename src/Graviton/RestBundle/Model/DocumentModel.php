@@ -116,7 +116,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->limit($numberPerPage);
         } else {
-            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery();
+            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery()['limit'];
         }
 
         /**
