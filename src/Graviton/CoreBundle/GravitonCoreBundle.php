@@ -9,7 +9,6 @@ use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
 use Graviton\ConsultationBundle\GravitonConsultationBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\EntityBundle\GravitonEntityBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
@@ -49,7 +48,6 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonDocumentBundle(),
             new GravitonSchemaBundle(),
             new GravitonRestBundle(),
-            new GravitonEntityBundle(),
             new GravitonI18nBundle(),
             new GravitonGeneratorBundle(),
             new GravitonPersonBundle(),
