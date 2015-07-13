@@ -533,6 +533,26 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * ensure we have nice parse error output in rql parse failure
+     *
+     * @return void
+     */
+    public function testRqlSyntaxError()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/app?q=eq(name)');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $this->assertContains('syntax error in rql: ', $results->message);
+        $this->assertContains('Unexpected token', $results->message);
+    }
+
+    /**
      * check if response looks like schema
      *
      * @param object $response response
