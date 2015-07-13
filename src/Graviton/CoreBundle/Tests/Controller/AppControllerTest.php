@@ -245,7 +245,7 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * tests if an error is returned when a id is send in a post
+     * Tests if an error is returned when an id is send in a post
      *
      * @return void
      */
@@ -257,12 +257,10 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/person/customer', $helloApp);
-        $response = $client->getResponse();
-        $results = $client->getResults();
 
         $this->assertEquals(
             'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
-            json_decode($response->getContent())[0]->message
+            $client->getResults()[0]->message
         );
 
 
