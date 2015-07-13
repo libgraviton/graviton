@@ -108,6 +108,24 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * rql limit() should be *never* overwritten by $_GET['perPage'] *or* default value
+     *
+     * @return void
+     */
+    public function testGetAppPagingWithRql()
+    {
+        // does limit work?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?q='.urlencode('limit(1)'));
+        $this->assertEquals(1, count($client->getResults()));
+
+        // rql before GET?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?perPage=2&q='.urlencode('limit(1)'));
+        $this->assertEquals(1, count($client->getResults()));
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void

@@ -109,9 +109,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
+
         // define offset and limit
         $queryBuilder->skip($startAt);
-        $queryBuilder->limit($numberPerPage);
+
+        if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->limit($numberPerPage);
+        } else {
+            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery();
+        }
 
         /**
          * add a default sort on id if none was specified earlier
