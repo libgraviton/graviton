@@ -32,7 +32,7 @@ class RqlSyntaxErrorListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof BadRequestHttpException &&
-            ($previous = $exception->getPrevious()) instanceof SyntaxErrorException
+            $exception->getPrevious() instanceof SyntaxErrorException
         ) {
             // Set status code and content
             $response = new Response();
@@ -45,35 +45,7 @@ class RqlSyntaxErrorListener extends RestExceptionListener
                         ]
                     )
                 );
-
             $event->setResponse($response);
         }
-    }
-
-    /**
-     * @param FormErrorIterator $errors errors
-     *
-     * @return array
-     */
-    private function getErrorMessages(FormErrorIterator $errors)
-    {
-        $content = [];
-        foreach ($errors as $error) {
-            if ($error instanceof FormErrorIterator) {
-                $content = array_merge($content, $this->getErrorMessages($error));
-            } elseif ($error instanceof FormError) {
-                $cause = $error->getCause();
-                if (!$cause) {
-                    $path = 'unknkown';
-                } else {
-                    $path = $cause->getPropertyPath();
-                }
-                $content[] = [
-                    'property_path' => $path,
-                    'message' => $error->getMessage(),
-                ];
-            }
-        }
-        return $content;
     }
 }
