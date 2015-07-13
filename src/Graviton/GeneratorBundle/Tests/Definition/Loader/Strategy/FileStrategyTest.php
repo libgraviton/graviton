@@ -38,17 +38,18 @@ class FileStrategyTest extends \PHPUnit_Framework_TestCase
                 'Graviton\GeneratorBundle\Definition\Schema\Definition',
                 'json'
             )
-            ->will($this->returnValue(
-                (new Definition())->setId('a')
-            ));
+            ->will(
+                $this->returnValue((new Definition())->setId('a'))
+            );
 
         $sut = new FileStrategy($serializer);
         $this->assertTrue($sut->supports($file));
 
         $data = $sut->load($file);
         $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
-        $this->assertEquals($data, [
-            new JsonDefinition((new Definition())->setId('a')),
-        ]);
+        $this->assertEquals(
+            $data,
+            [new JsonDefinition((new Definition())->setId('a'))]
+        );
     }
 }

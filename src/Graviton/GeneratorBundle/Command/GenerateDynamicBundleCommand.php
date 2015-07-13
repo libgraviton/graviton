@@ -79,8 +79,8 @@ class GenerateDynamicBundleCommand extends Command
      */
     public function __construct(
         ContainerInterface $container,
-        CommandRunner $runner,
-        XmlManipulator $xmlManipulator,
+        CommandRunner      $runner,
+        XmlManipulator     $xmlManipulator,
         $name = null
     ) {
         parent::__construct($name);

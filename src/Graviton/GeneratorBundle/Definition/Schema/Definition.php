@@ -1,7 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
+ * Raw desrialized data from JSON definition
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Definition
 {
@@ -35,7 +43,7 @@ class Definition
     }
 
     /**
-     * @param string $id
+     * @param string $id ID
      * @return $this
      */
     public function setId($id)
@@ -53,7 +61,7 @@ class Definition
     }
 
     /**
-     * @param string $description
+     * @param string $description Description
      * @return $this
      */
     public function setDescription($description)
@@ -71,7 +79,7 @@ class Definition
     }
 
     /**
-     * @param bool $isSubDocument
+     * @param bool $isSubDocument Is sub document definition
      * @return $this
      */
     public function setIsSubDocument($isSubDocument)
@@ -89,7 +97,7 @@ class Definition
     }
 
     /**
-     * @param Service $service
+     * @param Service $service Service data
      * @return $this
      */
     public function setService(Service $service)
@@ -107,7 +115,7 @@ class Definition
     }
 
     /**
-     * @param Target $target
+     * @param Target $target Target data
      * @return $this
      */
     public function setTarget(Target $target)

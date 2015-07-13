@@ -1,8 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
  * JSON definition "service"
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Service
 {
@@ -44,7 +51,7 @@ class Service
     }
 
     /**
-     * @param string $parent
+     * @param string $parent Parent service ID
      * @return $this
      */
     public function setParent($parent)
@@ -62,7 +69,7 @@ class Service
     }
 
     /**
-     * @param string $baseController
+     * @param string $baseController Base controller class
      * @return $this
      */
     public function setBaseController($baseController)
@@ -80,7 +87,7 @@ class Service
     }
 
     /**
-     * @param bool $readOnly
+     * @param bool $readOnly Is readOnly service
      * @return $this
      */
     public function setReadOnly($readOnly)
@@ -98,7 +105,7 @@ class Service
     }
 
     /**
-     * @param string $routerBase
+     * @param string $routerBase Base URL
      * @return $this
      */
     public function setRouterBase($routerBase)
@@ -116,7 +123,7 @@ class Service
     }
 
     /**
-     * @param string[] $roles
+     * @param string[] $roles Service roles
      * @return $this
      */
     public function setRoles(array $roles)
@@ -134,7 +141,7 @@ class Service
     }
 
     /**
-     * @param int $fixtureOrder
+     * @param int $fixtureOrder Fixture order
      * @return $this
      */
     public function setFixtureOrder($fixtureOrder)
@@ -152,7 +159,7 @@ class Service
     }
 
     /**
-     * @param array[] $fixtures
+     * @param array[] $fixtures Fixtures
      * @return $this
      */
     public function setFixtures(array $fixtures)

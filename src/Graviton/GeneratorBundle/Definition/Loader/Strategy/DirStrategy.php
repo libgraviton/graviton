@@ -13,7 +13,11 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 class DirStrategy extends AbstractStrategy implements DirStrategyInterface
 {
     /**
-     * @inheritdoc
+     * may the strategy handle this input
+     *
+     * @param string|null $input input from command
+     *
+     * @return boolean
      */
     public function supports($input)
     {
@@ -21,7 +25,8 @@ class DirStrategy extends AbstractStrategy implements DirStrategyInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $input Directory path
+     * @return string[]
      */
     public function getJsonDefinitions($input)
     {
@@ -35,7 +40,10 @@ class DirStrategy extends AbstractStrategy implements DirStrategyInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string|null $input input value
+     * @param array       $file  matched file
+     *
+     * @return boolean
      */
     public function isValid($input, $file)
     {

@@ -45,19 +45,24 @@ class DirStrategyTest extends \PHPUnit_Framework_TestCase
                     'json',
                 ]
             )
-            ->will($this->onConsecutiveCalls(
-                (new Definition())->setId('a'),
-                (new Definition())->setId('b')
-            ));
+            ->will(
+                $this->onConsecutiveCalls(
+                    (new Definition())->setId('a'),
+                    (new Definition())->setId('b')
+                )
+            );
 
         $sut = new DirStrategy($serializer);
         $this->assertTrue($sut->supports($dir));
 
         $data = $sut->load($dir);
         $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
-        $this->assertEquals($data, [
-            new JsonDefinition((new Definition())->setId('a')),
-            new JsonDefinition((new Definition())->setId('b')),
-        ]);
+        $this->assertEquals(
+            $data,
+            [
+                new JsonDefinition((new Definition())->setId('a')),
+                new JsonDefinition((new Definition())->setId('b')),
+            ]
+        );
     }
 }

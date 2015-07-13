@@ -1,8 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
  * JSON definition "target.fields"
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Field
 {
@@ -52,7 +59,7 @@ class Field
     }
 
     /**
-     * @param string $name
+     * @param string $name Field name
      * @return $this
      */
     public function setName($name)
@@ -70,7 +77,7 @@ class Field
     }
 
     /**
-     * @param string $type
+     * @param string $type Field type
      * @return $this
      */
     public function setType($type)
@@ -88,7 +95,7 @@ class Field
     }
 
     /**
-     * @param int $length
+     * @param int $length Field length
      * @return $this
      */
     public function setLength($length)
@@ -106,7 +113,7 @@ class Field
     }
 
     /**
-     * @param string $title
+     * @param string $title Field title
      * @return $this
      */
     public function setTitle($title)
@@ -124,7 +131,7 @@ class Field
     }
 
     /**
-     * @param string $description
+     * @param string $description Field description
      * @return $this
      */
     public function setDescription($description)
@@ -142,7 +149,7 @@ class Field
     }
 
     /**
-     * @param string $exposeAs
+     * @param string $exposeAs Expose field as ...
      * @return $this
      */
     public function setExposeAs($exposeAs)
@@ -160,7 +167,7 @@ class Field
     }
 
     /**
-     * @param bool $required
+     * @param bool $required Is field required
      * @return $this
      */
     public function setRequired($required)
@@ -178,7 +185,7 @@ class Field
     }
 
     /**
-     * @param bool $translatable
+     * @param bool $translatable Is field translatable
      * @return $this
      */
     public function setTranslatable($translatable)
@@ -196,7 +203,7 @@ class Field
     }
 
     /**
-     * @param Constraint[] $constraints
+     * @param Constraint[] $constraints Field constraints
      * @return $this
      */
     public function setConstraints(array $constraints)

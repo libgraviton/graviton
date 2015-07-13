@@ -32,7 +32,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $file
+     * @param string $file Definition file path
      * @return JsonDefinition
      */
     private function loadJsonDefinition($file)
@@ -46,11 +46,13 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             ->setDebug(true)
             ->build();
 
-        return new JsonDefinition($serializer->deserialize(
-            file_get_contents($file),
-            'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
-            'json'
-        ));
+        return new JsonDefinition(
+            $serializer->deserialize(
+                file_get_contents($file),
+                'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+                'json'
+            )
+        );
     }
 
     /**
@@ -172,11 +174,13 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
 
         $constraint = (new Constraint())
             ->setName('Email')
-            ->setOptions([
-                (new ConstraintOption())
-                    ->setName('strict')
-                    ->setValue('true')
-            ]);
+            ->setOptions(
+                [
+                    (new ConstraintOption())
+                        ->setName('strict')
+                        ->setValue('true')
+                ]
+            );
 
         $this->assertEquals([$constraint], $field->getConstraints());
     }

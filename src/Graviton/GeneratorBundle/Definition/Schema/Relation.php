@@ -1,8 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
  * JSON definition "target.fields.relations"
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Relation
 {
@@ -36,7 +43,7 @@ class Relation
     }
 
     /**
-     * @param string $type
+     * @param string $type Relation type
      * @return $this
      */
     public function setType($type)
@@ -54,7 +61,7 @@ class Relation
     }
 
     /**
-     * @param string $collectionName
+     * @param string $collectionName Relation collection name
      * @return $this
      */
     public function setCollectionName($collectionName)
@@ -72,7 +79,7 @@ class Relation
     }
 
     /**
-     * @param string $localProperty
+     * @param string $localProperty Local relation field
      * @return $this
      */
     public function setLocalProperty($localProperty)
@@ -90,7 +97,7 @@ class Relation
     }
 
     /**
-     * @param string $localValueField
+     * @param string $localValueField Local property name
      * @return $this
      */
     public function setLocalValueField($localValueField)
@@ -108,7 +115,7 @@ class Relation
     }
 
     /**
-     * @param string $foreignProperty
+     * @param string $foreignProperty Foreign relation field
      * @return $this
      */
     public function setForeignProperty($foreignProperty)

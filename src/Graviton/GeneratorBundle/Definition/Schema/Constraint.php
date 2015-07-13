@@ -1,8 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
  * JSON definition "target.fields.constraints"
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Constraint
 {
@@ -24,7 +31,7 @@ class Constraint
     }
 
     /**
-     * @param string $name
+     * @param string $name Constraint name
      * @return $this
      */
     public function setName($name)
@@ -42,7 +49,7 @@ class Constraint
     }
 
     /**
-     * @param ConstraintOption[] $options
+     * @param ConstraintOption[] $options Constraint options
      * @return $this
      */
     public function setOptions(array $options)

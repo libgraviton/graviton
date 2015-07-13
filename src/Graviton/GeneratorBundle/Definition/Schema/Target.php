@@ -1,8 +1,15 @@
 <?php
+/**
+ * Part of JSON definition
+ */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
 /**
  * JSON definition "target"
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class Target
 {
@@ -28,7 +35,7 @@ class Target
     }
 
     /**
-     * @param Index[] $indexes
+     * @param Index[] $indexes Indexes
      * @return $this
      */
     public function setIndexes(array $indexes)
@@ -46,7 +53,7 @@ class Target
     }
 
     /**
-     * @param Relation[] $relations
+     * @param Relation[] $relations Relations
      * @return $this
      */
     public function setRelations(array $relations)
@@ -64,7 +71,7 @@ class Target
     }
 
     /**
-     * @param Field[] $fields
+     * @param Field[] $fields Fields
      * @return $this
      */
     public function setFields(array $fields)
@@ -74,7 +81,7 @@ class Target
     }
 
     /**
-     * @param Field $field
+     * @param Field $field Field
      * @return $this
      */
     public function addField(Field $field)

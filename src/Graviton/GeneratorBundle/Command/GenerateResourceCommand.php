@@ -36,7 +36,7 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
 
     /**
      * @param ResourceGenerator $resourceGenerator generator to use for resource generation
-     * @param LoaderInterface $definitionLoader JSON definition loaded
+     * @param LoaderInterface   $definitionLoader  JSON definition loaded
      */
     public function __construct(ResourceGenerator $resourceGenerator, LoaderInterface $definitionLoader)
     {

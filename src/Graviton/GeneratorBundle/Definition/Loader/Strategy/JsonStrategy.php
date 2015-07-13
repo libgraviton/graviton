@@ -7,7 +7,11 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 class JsonStrategy extends AbstractStrategy
 {
     /**
-     * @inheritdoc
+     * may the strategy handle this input
+     *
+     * @param string|null $input input from command
+     *
+     * @return boolean
      */
     public function supports($input)
     {
@@ -15,7 +19,8 @@ class JsonStrategy extends AbstractStrategy
     }
 
     /**
-     * @inheritdoc
+     * @param mixed $input Input from command
+     * @return string[]
      */
     public function getJsonDefinitions($input)
     {

@@ -32,7 +32,11 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @inheritdoc
+     * may the strategy handle this input
+     *
+     * @param string|null $input input from command
+     *
+     * @return boolean
      */
     public function supports($input)
     {
@@ -40,7 +44,8 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @inheritdoc
+     * @param string $dirname input value
+     * @return \Iterator matched files
      */
     protected function getIterator($dirname)
     {
@@ -54,7 +59,10 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @inheritdoc
+     * @param string|null $input input value
+     * @param array       $file  matched file
+     *
+     * @return boolean
      */
     public function isValid($input, $file)
     {

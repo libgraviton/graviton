@@ -13,7 +13,11 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 class FileStrategy extends AbstractStrategy
 {
     /**
-     * @inheritdoc
+     * may the strategy handle this input
+     *
+     * @param string|null $input input from command
+     *
+     * @return boolean
      */
     public function supports($input)
     {
@@ -21,7 +25,8 @@ class FileStrategy extends AbstractStrategy
     }
 
     /**
-     * @inheritdoc
+     * @param mixed $input Input from command
+     * @return string[]
      */
     protected function getJsonDefinitions($input)
     {

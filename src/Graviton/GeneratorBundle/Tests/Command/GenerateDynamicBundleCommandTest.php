@@ -77,9 +77,9 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     /**
      * Provides a test double of the service container.
      *
-     * @param object $loaderDouble test double for a definition loader
+     * @param object $loaderDouble     test double for a definition loader
      * @param object $serializerDouble test double for a serializer
-     * @param object $kernelDouble test double of the SF2 kernel
+     * @param object $kernelDouble     test double of the SF2 kernel
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
@@ -92,13 +92,15 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $containerDouble
             ->expects($this->exactly(3))
             ->method('get')
-            ->willReturnCallback(function ($id) use ($loaderDouble, $serializerDouble, $kernelDouble) {
-                return [
-                    'graviton_generator.definition.loader' => $loaderDouble,
-                    'jms_serializer' => $serializerDouble,
-                    'kernel' => $kernelDouble,
-                ][$id];
-            });
+            ->willReturnCallback(
+                function ($id) use ($loaderDouble, $serializerDouble, $kernelDouble) {
+                    return [
+                        'graviton_generator.definition.loader' => $loaderDouble,
+                        'jms_serializer' => $serializerDouble,
+                        'kernel' => $kernelDouble,
+                    ][$id];
+                }
+            );
 
         return $containerDouble;
     }
