@@ -1,0 +1,51 @@
+{
+  "anotherInt": 6555488894525,
+  "testField": {"en": "a test string"},
+  "email": "joe@example.com",
+  "someOtherField": {"en": "another good ol' test string"},
+  "aBoolean": false,
+  "optionalBoolean": true,
+  "someFloatyDouble": 11.7,
+  "modificationDate": "1984-05-02T00:00:00Z",
+  "contact": {
+    "type": "home",
+    "value": "joe@example.com",
+    "protocol": "mailto",
+    "uri": "mailto:joe@example.com"
+  },
+  "contactCode": {
+    "someDate": "2012-12-21T00:00:00Z",
+    "text": "Ad mailing campaign 2012"
+  },
+  "nestedArray": [
+    {"name": "element one"},
+    {"name": "element two"}
+  ],
+  "unstructuredObject": {
+    "intField": 17,
+    "stringField": "Tux",
+    "listField": ["Linus", "Gnu"],
+    "hashField": {
+      "someField": 21,
+      "anotherField": "half the truth"
+    },
+    "nestedArrayField": [
+      {
+        "someField": 21,
+        "anotherField": "half the truth"
+      },
+      {
+        "someField": 23,
+        "anotherField": "nothing is as it seems"
+      }
+    ]
+  },
+  "nestedApps": [
+    {
+      "$ref": "http://localhost/core/app/tablet"
+    },
+    {
+      "$ref": "http://localhost/core/app/admin"
+    }
+  ]
+}
