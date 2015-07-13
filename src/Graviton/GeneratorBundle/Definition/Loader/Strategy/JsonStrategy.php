@@ -11,7 +11,7 @@ class JsonStrategy extends AbstractStrategy
      */
     public function supports($input)
     {
-        return is_string($input) && $input[0] === '{';
+        return is_string($input) && strlen($input) > 0 && $input[0] === '{';
     }
 
     /**
