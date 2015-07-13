@@ -111,7 +111,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         // define offset and limit
-        $queryBuilder->skip($startAt);
+        if (!array_key_exists('skip', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->skip($startAt);
+        }
 
         if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->limit($numberPerPage);
