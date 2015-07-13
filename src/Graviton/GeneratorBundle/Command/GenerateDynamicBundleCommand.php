@@ -191,7 +191,7 @@ class GenerateDynamicBundleCommand extends Command
                 $this->generateBundle($namespace, $bundleName, $input, $output);
                 $this->generateBundleBundleClass($this->bundleAdditions);
                 $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
-                $this->generateMainResource($output, $jsonDef, $bundleName, $thisIdName);
+                $this->generateMainResource($output, $jsonDef, $bundleName);
                 $this->generateValidationXml($this->xmlManipulator, $this->getGeneratedValidationXmlPath($namespace));
 
                 $output->writeln('');
