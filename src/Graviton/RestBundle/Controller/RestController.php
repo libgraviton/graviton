@@ -417,7 +417,7 @@ class RestController
         $request->attributes->set('id', $record->getId());
 
         // Set status code
-        $response->setStatusCode(Response::HTTP_OK);
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         $routeName = $request->get('_route');
         if (substr($routeName, 0, -4) == '.put') {

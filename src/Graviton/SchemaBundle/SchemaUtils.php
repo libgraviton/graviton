@@ -128,6 +128,10 @@ class SchemaUtils
             $schema->addProperty($field, $property);
         }
 
+        if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
+            $schema->removeProperty('id');
+        }
+
         $requiredFields = $model->getRequiredFields();
         foreach ($requiredFields as $index => $requiredField) {
             if ($requiredField === 'ref') {
