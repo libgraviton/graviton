@@ -116,9 +116,13 @@
 
         <service id="graviton_generator.command.generatedynamicbundle"
                  class="Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand">
-            <argument type="service" id="graviton_generator.command.generatedynamicbundle.container"/>
             <argument type="service" id="graviton_generator.command_runner"/>
             <argument type="service" id="graviton_generator.manipulator.xml_file"/>
+            <argument type="service" id="graviton_generator.definition.loader"/>
+            <argument type="service" id="jms_serializer"/>
+            <argument>%generator.bundlebundle.additions%</argument>
+            <argument>%generator.dynamicbundles.service.whitelist%</argument>
+
             <tag name="console.command" />
         </service>
 

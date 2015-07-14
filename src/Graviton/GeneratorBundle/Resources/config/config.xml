@@ -11,6 +11,10 @@
             {}
             ]]>
         </parameter>
+        <!-- additional bundles list in JSON format -->
+        <parameter key="generator.bundlebundle.additions"/>
+        <!-- service whitelist in JSON format -->
+        <parameter key="generator.dynamicbundles.service.whitelist"/>
     </parameters>
 
     <jms-serializer:config>

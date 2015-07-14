@@ -23,22 +23,21 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     public function testGenerateDynamicBundleExpectingException()
     {
-        $loaderDouble = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\Loader\LoaderInterface')
+        $loaderDouble = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\Loader\\LoaderInterface')
             ->disableOriginalConstructor()
-            ->setMethods(array('load'))
+            ->setMethods(['load'])
             ->getMockForAbstractClass();
         $loaderDouble
             ->expects($this->once())
             ->method('load')
-            ->willReturn(array());
+            ->willReturn([]);
 
         $serializerDouble = $this->getMockBuilder('JMS\\Serializer\\SerializerInterface')
             ->setMethods(['serialize', 'deserialize'])
             ->getMockForAbstractClass();
         $serializerDouble
             ->expects($this->never())
-            ->method('serialize')
-            ->willReturn(__METHOD__);
+            ->method('serialize');
 
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -52,9 +51,10 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $commando = new GenerateDynamicBundleCommand(
-            $this->getContainerDouble($loaderDouble, $serializerDouble, $kernelDouble),
             $runnerDouble,
-            $xmlManipulatorDouble
+            $xmlManipulatorDouble,
+            $loaderDouble,
+            $serializerDouble
         );
 
         $application = new Application();
@@ -72,37 +72,6 @@ class GenerateDynamicBundleCommandTest extends BaseTest
                 array('--json' => __DIR__ . '/Resources/Definition/testDefinition.json')
             )
         );
-    }
-
-    /**
-     * Provides a test double of the service container.
-     *
-     * @param object $loaderDouble     test double for a definition loader
-     * @param object $serializerDouble test double for a serializer
-     * @param object $kernelDouble     test double of the SF2 kernel
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getContainerDouble($loaderDouble, $serializerDouble, $kernelDouble)
-    {
-        $containerDouble = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('get'))
-            ->getMockForAbstractClass();
-        $containerDouble
-            ->expects($this->exactly(3))
-            ->method('get')
-            ->willReturnCallback(
-                function ($id) use ($loaderDouble, $serializerDouble, $kernelDouble) {
-                    return [
-                        'graviton_generator.definition.loader' => $loaderDouble,
-                        'jms_serializer' => $serializerDouble,
-                        'kernel' => $kernelDouble,
-                    ][$id];
-                }
-            );
-
-        return $containerDouble;
     }
 
     /**
@@ -165,19 +134,23 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->method('isBagOfPrimitives')
             ->will($this->returnValue(true));
 
+        $loaderDouble = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\Loader\\LoaderInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(['load'])
+            ->getMockForAbstractClass();
+        $loaderDouble
+            ->expects($this->never())
+            ->method('load');
 
         $serializerDouble = $this->getMockBuilder('JMS\\Serializer\\SerializerInterface')
             ->setMethods(['serialize', 'deserialize'])
             ->getMockForAbstractClass();
         $serializerDouble
             ->expects($this->never())
-            ->method('serialize')
-            ->willReturn(__METHOD__);
+            ->method('serialize');
 
         $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
             ->getMock();
-
-        $containerDouble = $this->getContainerDouble($jsonField, $serializerDouble, $kernelDouble);
 
         $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -192,10 +165,9 @@ class GenerateDynamicBundleCommandTest extends BaseTest
 
         $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
-        /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
         $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
-            ->setConstructorArgs(array($containerDouble, $runnerDouble, $xmlManipulatorDouble))
-            ->setMethods(array('generateSubResources'))
+            ->setConstructorArgs([$runnerDouble, $xmlManipulatorDouble, $loaderDouble, $serializerDouble])
+            ->setMethods(['generateSubResources'])
             ->getProxy();
 
         $command->generateSubResources(
@@ -218,10 +190,9 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     public function executeGenerateSubresources($outputDouble, $jsonDefDouble, $xmlManipulatorDouble)
     {
-        /** @var \Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand $command */
         $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
             ->disableOriginalConstructor()
-            ->setMethods(array('generateSubResources'))
+            ->setMethods(['generateSubResources'])
             ->getProxy();
 
         $command->generateSubResources(

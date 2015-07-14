@@ -11,12 +11,12 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
+use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -45,25 +45,26 @@ class GenerateDynamicBundleCommand extends Command
     private $bundleBundleClassfile;
 
     /** @var  array */
-    private $bundleBundleList = array();
-
-    /** @var ContainerInterface */
-    private $container;
-
-    /** @var CommandRunner */
-    private $runner;
-
-    /** @var \Graviton\GeneratorBundle\Definition\Loader\LoaderInterface */
-    private $definitionLoader;
-
-    /** @var \Symfony\Component\HttpKernel\KernelInterface */
-    private $kernel;
-
-    /** @var XmlManipulator */
-    private $xmlManipulator;
+    private $bundleBundleList = [];
 
     /** @var array */
     private $bundleAdditions = [];
+
+    /** @var array */
+    private $serviceWhitelist = [];
+
+    /**
+     * @var CommandRunner
+     */
+    private $runner;
+    /**
+     * @var LoaderInterface
+     */
+    private $definitionLoader;
+    /**
+     * @var XmlManipulator
+     */
+    private $xmlManipulator;
     /**
      * @var SerializerInterface
      */
@@ -71,35 +72,33 @@ class GenerateDynamicBundleCommand extends Command
 
 
     /**
-     * @param ContainerInterface $container      Symfony dependency injection container
-     * @param CommandRunner      $runner         Runs a console command.
-     * @param XmlManipulator     $xmlManipulator Helper to change the content of a xml file.
-     * @param string|null        $name           The name of the command; passing null means it must be set in
-     *                                           configure()
+     * @param CommandRunner       $runner           Runs a console command.
+     * @param XmlManipulator      $xmlManipulator   Helper to change the content of a xml file.
+     * @param LoaderInterface     $definitionLoader JSON definition loader
+     * @param SerializerInterface $serializer       Serializer
+     * @param string|null         $bundleAdditions  Additional bundles list in JSON format
+     * @param string|null         $serviceWhitelist Service whitelist in JSON format
+     * @param string|null         $name             The name of the command; passing null means it must be set in
+     *                                              configure()
      */
     public function __construct(
-        ContainerInterface $container,
-        CommandRunner      $runner,
-        XmlManipulator     $xmlManipulator,
+        CommandRunner       $runner,
+        XmlManipulator      $xmlManipulator,
+        LoaderInterface     $definitionLoader,
+        SerializerInterface $serializer,
+        $bundleAdditions = null,
+        $serviceWhitelist = null,
         $name = null
     ) {
         parent::__construct($name);
 
         $this->runner = $runner;
         $this->xmlManipulator = $xmlManipulator;
+        $this->definitionLoader = $definitionLoader;
+        $this->serializer = $serializer;
 
-        // TODO [lapistano]: somethigg to get rid of in the future.
-        $this->container = $container;
-        $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
-        $this->serializer = $this->container->get('jms_serializer');
-        $this->kernel = $this->container->get('kernel');
-
-        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
-            $this->bundleAdditions = json_decode(
-                $this->container->getParameter('generator.bundlebundle.additions'),
-                true
-            );
-        }
+        $this->bundleAdditions = $bundleAdditions === null ? [] : json_decode($bundleAdditions, true);
+        $this->serviceWhitelist = $serviceWhitelist === null ? [] : json_decode($serviceWhitelist, true);
     }
 
     /**
@@ -413,25 +412,11 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function isNotWhitelistedController($routerBase)
     {
-        // if no whitelist is set, everything is whitelisted
-        if (!$this->container->hasParameter('generator.dynamicbundles.service.whitelist')) {
+        if (is_array($this->serviceWhitelist) && in_array($routerBase, $this->serviceWhitelist)) {
             return false;
         }
 
-        // if param is there our default is 'yes' - everything is not whitelisted by default.
-        $ret = true;
-
-        $whitelist = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
-            true
-        );
-
-        // whitelist it if in list..
-        if (is_array($whitelist) && in_array($routerBase, $whitelist)) {
-            $ret = false;
-        }
-
-        return $ret;
+        return true;
     }
 
     /**
