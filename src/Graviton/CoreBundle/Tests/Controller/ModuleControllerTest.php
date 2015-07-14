@@ -228,10 +228,8 @@ class ModuleControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/module/'.$moduleId, $putModule);
 
-        $response = $client->getResponse();
-
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', '/core/module/'.$moduleId);
         $response = $client->getResponse();
         $results = $client->getResults();
 
