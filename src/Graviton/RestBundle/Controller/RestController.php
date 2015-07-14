@@ -447,7 +447,7 @@ class RestController
         $this->findRecord($id);
 
         $this->getModel()->deleteRecord($id);
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $response->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
