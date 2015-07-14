@@ -5,6 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
+use Symfony\Component\Finder\Finder;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -44,29 +46,17 @@ class ScanStrategy extends DirStrategy
     }
 
     /**
-     * @param string $dirname input value
-     * @return \Iterator matched files
+     * @param mixed $input Input from command
+     * @return Finder
      */
-    protected function getIterator($dirname)
+    protected function getFinder($input)
     {
-        $directory = new \RecursiveDirectoryIterator($this->scanDir);
-        $iterator = new \RecursiveIteratorIterator($directory);
-        return new \RegexIterator(
-            $iterator,
-            '/.*\/resources\/definition\/[^_].+\.json$/i',
-            \RegexIterator::GET_MATCH
-        );
-    }
-
-    /**
-     * @param string|null $input input value
-     * @param array       $file  matched file
-     *
-     * @return boolean
-     */
-    public function isValid($input, $file)
-    {
-        $checkFile = str_replace($this->scanDir, '', $file[0]);
-        return strpos($this->scanDir, '/Tests/') || !strpos($checkFile, '/Tests/');
+        return (new Finder())
+            ->files()
+            ->in($this->scanDir)
+            ->name('*.json')
+            ->notName('_*')
+            ->path('/(^|\/)resources\/definition($|\/)/i')
+            ->notPath('/(^|\/)Tests($|\/)/i');
     }
 }

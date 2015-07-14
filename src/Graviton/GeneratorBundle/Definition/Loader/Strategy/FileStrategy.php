@@ -28,10 +28,8 @@ class FileStrategy extends AbstractStrategy
      * @param mixed $input Input from command
      * @return string[]
      */
-    protected function getJsonDefinitions($input)
+    protected function getRawDefinitions($input)
     {
-        return [
-            file_get_contents($input),
-        ];
+        return [file_get_contents($input)];
     }
 }

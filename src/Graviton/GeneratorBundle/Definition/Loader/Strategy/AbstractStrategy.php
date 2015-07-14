@@ -26,7 +26,7 @@ abstract class AbstractStrategy implements StrategyInterface
      * @param mixed $input Input from command
      * @return string[]
      */
-    abstract protected function getJsonDefinitions($input);
+    abstract protected function getRawDefinitions($input);
 
     /**
      * @param SerializerInterface $serializer Serializer
@@ -42,7 +42,11 @@ abstract class AbstractStrategy implements StrategyInterface
      */
     protected function deserializeDefinition($json)
     {
-        return $this->serializer->deserialize($json, 'Graviton\GeneratorBundle\Definition\Schema\Definition', 'json');
+        return $this->serializer->deserialize(
+            $json,
+            'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+            'json'
+        );
     }
 
     /**
@@ -58,7 +62,7 @@ abstract class AbstractStrategy implements StrategyInterface
             function ($json) {
                 return new JsonDefinition($this->deserializeDefinition($json));
             },
-            $this->getJsonDefinitions($input)
+            $this->getRawDefinitions($input)
         );
     }
 }

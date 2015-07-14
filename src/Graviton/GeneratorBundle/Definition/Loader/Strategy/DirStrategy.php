@@ -5,12 +5,16 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Finder\Finder;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DirStrategy extends AbstractStrategy implements DirStrategyInterface
+class DirStrategy extends AbstractStrategy
 {
     /**
      * may the strategy handle this input
@@ -25,41 +29,30 @@ class DirStrategy extends AbstractStrategy implements DirStrategyInterface
     }
 
     /**
-     * @param string $input Directory path
+     * @param mixed $input Input from command
      * @return string[]
      */
-    public function getJsonDefinitions($input)
+    protected function getRawDefinitions($input)
     {
-        $results = [];
-        foreach ($this->getIterator($input) as $file) {
-            if ($this->isValid($input, $file)) {
-                $results[] = file_get_contents($file[0]);
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * @param string|null $input input value
-     * @param array       $file  matched file
-     *
-     * @return boolean
-     */
-    public function isValid($input, $file)
-    {
-        return true;
-    }
-
-    /**
-     * @param string $dirname input value
-     * @return \Iterator matched files
-     */
-    protected function getIterator($dirname)
-    {
-        return new \RecursiveRegexIterator(
-            new \RecursiveDirectoryIterator($dirname),
-            '/.*\/[^_]\w+\.json$/i',
-            \RecursiveRegexIterator::GET_MATCH
+        return array_map(
+            function (SplFileInfo $file) {
+                return $file->getContents();
+            },
+            array_values(iterator_to_array($this->getFinder($input)))
         );
+    }
+
+    /**
+     * @param mixed $input Input from command
+     * @return Finder
+     */
+    protected function getFinder($input)
+    {
+        return (new Finder())
+            ->files()
+            ->in($input)
+            ->name('*.json')
+            ->notName('_*')
+            ->depth('== 0');
     }
 }

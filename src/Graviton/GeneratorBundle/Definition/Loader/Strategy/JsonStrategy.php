@@ -3,6 +3,10 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
 /**
  * Load definition from JSON string
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class JsonStrategy extends AbstractStrategy
 {
@@ -22,7 +26,7 @@ class JsonStrategy extends AbstractStrategy
      * @param mixed $input Input from command
      * @return string[]
      */
-    public function getJsonDefinitions($input)
+    public function getRawDefinitions($input)
     {
         return [$input];
     }
