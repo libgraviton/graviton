@@ -415,7 +415,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
     /**
