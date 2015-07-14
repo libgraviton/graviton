@@ -169,12 +169,11 @@ class LanguageControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/i18n/language/es', $putLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
-        $response = $client->getResponse();
 
         $client = static::createRestClient();
         $client->request(
             'GET',
-            $response->headers->get('Location'),
+            '/i18n/language/es',
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'es')
@@ -193,12 +192,11 @@ class LanguageControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/i18n/language/es', $newPutLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
-        $response = $client->getResponse();
 
         $client = static::createRestClient();
         $client->request(
             'GET',
-            $response->headers->get('Location'),
+            '/i18n/language/es',
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'es')
