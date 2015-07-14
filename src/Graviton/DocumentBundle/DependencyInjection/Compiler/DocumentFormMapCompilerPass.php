@@ -53,6 +53,9 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsIn
             list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
             $this->loadFields($map, $ns, $bundle, $doc);
         }
+        if (!isset($map['stdclass'])) {
+            $map['stdclass'] = 'stdclass';
+        }
         $container->setParameter('graviton.document.form.type.document.service_map', $map);
     }
 
@@ -95,7 +98,10 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsIn
         $name = '',
         $prefix = ''
     ) {
-        foreach (['//doctrine:embed-one', '//doctrine:embed-many'] as $basePath) {
+        foreach ([
+                     '//*[self::doctrine:embed-one or self::doctrine:reference-one]',
+                     '//*[self::doctrine:embed-many or self::doctrine:reference-many]'
+            ] as $basePath) {
             $embedNodes = $xpath->query($basePath);
             foreach ($embedNodes as $node) {
                 $fieldName = $node->getAttribute('field');
@@ -105,7 +111,7 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsIn
                     $map,
                     $xpath->query(sprintf("%s[@field='%s']", $basePath, $fieldName)),
                     $targetDocument,
-                    $basePath == '//doctrine:embed-many'
+                    (strpos($basePath, '-many') !== false)
                 );
                 $map[$targetDocument] = $targetDocument;
             }

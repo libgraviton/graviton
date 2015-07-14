@@ -79,9 +79,13 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
-        $data = $client->getResults();
+        $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $data = $client->getResults();
 
         $data->links = [];
         $link = new \stdClass;
@@ -92,8 +96,14 @@ class FileControllerTest extends RestTestCase
         $data->metadata->filename = $filename;
 
         $client = static::createRestClient();
+
         $client->put(sprintf('/file/%s', $data->id), $data);
 
+        $response = $client->getResponse();
+
+        // re-fetch object from Location header
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
@@ -106,21 +116,58 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($fixtureData, $results);
 
+        // change link and add second link
         $data->links[0]->{'$ref'} = 'http://localhost/core/app/admin';
+        $link = new \stdClass;
+        $link->{'$ref'} = 'http://localhost/core/app/web';
+        $data->links[] = $link;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertEquals($data->links[1]->{'$ref'}, $results->links[1]->{'$ref'});
 
+        // remove a link
+        unset($data->links[1]);
+
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $results = $client->getResults();
+
+        $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
+        $this->assertCount(1, $results->links);
+
+        // remove last link
         $data->links = [];
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
+        $response = $client->getResponse();
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+
         $results = $client->getResults();
 
         $this->assertEmpty($results->links);
 
+        $data->metadata->size = 1;
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $data->id), $data);
+        $results = $client->getResults();
+
+        $this->assertEquals('The value "data.metadata.size" is read only.', $results[0]->message);
     }
 
     /**
@@ -163,9 +210,13 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
-        $data = $client->getResults();
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $data = $client->getResults();
 
         $client = static::createRestClient();
         $client->request('DELETE', sprintf('/file/%s', $data->id));
@@ -196,8 +247,15 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
-        $retData = $client->getResults();
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $retData = $client->getResults();
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(strlen($fixtureData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
 
@@ -210,6 +268,11 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
+        $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+
         $retData = $client->getResults();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(strlen($newData), $retData->metadata->size);

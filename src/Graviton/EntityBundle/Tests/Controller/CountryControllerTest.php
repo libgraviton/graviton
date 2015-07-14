@@ -312,7 +312,7 @@ class CountryControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/entity/country/CHE');
+        $client->request('GET', '/schema/entity/country/item');
 
         $response = $client->getResponse();
         $results = $client->getResults();

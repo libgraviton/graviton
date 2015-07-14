@@ -412,13 +412,24 @@ class RestController
         } else {
             $this->getModel()->updateRecord($id, $record);
         }
+
+        // store id of new record so we dont need to reparse body later when needed
+        $request->attributes->set('id', $record->getId());
+
+        // Set status code
         $response->setStatusCode(Response::HTTP_OK);
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($record)],
-            $response
+        $routeName = $request->get('_route');
+        if (substr($routeName, 0, -4) == '.put') {
+            $routeName = substr($routeName, 0, -3) . 'get';
+        }
+
+        $response->headers->set(
+            'Location',
+            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
         );
+
+        return $response;
     }
 
     /**
@@ -449,12 +460,43 @@ class RestController
      * Return OPTIONS results.
      *
      * @param Request $request Current http request
+     *
+     * @throws SerializationException
+     * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
+     */
+    public function optionsAction(Request $request)
+    {
+        list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
+
+        $response = $this->response;
+        $response->setStatusCode(Response::HTTP_OK);
+
+        // enabled methods for CorsListener
+        $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
+        try {
+            $router = $this->getRouter();
+            // if post route is available we assume everything is readable
+            $router->generate(implode('.', array($app, $module, 'rest', $modelName, 'post')));
+        } catch (RouteNotFoundException $exception) {
+            // only allow read methods
+            $corsMethods = 'GET, OPTIONS';
+        }
+        $request->attributes->set('corsMethods', $corsMethods);
+
+        return $response;
+    }
+
+
+    /**
+     * Return schema GET results.
+     *
+     * @param Request $request Current http request
      * @param string  $id      ID of record
      *
      * @throws SerializationException
      * @return \Symfony\Component\HttpFoundation\Response $response Result of the action
      */
-    public function optionsAction(Request $request, $id = null)
+    public function schemaAction(Request $request, $id = null)
     {
         $request->attributes->set('schemaRequest', true);
 

@@ -170,6 +170,16 @@ class LanguageControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/i18n/language/es', $putLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
         $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            $response->headers->get('Location'),
+            array(),
+            array(),
+            array('HTTP_ACCEPT_LANGUAGE' => 'es')
+        );
+        $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
@@ -183,6 +193,16 @@ class LanguageControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/i18n/language/es', $newPutLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            $response->headers->get('Location'),
+            array(),
+            array(),
+            array('HTTP_ACCEPT_LANGUAGE' => 'es')
+        );
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -220,7 +240,7 @@ class LanguageControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/schema/i18n/language/collection', [], [], ['HTTP_ACCEPT_LANGUAGE' => 'en,de']);
 
         $results = $client->getResults();
 

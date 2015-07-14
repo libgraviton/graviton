@@ -229,6 +229,10 @@ class ModuleControllerTest extends RestTestCase
         $client->put('/core/module/'.$moduleId, $putModule);
 
         $response = $client->getResponse();
+
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
@@ -284,14 +288,14 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/core/module');
+        $client->request('GET', '/schema/core/module/collection');
         $results = $client->getResults();
 
         $this->assertEquals('object', $results->items->properties->name->type);
         $this->assertEquals('translatable', $results->items->properties->name->format);
 
         $this->assertEquals('object', $results->items->properties->app->type);
-        $this->assertEquals('string', $results->items->properties->app->properties->ref->type);
-        $this->assertEquals('extref', $results->items->properties->app->properties->ref->format);
+        $this->assertEquals('string', $results->items->properties->app->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $results->items->properties->app->properties->{'$ref'}->format);
     }
 }

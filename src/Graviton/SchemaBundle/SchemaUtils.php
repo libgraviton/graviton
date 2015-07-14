@@ -121,10 +121,26 @@ class SchemaUtils
                 $property = self::makeTranslatable($property, $languages);
             }
 
+            if ($meta->getTypeOfField($field) === 'extref' && substr($field, 0, 1) !== '$') {
+                $field = '$' . $field;
+            }
+
             $schema->addProperty($field, $property);
         }
 
-        $schema->setRequired($model->getRequiredFields());
+        if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
+            $schema->removeProperty('id');
+        }
+
+        $requiredFields = $model->getRequiredFields();
+        foreach ($requiredFields as $index => $requiredField) {
+            if ($requiredField === 'ref') {
+                $requiredFields[$index] = '$' . $requiredFields[$index];
+            }
+        }
+
+        $schema->setRequired($requiredFields);
+
 
         return $schema;
     }
