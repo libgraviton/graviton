@@ -40,6 +40,10 @@ class Field
     /**
      * @var bool
      */
+    private $readOnly = false;
+    /**
+     * @var bool
+     */
     private $required = false;
     /**
      * @var bool
@@ -155,6 +159,24 @@ class Field
     public function setExposeAs($exposeAs)
     {
         $this->exposeAs = $exposeAs;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getReadOnly()
+    {
+        return $this->readOnly;
+    }
+
+    /**
+     * @param bool $readOnly Is field readonly
+     * @return $this
+     */
+    public function setReadOnly($readOnly)
+    {
+        $this->readOnly = $readOnly;
         return $this;
     }
 

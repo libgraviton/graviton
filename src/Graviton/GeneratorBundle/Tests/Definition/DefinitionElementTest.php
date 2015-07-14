@@ -99,6 +99,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'title' => 'A testing title',
             'description' => 'A lengthy and detailed description.',
             'exposeAs' => null,
+            'readOnly' => false,
             'required' => true,
             'translatable' => true,
             'exposedName' => 'testField',
