@@ -11,8 +11,6 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @return void
-     *
-     * @covers JsonStrategy::load()
      */
     public function testLoad()
     {
@@ -51,7 +49,6 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
      * @return void
      *
      * @dataProvider dataSupports()
-     * @covers JsonStrategy::supports()
      */
     public function testSupports($input, $result)
     {
