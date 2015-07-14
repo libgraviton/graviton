@@ -47,11 +47,11 @@ class GenerateDynamicBundleCommand extends Command
     /** @var  array */
     private $bundleBundleList = [];
 
-    /** @var array */
-    private $bundleAdditions = [];
+    /** @var array|null */
+    private $bundleAdditions = null;
 
-    /** @var array */
-    private $serviceWhitelist = [];
+    /** @var array|null */
+    private $serviceWhitelist = null;
 
     /**
      * @var CommandRunner
@@ -97,8 +97,8 @@ class GenerateDynamicBundleCommand extends Command
         $this->definitionLoader = $definitionLoader;
         $this->serializer = $serializer;
 
-        $this->bundleAdditions = $bundleAdditions === null ? [] : json_decode($bundleAdditions, true);
-        $this->serviceWhitelist = $serviceWhitelist === null ? [] : json_decode($serviceWhitelist, true);
+        $this->bundleAdditions = $bundleAdditions === null ? null : json_decode($bundleAdditions, true);
+        $this->serviceWhitelist = $serviceWhitelist === null ? null : json_decode($serviceWhitelist, true);
     }
 
     /**
@@ -412,11 +412,11 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function isNotWhitelistedController($routerBase)
     {
-        if (is_array($this->serviceWhitelist) && in_array($routerBase, $this->serviceWhitelist)) {
+        if (!is_array($this->serviceWhitelist)) {
             return false;
         }
 
-        return true;
+        return !in_array($routerBase, $this->serviceWhitelist, true);
     }
 
     /**
