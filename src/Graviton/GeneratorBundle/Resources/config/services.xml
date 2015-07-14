@@ -50,17 +50,24 @@
                 <argument type="service" id="graviton_generator.definition.loader.strategy.json"/>
             </call>
         </service>
-        <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%">
+        <service id="graviton_generator.definition.loader.strategy.abstract" abstract="true">
             <argument type="service" id="jms_serializer"/>
         </service>
-        <service id="graviton_generator.definition.loader.strategy.json" class="%graviton_generator.definition.loader.strategy.json.class%">
-            <argument type="service" id="jms_serializer"/>
+        <service id="graviton_generator.definition.loader.strategy.file"
+                 class="%graviton_generator.definition.loader.strategy.file.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
         </service>
-        <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%">
-            <argument type="service" id="jms_serializer"/>
+        <service id="graviton_generator.definition.loader.strategy.json"
+                 class="%graviton_generator.definition.loader.strategy.json.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
         </service>
-        <service id="graviton_generator.definition.loader.strategy.scan" class="%graviton_generator.definition.loader.strategy.scan.class%">
-            <argument type="service" id="jms_serializer"/>
+        <service id="graviton_generator.definition.loader.strategy.dir"
+                 class="%graviton_generator.definition.loader.strategy.dir.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.scan"
+                 class="%graviton_generator.definition.loader.strategy.scan.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
             <call method="setScanDir">
                 <argument>%kernel.root_dir%/..</argument>
             </call>
