@@ -80,8 +80,17 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements Loa
 
         $namePrefix = strtolower(implode('.', [$ns, $bundle, 'rest', $doc, '']));
 
-        $this->loadEmbeddedDocuments($map, $xpath->query('//doctrine:embed-one'), $namePrefix);
-        $this->loadEmbeddedDocuments($map, $xpath->query('//doctrine:embed-many'), $namePrefix, true);
+        $this->loadEmbeddedDocuments(
+            $map,
+            $xpath->query('//*[self::doctrine:embed-one or self::doctrine:reference-one]'),
+            $namePrefix
+        );
+        $this->loadEmbeddedDocuments(
+            $map,
+            $xpath->query('//*[self::doctrine:embed-many or self::doctrine:reference-many]'),
+            $namePrefix,
+            true
+        );
 
         foreach (['get', 'all'] as $suffix) {
             if ($embedded) {
