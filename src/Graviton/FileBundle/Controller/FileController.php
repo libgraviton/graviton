@@ -92,13 +92,14 @@ class FileController extends RestController
         $request->attributes->set('id', $record->getId());
 
         $file = $this->saveFile($record->getId(), $request->getContent());
+
         // update record with file metadata
-        $date = new \DateTime();
         $meta = new FileMetadata();
         $meta->setSize((int) $file->getSize())
             ->setMime($request->headers->get('Content-Type'))
-            ->setCtime($date);
+            ->setCreatedate(new \DateTime());
         $record->setMetadata($meta);
+
         $record = $this->getModel()->updateRecord($record->getId(), $record);
 
         // Set status code and content
