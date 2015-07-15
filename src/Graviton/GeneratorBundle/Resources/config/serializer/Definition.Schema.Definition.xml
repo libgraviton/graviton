@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Definition">
+        <property name="id"
+                  type="string"
+                  serialized-name="id"/>
+        <property name="description"
+                  type="string"
+                  serialized-name="description"/>
+        <property name="isSubDocument"
+                  type="boolean"
+                  serialized-name="isSubDocument"/>
+        <property name="service"
+                  type="Graviton\GeneratorBundle\Definition\Schema\Service"
+                  serialized-name="service"/>
+        <property name="target"
+                  type="Graviton\GeneratorBundle\Definition\Schema\Target"
+                  serialized-name="target"/>
+    </class>
+</serializer>

@@ -8,6 +8,7 @@
         <parameter key="graviton_generator.definition.loader.strategy.file.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.dir.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.scan.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy</parameter>
+        <parameter key="graviton_generator.definition.loader.strategy.json.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_name_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper</parameter>
@@ -45,10 +46,28 @@
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.scan"/>
             </call>
+            <call method="addStrategy">
+                <argument type="service" id="graviton_generator.definition.loader.strategy.json"/>
+            </call>
         </service>
-        <service id="graviton_generator.definition.loader.strategy.file" class="%graviton_generator.definition.loader.strategy.file.class%"/>
-        <service id="graviton_generator.definition.loader.strategy.dir" class="%graviton_generator.definition.loader.strategy.dir.class%"/>
-        <service id="graviton_generator.definition.loader.strategy.scan" class="%graviton_generator.definition.loader.strategy.scan.class%">
+        <service id="graviton_generator.definition.loader.strategy.abstract" abstract="true">
+            <argument type="service" id="jms_serializer"/>
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.file"
+                 class="%graviton_generator.definition.loader.strategy.file.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.json"
+                 class="%graviton_generator.definition.loader.strategy.json.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.dir"
+                 class="%graviton_generator.definition.loader.strategy.dir.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
+        </service>
+        <service id="graviton_generator.definition.loader.strategy.scan"
+                 class="%graviton_generator.definition.loader.strategy.scan.class%"
+                 parent="graviton_generator.definition.loader.strategy.abstract">
             <call method="setScanDir">
                 <argument>%kernel.root_dir%/..</argument>
             </call>
@@ -75,6 +94,7 @@
 
         <service id="graviton_generator.command.generateresource" class="%graviton_generator.command.generateresource.class%">
             <argument type="service" id="graviton_generator.generator.resourcegenerator"/>
+            <argument type="service" id="graviton_generator.definition.loader"/>
             <tag name="console.command"/>
         </service>
 
@@ -103,9 +123,13 @@
 
         <service id="graviton_generator.command.generatedynamicbundle"
                  class="Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand">
-            <argument type="service" id="graviton_generator.command.generatedynamicbundle.container"/>
             <argument type="service" id="graviton_generator.command_runner"/>
             <argument type="service" id="graviton_generator.manipulator.xml_file"/>
+            <argument type="service" id="graviton_generator.definition.loader"/>
+            <argument type="service" id="jms_serializer"/>
+            <argument>%generator.bundlebundle.additions%</argument>
+            <argument>%generator.dynamicbundles.service.whitelist%</argument>
+
             <tag name="console.command" />
         </service>
 

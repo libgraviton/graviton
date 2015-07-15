@@ -103,7 +103,7 @@
     </service>
     <service id="graviton.i18n.translator" alias="translator"/>
     <service id="graviton.i18n.request" class="%graviton.i18n.request.class%" factory-service="request_stack" factory-method="getCurrentRequest"/>
-    <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%" scope="request">
+    <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%">
       <call method="setUtils">
         <argument type="service" id="graviton.18n.utils"/>
       </call>

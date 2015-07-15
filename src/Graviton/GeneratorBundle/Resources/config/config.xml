@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<container xmlns="http://symfony.com/schema/dic/services">
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:jms-serializer="jms_serializer">
 
     <parameters>
         <!-- this is the name of the mongo collection that is searched for bundle definitions -->
@@ -10,6 +11,17 @@
             {}
             ]]>
         </parameter>
+        <!-- additional bundles list in JSON format -->
+        <parameter key="generator.bundlebundle.additions"/>
+        <!-- service whitelist in JSON format -->
+        <parameter key="generator.dynamicbundles.service.whitelist"/>
     </parameters>
 
+    <jms-serializer:config>
+        <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
+            <jms-serializer:directory
+                    namespace_prefix="Graviton\GeneratorBundle"
+                    path="@GravitonGeneratorBundle/Resources/config/serializer"/>
+        </jms-serializer:metadata>
+    </jms-serializer:config>
 </container>

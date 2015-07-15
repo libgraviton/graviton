@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Field">
+        <property name="name"
+                  type="string"
+                  serialized-name="name"/>
+        <property name="type"
+                  type="string"
+                  serialized-name="type"/>
+        <property name="length"
+                  type="integer"
+                  serialized-name="length"/>
+        <property name="title"
+                  type="string"
+                  serialized-name="title"/>
+        <property name="description"
+                  type="string"
+                  serialized-name="description"/>
+        <property name="exposeAs"
+                  type="string"
+                  serialized-name="exposeAs"/>
+        <property name="readOnly"
+                  type="boolean"
+                  serialized-name="readOnly"/>
+        <property name="required"
+                  type="boolean"
+                  serialized-name="required"/>
+        <property name="translatable"
+                  type="boolean"
+                  serialized-name="translatable"/>
+        <property name="constraints"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Constraint&gt;"
+                  serialized-name="constraints"/>
+    </class>
+</serializer>

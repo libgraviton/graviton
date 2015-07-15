@@ -5,14 +5,16 @@
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DirStrategy implements StrategyInterface, DirStrategyInterface
+class DirStrategy extends AbstractStrategy
 {
     /**
      * may the strategy handle this input
@@ -27,42 +29,30 @@ class DirStrategy implements StrategyInterface, DirStrategyInterface
     }
 
     /**
-     * @param string|null $input input from command
-     *
-     * @return JsonDefinition[]
+     * @param mixed $input Input from command
+     * @return string[]
      */
-    public function load($input)
+    protected function getRawDefinitions($input)
     {
-        $results = array();
-        foreach ($this->getIterator($input) as $file) {
-            if ($this->isValid($input, $file)) {
-                $results[] = new JsonDefinition($file[0]);
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * @param string|null $input input from command
-     * @return \RecursiveRegexIterator
-     */
-    protected function getIterator($input)
-    {
-        $directory = new \RecursiveDirectoryIterator($input);
-        return new \RecursiveRegexIterator(
-            $directory,
-            '/.*\/[^_]\w+\.json$/i',
-            \RecursiveRegexIterator::GET_MATCH
+        return array_map(
+            function (SplFileInfo $file) {
+                return $file->getContents();
+            },
+            array_values(iterator_to_array($this->getFinder($input)))
         );
     }
 
     /**
-     * @param string|null $input input value
-     * @param array       $file  matched file
-     * @return boolean
+     * @param mixed $input Input from command
+     * @return Finder
      */
-    public function isValid($input, $file)
+    protected function getFinder($input)
     {
-        return true;
+        return (new Finder())
+            ->files()
+            ->in($input)
+            ->name('*.json')
+            ->notName('_*')
+            ->depth('== 0');
     }
 }

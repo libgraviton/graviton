@@ -7,14 +7,15 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
-use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
+use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -43,54 +44,70 @@ class GenerateDynamicBundleCommand extends Command
     private $bundleBundleClassfile;
 
     /** @var  array */
-    private $bundleBundleList = array();
+    private $bundleBundleList = [];
 
-    /** @var ContainerInterface */
-    private $container;
+    /** @var array|null */
+    private $bundleAdditions = null;
 
-    /** @var CommandRunner */
+    /** @var array|null */
+    private $serviceWhitelist = null;
+
+    /**
+     * @var CommandRunner
+     */
     private $runner;
-
-    /** @var \Graviton\GeneratorBundle\Definition\Loader\LoaderInterface */
+    /**
+     * @var LoaderInterface
+     */
     private $definitionLoader;
-
-    /** @var \Symfony\Component\HttpKernel\KernelInterface */
-    private $kernel;
-
-    /** @var XmlManipulator */
+    /**
+     * @var XmlManipulator
+     */
     private $xmlManipulator;
-
-    /** @var array */
-    private $bundleAdditions = [];
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
 
     /**
-     * @param ContainerInterface $container      Symfony dependency injection container
-     * @param CommandRunner      $runner         Runs a console command.
-     * @param XmlManipulator     $xmlManipulator Helper to change the content of a xml file.
-     * @param string|null        $name           The name of the command; passing null means it must be set in
-     *                                           configure()
+     * @param CommandRunner       $runner           Runs a console command.
+     * @param XmlManipulator      $xmlManipulator   Helper to change the content of a xml file.
+     * @param LoaderInterface     $definitionLoader JSON definition loader
+     * @param SerializerInterface $serializer       Serializer
+     * @param string|null         $bundleAdditions  Additional bundles list in JSON format
+     * @param string|null         $serviceWhitelist Service whitelist in JSON format
+     * @param string|null         $name             The name of the command; passing null means it must be set in
+     *                                              configure()
      */
     public function __construct(
-        ContainerInterface $container,
-        CommandRunner $runner,
-        XmlManipulator $xmlManipulator,
+        CommandRunner       $runner,
+        XmlManipulator      $xmlManipulator,
+        LoaderInterface     $definitionLoader,
+        SerializerInterface $serializer,
+        $bundleAdditions = null,
+        $serviceWhitelist = null,
         $name = null
     ) {
         parent::__construct($name);
 
         $this->runner = $runner;
         $this->xmlManipulator = $xmlManipulator;
+        $this->definitionLoader = $definitionLoader;
+        $this->serializer = $serializer;
 
-        // TODO [lapistano]: somethigg to get rid of in the future.
-        $this->container = $container;
-        $this->definitionLoader = $this->container->get('graviton_generator.definition.loader');
-        $this->kernel = $this->container->get('kernel');
-
-        if ($this->container->hasParameter('generator.bundlebundle.additions')) {
-            $this->bundleAdditions = json_decode(
-                $this->container->getParameter('generator.bundlebundle.additions'),
-                true
+        if ($bundleAdditions !== null && $bundleAdditions !== '') {
+            $this->bundleAdditions = $serializer->deserialize(
+                $bundleAdditions,
+                'array<string>',
+                'json'
+            );
+        }
+        if ($serviceWhitelist !== null && $serviceWhitelist !== '') {
+            $this->serviceWhitelist = $serializer->deserialize(
+                $serviceWhitelist,
+                'array<string>',
+                'json'
             );
         }
     }
@@ -182,14 +199,14 @@ class GenerateDynamicBundleCommand extends Command
 
             try {
                 $this->generateBundle($namespace, $bundleName, $input, $output);
-                $this->generateBundleBundleClass($this->bundleAdditions);
+                $this->generateBundleBundleClass();
                 $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
-                $this->generateMainResource($output, $jsonDef, $bundleName, $thisIdName);
+                $this->generateMainResource($output, $jsonDef, $bundleName);
                 $this->generateValidationXml($this->xmlManipulator, $this->getGeneratedValidationXmlPath($namespace));
 
                 $output->writeln('');
                 $output->writeln(
-                    sprintf('<info>Generated "%s" from file %s</info>', $bundleName, $jsonDef->getFilename())
+                    sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
                 );
                 $output->writeln('');
             } catch (\Exception $e) {
@@ -225,38 +242,25 @@ class GenerateDynamicBundleCommand extends Command
         $namespace
     ) {
         foreach ($jsonDef->getFields() as $field) {
-            if ($field->isHash() && !$field->isBagOfPrimitives()) {
-                // get json for this hash and save to temp file..
-                $tempPath = tempnam(sys_get_temp_dir(), 'jsg_');
-                file_put_contents($tempPath, json_encode($field->getDefFromLocal()));
+            if ($field instanceof JsonDefinitionHash && !$field->isBagOfPrimitives()) {
+                $hashDefinition = $field->getDefFromLocal();
 
                 $arguments = array(
                     'graviton:generate:resource',
                     '--entity' => $bundleName . ':' . $field->getClassName(),
                     '--format' => 'xml',
-                    '--json' => $tempPath,
-                    '--fields' => $this->getFieldString(new JsonDefinition($tempPath)),
+                    '--json' => $this->serializer->serialize($hashDefinition->getDef(), 'json'),
+                    '--fields' => $this->getFieldString($hashDefinition),
                     '--with-repository' => null,
                     '--no-controller' => 'true'
                 );
+                $this->generateResource($arguments, $output, $jsonDef);
 
-                try {
-                    $this->generateResource($arguments, $output, $jsonDef);
-
-                    // look for validation.xml and save it from over-writing ;-)
-                    // we basically get the xml content that was generated in order to save them later..
-                    $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-                    if (file_exists($validationXml)) {
-                        $xmlManipulator->addNodes(file_get_contents($validationXml));
-                    }
-
-                    // throw away the temp json ;-)
-                    unlink($tempPath);
-                } catch (\Exception $e) {
-                    // throw away the temp json ;-)
-                    unlink($tempPath);
-
-                    throw $e;
+                // look for validation.xml and save it from over-writing ;-)
+                // we basically get the xml content that was generated in order to save them later..
+                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+                if (file_exists($validationXml)) {
+                    $xmlManipulator->addNodes(file_get_contents($validationXml));
                 }
             }
         }
@@ -278,7 +282,7 @@ class GenerateDynamicBundleCommand extends Command
             $arguments = array(
                 'graviton:generate:resource',
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
-                '--json' => $jsonDef->getFilename(),
+                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
                 '--format' => 'xml',
                 '--fields' => $this->getFieldString($jsonDef),
                 '--with-repository' => null
@@ -301,7 +305,8 @@ class GenerateDynamicBundleCommand extends Command
     private function generateResource(array $arguments, OutputInterface $output, JsonDefinition $jsonDef)
     {
         // controller?
-        if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
+        $routerBase = $jsonDef->getRouterBase();
+        if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
             $arguments['--no-controller'] = 'true';
         }
 
@@ -350,17 +355,15 @@ class GenerateDynamicBundleCommand extends Command
      * It basically replaces the Bundle main class that got generated
      * by the Sensio bundle task and it includes all of our bundles there.
      *
-     * @param array $additions List of additional bundles
-     *
      * @return void
      */
-    private function generateBundleBundleClass($additions)
+    private function generateBundleBundleClass()
     {
         $dbbGenerator = new DynamicBundleBundleGenerator();
 
         // add optional bundles if defined by parameter.
-        if (!empty($additions) && is_array($additions)) {
-            $dbbGenerator->setAdditions($additions);
+        if ($this->bundleAdditions !== null) {
+            $dbbGenerator->setAdditions($this->bundleAdditions);
         }
 
         $dbbGenerator->generate(
@@ -419,25 +422,11 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function isNotWhitelistedController($routerBase)
     {
-        // if no whitelist is set, everything is whitelisted
-        if (!$this->container->hasParameter('generator.dynamicbundles.service.whitelist')) {
+        if ($this->serviceWhitelist === null) {
             return false;
         }
 
-        // if param is there our default is 'yes' - everything is not whitelisted by default.
-        $ret = true;
-
-        $whitelist = json_decode(
-            $this->container->getParameter('generator.dynamicbundles.service.whitelist'),
-            true
-        );
-
-        // whitelist it if in list..
-        if (is_array($whitelist) && in_array($routerBase, $whitelist)) {
-            $ret = false;
-        }
-
-        return $ret;
+        return !in_array($routerBase, $this->serviceWhitelist, true);
     }
 
     /**
