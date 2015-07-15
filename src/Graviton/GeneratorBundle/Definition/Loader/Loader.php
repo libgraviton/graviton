@@ -52,5 +52,7 @@ class Loader implements LoaderInterface
                 return $strategy->load($input);
             }
         }
+
+        return [];
     }
 }

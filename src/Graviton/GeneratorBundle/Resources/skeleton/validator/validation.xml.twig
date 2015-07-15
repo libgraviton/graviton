@@ -5,19 +5,19 @@
     <class name="{{ base }}Document\{{ document }}">
 
 {% if noIdField is not defined %}
-        <!--
+
         <property name="id">
-            <constraint name="NotBlank"/>
+            <constraint name='Graviton\RestBundle\Validator\Constraints\Id\IdInPost'/>
         </property>
-        -->
+
 {% endif %}
+
 
 {% for field in fields %}
 
 {# there is an xml error if we generate <property> without <constraint> child, that's why we build array first to check #}
 
     {% set thisCons = [] %}
-
     {% if field.required is defined and field.required == true %}
         {% if field.type != 'boolean' %}
             {%  set thisCons = thisCons|merge(['<constraint name="NotBlank"/>']) %}

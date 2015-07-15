@@ -33,7 +33,7 @@
       },
       {
         "name": "metadata.size",
-        "type": "integer",
+        "type": "int",
         "title": "File size",
         "description": "Size of file",
         "readOnly": true
@@ -43,6 +43,13 @@
         "type": "string",
         "title": "MIME Type",
         "description": "MIME-Type of file.",
+        "readOnly": true
+      },
+      {
+        "name": "metadata.createDate",
+        "type": "datetime",
+        "title": "Creation date",
+        "description": "Timestamp of file upload",
         "readOnly": true
       },
       {

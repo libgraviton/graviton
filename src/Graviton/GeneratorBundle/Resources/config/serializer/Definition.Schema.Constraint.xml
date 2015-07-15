@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Constraint">
+        <property name="name"
+                  type="string"
+                  serialized-name="name"/>
+        <property name="options"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\ConstraintOption&gt;"
+                  serialized-name="options"/>
+    </class>
+</serializer>

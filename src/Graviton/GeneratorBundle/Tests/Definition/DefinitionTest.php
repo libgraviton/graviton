@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use JMS\Serializer\SerializerBuilder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -46,51 +47,39 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $file Definition file path
+     * @return JsonDefinition
+     */
+    private function loadJsonDefinition($file)
+    {
+        $serializer = SerializerBuilder::create()
+            ->addDefaultHandlers()
+            ->addDefaultSerializationVisitors()
+            ->addDefaultDeserializationVisitors()
+            ->addMetadataDir(__DIR__.'/../../Resources/config/serializer', 'Graviton\\GeneratorBundle')
+            ->setCacheDir(sys_get_temp_dir())
+            ->setDebug(true)
+            ->build();
+
+        return new JsonDefinition(
+            $serializer->deserialize(
+                file_get_contents($file),
+                'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+                'json'
+            )
+        );
+    }
+
+    /**
      * invalid handling
      *
-     * @expectedException \RuntimeException
+     * @expectedException \JMS\Serializer\Exception\RuntimeException
      *
      * @return void
      */
     public function testInvalidHandling()
     {
-        new JsonDefinition($this->invalidPath);
-    }
-
-    /**
-     * inexistent
-     *
-     * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
-     *
-     * @return void
-     */
-    public function testInexistentFile()
-    {
-        new JsonDefinition($this->invalidPath.'suffix');
-    }
-
-    /**
-     * empty
-     *
-     * @expectedException \RuntimeException
-     *
-     * @return void
-     */
-    public function testEmptyFile()
-    {
-        new JsonDefinition($this->emptyPath);
-    }
-
-    /**
-     * string file
-     *
-     * @expectedException \RuntimeException
-     *
-     * @return void
-     */
-    public function testStringFile()
-    {
-        new JsonDefinition($this->stringPath);
+        $this->loadJsonDefinition($this->invalidPath);
     }
 
     /**
@@ -102,8 +91,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoId()
     {
-        $jsonDef = new JsonDefinition($this->noIdPath);
-        $jsonDef->getId();
+        $this->loadJsonDefinition($this->noIdPath)->getId();
     }
 
     /**
@@ -113,10 +101,9 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasics()
     {
-        $jsonDef = new JsonDefinition($this->fullDefPath);
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
         $this->assertEquals('Showcase', $jsonDef->getId());
-        $this->assertEquals($this->fullDefPath, $jsonDef->getFilename());
         $this->assertEquals('A service showcasing all of our generator features', $jsonDef->getDescription());
         $this->assertTrue($jsonDef->hasController());
         $this->assertTrue($jsonDef->hasFixtures());
@@ -130,7 +117,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testFull()
     {
-        $jsonDef = new JsonDefinition($this->fullDefPath);
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
 
         // we only assert what we didn't assert in testBasics()
@@ -158,7 +145,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinimal()
     {
-        $jsonDef = new JsonDefinition($this->minimalPath);
+        $jsonDef = $this->loadJsonDefinition($this->minimalPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
 
         $this->assertFalse($jsonDef->hasController());
@@ -183,7 +170,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testNamespaceSetting()
     {
-        $jsonDef = new JsonDefinition($this->fullDefPath);
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
 
         $this->assertNull($jsonDef->getNamespace());
         $jsonDef->setNamespace('Hans\Namespace');
@@ -200,7 +187,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testSubDocument()
     {
-        $jsonDef = new JsonDefinition($this->subDocumentPath);
+        $jsonDef = $this->loadJsonDefinition($this->subDocumentPath);
         $this->assertTrue($jsonDef->isSubDocument());
     }
 
@@ -211,7 +198,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testObjectNotationHandling()
     {
-        $jsonDef = new JsonDefinition($this->fullDefPath);
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
         $fields = $jsonDef->getFields();
 
         // array (x.[0-9].y)
@@ -238,18 +225,24 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRelations()
     {
-        $jsonDef = new JsonDefinition($this->relationsPath);
+        $jsonDef = $this->loadJsonDefinition($this->relationsPath);
         $relations = $jsonDef->getRelations();
 
         $this->assertEquals(2, count($relations));
 
-        $this->assertInstanceOf('stdClass', $relations['anotherInt']);
-        $this->assertEquals('embed', $relations['anotherInt']->type);
+        $this->assertInstanceOf(
+            'Graviton\\GeneratorBundle\\Definition\\Schema\\Relation',
+            $relations['anotherInt']
+        );
+        $this->assertEquals('embed', $relations['anotherInt']->getType());
         $field = $jsonDef->getField('anotherInt');
         $this->assertEquals($field::REL_TYPE_EMBED, $field->getRelType());
 
-        $this->assertInstanceOf('stdClass', $relations['someFloatyDouble']);
-        $this->assertEquals('ref', $relations['someFloatyDouble']->type);
+        $this->assertInstanceOf(
+            'Graviton\\GeneratorBundle\\Definition\\Schema\\Relation',
+            $relations['someFloatyDouble']
+        );
+        $this->assertEquals('ref', $relations['someFloatyDouble']->getType());
         $field = $jsonDef->getField('someFloatyDouble');
         $this->assertEquals($field::REL_TYPE_REF, $field->getRelType());
     }
@@ -261,7 +254,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testUriFixing()
     {
-        $jsonDef = new JsonDefinition($this->wrongUriPath);
+        $jsonDef = $this->loadJsonDefinition($this->wrongUriPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
         $this->assertEquals('/hans/showcase', $jsonDef->getRouterBase());
     }
@@ -273,7 +266,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function testRoles()
     {
-        $jsonDef = new JsonDefinition($this->rolesPath);
+        $jsonDef = $this->loadJsonDefinition($this->rolesPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
         $this->assertEquals(array('GRAVITON_USER'), $jsonDef->getRoles());
     }

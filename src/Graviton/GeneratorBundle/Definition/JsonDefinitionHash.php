@@ -135,18 +135,18 @@ class JsonDefinitionHash implements DefinitionElementInterface
     /**
      * Returns the definition as array..
      *
-     * @return string[] the definition
+     * @return array the definition
      */
     public function getDefAsArray()
     {
-        return array(
-            'exposedName' => $this->getName(),
-            'type' => $this->getType(),
-            'relType' => $this->getRelType(),
-            'doctrineType' => $this->getTypeDoctrine(),
-            'serializerType' => $this->getTypeSerializer(),
-            'isClassType' => true
-        );
+        return [
+            'exposedName'       => $this->getName(),
+            'type'              => $this->getType(),
+            'doctrineType'      => $this->getTypeDoctrine(),
+            'serializerType'    => $this->getTypeSerializer(),
+            'relType'           => $this->getRelType(),
+            'isClassType'       => $this->isClassType(),
+        ];
     }
 
     /**
@@ -255,28 +255,27 @@ class JsonDefinitionHash implements DefinitionElementInterface
      * the stuff from the json file. this is needed to generate a Document/Model
      * from this hash (generate a json file again)
      *
-     * @return array the definition of this hash in a standalone array ready to be json_encoded()
+     * @return JsonDefinition the definition of this hash in a standalone array ready to be json_encoded()
      */
     public function getDefFromLocal()
     {
-        $ret = array();
-        $ret['id'] = $this->getClassName();
-        $ret['target']['fields'] = array();
-        $ret['isSubDocument'] = true;
+        $definition = (new Schema\Definition())
+            ->setId($this->getClassName())
+            ->setIsSubDocument(true)
+            ->setTarget(new Schema\Target());
 
         foreach ($this->getFields() as $field) {
             $thisDef = clone $field->getDef();
-
-            $thisDef->name = str_replace($this->getName() . '.', '', $thisDef->name);
+            $thisDef->setName(str_replace($this->getName() . '.', '', $thisDef->getName()));
 
             if ($this->isArrayHash()) {
-                $thisDef->name = preg_replace('/([0-9]+)\./', '', $thisDef->name);
+                $thisDef->setName(preg_replace('/([0-9]+)\./', '', $thisDef->getName()));
             }
 
-            $ret['target']['fields'][] = (array) $thisDef;
+            $definition->getTarget()->addField($thisDef);
         }
 
-        return $ret;
+        return new JsonDefinition($definition);
     }
 
     /**

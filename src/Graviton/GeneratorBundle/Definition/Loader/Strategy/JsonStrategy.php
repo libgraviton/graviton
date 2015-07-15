@@ -1,16 +1,14 @@
 <?php
-/**
- * load JsonDefinition from a file
- */
-
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
 /**
+ * Load definition from JSON string
+ *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FileStrategy extends AbstractStrategy
+class JsonStrategy extends AbstractStrategy
 {
     /**
      * may the strategy handle this input
@@ -21,15 +19,15 @@ class FileStrategy extends AbstractStrategy
      */
     public function supports($input)
     {
-        return is_file($input);
+        return is_string($input) && strlen($input) > 0 && $input[0] === '{';
     }
 
     /**
      * @param mixed $input Input from command
      * @return string[]
      */
-    protected function getRawDefinitions($input)
+    public function getRawDefinitions($input)
     {
-        return [file_get_contents($input)];
+        return [$input];
     }
 }
