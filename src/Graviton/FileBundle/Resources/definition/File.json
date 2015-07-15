@@ -33,7 +33,7 @@
       },
       {
         "name": "metadata.size",
-        "type": "integer",
+        "type": "int",
         "title": "File size",
         "description": "Size of file",
         "readOnly": true
@@ -46,7 +46,7 @@
         "readOnly": true
       },
       {
-        "name": "metadata.cTime",
+        "name": "metadata.createDate",
         "type": "datetime",
         "title": "Creation date",
         "description": "Timestamp of file upload",
