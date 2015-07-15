@@ -8,7 +8,7 @@ namespace Graviton\CoreBundle\Tests\Controller;
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**
- * Basic functional test for /core/product.
+ * Functional test for /hans/showcase
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -19,12 +19,12 @@ class ShowcaseControllerTest extends RestTestCase
     /**
      * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/product/item';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/hans/showcase/item';
 
     /**
      * @const corresponding vendorized schema mime type
      */
-    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/product/collection';
+    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/hans/showcase/collection';
 
     /**
      * setup client and load fixtures
