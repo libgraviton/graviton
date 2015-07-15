@@ -61,7 +61,7 @@ class I18nSerializationListener
                     $getter = 'get'.ucfirst($field);
 
                     // only allow objects that we can update during postSerialize
-                    if (method_exists($object, $setter)) {
+                    if (method_exists($object, $setter) && $object->$getter() != null) {
                             $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
                             // remove untranslated field to make space for translation struct
                             $object->$setter(null);
