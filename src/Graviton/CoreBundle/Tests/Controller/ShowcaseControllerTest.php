@@ -71,16 +71,20 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
-     * insert a minimal set of data
+     * insert various formats to see if all works as expected
+     *
+     * @dataProvider postCreationDataProvider
+     *
+     * @param string $filename filename
      *
      * @return void
      */
-    public function testMinimalPost()
+    public function testPost($filename)
     {
         // showcase contains some datetime fields that we need rendered as UTC in the case of this test
         ini_set('date.timezone', 'UTC');
         $document = json_decode(
-            file_get_contents(dirname(__FILE__).'/../resources/showcase-minimal.json'),
+            file_get_contents($filename),
             false
         );
 
@@ -100,6 +104,21 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertJsonStringEqualsJsonString(
             json_encode($document),
             json_encode($result)
+        );
+    }
+
+    /**
+     * Provides test sets for the testPost() test.
+     *
+     * @return array
+     */
+    public function postCreationDataProvider()
+    {
+        $basePath = dirname(__FILE__).'/../resources/';
+
+        return array(
+            'minimal' => array($basePath.'showcase-minimal.json'),
+            'complete' => array($basePath.'showcase-complete.json')
         );
     }
 
