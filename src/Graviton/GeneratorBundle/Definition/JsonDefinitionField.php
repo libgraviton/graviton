@@ -115,7 +115,23 @@ class JsonDefinitionField implements DefinitionElementInterface
             'serializerType'    => $this->getTypeSerializer(),
             'relType'           => $this->getRelType(),
             'isClassType'       => $this->isClassType(),
-            'constraints'       => $this->getConstraints(),
+            'constraints'       => array_map(
+                function (Schema\Constraint $constraint) {
+                    return [
+                        'name'  => $constraint->getName(),
+                        'options'   => array_map(
+                            function (Schema\ConstraintOption $option) {
+                                return [
+                                    'name'  => $option->getName(),
+                                    'value' => $option->getValue(),
+                                ];
+                            },
+                            $constraint->getOptions()
+                        )
+                    ];
+                },
+                $this->getConstraints()
+            )
         ];
     }
 
