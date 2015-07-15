@@ -29,9 +29,10 @@ class BooleanStrictValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if ($value !== true && $value !== false) {
-            $this->context->buildViolation($constraint->message)
-                          ->setParameter('%string%', $value)
-                          ->addViolation();
+            $this->context->addViolation(
+                $constraint->message,
+                array('%string%' => $value)
+            );
         }
     }
 }

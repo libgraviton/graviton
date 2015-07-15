@@ -94,9 +94,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
-            ->createQueryBuilder()
-            // not specifying something to sort on leads to very wierd cases when fetching references
-            ->sort('_id');
+            ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
         $filter = $request->query->get('q');
@@ -111,9 +109,26 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
+
         // define offset and limit
-        $queryBuilder->skip($startAt);
-        $queryBuilder->limit($numberPerPage);
+        if (!array_key_exists('skip', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->skip($startAt);
+        }
+
+        if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->limit($numberPerPage);
+        } else {
+            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery()['limit'];
+        }
+
+        /**
+         * add a default sort on id if none was specified earlier
+         *
+         * not specifying something to sort on leads to very weird cases when fetching references
+         */
+        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->sort('_id');
+        }
 
         // run query
         $query = $queryBuilder->getQuery();
@@ -165,7 +180,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function updateRecord($documentId, $entity)
     {
         $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
+        $entity = $manager->merge($entity);
         $manager->flush();
 
         return $entity;

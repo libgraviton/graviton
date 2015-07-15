@@ -108,6 +108,66 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * rql limit() should be *never* overwritten by $_GET['perPage'] *or* default value
+     *
+     * @return void
+     */
+    public function testGetAppPagingWithRql()
+    {
+        // does limit work?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?q='.urlencode('limit(1)'));
+        $this->assertEquals(1, count($client->getResults()));
+
+        // rql before GET?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?perPage=2&q='.urlencode('limit(1)'));
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        // "page" override - rql before get
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?perPage=2&page=1&q='.urlencode('limit(1,1)'));
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            '<http://localhost/core/app?q=limit%281%2C1%29>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        // we're passing page=1, but should be on last.. so next and last should be identical
+        $nextAndLastUrl = 'http://localhost/core/app?q=limit%281%2C1%29&page=2&perPage=1';
+
+        $this->assertContains(
+            '<'.$nextAndLastUrl.'>; rel="next"',
+            explode(',', $response->headers->get('Link'))
+        );
+
+        $this->assertContains(
+            '<'.$nextAndLastUrl.'>; rel="last"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void
@@ -260,20 +320,22 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
 
+        $this->assertNull($client->getResults());
+        $this->assertNull($client->getResponse()->headers->get('Location'));
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/tablet');
         $response = $client->getResponse();
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-
-        $this->assertEquals('tablet', $results->id);
         $this->assertEquals('Tablet', $results->title->en);
         $this->assertFalse($results->showInMenu);
-
         $this->assertContains(
             '<http://localhost/core/app/tablet>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+
     }
 
     /**
@@ -318,10 +380,12 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
 
-        $response = $client->getResponse();
-        $results = $client->getResults();
+        // we sent a location header so we don't want a body
+        $this->assertNull($client->getResults());
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/tablet');
+        $results = $client->getResults();
 
         $this->assertEquals('tablet', $results->id);
         $this->assertEquals('New tablet', $results->title->en);
@@ -343,7 +407,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -409,14 +473,7 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertIsSchemaResponse($response);
-        $this->assertIsAppSchema($client->getResults());
         $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
-
-        $this->assertContains(
-            '<http://localhost/schema/core/app/item>; rel="canonical"',
-            explode(',', $response->headers->get('Link'))
-        );
     }
 
     /**
@@ -442,7 +499,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('OPTIONS', '/core/app');
+        $client->request('GET', '/schema/core/app/collection');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -462,9 +519,29 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertContains(
-            '<http://localhost/schema/core/app/collection>; rel="canonical"',
+            '<http://localhost/schema/core/app/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * ensure we have nice parse error output in rql parse failure
+     *
+     * @return void
+     */
+    public function testRqlSyntaxError()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/app?q=eq(name)');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $this->assertContains('syntax error in rql: ', $results->message);
+        $this->assertContains('Unexpected token', $results->message);
     }
 
     /**

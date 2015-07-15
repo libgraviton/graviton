@@ -14,6 +14,7 @@
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
+        <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
     </parameters>
     <services>
@@ -155,6 +156,9 @@
             <call method="addHeader">
                 <argument>Content-Language</argument>
             </call>
+            <call method="addHeader">
+                <argument>Location</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
@@ -164,6 +168,12 @@
             <argument type="service" id="graviton.core.utils"/>
             <argument type="service" id="logger"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <service id="graviton.rest.validator.readonly"
+                 class="%graviton.rest.validator.readonly.class%">
+            <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
+            <tag name="validator.constraint_validator" alias="graviton.rest.validator.readonly"/>
         </service>
     </services>
 </container>

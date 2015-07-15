@@ -81,6 +81,9 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             $this->loadFields($map, $ns, $bundle, $doc);
             $this->className = null;
         }
+        if (!isset($map['stdclass'])) {
+            $map['stdclass'] = [];
+        }
         $container->setParameter('graviton.document.form.type.document.field_map', $map);
     }
 
@@ -132,33 +135,33 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             if (in_array($fieldName, $translatableFields)) {
                 $type = 'translatable';
             } elseif ($doctrineType == 'hash') {
-                $type = 'form';
-                $options['allow_extra_fields'] = true;
+                $type = 'freeform';
             } elseif (array_key_exists($doctrineType, $this->typeMap)) {
                 $type = $this->typeMap[$doctrineType];
             }
             $map[$class][] = [$fieldName, $type, $options];
         }
-        $embedNodes = $xpath->query("//doctrine:embed-one");
+
+        $embedNodes = $xpath->query("//*[self::doctrine:embed-one or self::doctrine:reference-one]");
         foreach ($embedNodes as $node) {
             $fieldName = $node->getAttribute('field');
             $targetDocument = $node->getAttribute('target-document');
 
             $this->loadEmbeddedDocuments(
                 $map,
-                $xpath->query("//doctrine:embed-one[@field='".$fieldName."']"),
+                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
                 $targetDocument
             );
             $map[$class][] = [$fieldName, 'form', ['data_class' => $targetDocument]];
         }
-        $embedNodes = $xpath->query("//doctrine:embed-many");
+        $embedNodes = $xpath->query("////*[self::doctrine:embed-many or self::doctrine:reference-many]");
         foreach ($embedNodes as $node) {
             $fieldName = $node->getAttribute('field');
             $targetDocument = $node->getAttribute('target-document');
 
             $this->loadEmbeddedDocuments(
                 $map,
-                $xpath->query("//doctrine:embed-many[@field='".$fieldName."']"),
+                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
                 $targetDocument,
                 true
             );
