@@ -98,7 +98,7 @@ class FileControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
-        // re-fetch object from Location header
+        // re-fetch
         $client = static::createRestClient();
         $client->request('GET', sprintf('/file/%s', $data->id));
         $results = $client->getResults();
@@ -130,6 +130,12 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
         $this->assertEquals($data->links[1]->{'$ref'}, $results->links[1]->{'$ref'});
 
+        // check metadata
+        $this->assertEquals(18, $data->metadata->size);
+        $this->assertEquals('text/plain', $data->metadata->mime);
+        $this->assertEquals('test.txt', $data->metadata->filename);
+        $this->assertNotNull($data->metadata->createDate);
+
         // remove a link
         unset($data->links[1]);
 
@@ -156,12 +162,25 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEmpty($results->links);
 
+        // read only fields
         $data->metadata->size = 1;
+        $data->metadata->createDate = '1984-05-02T00:00:00+0000';
+        $data->metadata->mime = 'application/octet-stream';
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
-        $results = $client->getResults();
 
-        $this->assertEquals('The value "data.metadata.size" is read only.', $results[0]->message);
+        $expectedErrors = [];
+        $expectedErrors[0] = new \stdClass();
+        $expectedErrors[0]->property_path = "data.metadata.size";
+        $expectedErrors[0]->message = "The value \"data.metadata.size\" is read only.";
+        $expectedErrors[1] = new \stdClass();
+        $expectedErrors[1]->property_path = "data.metadata.mime";
+        $expectedErrors[1]->message = "The value \"data.metadata.mime\" is read only.";
+        $expectedErrors[2] = new \stdClass();
+        $expectedErrors[2]->property_path = "data.metadata.createDate";
+        $expectedErrors[2]->message = "The value \"data.metadata.createDate\" is read only.";
+
+        $this->assertEquals($expectedErrors, $client->getResults());
     }
 
     /**
