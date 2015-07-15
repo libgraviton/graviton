@@ -51,7 +51,14 @@ class ReadOnlyValidator extends ConstraintValidator
         if ($record) {
             $storedValue = $this->getStoredValueByPath($this->context->getPropertyPath(), $record);
 
-            if ($value !== $storedValue) {
+            if ($storedValue instanceof \DateTime) {
+                $value = new \DateTime($value);
+                $isEqual = ($storedValue == $value);
+            } else {
+                $isEqual = ($value === $storedValue);
+            }
+
+            if (!$isEqual) {
                 $this->context->addViolation(
                     $constraint->message,
                     array('%string%' => $this->context->getPropertyPath())
