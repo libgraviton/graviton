@@ -96,8 +96,20 @@ class GenerateDynamicBundleCommand extends Command
         $this->definitionLoader = $definitionLoader;
         $this->serializer = $serializer;
 
-        $this->bundleAdditions = $bundleAdditions === null ? null : json_decode($bundleAdditions, true);
-        $this->serviceWhitelist = $serviceWhitelist === null ? null : json_decode($serviceWhitelist, true);
+        if ($bundleAdditions !== null && $bundleAdditions !== '') {
+            $this->bundleAdditions = $serializer->deserialize(
+                $bundleAdditions,
+                'array<string>',
+                'json'
+            );
+        }
+        if ($serviceWhitelist !== null && $serviceWhitelist !== '') {
+            $this->serviceWhitelist = $serializer->deserialize(
+                $serviceWhitelist,
+                'array<string>',
+                'json'
+            );
+        }
     }
 
     /**
@@ -187,7 +199,7 @@ class GenerateDynamicBundleCommand extends Command
 
             try {
                 $this->generateBundle($namespace, $bundleName, $input, $output);
-                $this->generateBundleBundleClass($this->bundleAdditions);
+                $this->generateBundleBundleClass();
                 $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
                 $this->generateMainResource($output, $jsonDef, $bundleName);
                 $this->generateValidationXml($this->xmlManipulator, $this->getGeneratedValidationXmlPath($namespace));
@@ -342,17 +354,15 @@ class GenerateDynamicBundleCommand extends Command
      * It basically replaces the Bundle main class that got generated
      * by the Sensio bundle task and it includes all of our bundles there.
      *
-     * @param array $additions List of additional bundles
-     *
      * @return void
      */
-    private function generateBundleBundleClass($additions)
+    private function generateBundleBundleClass()
     {
         $dbbGenerator = new DynamicBundleBundleGenerator();
 
         // add optional bundles if defined by parameter.
-        if (!empty($additions) && is_array($additions)) {
-            $dbbGenerator->setAdditions($additions);
+        if ($this->bundleAdditions !== null) {
+            $dbbGenerator->setAdditions($this->bundleAdditions);
         }
 
         $dbbGenerator->generate(
@@ -411,7 +421,7 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function isNotWhitelistedController($routerBase)
     {
-        if (!is_array($this->serviceWhitelist)) {
+        if ($this->serviceWhitelist === null) {
             return false;
         }
 
