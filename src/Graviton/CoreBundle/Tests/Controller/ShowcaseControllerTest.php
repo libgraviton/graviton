@@ -1,6 +1,6 @@
 <?php
 /**
- * functional test for /core/product
+ * functional test for /hans/showcase
  */
 
 namespace Graviton\CoreBundle\Tests\Controller;
@@ -100,6 +100,35 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertJsonStringEqualsJsonString(
             json_encode($document),
             json_encode($result)
+        );
+    }
+
+    /**
+     * are extra fields denied?
+     *
+     * @return void
+     */
+    public function testExtraFieldPost()
+    {
+        ini_set('date.timezone', 'UTC');
+        $document = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-minimal.json'),
+            false
+        );
+        $document->extraFields = "nice field";
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $document);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        $expectedErrors = [];
+        $expectedErrors[0] = new \stdClass();
+        $expectedErrors[0]->property_path = "";
+        $expectedErrors[0]->message = "This form should not contain extra fields.";
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expectedErrors),
+            json_encode($client->getResults())
         );
     }
 }
