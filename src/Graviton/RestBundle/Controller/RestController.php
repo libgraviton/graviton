@@ -610,7 +610,7 @@ class RestController
     {
         list($service) = explode(':', $request->attributes->get('_controller'));
         $this->formType->initialize($service);
-        return $this->formFactory->create($this->formType);
+        return $this->formFactory->create($this->formType, null, array('method'=> $request->getMethod()));
     }
 
     /**
