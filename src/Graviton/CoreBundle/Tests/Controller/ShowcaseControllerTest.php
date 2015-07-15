@@ -77,6 +77,8 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testMinimalPost()
     {
+        // showcase contains some datetime fields that we need rendered as UTC in the case of this test
+        ini_set('date.timezone', 'UTC');
         $document = json_decode(
             file_get_contents(dirname(__FILE__).'/../resources/showcase-minimal.json'),
             false
