@@ -305,7 +305,8 @@ class GenerateDynamicBundleCommand extends Command
     private function generateResource(array $arguments, OutputInterface $output, JsonDefinition $jsonDef)
     {
         // controller?
-        if (!$jsonDef->hasController() || $this->isNotWhitelistedController($jsonDef->getRouterBase())) {
+        $routerBase = $jsonDef->getRouterBase();
+        if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
             $arguments['--no-controller'] = 'true';
         }
 
