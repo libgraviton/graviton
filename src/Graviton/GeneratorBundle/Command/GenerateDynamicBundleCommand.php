@@ -9,7 +9,6 @@ use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
-use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
 use JMS\Serializer\SerializerInterface;

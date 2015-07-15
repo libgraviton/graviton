@@ -23,7 +23,7 @@ abstract class AbstractStrategy implements StrategyInterface
     private $serializer;
 
     /**
-     * @param mixed $input Input from command
+     * @param string|null $input Input from command
      * @return string[]
      */
     abstract protected function getRawDefinitions($input);
