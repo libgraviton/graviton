@@ -36,7 +36,7 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
-     * See how our missing fields are explained to us
+     * see how our missing fields are explained to us
      *
      * @return void
      */
@@ -63,9 +63,6 @@ class ShowcaseControllerTest extends RestTestCase
         $expectedErrors[3] = new \stdClass();
         $expectedErrors[3]->property_path = "data.contact.value";
         $expectedErrors[3]->message = "This value should not be blank.";
-        $expectedErrors[4] = new \stdClass();
-        $expectedErrors[4]->property_path = "data.contactCode.text";
-        $expectedErrors[4]->message = "This value should not be blank.";
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -74,29 +71,33 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
-     * check if all fixtures are returned on GET
+     * insert a minimal set of data
      *
      * @return void
      */
     public function testMinimalPost()
     {
-        $fullDocument = json_decode(
+        $document = json_decode(
             file_get_contents(dirname(__FILE__).'/../resources/showcase-minimal.json'),
-            true
+            false
         );
 
         $client = static::createRestClient();
-        $client->post('/hans/showcase', $fullDocument);
+        $client->post('/hans/showcase', $document);
         $response = $client->getResponse();
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
 
-        $response = $client->getResults();
+        $result = $client->getResults();
+
+        // unset id as we cannot compare and don't care
+        $this->assertNotNull($result->id);
+        unset($result->id);
 
         $this->assertJsonStringEqualsJsonString(
-            json_encode($fullDocument),
-            json_encode($response)
+            json_encode($document),
+            json_encode($result)
         );
     }
 }

@@ -1,15 +1,21 @@
 {
   "anotherInt": 6555488894525,
   "testField": {"en": "a test string"},
+  "modificationDate": "1984-05-02T00:00:00+0000",
   "someOtherField": {"en": "another good ol' test string"},
+  "aBoolean": false,
+  "optionalBoolean": false,
   "contact": {
     "type": "home",
     "value": "joe@example.com",
     "protocol": "mailto",
     "uri": "mailto:joe@example.com"
   },
+  "contacts": [],
+  "nestedCustomers": [],
   "contactCode": {
-    "someDate": "2012-12-21T00:00:00Z",
-    "text": {"en": "Ad mailing campaign 2012"}
-  }
+    "someDate": "1984-05-01T00:00:00+0000"
+  },
+  "nestedArray": [],
+  "nestedApps": []
 }
