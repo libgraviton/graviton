@@ -167,6 +167,10 @@ final class RestUtils implements RestUtilsInterface
                 if ($route->getRequirement('_method') != 'OPTIONS') {
                     return false;
                 }
+                // ignore all schema routes
+                if (strpos($route->getPath(), '/schema') === 0) {
+                    return false;
+                }
                 if ($route->getPath() == '/') {
                     return false;
                 }

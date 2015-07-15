@@ -413,21 +413,11 @@ class RestController
             $this->getModel()->updateRecord($id, $record);
         }
 
+        // Set status code
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
-
-        // Set status code
-        $response->setStatusCode(Response::HTTP_OK);
-
-        $routeName = $request->get('_route');
-        if (substr($routeName, 0, -4) == '.put') {
-            $routeName = substr($routeName, 0, -3) . 'get';
-        }
-
-        $response->headers->set(
-            'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
-        );
 
         return $response;
     }

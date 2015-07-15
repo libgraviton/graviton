@@ -320,15 +320,11 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
 
-        $response = $client->getResponse();
-        $results = $client->getResults();
-
-        // we sent a location header so we don't want a body
-        $this->assertNull($results);
-        $this->assertContains('/core/app', $response->headers->get('Location'));
+        $this->assertNull($client->getResults());
+        $this->assertNull($client->getResponse()->headers->get('Location'));
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', '/core/app/tablet');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -384,15 +380,11 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
 
-        $response = $client->getResponse();
-        $results = $client->getResults();
-
         // we sent a location header so we don't want a body
-        $this->assertNull($results);
-        $this->assertContains('/core/app', $response->headers->get('Location'));
+        $this->assertNull($client->getResults());
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', '/core/app/tablet');
         $results = $client->getResults();
 
         $this->assertEquals('tablet', $results->id);
@@ -415,7 +407,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
     /**

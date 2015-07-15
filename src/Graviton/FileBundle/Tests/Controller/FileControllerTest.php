@@ -96,14 +96,11 @@ class FileControllerTest extends RestTestCase
         $data->metadata->filename = $filename;
 
         $client = static::createRestClient();
-
         $client->put(sprintf('/file/%s', $data->id), $data);
-
-        $response = $client->getResponse();
 
         // re-fetch object from Location header
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', sprintf('/file/%s', $data->id));
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
@@ -124,11 +121,10 @@ class FileControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
-        $response = $client->getResponse();
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', sprintf('/file/%s', $data->id));
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
@@ -139,10 +135,9 @@ class FileControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
-        $response = $client->getResponse();
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', sprintf('/file/%s', $data->id));
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
@@ -152,11 +147,10 @@ class FileControllerTest extends RestTestCase
         $data->links = [];
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
-        $response = $client->getResponse();
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', sprintf('/file/%s', $data->id));
 
         $results = $client->getResults();
 
@@ -268,10 +262,9 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
-        $response = $client->getResponse();
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', sprintf('/file/%s', $retData->id));
 
         $retData = $client->getResults();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
