@@ -76,7 +76,7 @@ interface DefinitionElementInterface
     /**
      * Returns the definition as array
      *
-     * @return string[] definition
+     * @return array definition
      */
     public function getDefAsArray();
 

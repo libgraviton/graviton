@@ -135,7 +135,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     /**
      * Returns the definition as array..
      *
-     * @return string[] the definition
+     * @return array the definition
      */
     public function getDefAsArray()
     {
