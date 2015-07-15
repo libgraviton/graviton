@@ -6,17 +6,30 @@
   "aBoolean": false,
   "optionalBoolean": true,
   "someFloatyDouble": 11.7,
-  "modificationDate": "1984-05-02T00:00:00Z",
+  "modificationDate": "1984-05-02T00:00:00+0000",
+  "contactCode": {
+    "someDate": "1984-05-01T00:00:00+0000"
+  },
   "contact": {
     "type": "home",
     "value": "joe@example.com",
     "protocol": "mailto",
     "uri": "mailto:joe@example.com"
   },
-  "contactCode": {
-    "someDate": "2012-12-21T00:00:00Z",
-    "text": "Ad mailing campaign 2012"
-  },
+  "contacts": [
+    {
+      "type": "home2",
+      "value": "joe2@example.com",
+      "protocol": "mailto",
+      "uri": "mailto:joe2@example.com"
+    },
+    {
+      "type": "home3",
+      "value": "joe3@example.com",
+      "protocol": "mailto",
+      "uri": "mailto:joe3@example.com"
+    }
+  ],
   "nestedArray": [
     {"name": "element one"},
     {"name": "element two"}
@@ -46,6 +59,18 @@
     },
     {
       "$ref": "http://localhost/core/app/admin"
+    }
+  ],
+  "nestedCustomers": [
+    {
+      "id": "1234",
+      "name": "Hans",
+      "$ref": "http://localhost/core/app/admin"
+    },
+    {
+      "id": "1235",
+      "name": "Franz",
+      "$ref": "http://localhost/core/app/tablet"
     }
   ]
 }
