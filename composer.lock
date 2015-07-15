@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ccdf41d0bcf22082d98a27433718a052",
+    "hash": "2b3e9eb1ccb13960c1f4f6c71d5cbbaa",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -54,16 +54,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "2.8.12",
+            "version": "2.8.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "69cf65438b99051ce4d599f1611dea5d50551b3f"
+                "reference": "cc3f63f695e15e4b1e6ee0e090c32bfde78115a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/69cf65438b99051ce4d599f1611dea5d50551b3f",
-                "reference": "69cf65438b99051ce4d599f1611dea5d50551b3f",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cc3f63f695e15e4b1e6ee0e090c32bfde78115a4",
+                "reference": "cc3f63f695e15e4b1e6ee0e090c32bfde78115a4",
                 "shasum": ""
             },
             "require": {
@@ -113,7 +113,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-06-24 21:23:21"
+            "time": "2015-07-14 20:48:28"
         },
         {
             "name": "behat/transliterator",
@@ -2943,16 +2943,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.14.0",
+            "version": "1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "b287fbbe1ca27847064beff2bad7fb6920bf08cc"
+                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/b287fbbe1ca27847064beff2bad7fb6920bf08cc",
-                "reference": "b287fbbe1ca27847064beff2bad7fb6920bf08cc",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/dc5150cc608f2334c72c3b6a553ec9668a4156b0",
+                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0",
                 "shasum": ""
             },
             "require": {
@@ -2989,7 +2989,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.14.x-dev"
+                    "dev-master": "1.15.x-dev"
                 }
             },
             "autoload": {
@@ -3015,7 +3015,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-06-19 13:29:54"
+            "time": "2015-07-12 13:54:09"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
@@ -3708,16 +3708,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.6.9",
+            "version": "v2.6.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "b06539573ccf64dd3a62852685f052553d02c5ba"
+                "reference": "e246af5f3bdf64fa5a85936ee78e3574e094cf5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/b06539573ccf64dd3a62852685f052553d02c5ba",
-                "reference": "b06539573ccf64dd3a62852685f052553d02c5ba",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/e246af5f3bdf64fa5a85936ee78e3574e094cf5f",
+                "reference": "e246af5f3bdf64fa5a85936ee78e3574e094cf5f",
                 "shasum": ""
             },
             "require": {
@@ -3821,7 +3821,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2015-05-29 22:55:07"
+            "time": "2015-07-13 09:34:32"
         },
         {
             "name": "twig/extensions",
@@ -3979,16 +3979,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "79e2faa69c63c787abc5dd91914d82671fa8911e"
+                "reference": "556edb67f6b7ae516a3ab56922329f797eae16ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/79e2faa69c63c787abc5dd91914d82671fa8911e",
-                "reference": "79e2faa69c63c787abc5dd91914d82671fa8911e",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/556edb67f6b7ae516a3ab56922329f797eae16ba",
+                "reference": "556edb67f6b7ae516a3ab56922329f797eae16ba",
                 "shasum": ""
             },
             "type": "library",
@@ -4003,10 +4003,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.3.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.4.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-05-28 09:51:08"
+            "time": "2015-07-15 08:38:38"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -4299,16 +4299,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.1.7",
+            "version": "2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "07e27765596d72c378a6103e80da5d84e802f1e4"
+                "reference": "6044546998c7627ab997501a3d0db972b3db9790"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/07e27765596d72c378a6103e80da5d84e802f1e4",
-                "reference": "07e27765596d72c378a6103e80da5d84e802f1e4",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6044546998c7627ab997501a3d0db972b3db9790",
+                "reference": "6044546998c7627ab997501a3d0db972b3db9790",
                 "shasum": ""
             },
             "require": {
@@ -4357,7 +4357,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-06-30 06:52:35"
+            "time": "2015-07-13 11:25:58"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -4539,16 +4539,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.7.6",
+            "version": "4.7.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "0ebabb4cda7d066be8391dfdbaf57fe70ac9a99b"
+                "reference": "9b97f9d807b862c2de2a36e86690000801c85724"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0ebabb4cda7d066be8391dfdbaf57fe70ac9a99b",
-                "reference": "0ebabb4cda7d066be8391dfdbaf57fe70ac9a99b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9b97f9d807b862c2de2a36e86690000801c85724",
+                "reference": "9b97f9d807b862c2de2a36e86690000801c85724",
                 "shasum": ""
             },
             "require": {
@@ -4607,7 +4607,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-06-30 06:53:57"
+            "time": "2015-07-13 11:28:34"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
