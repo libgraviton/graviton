@@ -220,6 +220,7 @@ class AppControllerTest extends RestTestCase
     public function testPostApp()
     {
         $testApp = new \stdClass;
+        $testApp->id = 'glorious-app';
         $testApp->title = new \stdClass;
         $testApp->title->en = 'new Test App';
         $testApp->showInMenu = true;
@@ -231,7 +232,7 @@ class AppControllerTest extends RestTestCase
 
         // we sent a location header so we don't want a body
         $this->assertNull($results);
-        $this->assertContains('/core/app', $response->headers->get('Location'));
+        $this->assertEquals('/core/app/glorious-app', $response->headers->get('Location'));
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
@@ -239,6 +240,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertEquals('glorious-app', $results->id);
         $this->assertEquals('new Test App', $results->title->en);
         $this->assertTrue($results->showInMenu);
         $this->assertContains(
