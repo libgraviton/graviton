@@ -109,5 +109,10 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements Loa
                 $map[$mapName] = array_merge($fields, $map[$mapName]);
             }
         }
+
+        // make em all unique
+        foreach ($map as $name => $fields) {
+            $map[$name] = array_unique($fields);
+        }
     }
 }
