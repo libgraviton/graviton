@@ -142,8 +142,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
         $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
-        $testModule->name = new \stdClass;
-        $testModule->name->en = 'Name';
+        $testModule->name = 'Name';
         $testModule->path = '/test/test';
         $testModule->order = 50;
 
@@ -220,8 +219,7 @@ class ModuleControllerTest extends RestTestCase
         $putModule->key = 'test';
         $putModule->app = new \stdClass;
         $putModule->app->{'$ref'} = 'http://localhost/core/app/test';
-        $putModule->name = new \stdClass();
-        $putModule->name->en = 'testerle';
+        $putModule->name = 'testerle';
         $putModule->path = '/test/test';
         $putModule->order = 500;
 
@@ -289,11 +287,19 @@ class ModuleControllerTest extends RestTestCase
         $client->request('GET', '/schema/core/module/collection');
         $results = $client->getResults();
 
-        $this->assertEquals('object', $results->items->properties->name->type);
-        $this->assertEquals('translatable', $results->items->properties->name->format);
-
         $this->assertEquals('object', $results->items->properties->app->type);
         $this->assertEquals('string', $results->items->properties->app->properties->{'$ref'}->type);
         $this->assertEquals('extref', $results->items->properties->app->properties->{'$ref'}->format);
+
+        $service = $results->items->properties->service;
+        $this->assertEquals('array', $service->type);
+        $this->assertEquals('string', $service->items->properties->name->type);
+        $this->assertEquals('string', $service->items->properties->description->type);
+        $this->assertEquals('object', $service->items->properties->gui->type);
+        $this->assertEquals('object', $service->items->properties->service->type);
+        $this->assertEquals('string', $service->items->properties->gui->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $service->items->properties->gui->properties->{'$ref'}->format);
+        $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $service->items->properties->service->properties->{'$ref'}->format);
     }
 }
