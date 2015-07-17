@@ -4,20 +4,16 @@ namespace Graviton\GeneratorBundle\Definition;
 /**
  * A single field as specified in the json definition
  *
- * @todo     if this json format serves in more places; move this class
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
 class JsonDefinitionField implements DefinitionElementInterface
 {
-    const TYPE_EXTREF = 'extref';
-
     /**
      * Typemap from our source types to doctrine types
      */
-    private $doctrineTypeMap = array(
+    private $doctrineTypeMap = [
         self::TYPE_STRING => 'string',
         self::TYPE_INTEGER => 'int',
         self::TYPE_LONG => 'int',
@@ -27,9 +23,9 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'object',
         self::TYPE_EXTREF => 'extref',
-    );
+    ];
 
-    private $serializerTypeMap = array(
+    private $serializerTypeMap = [
         self::TYPE_STRING => 'string',
         self::TYPE_INTEGER => 'integer',
         self::TYPE_LONG => 'integer',
@@ -39,21 +35,18 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'array',
         self::TYPE_EXTREF => 'string',
-    );
+    ];
 
     /**
-     * This is a ref to the parent hash of this field (if any)
-     *
-     * @var JsonDefinitionHash
+     * @var string
      */
-    private $parentHash;
-
+    private $name;
     /**
      * Our definition
      *
      * @var Schema\Field
      */
-    private $def;
+    private $definition;
 
     /**
      * How the relation type of this field is (if applicable to the type)
@@ -65,21 +58,23 @@ class JsonDefinitionField implements DefinitionElementInterface
     /**
      * Constructor
      *
-     * @param Schema\Field $def Definition
+     * @param string       $name       Field name
+     * @param Schema\Field $definition Definition
      */
-    public function __construct(Schema\Field $def)
+    public function __construct($name, Schema\Field $definition)
     {
-        $this->def = $def;
+        $this->name = $name;
+        $this->definition = $definition;
     }
 
     /**
-     * Returns the definition
+     * Returns the field definition
      *
      * @return Schema\Field definition
      */
     public function getDef()
     {
-        return $this->def;
+        return $this->definition;
     }
 
     /**
@@ -89,7 +84,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getName()
     {
-        return $this->def->getName();
+        return $this->name;
     }
 
     /**
@@ -100,16 +95,16 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getDefAsArray()
     {
         return [
-            'name'              => $this->def->getName(),
-            'type'              => $this->def->getType(),
-            'length'            => $this->def->getLength(),
-            'title'             => $this->def->getTitle(),
-            'description'       => $this->def->getDescription(),
-            'exposeAs'          => $this->def->getExposeAs(),
-            'readOnly'          => $this->def->getReadOnly(),
-            'required'          => $this->def->getRequired(),
-            'translatable'      => $this->def->getTranslatable(),
+            'length'            => $this->definition->getLength(),
+            'title'             => $this->definition->getTitle(),
+            'description'       => $this->definition->getDescription(),
+            'exposeAs'          => $this->definition->getExposeAs(),
+            'readOnly'          => $this->definition->getReadOnly(),
+            'required'          => $this->definition->getRequired(),
+            'translatable'      => $this->definition->getTranslatable(),
 
+            'name'              => $this->getName(),
+            'type'              => $this->getType(),
             'exposedName'       => $this->getExposedName(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
@@ -143,17 +138,15 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getTypeDoctrine()
     {
         if ($this->isClassType()) {
-            $ret = $this->getClassName();
-        } else {
-            if (isset($this->doctrineTypeMap[$this->getType()])) {
-                $ret = $this->doctrineTypeMap[$this->getType()];
-            } else {
-                // our fallback default
-                $ret = $this->doctrineTypeMap[self::TYPE_STRING];
-            }
+            return $this->getClassName();
         }
 
-        return $ret;
+        if (isset($this->doctrineTypeMap[$this->getType()])) {
+            return $this->doctrineTypeMap[$this->getType()];
+        }
+
+        // our fallback default
+        return $this->doctrineTypeMap[self::TYPE_STRING];
     }
 
     /**
@@ -164,7 +157,9 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getExposedName()
     {
-        return $this->def->getExposeAs() === null ? $this->def->getName() : $this->def->getExposeAs();
+        return $this->definition->getExposeAs() === null ?
+            $this->definition->getName() :
+            $this->definition->getExposeAs();
     }
 
     /**
@@ -174,14 +169,11 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        $thisType = $this->def->getType();
         if ($this->isClassType()) {
-            $thisType = $this->getClassName();
-        } else {
-            $thisType = strtolower($thisType);
+            return $this->getClassName();
         }
 
-        return $thisType;
+        return strtolower($this->definition->getType());
     }
 
     /**
@@ -192,21 +184,20 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getTypeSerializer()
     {
         if ($this->isClassType()) {
-            $ret = $this->getClassName();
-            // collection?
-            if (substr($ret, -2) == '[]') {
-                $ret = 'array<'.substr($ret, 0, -2).'>';
+            $className = $this->getClassName();
+            if (substr($className, -2) === '[]') {
+                return 'array<'.substr($className, 0, -2).'>';
             }
-        } else {
-            if (isset($this->serializerTypeMap[$this->getType()])) {
-                $ret = $this->serializerTypeMap[$this->getType()];
-            } else {
-                // our fallback default
-                $ret = $this->serializerTypeMap[self::TYPE_STRING];
-            }
+
+            return $className;
         }
 
-        return $ret;
+        if (isset($this->serializerTypeMap[$this->getType()])) {
+            return $this->serializerTypeMap[$this->getType()];
+        }
+
+        // our fallback default
+        return $this->serializerTypeMap[self::TYPE_STRING];
     }
 
     /**
@@ -216,12 +207,11 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getClassName()
     {
-        $ret = null;
         if ($this->isClassType()) {
-            $ret = str_replace('class:', '', $this->def->getType());
+            return str_replace('class:', '', $this->definition->getType());
         }
 
-        return $ret;
+        return null;
     }
 
     /**
@@ -231,7 +221,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function isClassType()
     {
-        return preg_match('/^class\:/', $this->def->getType()) > 0;
+        return strpos($this->definition->getType(), 'class:') === 0;
     }
 
     /**
@@ -241,7 +231,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getLength()
     {
-        return $this->def->getLength();
+        return $this->definition->getLength();
     }
 
     /**
@@ -251,7 +241,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getConstraints()
     {
-        return $this->def->getConstraints();
+        return $this->definition->getConstraints();
     }
 
     /**
@@ -261,49 +251,9 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getDescription()
     {
-        return $this->def->getDescription() === null ? '' : $this->def->getDescription();
-    }
-
-    /**
-     * Returns the parent hash (if any)
-     *
-     * @return JsonDefinitionHash The parent hash
-     */
-    public function getParentHash()
-    {
-        return $this->parentHash;
-    }
-
-    /**
-     * Sets the parent hash
-     *
-     * @param JsonDefinitionHash $parentHash The parent hash
-     *
-     * @return void
-     */
-    public function setParentHash(JsonDefinitionHash $parentHash)
-    {
-        $this->parentHash = $parentHash;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return bool
-     */
-    public function isField()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return bool
-     */
-    public function isHash()
-    {
-        return false;
+        return $this->definition->getDescription() === null ?
+            '' :
+            $this->definition->getDescription();
     }
 
     /**

@@ -10,122 +10,47 @@ namespace Graviton\GeneratorBundle\Definition;
  */
 class JsonDefinitionHash implements DefinitionElementInterface
 {
-
     /**
-     * Array of fields..
-     *
-     * @var JsonDefinitionField[]
-     */
-    private $fields = array();
-
-    /**
-     * Name of this hash
-     *
-     * @var string
+     * @var string Name of this hash
      */
     private $name;
-
     /**
-     * The parent
-     *
      * @var JsonDefinition
      */
     private $parent;
-
     /**
-     * Whether this is an array hash, so an array of ourselves.
-     *
-     * @var bool true if yes
+     * @var DefinitionElementInterface[] Array of fields..
      */
-    private $isArrayHash = false;
-
-
-    /**
-     * How the relation type of this hash to his parent is..
-     *
-     * @var string rel type
-     */
-    private $relType = self::REL_TYPE_REF;
+    private $fields = [];
 
     /**
      * Constructor
      *
-     * @param string                $name   Name of this hash
-     * @param JsonDefinitionField[] $fields Fields of the hash
+     * @param string                       $name   Name of this hash
+     * @param JsonDefinition               $parent Parent definiton
+     * @param DefinitionElementInterface[] $fields Fields of the hash
      */
-    public function __construct($name, array $fields)
+    public function __construct($name, JsonDefinition $parent, array $fields)
     {
         $this->name = $name;
-
-        // sets ourselves as parent on our fields
-        foreach ($fields as $key => $field) {
-            $fields[$key]->setParentHash($this);
-        }
-
+        $this->parent = $parent;
         $this->fields = $fields;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the hash name
      *
-     * @return bool
+     * @return string Name
      */
-    public function isField()
+    public function getName()
     {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return bool
-     */
-    public function isHash()
-    {
-        return true;
-    }
-
-    /**
-     * Gets the rel type
-     *
-     * @return string
-     */
-    public function getRelType()
-    {
-        return $this->relType;
-    }
-
-    /**
-     * Sets the rel type
-     *
-     * @param string $relType rel type
-     *
-     * @return void
-     */
-    public function setRelType($relType)
-    {
-        $this->relType = $relType;
-    }
-
-    /**
-     * Returns the types of all fields
-     *
-     * @return string[] the types..
-     */
-    public function getFieldTypes()
-    {
-        $ret = array();
-        foreach ($this->getFields() as $field) {
-            $ret[] = $field->getType();
-        }
-
-        return $ret;
+        return $this->name;
     }
 
     /**
      * Returns this hash' fields..
      *
-     * @return array|JsonDefinitionField[]
+     * @return DefinitionElementInterface[]
      */
     public function getFields()
     {
@@ -144,8 +69,8 @@ class JsonDefinitionHash implements DefinitionElementInterface
             'type'              => $this->getType(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
-            'relType'           => $this->getRelType(),
-            'isClassType'       => $this->isClassType(),
+            'relType'           => self::REL_TYPE_EMBED,
+            'isClassType'       => true,
         ];
     }
 
@@ -166,14 +91,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getTypeDoctrine()
     {
-        $ret = $this->getClassName(true);
-
-        // make sure we're recognized as array ;-)
-        if ($this->isArrayHash()) {
-            $ret .= '[]';
-        }
-
-        return $ret;
+        return $this->getClassName(true);
     }
 
     /**
@@ -183,70 +101,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getTypeSerializer()
     {
-        $ret = $this->getClassName(true);
-
-        // make sure we're recognized as array ;-)
-        if ($this->isArrayHash()) {
-            $ret = 'array<'.$ret.'>';
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Returns whether this is a class type (= not a primitive)
-     *
-     * @return boolean true if yes
-     */
-    public function isClassType()
-    {
-        return true;
-    }
-
-    /**
-     * Well.. a "bag of primitives" is basically if we're having an array
-     * (isArrayHash()=true) and we're only having primitive types
-     * in our fields with NO keys(!)
-     * get the difference: a hash forms an object with index keys
-     * (i.e. {"hans": "fred"}, BUT with the same type and NO keys
-     * we have a bag of primitives, ie. [3, 4, 5]
-     *
-     * @return boolean true if yes
-     */
-    public function isBagOfPrimitives()
-    {
-        $ret = true;
-        foreach ($this->getFields() as $key => $field) {
-            if (!preg_match('([0-9]+)', $key)) {
-                $ret = false;
-                break;
-            }
-        }
-
-        return $ret;
-
-    }
-
-    /**
-     * true if this is an array hash
-     *
-     * @return boolean
-     */
-    public function isArrayHash()
-    {
-        return $this->isArrayHash;
-    }
-
-    /**
-     * set if this is an array hash
-     *
-     * @param boolean $isArrayHash if array hash or not
-     *
-     * @return boolean
-     */
-    public function setIsArrayHash($isArrayHash)
-    {
-        $this->isArrayHash = $isArrayHash;
+        return $this->getClassName(true);
     }
 
     /**
@@ -257,7 +112,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @return JsonDefinition the definition of this hash in a standalone array ready to be json_encoded()
      */
-    public function getDefFromLocal()
+    public function getJsonDefinition()
     {
         $definition = (new Schema\Definition())
             ->setId($this->getClassName())
@@ -265,17 +120,40 @@ class JsonDefinitionHash implements DefinitionElementInterface
             ->setTarget(new Schema\Target());
 
         foreach ($this->getFields() as $field) {
-            $thisDef = clone $field->getDef();
-            $thisDef->setName(str_replace($this->getName() . '.', '', $thisDef->getName()));
-
-            if ($this->isArrayHash()) {
-                $thisDef->setName(preg_replace('/([0-9]+)\./', '', $thisDef->getName()));
+            foreach ($this->processFieldDefinitionsRecursive($field) as $definitions) {
+                $definition->getTarget()->addField($definitions);
             }
-
-            $definition->getTarget()->addField($thisDef);
         }
 
         return new JsonDefinition($definition);
+    }
+
+    /**
+     * Method getFieldDefinitionsRecursive
+     *
+     * @param DefinitionElementInterface $field
+     * @return Schema\Field[]
+     */
+    private function processFieldDefinitionsRecursive(DefinitionElementInterface $field)
+    {
+        if ($field instanceof JsonDefinitionField) {
+            $clone = clone $field->getDef();
+            $clone->setName(preg_replace('/^'.preg_quote($this->name, '/').'\.(\d+\.)*/', '', $clone->getName()));
+
+            return [$clone];
+        } elseif ($field instanceof JsonDefinitionArray) {
+            return $this->processFieldDefinitionsRecursive($field->getElement());
+        } elseif ($field instanceof JsonDefinitionHash) {
+            return array_reduce(
+                $field->fields,
+                function (array $subfields, DefinitionElementInterface $subfield) {
+                    return array_merge($subfields, $this->processFieldDefinitionsRecursive($subfield));
+                },
+                []
+            );
+        }
+
+        throw new \InvalidArgumentException(sprintf('Unknown field type "%s"', get_class($field)));
     }
 
     /**
@@ -289,66 +167,11 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getClassName($fq = false)
     {
-        if (!$this->isBagOfPrimitives()) {
-            $ret = ucfirst($this->getName());
-            if (!is_null($this->getParentName())) {
-                $ret = $this->getParentName() . $ret;
-            }
-
-            if (true === $fq) {
-                $ret = $this->getParent()->getNamespace().'\Document\\'.$ret;
-            }
-        } else {
-            // ok, we're a bag of primitives.. (ie int[] or string[])
-            // let's just get the first field and take that
-            $thisFields = $this->getFields();
-            $firstField = array_shift($thisFields);
-
-            $ret = $firstField->getType();
+        $className = ucfirst($this->parent->getId()).ucfirst($this->getName());
+        if ($fq) {
+            $className = $this->parent->getNamespace().'\\Document\\'.$className;
         }
 
-        return $ret;
-    }
-
-    /**
-     * Returns the hash name
-     *
-     * @return string Name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Returns the parent
-     *
-     * @return JsonDefinition
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Sets the parent
-     *
-     * @param JsonDefinition $parent Parent
-     *
-     * @return void
-     */
-    public function setParent($parent)
-    {
-        $this->parent = $parent;
-    }
-
-    /**
-     * Gets the name of parent definition element
-     *
-     * @return string parent name
-     */
-    public function getParentName()
-    {
-        return $this->getParent()->getId();
+        return $className;
     }
 }

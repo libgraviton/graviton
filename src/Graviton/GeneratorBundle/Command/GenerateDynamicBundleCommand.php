@@ -7,6 +7,7 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
@@ -241,27 +242,23 @@ class GenerateDynamicBundleCommand extends Command
         $bundleName,
         $namespace
     ) {
-        foreach ($jsonDef->getFields() as $field) {
-            if ($field instanceof JsonDefinitionHash && !$field->isBagOfPrimitives()) {
-                $hashDefinition = $field->getDefFromLocal();
+        foreach ($this->getSubResources($jsonDef) as $subRecource) {
+            $arguments = [
+                'graviton:generate:resource',
+                '--entity' => $bundleName . ':' . $subRecource->getId(),
+                '--format' => 'xml',
+                '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
+                '--fields' => $this->getFieldString($subRecource),
+                '--with-repository' => null,
+                '--no-controller' => 'true',
+            ];
+            $this->generateResource($arguments, $output, $jsonDef);
 
-                $arguments = array(
-                    'graviton:generate:resource',
-                    '--entity' => $bundleName . ':' . $field->getClassName(),
-                    '--format' => 'xml',
-                    '--json' => $this->serializer->serialize($hashDefinition->getDef(), 'json'),
-                    '--fields' => $this->getFieldString($hashDefinition),
-                    '--with-repository' => null,
-                    '--no-controller' => 'true'
-                );
-                $this->generateResource($arguments, $output, $jsonDef);
-
-                // look for validation.xml and save it from over-writing ;-)
-                // we basically get the xml content that was generated in order to save them later..
-                $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-                if (file_exists($validationXml)) {
-                    $xmlManipulator->addNodes(file_get_contents($validationXml));
-                }
+            // look for validation.xml and save it from over-writing ;-)
+            // we basically get the xml content that was generated in order to save them later..
+            $validationXml = $this->getGeneratedValidationXmlPath($namespace);
+            if (file_exists($validationXml)) {
+                $xmlManipulator->addNodes(file_get_contents($validationXml));
             }
         }
     }
@@ -290,6 +287,31 @@ class GenerateDynamicBundleCommand extends Command
 
             $this->generateResource($arguments, $output, $jsonDef);
         }
+    }
+
+    /**
+     * Get all sub hashes
+     *
+     * @param JsonDefinition $definition
+     * @return JsonDefinition[]
+     */
+    protected function getSubResources(JsonDefinition $definition) {
+        $resources = [];
+        foreach ($definition->getFields() as $field) {
+            while ($field instanceof JsonDefinitionArray) {
+                $field = $field->getElement();
+            }
+            if (!$field instanceof JsonDefinitionHash) {
+                continue;
+            }
+
+            $subDefiniton = $field->getJsonDefinition();
+
+            $resources = array_merge($this->getSubResources($subDefiniton), $resources);
+            $resources[] = $subDefiniton;
+        }
+
+        return $resources;
     }
 
     /**

@@ -1,0 +1,55 @@
+{
+  "id": "FieldTest",
+  "description": "",
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar"
+      },
+
+      {
+        "name": "hash.abc",
+        "type": "integer"
+      },
+      {
+        "name": "hash.def",
+        "type": "boolean"
+      },
+
+      {
+        "name": "array.0",
+        "type": "string"
+      },
+
+      {
+        "name": "arrayarray.0.0.0",
+        "type": "integer"
+      },
+
+      {
+        "name": "arrayhash.0.mno",
+        "type": "string"
+      },
+      {
+        "name": "arrayhash.0.pqr",
+        "type": "float"
+      },
+
+      {
+        "name": "deep.0.b.0.c.d.e",
+        "type": "varchar"
+      },
+      {
+        "name": "deep.0.c",
+        "type": "string"
+      },
+      {
+        "name": "deep.0.d.0",
+        "type": "integer"
+      }
+    ]
+  }
+}

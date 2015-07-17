@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Tests\Command;
 
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use lapistano\ProxyObject\ProxyBuilder;
 use Sensio\Bundle\GeneratorBundle\Tests\Command\GenerateBundleCommandTest as BaseTest;
 use Symfony\Component\Console\Application;
@@ -75,26 +76,6 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     }
 
     /**
-     * @dataProvider definitionElementConfigProvider
-     * @return void
-     */
-    public function testGenerateSubResourcesWithElementDefinition()
-    {
-        $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
-            ->getMockForAbstractClass();
-
-        $isHash = false;
-        $jsonField = $this->getDefinitionElementDouble($isHash);
-        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
-
-        $this->executeGenerateSubresources(
-            $outputDouble,
-            $this->getJsonDefDouble(array($jsonField)),
-            $xmlManipulatorDouble
-        );
-    }
-
-    /**
      * @return array
      */
     public function definitionElementConfigProvider()
@@ -110,87 +91,117 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     public function testGenerateSubResourcesFieldNoFields()
     {
-        $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
-            ->getMockForAbstractClass();
-        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
+        $this->executeGenerateSubresources(
+            $this->getJsonDefDouble([])
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testGenerateSubResourcesWithoutHashes()
+    {
+        $valueField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionField')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $arrayField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionArray')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->executeGenerateSubresources(
-            $outputDouble,
-            $this->getJsonDefDouble(),
-            $xmlManipulatorDouble
+            $this->getJsonDefDouble([$valueField, $arrayField])
         );
     }
 
     /**
      * @return void
      */
-    public function testGenerateSubResources()
+    public function testGenerateDeepSubResources()
     {
-        $jsonField = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinitionHash')
-            ->disableOriginalConstructor()
-            ->setMethods(['isBagOfPrimitives'])
-            ->getMock();
-        $jsonField->expects($this->any())
-            ->method('isBagOfPrimitives')
-            ->will($this->returnValue(true));
-
-        $loaderDouble = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\Loader\\LoaderInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(['load'])
-            ->getMockForAbstractClass();
-        $loaderDouble
-            ->expects($this->never())
-            ->method('load');
-
-        $serializerDouble = $this->getMockBuilder('JMS\\Serializer\\SerializerInterface')
-            ->setMethods(['serialize', 'deserialize'])
-            ->getMockForAbstractClass();
-        $serializerDouble
-            ->expects($this->never())
-            ->method('serialize');
-
-        $kernelDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
-            ->getMock();
-
-        $processDouble = $this->getMockBuilder('\Symfony\Component\Process\Process')
+        $subSubHashField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionField')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $runnerDouble = $this->getMockBuilder('\Graviton\GeneratorBundle\CommandRunner')
-            ->setConstructorArgs(array($kernelDouble, $processDouble))
+        $subHashFieldA = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionField')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subHashFieldB = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionHash')
+            ->disableOriginalConstructor()
+            ->setMethods(['getJsonDefinition'])
+            ->getMock();
+        $subHashFieldB
+            ->expects($this->exactly(2))
+            ->method('getJsonDefinition')
+            ->willReturn(
+                $this->getJsonDefDouble([$subSubHashField])
+            );
+
+        $subArrayhashFieldA = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionField')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subArrayhashFieldB = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionField')
+            ->disableOriginalConstructor()
             ->getMock();
 
-        $outputDouble = $this->getMockBuilder('\Symfony\Component\Console\Output\OutputInterface')
-            ->getMockForAbstractClass();
+        $hashField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionHash')
+            ->disableOriginalConstructor()
+            ->setMethods(['getJsonDefinition'])
+            ->getMock();
+        $hashField
+            ->expects($this->exactly(2))
+            ->method('getJsonDefinition')
+            ->willReturn(
+                $this->getJsonDefDouble([$subHashFieldA, $subHashFieldB])
+            );
 
+        $arrayHashField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionHash')
+            ->disableOriginalConstructor()
+            ->setMethods(['getJsonDefinition'])
+            ->getMock();
+        $arrayHashField
+            ->expects($this->exactly(2))
+            ->method('getJsonDefinition')
+            ->willReturn(
+                $this->getJsonDefDouble([$subArrayhashFieldA, $subArrayhashFieldB])
+            );
+
+        $arrayField = $this->getMockBuilder('Graviton\\GeneratorBundle\\Definition\\JsonDefinitionArray')
+            ->disableOriginalConstructor()
+            ->setMethods(['getElement'])
+            ->getMock();
+        $arrayField
+            ->expects($this->once())
+            ->method('getElement')
+            ->willReturn(
+                $arrayHashField
+            );
+
+        $command = $this->getProxyBuilder('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand')
+            ->disableOriginalConstructor()
+            ->setMethods(['getSubResources'])
+            ->getProxy();
+        $this->assertEquals(
+            [
+                $subHashFieldB->getJsonDefinition(),
+                $hashField->getJsonDefinition(),
+                $arrayHashField->getJsonDefinition(),
+            ],
+            $command->getSubResources(
+                $this->getJsonDefDouble([$arrayField, $hashField])
+            )
+        );
+    }
+
+    /**
+     * @param JsonDefinition $jsonDefDouble test double for the json configuration
+     * @return void
+     */
+    private function executeGenerateSubresources(JsonDefinition $jsonDefDouble)
+    {
+        $outputDouble = $this->getMock('Symfony\\Component\\Console\\Output\\OutputInterface');
         $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
-        $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
-            ->setConstructorArgs([$runnerDouble, $xmlManipulatorDouble, $loaderDouble, $serializerDouble])
-            ->setMethods(['generateSubResources'])
-            ->getProxy();
-
-        $command->generateSubResources(
-            $outputDouble,
-            $this->getJsonDefDouble(array($jsonField)),
-            $xmlManipulatorDouble,
-            'MyTestBundle',
-            '\MyNamespace\Test'
-        );
-
-    }
-
-    /**
-     * @param object $outputDouble         test double for the output stgream
-     * @param object $jsonDefDouble        test double for the json configuration
-     * @param object $xmlManipulatorDouble test double for the manipulator
-     *
-     * @throws \Exception
-     * @return void
-     */
-    public function executeGenerateSubresources($outputDouble, $jsonDefDouble, $xmlManipulatorDouble)
-    {
-        $command = $this->getProxyBuilder('\Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand')
+        $command = $this->getProxyBuilder('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand')
             ->disableOriginalConstructor()
             ->setMethods(['generateSubResources'])
             ->getProxy();
@@ -199,7 +210,6 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             $outputDouble,
             $jsonDefDouble,
             $xmlManipulatorDouble,
-            array(),
             'MyTestBundle',
             '\MyNamespace\Test'
         );
@@ -218,13 +228,13 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     /**
      * @param array $fields set of field to be configured
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return JsonDefinition
      */
-    public function getJsonDefDouble(array $fields = [])
+    public function getJsonDefDouble(array $fields)
     {
         $jsonDefDouble = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinition')
             ->disableOriginalConstructor()
-            ->setMethods(array('getFields'))
+            ->setMethods(['getFields'])
             ->getMock();
 
         $jsonDefDouble
@@ -233,41 +243,5 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->willReturn($fields);
 
         return $jsonDefDouble;
-    }
-
-    /**
-     * @param bool $isHash            Indicates if the double imitates a hash value
-     * @param bool $isBagOfPrimitives Indicates if the double imitates a set of primitive var types
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    public function getDefinitionElementDouble($isHash = false, $isBagOfPrimitives = false)
-    {
-        $jsonField = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(array('isHash', 'isBagOfPrimitives', 'getClassName', 'getDefFromLocal'))
-            ->getMockForAbstractClass();
-
-        if (true === $isHash) {
-            $jsonField
-                ->expects($this->once())
-                ->method('isBagOfPrimitives')
-                ->willReturn($isBagOfPrimitives);
-
-            if (false === $isBagOfPrimitives) {
-                $jsonField
-                    ->expects($this->once())
-                    ->method('getDefFromLocal')
-                    ->willReturn(
-                        [
-                            "id" => "myClass",
-                            "target" => ["fields" => []],
-                            'isSubDocument' => true
-                        ]
-                    );
-            }
-        }
-
-        return $jsonField;
     }
 }
