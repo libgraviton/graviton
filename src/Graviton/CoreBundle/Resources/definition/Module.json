@@ -17,9 +17,11 @@
         "order": 1,
         "service": [
           {
-            "description" : "...",
             "name": {
               "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
             },
             "gui": {
               "$ref": "/core/product/1"
@@ -42,9 +44,11 @@
         "order": 2,
         "service": [
           {
-            "description" : "...",
             "name": {
               "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
             },
             "gui": {
               "$ref": "/core/product/3"
@@ -54,9 +58,11 @@
             }
           },
           {
-            "description" : "...",
             "name": {
               "en": "2nd admin GUI"
+            },
+            "description" : {
+              "en": "..."
             },
             "gui": {
               "$ref": "/core/product/5"
@@ -163,7 +169,8 @@
         "type": "varchar",
         "title": "Service description",
         "description": "Displayed service description",
-        "required": true
+        "required": false,
+        "translatable": true
       },
       {
         "name": "service.0.gui.ref",

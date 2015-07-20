@@ -343,7 +343,8 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('array', $service->type);
         $this->assertEquals('object', $service->items->properties->name->type);
         $this->assertEquals('string', $service->items->properties->name->properties->en->type);
-        $this->assertEquals('string', $service->items->properties->description->type);
+        $this->assertEquals('object', $service->items->properties->description->type);
+        $this->assertEquals('string', $service->items->properties->description->properties->en->type);
         $this->assertEquals('object', $service->items->properties->gui->type);
         $this->assertEquals('object', $service->items->properties->service->type);
         $this->assertEquals('string', $service->items->properties->gui->properties->{'$ref'}->type);

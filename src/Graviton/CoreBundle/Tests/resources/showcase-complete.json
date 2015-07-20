@@ -8,7 +8,8 @@
   "someFloatyDouble": 11.7,
   "modificationDate": "1984-05-02T00:00:00+0000",
   "contactCode": {
-    "someDate": "1984-05-01T00:00:00+0000"
+    "someDate": "1984-05-01T00:00:00+0000",
+    "text": {"en": "Some Text"}
   },
   "contact": {
     "type": "home",
