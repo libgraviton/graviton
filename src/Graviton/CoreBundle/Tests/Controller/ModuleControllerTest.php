@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /core/module.
@@ -271,6 +272,51 @@ class ModuleControllerTest extends RestTestCase
 
         $client->request('GET', '/core/module/'.$moduleId);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * Test extref transformation
+     *
+     * @return void
+     */
+    public function testExtRefTransformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $results = $client->getResults();
+        $this->assertCount(1, $results);
+
+        $module = $results[0];
+        $this->assertEquals('investment', $module->key);
+        $this->assertEquals('http://localhost/core/app/tablet', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/3', $module->service[0]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/4', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/5', $module->service[1]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/6', $module->service[1]->service->{'$ref'});
+
+
+        $module->app->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+
+        $client = static::createRestClient();
+        $client->put('/core/module/'.$module->id, $module);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/'.$module->id);
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $module = $client->getResults();
+        $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->service->{'$ref'});
     }
 
     /**
