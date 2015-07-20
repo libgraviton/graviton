@@ -414,7 +414,10 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         /** @var JsonDefinitionArray $field */
         $field = $definition->getField('arrayhash');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field->getElement());
+
+        /** @var JsonDefinitionHash $element */
+        $element = $field->getElement();
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
 
         $this->assertEquals(
             (new JsonDefinition(
@@ -435,13 +438,16 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                             )
                     )
             )),
-            $field->getElement()->getJsonDefinition()
+            $element->getJsonDefinition()
         );
 
         /** @var JsonDefinitionArray $field */
         $field = $definition->getField('deep');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field->getElement());
+
+        /** @var JsonDefinitionHash $element */
+        $element = $field->getElement();
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
 
         $this->assertEquals(
             new JsonDefinition(
@@ -467,7 +473,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                             )
                     )
             ),
-            $field->getElement()->getJsonDefinition()
+            $element->getJsonDefinition()
         );
     }
 }
