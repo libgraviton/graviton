@@ -107,16 +107,6 @@ class JsonDefinition
     }
 
     /**
-     * Gets class prefix id
-     *
-     * @return string
-     */
-    public function getClassPrefix()
-    {
-        return $this->getId();
-    }
-
-    /**
      * Sets the namespace
      *
      * @param string $namespace namespace
