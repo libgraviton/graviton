@@ -292,7 +292,7 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Get all sub hashes
      *
-     * @param JsonDefinition $definition
+     * @param JsonDefinition $definition Main JSON definition
      * @return JsonDefinition[]
      */
     protected function getSubResources(JsonDefinition $definition)
