@@ -6,6 +6,10 @@
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
+use Graviton\GeneratorBundle\Definition\Schema;
 use JMS\Serializer\SerializerBuilder;
 
 /**
@@ -15,9 +19,6 @@ use JMS\Serializer\SerializerBuilder;
  */
 class DefinitionTest extends \PHPUnit_Framework_TestCase
 {
-
-    private $emptyPath;
-    private $stringPath;
     private $fullDefPath;
     private $minimalPath;
     private $noIdPath;
@@ -26,6 +27,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     private $subDocumentPath;
     private $relationsPath;
     private $rolesPath;
+    private $nestedFieldPath;
 
     /**
      * setup
@@ -34,8 +36,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->emptyPath = __DIR__.'/resources/test-empty.json';
-        $this->stringPath = __DIR__.'/resources/test-string.json';
         $this->fullDefPath = __DIR__.'/resources/test-full.json';
         $this->minimalPath = __DIR__.'/resources/test-minimal.json';
         $this->noIdPath = __DIR__.'/resources/test-noid.json';
@@ -44,6 +44,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->subDocumentPath = __DIR__.'/resources/test-minimal-sub.json';
         $this->relationsPath = __DIR__.'/resources/test-minimal-relations.json';
         $this->rolesPath = __DIR__.'/resources/test-roles.json';
+        $this->nestedFieldPath = __DIR__.'/resources/test-nested-fields.json';
     }
 
     /**
@@ -192,33 +193,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * dot notation
-     *
-     * @return void
-     */
-    public function testObjectNotationHandling()
-    {
-        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
-        $fields = $jsonDef->getFields();
-
-        // array (x.[0-9].y)
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $fields['nestedArray']);
-        $this->assertTrue($fields['nestedArray']->isArrayHash());
-        $this->assertEquals($jsonDef, $fields['nestedArray']->getParent());
-        $this->assertEquals('hash', $fields['nestedArray']->getType());
-        $this->assertEquals('\Document\ShowcaseNestedArray[]', $fields['nestedArray']->getTypeDoctrine());
-        $this->assertEquals('array<\Document\ShowcaseNestedArray>', $fields['nestedArray']->getTypeSerializer());
-
-        // object (x.y)
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $fields['contactCode']);
-        $this->assertTrue($fields['contactCode']->isHash());
-        $this->assertFalse($fields['contactCode']->isArrayHash());
-        $this->assertEquals('hash', $fields['contactCode']->getType());
-        $this->assertEquals('\Document\ShowcaseContactCode', $fields['contactCode']->getTypeDoctrine());
-        $this->assertEquals('\Document\ShowcaseContactCode', $fields['contactCode']->getTypeSerializer());
-    }
-
-    /**
      * relations
      *
      * @return void
@@ -269,5 +243,237 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $jsonDef = $this->loadJsonDefinition($this->rolesPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
         $this->assertEquals(array('GRAVITON_USER'), $jsonDef->getRoles());
+    }
+
+    /**
+     * @return void
+     */
+    public function testNestedFields()
+    {
+        $definition = $this->loadJsonDefinition($this->nestedFieldPath);
+        $this->assertEquals(
+            [
+                'id' => new JsonDefinitionField(
+                    'id',
+                    (new Schema\Field())
+                        ->setName('id')
+                        ->setType('varchar')
+                ),
+                'hash' => new JsonDefinitionHash(
+                    'hash',
+                    $definition,
+                    [
+                        'abc' => new JsonDefinitionField(
+                            'abc',
+                            (new Schema\Field())
+                                ->setName('hash.abc')
+                                ->setType('integer')
+                        ),
+                        'def' => new JsonDefinitionField(
+                            'def',
+                            (new Schema\Field())
+                                ->setName('hash.def')
+                                ->setType('boolean')
+                        ),
+                    ]
+                ),
+                'array' => new JsonDefinitionArray(
+                    'array',
+                    new JsonDefinitionField(
+                        'array',
+                        (new Schema\Field())
+                            ->setName('array.0')
+                            ->setType('string')
+                    )
+                ),
+                'arrayarray' => new JsonDefinitionArray(
+                    'arrayarray',
+                    new JsonDefinitionArray(
+                        'arrayarray',
+                        new JsonDefinitionArray(
+                            'arrayarray',
+                            new JsonDefinitionField(
+                                'arrayarray',
+                                (new Schema\Field())
+                                    ->setName('arrayarray.0.0.0')
+                                    ->setType('integer')
+                            )
+                        )
+                    )
+                ),
+                'arrayhash' => new JsonDefinitionArray(
+                    'arrayhash',
+                    new JsonDefinitionHash(
+                        'arrayhash',
+                        $definition,
+                        [
+                            'mno' => new JsonDefinitionField(
+                                'mno',
+                                (new Schema\Field())
+                                    ->setName('arrayhash.0.mno')
+                                    ->setType('string')
+                            ),
+                            'pqr' => new JsonDefinitionField(
+                                'pqr',
+                                (new Schema\Field())
+                                    ->setName('arrayhash.0.pqr')
+                                    ->setType('float')
+                            ),
+                        ]
+                    )
+                ),
+                'deep' => new JsonDefinitionArray(
+                    'deep',
+                    new JsonDefinitionHash(
+                        'deep',
+                        $definition,
+                        [
+                            'b' => new JsonDefinitionArray(
+                                'b',
+                                new JsonDefinitionHash(
+                                    'b',
+                                    $definition,
+                                    [
+                                        'c' => new JsonDefinitionHash(
+                                            'c',
+                                            $definition,
+                                            [
+                                                'd' => new JsonDefinitionHash(
+                                                    'd',
+                                                    $definition,
+                                                    [
+                                                        'e' => new JsonDefinitionField(
+                                                            'e',
+                                                            (new Schema\Field())
+                                                                ->setName('deep.0.b.0.c.d.e')
+                                                                ->setType('varchar')
+                                                        ),
+                                                    ]
+                                                ),
+                                            ]
+                                        ),
+                                    ]
+                                )
+                            ),
+                            'c' => new JsonDefinitionField(
+                                'c',
+                                (new Schema\Field())
+                                    ->setName('deep.0.c')
+                                    ->setType('string')
+                            ),
+                            'd' => new JsonDefinitionArray(
+                                'd',
+                                new JsonDefinitionField(
+                                    'd',
+                                    (new Schema\Field())
+                                        ->setName('deep.0.d.0')
+                                        ->setType('integer')
+                                )
+                            ),
+                        ]
+                    )
+                ),
+            ],
+            $definition->getFields()
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testHashToJsonDefinition()
+    {
+        $definition = $this->loadJsonDefinition($this->nestedFieldPath);
+
+        /** @var JsonDefinitionHash $field */
+        $field = $definition->getField('hash');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field);
+
+        $this->assertEquals(
+            (new JsonDefinition(
+                (new Schema\Definition())
+                    ->setId('FieldTestHash')
+                    ->setIsSubDocument(true)
+                    ->setTarget(
+                        (new Schema\Target())
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('abc')
+                                    ->setType('integer')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('def')
+                                    ->setType('boolean')
+                            )
+                    )
+            )),
+            $field->getJsonDefinition()
+        );
+
+        /** @var JsonDefinitionArray $field */
+        $field = $definition->getField('arrayhash');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
+
+        /** @var JsonDefinitionHash $element */
+        $element = $field->getElement();
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
+
+        $this->assertEquals(
+            (new JsonDefinition(
+                (new Schema\Definition())
+                    ->setId('FieldTestArrayhash')
+                    ->setIsSubDocument(true)
+                    ->setTarget(
+                        (new Schema\Target())
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('mno')
+                                    ->setType('string')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('pqr')
+                                    ->setType('float')
+                            )
+                    )
+            )),
+            $element->getJsonDefinition()
+        );
+
+        /** @var JsonDefinitionArray $field */
+        $field = $definition->getField('deep');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
+
+        /** @var JsonDefinitionHash $element */
+        $element = $field->getElement();
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
+
+        $this->assertEquals(
+            new JsonDefinition(
+                (new Schema\Definition())
+                    ->setId('FieldTestDeep')
+                    ->setIsSubDocument(true)
+                    ->setTarget(
+                        (new Schema\Target())
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('b.0.c.d.e')
+                                    ->setType('varchar')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('c')
+                                    ->setType('string')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('d.0')
+                                    ->setType('integer')
+                            )
+                    )
+            ),
+            $element->getJsonDefinition()
+        );
     }
 }

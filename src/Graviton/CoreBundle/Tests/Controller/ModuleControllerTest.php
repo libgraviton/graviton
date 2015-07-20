@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /core/module.
@@ -142,8 +143,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
         $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
-        $testModule->name = new \stdClass;
-        $testModule->name->en = 'Name';
+        $testModule->name = 'Name';
         $testModule->path = '/test/test';
         $testModule->order = 50;
 
@@ -220,8 +220,7 @@ class ModuleControllerTest extends RestTestCase
         $putModule->key = 'test';
         $putModule->app = new \stdClass;
         $putModule->app->{'$ref'} = 'http://localhost/core/app/test';
-        $putModule->name = new \stdClass();
-        $putModule->name->en = 'testerle';
+        $putModule->name = 'testerle';
         $putModule->path = '/test/test';
         $putModule->order = 500;
 
@@ -276,6 +275,51 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
+     * Test extref transformation
+     *
+     * @return void
+     */
+    public function testExtRefTransformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $results = $client->getResults();
+        $this->assertCount(1, $results);
+
+        $module = $results[0];
+        $this->assertEquals('investment', $module->key);
+        $this->assertEquals('http://localhost/core/app/tablet', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/3', $module->service[0]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/4', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/5', $module->service[1]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/6', $module->service[1]->service->{'$ref'});
+
+
+        $module->app->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+
+        $client = static::createRestClient();
+        $client->put('/core/module/'.$module->id, $module);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/'.$module->id);
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $module = $client->getResults();
+        $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->service->{'$ref'});
+    }
+
+    /**
      * test getting collection schema.
      * i avoid retesting everything (covered in /core/app), this test only
      * asserts translatable & extref representation
@@ -289,11 +333,19 @@ class ModuleControllerTest extends RestTestCase
         $client->request('GET', '/schema/core/module/collection');
         $results = $client->getResults();
 
-        $this->assertEquals('object', $results->items->properties->name->type);
-        $this->assertEquals('translatable', $results->items->properties->name->format);
-
         $this->assertEquals('object', $results->items->properties->app->type);
         $this->assertEquals('string', $results->items->properties->app->properties->{'$ref'}->type);
         $this->assertEquals('extref', $results->items->properties->app->properties->{'$ref'}->format);
+
+        $service = $results->items->properties->service;
+        $this->assertEquals('array', $service->type);
+        $this->assertEquals('string', $service->items->properties->name->type);
+        $this->assertEquals('string', $service->items->properties->description->type);
+        $this->assertEquals('object', $service->items->properties->gui->type);
+        $this->assertEquals('object', $service->items->properties->service->type);
+        $this->assertEquals('string', $service->items->properties->gui->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $service->items->properties->gui->properties->{'$ref'}->format);
+        $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $service->items->properties->service->properties->{'$ref'}->format);
     }
 }

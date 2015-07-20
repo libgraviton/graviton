@@ -34,23 +34,18 @@ interface DefinitionElementInterface
 
     const TYPE_OBJECT = 'object';
 
+    const TYPE_EXTREF = 'extref';
+
     const REL_TYPE_REF = 'reference';
 
     const REL_TYPE_EMBED = 'embed';
 
     /**
-     * Returns whether this element is a field
+     * Returns the name of this field
      *
-     * @return boolean
+     * @return string
      */
-    public function isField();
-
-    /**
-     * Returns whether this element is a hash
-     *
-     * @return boolean
-     */
-    public function isHash();
+    public function getName();
 
     /**
      * Returns the type of this element
@@ -79,20 +74,4 @@ interface DefinitionElementInterface
      * @return array definition
      */
     public function getDefAsArray();
-
-    /**
-     * Gets the rel type
-     *
-     * @return string
-     */
-    public function getRelType();
-
-    /**
-     * Sets the rel type
-     *
-     * @param string $relType rel type
-     *
-     * @return void
-     */
-    public function setRelType($relType);
 }

@@ -240,93 +240,96 @@ class JsonDefinition
      *
      * @param string $name Field name
      *
-     * @return JsonDefinitionField The field
+     * @return DefinitionElementInterface The field
      */
     public function getField($name)
     {
-        foreach ($this->getFields() as $field) {
-            if ($field->getName() === $name) {
-                return $field;
-            }
-        }
-
-        return null;
+        $fields = $this->getFields();
+        return isset($fields[$name]) ? $fields[$name] : null;
     }
 
     /**
      * Returns the field definition
      *
-     * @return JsonDefinitionField[] Fields
+     * @return DefinitionElementInterface[] Fields
      */
     public function getFields()
     {
-        if ($this->def->getTarget() === null) {
-            return [];
+        $hierarchy = [];
+        foreach ($this->def->getTarget()->getFields() as $field) {
+            $hierarchy = array_merge_recursive(
+                $hierarchy,
+                $this->createFieldHierarchyRecursive($field, $field->getName())
+            );
         }
-
-        $result = [];
 
         $fields = [];
+        foreach ($hierarchy as $name => $definition) {
+            $fields[$name] = $this->processFieldHierarchyRecursive($name, $definition);
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param Schema\Field $definition Raw field definition
+     * @param string       $path       Relative field path
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    private function createFieldHierarchyRecursive(Schema\Field $definition, $path)
+    {
+        if (!preg_match('/^(?P<name>[^\.]+)(\.(?P<sub>.+))?$/', $path, $matches)) {
+            throw new \InvalidArgumentException(sprintf('Invalid field name "%s" defintion', $definition->getName()));
+        }
+
+        $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
+        if (isset($matches['sub'])) {
+            $definition = $this->createFieldHierarchyRecursive($definition, $matches['sub']);
+        }
+
+        return [$name => $definition];
+    }
+
+    /**
+     * @param string                      $name
+     * @param Schema\Field|Schema\Field[] $definition
+     *
+     * @return DefinitionElementInterface
+     */
+    private function processFieldHierarchyRecursive($name, $definition)
+    {
+        if ($definition instanceof Schema\Field) {
+            return $this->processSimpleField($name, $definition);
+        } elseif (array_keys($definition) === ['$']) {
+            return new JsonDefinitionArray($name, $this->processFieldHierarchyRecursive($name, $definition['$']));
+        } else {
+            $fields = [];
+            foreach ($definition as $subname => $subdefinition) {
+                $fields[$subname] = $this->processFieldHierarchyRecursive($subname, $subdefinition);
+            }
+
+            return new JsonDefinitionHash($name, $this, $fields);
+        }
+    }
+
+    /**
+     * @param string       $name       Field name
+     * @param Schema\Field $definition Field
+     *
+     * @return JsonDefinitionField
+     */
+    private function processSimpleField($name, Schema\Field $definition)
+    {
+        $field = new JsonDefinitionField($name, $definition);
+
         $relations = $this->getRelations();
-
-        foreach ($this->def->getTarget()->getFields() as $field) {
-            $field = new JsonDefinitionField($field);
-            $fields[$field->getName()] = $field;
-
-            // embed rel?
-            if (isset($relations[$field->getName()])) {
-                if ($relations[$field->getName()]->getType() === 'embed') {
-                    $field->setRelType(JsonDefinitionField::REL_TYPE_EMBED);
-                }
-            }
+        if (isset($relations[$definition->getName()]) &&
+            $relations[$definition->getName()]->getType() === DefinitionElementInterface::REL_TYPE_EMBED) {
+            $field->setRelType(DefinitionElementInterface::REL_TYPE_EMBED);
         }
 
-        // object generation (dot-notation parsing)
-        $fieldHierarchy = [];
-        $arrayHashes = [];
-        foreach ($fields as $fieldName => $field) {
-            if (strpos($fieldName, '.') !== false) {
-                $nameParts = explode('.', $fieldName);
-
-                // hm, i'm too uninspired to make this recursive..
-                switch (count($nameParts)) {
-                    case 2:
-                        $fieldHierarchy[$nameParts[0]][$nameParts[1]] = $field;
-
-                        if (preg_match('([0-9]+)', $nameParts[1])) {
-                            $arrayHashes[] = $nameParts[0];
-                        }
-
-                        break;
-                    case 3:
-                        // handle "0-9" in second part (like field.0.val)
-                        // ..handle as normal hash, but set array property
-                        if (preg_match('([0-9]+)', $nameParts[1])) {
-                            $fieldHierarchy[$nameParts[0]][$nameParts[2]] = $field;
-                            $arrayHashes[] = $nameParts[0];
-                        }
-                        break;
-                }
-            } else {
-                $result[$fieldName] = $field;
-            }
-        }
-
-        foreach ($fieldHierarchy as $fieldName => $subElements) {
-            $hashField = new JsonDefinitionHash(
-                $fieldName,
-                $subElements
-            );
-            $hashField->setParent($this);
-            $hashField->setRelType(JsonDefinitionHash::REL_TYPE_EMBED);
-
-            if (in_array($fieldName, $arrayHashes)) {
-                $hashField->setIsArrayHash(true);
-            }
-            $result[$fieldName] = $hashField;
-        }
-
-        return $result;
+        return $field;
     }
 
     /**

@@ -6,7 +6,9 @@
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
+use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\ConstraintOption;
 use JMS\Serializer\SerializerBuilder;
@@ -65,6 +67,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $jsonDef);
 
+        /** @var JsonDefinitionField $field */
         $field = $jsonDef->getField('testField');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionField', $field);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\Schema\Field', $field->getDef());
@@ -76,10 +79,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $field->getTypeDoctrine());
         $this->assertEquals('string', $field->getTypeSerializer());
         $this->assertNull($field->getClassName());
-        $this->assertNull($field->getParentHash());
         $this->assertFalse($field->isClassType());
-        $this->assertTrue($field->isField());
-        $this->assertFalse($field->isHash());
     }
 
     /**
@@ -121,6 +121,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     public function testClassType()
     {
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
+
+        /** @var JsonDefinitionField $field */
         $field = $jsonDef->getField('contact');
 
         $this->assertTrue($field->isClassType());
@@ -159,6 +161,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     public function testExposeAs()
     {
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
+
+        /** @var JsonDefinitionField $field */
         $field = $jsonDef->getField('unknownType');
         $this->assertEquals('unknown', $field->getExposedName());
     }
@@ -171,6 +175,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     public function testConstraints()
     {
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
+
+        /** @var JsonDefinitionField $field */
         $field = $jsonDef->getField('emailField');
 
         $constraint = (new Constraint())
@@ -199,11 +205,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         $field = $jsonDef->getField('contactCode');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field);
 
-        $this->assertEquals($field::REL_TYPE_EMBED, $field->getRelType());
-        $this->assertTrue($field->isClassType());
-        $this->assertTrue($field->isHash());
-        $this->assertFalse($field->isField());
-        $this->assertEquals(array('datetime', 'varchar'), $field->getFieldTypes());
+        $this->assertEquals('datetime', $field->getFields()['someDate']->getType());
+        $this->assertEquals('varchar', $field->getFields()['text']->getType());
     }
 
     /**
@@ -239,47 +242,24 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
     {
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
 
-        /** @var JsonDefinitionHash $field */
-        $field = $jsonDef->getField('contactCode');
-        $localDef = $field->getDefFromLocal();
+        /** @var JsonDefinitionHash $hashField */
+        $hashField = $jsonDef->getField('contactCode');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $hashField);
+
+        $localDef = $hashField->getJsonDefinition();
         $this->assertTrue($localDef->isSubDocument());
-        $this->assertEquals(count($field->getFields()), count($localDef->getFields()));
+        $this->assertEquals(count($hashField->getFields()), count($localDef->getFields()));
 
-        // array
-        $field = $jsonDef->getField('nestedArray');
-        $localDef = $field->getDefFromLocal();
+        /** @var JsonDefinitionArray $arrayField */
+        $arrayField = $jsonDef->getField('nestedArray');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $arrayField);
+
+        /** @var JsonDefinitionHash $arrayItem */
+        $arrayItem = $arrayField->getElement();
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $arrayItem);
+
+        $localDef = $arrayItem->getJsonDefinition();
         $this->assertTrue($localDef->isSubDocument());
-        $this->assertEquals(count($field->getFields()), count($localDef->getFields()));
-    }
-
-    /**
-     * bop
-     *
-     * @return void
-     */
-    public function testBagOfPrimitives()
-    {
-        // @todo bag of primitive support is not finished; i'm locking it down, it isn't used anyway
-        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
-
-        /** @var JsonDefinitionHash $field */
-        $field = $jsonDef->getField('bag');
-        $this->assertTrue($field->isBagOfPrimitives());
-        $this->assertEquals('varchar', $field->getClassName());
-    }
-
-    /**
-     * reltype
-     *
-     * @return void
-     */
-    public function testSetRelType()
-    {
-        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
-        $field = $jsonDef->getField('contact');
-        $this->assertEquals($field::REL_TYPE_REF, $field->getRelType());
-
-        $field->setRelType($field::REL_TYPE_EMBED);
-        $this->assertEquals($field::REL_TYPE_EMBED, $field->getRelType());
+        $this->assertEquals(count($arrayItem->getFields()), count($localDef->getFields()));
     }
 }

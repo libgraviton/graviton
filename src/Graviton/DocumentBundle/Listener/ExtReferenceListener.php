@@ -105,41 +105,10 @@ class ExtReferenceListener
             return $item;
         }
         foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
-            if (strpos($field, '.') !== false) {
-                $topLevel = substr($field, 0, strpos($field, '.'));
-                $subField = str_replace($topLevel . '.', '', $field);
-                if (array_key_exists($topLevel, $item)) {
-                    if (substr($subField, 0, 2) === '0.') {
-                        $item[$topLevel] = $this->mapFields($item[$topLevel], $subField);
-                    } else {
-                        $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
-                    }
-                }
-
-            } elseif (is_array($item)) {
-                $item = $this->mapField($item, $field);
-            }
+            $item = $this->mapField($item, $field);
         }
 
         return $item;
-    }
-
-    /**
-     * recursive mapper for embed-many fields
-     *
-     * @param array  $items items to map
-     * @param string $field name of field to map
-     *
-     * @return array
-     */
-    private function mapFields($items, $field)
-    {
-        $field = substr($field, 2);
-        foreach ($items as $key => $item) {
-            $items[$key] = $this->mapField($item, $field);
-        }
-
-        return $items;
     }
 
     /**
@@ -152,7 +121,32 @@ class ExtReferenceListener
      */
     private function mapField($item, $field)
     {
-        if (array_key_exists($field, $item)) {
+        if (!is_array($item)) {
+            return $item;
+        }
+
+        if (strpos($field, '0.') === 0) {
+            $subField = substr($field, 2);
+
+            return array_map(
+                function ($subItem) use ($subField) {
+                    return $this->mapField($subItem, $subField);
+                },
+                $item
+            );
+        }
+
+        if (($pos = strpos($field, '.')) !== false) {
+            $topLevel = substr($field, 0, $pos);
+            $subField = substr($field, $pos + 1);
+
+            if (isset($item[$topLevel])) {
+                $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+            }
+            return $item;
+        }
+
+        if (isset($item[$field])) {
             $ref = json_decode($item[$field], true);
             $routeId = $this->mapping[$ref['$ref']];
             $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
