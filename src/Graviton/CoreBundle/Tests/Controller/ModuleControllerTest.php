@@ -143,7 +143,8 @@ class ModuleControllerTest extends RestTestCase
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
         $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
-        $testModule->name = 'Name';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
         $testModule->order = 50;
 
@@ -220,7 +221,8 @@ class ModuleControllerTest extends RestTestCase
         $putModule->key = 'test';
         $putModule->app = new \stdClass;
         $putModule->app->{'$ref'} = 'http://localhost/core/app/test';
-        $putModule->name = 'testerle';
+        $putModule->name = new \stdClass;
+        $putModule->name->en = 'testerle';
         $putModule->path = '/test/test';
         $putModule->order = 500;
 
@@ -339,7 +341,8 @@ class ModuleControllerTest extends RestTestCase
 
         $service = $results->items->properties->service;
         $this->assertEquals('array', $service->type);
-        $this->assertEquals('string', $service->items->properties->name->type);
+        $this->assertEquals('object', $service->items->properties->name->type);
+        $this->assertEquals('string', $service->items->properties->name->properties->en->type);
         $this->assertEquals('string', $service->items->properties->description->type);
         $this->assertEquals('object', $service->items->properties->gui->type);
         $this->assertEquals('object', $service->items->properties->service->type);
