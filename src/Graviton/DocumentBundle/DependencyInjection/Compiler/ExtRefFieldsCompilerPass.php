@@ -187,29 +187,18 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
         $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
 
         $result = [];
-        array_map(
-            function (\DOMElement $node) use (&$result) {
-                $result[$node->getAttribute('field')] = [
-                    'class' => $node->getAttribute('target-document'),
-                    'multi' => false,
-                ];
-            },
-            iterator_to_array(
-                $xpath->query('//*[self::doctrine:embed-one or self::doctrine:reference-one]')
-            )
-        );
-
-        array_map(
-            function (\DOMElement $node) use (&$result) {
-                $result[$node->getAttribute('field')] = [
-                    'class' => $node->getAttribute('target-document'),
-                    'multi' => true,
-                ];
-            },
-            iterator_to_array(
-                $xpath->query('//*[self::doctrine:embed-many or self::doctrine:reference-many]')
-            )
-        );
+        foreach ($xpath->query('//*[self::doctrine:embed-one or self::doctrine:reference-one]') as $node) {
+            $result[$node->getAttribute('field')] = [
+                'class' => $node->getAttribute('target-document'),
+                'multi' => false,
+            ];
+        }
+        foreach ($xpath->query('//*[self::doctrine:embed-many or self::doctrine:reference-many]') as $node) {
+            $result[$node->getAttribute('field')] = [
+                'class' => $node->getAttribute('target-document'),
+                'multi' => true,
+            ];
+        }
 
         return $result;
     }

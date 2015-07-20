@@ -279,16 +279,16 @@ class JsonDefinition
      */
     private function createFieldHierarchyRecursive(Schema\Field $definition, $path)
     {
-        if (preg_match('/^(?P<name>[^\.]+)$/', $path, $matches)) {
-            $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
-            return [$name => $definition];
-        }
-        if (preg_match('/^(?P<name>[^\.]+)\.(?P<sub>.+)$/', $path, $matches)) {
-            $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
-            return [$name => $this->createFieldHierarchyRecursive($definition, $matches['sub'])];
+        if (!preg_match('/^(?P<name>[^\.]+)(\.(?P<sub>.+))?$/', $path, $matches)) {
+            throw new \InvalidArgumentException(sprintf('Invalid field name "%s" defintion', $definition->getName()));
         }
 
-        throw new \InvalidArgumentException(sprintf('Invalid field name "%s" defintion', $definition->getName()));
+        $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
+        if (isset($matches['sub'])) {
+            $definition = $this->createFieldHierarchyRecursive($definition, $matches['sub']);
+        }
+
+        return [$name => $definition];
     }
 
     /**
