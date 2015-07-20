@@ -295,7 +295,8 @@ class GenerateDynamicBundleCommand extends Command
      * @param JsonDefinition $definition
      * @return JsonDefinition[]
      */
-    protected function getSubResources(JsonDefinition $definition) {
+    protected function getSubResources(JsonDefinition $definition)
+    {
         $resources = [];
         foreach ($definition->getFields() as $field) {
             while ($field instanceof JsonDefinitionArray) {

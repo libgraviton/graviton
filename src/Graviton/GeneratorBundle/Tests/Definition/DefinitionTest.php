@@ -406,7 +406,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                                     ->setName('def')
                                     ->setType('boolean')
                             )
-
                     )
             )),
             $field->getJsonDefinition()
@@ -434,7 +433,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                                     ->setName('pqr')
                                     ->setType('float')
                             )
-
                     )
             )),
             $field->getElement()->getJsonDefinition()
