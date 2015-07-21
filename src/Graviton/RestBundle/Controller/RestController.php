@@ -562,15 +562,15 @@ class RestController
             throw new BadRequestHttpException('unexpected resource in validation');
         }
 
-        // Decode the json from request
-        if (!($input = json_decode($content, true)) && JSON_ERROR_NONE === json_last_error()) {
+        // is request body empty
+        if ($content === '') {
             $e = new NoInputException();
             $e->setResponse($response);
             throw $e;
         }
 
-        // specially check for parse error ($input decodes to null) and report accordingly..
-        if (is_null($input) && JSON_ERROR_NONE !== json_last_error()) {
+        $input = json_decode($content, true);
+        if (JSON_ERROR_NONE !== json_last_error()) {
             $e = new MalformedInputException($this->getLastJsonErrorMessage());
             $e->setErrorType(json_last_error());
             $e->setResponse($response);
