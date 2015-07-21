@@ -194,7 +194,11 @@ class {{ document }} implements TranslatableDocumentInterface
      */
     public function getTranslatableFields()
     {
+{% if translatableFields is empty %}
+        return [];
+{% else %}
         return array('{{ translatableFields|join('\',\'') }}');
+{% endif %}
     }
 
     /**
@@ -204,7 +208,11 @@ class {{ document }} implements TranslatableDocumentInterface
      */
     public function getPreTranslatedFields()
     {
-        return array('{{ preTranslatedFields|join('\',\'') }}');
+{% if preTranslatedFields is empty %}
+        return [];
+{% else %}
+        return ['{{ preTranslatedFields|join('\',\'') }}'];
+{% endif %}
     }
 
 }

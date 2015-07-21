@@ -10,13 +10,19 @@
         "app": {
           "$ref": "http://localhost/core/app/tablet"
         },
-        "name": "Real Estate",
+        "name": {
+          "en": "Real Estate"
+        },
         "path": "/module/realestate",
         "order": 1,
         "service": [
           {
-            "name": "1st admin GUI",
-            "description" : "...",
+            "name": {
+              "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
             "gui": {
               "$ref": "/core/product/1"
             },
@@ -31,13 +37,19 @@
         "app": {
           "$ref": "http://localhost/core/app/tablet"
         },
-        "name": "Investment",
+        "name": {
+          "en": "Investment"
+        },
         "path": "/module/investment",
         "order": 2,
         "service": [
           {
-            "name": "1st admin GUI",
-            "description" : "...",
+            "name": {
+              "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
             "gui": {
               "$ref": "/core/product/3"
             },
@@ -46,8 +58,12 @@
             }
           },
           {
-            "name": "2nd admin GUI",
-            "description" : "...",
+            "name": {
+              "en": "2nd admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
             "gui": {
               "$ref": "/core/product/5"
             },
@@ -62,7 +78,9 @@
         "app": {
           "$ref": "http://localhost/core/app/tablet"
         },
-        "name": "Retirement",
+        "name": {
+          "en": "Retirement"
+        },
         "path": "/module/retirement",
         "order": 3,
         "service": []
@@ -72,7 +90,9 @@
         "app": {
           "$ref": "http://localhost/core/app/tablet"
         },
-        "name": "Requisition",
+        "name": {
+          "en": "Requisition"
+        },
         "path": "/module/requisition",
         "order": 4,
         "service": []
@@ -82,7 +102,9 @@
         "app": {
           "$ref": "http://localhost/core/app/tablet"
         },
-        "name": "Pay & Save",
+        "name": {
+          "en": "Pay & Save"
+        },
         "path": "/module/payandsave",
         "order": 5,
         "service": []
@@ -119,7 +141,8 @@
         "type": "varchar",
         "title": "Name",
         "description": "Name of this module",
-        "required": true
+        "required": true,
+        "translatable": true
       },
       {
         "name": "path",
@@ -138,14 +161,16 @@
         "type": "varchar",
         "title": "Service name",
         "description": "Displayed service name",
-        "required": true
+        "required": true,
+        "translatable": true
       },
       {
         "name": "service.0.description",
         "type": "varchar",
         "title": "Service description",
         "description": "Displayed service description",
-        "required": true
+        "required": false,
+        "translatable": true
       },
       {
         "name": "service.0.gui.ref",
