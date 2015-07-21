@@ -56,8 +56,7 @@
         "name": "metadata.filename",
         "type": "string",
         "title": "file name",
-        "description": "file name",
-        "required": true
+        "description": "file name"
       }
     ]
   }
