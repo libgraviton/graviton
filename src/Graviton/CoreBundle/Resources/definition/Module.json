@@ -14,7 +14,23 @@
           "en": "Real Estate"
         },
         "path": "/module/realestate",
-        "order": 1
+        "order": 1,
+        "service": [
+          {
+            "name": {
+              "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
+            "gui": {
+              "$ref": "/core/product/1"
+            },
+            "service": {
+              "$ref": "/core/product/2"
+            }
+          }
+        ]
       },
       {
         "key": "investment",
@@ -25,7 +41,37 @@
           "en": "Investment"
         },
         "path": "/module/investment",
-        "order": 2
+        "order": 2,
+        "service": [
+          {
+            "name": {
+              "en": "1st admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
+            "gui": {
+              "$ref": "/core/product/3"
+            },
+            "service": {
+              "$ref": "/core/product/4"
+            }
+          },
+          {
+            "name": {
+              "en": "2nd admin GUI"
+            },
+            "description" : {
+              "en": "..."
+            },
+            "gui": {
+              "$ref": "/core/product/5"
+            },
+            "service": {
+              "$ref": "/core/product/6"
+            }
+          }
+        ]
       },
       {
         "key": "retirement",
@@ -36,7 +82,8 @@
           "en": "Retirement"
         },
         "path": "/module/retirement",
-        "order": 3
+        "order": 3,
+        "service": []
       },
       {
         "key": "requisition",
@@ -47,7 +94,8 @@
           "en": "Requisition"
         },
         "path": "/module/requisition",
-        "order": 4
+        "order": 4,
+        "service": []
       },
       {
         "key": "payAndSave",
@@ -58,7 +106,8 @@
           "en": "Pay & Save"
         },
         "path": "/module/payandsave",
-        "order": 5
+        "order": 5,
+        "service": []
       }
     ]
   },
@@ -84,7 +133,8 @@
         "type": "extref",
         "title": "Language-Link",
         "description": "Link to language document.",
-        "exposeAs": "$ref"
+        "exposeAs": "$ref",
+        "required": true
       },
       {
         "name": "name",
@@ -105,6 +155,38 @@
         "type": "int",
         "title": "Order",
         "description": "Integer for sort order"
+      },
+      {
+        "name": "service.0.name",
+        "type": "varchar",
+        "title": "Service name",
+        "description": "Displayed service name",
+        "required": true,
+        "translatable": true
+      },
+      {
+        "name": "service.0.description",
+        "type": "varchar",
+        "title": "Service description",
+        "description": "Displayed service description",
+        "required": false,
+        "translatable": true
+      },
+      {
+        "name": "service.0.gui.ref",
+        "type": "extref",
+        "title": "Service GUI link",
+        "description": "Link to the service GUI",
+        "exposeAs": "$ref",
+        "required": true
+      },
+      {
+        "name": "service.0.service.ref",
+        "type": "extref",
+        "title": "Service link",
+        "description": "Link to the service",
+        "exposeAs": "$ref",
+        "required": true
       }
     ]
   }

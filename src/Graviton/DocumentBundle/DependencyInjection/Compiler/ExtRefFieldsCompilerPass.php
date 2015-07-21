@@ -9,6 +9,8 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -16,12 +18,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements LoadFieldsInterface
+class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
 {
     /**
-     * @see \Graviton\DocumentBundle\DependencyInjection\Compiler\LoadFieldsTrait
+     * @var array Doctrine mappings
      */
-    use LoadFieldsTrait;
+    private $classMap = [];
 
     /**
      * load services
@@ -33,86 +35,192 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass implements Loa
      */
     public function processServices(ContainerBuilder $container, $services)
     {
+        $this->classMap = $this->loadDoctrineClassMap();
+
         $map = [];
         foreach ($services as $id) {
-            list($ns, $bundle,, $doc) = explode('.', $id);
+            list($ns, $bundle, , $doc) = explode('.', $id);
             if (empty($bundle) || empty($doc)) {
                 continue;
             }
-            if ($bundle == 'core' && $doc == 'main') {
+            if ($bundle === 'core' && $doc === 'main') {
                 continue;
             }
-            $tag = $container->getDefinition($id)->getTag('graviton.rest');
-            list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
-            $this->loadFields($map, $ns, $bundle, $doc);
+
+            $className = $this->getServiceDocument(
+                $container->getDefinition($id),
+                $ns,
+                $bundle,
+                $doc
+            );
+            $extRefFields = $this->processDocument($className);
+            $routePrefix = strtolower($ns.'.'.$bundle.'.'.'rest'.'.'.$doc);
+
+            $map[$routePrefix.'.get'] = $extRefFields;
+            $map[$routePrefix.'.all'] = $extRefFields;
         }
+
         $container->setParameter('graviton.document.type.extref.fields', $map);
     }
 
     /**
-     * @param array     $map      map to add entries to
-     * @param \DOMXPath $xpath    xpath access to doctrine config dom
-     * @param string    $ns       namespace
-     * @param string    $bundle   bundle name
-     * @param string    $doc      document name
-     * @param boolean   $embedded is this an embedded doc, further args are only for embeddeds
-     * @param string    $name     name prefix of document the embedded field belongs to
-     * @param string    $prefix   prefix to add to embedded field name
+     * Get base directory for Doctrine XML mappings
      *
-     * @return void
+     * @return Finder
      */
-    public function loadFieldsFromDOM(
-        array &$map,
-        \DOMXPath $xpath,
-        $ns,
-        $bundle,
-        $doc,
-        $embedded,
-        $name = '',
-        $prefix = ''
-    ) {
-        $fieldNodes = $xpath->query("//doctrine:field[@type='extref']");
+    protected function getDoctrineMappingFinder()
+    {
+        return (new Finder())
+            ->in(__DIR__ . '/../../../..')
+            ->path('Resources/config/doctrine')
+            ->name('*.mongodb.xml');
+    }
 
-        $fields = [];
-        foreach ($fieldNodes as $node) {
-            $fields[] = '$'.$node->getAttribute('fieldName');
+    /**
+     * Get document class name from service
+     *
+     * @param Definition $service Service definition
+     * @param string     $ns      Bundle namespace
+     * @param string     $bundle  Bundle name
+     * @param string     $doc     Document name
+     * @return string
+     */
+    private function getServiceDocument(Definition $service, $ns, $bundle, $doc)
+    {
+        $tags = $service->getTag('graviton.rest');
+        if (!empty($tags[0]['collection'])) {
+            $doc = $tags[0]['collection'];
+            $bundle = $tags[0]['collection'];
         }
 
-        $namePrefix = strtolower(implode('.', [$ns, $bundle, 'rest', $doc, '']));
+        if (strtolower($ns) === 'gravitondyn') {
+            $ns = 'GravitonDyn';
+        }
 
-        $this->loadEmbeddedDocuments(
-            $map,
-            $xpath->query('//*[self::doctrine:embed-one or self::doctrine:reference-one]'),
-            $namePrefix
+        return sprintf(
+            '%s\\%s\\Document\\%s',
+            ucfirst($ns),
+            ucfirst($bundle).'Bundle',
+            ucfirst($doc)
         );
-        $this->loadEmbeddedDocuments(
-            $map,
-            $xpath->query('//*[self::doctrine:embed-many or self::doctrine:reference-many]'),
-            $namePrefix,
-            true
+    }
+
+    /**
+     * Recursive doctrine document processing
+     *
+     * @param string $documentClass Document class
+     * @param string $prefix        Field prefix
+     * @return array
+     */
+    private function processDocument($documentClass, $prefix = '')
+    {
+        if (!isset($this->classMap[$documentClass])) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($this->classMap[$documentClass]['fields'] as $field) {
+            $result[] = $prefix.$field;
+        }
+        foreach ($this->classMap[$documentClass]['embedded'] as $field => $embed) {
+            $result = array_merge(
+                $result,
+                $this->processDocument(
+                    $embed['class'],
+                    $prefix.$field.($embed['multi'] ? '.0.' : '.')
+                )
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Load doctrine class map
+     *
+     * @return array
+     */
+    private function loadDoctrineClassMap()
+    {
+        $classMap = [];
+        foreach ($this->getDoctrineMappingFinder() as $file) {
+            $document = new \DOMDocument();
+            $document->load($file);
+
+            $classMap[$this->getDocumentClassName($document)] = [
+                'fields' => $this->getDocumentExtRefFields($document),
+                'embedded' => $this->getDocumentEmbeddedDocs($document),
+            ];
+        }
+
+        return $classMap;
+    }
+
+    /**
+     * Get document class name
+     *
+     * @param \DOMDocument $document Doctrine mapping XML document
+     * @return string
+     */
+    private function getDocumentClassName(\DOMDocument $document)
+    {
+        $xpath = new \DOMXPath($document);
+        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+
+        $node = $xpath->query('//*[self::doctrine:document or self::doctrine:embedded-document]')->item(0);
+        if (!$node instanceof \DOMElement) {
+            throw new \InvalidArgumentException('Invalid XML mapping file');
+        }
+
+        return $node->getAttribute('name');
+    }
+
+    /**
+     * Get document embedded docs
+     *
+     * @param \DOMDocument $document Doctrine mapping XML document
+     * @return array
+     */
+    private function getDocumentEmbeddedDocs(\DOMDocument $document)
+    {
+        $xpath = new \DOMXPath($document);
+        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+
+        $result = [];
+        foreach ($xpath->query('//*[self::doctrine:embed-one or self::doctrine:reference-one]') as $node) {
+            $result[$node->getAttribute('field')] = [
+                'class' => $node->getAttribute('target-document'),
+                'multi' => false,
+            ];
+        }
+        foreach ($xpath->query('//*[self::doctrine:embed-many or self::doctrine:reference-many]') as $node) {
+            $result[$node->getAttribute('field')] = [
+                'class' => $node->getAttribute('target-document'),
+                'multi' => true,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get document $extref fields
+     *
+     * @param \DOMDocument $document Doctrine mapping XML document
+     * @return array
+     */
+    private function getDocumentExtRefFields(\DOMDocument $document)
+    {
+        $xpath = new \DOMXPath($document);
+        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+
+        return array_map(
+            function (\DOMElement $node) {
+                return '$'.$node->getAttribute('fieldName');
+            },
+            iterator_to_array(
+                $xpath->query('//doctrine:field[@type="extref"]')
+            )
         );
-
-        foreach (['get', 'all'] as $suffix) {
-            if ($embedded) {
-                $mapName = $name.$suffix;
-            } else {
-                $mapName = $namePrefix.$suffix;
-            }
-            if (empty($map[$mapName])) {
-                $map[$mapName] = [];
-            }
-            if ($embedded) {
-                foreach ($fields as $field) {
-                    $map[$mapName][] = $prefix.$field;
-                }
-            } else {
-                $map[$mapName] = array_merge($fields, $map[$mapName]);
-            }
-        }
-
-        // make em all unique
-        foreach ($map as $name => $fields) {
-            $map[$name] = array_unique($fields);
-        }
     }
 }

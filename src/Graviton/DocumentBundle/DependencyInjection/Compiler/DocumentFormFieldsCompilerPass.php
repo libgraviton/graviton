@@ -124,9 +124,9 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
             $translatableFields = [];
             if (in_array(
                 'Graviton\I18nBundle\Document\TranslatableDocumentInterface',
-                array_keys(class_implements($this->className))
+                array_keys(class_implements($class))
             )) {
-                $fieldInstance = new $this->className;
+                $fieldInstance = new $class;
                 $translatableFields = $fieldInstance->getTranslatableFields();
             }
 
