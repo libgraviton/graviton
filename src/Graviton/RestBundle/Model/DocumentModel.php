@@ -108,6 +108,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
+            // grab unencoded version of rql extract q arg
+            // has to grab the query direclty from _SERVER so it does not get unecoded by php beforehand
+            if (array_key_exists('QUERY_STRING', $_SERVER)) {
+                $filter = array_filter(
+                    explode('&', $_SERVER['QUERY_STRING']),
+                    function ($param) {
+                        return (substr($param, 0, 2) == 'q=');
+                    }
+                );
+                $filter = substr(reset($filter), 2);
+            }
+
             $queryBuilder = $this->doRqlQuery($queryBuilder, $filter);
 
         } else {
