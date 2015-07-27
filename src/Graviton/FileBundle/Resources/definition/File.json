@@ -53,6 +53,13 @@
         "readOnly": true
       },
       {
+        "name": "metadata.modificationDate",
+        "type": "datetime",
+        "title": "Modification date",
+        "description": "Timestamp of the last file change",
+        "readOnly": true
+      },
+      {
         "name": "metadata.filename",
         "type": "string",
         "title": "file name",
