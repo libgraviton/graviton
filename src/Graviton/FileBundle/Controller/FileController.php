@@ -97,7 +97,9 @@ class FileController extends RestController
         $meta = new FileMetadata();
         $meta->setSize((int) $file->getSize())
             ->setMime($request->headers->get('Content-Type'))
-            ->setCreatedate(new \DateTime());
+            ->setCreatedate(new \DateTime())
+            ->setModificationdate(new \DateTime());
+
         $record->setMetadata($meta);
 
         $record = $this->getModel()->updateRecord($record->getId(), $record);
@@ -176,7 +178,8 @@ class FileController extends RestController
 
         $record->getMetadata()
             ->setSize((int) $file->getSize())
-            ->setMime($contentType);
+            ->setMime($contentType)
+            ->setModificationdate(new \DateTime());
 
         $this->getModel()->updateRecord($id, $record);
 

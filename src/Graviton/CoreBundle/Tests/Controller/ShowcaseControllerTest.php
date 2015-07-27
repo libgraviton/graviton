@@ -51,18 +51,22 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $document);
 
         $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "children[someOtherField]";
-        $expectedErrors[0]->message = "This value is not valid.";
-        $expectedErrors[1] = new \stdClass();
-        $expectedErrors[1]->property_path = "data.contact.type";
-        $expectedErrors[1]->message = "This value should not be blank.";
-        $expectedErrors[2] = new \stdClass();
-        $expectedErrors[2]->property_path = "data.contact.protocol";
-        $expectedErrors[2]->message = "This value should not be blank.";
-        $expectedErrors[3] = new \stdClass();
-        $expectedErrors[3]->property_path = "data.contact.value";
-        $expectedErrors[3]->message = "This value should not be blank.";
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "children[someOtherField]";
+        $expectedError->message = "This value is not valid.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.type";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.protocol";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.value";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -142,7 +146,7 @@ class ShowcaseControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "";
+        $expectedErrors[0]->propertyPath = "";
         $expectedErrors[0]->message = "This form should not contain extra fields.";
 
         $this->assertJsonStringEqualsJsonString(
