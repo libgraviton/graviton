@@ -62,7 +62,7 @@ class ValidationExceptionListener extends RestExceptionListener
                     $path = $cause->getPropertyPath();
                 }
                 $content[] = [
-                    'property_path' => $path,
+                    'propertyPath' => $path,
                     'message' => $error->getMessage(),
                 ];
             }
