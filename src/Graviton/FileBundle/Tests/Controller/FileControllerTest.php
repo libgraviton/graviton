@@ -83,9 +83,32 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 
+        // ehm - how to force that mtime will differ?
+        sleep(1);
+
+        // update file contents to update mod date
+        $client = static::createRestClient();
+        $client->put(
+            $response->headers->get('Location'),
+            $fixtureData,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+        $this->assertEmpty($client->getResults());
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
         $data = $client->getResults();
+
+        // check mtime increase
+        $this->assertGreaterThan(
+            new \DateTime($data->metadata->createDate),
+            new \DateTime($data->metadata->modificationDate)
+        );
 
         $data->links = [];
         $link = new \stdClass;
@@ -135,6 +158,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('text/plain', $data->metadata->mime);
         $this->assertEquals('test.txt', $data->metadata->filename);
         $this->assertNotNull($data->metadata->createDate);
+        $this->assertNotNull($data->metadata->modificationDate);
 
         // remove a link
         unset($data->links[1]);
@@ -165,6 +189,7 @@ class FileControllerTest extends RestTestCase
         // read only fields
         $data->metadata->size = 1;
         $data->metadata->createDate = '1984-05-02T00:00:00+0000';
+        $data->metadata->modificationDate = '1984-05-02T00:00:00+0000';
         $data->metadata->mime = 'application/octet-stream';
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
@@ -179,6 +204,9 @@ class FileControllerTest extends RestTestCase
         $expectedErrors[2] = new \stdClass();
         $expectedErrors[2]->property_path = "data.metadata.createDate";
         $expectedErrors[2]->message = "The value \"data.metadata.createDate\" is read only.";
+        $expectedErrors[3] = new \stdClass();
+        $expectedErrors[3]->property_path = "data.metadata.modificationDate";
+        $expectedErrors[3]->message = "The value \"data.metadata.modificationDate\" is read only.";
 
         $this->assertEquals($expectedErrors, $client->getResults());
     }
