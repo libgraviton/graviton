@@ -195,18 +195,22 @@ class FileControllerTest extends RestTestCase
         $client->put(sprintf('/file/%s', $data->id), $data);
 
         $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "data.metadata.size";
-        $expectedErrors[0]->message = "The value \"data.metadata.size\" is read only.";
-        $expectedErrors[1] = new \stdClass();
-        $expectedErrors[1]->property_path = "data.metadata.mime";
-        $expectedErrors[1]->message = "The value \"data.metadata.mime\" is read only.";
-        $expectedErrors[2] = new \stdClass();
-        $expectedErrors[2]->property_path = "data.metadata.createDate";
-        $expectedErrors[2]->message = "The value \"data.metadata.createDate\" is read only.";
-        $expectedErrors[3] = new \stdClass();
-        $expectedErrors[3]->property_path = "data.metadata.modificationDate";
-        $expectedErrors[3]->message = "The value \"data.metadata.modificationDate\" is read only.";
+        $expectedError = new \stdClass();
+        $expectedError->property_path = "data.metadata.size";
+        $expectedError->message = "The value \"data.metadata.size\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->property_path = "data.metadata.mime";
+        $expectedError->message = "The value \"data.metadata.mime\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->property_path = "data.metadata.createDate";
+        $expectedError->message = "The value \"data.metadata.createDate\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->property_path = "data.metadata.modificationDate";
+        $expectedError->message = "The value \"data.metadata.modificationDate\" is read only.";
+        $expectedErrors[] = $expectedError;
 
         $this->assertEquals($expectedErrors, $client->getResults());
     }
