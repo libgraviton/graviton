@@ -83,9 +83,6 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 
-        // ehm - how to force that mtime will differ?
-        sleep(1);
-
         // update file contents to update mod date
         $client = static::createRestClient();
         $client->put(
@@ -104,11 +101,9 @@ class FileControllerTest extends RestTestCase
         $client->request('GET', $response->headers->get('Location'));
         $data = $client->getResults();
 
-        // check mtime increase
-        $this->assertGreaterThan(
-            new \DateTime($data->metadata->createDate),
-            new \DateTime($data->metadata->modificationDate)
-        );
+        // check for valid format
+        $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->createDate));
+        $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->modificationDate));
 
         $data->links = [];
         $link = new \stdClass;
