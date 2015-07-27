@@ -191,19 +191,19 @@ class FileControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $expectedError = new \stdClass();
-        $expectedError->property_path = "data.metadata.size";
+        $expectedError->propertyPath = "data.metadata.size";
         $expectedError->message = "The value \"data.metadata.size\" is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->property_path = "data.metadata.mime";
+        $expectedError->propertyPath = "data.metadata.mime";
         $expectedError->message = "The value \"data.metadata.mime\" is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->property_path = "data.metadata.createDate";
+        $expectedError->propertyPath = "data.metadata.createDate";
         $expectedError->message = "The value \"data.metadata.createDate\" is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->property_path = "data.metadata.modificationDate";
+        $expectedError->propertyPath = "data.metadata.modificationDate";
         $expectedError->message = "The value \"data.metadata.modificationDate\" is read only.";
         $expectedErrors[] = $expectedError;
 
