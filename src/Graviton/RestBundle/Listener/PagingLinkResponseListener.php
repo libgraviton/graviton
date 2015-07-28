@@ -21,6 +21,8 @@ use Graviton\RestBundle\Event\RestEvent;
  */
 class PagingLinkResponseListener
 {
+    use GetRqlUrlTrait;
+
     /**
      * @var Router
      */
@@ -126,13 +128,10 @@ class PagingLinkResponseListener
         if ($perPage) {
             $parameters['perPage'] = $perPage;
         }
-        $url = $this->router->generate($routeName, $parameters, true);
-
-        if ($request->attributes->get('hasRql', false)) {
-            $rawRql = $request->attributes->get('rawRql');
-
-            $url = str_replace('q=' . urlencode($rawRql), 'q=' . str_replace(',', '%2C', $rawRql), $url);
-        }
+        $url = $this->getRqlUrl(
+            $request,
+            $this->router->generate($routeName, $parameters, true)
+        );
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }

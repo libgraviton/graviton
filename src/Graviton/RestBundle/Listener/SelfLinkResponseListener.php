@@ -21,6 +21,8 @@ use Graviton\RestBundle\Event\RestEvent;
  */
 class SelfLinkResponseListener
 {
+    use GetRqlUrlTrait;
+
     /**
      * @var Router
      */
@@ -71,13 +73,11 @@ class SelfLinkResponseListener
         $url = '';
 
         try {
-            $url = $this->router->generate($routeName, $this->generateParameters($routeType, $request), true);
+            $url = $this->getRqlUrl(
+                $request,
+                $this->router->generate($routeName, $this->generateParameters($routeType, $request), true)
+            );
 
-            if ($request->attributes->get('hasRql', false)) {
-                $rawRql = $request->attributes->get('rawRql');
-
-                $url = str_replace('q=' . urlencode($rawRql), 'q=' . str_replace(',', '%2C', $rawRql), $url);
-            }
         } catch (\Exception $e) {
             $addHeader = false;
         }
