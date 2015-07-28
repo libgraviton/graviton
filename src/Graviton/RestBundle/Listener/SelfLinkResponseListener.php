@@ -73,10 +73,10 @@ class SelfLinkResponseListener
         try {
             $url = $this->router->generate($routeName, $this->generateParameters($routeType, $request), true);
 
-            if ($request->attributes->get('filtering', false)) {
+            if ($request->attributes->get('hasRql', false)) {
                 $rawRql = $request->attributes->get('rawRql');
 
-                $url = str_replace('q=' . urlencode($rawRql), 'q=' . $rawRql, $url);
+                $url = str_replace('q=' . urlencode($rawRql), 'q=' . str_replace(',', '%2C', $rawRql), $url);
             }
         } catch (\Exception $e) {
             $addHeader = false;
@@ -121,7 +121,7 @@ class SelfLinkResponseListener
             }
         }
 
-        if ($routeType == 'all' && $request->attributes->get('filtering')) {
+        if ($routeType == 'all' && $request->attributes->get('hasRql')) {
             $parameters = ['q' => $request->attributes->get('rawRql')];
         }
 

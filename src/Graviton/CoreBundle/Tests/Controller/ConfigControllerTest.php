@@ -65,15 +65,15 @@ class ConfigControllerTest extends RestTestCase
     {
         return array(
             array(
-                'eq(id,'.$this->encodeString('tablet-hello-message').')',
+                'eq(id'.$this->encodeString(',tablet-hello-message').')',
                 1
             ),
             array(
-                'eq(id,'.$this->encodeString('admin-additional+setting').')',
+                'eq(id'.$this->encodeString(',admin-additional+setting').')',
                 1
             ),
             array(
-                'like(key,'.$this->encodeString('hello-').'*)',
+                'like(key'.$this->encodeString(',hello-').'*)',
                 1
             )
         );

@@ -99,14 +99,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
-            // set filtering attributes on request
-            $request->attributes->set('filtering', true);
-
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
                 $request->attributes->get('rqlQuery')
             );
-
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */

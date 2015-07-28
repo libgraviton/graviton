@@ -93,17 +93,17 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu,true)>; rel="self"',
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu,true)&page=2&perPage=1>; rel="next"',
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu,true)&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -151,12 +151,12 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1,1)>; rel="self"',
+            '<http://localhost/core/app?q=limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         // we're passing page=1, but should be on last.. so next and last should be identical
-        $nextAndLastUrl = 'http://localhost/core/app?q=limit(1,1)&page=2&perPage=1';
+        $nextAndLastUrl = 'http://localhost/core/app?q=limit(1%2C1)&page=2&perPage=1';
 
         $this->assertContains(
             '<'.$nextAndLastUrl.'>; rel="next"',

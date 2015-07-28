@@ -59,7 +59,7 @@ class PagingLinkResponseListener
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
             $additionalParams = array();
-            if ($request->attributes->get('filtering')) {
+            if ($request->attributes->get('hasRql', false)) {
                 $additionalParams['q'] = $request->attributes->get('rawRql', '');
             }
 
@@ -128,10 +128,10 @@ class PagingLinkResponseListener
         }
         $url = $this->router->generate($routeName, $parameters, true);
 
-        if ($request->attributes->get('filtering', false)) {
+        if ($request->attributes->get('hasRql', false)) {
             $rawRql = $request->attributes->get('rawRql');
 
-            $url = str_replace('q=' . urlencode($rawRql), 'q=' . $rawRql, $url);
+            $url = str_replace('q=' . urlencode($rawRql), 'q=' . str_replace(',', '%2C', $rawRql), $url);
         }
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
