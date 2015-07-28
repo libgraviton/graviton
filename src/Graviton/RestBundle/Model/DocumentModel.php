@@ -98,12 +98,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
             ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
-        $filter = '';
         if ($request->attributes->get('hasRql', false)) {
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
-            $filter = $request->attributes->get('rawRql');
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
                 $request->attributes->get('rqlQuery')
