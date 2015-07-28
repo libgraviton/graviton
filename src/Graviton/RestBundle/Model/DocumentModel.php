@@ -10,8 +10,7 @@ use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\RqlParserBundle\Factory;
-use Xiag\Rql\Parser\Lexer;
-use Xiag\Rql\Parser\Parser;
+use Xiag\Rql\Parser\Query;
 
 /**
  * Use doctrine odm as backend
@@ -50,15 +49,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
     /**
      * @param Factory $rqlFactory factory object to use
-     * @param Parser  $parser     rql parser
-     * @param Lexer   $lexer      rql lexer
      */
-    public function __construct(Factory $rqlFactory, Parser $parser, Lexer $lexer)
+    public function __construct(Factory $rqlFactory)
     {
         parent::__construct();
         $this->rqlFactory = $rqlFactory;
-        $this->parser = $parser;
-        $this->lexer = $lexer;
     }
 
     /**
@@ -103,24 +98,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
             ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
-        $filter = $request->query->get('q');
-        if (!empty($filter)) {
+        $filter = '';
+        if ($request->attributes->get('hasRql', false)) {
             // set filtering attributes on request
             $request->attributes->set('filtering', true);
 
-            // grab unencoded version of rql extract q arg
-            // has to grab the query direclty from _SERVER so it does not get unecoded by php beforehand
-            if (array_key_exists('QUERY_STRING', $_SERVER)) {
-                $filter = array_filter(
-                    explode('&', $_SERVER['QUERY_STRING']),
-                    function ($param) {
-                        return (substr($param, 0, 2) == 'q=');
-                    }
-                );
-                $filter = substr(reset($filter), 2);
-            }
-
-            $queryBuilder = $this->doRqlQuery($queryBuilder, $filter);
+            $filter = $request->attributes->get('rawRql');
+            $queryBuilder = $this->doRqlQuery(
+                $queryBuilder,
+                $request->attributes->get('rqlQuery')
+            );
 
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
@@ -262,18 +249,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * Does the actual query using the RQL Bundle.
      *
      * @param Builder $queryBuilder Doctrine ODM QueryBuilder
-     * @param string  $rqlQuery     raw query string
+     * @param Query   $query        query from parser
      *
      * @return array
      */
-    protected function doRqlQuery($queryBuilder, $rqlQuery)
+    protected function doRqlQuery($queryBuilder, Query $query)
     {
         $factory = $this->rqlFactory;
 
         $visitor = $factory
             ->create('MongoOdm', $queryBuilder);
-
-        $query = $this->parser->parse($this->lexer->tokenize($rqlQuery));
 
         return $visitor->visit($query);
     }

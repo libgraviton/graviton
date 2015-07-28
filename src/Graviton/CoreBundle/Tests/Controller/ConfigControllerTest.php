@@ -90,7 +90,7 @@ class ConfigControllerTest extends RestTestCase
         return str_replace(
             array('-', '_', '.', '~'),
             array('%2D', '%5F', '%2E', '%7E'),
-            $value
+            rawurlencode($value)
         );
     }
 }
