@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 trait GetRqlUrlTrait
 {
     /**
-     * @param string $url url with rql query that needs to be sanitized
+     * @param Request $request request to grab real rql from
+     * @param string  $url     url with rql query that needs to be sanitized
      *
      * @return string
      */
