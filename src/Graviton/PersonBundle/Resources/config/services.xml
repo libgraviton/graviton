@@ -31,8 +31,6 @@
              class="%graviton.person.model.personcontact.class%"
              parent="graviton.rest.model">
       <argument type="service" id="graviton.rql.visitor_factory"/>
-      <argument type="service" id="graviton.rql.parser"/>
-      <argument type="service" id="graviton.rql.lexer"/>
       <call method="setRepository">
         <argument type="service" id="graviton.person.repository.personcontact"/>
       </call>
