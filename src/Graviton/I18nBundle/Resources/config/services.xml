@@ -36,7 +36,9 @@
     <service id="graviton.i18n.model.language"
              class="%graviton.i18n.model.language.class%"
              parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor_factory"/>
+      <argument type="service" id="graviton.rql.parser"/>
+      <argument type="service" id="graviton.rql.lexer"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.language"/>
       </call>
@@ -64,7 +66,9 @@
     <service id="graviton.i18n.model.translatable"
       class="%graviton.i18n.model.translatable.class%"
       parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor_factory"/>
+      <argument type="service" id="graviton.rql.parser"/>
+      <argument type="service" id="graviton.rql.lexer"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatable"/>
       </call>
@@ -72,7 +76,9 @@
     <service id="graviton.i18n.model.translatablelanguage"
       class="%graviton.i18n.model.translatablelanguage.class%"
       parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor_factory"/>
+      <argument type="service" id="graviton.rql.parser"/>
+      <argument type="service" id="graviton.rql.lexer"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatablelanguage"/>
       </call>

@@ -10,6 +10,8 @@ use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\RqlParserBundle\Factory;
+use Xiag\Rql\Parser\Lexer;
+use Xiag\Rql\Parser\Parser;
 
 /**
  * Use doctrine odm as backend
@@ -48,11 +50,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
     /**
      * @param Factory $rqlFactory factory object to use
+     * @param Parser  $parser     rql parser
+     * @param Lexer   $lexer      rql lexer
      */
-    public function __construct(Factory $rqlFactory)
+    public function __construct(Factory $rqlFactory, Parser $parser, Lexer $lexer)
     {
         parent::__construct();
         $this->rqlFactory = $rqlFactory;
+        $this->parser = $parser;
+        $this->lexer = $lexer;
     }
 
     /**
@@ -252,9 +258,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $factory = $this->rqlFactory;
 
-        $query = $factory
-            ->create('MongoOdm', $rqlQuery, $queryBuilder);
+        $visitor = $factory
+            ->create('MongoOdm', $queryBuilder);
 
-        return $query->buildQuery();
+        $query = $this->parser->parse($this->lexer->tokenize($rqlQuery));
+
+        return $visitor->visit($query);
     }
 }

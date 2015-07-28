@@ -31,9 +31,7 @@ class RqlSyntaxErrorListener extends RestExceptionListener
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof BadRequestHttpException &&
-            $exception->getPrevious() instanceof SyntaxErrorException
-        ) {
+        if (($exception = $event->getException()) instanceof SyntaxErrorException) {
             // Set status code and content
             $response = new Response();
             $response
@@ -41,7 +39,7 @@ class RqlSyntaxErrorListener extends RestExceptionListener
                 ->setContent(
                     $this->getSerializedContent(
                         [
-                            'message' => $exception->getMessage()
+                            'message' => sprintf('syntax error in rql: %s', $exception->getMessage())
                         ]
                     )
                 );
