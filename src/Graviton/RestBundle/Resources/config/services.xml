@@ -14,6 +14,7 @@
         <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
+        <parameter key="graviton.rest.listener.rqlselectresponselistener.class">Graviton\RestBundle\Listener\RqlSelectResponseListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
@@ -171,6 +172,13 @@
                  class="%graviton.rest.listener.xversionresponselistener.class%">
             <argument type="service" id="graviton.core.utils"/>
             <argument type="service" id="logger"/>
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <!-- RQL select listener -->
+        <service id="graviton.rest.listener.rqlselectresponselistener"
+                 class="%graviton.rest.listener.rqlselectresponselistener.class%">
+            <argument type="service" id="graviton.rest.objectslicer"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
