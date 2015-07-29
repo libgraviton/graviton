@@ -60,7 +60,7 @@ class ObjectSlicer
 
         $result = array_shift($parts);
         foreach ($parts as $part) {
-            $result = $this->mergeSliceRecursive($result, $part);
+            $this->mergeSliceRecursive($result, $part);
         }
         return $result;
     }
@@ -109,7 +109,7 @@ class ObjectSlicer
      *
      * @param object|array $dst Dst
      * @param object|array $src Src
-     * @return object|array
+     * @return void
      */
     private function mergeSliceRecursive($dst, $src)
     {
@@ -118,18 +118,16 @@ class ObjectSlicer
                 if (!property_exists($dst, $key)) {
                     $dst->{$key} = $value;
                 } elseif (is_object($value) || is_array($value)) {
-                    $dst->{$key} = $this->mergeSliceRecursive($dst->{$key}, $value);
+                    $this->mergeSliceRecursive($dst->{$key}, $value);
                 }
             }
         } else {
             foreach ($src as $key => $value) {
                 if (is_object($value) || is_array($value)) {
-                    $a[$key] = $this->mergeSliceRecursive($dst[$key], $value);
+                    $this->mergeSliceRecursive($dst[$key], $value);
                 }
             }
         }
-
-        return $dst;
     }
 
     /**

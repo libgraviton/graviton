@@ -279,6 +279,28 @@ class ObjectSlicerTest extends \PHPUnit_Framework_TestCase
                 ['a', 'b', 'c'],
                 (object) ['a' => 1, 'b' => [], 'c' => ['d' => ['e' => 5]]],
             ],
+
+            'array merging' => [
+                ['a' => [
+                    ['b' => 2],
+                    'delete',
+                    ['b' => 2, 'd' => 4, 'e' => 5],
+                    'delete',
+                    ['f' => 6],
+                    'delete',
+                    ['e' => 5, 'x' => 0],
+                    'delete',
+                    ['delete', [['e' => 5], 'delete', [], (object) [], [['f' => 6]]]],
+                ]],
+                ['a.b', 'a.c', 'a.e'],
+                (object) ['a' => [
+                    (object) ['b' => 2],
+                    (object) ['b' => 2, 'e' => 5],
+                    (object) [],
+                    (object) ['e' => 5],
+                    [[(object) ['e' => 5], [], (object) [], [(object) []]]],
+                ]],
+            ],
         ];
     }
 }
