@@ -44,7 +44,7 @@
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": "~2.0@alpha",
-        "graviton/rql-parser-bundle": ">=0.5.0",
+        "graviton/rql-parser-bundle": "~0.6",
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
         "eo/airbrake-bundle": "~1.0",

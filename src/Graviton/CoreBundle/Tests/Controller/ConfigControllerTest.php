@@ -46,9 +46,10 @@ class ConfigControllerTest extends RestTestCase
      */
     public function testLinkHeaderEncodingDash($expression, $resultCount)
     {
-        $expression = urlencode($expression);
         $client = static::createRestClient();
+        $_SERVER['QUERY_STRING'] = 'q=' . $expression;
         $client->request('GET', '/core/config?q='.$expression);
+        unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertContains($expression, $response->headers->get('Link'));
@@ -64,15 +65,15 @@ class ConfigControllerTest extends RestTestCase
     {
         return array(
             array(
-                'eq(id,'.$this->encodeString('tablet-hello-message').')',
+                'eq(id'.$this->encodeString(',tablet-hello-message').')',
                 1
             ),
             array(
-                'eq(id,'.$this->encodeString('admin-additional+setting').')',
+                'eq(id'.$this->encodeString(',admin-additional+setting').')',
                 1
             ),
             array(
-                'like(key,'.$this->encodeString('hello-').'*)',
+                'like(key'.$this->encodeString(',hello-').'*)',
                 1
             )
         );
@@ -90,7 +91,7 @@ class ConfigControllerTest extends RestTestCase
         return str_replace(
             array('-', '_', '.', '~'),
             array('%2D', '%5F', '%2E', '%7E'),
-            $value
+            rawurlencode($value)
         );
     }
 }
