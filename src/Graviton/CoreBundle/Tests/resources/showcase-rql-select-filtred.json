@@ -1,0 +1,46 @@
+[
+  {
+    "someFloatyDouble": 11.7,
+    "contact": {
+      "uri": "mailto:joe@example.com"
+    },
+    "contactCode": {
+      "text": {
+        "en": "Ad mailing campaign 2012"
+      }
+    },
+    "unstructuredObject": {
+      "hashField": {
+        "someField": 21
+      },
+      "nestedArrayField": [
+        {
+          "anotherField": "half the truth"
+        },
+        {
+          "anotherField": "nothing is as it seems"
+        }
+      ]
+    },
+    "nestedCustomers": [
+      {
+        "$ref": "http:\/\/localhost\/core\/app\/admin"
+      }
+    ]
+  },
+  {
+    "someFloatyDouble": 458.114,
+    "contact": {
+      "uri": "mailto:dave@example-company.com"
+    },
+    "contactCode": {
+      "text": {
+        "en": "Phone call"
+      }
+    },
+    "unstructuredObject": {
+      "booleanField": true
+    },
+    "nestedCustomers": []
+  }
+]
