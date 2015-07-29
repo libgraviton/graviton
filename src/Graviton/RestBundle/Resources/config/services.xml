@@ -9,6 +9,7 @@
         <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
         <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
         <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
+        <parameter key="graviton.rest.objectslicer.class">Graviton\RestBundle\Utils\ObjectSlicer</parameter>
         <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
         <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
@@ -46,6 +47,9 @@
 
         <!-- Pagination -->
         <service id="graviton.rest.paginator" alias="knp_paginator"/>
+
+        <!-- Object slicer -->
+        <service id="graviton.rest.objectslicer" class="%graviton.rest.objectslicer.class%"/>
 
         <!-- Routing -->
         <!-- Routing collection -->
