@@ -139,6 +139,9 @@ class BasicLoader extends Loader
         $actionPut = ActionUtils::getRoutePut($service, $serviceConfig);
         $this->routes->add($resource . '.put', $actionPut);
 
+        $actionPatch = ActionUtils::getRoutePatch($service, $serviceConfig);
+        $this->routes->add($resource . '.patch', $actionPatch);
+
         $actionDelete = ActionUtils::getRouteDelete($service, $serviceConfig);
         $this->routes->add($resource . '.delete', $actionDelete);
     }

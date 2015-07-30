@@ -11,6 +11,7 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
+use mikemccabe\JsonPatch\JsonPatchException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
@@ -27,6 +28,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use mikemccabe\JsonPatch\JsonPatch;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -418,6 +420,45 @@ class RestController
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
+
+        return $response;
+    }
+
+    /**
+     * Patch a record
+     *
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
+     *
+     * @throws MalformedInputException
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function patchAction($id, Request $request)
+    {
+        $response = $this->getResponse();
+        $this->checkJsonRequest($request, $response);
+
+        // Find record
+        $record = $this->findRecord($id);
+        $serialized = $this->serialize($record);
+
+        try {
+            // Apply JSON patches
+            $patchedDocument = JsonPatch::patch(
+                json_decode($serialized, 1),
+                json_decode($request->getContent(), 1)
+            );
+        } catch(JsonPatchException $e) {
+            throw new BadRequestHttpException('Invalid PATCH request.');
+        }
+
+        // Update object
+        $updatedRecord = $this->deserialize(json_encode($patchedDocument), $this->getModel()->getEntityClass());
+        $this->getModel()->updateRecord($id, $updatedRecord);
+
+        // Set status code
+        $response->setStatusCode(Response::HTTP_OK);
 
         return $response;
     }

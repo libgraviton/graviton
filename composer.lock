@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5f6c04eceb94c0202275c78445123fe1",
+    "hash": "9cfb5185d2f6eb0dbd7026119397d2f3",
     "packages": [
         {
             "name": "airbrake/airbrake-php",
@@ -2870,6 +2870,33 @@
             "time": "2015-06-25 17:26:56"
         },
         {
+            "name": "mikemccabe/json-patch-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikemccabe/json-patch-php.git",
+                "reference": "006a018ea71b17a90198c6db340bdd09f36278cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikemccabe/json-patch-php/zipball/006a018ea71b17a90198c6db340bdd09f36278cc",
+                "reference": "006a018ea71b17a90198c6db340bdd09f36278cc",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mikemccabe\\JsonPatch\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Produce and apply json-patch objects",
+            "time": "2015-01-14 00:59:52"
+        },
+        {
             "name": "misd/guzzle-bundle",
             "version": "v1.1.5",
             "source": {
@@ -5118,6 +5145,7 @@
         "php-jsonpointer/php-jsonpointer": 5,
         "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
+        "mikemccabe/json-patch-php": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
