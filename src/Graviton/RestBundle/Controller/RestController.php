@@ -449,7 +449,7 @@ class RestController
                 json_decode($serialized, 1),
                 json_decode($request->getContent(), 1)
             );
-        } catch(JsonPatchException $e) {
+        } catch (JsonPatchException $e) {
             throw new BadRequestHttpException('Invalid PATCH request.');
         }
 
