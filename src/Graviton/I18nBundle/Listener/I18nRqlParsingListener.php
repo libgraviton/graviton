@@ -5,12 +5,6 @@
 
 namespace Graviton\I18nBundle\Listener;
 
-use Doctrine\Common\EventSubscriber;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Graviton\I18nBundle\Document\Translatable;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
-
 /**
  * tries to alter rql queries in a way the user can search translatables in all languages
  *
@@ -18,17 +12,8 @@ use Symfony\Component\Filesystem\Filesystem;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class I18nRqlParsingListener implements EventSubscriber
+class I18nRqlParsingListener
 {
-    /**
-     * {@inheritDocs}
-     *
-     * @return string[]
-     */
-    public function getSubscribedEvents()
-    {
-        return array('visitNode');
-    }
 
     /**
      * @param VisitNodeEvent $event node event to visit
@@ -40,5 +25,4 @@ class I18nRqlParsingListener implements EventSubscriber
         $node = $event->getNode();
         return $event;
     }
-
 }
