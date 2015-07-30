@@ -21,6 +21,14 @@
                     "$ref": "http://localhost/core/app/admin"
                 },
                 "default": "/"
+            },
+            {
+                "id": "admin-additional+setting",
+                "key": "additional-setting",
+                "app": {
+                    "$ref": "http://localhost/core/app/admin"
+                },
+                "default": "stronghold"
             }
         ]
     },

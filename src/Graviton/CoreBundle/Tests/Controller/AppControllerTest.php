@@ -555,7 +555,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertContains('showInMenu', $results[0]->property_path);
+        $this->assertContains('showInMenu', $results[0]->propertyPath);
         $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
