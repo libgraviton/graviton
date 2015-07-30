@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
@@ -20,6 +21,8 @@ use Graviton\RestBundle\Event\RestEvent;
  */
 class PagingLinkResponseListener
 {
+    use GetRqlUrlTrait;
+
     /**
      * @var Router
      */
@@ -58,8 +61,8 @@ class PagingLinkResponseListener
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
             $additionalParams = array();
-            if ($request->attributes->get('filtering')) {
-                $additionalParams['q'] = $request->get('q', '');
+            if ($request->attributes->get('hasRql', false)) {
+                $additionalParams['q'] = $request->attributes->get('rawRql', '');
             }
 
             $this->linkHeader = LinkHeader::fromResponse($response);
@@ -69,6 +72,7 @@ class PagingLinkResponseListener
                 $request->get('page', 1),
                 $request->attributes->get('numPages'),
                 $request->attributes->get('perPage'),
+                $request,
                 $additionalParams
             );
             $response->headers->set(
@@ -85,23 +89,24 @@ class PagingLinkResponseListener
      * @param integer $page             current page
      * @param integer $numPages         number of all pages
      * @param integer $perPage          number of records per page
+     * @param Request $request          request to get rawRql from
      * @param array   $additionalParams Optional array of additional params to include
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages, $perPage, $additionalParams = array())
+    private function generateLinks($route, $page, $numPages, $perPage, Request $request, $additionalParams = array())
     {
         if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first', $additionalParams);
+            $this->generateLink($route, 1, $perPage, 'first', $request, $additionalParams);
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev', $additionalParams);
+            $this->generateLink($route, $page - 1, $perPage, 'prev', $request, $additionalParams);
         }
         if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, $perPage, 'next', $additionalParams);
+            $this->generateLink($route, $page + 1, $perPage, 'next', $request, $additionalParams);
         }
         if ($page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last', $additionalParams);
+            $this->generateLink($route, $numPages, $perPage, 'last', $request, $additionalParams);
         }
     }
 
@@ -112,17 +117,22 @@ class PagingLinkResponseListener
      * @param integer $page             page to link to
      * @param integer $perPage          number of items per page
      * @param string  $type             rel type of link to generate
+     * @param Request $request          request to get rawRql from
      * @param array   $additionalParams Optional array of additional params to include
      *
      * @return string
      */
-    private function generateLink($routeName, $page, $perPage, $type, $additionalParams = array())
+    private function generateLink($routeName, $page, $perPage, $type, Request $request, $additionalParams = array())
     {
         $parameters = array_merge($additionalParams, array('page' => $page));
         if ($perPage) {
             $parameters['perPage'] = $perPage;
         }
-        $url = $this->router->generate($routeName, $parameters, true);
+        $url = $this->getRqlUrl(
+            $request,
+            $this->router->generate($routeName, $parameters, true)
+        );
+
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }
 }

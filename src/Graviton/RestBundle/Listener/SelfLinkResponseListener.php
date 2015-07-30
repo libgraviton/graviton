@@ -21,6 +21,8 @@ use Graviton\RestBundle\Event\RestEvent;
  */
 class SelfLinkResponseListener
 {
+    use GetRqlUrlTrait;
+
     /**
      * @var Router
      */
@@ -71,7 +73,11 @@ class SelfLinkResponseListener
         $url = '';
 
         try {
-            $url = $this->router->generate($routeName, $this->generateParameters($routeType, $request), true);
+            $url = $this->getRqlUrl(
+                $request,
+                $this->router->generate($routeName, $this->generateParameters($routeType, $request), true)
+            );
+
         } catch (\Exception $e) {
             $addHeader = false;
         }
@@ -115,8 +121,8 @@ class SelfLinkResponseListener
             }
         }
 
-        if ($routeType == 'all' && $request->attributes->get('filtering')) {
-            $parameters = array('q' => $request->get('q', ''));
+        if ($routeType == 'all' && $request->attributes->get('hasRql')) {
+            $parameters = ['q' => $request->attributes->get('rawRql')];
         }
 
         return $parameters;
