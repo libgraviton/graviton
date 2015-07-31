@@ -150,6 +150,26 @@ class I18nUtils
     }
 
     /**
+     * This function allows to search for existing translations from a source
+     * language, probably using a wildcard
+     *
+     * @param $value
+     * @param $sourceLocale
+     * @param $useWildCard
+     *
+     * @return array matching Translatables
+     */
+    public function findMatchingTranslatables($value, $sourceLocale, $useWildCard = false)
+    {
+        $repo = $this->translatable->getRepository();
+        return $repo->findBy(array(
+            'domain' => $this->getTranslatableDomain(),
+            'locale' => $sourceLocale,
+            'translated' => $value
+        ));
+    }
+
+    /**
      * [In|Up]serts a Translatable object using an array with language strings.
      *
      * @param array $values array with language strings; key should be language id
