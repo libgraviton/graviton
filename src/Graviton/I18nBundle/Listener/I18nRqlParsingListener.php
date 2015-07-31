@@ -11,6 +11,9 @@ use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Xiag\Rql\Parser\AbstractNode;
+use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
+use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
+use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * tries to alter rql queries in a way the user can search translatables in all languages
@@ -37,6 +40,11 @@ class I18nRqlParsingListener
      */
     protected $builder;
 
+    /**
+     * Constructor
+     *
+     * @param I18nUtils $i18nUtils i18nutils
+     */
     public function __construct(I18nUtils $i18nUtils)
     {
         $this->i18nUtils = $i18nUtils;
@@ -52,11 +60,35 @@ class I18nRqlParsingListener
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
 
-        if ($this->isTranslatableFieldNode()) {
-
+        if ($this->node instanceof AbstractScalarOperatorNode && $this->isTranslatableFieldNode()) {
+            $event->setNode($this->getAlteredQueryNode(
+                $this->getNewNodeTargetField(),
+                $this->getAllPossibleTranslatableStrings()
+            ));
         }
 
         return $event;
+    }
+
+    /**
+     * Gets a new query node
+     *
+     * @param string $fieldName target fieldname
+     * @param mixed  $value     the values to set - array or string
+     *
+     * @return AbstractNode some node
+     */
+    private function getAlteredQueryNode($fieldName, $value)
+    {
+        if (is_array($value)) {
+            $newNode = new OrNode();
+            foreach ($value as $singleValue) {
+                $newNode->addQuery(new EqNode($fieldName, $singleValue));
+            }
+        } else {
+            $newNode = new EqNode($fieldName, $value);
+        }
+        return $newNode;
     }
 
     /**
@@ -69,7 +101,8 @@ class I18nRqlParsingListener
         $class = $this->getDocumentClass();
         $isTranslatableField = false;
 
-        if ($class instanceof TranslatableDocumentInterface &&
+        if ($this->node instanceof AbstractScalarOperatorNode &&
+            $class instanceof TranslatableDocumentInterface &&
             in_array($this->getDocumentFieldName(), $class->getTranslatableFields())) {
             $isTranslatableField = true;
         }
@@ -101,6 +134,36 @@ class I18nRqlParsingListener
     {
         $parts = explode('.', $this->node->getField());
         return array_pop($parts);
+    }
+
+    /**
+     * Returns the new node target field (the one without language)
+     *
+     * @return string new field name
+     */
+    private function getNewNodeTargetField()
+    {
+        $parts = explode('.', $this->node->getField());
+        array_pop($parts);
+        return implode('.', $parts);
+    }
+
+    private function getAllPossibleTranslatableStrings()
+    {
+        $matchingTranslations = array();
+        $matchingTranslatables = $this->i18nUtils->findMatchingTranslatables(
+            $this->node->getValue(),
+            $this->getClientSearchLanguage()
+        );
+
+        foreach ($matchingTranslatables as $translatable) {
+            $originalString = $translatable->getOriginal();
+            if (!empty($originalString)) {
+                $matchingTranslations[] = $originalString;
+            }
+        }
+
+        return array_unique($matchingTranslations);
     }
 
     /**
