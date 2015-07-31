@@ -28,7 +28,7 @@ class I18nRqlParsingListener
     /**
      * @var I18nUtils
      */
-    protected $i18nUtils;
+    protected $intUtils;
 
     /**
      * @var AbstractNode
@@ -43,11 +43,11 @@ class I18nRqlParsingListener
     /**
      * Constructor
      *
-     * @param I18nUtils $i18nUtils i18nutils
+     * @param I18nUtils $intUtils int utils
      */
-    public function __construct(I18nUtils $i18nUtils)
+    public function __construct(I18nUtils $intUtils)
     {
-        $this->i18nUtils = $i18nUtils;
+        $this->intUtils = $intUtils;
     }
 
     /**
@@ -61,10 +61,12 @@ class I18nRqlParsingListener
         $this->builder = $event->getBuilder();
 
         if ($this->node instanceof AbstractScalarOperatorNode && $this->isTranslatableFieldNode()) {
-            $event->setNode($this->getAlteredQueryNode(
-                $this->getNewNodeTargetField(),
-                $this->getAllPossibleTranslatableStrings()
-            ));
+            $event->setNode(
+                $this->getAlteredQueryNode(
+                    $this->getNewNodeTargetField(),
+                    $this->getAllPossibleTranslatableStrings()
+                )
+            );
         }
 
         return $event;
@@ -148,10 +150,16 @@ class I18nRqlParsingListener
         return implode('.', $parts);
     }
 
+    /**
+     * Looks up all matching Translatables and returns them uniquified
+     *
+     * @return array matching english strings
+     */
     private function getAllPossibleTranslatableStrings()
     {
         $matchingTranslations = array();
-        $matchingTranslatables = $this->i18nUtils->findMatchingTranslatables(
+
+        $matchingTranslatables = $this->intUtils->findMatchingTranslatables(
             $this->node->getValue(),
             $this->getClientSearchLanguage()
         );
@@ -163,7 +171,16 @@ class I18nRqlParsingListener
             }
         }
 
-        return array_unique($matchingTranslations);
+        $matches = array_unique($matchingTranslations);
+
+        if (count($matches) === 0) {
+            // if we have no matches, that means that it's either not existing OR
+            // that it's not translated (= not in translatable). so we include
+            // the searchval in that case to at least find original OR find nothing
+            $matches = array($this->node->getValue());
+        }
+
+        return $matches;
     }
 
     /**

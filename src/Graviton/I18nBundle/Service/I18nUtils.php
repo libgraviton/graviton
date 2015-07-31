@@ -153,20 +153,22 @@ class I18nUtils
      * This function allows to search for existing translations from a source
      * language, probably using a wildcard
      *
-     * @param $value
-     * @param $sourceLocale
-     * @param $useWildCard
+     * @param string  $value        the translated string
+     * @param string  $sourceLocale a source locale
+     * @param boolean $useWildCard  if we should search wildcard or not
      *
      * @return array matching Translatables
      */
     public function findMatchingTranslatables($value, $sourceLocale, $useWildCard = false)
     {
         $repo = $this->translatable->getRepository();
-        return $repo->findBy(array(
-            'domain' => $this->getTranslatableDomain(),
-            'locale' => $sourceLocale,
-            'translated' => $value
-        ));
+        return $repo->findBy(
+            array(
+                'domain' => $this->getTranslatableDomain(),
+                'locale' => $sourceLocale,
+                'translated' => $value
+            )
+        );
     }
 
     /**
