@@ -102,6 +102,7 @@ class JsonDefinitionField implements DefinitionElementInterface
             'readOnly'          => $this->definition->getReadOnly(),
             'required'          => $this->definition->getRequired(),
             'translatable'      => $this->definition->getTranslatable(),
+            'collection'        => $this->definition->getCollection(),
 
             'name'              => $this->getName(),
             'type'              => $this->getType(),
