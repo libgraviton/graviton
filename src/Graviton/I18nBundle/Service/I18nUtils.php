@@ -161,14 +161,20 @@ class I18nUtils
      */
     public function findMatchingTranslatables($value, $sourceLocale, $useWildCard = false)
     {
-        $repo = $this->translatable->getRepository();
-        return $repo->findBy(
-            array(
-                'domain' => $this->getTranslatableDomain(),
-                'locale' => $sourceLocale,
-                'translated' => $value
-            )
-        );
+        // i need to use a queryBuilder as the repository doesn't let me do regex queries (i guess so..)
+        $builder = $this->translatable->getRepository()->createQueryBuilder();
+        $builder
+            ->field('domain')->equals($this->getTranslatableDomain())
+            ->field('locale')->equals($sourceLocale);
+
+        if ($useWildCard === true) {
+            $value = new \MongoRegex($value);
+        }
+        $builder->field('translated')->equals($value);
+
+        $query = $builder->getQuery();
+
+        return $query->execute()->toArray();
     }
 
     /**

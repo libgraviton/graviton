@@ -159,9 +159,19 @@ class I18nRqlParsingListener
     {
         $matchingTranslations = array();
 
+        // is it a glob?
+        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
+            $userValue = $this->node->getValue()->toRegex();
+            $useWildcard = true;
+        } else {
+            $userValue = $this->node->getValue();
+            $useWildcard = false;
+        }
+
         $matchingTranslatables = $this->intUtils->findMatchingTranslatables(
-            $this->node->getValue(),
-            $this->getClientSearchLanguage()
+            $userValue,
+            $this->getClientSearchLanguage(),
+            $useWildcard
         );
 
         foreach ($matchingTranslatables as $translatable) {
@@ -176,8 +186,9 @@ class I18nRqlParsingListener
         if (count($matches) === 0) {
             // if we have no matches, that means that it's either not existing OR
             // that it's not translated (= not in translatable). so we include
-            // the searchval in that case to at least find original OR find nothing
-            $matches = array($this->node->getValue());
+            // the searchval in that case to at least find original OR find nothing.
+            // that's important, because if we return [], mongo will return *all* records again
+            $matches = array($userValue);
         }
 
         return $matches;
