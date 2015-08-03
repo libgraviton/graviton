@@ -751,7 +751,7 @@ class ResourceGenerator extends AbstractGenerator
             [
                 [
                     'type' => 'service',
-                    'id' => 'graviton.rql.visitor_factory',
+                    'id' => 'graviton.rql.visitor.mongodb',
                 ],
             ]
         );
