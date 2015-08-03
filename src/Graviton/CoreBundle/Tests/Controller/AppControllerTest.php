@@ -37,7 +37,9 @@ class AppControllerTest extends RestTestCase
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
             ),
             null,
             'doctrine_mongodb'
@@ -580,7 +582,7 @@ class AppControllerTest extends RestTestCase
             "eq(title.de,Die%20Administration)",
             "eq(title.en,Administration)",
             "eq(title,Administration)",
-            "like(title.de,*Administr*)",
+            "like(title.de,*Administr*)"
         ];
 
         foreach ($expressions as $expr) {
@@ -600,6 +602,24 @@ class AppControllerTest extends RestTestCase
             $this->assertEquals($refApp, $result[0]);
         }
 
+        /**
+         * now we test an edge case. at this point we have 'Die Administration' for the first app
+         * translated. but "Tablet" from the second app is not localized yet - but it is present in
+         * the output. so a search for "title.de" with "*a*" should find both apps!
+         */
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app',
+            array(
+                'q' => 'like(title.de,*a*)'
+            ),
+            array(),
+            $serverParams
+        );
+
+        $result = $client->getResults();
+        $this->assertCount(2, $result);
     }
 
     /**
