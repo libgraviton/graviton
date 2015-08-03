@@ -36,7 +36,8 @@ class AppControllerTest extends RestTestCase
         $this->loadFixtures(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData'
             ),
             null,
             'doctrine_mongodb'
@@ -546,6 +547,58 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * Test for searchable translations
+     *
+     * @return void
+     */
+    public function testSearchableTranslations()
+    {
+        $serverParams = array('HTTP_ACCEPT_LANGUAGE' => 'en, de');
+
+        // fetch app
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin', array(), array(), $serverParams);
+
+        // add german title
+        $app = $client->getResults();
+        $app->title->de = 'Die Administration';
+
+        $client = static::createRestClient();
+        $client->put('/core/app/admin', $app, array(), array(), $serverParams);
+
+        // get our 'ref app' for admin
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin', array(), array(), $serverParams);
+        $refApp = $client->getResults();
+
+        // ok - now let's search for that
+        // this should all find the same document
+        $expressions = [
+            "eq(title.de,Die%20Administration)",
+            "eq(title.de,*Administr*)",
+            "eq(title.en,Administration)"
+        ];
+
+        foreach ($expressions as $expr) {
+            $client = static::createRestClient();
+            $client->request(
+                'GET',
+                '/core/app',
+                array(
+                    'q' => $expr
+                ),
+                array(),
+                $serverParams
+            );
+
+            $result = $client->getResults();
+            $this->assertCount(1, $result);
+            $this->assertEquals($refApp, $result[0]);
+        }
+
     }
 
     /**
