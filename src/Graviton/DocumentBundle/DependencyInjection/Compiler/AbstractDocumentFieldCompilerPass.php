@@ -5,8 +5,8 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * An AbstractDocumentFieldsCompilerPass has the focus of somehow filtering/preparing stuff
@@ -17,8 +17,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-abstract class AbstractDocumentFieldsCompilerPass extends AbstractDocumentCompilerPass
+abstract class AbstractDocumentFieldCompilerPass extends AbstractDocumentCompilerPass
 {
+    /**
+     * @var array Doctrine mappings
+     */
+    protected $classMap = [];
 
     /**
      * Filter out whatever you need of the $document
@@ -33,7 +37,7 @@ abstract class AbstractDocumentFieldsCompilerPass extends AbstractDocumentCompil
      *
      * @return Finder
      */
-    private function getDoctrineMappingFinder()
+    protected function getDoctrineMappingFinder()
     {
         return (new Finder())
             ->in(__DIR__ . '/../../../..')

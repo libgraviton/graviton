@@ -9,8 +9,6 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -23,7 +21,7 @@ class ExtRefFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
     /**
      * @var array Doctrine mappings
      */
-    private $classMap = [];
+    protected $classMap = [];
 
     /**
      * load services
