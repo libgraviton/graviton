@@ -598,11 +598,10 @@ class AppControllerTest extends RestTestCase
             );
 
             $result = $client->getResults();
-            var_dump($result);
             $this->assertCount(1, $result);
             $this->assertEquals($refApp, $result[0]);
         }
-        die;
+
         /**
          * now we test an edge case. at this point we have 'Die Administration' for the first app
          * translated. but "Tablet" from the second app is not localized yet - but it is present in
