@@ -10,7 +10,6 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
@@ -76,20 +75,18 @@ class I18nRqlParsingListener
      * Gets a new query node
      *
      * @param string $fieldName target fieldname
-     * @param mixed  $value     the values to set - array or string
+     * @param array  $values    the values to set
      *
      * @return AbstractNode some node
      */
-    private function getAlteredQueryNode($fieldName, $value)
+    private function getAlteredQueryNode($fieldName, array $values)
     {
-        if (is_array($value)) {
-            $newNode = new OrNode();
-            foreach ($value as $singleValue) {
-                $newNode->addQuery(new EqNode($fieldName, $singleValue));
-            }
-        } else {
-            $newNode = new EqNode($fieldName, $value);
+        $newNode = new OrNode();
+
+        foreach ($values as $singleValue) {
+            $newNode->addQuery(new EqNode($fieldName, $singleValue));
         }
+
         return $newNode;
     }
 
@@ -181,17 +178,7 @@ class I18nRqlParsingListener
             }
         }
 
-        $matches = array_unique($matchingTranslations);
-
-        if (count($matches) === 0) {
-            // if we have no matches, that means that it's either not existing OR
-            // that it's not translated (= not in translatable). so we include
-            // the searchval in that case to at least find original OR find nothing.
-            // that's important, because if we return [], mongo will return *all* records again
-            $matches = array($userValue);
-        }
-
-        return $matches;
+        return array_unique($matchingTranslations);
     }
 
     /**
