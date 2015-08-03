@@ -579,7 +579,7 @@ class AppControllerTest extends RestTestCase
         // ok - now let's search for that
         // this should all find the same document
         $expressions = [
-            'eq(title.de,Die Administration)',
+            'eq(title.de,Die%20Administration)',
             'eq(title.en,Administration)',
             'eq(title,Administration)',
             'like(title.de,*Administr*)'
@@ -587,15 +587,17 @@ class AppControllerTest extends RestTestCase
 
         foreach ($expressions as $expr) {
             $client = static::createRestClient();
+            $_SERVER['QUERY_STRING'] = 'q='.$expr;
             $client->request(
                 'GET',
-                '/core/app',
+                '/core/app?q='.$expr,
                 array(
-                    'q' => $expr
+                    //'q' => $expr
                 ),
                 array(),
                 $serverParams
             );
+            unset($_SERVER['QUERY_STRING']);
 
             $result = $client->getResults();
             $this->assertCount(1, $result);
