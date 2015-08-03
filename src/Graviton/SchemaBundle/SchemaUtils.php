@@ -8,6 +8,7 @@ namespace Graviton\SchemaBundle;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\SchemaBundle\Document\Schema;
+use Symfony\Component\Routing\Router;
 
 /**
  * Utils for generating schemas.
@@ -26,14 +27,20 @@ class SchemaUtils
      */
     private $languageRepository;
 
+    private $router;
+
+    private $mapping;
+
     /**
      * Constructor
      *
      * @param LanguageRepository $languageRepository repository
      */
-    public function __construct(LanguageRepository $languageRepository)
+    public function __construct(LanguageRepository $languageRepository, Router $router, Array $map)
     {
         $this->languageRepository = $languageRepository;
+        $this->router = $router;
+        $this->mapping = $map;
     }
 
     /**
@@ -121,10 +128,26 @@ class SchemaUtils
                 $property = self::makeTranslatable($property, $languages);
             }
 
-            if ($meta->getTypeOfField($field) === 'extref' && substr($field, 0, 1) !== '$') {
-                $field = '$' . $field;
-            }
+            if ($meta->getTypeOfField($field) === 'extref') {
+                $urls = array();
+                $refCollections = $model->getRefCollectionOfField($field);
+                foreach ($refCollections as $col) {
+                    if (array_key_exists($col, $this->mapping)) {
+                        $urls[] = $this->router->generate(
+                            substr($this->mapping[$col], 0, strrpos($this->mapping[$col], '.')).'.all',
+                            array(),
+                            true
+                        );
+                    } elseif ($col == '*') {
+                        $urls[] = '*';
+                    }
+                }
+                $property->setRefCollection($urls);
 
+                if (substr($field, 0, 1) !== '$') {
+                    $field = '$'.$field;
+                }
+            }
             $schema->addProperty($field, $property);
         }
 

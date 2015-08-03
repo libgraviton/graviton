@@ -55,6 +55,11 @@ class Schema
     protected $translatable;
 
     /**
+     * @var array
+     */
+    protected $refCollection = array();
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -319,5 +324,20 @@ class Schema
         }
 
         return $ret;
+    }
+
+    public function setRefCollection(array $refCollection)
+    {
+        $this->refCollection = $refCollection;
+    }
+
+    public function getRefCollection()
+    {
+        $collection = $this->refCollection;
+        if (empty($collection)) {
+            $collection = null;
+        }
+
+        return $collection;
     }
 }

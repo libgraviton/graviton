@@ -149,4 +149,21 @@ class SchemaModel implements ContainerAwareInterface
     {
         return $this->schema->required;
     }
+
+    /**
+     * get a collection of service names that can extref refere to
+     *
+     * @param string $field field name
+     *
+     * @return array
+     */
+    public function getRefCollectionOfField($field)
+    {
+        $ret = array();
+        if (isset($this->schema->properties->$field->collection)) {
+            $ret = $this->schema->properties->$field->collection;
+        }
+
+        return $ret;
+    }
 }
