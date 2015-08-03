@@ -140,32 +140,20 @@ class ExtReference extends Type
      */
     private function getDataFromRoute(Route $route, $value)
     {
-        $collection = null;
-        $id = null;
-
-        $reqs = $route->getRequirements();
-        $keys = array_filter(
-            array_keys($reqs),
-            function ($req) {
-                return substr($req, 0, 1) !== '_';
-            }
-        );
-
-        $params = array();
-        foreach ($keys as $key) {
-            $params[$key] = $reqs[$key];
-        }
-
-        $matches = [];
-        if (preg_match($route->compile()->getRegex(), $value, $matches)) {
+        if ($route->getRequirement('id') !== null &&
+            $route->getMethods() === ['GET'] &&
+            preg_match($route->compile()->getRegex(), $value, $matches)
+        ) {
             $id = $matches['id'];
 
             list($routeService) = explode(':', $route->getDefault('_controller'));
             list($core, $bundle,,$name) = explode('.', $routeService);
             $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
             $collection = array_search($serviceName, $this->mapping);
+
+            return [$collection, $id];
         }
 
-        return [$collection, $id];
+        return [null, null];
     }
 }
