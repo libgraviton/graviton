@@ -170,7 +170,23 @@ class I18nUtils
         if ($useWildCard === true) {
             $value = new \MongoRegex($value);
         }
-        $builder->field('translated')->equals($value);
+
+        /*
+         * we have 2 cases to match
+         * - 'translated' is set and matches
+         * - 'translated' is not present, so 'original' can match (as this is inserted 'virtually')
+         */
+        $builder->addAnd(
+            $builder->expr()
+                ->addOr(
+                    $builder->expr()->field('translated')->equals($value)
+                )
+                ->addOr(
+                    $builder->expr()
+                        ->field('translated')->equals(null)
+                        ->field('original')->equals($value)
+                )
+        );
 
         $query = $builder->getQuery();
 
