@@ -107,7 +107,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'serializerType' => 'string',
             'relType' => $field::REL_TYPE_REF,
             'isClassType' => false,
-            'constraints' => array()
+            'constraints' => array(),
+            'collection' => array()
         );
 
         $this->assertEquals($def, $field->getDefAsArray());
