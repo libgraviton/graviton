@@ -32,6 +32,7 @@
   </filter>
   <php>
     <ini name="error_reporting" value="E_ALL"/>
+    <ini name="xdebug.max_nesting_level" value="200"/>
   </php>
   <listeners>
     <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
