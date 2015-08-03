@@ -578,8 +578,9 @@ class AppControllerTest extends RestTestCase
         // this should all find the same document
         $expressions = [
             "eq(title.de,Die%20Administration)",
-            "eq(title.de,*Administr*)",
-            "eq(title.en,Administration)"
+            "eq(title.en,Administration)",
+            "eq(title,Administration)",
+            "like(title.de,*Administr*)",
         ];
 
         foreach ($expressions as $expr) {
