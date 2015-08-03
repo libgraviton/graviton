@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefMappingCompilerPass extends AbstractExtRefCompilerPass
+class ExtRefMappingCompilerPass extends AbstractDocumentCompilerPass
 {
     /**
      * create mapping from services
