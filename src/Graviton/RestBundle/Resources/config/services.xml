@@ -17,6 +17,7 @@
         <parameter key="graviton.rest.listener.rqlselectresponselistener.class">Graviton\RestBundle\Listener\RqlSelectResponseListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
+        <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
     </parameters>
     <services>
@@ -182,10 +183,19 @@
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
+        <!-- Validators -->
         <service id="graviton.rest.validator.readonly"
                  class="%graviton.rest.validator.readonly.class%">
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
             <tag name="validator.constraint_validator" alias="graviton.rest.validator.readonly"/>
+        </service>
+
+        <service id="graviton.rest.validator.extref"
+                 class="%graviton.rest.validator.extref.class%">
+            <call method="setRouter">
+                <argument type="service" id="router"/>
+            </call>
+            <tag name="validator.constraint_validator" alias="graviton.rest.validator.extref" />
         </service>
     </services>
 </container>
