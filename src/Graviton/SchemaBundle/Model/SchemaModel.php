@@ -151,7 +151,7 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
-     * get a collection of service names that can extref refere to
+     * get a collection of service names that can extref refer to
      *
      * @param string $field field name
      *

@@ -27,20 +27,32 @@ class SchemaUtils
      */
     private $languageRepository;
 
+    /**
+     * router
+     *
+     * @var Router router
+     */
     private $router;
 
-    private $mapping;
+    /**
+     * mapping service names => route names
+     *
+     * @var array service mapping
+     */
+    private $serviceMapping;
 
     /**
      * Constructor
      *
      * @param LanguageRepository $languageRepository repository
+     * @param Router             $router             router
+     * @param array              $map                service mapping
      */
-    public function __construct(LanguageRepository $languageRepository, Router $router, Array $map)
+    public function __construct(LanguageRepository $languageRepository, Router $router, array $map)
     {
         $this->languageRepository = $languageRepository;
         $this->router = $router;
-        $this->mapping = $map;
+        $this->serviceMapping = $map;
     }
 
     /**
@@ -131,14 +143,14 @@ class SchemaUtils
             if ($meta->getTypeOfField($field) === 'extref') {
                 $urls = array();
                 $refCollections = $model->getRefCollectionOfField($field);
-                foreach ($refCollections as $col) {
-                    if (array_key_exists($col, $this->mapping)) {
+                foreach ($refCollections as $val) {
+                    if (array_key_exists($val, $this->serviceMapping)) {
                         $urls[] = $this->router->generate(
-                            substr($this->mapping[$col], 0, strrpos($this->mapping[$col], '.')).'.all',
+                            substr($this->serviceMapping[$val], 0, strrpos($this->serviceMapping[$val], '.')).'.all',
                             array(),
                             true
                         );
-                    } elseif ($col == '*') {
+                    } elseif ($val == '*') {
                         $urls[] = '*';
                     }
                 }

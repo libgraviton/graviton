@@ -326,11 +326,23 @@ class Schema
         return $ret;
     }
 
+    /**
+     * set a array of urls that can extref refer to
+     *
+     * @param array $refCollection urls
+     *
+     * @return void
+     */
     public function setRefCollection(array $refCollection)
     {
         $this->refCollection = $refCollection;
     }
 
+    /**
+     * get a collection of urls that can extref refer to
+     *
+     * @return array
+     */
     public function getRefCollection()
     {
         $collection = $this->refCollection;

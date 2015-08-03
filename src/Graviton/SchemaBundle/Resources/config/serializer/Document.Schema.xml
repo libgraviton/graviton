@@ -6,7 +6,7 @@
     <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
     <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
-    <property name="collection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
+    <property name="refCollection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
     <property name="properties" accessor-getter="getProperties" expose="true">
