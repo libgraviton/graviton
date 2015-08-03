@@ -101,16 +101,21 @@ class ExtReference extends Type
 
         $path = $this->getPathFromUrl($value);
 
+        $id = null;
+        $collection = null;
+
         foreach ($this->router->getRouteCollection()->all() as $route) {
             list($collection, $id) = $this->getDataFromRoute($route, $path);
-            if (!empty($collection) && !empty($id)) {
-                return \MongoDBRef::create($collection, $id);
+            if ($collection !== null && $id !== null) {
+                break;
             }
         }
 
-        if (empty($collection) || empty($id)) {
+        if ($collection === null || $id === null) {
             throw new \RuntimeException(sprintf('Could not read URL %s', $value));
         }
+
+        return \MongoDBRef::create($collection, $id);
     }
 
     /**
