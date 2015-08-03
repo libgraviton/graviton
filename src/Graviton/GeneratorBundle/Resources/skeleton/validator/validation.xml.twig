@@ -34,6 +34,10 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\BooleanStrict"/>']) %}
     {% endif %}
 
+    {% if field.type == 'extref' %}
+        {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\ExtReference\\ExtReference"/>']) %}
+    {% endif %}
+
     {% if field.type == 'int' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">integer</option></constraint>']) %}
     {% endif %}
