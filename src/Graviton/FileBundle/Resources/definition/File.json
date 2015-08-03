@@ -29,7 +29,8 @@
         "type": "extref",
         "title": "Link",
         "description": "Link to any document.",
-        "exposeAs": "$ref"
+        "exposeAs": "$ref",
+        "collection": ["*"]
       },
       {
         "name": "metadata.size",
