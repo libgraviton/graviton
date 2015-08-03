@@ -28,13 +28,13 @@ class LoadTranslatablesApp implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        /*** THIS TRANSLATABLES HERE SHOULD *NOT* BE TRANSLATED FOR TESTS ***/
         $deAdmin = new Translatable;
         $deAdmin->setId('i18n-de-Administration');
         $deAdmin->setDomain('core');
         $deAdmin->setLocale('de');
         $deAdmin->setOriginal('Administration');
-        $deAdmin->setIsLocalized(false);
+        $deAdmin->setTranslated('Die Administration');
+        $deAdmin->setIsLocalized(true);
         $language = new TranslatableLanguage;
         $language->setRef('http://localhost/i18n/language/de');
         $deAdmin->setLanguage($language);
@@ -62,6 +62,8 @@ class LoadTranslatablesApp implements FixtureInterface
         $language->setRef('http://localhost/i18n/language/en');
         $enAdmin->setLanguage($language);
         $manager->persist($enAdmin);
+
+        /*** THIS TRANSLATABLES HERE SHOULD *NOT* BE TRANSLATED FOR TESTS ***/
 
         $deTablet = new Translatable;
         $deTablet->setId('i18n-de-Tablet');

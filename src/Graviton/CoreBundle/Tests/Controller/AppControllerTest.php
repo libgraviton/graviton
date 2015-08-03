@@ -554,74 +554,42 @@ class AppControllerTest extends RestTestCase
     /**
      * Test for searchable translations
      *
+     * @dataProvider searchableTranslationDataProvider
+     *
+     * @param string $expr     expression
+     * @param int    $expCount count
+     *
      * @return void
      */
-    public function testSearchableTranslations()
+    public function testSearchableTranslations($expr, $expCount)
     {
-        $serverParams = array('HTTP_ACCEPT_LANGUAGE' => 'en, de');
-
-        // fetch app
-        $client = static::createRestClient();
-        $client->request('GET', '/core/app/admin', array(), array(), $serverParams);
-
-        // add german title
-        $app = $client->getResults();
-        $app->title->de = 'Die Administration';
-
-        $client = static::createRestClient();
-        $client->put('/core/app/admin', $app, array(), array(), $serverParams);
-
-        // get our 'ref app' for admin
-        $client = static::createRestClient();
-        $client->request('GET', '/core/app/admin', array(), array(), $serverParams);
-        $refApp = $client->getResults();
-
-        // ok - now let's search for that
-        // this should all find the same document
-        $expressions = [
-            'eq(title.de,Die%20Administration)',
-            'eq(title.en,Administration)',
-            'eq(title,Administration)',
-            'like(title.de,*Administr*)'
-        ];
-
-        foreach ($expressions as $expr) {
-            $client = static::createRestClient();
-            $_SERVER['QUERY_STRING'] = 'q='.$expr;
-            $client->request(
-                'GET',
-                '/core/app?q='.$expr,
-                array(
-                    //'q' => $expr
-                ),
-                array(),
-                $serverParams
-            );
-            unset($_SERVER['QUERY_STRING']);
-
-            $result = $client->getResults();
-            $this->assertCount(1, $result);
-            $this->assertEquals($refApp, $result[0]);
-        }
-
-        /**
-         * now we test an edge case. at this point we have 'Die Administration' for the first app
-         * translated. but "Tablet" from the second app is not localized yet - but it is present in
-         * the output. so a search for "title.de" with "*a*" should find both apps!
-         */
         $client = static::createRestClient();
         $client->request(
             'GET',
-            '/core/app',
-            array(
-                'q' => 'like(title.de,*a*)'
-            ),
+            '/core/app?q='.$expr,
             array(),
-            $serverParams
+            array(),
+            array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
         );
 
         $result = $client->getResults();
-        $this->assertCount(2, $result);
+        $this->assertCount($expCount, $result);
+    }
+
+    /**
+     * data provider for searchable translations
+     *
+     * @return array data
+     */
+    public function searchableTranslationDataProvider()
+    {
+        return [
+            'simple-de' => array('eq(title.de,Die%20Administration)', 1),
+            'english' => array('eq(title.en,Administration)', 1),
+            'no-lang' => array('eq(title,Administration)', 1),
+            'glob' => array('like(title.de,*Administr*)', 1),
+            'all-glob' => array('like(title.de,*a*)', 2)
+        ];
     }
 
     /**
