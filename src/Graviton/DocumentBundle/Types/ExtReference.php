@@ -5,8 +5,7 @@
 
 namespace Graviton\DocumentBundle\Types;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Routing\Route;
+use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
@@ -19,39 +18,22 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ExtReference extends Type
 {
     /**
-     * @var Router
+     * @var ExtReferenceResolverInterface
      */
-    private $router;
+    private $resolver;
 
     /**
-     * @var array
-     */
-    private $mapping;
-
-    /**
-     * inject a router
+     * inject a resolver
      *
      * This uses setter injection due to the fact that doctrine doesn't do constructor injection
      *
-     * @param Router $router router
+     * @param ExtReferenceResolverInterface $resolver resolver
      *
      * @return void
      */
-    public function setRouter(Router $router)
+    public function setResolver(ExtReferenceResolverInterface $resolver)
     {
-        $this->router = $router;
-    }
-
-    /**
-     * inject collection name to routing service mapping
-     *
-     * @param array $mapping colleciton_name => service_id mapping
-     *
-     * @return void
-     */
-    public function setMapping(array $mapping)
-    {
-        $this->mapping = $mapping;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -63,13 +45,11 @@ class ExtReference extends Type
      */
     public function convertToPHPValue($value)
     {
-        if (!array_key_exists('$ref', $value)
-            && !array_key_exists($value['$ref'], $this->mapping)
-            && !array_key_exists('$id', $value)
-        ) {
+        try {
+            return $this->resolver->getUrl($value);
+        } catch (\InvalidArgumentException $e) {
             return '';
         }
-        return $this->router->generate($this->mapping[$value['$ref']], ['id' => $value['$id']]);
     }
 
     /**
@@ -92,73 +72,14 @@ class ExtReference extends Type
      */
     public function convertToDatabaseValue($value)
     {
-        if (empty($this->router)) {
-            throw new \RuntimeException('no router injected into '.__CLASS__);
+        try {
+            return $this->resolver->getDbValue($value);
+        } catch (\InvalidArgumentException $e) {
+            throw new \RuntimeException(
+                sprintf('Could not read URL %s', $value),
+                0,
+                $e
+            );
         }
-        if (empty($value)) {
-            throw new \RuntimeException('Empty URL in '.__CLASS__);
-        }
-
-        $path = $this->getPathFromUrl($value);
-
-        $id = null;
-        $collection = null;
-
-        foreach ($this->router->getRouteCollection()->all() as $route) {
-            list($collection, $id) = $this->getDataFromRoute($route, $path);
-            if ($collection !== null && $id !== null) {
-                break;
-            }
-        }
-
-        if ($collection === null || $id === null) {
-            throw new \RuntimeException(sprintf('Could not read URL %s', $value));
-        }
-
-        return \MongoDBRef::create($collection, $id);
-    }
-
-    /**
-     * get path from url
-     *
-     * @param string $url url from request
-     *
-     * @return string
-     */
-    private function getPathFromUrl($url)
-    {
-        $path = parse_url($url, PHP_URL_PATH);
-        if ($path === false) {
-            throw new \RuntimeException('No path found in URL '.$url);
-        }
-        return $path;
-    }
-
-
-    /**
-     * get collection and id from route
-     *
-     * @param Route  $route route to look at
-     * @param string $value value of reference as URI
-     *
-     * @return array
-     */
-    private function getDataFromRoute(Route $route, $value)
-    {
-        if ($route->getRequirement('id') !== null &&
-            $route->getMethods() === ['GET'] &&
-            preg_match($route->compile()->getRegex(), $value, $matches)
-        ) {
-            $id = $matches['id'];
-
-            list($routeService) = explode(':', $route->getDefault('_controller'));
-            list($core, $bundle,,$name) = explode('.', $routeService);
-            $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
-            $collection = array_search($serviceName, $this->mapping);
-
-            return [$collection, $id];
-        }
-
-        return [null, null];
     }
 }

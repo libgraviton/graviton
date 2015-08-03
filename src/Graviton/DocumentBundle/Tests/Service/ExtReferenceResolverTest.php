@@ -1,0 +1,188 @@
+<?php
+/**
+ * ExtReferenceResolverTest class file
+ */
+
+namespace Graviton\DocumentBundle\Tests\Service;
+
+use Graviton\DocumentBundle\Service\ExtReferenceResolver;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
+
+/**
+ * ExtReferenceResolver test
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/GPL GPL
+ * @link     http://swisscom.ch
+ */
+class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $router;
+    /**
+     * @var RouteCollection|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $collection;
+    /**
+     * @var Route[]
+     */
+    private $routes;
+
+    /**
+     * setup type we want to test
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+            ->disableOriginalConstructor()
+            ->setMethods(['getRouteCollection', 'generate'])
+            ->getMock();
+
+        $this->collection = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
+            ->setMethods(['all'])
+            ->getMock();
+
+        $this->routes = [
+            new Route(
+                '/core/app/{id}',
+                [
+                    '_controller' => 'graviton.core.controller.app:getAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                    'id' => '[a-zA-Z0-9\-_\/]+',
+                ]
+            ),
+            new Route(
+                '/core/app',
+                [
+                    '_controller' => 'graviton.core.controller.app.appAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                ]
+            ),
+            new Route(
+                '/i18n/language/{id}',
+                [
+                    '_controller' => 'graviton.i18n.controller.language:getAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                    'id' => '[a-zA-Z0-9\-_\/]+',
+                ]
+            ),
+            new Route(
+                '/hans/showcase/{id}',
+                [
+                    '_controller' => 'gravitondyn.showcase.controller.showcase:getAction',
+                    '_format' => '~'
+                ],
+                [
+                    '_method' => 'GET',
+                    'id' => '[a-zA-Z0-9\-_\/]+',
+                ]
+            ),
+        ];
+    }
+
+    /**
+     * verify that we get a mongodbref
+     *
+     * @dataProvider getDbValueProvider
+     *
+     * @param string $url      external link to convert
+     * @param array  $expected expected mogodb ref
+     *
+     * @return void
+     */
+    public function testGetDbValue($url, $expected)
+    {
+        $this->router
+            ->expects($this->once())
+            ->method('getRouteCollection')
+            ->will($this->returnValue($this->collection));
+
+        $this->collection
+            ->expects($this->once())
+            ->method('all')
+            ->will($this->returnValue($this->routes));
+
+        $resolver = new ExtReferenceResolver(
+            $this->router,
+            [
+                'App' => 'graviton.core.rest.app.get',
+                'Language' => 'graviton.i18n.rest.language.get',
+                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
+            ]
+        );
+        $this->assertEquals($expected, $resolver->getDbValue($url));
+    }
+
+    /**
+     * @return array
+     */
+    public function getDbValueProvider()
+    {
+        return [
+            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
+            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
+            ['http://localhost/hans/showcase/blah', ['$ref' => 'ShowCase', '$id' => 'blah']],
+        ];
+    }
+
+    /**
+     * @dataProvider getUrlProvider
+     *
+     * @param array  $ref     reference as from mongo
+     * @param string $routeId name of route that should get loaded
+     * @param string $url     url we expect to result from the conversion
+     *
+     * @return void
+     */
+    public function testGetUrl($ref, $routeId, $url)
+    {
+        $this->router
+            ->expects($this->once())
+            ->method('generate')
+            ->with(
+                $this->equalTo($routeId),
+                $this->equalTo(['id' => $ref['$id']])
+            )
+            ->will($this->returnValue($url));
+
+        $resolver = new ExtReferenceResolver(
+            $this->router,
+            [
+                'App' => 'graviton.core.rest.app.get',
+                'Language' => 'graviton.i18n.rest.language.get',
+                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
+            ]
+        );
+        $this->assertEquals($url, $resolver->getUrl($ref));
+    }
+
+    /**
+     * @return array
+     */
+    public function getUrlProvider()
+    {
+        return [
+            [['$ref' => 'App', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
+            [
+                ['$ref' => 'Language', '$id' => 'en'],
+                'graviton.i18n.rest.language.get',
+                'http://localhost/i18n/language/en'
+            ],
+        ];
+    }
+}

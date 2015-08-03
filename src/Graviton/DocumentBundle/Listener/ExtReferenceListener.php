@@ -11,10 +11,10 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
+use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,14 +24,9 @@ use Symfony\Component\Routing\RouterInterface;
 class ExtReferenceListener
 {
     /**
-     * @var RouterInterface
+     * @var ExtReferenceResolverInterface
      */
-    private $router;
-
-    /**
-     * @var array
-     */
-    private $mapping;
+    private $resolver;
 
     /**
      * @var array
@@ -46,15 +41,13 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param RouterInterface $router   symfony router
-     * @param array           $mapping  map of collection_name => route_id
-     * @param array           $fields   map of fields to process
-     * @param RequestStack    $requests request
+     * @param ExtReferenceResolverInterface $resolver Extref resolver
+     * @param array                         $fields   map of fields to process
+     * @param RequestStack                  $requests request
      */
-    public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
+    public function __construct(ExtReferenceResolverInterface $resolver, array $fields, RequestStack $requests)
     {
-        $this->router = $router;
-        $this->mapping = $mapping;
+        $this->resolver = $resolver;
         $this->fields = $fields;
         $this->request = $requests->getCurrentRequest();
     }
@@ -146,12 +139,28 @@ class ExtReferenceListener
             return $item;
         }
 
-        if (isset($item[$field])) {
-            $ref = json_decode($item[$field], true);
-            $routeId = $this->mapping[$ref['$ref']];
-            $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
+        if ($field === '0') {
+            $item = array_map([$this, 'convertToUrl'], $item);
+        } elseif (isset($item[$field])) {
+            $item[$field] = $this->convertToUrl($item[$field]);
         }
 
         return $item;
+    }
+
+    /**
+     * Convert extref to URL
+     *
+     * @param string $ref JSON encoded extref
+     * @return string
+     */
+    private function convertToUrl($ref)
+    {
+        try {
+            $ref = json_decode($ref, true);
+            return $this->resolver->getUrl($ref);
+        } catch (\InvalidArgumentException $e) {
+            return '';
+        }
     }
 }

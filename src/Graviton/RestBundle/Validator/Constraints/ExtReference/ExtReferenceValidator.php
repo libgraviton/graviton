@@ -5,10 +5,9 @@
 
 namespace Graviton\RestBundle\Validator\Constraints\ExtReference;
 
+use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Routing\Route;
 
 /**
  * Validator for the extref type
@@ -20,19 +19,19 @@ use Symfony\Component\Routing\Route;
 class ExtReferenceValidator extends ConstraintValidator
 {
     /**
-     * @var RouterInterface
+     * @var ExtReferenceResolverInterface
      */
-    private $router;
+    private $resolver;
 
     /**
-     * Inject router
+     * Inject extref resolver
      *
-     * @param RouterInterface $router Router
+     * @param ExtReferenceResolverInterface $resolver Extref resolver
      * @return void
      */
-    public function setRouter(RouterInterface $router)
+    public function setResolver(ExtReferenceResolverInterface $resolver)
     {
-        $this->router = $router;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -55,29 +54,10 @@ class ExtReferenceValidator extends ConstraintValidator
             );
         }
 
-        $path = parse_url($value, PHP_URL_PATH);
-        if ($path !== false) {
-            foreach ($this->router->getRouteCollection()->all() as $route) {
-                if ($this->checkRoute($route, $path)) {
-                    return;
-                }
-            }
+        try {
+            $this->resolver->getDbValue($value);
+        } catch (\InvalidArgumentException $e) {
+            $this->context->addViolation($constraint->message, ['%url%' => $value]);
         }
-
-        $this->context->addViolation($constraint->message, ['%url%' => $value]);
-    }
-
-    /**
-     * Check Route object
-     *
-     * @param Route  $route Route
-     * @param string $path  Extref URL path
-     * @return bool
-     */
-    private function checkRoute(Route $route, $path)
-    {
-        return $route->getRequirement('id') !== null &&
-            $route->getMethods() === ['GET'] &&
-            preg_match($route->compile()->getRegex(), $path);
     }
 }
