@@ -119,20 +119,20 @@
         "name": "id",
         "type": "varchar",
         "title": "ID",
-        "description": "Unique identifier for an item."
+        "description": "Unique identifier of a module."
       },
       {
         "name": "key",
         "type": "varchar",
         "title": "Key",
-        "description": "A fixed string identifying this module.",
+        "description": "A short string identifying this module.",
         "required": true
       },
       {
         "name": "app.ref",
         "type": "extref",
-        "title": "Language-Link",
-        "description": "Link to language document.",
+        "title": "Application",
+        "description": "Link to the application this module belongs to.",
         "exposeAs": "$ref",
         "required": true,
         "collection": ["App"]
@@ -141,7 +141,7 @@
         "name": "name",
         "type": "varchar",
         "title": "Name",
-        "description": "Name of this module",
+        "description": "Name of this module.",
         "required": true,
         "translatable": true
       },
@@ -155,29 +155,29 @@
         "name": "order",
         "type": "int",
         "title": "Order",
-        "description": "Integer for sort order"
+        "description": "Sort order that may be used by clients to define how modules are sorted."
       },
       {
         "name": "service.0.name",
         "type": "varchar",
-        "title": "Service name",
-        "description": "Displayed service name",
+        "title": "Service Name",
+        "description": "Display name for backend service referenced by this module.",
         "required": true,
         "translatable": true
       },
       {
         "name": "service.0.description",
         "type": "varchar",
-        "title": "Service description",
-        "description": "Displayed service description",
+        "title": "Service Description",
+        "description": "Description of backend service referenced by this module.",
         "required": false,
         "translatable": true
       },
       {
         "name": "service.0.gui.ref",
         "type": "extref",
-        "title": "Service GUI link",
-        "description": "Link to the service GUI",
+        "title": "Service GUI Link",
+        "description": "Link to GUI endpoint used for displaying this service.",
         "exposeAs": "$ref",
         "required": true,
         "collection": ["*"]
@@ -185,8 +185,8 @@
       {
         "name": "service.0.service.ref",
         "type": "extref",
-        "title": "Service link",
-        "description": "Link to the service",
+        "title": "Service Link",
+        "description": "Link to service referenced by this module.",
         "exposeAs": "$ref",
         "required": true,
         "collection": ["Product"]
