@@ -259,7 +259,7 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
                 'hash.c.ref',
                 'arrayhash.0.ref',
                 'deep.deep.deep.deep.ref',
-            ]
+            ],
         ];
 
         $this->response->expects($this->once())
@@ -282,23 +282,21 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
         $this->converter
             ->expects($this->any())
             ->method('getUrl')
-            ->willReturnCallback(function ($url) {
-                $map = [
-                    '{"$ref":"toplevel","$id":123}' => 'url-toplevel-123',
+            ->willReturnCallback(
+                function ($url) {
+                    $map = [
+                        '{"$ref":"toplevel","$id":123}'     => 'url-toplevel-123',
+                        '{"$ref":"array","$id":123}'        => 'url-array-123',
+                        '{"$ref":"array","$id":456}'        => 'url-array-456',
+                        '{"$ref":"hash","$id":123}'         => 'url-hash-123',
+                        '{"$ref":"arrayhash","$id":123}'    => 'url-arrayhash-123',
+                        '{"$ref":"arrayhash","$id":456}'    => 'url-arrayhash-456',
+                        '{"$ref":"deep","$id":123}'         => 'url-deep-123',
+                    ];
 
-                    '{"$ref":"array","$id":123}' => 'url-array-123',
-                    '{"$ref":"array","$id":456}' => 'url-array-456',
-
-                    '{"$ref":"hash","$id":123}' => 'url-hash-123',
-
-                    '{"$ref":"arrayhash","$id":123}' => 'url-arrayhash-123',
-                    '{"$ref":"arrayhash","$id":456}' => 'url-arrayhash-456',
-
-                    '{"$ref":"deep","$id":123}' => 'url-deep-123',
-                ];
-
-                return $map[json_encode($url)];
-            });
+                    return $map[json_encode($url)];
+                }
+            );
 
         $listener = $this->createListener($fields);
         $listener->onKernelResponse($this->responseEvent);

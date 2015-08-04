@@ -345,28 +345,28 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(
             [
-                (object)[
+                (object) [
                     'propertyPath' => 'data.app.ref',
                     'message' => sprintf(
                         'URL "%s" is not a valid ext reference.',
                         $module->app->{'$ref'}
                     ),
                 ],
-                (object)[
+                (object) [
                     'propertyPath' => 'data.service[0].gui.ref',
                     'message' => sprintf(
                         'URL "%s" is not a valid ext reference.',
                         $module->service[0]->gui->{'$ref'}
                     ),
                 ],
-                (object)[
+                (object) [
                     'propertyPath' => 'data.service[0].service.ref',
                     'message' => sprintf(
                         'URL "%s" is not a valid ext reference.',
                         $module->service[0]->service->{'$ref'}
                     ),
                 ],
-                (object)[
+                (object) [
                     'propertyPath' => 'data.service[1].gui.ref',
                     'message' => sprintf(
                         'URL "%s" is not a valid ext reference.',

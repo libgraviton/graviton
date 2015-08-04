@@ -64,7 +64,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('getDbRef')
             ->with($url)
-            ->willThrowException( new \InvalidArgumentException);
+            ->willThrowException(new \InvalidArgumentException);
 
         $this->type->setConverter($this->converter);
         $this->type->convertToDatabaseValue($url);
@@ -109,7 +109,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('getUrl')
             ->with($dbRef)
-            ->willThrowException( new \InvalidArgumentException);
+            ->willThrowException(new \InvalidArgumentException);
 
         $this->type->setConverter($this->converter);
         $this->assertEquals('', $this->type->convertToPHPValue($dbRef));
