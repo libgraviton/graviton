@@ -72,7 +72,7 @@ class ModuleControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
 
-        $this->assertEquals('http://localhost/i18n/language/de', $client->getResults()[0]->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
     }
 
     /**
@@ -142,7 +142,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule = new \stdClass;
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
-        $testModule->app->{'$ref'} = 'http://localhost/i18n/language/en';
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -160,7 +160,7 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
-        $this->assertEquals('http://localhost/i18n/language/en', $results->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/testapp', $results->app->{'$ref'});
         $this->assertEquals(50, $results->order);
 
         $this->assertContains(
@@ -179,7 +179,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule = new \stdClass;
         $testModule->key = 'test';
         $testModule->app = new \stdClass;
-        $testModule->app->{'$ref'} = 'http://localhost/i18n/language/en';
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/testapp';
         $testModule->name = new \stdClass;
         $testModule->name->en = 'Name';
         $testModule->path = '/test/test';
@@ -221,7 +221,7 @@ class ModuleControllerTest extends RestTestCase
         $putModule->id = $moduleId;
         $putModule->key = 'test';
         $putModule->app = new \stdClass;
-        $putModule->app->{'$ref'} = 'http://localhost/i18n/language/de';
+        $putModule->app->{'$ref'} = 'http://localhost/core/app/test';
         $putModule->name = new \stdClass;
         $putModule->name->en = 'testerle';
         $putModule->path = '/test/test';
@@ -239,7 +239,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals($moduleId, $results->id);
-        $this->assertEquals('http://localhost/i18n/language/de', $results->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/test', $results->app->{'$ref'});
         $this->assertEquals(500, $results->order);
 
         $this->assertContains(
@@ -293,14 +293,14 @@ class ModuleControllerTest extends RestTestCase
 
         $module = $results[0];
         $this->assertEquals('investment', $module->key);
-        $this->assertEquals('http://localhost/i18n/language/en', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/tablet', $module->app->{'$ref'});
         $this->assertEquals('http://localhost/core/product/3', $module->service[0]->gui->{'$ref'});
         $this->assertEquals('http://localhost/core/product/4', $module->service[0]->service->{'$ref'});
         $this->assertEquals('http://localhost/core/product/5', $module->service[1]->gui->{'$ref'});
         $this->assertEquals('http://localhost/core/product/6', $module->service[1]->service->{'$ref'});
 
 
-        $module->app->{'$ref'} = 'http://localhost/i18n/language/de';
+        $module->app->{'$ref'} = 'http://localhost/core/app/admin';
         $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
         $module->service[0]->service->{'$ref'} = 'http://localhost/core/product/1';
         $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
@@ -316,7 +316,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $module = $client->getResults();
-        $this->assertEquals('http://localhost/i18n/language/de', $module->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
         $this->assertEquals('http://localhost/core/product/1', $module->service[0]->service->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
