@@ -322,6 +322,63 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
+     * Test extref validation
+     *
+     * @return void
+     * @group 123
+     */
+    public function testExtReferenceValidation()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $this->assertCount(1, $client->getResults());
+
+        $module = $client->getResults()[0];
+        $module->app->{'$ref'} = 'http://localhost';
+        $module->service[0]->gui->{'$ref'} = 'http://localhost/core';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app';
+        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/noapp/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+
+        $client = static::createRestClient();
+        $client->put('/core/module/'.$module->id, $module);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(
+            [
+                (object)[
+                    'propertyPath' => 'data.app.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->app->{'$ref'}
+                    ),
+                ],
+                (object)[
+                    'propertyPath' => 'data.service[0].gui.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[0]->gui->{'$ref'}
+                    ),
+                ],
+                (object)[
+                    'propertyPath' => 'data.service[0].service.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[0]->service->{'$ref'}
+                    ),
+                ],
+                (object)[
+                    'propertyPath' => 'data.service[1].gui.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[1]->gui->{'$ref'}
+                    ),
+                ],
+            ],
+            $client->getResults()
+        );
+    }
+
+    /**
      * test getting collection schema.
      * i avoid retesting everything (covered in /core/app), this test only
      * asserts translatable & extref representation
