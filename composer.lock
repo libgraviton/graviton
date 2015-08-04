@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7b4b1d89ce62c8261d900e5f50540353",
+    "hash": "c9cc8f4ace05de0a1824dba5d86f612e",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2172,7 +2172,7 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes Schmitt",
+                    "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -2871,16 +2871,16 @@
         },
         {
             "name": "mikemccabe/json-patch-php",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikemccabe/json-patch-php.git",
-                "reference": "006a018ea71b17a90198c6db340bdd09f36278cc"
+                "reference": "b3af30a6aec7f6467c773cd49b2d974a70f7c0d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikemccabe/json-patch-php/zipball/006a018ea71b17a90198c6db340bdd09f36278cc",
-                "reference": "006a018ea71b17a90198c6db340bdd09f36278cc",
+                "url": "https://api.github.com/repos/mikemccabe/json-patch-php/zipball/b3af30a6aec7f6467c773cd49b2d974a70f7c0d4",
+                "reference": "b3af30a6aec7f6467c773cd49b2d974a70f7c0d4",
                 "shasum": ""
             },
             "type": "library",
@@ -2894,7 +2894,7 @@
                 "LGPL-3.0"
             ],
             "description": "Produce and apply json-patch objects",
-            "time": "2015-01-14 00:59:52"
+            "time": "2015-01-05 21:19:54"
         },
         {
             "name": "misd/guzzle-bundle",
@@ -5146,7 +5146,6 @@
         "php-jsonpointer/php-jsonpointer": 5,
         "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
-        "mikemccabe/json-patch-php": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
