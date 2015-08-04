@@ -325,12 +325,11 @@ class ModuleControllerTest extends RestTestCase
      * Test extref validation
      *
      * @return void
-     * @group 123
      */
     public function testExtReferenceValidation()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];
