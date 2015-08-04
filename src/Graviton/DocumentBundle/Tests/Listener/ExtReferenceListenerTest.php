@@ -6,7 +6,7 @@
 namespace Graviton\DocumentBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Listener\ExtReferenceListener;
-use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +22,9 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var ExtReferenceResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $resolver;
+    private $converter;
     /**
      * @var Request
      */
@@ -58,9 +58,9 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->resolver = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceResolverInterface')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['getUrl', 'getDbValue'])
+            ->setMethods(['getUrl', 'getDbRef'])
             ->getMock();
 
         $this->requestAttrs = $this->getMockBuilder('\Symfony\Component\HttpFoundation\ParameterBag')
@@ -109,7 +109,7 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
      */
     private function createListener(array $fields)
     {
-        return new ExtReferenceListener($this->resolver, $fields, $this->requestStack);
+        return new ExtReferenceListener($this->converter, $fields, $this->requestStack);
     }
 
     /**
@@ -279,7 +279,7 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with('_route')
             ->willReturn('route.id');
-        $this->resolver
+        $this->converter
             ->expects($this->any())
             ->method('getUrl')
             ->willReturnCallback(function ($url) {

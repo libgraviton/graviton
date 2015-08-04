@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Validator\Constraints\ExtReference;
 
-use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -19,19 +19,19 @@ use Symfony\Component\Validator\ConstraintValidator;
 class ExtReferenceValidator extends ConstraintValidator
 {
     /**
-     * @var ExtReferenceResolverInterface
+     * @var ExtReferenceConverterInterface
      */
-    private $resolver;
+    private $converter;
 
     /**
-     * Inject extref resolver
+     * Inject extref converter
      *
-     * @param ExtReferenceResolverInterface $resolver Extref resolver
+     * @param ExtReferenceConverterInterface $converter Extref converter
      * @return void
      */
-    public function setResolver(ExtReferenceResolverInterface $resolver)
+    public function setConverter(ExtReferenceConverterInterface $converter)
     {
-        $this->resolver = $resolver;
+        $this->converter = $converter;
     }
 
     /**
@@ -55,7 +55,7 @@ class ExtReferenceValidator extends ConstraintValidator
         }
 
         try {
-            $this->resolver->getDbValue($value);
+            $this->converter->getDbRef($value);
         } catch (\InvalidArgumentException $e) {
             $this->context->addViolation($constraint->message, ['%url%' => $value]);
         }

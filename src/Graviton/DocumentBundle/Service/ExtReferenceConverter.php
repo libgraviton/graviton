@@ -1,6 +1,6 @@
 <?php
 /**
- * ExtReferenceResolver class file
+ * ExtReferenceConverter class file
  */
 
 namespace Graviton\DocumentBundle\Service;
@@ -9,9 +9,9 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Extref URL resolver
+ * Extref URL converter
  */
-class ExtReferenceResolver implements ExtReferenceResolverInterface
+class ExtReferenceConverter implements ExtReferenceConverterInterface
 {
     /**
      * @var RouterInterface
@@ -41,7 +41,7 @@ class ExtReferenceResolver implements ExtReferenceResolverInterface
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function getDbValue($url)
+    public function getDbRef($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
         if ($path === false) {
@@ -68,23 +68,19 @@ class ExtReferenceResolver implements ExtReferenceResolverInterface
     /**
      * return the extref URL
      *
-     * @param array $value DB value
+     * @param array $dbRef DB value
      * @return string
      */
-    public function getUrl(array $value)
+    public function getUrl(array $dbRef)
     {
-        if (!array_key_exists('$ref', $value)
-            && !array_key_exists($value['$ref'], $this->mapping)
-            && !array_key_exists('$id', $value)
+        if (!array_key_exists('$ref', $dbRef)
+            && !array_key_exists($dbRef['$ref'], $this->mapping)
+            && !array_key_exists('$id', $dbRef)
         ) {
-            throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($value)));
+            throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($dbRef)));
         }
 
-        return $this->router->generate(
-            $this->mapping[$value['$ref']],
-            ['id' => $value['$id']],
-            true
-        );
+        return $this->router->generate($this->mapping[$dbRef['$ref']], ['id' => $dbRef['$id']], true);
     }
 
     /**

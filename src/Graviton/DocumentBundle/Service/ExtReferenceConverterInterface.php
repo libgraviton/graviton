@@ -1,14 +1,14 @@
 <?php
 /**
- * ExtReferenceResolverInterface class file
+ * ExtReferenceConverterInterface class file
  */
 
 namespace Graviton\DocumentBundle\Service;
 
 /**
- * Extref URL resolver interface
+ * Extref URL converter interface
  */
-interface ExtReferenceResolverInterface
+interface ExtReferenceConverterInterface
 {
     /**
      * return the mongodb representation from a extref URL
@@ -17,14 +17,14 @@ interface ExtReferenceResolverInterface
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function getDbValue($url);
+    public function getDbRef($url);
 
     /**
      * return the extref URL
      *
-     * @param array $value DB value
+     * @param array $dbRef DB ref
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getUrl(array $value);
+    public function getUrl(array $dbRef);
 }

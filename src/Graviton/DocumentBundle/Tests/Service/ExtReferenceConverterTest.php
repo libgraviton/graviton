@@ -1,23 +1,23 @@
 <?php
 /**
- * ExtReferenceResolverTest class file
+ * ExtReferenceConverterTest class file
  */
 
 namespace Graviton\DocumentBundle\Tests\Service;
 
-use Graviton\DocumentBundle\Service\ExtReferenceResolver;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * ExtReferenceResolver test
+ * ExtReferenceConverter test
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
-class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -98,14 +98,14 @@ class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
     /**
      * verify that we get a mongodbref
      *
-     * @dataProvider getDbValueProvider
+     * @dataProvider getDbRefProvider
      *
      * @param string $url      external link to convert
      * @param array  $expected expected mogodb ref
      *
      * @return void
      */
-    public function testGetDbValue($url, $expected)
+    public function testGetDbRef($url, $expected)
     {
         $this->router
             ->expects($this->once())
@@ -117,7 +117,7 @@ class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
             ->method('all')
             ->will($this->returnValue($this->routes));
 
-        $resolver = new ExtReferenceResolver(
+        $converter = new ExtReferenceConverter(
             $this->router,
             [
                 'App' => 'graviton.core.rest.app.get',
@@ -125,13 +125,13 @@ class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
                 'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
             ]
         );
-        $this->assertEquals($expected, $resolver->getDbValue($url));
+        $this->assertEquals($expected, $converter->getDbRef($url));
     }
 
     /**
      * @return array
      */
-    public function getDbValueProvider()
+    public function getDbRefProvider()
     {
         return [
             ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
@@ -160,7 +160,7 @@ class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($url));
 
-        $resolver = new ExtReferenceResolver(
+        $converter = new ExtReferenceConverter(
             $this->router,
             [
                 'App' => 'graviton.core.rest.app.get',
@@ -168,7 +168,7 @@ class ExtReferenceResolverTest extends \PHPUnit_Framework_TestCase
                 'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
             ]
         );
-        $this->assertEquals($url, $resolver->getUrl($ref));
+        $this->assertEquals($url, $converter->getUrl($ref));
     }
 
     /**

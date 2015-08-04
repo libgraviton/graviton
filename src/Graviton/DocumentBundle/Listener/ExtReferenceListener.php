@@ -11,7 +11,7 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
-use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -24,9 +24,9 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class ExtReferenceListener
 {
     /**
-     * @var ExtReferenceResolverInterface
+     * @var ExtReferenceConverterInterface
      */
-    private $resolver;
+    private $converter;
 
     /**
      * @var array
@@ -41,13 +41,13 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param ExtReferenceResolverInterface $resolver Extref resolver
-     * @param array                         $fields   map of fields to process
-     * @param RequestStack                  $requests request
+     * @param ExtReferenceConverterInterface $converter Extref converter
+     * @param array                          $fields    map of fields to process
+     * @param RequestStack                   $requests  request
      */
-    public function __construct(ExtReferenceResolverInterface $resolver, array $fields, RequestStack $requests)
+    public function __construct(ExtReferenceConverterInterface $converter, array $fields, RequestStack $requests)
     {
-        $this->resolver = $resolver;
+        $this->converter = $converter;
         $this->fields = $fields;
         $this->request = $requests->getCurrentRequest();
     }
@@ -158,7 +158,7 @@ class ExtReferenceListener
     {
         try {
             $ref = json_decode($ref, true);
-            return $this->resolver->getUrl($ref);
+            return $this->converter->getUrl($ref);
         } catch (\InvalidArgumentException $e) {
             return '';
         }

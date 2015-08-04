@@ -5,7 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\Types;
 
-use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\DocumentBundle\Types\ExtReference;
 use Doctrine\ODM\MongoDB\Types\Type;
 
@@ -17,9 +17,9 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ExtReferenceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var ExtReferenceResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $resolver;
+    private $converter;
     /**
      * @var ExtReference
      */
@@ -35,9 +35,9 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
         Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
         $this->type = Type::getType('extref');
 
-        $this->resolver = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceResolverInterface')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['getDbValue', 'getUrl'])
+            ->setMethods(['getDbRef', 'getUrl'])
             ->getMock();
     }
 
@@ -46,7 +46,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testExceptWithoutResolver()
+    public function testExceptWithoutConverter()
     {
         $this->type->convertToDatabaseValue('');
     }
@@ -60,13 +60,13 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     {
         $url = __FILE__;
 
-        $this->resolver
+        $this->converter
             ->expects($this->once())
-            ->method('getDbValue')
+            ->method('getDbRef')
             ->with($url)
             ->willThrowException( new \InvalidArgumentException);
 
-        $this->type->setResolver($this->resolver);
+        $this->type->setConverter($this->converter);
         $this->type->convertToDatabaseValue($url);
     }
 
@@ -83,13 +83,13 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             '$id' => __LINE__,
         ];
 
-        $this->resolver
+        $this->converter
             ->expects($this->once())
-            ->method('getDbValue')
+            ->method('getDbRef')
             ->with($url)
             ->willReturn($dbRef);
 
-        $this->type->setResolver($this->resolver);
+        $this->type->setConverter($this->converter);
         $this->assertEquals($dbRef, $this->type->convertToDatabaseValue($url));
     }
 
@@ -105,13 +105,13 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             '$id' => __LINE__,
         ];
 
-        $this->resolver
+        $this->converter
             ->expects($this->once())
             ->method('getUrl')
             ->with($dbRef)
             ->willThrowException( new \InvalidArgumentException);
 
-        $this->type->setResolver($this->resolver);
+        $this->type->setConverter($this->converter);
         $this->assertEquals('', $this->type->convertToPHPValue($dbRef));
     }
 
@@ -127,13 +127,13 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
             '$id' => __LINE__,
         ];
 
-        $this->resolver
+        $this->converter
             ->expects($this->once())
             ->method('getUrl')
             ->with($dbRef)
             ->willReturn(__FILE__);
 
-        $this->type->setResolver($this->resolver);
+        $this->type->setConverter($this->converter);
         $this->assertEquals(__FILE__, $this->type->convertToPHPValue($dbRef));
     }
 }

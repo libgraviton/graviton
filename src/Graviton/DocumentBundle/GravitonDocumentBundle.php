@@ -43,7 +43,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
         $type = Type::getType('extref');
-        $type->setResolver($this->container->get('graviton.document.service.extrefresolver'));
+        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
     }
 
 

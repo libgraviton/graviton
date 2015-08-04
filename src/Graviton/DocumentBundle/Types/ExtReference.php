@@ -5,7 +5,7 @@
 
 namespace Graviton\DocumentBundle\Types;
 
-use Graviton\DocumentBundle\Service\ExtReferenceResolverInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
@@ -18,22 +18,22 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ExtReference extends Type
 {
     /**
-     * @var ExtReferenceResolverInterface
+     * @var ExtReferenceConverterInterface
      */
-    private $resolver;
+    private $converter;
 
     /**
-     * inject a resolver
+     * inject a converter
      *
      * This uses setter injection due to the fact that doctrine doesn't do constructor injection
      *
-     * @param ExtReferenceResolverInterface $resolver resolver
+     * @param ExtReferenceConverterInterface $converter Converter
      *
      * @return void
      */
-    public function setResolver(ExtReferenceResolverInterface $resolver)
+    public function setConverter(ExtReferenceConverterInterface $converter)
     {
-        $this->resolver = $resolver;
+        $this->converter = $converter;
     }
 
     /**
@@ -46,7 +46,7 @@ class ExtReference extends Type
     public function convertToPHPValue($value)
     {
         try {
-            return $this->resolver->getUrl($value);
+            return $this->converter->getUrl($value);
         } catch (\InvalidArgumentException $e) {
             return '';
         }
@@ -73,7 +73,7 @@ class ExtReference extends Type
     public function convertToDatabaseValue($value)
     {
         try {
-            return $this->resolver->getDbValue($value);
+            return $this->converter->getDbRef($value);
         } catch (\InvalidArgumentException $e) {
             throw new \RuntimeException(
                 sprintf('Could not read URL %s', $value),

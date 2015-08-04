@@ -191,8 +191,8 @@
         </service>
 
         <service id="graviton.rest.validator.extref" class="%graviton.rest.validator.extref.class%">
-            <call method="setResolver">
-                <argument type="service" id="graviton.document.service.extrefresolver"/>
+            <call method="setConverter">
+                <argument type="service" id="graviton.document.service.extrefconverter"/>
             </call>
             <tag name="validator.constraint_validator" alias="graviton.rest.validator.extref" />
         </service>
