@@ -9,7 +9,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Graviton\RqlParserBundle\Factory;
+use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
 
 /**
@@ -43,17 +43,17 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $repository;
 
     /**
-     * @var Factory
+     * @var Visitor
      */
-    private $rqlFactory;
+    private $visitor;
 
     /**
-     * @param Factory $rqlFactory factory object to use
+     * @param Visitor $visitor rql query visitor
      */
-    public function __construct(Factory $rqlFactory)
+    public function __construct(Visitor $visitor)
     {
         parent::__construct();
-        $this->rqlFactory = $rqlFactory;
+        $this->visitor = $visitor;
     }
 
     /**
@@ -249,11 +249,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected function doRqlQuery($queryBuilder, Query $query)
     {
-        $factory = $this->rqlFactory;
-
-        $visitor = $factory
-            ->create('MongoOdm', $queryBuilder);
-
-        return $visitor->visit($query);
+        $this->visitor->setBuilder($queryBuilder);
+        return $this->visitor->visit($query);
     }
 }

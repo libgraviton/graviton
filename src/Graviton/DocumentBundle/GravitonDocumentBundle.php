@@ -6,7 +6,6 @@
 namespace Graviton\DocumentBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
@@ -43,14 +42,9 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function boot()
     {
-        /* @var $router Router */
-        $router = $this->container->get('router');
-
-        /* @var $type \Graviton\DocumentBundle\Types\ExtReference */
+        /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
         $type = Type::getType('extref');
-
-        $type->setRouter($router);
-        $type->setMapping($this->container->getParameter('graviton.document.type.extref.mapping'));
+        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
     }
 
 

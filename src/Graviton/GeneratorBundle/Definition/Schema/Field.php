@@ -59,6 +59,11 @@ class Field
     private $collection;
 
     /**
+     * @var array
+     */
+    private $collection = [];
+
+    /**
      * @return string
      */
     public function getName()
@@ -235,6 +240,24 @@ class Field
     public function setConstraints(array $constraints)
     {
         $this->constraints = $constraints;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @param array $collection Field
+     * @return $this
+     */
+    public function setCollection(array $collection)
+    {
+        $this->collection = $collection;
         return $this;
     }
 }

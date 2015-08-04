@@ -17,6 +17,10 @@
       "title": {{ field.fieldName|json_encode() }},
 {% endif %}
 
+{% if field.collection is defined and field.type == 'extref' %}
+      "collection": {{ field.collection|json_encode() }},
+{% endif %}
+
 {% if field.description is defined %}
       "description": {{ field.description|json_encode() }}
 {% else %}
