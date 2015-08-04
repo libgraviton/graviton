@@ -97,11 +97,7 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function getTitleOfField($field)
     {
-        $ret = '';
-        if (isset($this->schema->properties->$field->title)) {
-            $ret = $this->schema->properties->$field->title;
-        }
-        return $ret;
+        return $this->getSchemaField($field, 'title');
     }
 
     /**
@@ -113,11 +109,7 @@ class SchemaModel implements ContainerAwareInterface
      */
     public function getDescriptionOfField($field)
     {
-        $ret = '';
-        if (isset($this->schema->properties->$field->description)) {
-            $ret = $this->schema->properties->$field->description;
-        }
-        return $ret;
+        return $this->getSchemaField($field, 'description');
     }
 
     /**
@@ -148,5 +140,35 @@ class SchemaModel implements ContainerAwareInterface
     public function getRequiredFields()
     {
         return $this->schema->required;
+    }
+
+    /**
+     * get a collection of service names that can extref refer to
+     *
+     * @param string $field field name
+     *
+     * @return array
+     */
+    public function getRefCollectionOfField($field)
+    {
+        return $this->getSchemaField($field, 'collection', array());
+    }
+
+    /**
+     * get schema field value
+     *
+     * @param string $field         field name
+     * @param string $property      property name
+     * @param mixed  $fallbackValue fallback value if property isn't set
+     *
+     * @return array
+     */
+    private function getSchemaField($field, $property, $fallbackValue = '')
+    {
+        if (isset($this->schema->properties->$field->$property)) {
+            $fallbackValue = $this->schema->properties->$field->$property;
+        }
+
+        return $fallbackValue;
     }
 }
