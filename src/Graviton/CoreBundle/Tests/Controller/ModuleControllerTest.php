@@ -300,9 +300,9 @@ class ModuleControllerTest extends RestTestCase
 
         $module->app->{'$ref'} = 'http://localhost/core/app/admin';
         $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/product/1';
         $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/product/2';
 
         $client = static::createRestClient();
         $client->put('/core/module/'.$module->id, $module);
@@ -316,9 +316,9 @@ class ModuleControllerTest extends RestTestCase
         $module = $client->getResults();
         $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/1', $module->service[0]->service->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/2', $module->service[1]->service->{'$ref'});
     }
 
     /**
@@ -370,6 +370,13 @@ class ModuleControllerTest extends RestTestCase
                     'message' => sprintf(
                         'URL "%s" is not a valid ext reference.',
                         $module->service[1]->gui->{'$ref'}
+                    ),
+                ],
+                (object) [
+                    'propertyPath' => 'data.service[1].service.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not allowed.',
+                        $module->service[1]->service->{'$ref'}
                     ),
                 ],
             ],

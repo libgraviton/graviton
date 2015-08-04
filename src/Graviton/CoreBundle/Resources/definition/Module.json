@@ -134,7 +134,8 @@
         "title": "Language-Link",
         "description": "Link to language document.",
         "exposeAs": "$ref",
-        "required": true
+        "required": true,
+        "collection": ["App"]
       },
       {
         "name": "name",
@@ -178,7 +179,8 @@
         "title": "Service GUI link",
         "description": "Link to the service GUI",
         "exposeAs": "$ref",
-        "required": true
+        "required": true,
+        "collection": ["*"]
       },
       {
         "name": "service.0.service.ref",
@@ -186,7 +188,8 @@
         "title": "Service link",
         "description": "Link to the service",
         "exposeAs": "$ref",
-        "required": true
+        "required": true,
+        "collection": ["Product"]
       }
     ]
   }
