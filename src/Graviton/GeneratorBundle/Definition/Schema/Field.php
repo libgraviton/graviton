@@ -53,6 +53,10 @@ class Field
      * @var Constraint[]
      */
     private $constraints = [];
+    /**
+     * @var array
+     */
+    private $collection;
 
     /**
      * @return string
