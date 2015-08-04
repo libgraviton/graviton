@@ -374,13 +374,6 @@ class ModuleControllerTest extends RestTestCase
                         $module->service[1]->gui->{'$ref'}
                     ),
                 ],
-                (object) [
-                    'propertyPath' => 'data.service[1].service.ref',
-                    'message' => sprintf(
-                        'URL "%s" is not allowed.',
-                        $module->service[1]->service->{'$ref'}
-                    ),
-                ],
             ],
             $client->getResults()
         );

@@ -189,7 +189,7 @@
         "description": "Link to service referenced by this module.",
         "exposeAs": "$ref",
         "required": true,
-        "collection": ["Product"]
+        "collection": ["*"]
       }
     ]
   }
