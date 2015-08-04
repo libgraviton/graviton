@@ -34,23 +34,7 @@ class TranslatableFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
     {
         $this->classMap = $this->loadDoctrineClassMap();
 
-        $map = [];
-        foreach ($services as $id) {
-            list($ns, $bundle, , $doc) = explode('.', $id);
-            if (empty($bundle) || empty($doc)) {
-                continue;
-            }
-            if ($bundle === 'core' && $doc === 'main') {
-                continue;
-            }
-
-            $className = $this->getServiceDocument(
-                $container->getDefinition($id),
-                $ns,
-                $bundle,
-                $doc
-            );
-
+        foreach ($this->classMap as $className => $data) {
             $map[$className] = $this->processDocument($className);
         }
 
