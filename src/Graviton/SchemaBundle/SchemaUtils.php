@@ -8,6 +8,7 @@ namespace Graviton\SchemaBundle;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\SchemaBundle\Document\Schema;
+use Symfony\Component\Routing\Router;
 
 /**
  * Utils for generating schemas.
@@ -27,13 +28,31 @@ class SchemaUtils
     private $languageRepository;
 
     /**
+     * router
+     *
+     * @var Router router
+     */
+    private $router;
+
+    /**
+     * mapping service names => route names
+     *
+     * @var array service mapping
+     */
+    private $serviceMapping;
+
+    /**
      * Constructor
      *
      * @param LanguageRepository $languageRepository repository
+     * @param Router             $router             router
+     * @param array              $map                service mapping
      */
-    public function __construct(LanguageRepository $languageRepository)
+    public function __construct(LanguageRepository $languageRepository, Router $router, array $map)
     {
         $this->languageRepository = $languageRepository;
+        $this->router = $router;
+        $this->serviceMapping = $map;
     }
 
     /**
@@ -121,10 +140,26 @@ class SchemaUtils
                 $property = self::makeTranslatable($property, $languages);
             }
 
-            if ($meta->getTypeOfField($field) === 'extref' && substr($field, 0, 1) !== '$') {
-                $field = '$' . $field;
-            }
+            if ($meta->getTypeOfField($field) === 'extref') {
+                $urls = array();
+                $refCollections = $model->getRefCollectionOfField($field);
+                foreach ($refCollections as $val) {
+                    if (array_key_exists($val, $this->serviceMapping)) {
+                        $urls[] = $this->router->generate(
+                            substr($this->serviceMapping[$val], 0, strrpos($this->serviceMapping[$val], '.')).'.all',
+                            array(),
+                            true
+                        );
+                    } elseif ($val == '*') {
+                        $urls[] = '*';
+                    }
+                }
+                $property->setRefCollection($urls);
 
+                if (substr($field, 0, 1) !== '$') {
+                    $field = '$'.$field;
+                }
+            }
             $schema->addProperty($field, $property);
         }
 

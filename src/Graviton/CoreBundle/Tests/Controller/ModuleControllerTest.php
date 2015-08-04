@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -205,7 +205,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -256,7 +256,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -285,7 +285,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
