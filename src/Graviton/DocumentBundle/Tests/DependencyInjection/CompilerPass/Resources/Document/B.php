@@ -1,17 +1,27 @@
 <?php
+/**
+ * test dummy document
+ */
 
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document;
 
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
-class B implements TranslatableDocumentInterface {
+/**
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
+ */
+class B implements TranslatableDocumentInterface
+{
 
     /**
      * return all translatable fields
      *
      * @return string[]
      */
-    public function getTranslatableFields() {
+    public function getTranslatableFields()
+    {
         return array('title');
     }
 
@@ -20,7 +30,8 @@ class B implements TranslatableDocumentInterface {
      *
      * @return string[]
      */
-    public function getPreTranslatedFields() {
+    public function getPreTranslatedFields()
+    {
         return array();
     }
 }
