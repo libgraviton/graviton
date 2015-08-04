@@ -172,5 +172,4 @@ abstract class AbstractDocumentFieldCompilerPass extends AbstractDocumentCompile
 
         return $result;
     }
-
 }
