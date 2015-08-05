@@ -3,17 +3,23 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
+        <parameter key="graviton.document.service.extrefjsonconverter.class">Graviton\DocumentBundle\Service\ExtReferenceJsonConverter</parameter>
         <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
         <parameter key="graviton.document.form.type.freeform.class">Graviton\DocumentBundle\Form\Type\FreeForm</parameter>
     </parameters>
     <services>
+        <!-- extref converter -->
+        <service id="graviton.document.service.extrefjsonconverter" class="%graviton.document.service.extrefjsonconverter.class%">
+            <argument type="service" id="router"/>
+            <argument>%graviton.document.type.extref.mapping%</argument>
+            <argument>%graviton.document.type.extref.fields%</argument>
+        </service>
+
         <!-- $ref output in responses -->
         <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%">
-             <argument type="service" id="router" />
-             <argument>%graviton.document.type.extref.mapping%</argument>
-             <argument>%graviton.document.type.extref.fields%</argument>
+             <argument type="service" id="graviton.document.service.extrefjsonconverter" />
              <argument type="service" id="request_stack"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>

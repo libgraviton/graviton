@@ -17,6 +17,7 @@ use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
+use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -92,6 +93,11 @@ class RestController
     private $templating;
 
     /**
+     * @var ExtReferenceJsonConverterInterface
+     */
+    private $extReferenceJsonConverter;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -122,6 +128,15 @@ class RestController
         $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
+    }
+
+    /**
+     * @param ExtReferenceJsonConverterInterface $extReferenceConverter Converter for $ref attributes
+     * @return void
+     */
+    public function setExtrefJsonConverter(ExtReferenceJsonConverterInterface $extReferenceConverter)
+    {
+        $this->extReferenceJsonConverter = $extReferenceConverter;
     }
 
 
@@ -296,7 +311,7 @@ class RestController
         $this->checkJsonRequest($request, $response);
         $record = $this->checkForm(
             $this->getForm($request),
-            $request
+            $request->getContent()
         );
 
         // Insert the new record
@@ -385,7 +400,7 @@ class RestController
 
         $record = $this->checkForm(
             $this->getForm($request),
-            $request
+            $request->getContent()
         );
 
         // does it really exist??
@@ -439,23 +454,31 @@ class RestController
         $response = $this->getResponse();
         $this->checkJsonRequest($request, $response);
 
-        // Find record
+        // Find record && apply $ref converter
         $record = $this->findRecord($id);
-        $serialized = $this->serialize($record);
+        $recordData = $this->extReferenceJsonConverter->convert(
+            json_decode($this->serialize($record), 1),
+            $request->attributes->get('_route')
+        );
 
         try {
             // Apply JSON patches
             $patchedDocument = JsonPatch::patch(
-                json_decode($serialized, 1),
+                $recordData,
                 json_decode($request->getContent(), 1)
             );
         } catch (JsonPatchException $e) {
             throw new BadRequestHttpException('Invalid PATCH request.');
         }
 
+        // Validate result object
+        $record = $this->checkForm(
+            $this->getForm($request),
+            json_encode($patchedDocument)
+        );
+
         // Update object
-        $updatedRecord = $this->deserialize(json_encode($patchedDocument), $this->getModel()->getEntityClass());
-        $this->getModel()->updateRecord($id, $updatedRecord);
+        $this->getModel()->updateRecord($id, $record);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_OK);
@@ -655,14 +678,14 @@ class RestController
     }
 
     /**
-     * @param FormInterface $form    form to check
-     * @param Request       $request data request
+     * @param FormInterface $form        form to check
+     * @param string        $jsonContent json data
      *
      * @return mixed
      */
-    private function checkForm(FormInterface $form, Request $request)
+    private function checkForm(FormInterface $form, $jsonContent)
     {
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), true);
+        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $jsonContent), true), true);
 
         if (!$form->isValid()) {
             throw new ValidationException($form->getErrors(true));

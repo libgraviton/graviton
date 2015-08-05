@@ -14,7 +14,7 @@ namespace Graviton\DocumentBundle\Listener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Routing\RouterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,19 +24,9 @@ use Symfony\Component\Routing\RouterInterface;
 class ExtReferenceListener
 {
     /**
-     * @var RouterInterface
+     * @var ExtReferenceJsonConverterInterface
      */
-    private $router;
-
-    /**
-     * @var array
-     */
-    private $mapping;
-
-    /**
-     * @var array
-     */
-    private $fields;
+    private $converter;
 
     /**
      * @var Request
@@ -46,16 +36,12 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param RouterInterface $router   symfony router
-     * @param array           $mapping  map of collection_name => route_id
-     * @param array           $fields   map of fields to process
-     * @param RequestStack    $requests request
+     * @param ExtReferenceJsonConverterInterface $converter extref converter
+     * @param RequestStack                       $requests  request
      */
-    public function __construct(RouterInterface $router, array $mapping, array $fields, RequestStack $requests)
+    public function __construct(ExtReferenceJsonConverterInterface $converter, RequestStack $requests)
     {
-        $this->router = $router;
-        $this->mapping = $mapping;
-        $this->fields = $fields;
+        $this->converter = $converter;
         $this->request = $requests->getCurrentRequest();
     }
 
@@ -81,77 +67,10 @@ class ExtReferenceListener
 
         $data = json_decode($event->getResponse()->getContent(), true);
 
-        if (is_array($data) && !empty($data) && !is_string(array_keys($data)[0])) {
-            foreach ($data as $index => $row) {
-                $data[$index] = $this->mapItem($row);
-            }
-        } else {
-            $data = $this->mapItem($data);
-        }
-
-        $event->getResponse()->setContent(json_encode($data));
-    }
-
-    /**
-     * apply single mapping
-     *
-     * @param array $item item to apply mapping to
-     *
-     * @return array
-     */
-    private function mapItem(array $item)
-    {
-        if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
-            return $item;
-        }
-        foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
-            $item = $this->mapField($item, $field);
-        }
-
-        return $item;
-    }
-
-    /**
-     * recursive mapper for embed-one fields
-     *
-     * @param array  $item  item to map
-     * @param string $field name of field to map
-     *
-     * @return array
-     */
-    private function mapField($item, $field)
-    {
-        if (!is_array($item)) {
-            return $item;
-        }
-
-        if (strpos($field, '0.') === 0) {
-            $subField = substr($field, 2);
-
-            return array_map(
-                function ($subItem) use ($subField) {
-                    return $this->mapField($subItem, $subField);
-                },
-                $item
-            );
-        }
-
-        if (($pos = strpos($field, '.')) !== false) {
-            $topLevel = substr($field, 0, $pos);
-            $subField = substr($field, $pos + 1);
-
-            if (isset($item[$topLevel])) {
-                $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
-            }
-            return $item;
-        }
-
-        if (isset($item[$field])) {
-            $ref = json_decode($item[$field], true);
-            $routeId = $this->mapping[$ref['$ref']];
-            $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
-        }
-
-        return $item;
+        $event->getResponse()->setContent(
+            json_encode(
+                $this->converter->convert($data, $this->request->attributes->get('_route'))
+            )
+        );
     }
 }

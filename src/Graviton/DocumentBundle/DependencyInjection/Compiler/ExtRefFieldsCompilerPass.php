@@ -57,6 +57,7 @@ class ExtRefFieldsCompilerPass extends AbstractExtRefCompilerPass
             $routePrefix = strtolower($ns.'.'.$bundle.'.'.'rest'.'.'.$doc);
 
             $map[$routePrefix.'.get'] = $extRefFields;
+            $map[$routePrefix.'.patch'] = $extRefFields;
             $map[$routePrefix.'.all'] = $extRefFields;
         }
 

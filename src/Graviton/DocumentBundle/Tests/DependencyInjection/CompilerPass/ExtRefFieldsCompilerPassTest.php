@@ -67,6 +67,17 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                         'achildren.0.bchild.$cref',
                         'achildren.0.bchildren.0.$cref',
                     ],
+                    'gravitontest.document.rest.a.patch' => [
+                        '$aref',
+
+                        'achild.$bref',
+                        'achild.bchild.$cref',
+                        'achild.bchildren.0.$cref',
+
+                        'achildren.0.$bref',
+                        'achildren.0.bchild.$cref',
+                        'achildren.0.bchildren.0.$cref',
+                    ]
                 ]
             );
 
