@@ -18,8 +18,8 @@ interface ExtReferenceJsonConverterInterface
      * Convert $refs to URLs in input data
      *
      * @param array $data
-     * @param string $routeId
+     * @param array $fields
      * @return array
      */
-    public function convert(array $data, $routeId);
+    public function convert(array $data, $fields);
 }

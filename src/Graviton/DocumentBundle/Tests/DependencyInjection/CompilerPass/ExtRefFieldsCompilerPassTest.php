@@ -90,7 +90,7 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->method('getDoctrineMappingFinder')
             ->willReturn(
                 (new Finder())
-                    ->in(__DIR__.'/Resources/doctrine')
+                    ->in(__DIR__.'/Resources/doctrine/extref')
                     ->name('*.mongodb.xml')
             );
 

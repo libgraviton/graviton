@@ -98,6 +98,11 @@ class RestController
     private $extReferenceJsonConverter;
 
     /**
+     * @var array
+     */
+    private $extrefFields;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -139,6 +144,14 @@ class RestController
         $this->extReferenceJsonConverter = $extReferenceConverter;
     }
 
+    /**
+     * @param array $fields array of extref fields
+     * @return void
+     */
+    public function setExtrefFields(array $fields)
+    {
+        $this->extrefFields = $fields;
+    }
 
     /**
      * Get the container object
@@ -458,7 +471,7 @@ class RestController
         $record = $this->findRecord($id);
         $recordData = $this->extReferenceJsonConverter->convert(
             json_decode($this->serialize($record), 1),
-            $request->attributes->get('_route')
+            $this->extrefFields[$request->attributes->get('_route')]
         );
 
         try {

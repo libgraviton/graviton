@@ -5,10 +5,9 @@
 
 namespace Graviton\DocumentBundle\Tests\Form\Type;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\DocumentBundle\Service\ExtReferenceJsonConverter;
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -19,19 +18,9 @@ class ExtReferenceJsonConverterTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Request
+     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $request;
-
-    /**
-     * @var ParameterBag|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $requestAttrs;
-
-    /**
-     * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $router;
+    private $converter;
 
     /**
      * setup type we want to test
@@ -40,103 +29,113 @@ class ExtReferenceJsonConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-
-        $this->router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['generate'])
+            ->setMethods(['getUrl', 'getDbRef'])
             ->getMock();
-
-        $this->requestAttrs = $this->getMockBuilder('\Symfony\Component\HttpFoundation\ParameterBag')
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
-        $this->requestAttrs
-            ->expects($this->any())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
-
-        $this->request = new Request();
-        $this->request->attributes = $this->requestAttrs;
-
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param array $input input data
-     * @param array $expectedResult expected result
-     * @param string $routerUrl
+     * Test convert
      *
      * @return void
      */
-    public function testGetName($input, $expectedResult, $routerUrl)
+    public function testConvert()
     {
-        $this->router
-            ->expects($this->once())
-            ->method('generate')
-            ->will($this->returnValue($routerUrl));
-
+        $before = [
+            'name' => 'name',
+            'ref' => '{"$ref":"toplevel","$id":123}',
+            'array' => [
+                '{"$ref":"array","$id":123}',
+                '{"$ref":"array","$id":456}',
+            ],
+            'arrayhash' => [
+                [
+                    'ref' => '{"$ref":"arrayhash","$id":123}',
+                ],
+                [
+                    'ref' => '{"$ref":"arrayhash","$id":456}',
+                ],
+            ],
+            'hash' => [
+                'c' => [
+                    'ref' => '{"$ref":"hash","$id":123}',
+                ],
+                'd' => [
+                    'ref' => '{"$ref":"notmapped","$id":123}',
+                ],
+            ],
+            'deep' => [
+                'deep' => [
+                    'deep' => [
+                        'deep' => [
+                            'ref' => '{"$ref":"deep","$id":123}',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $after = [
+            'name' => 'name',
+            'ref' => 'url-toplevel-123',
+            'array' => [
+                'url-array-123',
+                'url-array-456',
+            ],
+            'hash' => [
+                'c' => [
+                    'ref' => 'url-hash-123',
+                ],
+                'd' => [
+                    'ref' => '{"$ref":"notmapped","$id":123}',
+                ],
+            ],
+            'arrayhash' => [
+                [
+                    'ref' => 'url-arrayhash-123',
+                ],
+                [
+                    'ref' => 'url-arrayhash-456',
+                ],
+            ],
+            'deep' => [
+                'deep' => [
+                    'deep' => [
+                        'deep' => [
+                            'ref' => 'url-deep-123',
+                        ],
+                    ],
+                ],
+            ],
+        ];
         $fields = [
-            'route.id' => [
-                'db_link.$ref',
-                'deep.deep.application.$ref',
-            ],
+            'ref',
+            'array.0',
+            'hash.c.ref',
+            'arrayhash.0.ref',
+            'deep.deep.deep.deep.ref'
         ];
 
-        $converter = new ExtReferenceJsonConverter($this->router, ['App' => 'graviton.core.rest.app.get'], $fields);
+        $this->converter
+            ->expects($this->any())
+            ->method('getUrl')
+            ->willReturnCallback(
+                function ($url) {
+                    $map = [
+                        '{"$ref":"toplevel","$id":123}'     => 'url-toplevel-123',
+                        '{"$ref":"array","$id":123}'        => 'url-array-123',
+                        '{"$ref":"array","$id":456}'        => 'url-array-456',
+                        '{"$ref":"hash","$id":123}'         => 'url-hash-123',
+                        '{"$ref":"arrayhash","$id":123}'    => 'url-arrayhash-123',
+                        '{"$ref":"arrayhash","$id":456}'    => 'url-arrayhash-456',
+                        '{"$ref":"deep","$id":123}'         => 'url-deep-123',
+                    ];
 
-        $this->assertEquals(
-            $expectedResult,
-            $converter->convert($input, 'route.id')
-        );
-    }
+                    return $map[json_encode($url)];
+                }
+            );
 
-    /**
-     * @return array
-     */
-    public function testData()
-    {
-        return [
-            'simple converting' => [
-                [
-                    'id' => 100,
-                    'db_link' => [
-                        '$ref' => json_encode(['$ref' => 'App', '$id' => 'tablet'])
-                    ]
-                ],
-                [
-                    'id' => 100,
-                    'db_link' => [
-                        '$ref' => 'http://localhost/core/app/tablet'
-                    ]
-                ],
-                'http://localhost/core/app/tablet'
-            ],
-            'deep nested converting' => [
-                [
-                    'id' => 100,
-                    'deep' => [
-                        'deep' => [
-                            'application' => [
-                                '$ref' => json_encode(['$ref' => 'App', '$id' => 'admin'])
-                            ]
-                        ]
-                    ]
-                ],
-                [
-                    'id' => 100,
-                    'deep' => [
-                        'deep' => [
-                            'application' => [
-                                '$ref' => 'http://localhost/core/app/admin'
-                            ]
-                        ]
-                    ]
-                ],
-                'http://localhost/core/app/admin'
-            ]
-        ];
+        $converter = new ExtReferenceJsonConverter($this->converter);
+        $this->assertEquals($after, $converter->convert($before, $fields));
     }
 }

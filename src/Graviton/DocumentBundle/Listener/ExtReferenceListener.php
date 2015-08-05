@@ -14,6 +14,7 @@ namespace Graviton\DocumentBundle\Listener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+
 use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 
 /**
@@ -29,6 +30,11 @@ class ExtReferenceListener
     private $converter;
 
     /**
+     * @var array
+     */
+    private $fields;
+
+    /**
      * @var Request
      */
     private $request;
@@ -36,12 +42,14 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param ExtReferenceJsonConverterInterface $converter extref converter
+     * @param ExtReferenceJsonConverterInterface $converter Extref converter
+     * @param array                              $fields    extref fields
      * @param RequestStack                       $requests  request
      */
-    public function __construct(ExtReferenceJsonConverterInterface $converter, RequestStack $requests)
+    public function __construct(ExtReferenceJsonConverterInterface $converter, array $fields, RequestStack $requests)
     {
         $this->converter = $converter;
+        $this->fields = $fields;
         $this->request = $requests->getCurrentRequest();
     }
 
@@ -54,6 +62,10 @@ class ExtReferenceListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        if (!isset($this->fields[$this->request->attributes->get('_route')])) {
+            return;
+        }
+
         $content = trim($event->getResponse()->getContent());
 
         if (!$event->isMasterRequest() || empty($content)) {
@@ -69,7 +81,7 @@ class ExtReferenceListener
 
         $event->getResponse()->setContent(
             json_encode(
-                $this->converter->convert($data, $this->request->attributes->get('_route'))
+                $this->converter->convert($data, $this->fields[$this->request->attributes->get('_route')])
             )
         );
     }

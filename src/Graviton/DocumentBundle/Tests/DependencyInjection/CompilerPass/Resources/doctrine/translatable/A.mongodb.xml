@@ -2,16 +2,17 @@
 <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-    <document name="GravitonTest\DocumentBundle\Document\B">
+    <document name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A">
         <field fieldName="id" type="string" id="true"/>
         <field fieldName="key" type="string"/>
-        <field fieldName="bref" type="extref"/>
+        <field fieldName="title" type="string"/>
+        <field fieldName="aref" type="extref"/>
 
-        <embed-one field="bchild"
-                   target-document="GravitonTest\DocumentBundle\Document\C">
+        <embed-one field="achild"
+                   target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B">
         </embed-one>
-        <embed-many field="bchildren"
-                    target-document="GravitonTest\DocumentBundle\Document\C"
+        <embed-many field="achildren"
+                    target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B"
                     strategy="set">
         </embed-many>
     </document>

@@ -4,7 +4,6 @@
  */
 
 namespace Graviton\DocumentBundle\Service;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Extref converter
@@ -16,47 +15,31 @@ use Symfony\Component\Routing\RouterInterface;
 class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
 {
     /**
-     * @var RouterInterface
+     * @var ExtReferenceConverterInterface
      */
-    private $router;
+    private $refConverter;
 
     /**
-     * @var array
+     * @param ExtReferenceConverterInterface $refConverter
      */
-    private $mapping;
-
-    /**
-     * @var array
-     */
-    private $fields;
-
-    /**
-     * Constructor
-     *
-     * @param RouterInterface $router
-     * @param array $mapping
-     * @param array $fields
-     */
-    public function __construct(RouterInterface $router, array $mapping, array $fields)
+    public function __construct(ExtReferenceConverterInterface $refConverter)
     {
-        $this->router = $router;
-        $this->mapping = $mapping;
-        $this->fields = $fields;
+        $this->refConverter = $refConverter;
     }
 
     /**
      * @param array $data
-     * @param string $routeId
+     * @param array $fields
      * @return array
      */
-    public function convert(array $data, $routeId)
+    public function convert(array $data, $fields)
     {
         if (is_array($data) && !empty($data) && !is_string(array_keys($data)[0])) {
             foreach ($data as $index => $row) {
-                $data[$index] = $this->mapItem($row, $routeId);
+                $data[$index] = $this->mapItem($row, $fields);
             }
         } else {
-            $data = $this->mapItem($data, $routeId);
+            $data = $this->mapItem($data, $fields);
         }
 
         return $data;
@@ -66,16 +49,13 @@ class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
      * apply single mapping
      *
      * @param array $item item to apply mapping to
-     * @param string $routeId
+     * @param array $fields
      *
      * @return array
      */
-    private function mapItem(array $item, $routeId)
+    private function mapItem(array $item, array $fields)
     {
-        if (!array_key_exists($routeId, $this->fields)) {
-            return $item;
-        }
-        foreach ($this->fields[$routeId] as $field) {
+        foreach ($fields as $field) {
             $item = $this->mapField($item, $field);
         }
 
@@ -117,13 +97,29 @@ class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
             return $item;
         }
 
-        if (isset($item[$field])) {
-            $ref = json_decode($item[$field], true);
-            $routeId = $this->mapping[$ref['$ref']];
-            $item[$field] = $this->router->generate($routeId, ['id' => $ref['$id']], true);
+        if ($field === '0') {
+            $item = array_map([$this, 'convertToUrl'], $item);
+        } elseif (isset($item[$field])) {
+            $item[$field] = $this->convertToUrl($item[$field]);
         }
 
         return $item;
+    }
+
+    /**
+     * Convert extref to URL
+     *
+     * @param string $ref JSON encoded extref
+     * @return string
+     */
+    private function convertToUrl($ref)
+    {
+        try {
+            $ref = json_decode($ref, true);
+            return $this->refConverter->getUrl($ref);
+        } catch (\InvalidArgumentException $e) {
+                return '';
+        }
     }
 
 }
