@@ -121,7 +121,7 @@
 
     <service id="graviton.i18n.listener.i18nrqlparsinglistener" class="%graviton.i18n.listener.i18nrqlparsinglistener.class%">
       <argument type="service" id="graviton.18n.utils"/>
-      <argument type="service" id="graviton.i18n.repository.translatable"/>
+      <argument>%graviton.document.type.translatable.fields%</argument>
       <tag name="kernel.event_listener" event="rql.visit.node" method="onvisitnode"/>
     </service>
 
