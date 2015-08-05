@@ -38,6 +38,14 @@
         "type": "string"
       },
       "description": "Array of required field names"
+    },
+    "x-collection": {
+      "title": "Collection",
+      "type": "array",
+      "items": {
+        "type": "exref"
+      },
+      "description": "Array of required field names"
     }
   },
   "required": ["title", "description", "type"]

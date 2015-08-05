@@ -1,6 +1,6 @@
 <?php
 /**
- * abstract compiler pass for extref things
+ * abstract compiler pass for document things
  */
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-abstract class AbstractExtRefCompilerPass implements CompilerPassInterface
+abstract class AbstractDocumentCompilerPass implements CompilerPassInterface
 {
     /**
      * load services

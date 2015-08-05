@@ -150,3 +150,6 @@ knp_gaufrette:
 eo_airbrake:
         host: %graviton.errbit.host%
         api_key: %graviton.errbit.api_key%
+        ignored_exceptions: 
+            - "Symfony\Component\HttpKernel\Exception\HttpException"
+            - "Xiag\Rql\Parser\Exception\SyntaxErrorException"
