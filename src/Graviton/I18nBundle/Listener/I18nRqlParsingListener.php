@@ -90,8 +90,17 @@ class I18nRqlParsingListener
     {
         $newNode = new OrNode();
 
-        foreach ($values as $singleValue) {
-            $newNode->addQuery(new EqNode($fieldName, $singleValue));
+        if (count($values) > 0) {
+            foreach ($values as $singleValue) {
+                $newNode->addQuery(new EqNode($fieldName, $singleValue));
+            }
+        } else {
+            /**
+             * if we received no valid translations (empty array), we need to
+             * set some impossible condition to make sure we have an empty resultset.
+             * otherwise mongo will return all records, that's not desired.
+             */
+            $newNode->addQuery(new EqNode(1, 2));
         }
 
         return $newNode;
@@ -124,9 +133,8 @@ class I18nRqlParsingListener
     private function getDocumentFieldName()
     {
         $parts = explode('.', $this->node->getField());
-        unset($parts[sizeof($parts)-1]);
-
-        return array_pop($parts);
+        array_pop($parts);
+        return implode('.', $parts);
     }
 
     /**

@@ -585,6 +585,7 @@ class AppControllerTest extends RestTestCase
     {
         return [
             'simple-de' => array('eq(title.de,Die%20Administration)', 1),
+            'non-existent' => array('eq(title.de,Administration)', 0),
             'english' => array('eq(title.en,Administration)', 1),
             'no-lang' => array('eq(title,Administration)', 1),
             'glob' => array('like(title.de,*Administr*)', 1),
