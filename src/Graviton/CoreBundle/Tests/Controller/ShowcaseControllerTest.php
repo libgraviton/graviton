@@ -154,4 +154,65 @@ class ShowcaseControllerTest extends RestTestCase
             json_encode($client->getResults())
         );
     }
+
+    /**
+     * Test RQL select statement
+     *
+     * @return void
+     */
+    public function testRqlSelect()
+    {
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $initial = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-initial.json'),
+            false
+        );
+        $filtred = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-filtred.json'),
+            false
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase');
+        $this->assertEquals($initial, $client->getResults());
+
+        $fields = [
+            'someFloatyDouble',
+            'contact.uri',
+            'contactCode.text.en',
+            'unstructuredObject.booleanField',
+            'unstructuredObject.hashField.someField',
+            'unstructuredObject.nestedArrayField.anotherField',
+            'nestedCustomers.$ref'
+        ];
+        $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase?q='.$rqlSelect);
+        $this->assertEquals($filtred, $client->getResults());
+    }
+
+    /**
+     * Encode string value in RQL
+     *
+     * @param string $value String value
+     * @return string
+     */
+    private function encodeRqlString($value)
+    {
+        return strtr(
+            rawurlencode($value),
+            [
+                '-' => '%2D',
+                '_' => '%5F',
+                '.' => '%2E',
+                '~' => '%7E',
+            ]
+        );
+    }
 }

@@ -5,9 +5,9 @@
 
 namespace Graviton\DocumentBundle\Tests\Types;
 
+use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\DocumentBundle\Types\ExtReference;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Symfony\Component\Routing\Route;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -17,9 +17,13 @@ use Symfony\Component\Routing\Route;
 class ExtReferenceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array
+     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $doubles = [];
+    private $converter;
+    /**
+     * @var ExtReference
+     */
+    private $type;
 
     /**
      * setup type we want to test
@@ -29,162 +33,107 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
+        $this->type = Type::getType('extref');
 
-        $this->doubles['router'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(array('getRouteCollection', 'generate'))
+            ->setMethods(['getDbRef', 'getUrl'])
             ->getMock();
-
-        $this->doubles['collection'] = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
-            ->setMethods(array('all'))
-            ->getMock();
-
-        $this->doubles['routes'] = [
-            new Route(
-                '/core/app/{id}',
-                [
-                    '_controller' => 'graviton.core.controller.app:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
-            new Route(
-                '/core/app',
-                [
-                    '_controller' => 'graviton.core.controller.app.appAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                ]
-            ),
-            new Route(
-                '/i18n/language/{id}',
-                [
-                    '_controller' => 'graviton.i18n.controller.language:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
-            new Route(
-                '/hans/showcase/{id}',
-                [
-                    '_controller' => 'gravitondyn.showcase.controller.showcase:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
-        ];
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      *
      * @return void
      */
-    public function testExceptWithoutRouter()
+    public function testExceptWithoutConverter()
     {
-        $sut = Type::getType('extref');
+        $this->type->convertToDatabaseValue('');
+    }
 
-        $sut->convertToDatabaseValue('');
+    /**
+     * @expectedException \RuntimeException
+     *
+     * @return void
+     */
+    public function testMongoRefFromValueWithException()
+    {
+        $url = __FILE__;
+
+        $this->converter
+            ->expects($this->once())
+            ->method('getDbRef')
+            ->with($url)
+            ->willThrowException(new \InvalidArgumentException);
+
+        $this->type->setConverter($this->converter);
+        $this->type->convertToDatabaseValue($url);
     }
 
     /**
      * verify that we get a mongodbref
      *
-     * @dataProvider mongoRefFromValueProvider
-     *
-     * @param string $url      external link to convert
-     * @param array  $expected expected mogodb ref
+     * @return void
+     */
+    public function testMongoRefFromValue()
+    {
+        $url = __FILE__;
+        $dbRef = [
+            '$ref' => __METHOD__,
+            '$id' => __LINE__,
+        ];
+
+        $this->converter
+            ->expects($this->once())
+            ->method('getDbRef')
+            ->with($url)
+            ->willReturn($dbRef);
+
+        $this->type->setConverter($this->converter);
+        $this->assertEquals($dbRef, $this->type->convertToDatabaseValue($url));
+    }
+
+    /**
+     * Test ConvertToPHPValue
      *
      * @return void
      */
-    public function testMongoRefFromValue($url, $expected)
+    public function testConvertToPHPValueWithException()
     {
-        $this->doubles['router']
-            ->expects($this->once())
-            ->method('getRouteCollection')
-            ->will($this->returnValue($this->doubles['collection']));
-
-        $this->doubles['collection']
-            ->expects($this->once())
-            ->method('all')
-            ->will($this->returnValue($this->doubles['routes']));
-
-        $sut = Type::getType('extref');
-        $sut->setRouter($this->doubles['router']);
-        $sut->setMapping(
-            [
-                'App' => 'graviton.core.rest.app.get',
-                'Language' => 'graviton.i18n.rest.language.get',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
-            ]
-        );
-
-        $result = $sut->convertToDatabaseValue($url);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function mongoRefFromValueProvider()
-    {
-        return [
-            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['http://localhost/hans/showcase/blah', ['$ref' => 'ShowCase', '$id' => 'blah']],
+        $dbRef = [
+            '$ref' => __METHOD__,
+            '$id' => __LINE__,
         ];
+
+        $this->converter
+            ->expects($this->once())
+            ->method('getUrl')
+            ->with($dbRef)
+            ->willThrowException(new \InvalidArgumentException);
+
+        $this->type->setConverter($this->converter);
+        $this->assertEquals('', $this->type->convertToPHPValue($dbRef));
     }
 
     /**
-     * @dataProvider convertToPHPValueProvider
-     *
-     * @param array  $ref     reference as from mongo
-     * @param string $routeId name of route that should get loaded
-     * @param string $url     url we expect to result from the conversion
+     * Test ConvertToPHPValue
      *
      * @return void
      */
-    public function testConvertToPHPValue($ref, $routeId, $url)
+    public function testConvertToPHPValue()
     {
-        $this->doubles['router']
-            ->expects($this->once())
-            ->method('generate')
-            ->with(
-                $this->equalTo($routeId),
-                $this->equalTo(array('id' => $ref['$id']))
-            )
-            ->will($this->returnValue($url));
-
-        $sut = Type::getType('extref');
-        $sut->setRouter($this->doubles['router']);
-
-        $this->assertEquals($url, $sut->convertToPHPValue($ref));
-    }
-
-    /**
-     * @return array
-     */
-    public function convertToPHPValueProvider()
-    {
-        return [
-            [['$ref' => 'App', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
-            [
-                ['$ref' => 'Language', '$id' => 'en'],
-                'graviton.i18n.rest.language.get',
-                'http://localhost/i18n/language/en'
-            ],
+        $dbRef = [
+            '$ref' => __METHOD__,
+            '$id' => __LINE__,
         ];
+
+        $this->converter
+            ->expects($this->once())
+            ->method('getUrl')
+            ->with($dbRef)
+            ->willReturn(__FILE__);
+
+        $this->type->setConverter($this->converter);
+        $this->assertEquals(__FILE__, $this->type->convertToPHPValue($dbRef));
     }
 }

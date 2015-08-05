@@ -1,0 +1,157 @@
+[
+  {
+    "id": "500",
+    "anotherInt": 6555488894525,
+    "email": "joe@example.com",
+    "aBoolean": false,
+    "optionalBoolean": true,
+    "someFloatyDouble": 11.7,
+    "modificationDate": "1984-05-02T00:00:00+0000",
+    "contact": {
+      "type": "home",
+      "value": "joe@example.com",
+      "protocol": "mailto",
+      "uri": "mailto:joe@example.com"
+    },
+    "contacts": [
+      {
+        "type": "business",
+        "value": "+41791456214",
+        "protocol": "tel",
+        "uri": "tel:+41791456214"
+      },
+      {
+        "type": "home",
+        "value": "+41332434479",
+        "protocol": "tel",
+        "uri": "tel:+41332434479"
+      },
+      {
+        "type": "home",
+        "value": "someuser",
+        "protocol": "skype",
+        "uri": "skype:someuser"
+      }
+    ],
+    "contactCode": {
+      "someDate": "2012-12-21T00:00:00+0000",
+      "text": {
+        "en": "Ad mailing campaign 2012"
+      }
+    },
+    "nestedArray": [
+      {
+        "name": "element one"
+      },
+      {
+        "name": "element two"
+      }
+    ],
+    "unstructuredObject": {
+      "intField": 17,
+      "stringField": "Tux",
+      "listField": [
+        "Linus",
+        "Gnu"
+      ],
+      "hashField": {
+        "someField": 21,
+        "anotherField": "half the truth"
+      },
+      "nestedArrayField": [
+        {
+          "someField": 21,
+          "anotherField": "half the truth"
+        },
+        {
+          "someField": 23,
+          "anotherField": "nothing is as it seems"
+        }
+      ]
+    },
+    "nestedApps": [
+      {
+        "$ref": "http:\/\/localhost\/core\/app\/tablet"
+      },
+      {
+        "$ref": "http:\/\/localhost\/core\/app\/admin"
+      }
+    ],
+    "nestedCustomers": [
+      {
+        "id": 1234,
+        "name": "Hans",
+        "$ref": "http:\/\/localhost\/core\/app\/admin"
+      }
+    ],
+    "testField": {
+      "en": "a test string"
+    },
+    "someOtherField": {
+      "en": "another good ol' test string"
+    }
+  },
+  {
+    "id": "600",
+    "anotherInt": 544615898841,
+    "email": "dave@example-company.com",
+    "aBoolean": true,
+    "someFloatyDouble": 458.114,
+    "modificationDate": "2012-12-24T14:15:55+0000",
+    "contact": {
+      "type": "business",
+      "value": "dave@example-company.com",
+      "protocol": "mailto",
+      "uri": "mailto:dave@example-company.com"
+    },
+    "contacts": [
+      {
+        "type": "home",
+        "value": "+41767845112",
+        "protocol": "tel",
+        "uri": "tel:+41767845112"
+      },
+      {
+        "type": "home",
+        "value": "+41317415488",
+        "protocol": "tel",
+        "uri": "tel:+41317415488"
+      },
+      {
+        "type": "business",
+        "value": "another@example.com",
+        "protocol": "jabber",
+        "uri": "jabber:another@example.com"
+      }
+    ],
+    "contactCode": {
+      "someDate": "2014-06-30T11:45:31+0000",
+      "text": {
+        "en": "Phone call"
+      }
+    },
+    "nestedArray": [
+      {
+        "name": "array element one"
+      },
+      {
+        "name": "array element two"
+      }
+    ],
+    "unstructuredObject": {
+      "intField": 17,
+      "stringField": "some random string",
+      "booleanField": true,
+      "dateField": "2012-12-24T14:15:55Z",
+      "someFloatyDouble": 458.114
+    },
+    "nestedApps": [],
+    "nestedCustomers": [],
+    "testField": {
+      "en": "some text"
+    },
+    "someOtherField": {
+      "en": "this is a text from another field"
+    }
+  }
+]
