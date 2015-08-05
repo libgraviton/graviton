@@ -142,9 +142,6 @@
                 }
             }
         ],
-        "branch-alias": {
-            "dev-master": "2.6-dev"
-        },
         "installer-paths": {
             "vendor/composer_phpcs": ["libgraviton/codesniffer"]
         }
