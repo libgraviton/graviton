@@ -18,6 +18,7 @@
     <parameter key="graviton.i18n.listener.acceptlanguagerequest.class">Graviton\I18nBundle\Listener\AcceptLanguageRequestListener</parameter>
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
     <parameter key="graviton.i18n.listener.i18ndeserializer.class">Graviton\I18nBundle\Listener\I18nDeserializationListener</parameter>
+    <parameter key="graviton.i18n.listener.i18nrqlparsinglistener.class">Graviton\I18nBundle\Listener\I18nRqlParsingListener</parameter>
     <parameter key="graviton.i18n.loader.doctrineodm.class">Graviton\I18nBundle\Translation\Loader\DoctrineODMLoader</parameter>
     <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
@@ -36,7 +37,7 @@
     <service id="graviton.i18n.model.language"
              class="%graviton.i18n.model.language.class%"
              parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor.mongodb"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.language"/>
       </call>
@@ -64,7 +65,7 @@
     <service id="graviton.i18n.model.translatable"
       class="%graviton.i18n.model.translatable.class%"
       parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor.mongodb"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatable"/>
       </call>
@@ -72,7 +73,7 @@
     <service id="graviton.i18n.model.translatablelanguage"
       class="%graviton.i18n.model.translatablelanguage.class%"
       parent="graviton.rest.model">
-      <argument type="service" id="graviton.rql.factory"/>
+      <argument type="service" id="graviton.rql.visitor.mongodb"/>
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatablelanguage"/>
       </call>
@@ -116,6 +117,12 @@
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" method="onPreDeserialize" direction="deserialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_deserialize" method="onPostDeserialize" direction="deserialization"/>
+    </service>
+
+    <service id="graviton.i18n.listener.i18nrqlparsinglistener" class="%graviton.i18n.listener.i18nrqlparsinglistener.class%">
+      <argument type="service" id="graviton.18n.utils"/>
+      <argument>%graviton.document.type.translatable.fields%</argument>
+      <tag name="kernel.event_listener" event="rql.visit.node" method="onvisitnode"/>
     </service>
 
     <service id="graviton.18n.utils"

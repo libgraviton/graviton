@@ -36,7 +36,10 @@ class AppControllerTest extends RestTestCase
         $this->loadFixtures(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
             ),
             null,
             'doctrine_mongodb'
@@ -72,7 +75,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
@@ -85,24 +88,26 @@ class AppControllerTest extends RestTestCase
     public function testGetAppWithFilteringAndPaging()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=1&q='.urlencode('eq(showInMenu,true)'));
+        $_SERVER['QUERY_STRING'] = 'perPage=1&q=eq(showInMenu,true)';
+        $client->request('GET', '/core/app?perPage=1&q=eq(showInMenu,true)');
+        unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)>; rel="self"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="next"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="next"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq%28showInMenu%2Ctrue%29&page=2&perPage=1>; rel="last"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="last"',
+            $response->headers->get('Link')
         );
 
     }
@@ -116,54 +121,54 @@ class AppControllerTest extends RestTestCase
     {
         // does limit work?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?q='.urlencode('limit(1)'));
+        $client->request('GET', '/core/app?q=limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         // rql before GET?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&q='.urlencode('limit(1)'));
+        $client->request('GET', '/core/app?perPage=2&q=limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit%281%29>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=limit(1)>; rel="self"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="next"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="next"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit%281%29&page=2&perPage=1>; rel="last"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="last"',
+            $response->headers->get('Link')
         );
 
         // "page" override - rql before get
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&page=1&q='.urlencode('limit(1,1)'));
+        $client->request('GET', '/core/app?perPage=2&page=1&q=limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit%281%2C1%29>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/app?q=limit(1%2C1)>; rel="self"',
+            $response->headers->get('Link')
         );
 
         // we're passing page=1, but should be on last.. so next and last should be identical
-        $nextAndLastUrl = 'http://localhost/core/app?q=limit%281%2C1%29&page=2&perPage=1';
+        $nextAndLastUrl = 'http://localhost/core/app?q=limit(1%2C1)&page=2&perPage=1';
 
         $this->assertContains(
             '<'.$nextAndLastUrl.'>; rel="next"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
             '<'.$nextAndLastUrl.'>; rel="last"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
     }
 
@@ -207,7 +212,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertContains(
             '<http://localhost/core/app/admin>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
     }
@@ -479,7 +484,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertContains('showInMenu', $results[0]->property_path);
+        $this->assertContains('showInMenu', $results[0]->propertyPath);
         $this->assertEquals('This value is not valid.', $results[0]->message);
     }
 
@@ -544,6 +549,48 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * Test for searchable translations
+     *
+     * @dataProvider searchableTranslationDataProvider
+     *
+     * @param string $expr     expression
+     * @param int    $expCount count
+     *
+     * @return void
+     */
+    public function testSearchableTranslations($expr, $expCount)
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app?q='.$expr,
+            array(),
+            array(),
+            array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
+        );
+
+        $result = $client->getResults();
+        $this->assertCount($expCount, $result);
+    }
+
+    /**
+     * data provider for searchable translations
+     *
+     * @return array data
+     */
+    public function searchableTranslationDataProvider()
+    {
+        return [
+            'simple-de' => array('eq(title.de,Die%20Administration)', 1),
+            'non-existent' => array('eq(title.de,Administration)', 0),
+            'english' => array('eq(title.en,Administration)', 1),
+            'no-lang' => array('eq(title,Administration)', 1),
+            'glob' => array('like(title.de,*Administr*)', 1),
+            'all-glob' => array('like(title.de,*a*)', 2)
+        ];
     }
 
     /**

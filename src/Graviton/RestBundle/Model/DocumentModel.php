@@ -9,7 +9,8 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Graviton\RqlParserBundle\Factory;
+use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Xiag\Rql\Parser\Query;
 
 /**
  * Use doctrine odm as backend
@@ -42,17 +43,17 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $repository;
 
     /**
-     * @var Factory
+     * @var Visitor
      */
-    private $rqlFactory;
+    private $visitor;
 
     /**
-     * @param Factory $rqlFactory factory object to use
+     * @param Visitor $visitor rql query visitor
      */
-    public function __construct(Factory $rqlFactory)
+    public function __construct(Visitor $visitor)
     {
         parent::__construct();
-        $this->rqlFactory = $rqlFactory;
+        $this->visitor = $visitor;
     }
 
     /**
@@ -97,13 +98,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
-        $filter = $request->query->get('q');
-        if (!empty($filter)) {
-            // set filtering attributes on request
-            $request->attributes->set('filtering', true);
-
-            $queryBuilder = $this->doRqlQuery($queryBuilder, $filter);
-
+        if ($request->attributes->get('hasRql', false)) {
+            $queryBuilder = $this->doRqlQuery(
+                $queryBuilder,
+                $request->attributes->get('rqlQuery')
+            );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
@@ -244,17 +243,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * Does the actual query using the RQL Bundle.
      *
      * @param Builder $queryBuilder Doctrine ODM QueryBuilder
-     * @param string  $rqlQuery     raw query string
+     * @param Query   $query        query from parser
      *
      * @return array
      */
-    protected function doRqlQuery($queryBuilder, $rqlQuery)
+    protected function doRqlQuery($queryBuilder, Query $query)
     {
-        $factory = $this->rqlFactory;
-
-        $query = $factory
-            ->create('MongoOdm', $rqlQuery, $queryBuilder);
-
-        return $query->buildQuery();
+        $this->visitor->setBuilder($queryBuilder);
+        return $this->visitor->visit($query);
     }
 }

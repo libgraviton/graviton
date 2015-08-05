@@ -83,9 +83,27 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 
+        // update file contents to update mod date
+        $client = static::createRestClient();
+        $client->put(
+            $response->headers->get('Location'),
+            $fixtureData,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+        $this->assertEmpty($client->getResults());
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
         $data = $client->getResults();
+
+        // check for valid format
+        $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->createDate));
+        $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->modificationDate));
 
         $data->links = [];
         $link = new \stdClass;
@@ -135,6 +153,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('text/plain', $data->metadata->mime);
         $this->assertEquals('test.txt', $data->metadata->filename);
         $this->assertNotNull($data->metadata->createDate);
+        $this->assertNotNull($data->metadata->modificationDate);
 
         // remove a link
         unset($data->links[1]);
@@ -165,20 +184,28 @@ class FileControllerTest extends RestTestCase
         // read only fields
         $data->metadata->size = 1;
         $data->metadata->createDate = '1984-05-02T00:00:00+0000';
+        $data->metadata->modificationDate = '1984-05-02T00:00:00+0000';
         $data->metadata->mime = 'application/octet-stream';
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
         $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "data.metadata.size";
-        $expectedErrors[0]->message = "The value \"data.metadata.size\" is read only.";
-        $expectedErrors[1] = new \stdClass();
-        $expectedErrors[1]->property_path = "data.metadata.mime";
-        $expectedErrors[1]->message = "The value \"data.metadata.mime\" is read only.";
-        $expectedErrors[2] = new \stdClass();
-        $expectedErrors[2]->property_path = "data.metadata.createDate";
-        $expectedErrors[2]->message = "The value \"data.metadata.createDate\" is read only.";
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.metadata.size";
+        $expectedError->message = "The value \"data.metadata.size\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.metadata.mime";
+        $expectedError->message = "The value \"data.metadata.mime\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.metadata.createDate";
+        $expectedError->message = "The value \"data.metadata.createDate\" is read only.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.metadata.modificationDate";
+        $expectedError->message = "The value \"data.metadata.modificationDate\" is read only.";
+        $expectedErrors[] = $expectedError;
 
         $this->assertEquals($expectedErrors, $client->getResults());
     }

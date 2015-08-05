@@ -51,18 +51,22 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $document);
 
         $expectedErrors = [];
-        $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "children[someOtherField]";
-        $expectedErrors[0]->message = "This value is not valid.";
-        $expectedErrors[1] = new \stdClass();
-        $expectedErrors[1]->property_path = "data.contact.type";
-        $expectedErrors[1]->message = "This value should not be blank.";
-        $expectedErrors[2] = new \stdClass();
-        $expectedErrors[2]->property_path = "data.contact.protocol";
-        $expectedErrors[2]->message = "This value should not be blank.";
-        $expectedErrors[3] = new \stdClass();
-        $expectedErrors[3]->property_path = "data.contact.value";
-        $expectedErrors[3]->message = "This value should not be blank.";
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "children[someOtherField]";
+        $expectedError->message = "This value is not valid.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.type";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.protocol";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "data.contact.value";
+        $expectedError->message = "This value should not be blank.";
+        $expectedErrors[] = $expectedError;
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -142,12 +146,73 @@ class ShowcaseControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $expectedErrors[0] = new \stdClass();
-        $expectedErrors[0]->property_path = "";
+        $expectedErrors[0]->propertyPath = "";
         $expectedErrors[0]->message = "This form should not contain extra fields.";
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
             json_encode($client->getResults())
+        );
+    }
+
+    /**
+     * Test RQL select statement
+     *
+     * @return void
+     */
+    public function testRqlSelect()
+    {
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $initial = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-initial.json'),
+            false
+        );
+        $filtred = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-filtred.json'),
+            false
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase');
+        $this->assertEquals($initial, $client->getResults());
+
+        $fields = [
+            'someFloatyDouble',
+            'contact.uri',
+            'contactCode.text.en',
+            'unstructuredObject.booleanField',
+            'unstructuredObject.hashField.someField',
+            'unstructuredObject.nestedArrayField.anotherField',
+            'nestedCustomers.$ref'
+        ];
+        $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase?q='.$rqlSelect);
+        $this->assertEquals($filtred, $client->getResults());
+    }
+
+    /**
+     * Encode string value in RQL
+     *
+     * @param string $value String value
+     * @return string
+     */
+    private function encodeRqlString($value)
+    {
+        return strtr(
+            rawurlencode($value),
+            [
+                '-' => '%2D',
+                '_' => '%5F',
+                '.' => '%2E',
+                '~' => '%7E',
+            ]
         );
     }
 }

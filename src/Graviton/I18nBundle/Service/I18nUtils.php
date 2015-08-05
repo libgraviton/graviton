@@ -150,6 +150,50 @@ class I18nUtils
     }
 
     /**
+     * This function allows to search for existing translations from a source
+     * language, probably using a wildcard
+     *
+     * @param string  $value        the translated string
+     * @param string  $sourceLocale a source locale
+     * @param boolean $useWildCard  if we should search wildcard or not
+     *
+     * @return array matching Translatables
+     */
+    public function findMatchingTranslatables($value, $sourceLocale, $useWildCard = false)
+    {
+        // i need to use a queryBuilder as the repository doesn't let me do regex queries (i guess so..)
+        $builder = $this->translatable->getRepository()->createQueryBuilder();
+        $builder
+            ->field('domain')->equals($this->getTranslatableDomain())
+            ->field('locale')->equals($sourceLocale);
+
+        if ($useWildCard === true) {
+            $value = new \MongoRegex($value);
+        }
+
+        /*
+         * we have 2 cases to match
+         * - 'translated' is set and matches
+         * - 'translated' is not present, so 'original' can match (as this is inserted 'virtually')
+         */
+        $builder->addAnd(
+            $builder->expr()
+                ->addOr(
+                    $builder->expr()->field('translated')->equals($value)
+                )
+                ->addOr(
+                    $builder->expr()
+                        ->field('translated')->equals(null)
+                        ->field('original')->equals($value)
+                )
+        );
+
+        $query = $builder->getQuery();
+
+        return $query->execute()->toArray();
+    }
+
+    /**
      * [In|Up]serts a Translatable object using an array with language strings.
      *
      * @param array $values array with language strings; key should be language id

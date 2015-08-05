@@ -29,7 +29,8 @@
         "type": "extref",
         "title": "Link",
         "description": "Link to any document.",
-        "exposeAs": "$ref"
+        "exposeAs": "$ref",
+        "collection": ["*"]
       },
       {
         "name": "metadata.size",
@@ -50,6 +51,13 @@
         "type": "datetime",
         "title": "Creation date",
         "description": "Timestamp of file upload",
+        "readOnly": true
+      },
+      {
+        "name": "metadata.modificationDate",
+        "type": "datetime",
+        "title": "Modification date",
+        "description": "Timestamp of the last file change",
         "readOnly": true
       },
       {
