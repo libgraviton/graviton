@@ -296,14 +296,10 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $content = $response->getContent();
+        // Check that error message contains detailed reason
         $this->assertContains(
-            'syntax error',
-            strtolower($content)
-        );
-        $this->assertContains(
-            'malformed JSON',
-            $content
+            "object property name separator ':' expected",
+            $client->getResults()->message
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -327,9 +323,6 @@ class AppControllerTest extends RestTestCase
             'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
             $client->getResults()[0]->message
         );
-
-
-
     }
     /**
      * test updating apps
