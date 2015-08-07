@@ -8,6 +8,7 @@
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
         <parameter key="graviton.document.form.type.freeform.class">Graviton\DocumentBundle\Form\Type\FreeForm</parameter>
+        <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
     </parameters>
     <services>
         <!-- extref converter -->
@@ -34,6 +35,13 @@
         <!-- freeform form type -->
         <service id="graviton.document.form.type.freeform" class="%graviton.document.form.type.freeform.class%">
           <tag name="form.type" alias="freeform" />
+        </service>
+
+        <!-- hash serializer handler -->
+        <service id="graviton.document.serializer.handler.hash" class="%graviton.document.serializer.handler.hash.class%">
+            <tag name="jms_serializer.handler"
+                 type="Graviton\DocumentBundle\Entity\Hash"
+                 format="json"/>
         </service>
     </services>
 </container>

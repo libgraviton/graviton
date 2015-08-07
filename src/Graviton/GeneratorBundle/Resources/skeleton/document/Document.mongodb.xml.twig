@@ -34,12 +34,8 @@
                         </cascade>
                     </{{ relType }}-one>
                 {% endif %}
-            {% elseif 'Graviton' not in field.type %}
-                {% if field.type == 'object' %}
-                    <field fieldName="{{ field.fieldName }}" type="hash"/>
-                {% elseif field.type != 'hash' %}
-                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
-                {% endif %}
+            {% else %}
+                <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
             {% endif %}
         {% endfor %}
     </{{ docType }}>
