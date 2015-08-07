@@ -297,8 +297,10 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         // Check that error message contains detailed reason
+        json_decode($input);
+        $lastJsonError = function_exists('json_last_error_msg') ? json_last_error_msg() : 'Unable to decode JSON string';
         $this->assertContains(
-            "object property name separator ':' expected",
+            $lastJsonError,
             $client->getResults()->message
         );
 
