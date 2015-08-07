@@ -36,7 +36,7 @@ class HashType extends Type
     public function closureToPHP()
     {
         return <<<'PHP'
-$return = (is_array($value) ? new \ Graviton\DocumentBundle\Entity\Hash($value) : null);
+$return = (is_array($value) ? new \Graviton\DocumentBundle\Entity\Hash($value) : null);
 PHP;
     }
 
