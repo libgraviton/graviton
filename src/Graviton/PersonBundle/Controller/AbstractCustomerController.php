@@ -35,46 +35,5 @@ use Graviton\DocumentBundle\Form\Type\DocumentType;
  */
 abstract class AbstractCustomerController extends RestController
 {
-    /**
-     * @var CustomerDiffRepository
-     */
-    private $diffRepo;
 
-    /**
-     * @param Response               $response    Response
-     * @param RestUtilsInterface     $restUtils   Rest utils
-     * @param Router                 $router      Router
-     * @param ValidatorInterface     $validator   Validator
-     * @param EngineInterface        $templating  Templating
-     * @param FormFactory            $formFactory form factory
-     * @param DocumentType           $formType    generic form
-     * @param ContainerInterface     $container   Container
-     * @param SchemaUtils            $schemaUtils Schema utils
-     * @param CustomerDiffRepository $diffRepo    repo containing customer diffs
-     */
-    public function __construct(
-        Response $response,
-        RestUtilsInterface $restUtils,
-        Router $router,
-        ValidatorInterface $validator,
-        EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
-        ContainerInterface $container,
-        SchemaUtils $schemaUtils,
-        CustomerDiffRepository $diffRepo
-    ) {
-        parent::__construct(
-            $response,
-            $restUtils,
-            $router,
-            $validator,
-            $templating,
-            $formFactory,
-            $formType,
-            $container,
-            $schemaUtils
-        );
-        $this->diffRepo = $diffRepo;
-    }
 }
