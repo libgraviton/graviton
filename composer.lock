@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "049fa5fa9bb73456423adc3d4848ac87",
+    "hash": "e758215d8fbb58cc0b42bb6ad5f3e4d0",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1742,16 +1742,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "dev-feature/direct-rql-query-strings",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "85d6769be325048e85fb20de4359b9fbb1d23d93"
+                "reference": "0fe8b6bce3da7076dd9cfb8d49e2a730de695f21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/85d6769be325048e85fb20de4359b9fbb1d23d93",
-                "reference": "85d6769be325048e85fb20de4359b9fbb1d23d93",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/0fe8b6bce3da7076dd9cfb8d49e2a730de695f21",
+                "reference": "0fe8b6bce3da7076dd9cfb8d49e2a730de695f21",
                 "shasum": ""
             },
             "require": {
@@ -1783,7 +1783,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-08-06 10:50:06"
+            "time": "2015-08-10 12:27:27"
         },
         {
             "name": "guzzle/guzzle",
@@ -5118,7 +5118,6 @@
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
         "graviton/php-rql-parser": 15,
-        "graviton/rql-parser-bundle": 20,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
     },
