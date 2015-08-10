@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
-use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -124,6 +123,7 @@ class PagingLinkResponseListener
      */
     private function generateLink($routeName, $page, $perPage, $type, Request $request, $rql)
     {
+        $limit = '';
         if ($perPage) {
             $page = ($page - 1) * $perPage;
             $limit = sprintf('limit(%s,%s)', $perPage, $page);
