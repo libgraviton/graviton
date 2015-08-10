@@ -31,5 +31,8 @@
         <property name="constraints"
                   type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Constraint&gt;"
                   serialized-name="constraints"/>
+        <property name="collection"
+                  type="array&lt;string&gt;"
+                  serialized-name="collection"/>
     </class>
 </serializer>

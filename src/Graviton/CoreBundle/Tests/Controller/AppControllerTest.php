@@ -36,7 +36,10 @@ class AppControllerTest extends RestTestCase
         $this->loadFixtures(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
             ),
             null,
             'doctrine_mongodb'
@@ -293,14 +296,14 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $content = $response->getContent();
+        // Check that error message contains detailed reason
+        json_decode($input);
+        $lastJsonError = function_exists('json_last_error_msg')
+            ? json_last_error_msg()
+            : 'Unable to decode JSON string';
         $this->assertContains(
-            'syntax error',
-            strtolower($content)
-        );
-        $this->assertContains(
-            'malformed JSON',
-            $content
+            $lastJsonError,
+            $client->getResults()->message
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -324,9 +327,6 @@ class AppControllerTest extends RestTestCase
             'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
             $client->getResults()[0]->message
         );
-
-
-
     }
     /**
      * test updating apps
@@ -546,6 +546,48 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/schema/core/app/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+    }
+
+    /**
+     * Test for searchable translations
+     *
+     * @dataProvider searchableTranslationDataProvider
+     *
+     * @param string $expr     expression
+     * @param int    $expCount count
+     *
+     * @return void
+     */
+    public function testSearchableTranslations($expr, $expCount)
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app?q='.$expr,
+            array(),
+            array(),
+            array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
+        );
+
+        $result = $client->getResults();
+        $this->assertCount($expCount, $result);
+    }
+
+    /**
+     * data provider for searchable translations
+     *
+     * @return array data
+     */
+    public function searchableTranslationDataProvider()
+    {
+        return [
+            'simple-de' => array('eq(title.de,Die%20Administration)', 1),
+            'non-existent' => array('eq(title.de,Administration)', 0),
+            'english' => array('eq(title.en,Administration)', 1),
+            'no-lang' => array('eq(title,Administration)', 1),
+            'glob' => array('like(title.de,*Administr*)', 1),
+            'all-glob' => array('like(title.de,*a*)', 2)
+        ];
     }
 
     /**

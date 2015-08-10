@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.21.0",
+    "version": "0.22.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -44,7 +44,7 @@
         "exercise/htmlpurifier-bundle": "~0.1",
         "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": "~2.0@alpha",
-        "graviton/rql-parser-bundle": "~0.6",
+        "graviton/rql-parser-bundle": "~0.7.1",
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
         "aws/aws-sdk-php": "~2.7",
         "eo/airbrake-bundle": "~1.0",
@@ -142,9 +142,6 @@
                 }
             }
         ],
-        "branch-alias": {
-            "dev-master": "2.6-dev"
-        },
         "installer-paths": {
             "vendor/composer_phpcs": ["libgraviton/codesniffer"]
         }

@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -151,6 +151,7 @@ class ModuleControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->post('/core/module', $testModule);
         $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
@@ -205,7 +206,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -228,6 +229,7 @@ class ModuleControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/core/module/'.$moduleId, $putModule);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
         $client = static::createRestClient();
         $client->request('GET', '/core/module/'.$moduleId);
@@ -256,7 +258,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -285,7 +287,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?q='.urlencode('eq(key,investment)'));
+        $client->request('GET', '/core/module?q=eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
@@ -300,9 +302,9 @@ class ModuleControllerTest extends RestTestCase
 
         $module->app->{'$ref'} = 'http://localhost/core/app/admin';
         $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/product/1';
         $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/product/2';
 
         $client = static::createRestClient();
         $client->put('/core/module/'.$module->id, $module);
@@ -316,9 +318,65 @@ class ModuleControllerTest extends RestTestCase
         $module = $client->getResults();
         $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/1', $module->service[0]->service->{'$ref'});
         $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->service->{'$ref'});
+        $this->assertEquals('http://localhost/core/product/2', $module->service[1]->service->{'$ref'});
+    }
+
+    /**
+     * Test extref validation
+     *
+     * @return void
+     */
+    public function testExtReferenceValidation()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $this->assertCount(1, $client->getResults());
+
+        $module = $client->getResults()[0];
+        $module->app->{'$ref'} = 'http://localhost';
+        $module->service[0]->gui->{'$ref'} = 'http://localhost/core';
+        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app';
+        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/noapp/admin';
+        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
+
+        $client = static::createRestClient();
+        $client->put('/core/module/'.$module->id, $module);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(
+            [
+                (object) [
+                    'propertyPath' => 'data.app.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->app->{'$ref'}
+                    ),
+                ],
+                (object) [
+                    'propertyPath' => 'data.service[0].gui.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[0]->gui->{'$ref'}
+                    ),
+                ],
+                (object) [
+                    'propertyPath' => 'data.service[0].service.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[0]->service->{'$ref'}
+                    ),
+                ],
+                (object) [
+                    'propertyPath' => 'data.service[1].gui.ref',
+                    'message' => sprintf(
+                        'URL "%s" is not a valid ext reference.',
+                        $module->service[1]->gui->{'$ref'}
+                    ),
+                ],
+            ],
+            $client->getResults()
+        );
     }
 
     /**

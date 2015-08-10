@@ -6,7 +6,6 @@
 namespace Graviton\DocumentBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
@@ -15,6 +14,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
 
@@ -42,14 +42,9 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function boot()
     {
-        /* @var $router Router */
-        $router = $this->container->get('router');
-
-        /* @var $type \Graviton\DocumentBundle\Types\ExtReference */
+        /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
         $type = Type::getType('extref');
-
-        $type->setRouter($router);
-        $type->setMapping($this->container->getParameter('graviton.document.type.extref.mapping'));
+        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
     }
 
 
@@ -80,6 +75,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 
         $container->addCompilerPass(new ExtRefMappingCompilerPass);
         $container->addCompilerPass(new ExtRefFieldsCompilerPass);
+        $container->addCompilerPass(new TranslatableFieldsCompilerPass);
         $container->addCompilerPass(new DocumentFormMapCompilerPass);
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass);
     }
