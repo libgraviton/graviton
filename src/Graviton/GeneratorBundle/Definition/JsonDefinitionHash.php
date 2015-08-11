@@ -116,6 +116,12 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 $definition->getTarget()->addField($definitions);
             }
         }
+        foreach ($this->parent->getRelations() as $relation) {
+            $relation = $this->processParentRelation($relation);
+            if ($relation !== null) {
+                $definition->getTarget()->addRelation($relation);
+            }
+        }
 
         return new JsonDefinition($definition);
     }
@@ -146,6 +152,24 @@ class JsonDefinitionHash implements DefinitionElementInterface
         }
 
         throw new \InvalidArgumentException(sprintf('Unknown field type "%s"', get_class($field)));
+    }
+
+    /**
+     * Process parent relation
+     *
+     * @param Schema\Relation $relation Parent relation
+     * @return Schema\Relation|null
+     */
+    private function processParentRelation(Schema\Relation $relation)
+    {
+        $prefixRegex = '/^'.preg_quote($this->name, '/').'\.(\d+\.)*(?P<sub>.*)/';
+        if (!preg_match($prefixRegex, $relation->getLocalProperty(), $matches)) {
+            return null;
+        }
+
+        $clone = clone $relation;
+        $clone->setLocalProperty($matches['sub']);
+        return $clone;
     }
 
     /**
