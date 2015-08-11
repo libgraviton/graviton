@@ -113,7 +113,7 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * rql limit() should *never* by overwritten by default value
+     * rql limit() should *never* be overwritten by default value
      *
      * @return void
      */
