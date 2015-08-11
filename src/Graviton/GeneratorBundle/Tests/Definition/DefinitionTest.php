@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
+use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
@@ -209,16 +210,12 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
             $relations['anotherInt']
         );
         $this->assertEquals('embed', $relations['anotherInt']->getType());
-        $field = $jsonDef->getField('anotherInt');
-        $this->assertEquals($field::REL_TYPE_EMBED, $field->getRelType());
 
         $this->assertInstanceOf(
             'Graviton\\GeneratorBundle\\Definition\\Schema\\Relation',
             $relations['someFloatyDouble']
         );
         $this->assertEquals('ref', $relations['someFloatyDouble']->getType());
-        $field = $jsonDef->getField('someFloatyDouble');
-        $this->assertEquals($field::REL_TYPE_REF, $field->getRelType());
     }
 
     /**
@@ -386,7 +383,7 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $definition = $this->loadJsonDefinition($this->nestedFieldPath);
 
         /** @var JsonDefinitionHash $field */
-        $field = $definition->getField('hash');
+        $field = $this->getFieldByPath($definition, 'hash');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field);
 
         $this->assertEquals(
@@ -411,13 +408,9 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
             $field->getJsonDefinition()
         );
 
-        /** @var JsonDefinitionArray $field */
-        $field = $definition->getField('arrayhash');
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
-
-        /** @var JsonDefinitionHash $element */
-        $element = $field->getElement();
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
+        /** @var JsonDefinitionHash $field */
+        $field = $this->getFieldByPath($definition, 'arrayhash.0');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field);
 
         $this->assertEquals(
             (new JsonDefinition(
@@ -438,16 +431,12 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                             )
                     )
             )),
-            $element->getJsonDefinition()
+            $field->getJsonDefinition()
         );
 
-        /** @var JsonDefinitionArray $field */
-        $field = $definition->getField('deep');
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $field);
-
-        /** @var JsonDefinitionHash $element */
-        $element = $field->getElement();
-        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $element);
+        /** @var JsonDefinitionHash $field */
+        $field = $this->getFieldByPath($definition, 'deep.0');
+        $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionHash', $field);
 
         $this->assertEquals(
             new JsonDefinition(
@@ -473,7 +462,34 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                             )
                     )
             ),
-            $element->getJsonDefinition()
+            $field->getJsonDefinition()
         );
+    }
+
+    /**
+     * Get field by path
+     *
+     * @param JsonDefinition $definition JSON definition
+     * @param string         $path       Path to field
+     * @return DefinitionElementInterface
+     */
+    private function getFieldByPath(JsonDefinition $definition, $path)
+    {
+        $items = explode('.', $path);
+        $field = $definition->getField(array_shift($items));
+        foreach ($items as $item) {
+            if ($item === '0') {
+                if (!$field instanceof JsonDefinitionArray) {
+                    throw new \InvalidArgumentException(sprintf('Error path: "%s"', $path));
+                }
+                $field = $field->getElement();
+            } else {
+                if (!$field instanceof JsonDefinitionHash) {
+                    throw new \InvalidArgumentException(sprintf('Error path: "%s"', $path));
+                }
+                $field = $field->getJsonDefinition()->getField($item);
+            }
+        }
+        return $field;
     }
 }
