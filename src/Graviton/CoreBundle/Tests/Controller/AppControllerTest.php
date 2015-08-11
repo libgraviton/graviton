@@ -153,16 +153,9 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        // we're passing page=1, but should be on last.. so next and last should be identical
-        $nextAndLastUrl = 'http://localhost/core/app?limit(1%2C1)';
-
+        // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="next"',
-            $response->headers->get('Link')
-        );
-
-        $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="last"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
     }
