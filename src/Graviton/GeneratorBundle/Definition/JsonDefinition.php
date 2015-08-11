@@ -321,12 +321,13 @@ class JsonDefinition
      */
     private function processSimpleField($name, Schema\Field $definition)
     {
-        $field = new JsonDefinitionField($name, $definition);
-
-        $relations = $this->getRelations();
-        if (isset($relations[$definition->getName()]) &&
-            $relations[$definition->getName()]->getType() === DefinitionElementInterface::REL_TYPE_EMBED) {
-            $field->setRelType(DefinitionElementInterface::REL_TYPE_EMBED);
+        if (strpos($definition->getType(), 'class:') === 0) {
+            $field = new JsonDefinitionRel($name, $definition, $this->getRelation($name));
+        } else {
+            $field = new JsonDefinitionField($name, $definition);
+        }
+        if (substr($definition->getType(), -2) === '[]') {
+            $field = new JsonDefinitionArray($name, $field);
         }
 
         return $field;
@@ -349,6 +350,18 @@ class JsonDefinition
         }
 
         return $relations;
+    }
+
+    /**
+     * Get relation by field name
+     *
+     * @param string $field Field name
+     * @return Schema\Relation|null
+     */
+    private function getRelation($field)
+    {
+        $relations = $this->getRelations();
+        return isset($relations[$field]) ? $relations[$field] : null;
     }
 
     /**

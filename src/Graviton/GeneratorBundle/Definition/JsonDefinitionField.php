@@ -49,13 +49,6 @@ class JsonDefinitionField implements DefinitionElementInterface
     private $definition;
 
     /**
-     * How the relation type of this field is (if applicable to the type)
-     *
-     * @var string rel type
-     */
-    private $relType = self::REL_TYPE_REF;
-
-    /**
      * Constructor
      *
      * @param string       $name       Field name
@@ -98,7 +91,6 @@ class JsonDefinitionField implements DefinitionElementInterface
             'length'            => $this->definition->getLength(),
             'title'             => $this->definition->getTitle(),
             'description'       => $this->definition->getDescription(),
-            'exposeAs'          => $this->definition->getExposeAs(),
             'readOnly'          => $this->definition->getReadOnly(),
             'required'          => $this->definition->getRequired(),
             'translatable'      => $this->definition->getTranslatable(),
@@ -109,8 +101,8 @@ class JsonDefinitionField implements DefinitionElementInterface
             'exposedName'       => $this->getExposedName(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
-            'relType'           => $this->getRelType(),
-            'isClassType'       => $this->isClassType(),
+            'relType'           => null,
+            'isClassType'       => false,
             'constraints'       => array_map(
                 function (Schema\Constraint $constraint) {
                     return [
@@ -126,7 +118,7 @@ class JsonDefinitionField implements DefinitionElementInterface
                         )
                     ];
                 },
-                $this->getConstraints()
+                $this->definition->getConstraints()
             )
         ];
     }
@@ -138,10 +130,6 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getTypeDoctrine()
     {
-        if ($this->isClassType()) {
-            return $this->getClassName();
-        }
-
         if (isset($this->doctrineTypeMap[$this->getType()])) {
             return $this->doctrineTypeMap[$this->getType()];
         }
@@ -156,7 +144,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      *
      * @return string exposed field name
      */
-    public function getExposedName()
+    private function getExposedName()
     {
         return $this->definition->getExposeAs() === null ?
             $this->definition->getName() :
@@ -170,10 +158,6 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        if ($this->isClassType()) {
-            return $this->getClassName();
-        }
-
         return strtolower($this->definition->getType());
     }
 
@@ -184,98 +168,11 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getTypeSerializer()
     {
-        if ($this->isClassType()) {
-            $className = $this->getClassName();
-            if (substr($className, -2) === '[]') {
-                return 'array<'.substr($className, 0, -2).'>';
-            }
-
-            return $className;
-        }
-
         if (isset($this->serializerTypeMap[$this->getType()])) {
             return $this->serializerTypeMap[$this->getType()];
         }
 
         // our fallback default
         return $this->serializerTypeMap[self::TYPE_STRING];
-    }
-
-    /**
-     * If this is a classType, return the defined class name
-     *
-     * @return string class name
-     */
-    public function getClassName()
-    {
-        if ($this->isClassType()) {
-            return str_replace('class:', '', $this->definition->getType());
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns whether this is a class type (= not a primitive)
-     *
-     * @return boolean true if yes
-     */
-    public function isClassType()
-    {
-        return strpos($this->definition->getType(), 'class:') === 0;
-    }
-
-    /**
-     * Returns the field length
-     *
-     * @return int length
-     */
-    public function getLength()
-    {
-        return $this->definition->getLength();
-    }
-
-    /**
-     * Returns defined Constraints for this field
-     *
-     * @return Schema\Constraint[] Constraints
-     */
-    public function getConstraints()
-    {
-        return $this->definition->getConstraints();
-    }
-
-    /**
-     * Returns the field description
-     *
-     * @return string description
-     */
-    public function getDescription()
-    {
-        return $this->definition->getDescription() === null ?
-            '' :
-            $this->definition->getDescription();
-    }
-
-    /**
-     * Gets the rel type
-     *
-     * @return string
-     */
-    public function getRelType()
-    {
-        return $this->relType;
-    }
-
-    /**
-     * Sets the rel type
-     *
-     * @param string $relType rel type
-     *
-     * @return void
-     */
-    public function setRelType($relType)
-    {
-        $this->relType = $relType;
     }
 }
