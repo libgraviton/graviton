@@ -317,7 +317,7 @@ class JsonDefinition
      * @param string       $name       Field name
      * @param Schema\Field $definition Field
      *
-     * @return JsonDefinitionField
+     * @return DefinitionElementInterface
      */
     private function processSimpleField($name, Schema\Field $definition)
     {
