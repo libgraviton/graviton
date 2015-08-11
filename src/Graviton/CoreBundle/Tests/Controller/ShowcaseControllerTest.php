@@ -193,7 +193,7 @@ class ShowcaseControllerTest extends RestTestCase
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
 
         $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase?q='.$rqlSelect);
+        $client->request('GET', '/hans/showcase?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
     }
 

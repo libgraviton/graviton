@@ -6,6 +6,7 @@
     "routerBase": "/core/module/",
     "fixtures": [
       {
+        "id": "55c1c99a7f8b9ac7dd8b456f",
         "key": "realEstate",
         "app": {
           "$ref": "http://localhost/core/app/tablet"
@@ -33,6 +34,7 @@
         ]
       },
       {
+        "id": "55c1c99a7f8b9ac7dd8b456d",
         "key": "investment",
         "app": {
           "$ref": "http://localhost/core/app/tablet"
