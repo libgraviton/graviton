@@ -68,7 +68,7 @@ class ModuleControllerTest extends RestTestCase
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1%2C4)>; rel="last"',
+            '<http://localhost/core/module?limit(1%2C5)>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -130,6 +130,59 @@ class ModuleControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * test finding of modules by ref
+     *
+     * @dataProvider findByAppRefProvider
+     *
+     * @param string  $ref   which reference to search in
+     * @param string  $url   ref to search for
+     * @param integer $count number of results to expect
+     *
+     * @return void
+     */
+    public function testFindByAppRef($ref, $url, $count)
+    {
+        $this->loadFixtures(
+            [
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+            ],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module?eq('.rawurlencode($ref).',' . rawurlencode($url).')');
+        $results = $client->getResults();
+        $this->assertCount($count, $results);
+    }
+
+    /**
+     * @return array
+     */
+    public function findByAppRefProvider()
+    {
+        return [
+            'find all tablet records' => [
+                'app.$ref',
+                'http://localhost/core/app/tablet',
+                5
+            ],
+            'find nothing when searching for non used ref' => [
+                'app.$ref',
+                'http://localhost/core/app/admin',
+                1
+            ],
+            'find nothing when searching for existing ref' => [
+                'app.$ref',
+                'http://localhost/core/app/inexistant',
+                0
+            ],
+        ];
     }
 
     /**
