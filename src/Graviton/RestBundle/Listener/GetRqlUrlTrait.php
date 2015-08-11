@@ -25,7 +25,7 @@ trait GetRqlUrlTrait
         if ($request->attributes->get('hasRql', false)) {
             $rawRql = $request->attributes->get('rawRql');
 
-            $url = str_replace('q=' . urlencode($rawRql), 'q=' . str_replace(',', '%2C', $rawRql), $url);
+            $url = str_replace(urlencode($rawRql), str_replace(',', '%2C', $rawRql), $url);
         }
         return $url;
     }

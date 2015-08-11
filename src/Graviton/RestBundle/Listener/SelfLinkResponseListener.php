@@ -73,9 +73,15 @@ class SelfLinkResponseListener
         $url = '';
 
         try {
+            $params = $this->generateParameters($routeType, $request);
+            $query = '';
+            if (array_key_exists('q', $params)) {
+                $query = '?' . strtr($params['q'], [',' => '%2C']);
+                unset($params['q']);
+            }
             $url = $this->getRqlUrl(
                 $request,
-                $this->router->generate($routeName, $this->generateParameters($routeType, $request), true)
+                $this->router->generate($routeName, $params, true) . $query
             );
 
         } catch (\Exception $e) {

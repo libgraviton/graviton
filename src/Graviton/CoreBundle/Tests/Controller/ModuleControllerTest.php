@@ -52,24 +52,24 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithPaging()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?perPage=1');
+        $client->request('GET', '/core/module?limit(1)');
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/module?page=1&perPage=1>; rel="self"',
+            '<http://localhost/core/module?limit(1)>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?page=2&perPage=1>; rel="next"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/module?limit(1%2C1)>; rel="next"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?page=5&perPage=1>; rel="last"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/module?limit(1%2C4)>; rel="last"',
+            $response->headers->get('Link')
         );
 
         $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -206,7 +206,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -258,7 +258,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -287,7 +287,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
@@ -331,7 +331,7 @@ class ModuleControllerTest extends RestTestCase
     public function testExtReferenceValidation()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];
