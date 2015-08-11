@@ -152,7 +152,11 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
                 $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
                 $targetDocument
             );
-            $map[$class][] = [$fieldName, 'form', ['data_class' => $targetDocument]];
+            $map[$class][] = [
+                $fieldName,
+                'form',
+                ['data_class' => $targetDocument, 'required' => false],
+            ];
         }
         $embedNodes = $xpath->query("////*[self::doctrine:embed-many or self::doctrine:reference-many]");
         foreach ($embedNodes as $node) {
