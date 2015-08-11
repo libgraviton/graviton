@@ -48,16 +48,6 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
-     * Returns this hash' fields..
-     *
-     * @return DefinitionElementInterface[]
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
-    /**
      * Returns the definition as array..
      *
      * @return array the definition
@@ -65,12 +55,14 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getDefAsArray()
     {
         return [
-            'exposedName'       => $this->getName(),
+            'name'              => $this->getName(),
             'type'              => $this->getType(),
+            'exposedName'       => $this->getName(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
             'relType'           => self::REL_TYPE_EMBED,
             'isClassType'       => true,
+            'constraints'       => [],
         ];
     }
 
@@ -119,7 +111,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
             ->setIsSubDocument(true)
             ->setTarget(new Schema\Target());
 
-        foreach ($this->getFields() as $field) {
+        foreach ($this->fields as $field) {
             foreach ($this->processFieldDefinitionsRecursive($field) as $definitions) {
                 $definition->getTarget()->addField($definitions);
             }
@@ -165,7 +157,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @return string
      */
-    public function getClassName($fq = false)
+    private function getClassName($fq = false)
     {
         $className = ucfirst($this->parent->getId()).ucfirst($this->getName());
         if ($fq) {
