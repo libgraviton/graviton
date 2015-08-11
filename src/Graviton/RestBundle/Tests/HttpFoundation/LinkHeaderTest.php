@@ -67,7 +67,7 @@ class LinkHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testCommaInLink()
     {
-        $headers = LinkHeader::fromString('<http://localhost/core/test?q=limit(1%2C1)>')->all();
+        $headers = LinkHeader::fromString('<http://localhost/core/test?limit(1%2C1)>')->all();
         $this->assertCount(1, $headers);
     }
 
