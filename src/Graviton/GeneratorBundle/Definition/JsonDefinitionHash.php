@@ -65,12 +65,15 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getDefAsArray()
     {
         return [
-            'exposedName'       => $this->getName(),
+            'name'              => $this->getName(),
             'type'              => $this->getType(),
+
+            'exposedName'       => $this->getName(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
             'relType'           => self::REL_TYPE_EMBED,
             'isClassType'       => true,
+            'constraints'       => [],
         ];
     }
 
@@ -124,6 +127,12 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 $definition->getTarget()->addField($definitions);
             }
         }
+        foreach ($this->parent->getRelations() as $relation) {
+            $relation = $this->processParentRelation($relation);
+            if ($relation !== null) {
+                $definition->getTarget()->addRelation($relation);
+            }
+        }
 
         return new JsonDefinition($definition);
     }
@@ -157,6 +166,24 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Process parent relation
+     *
+     * @param Schema\Relation $relation Parent relation
+     * @return Schema\Relation|null
+     */
+    private function processParentRelation(Schema\Relation $relation)
+    {
+        $prefixRegex = '/^'.preg_quote($this->name, '/').'\.(\d+\.)*(?P<sub>.*)/';
+        if (!preg_match($prefixRegex, $relation->getLocalProperty(), $matches)) {
+            return null;
+        }
+
+        $clone = clone $relation;
+        $clone->setLocalProperty($matches['sub']);
+        return $clone;
+    }
+
+    /**
      * Returns the class name of this hash, possibly
      * taking the parent element into the name. this
      * string here results in the name of the generated Document.
@@ -165,7 +192,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @return string
      */
-    public function getClassName($fq = false)
+    private function getClassName($fq = false)
     {
         $className = ucfirst($this->parent->getId()).ucfirst($this->getName());
         if ($fq) {
