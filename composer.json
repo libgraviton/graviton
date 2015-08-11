@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "symfony/symfony": "~2.6.5",
+        "symfony/symfony": "~2.7",
         "doctrine/orm": "~2.4",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
