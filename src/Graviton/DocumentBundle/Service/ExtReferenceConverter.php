@@ -72,19 +72,21 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
     /**
      * return the extref URL
      *
-     * @param array $dbRef DB value
+     * @param array|object $dbRef DB value
      * @return string
      */
-    public function getUrl(array $dbRef)
+    public function getUrl($dbRef)
     {
-        if (!array_key_exists('$ref', $dbRef)
-            && !array_key_exists($dbRef['$ref'], $this->mapping)
-            && !array_key_exists('$id', $dbRef)
-        ) {
+        if (!\MongoDBRef::isRef($dbRef)) {
+            throw new \InvalidArgumentException(sprintf('Value "%s" must be a valid MongoDbRef', json_encode($dbRef)));
+        }
+
+        $dbRef = (object) $dbRef;
+        if (!isset($this->mapping[$dbRef->{'$ref'}])) {
             throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($dbRef)));
         }
 
-        return $this->router->generate($this->mapping[$dbRef['$ref']], ['id' => $dbRef['$id']], true);
+        return $this->router->generate($this->mapping[$dbRef->{'$ref'}], ['id' => $dbRef->{'$id'}], true);
     }
 
     /**
