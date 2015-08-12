@@ -134,9 +134,18 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     public function getDbRefProvider()
     {
         return [
-            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['http://localhost/hans/showcase/blah', ['$ref' => 'ShowCase', '$id' => 'blah']],
+            [
+                'http://localhost/core/app/test',
+                \MongoDBRef::create('App', 'test'),
+            ],
+            [
+                '/core/app/test',
+                \MongoDBRef::create('App', 'test'),
+            ],
+            [
+                'http://localhost/hans/showcase/blah',
+                \MongoDBRef::create('ShowCase', 'blah'),
+            ],
         ];
     }
 
@@ -177,11 +186,15 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     public function getUrlProvider()
     {
         return [
-            [['$ref' => 'App', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
             [
-                ['$ref' => 'Language', '$id' => 'en'],
+                \MongoDBRef::create('App', 'test'),
+                'graviton.core.rest.app.get',
+                'http://localhost/core/app/test',
+            ],
+            [
+                \MongoDBRef::create('Language', 'en'),
                 'graviton.i18n.rest.language.get',
-                'http://localhost/i18n/language/en'
+                'http://localhost/i18n/language/en',
             ],
         ];
     }
