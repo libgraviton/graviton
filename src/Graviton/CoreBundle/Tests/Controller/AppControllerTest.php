@@ -263,6 +263,21 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if we get a correct return if we post empty.
+     *
+     * @return void
+     */
+    public function testPostNonObjectApp()
+    {
+        $client = static::createRestClient();
+        $client->post('/core/app', "non-object value");
+
+        $response = $client->getResponse();
+        $this->assertContains('JSON request body must be an object', $response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
      * test if 500 error is reported when posting an malformed input
      *
      * @return void
