@@ -574,7 +574,11 @@ class RestController
             $e = new MalformedInputException($this->getLastJsonErrorMessage());
             $e->setErrorType(json_last_error());
             $e->setResponse($response);
-            //$e->setResponse($event->getResponse());
+            throw $e;
+        }
+        if (!is_array($input)) {
+            $e = new MalformedInputException('JSON request body must be an object');
+            $e->setResponse($response);
             throw $e;
         }
 
