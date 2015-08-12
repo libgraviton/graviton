@@ -50,7 +50,7 @@
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.3",
         "graviton/deploy-scripts": ">=0.2.2",
-        "mikemccabe/json-patch-php": "0.1.0"
+        "php-jsonpatch/php-jsonpatch": "1.2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",

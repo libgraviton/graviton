@@ -6,12 +6,12 @@
 namespace Graviton\RestBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
-use mikemccabe\JsonPatch\JsonPatchException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
@@ -29,7 +29,10 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use mikemccabe\JsonPatch\JsonPatch;
+use Rs\Json\Patch;
+use Rs\Json\Patch\InvalidPatchDocumentJsonException;
+use Rs\Json\Patch\InvalidTargetDocumentJsonException;
+use Rs\Json\Patch\InvalidOperationException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -336,17 +339,9 @@ class RestController
         // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
 
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
         );
 
         return $response;
@@ -467,6 +462,9 @@ class RestController
         $response = $this->getResponse();
         $this->checkJsonRequest($request, $response);
 
+        // Check JSON Patch request
+        $this->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
         $recordData = $this->extReferenceJsonConverter->convert(
@@ -476,25 +474,30 @@ class RestController
 
         try {
             // Apply JSON patches
-            $patchedDocument = JsonPatch::patch(
-                $recordData,
-                json_decode($request->getContent(), 1)
-            );
-        } catch (JsonPatchException $e) {
-            throw new BadRequestHttpException('Invalid PATCH request.');
+            $patch = new Patch(json_encode($recordData), $request->getContent());
+            $patchedDocument = $patch->apply();
+        } catch (InvalidPatchDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidTargetDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidOperationException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
         }
 
         // Validate result object
-        $record = $this->checkForm(
-            $this->getForm($request),
-            json_encode($patchedDocument)
-        );
+        $record = $this->checkForm($this->getForm($request), $patchedDocument);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_OK);
+
+        // Set Content-Location header
+        $response->headers->set(
+            'Content-Location',
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
+        );
 
         return $response;
     }
@@ -663,6 +666,25 @@ class RestController
         }
     }
     /**
+     * Validate JSON patch for any object
+     *
+     * @param array $jsonPatch json patch as array
+     *
+     * @throws InvalidJsonPatchException
+     * @return void
+     */
+    private function checkJsonPatchRequest(array $jsonPatch)
+    {
+        foreach ($jsonPatch as $operation) {
+            if (!is_array($operation)) {
+                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
+            }
+            if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
+                throw new InvalidJsonPatchException('Change/remove of ID not allowed');
+            }
+        }
+    }
+    /**
      * Used for backwards compatibility to PHP 5.4
      *
      * @return string
@@ -707,5 +729,22 @@ class RestController
         }
 
         return $record;
+    }
+
+    /**
+     * @param Request $request request
+     * @return string
+     */
+    private function getRouteName(Request $request)
+    {
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
+
+        if ($routeType == 'post') {
+            $routeName = substr($routeName, 0, -4) . 'get';
+        }
+
+        return $routeName;
     }
 }

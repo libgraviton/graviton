@@ -215,9 +215,11 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchJson = json_encode(
             [
-                'op' => 'replace',
-                'path' => '/unstructuredObject/hashField/anotherField',
-                'value' => 'changed nested hash field with patch'
+                [
+                    'op' => 'replace',
+                    'path' => '/unstructuredObject/hashField/anotherField',
+                    'value' => 'changed nested hash field with patch'
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -232,6 +234,68 @@ class ShowcaseControllerTest extends RestTestCase
             'changed nested hash field with patch',
             $result->unstructuredObject->hashField->anotherField
         );
+    }
+
+    /**
+     * Test success PATCH method - response headers contains link to resource
+     *
+     * @return void
+     */
+    public function testPatchSuccessResponseHeaderContainsResourceLink()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/testField/en',
+                    'value' => 'changed value'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $this->assertEquals(
+            '/hans/showcase/500',
+            $client->getResponse()->headers->get('Content-Location')
+        );
+    }
+
+    /**
+     * Test PATCH method - remove/change ID not allowed
+     *
+     * @return void
+     */
+    public function testPatchRemoveAndChangeIdNotAllowed()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'remove',
+                    'path' => '/id'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -252,9 +316,11 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchJson = json_encode(
             [
-                'op' => 'add',
-                'path' => '/unstructuredObject/hashField/newAddedField',
-                'value' => 'new field value'
+                [
+                    'op' => 'add',
+                    'path' => '/unstructuredObject/hashField/newAddedField',
+                    'value' => 'new field value'
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -292,9 +358,11 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchJson = json_encode(
             [
-                'op' => 'replace',
-                'path' => '/nestedApps/0/$ref',
-                'value' => 'http://localhost/core/app/admin'
+                [
+                    'op' => 'replace',
+                    'path' => '/nestedApps/0/$ref',
+                    'value' => 'http://localhost/core/app/admin'
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -329,8 +397,10 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchJson = json_encode(
             [
-                'op' => 'remove',
-                'path' => '/anotherInt'
+                [
+                    'op' => 'remove',
+                    'path' => '/anotherInt'
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -362,8 +432,10 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $patchJson = json_encode(
             [
-                'op' => 'remove',
-                'path' => '/nestedApps/0'
+                [
+                    'op' => 'remove',
+                    'path' => '/nestedApps/0'
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -397,9 +469,11 @@ class ShowcaseControllerTest extends RestTestCase
         $newElement = ['name' => 'element three'];
         $patchJson = json_encode(
             [
-                'op' => 'add',
-                'path' => '/nestedArray/1',
-                'value' => $newElement
+                [
+                    'op' => 'add',
+                    'path' => '/nestedArray/-',
+                    'value' => $newElement
+                ]
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
@@ -413,7 +487,7 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(3, count($result->nestedArray));
         $this->assertJsonStringEqualsJsonString(
             json_encode($newElement),
-            json_encode($result->nestedArray[1])
+            json_encode($result->nestedArray[2])
         );
     }
 

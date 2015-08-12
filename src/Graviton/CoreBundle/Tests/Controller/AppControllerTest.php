@@ -370,11 +370,13 @@ class AppControllerTest extends RestTestCase
         // 2. PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
-            array(
-                'op' => 'replace',
-                'path' => '/title/en',
-                'value' => 'Test App Patched'
-            )
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/title/en',
+                    'value' => 'Test App Patched'
+                ]
+            ]
         );
         $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
         $response = $client->getResponse();
@@ -421,7 +423,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertContains(
-            'Invalid PATCH request',
+            'Invalid JSON patch request',
             $response->getContent()
         );
     }
