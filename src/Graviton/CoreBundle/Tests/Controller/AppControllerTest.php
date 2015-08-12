@@ -88,32 +88,32 @@ class AppControllerTest extends RestTestCase
     public function testGetAppWithFilteringAndPaging()
     {
         $client = static::createRestClient();
-        $_SERVER['QUERY_STRING'] = 'perPage=1&q=eq(showInMenu,true)';
-        $client->request('GET', '/core/app?perPage=1&q=eq(showInMenu,true)');
+        $_SERVER['QUERY_STRING'] = 'eq(showInMenu,true)&limit(1)';
+        $client->request('GET', '/core/app?eq(showInMenu,true)&limit(1)');
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)>; rel="self"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="next"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
     }
 
     /**
-     * rql limit() should be *never* overwritten by $_GET['perPage'] *or* default value
+     * rql limit() should *never* be overwritten by default value
      *
      * @return void
      */
@@ -121,53 +121,41 @@ class AppControllerTest extends RestTestCase
     {
         // does limit work?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?q=limit(1)');
-        $this->assertEquals(1, count($client->getResults()));
-
-        // rql before GET?
-        $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&q=limit(1)');
+        $client->request('GET', '/core/app?limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)>; rel="self"',
+            '<http://localhost/core/app?limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="next"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
         // "page" override - rql before get
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&page=1&q=limit(1,1)');
+        $client->request('GET', '/core/app?limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1%2C1)>; rel="self"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        // we're passing page=1, but should be on last.. so next and last should be identical
-        $nextAndLastUrl = 'http://localhost/core/app?q=limit(1%2C1)&page=2&perPage=1';
-
+        // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="next"',
-            $response->headers->get('Link')
-        );
-
-        $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="last"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
     }
@@ -639,7 +627,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request(
             'GET',
-            '/core/app?q='.$expr,
+            '/core/app?'.$expr,
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
@@ -675,7 +663,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/app?q=eq(name)');
+        $client->request('GET', '/core/app?eq(name)');
 
         $response = $client->getResponse();
         $results = $client->getResults();
