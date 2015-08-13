@@ -48,14 +48,9 @@ class RqlQueryDecoratorCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $outerDefinition
-            ->expects($this->exactly(4))
-            ->method('addTag')
-            ->withConsecutive(
-                ['tag1', ['attr1' => 'value1', 'attr2' => 'value2']],
-                ['tag1', ['attr3' => 'value3', 'attr4' => 'value4']],
-                ['tag2', ['attr5' => 'value5', 'attr6' => 'value6']],
-                ['tag2', ['attr7' => 'value7', 'attr8' => 'value8']]
-            );
+            ->expects($this->once())
+            ->method('setTags')
+            ->with($tags);
 
         $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
             ->disableOriginalConstructor()

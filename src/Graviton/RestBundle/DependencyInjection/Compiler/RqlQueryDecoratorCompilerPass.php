@@ -26,11 +26,7 @@ class RqlQueryDecoratorCompilerPass implements CompilerPassInterface
         $innerDefinition = $container->getDefinition('graviton.rest.listener.rqlqueryrequestlistener.inner');
         $outerDefinition = $container->getDefinition('graviton.rest.listener.rqlqueryrequestlistener');
 
-        foreach ($innerDefinition->getTags() as $name => $attrsList) {
-            foreach ($attrsList as $attrs) {
-                $outerDefinition->addTag($name, $attrs);
-            }
-        }
+        $outerDefinition->setTags($innerDefinition->getTags());
         $innerDefinition->clearTags();
     }
 }
