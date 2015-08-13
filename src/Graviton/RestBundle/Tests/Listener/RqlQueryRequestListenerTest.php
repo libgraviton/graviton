@@ -25,7 +25,7 @@ class RqlQueryRequestListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnKernelRequest($routeId, $isAllowed)
     {
-        $innerListener = $this->getMockBuilder('Graviton\RqlParserBundle\Listener\RequestListener')
+        $innerListener = $this->getMockBuilder('Graviton\RqlParserBundle\Listener\RequestListenerInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $innerListener->expects($isAllowed ? $this->once() : $this->never())

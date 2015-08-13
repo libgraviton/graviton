@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Graviton\RqlParserBundle\Listener\RequestListener;
+use Graviton\RqlParserBundle\Listener\RequestListenerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
@@ -15,24 +15,24 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class RqlQueryRequestListener extends RequestListener
+class RqlQueryRequestListener implements RequestListenerInterface
 {
     /**
      * @var array Allowed route IDs
      */
     private $allowedRoutes = [];
     /**
-     * @var RequestListener
+     * @var RequestListenerInterface
      */
     private $requestListener;
 
     /**
      * Constructor
      *
-     * @param RequestListener $requestListener Original RQL listener
-     * @param array           $allowedRoutes   Allowed route IDs
+     * @param RequestListenerInterface $requestListener Original RQL listener
+     * @param array                    $allowedRoutes   Allowed route IDs
      */
-    public function __construct(RequestListener $requestListener, array $allowedRoutes)
+    public function __construct(RequestListenerInterface $requestListener, array $allowedRoutes)
     {
         $this->requestListener = $requestListener;
         $this->allowedRoutes = $allowedRoutes;
