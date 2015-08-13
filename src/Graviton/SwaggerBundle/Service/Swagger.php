@@ -237,9 +237,9 @@ class Swagger
             );
 
             $thisPath['parameters'][] = array(
-                'name' => '',
+                'name' => 'rql',
                 'in' => 'query',
-                'description' => 'Optional RQL filter',
+                'description' => 'Optional RQL filter, replaces the complete query string if available',
                 'required' => false,
                 'type' => 'string'
             );
