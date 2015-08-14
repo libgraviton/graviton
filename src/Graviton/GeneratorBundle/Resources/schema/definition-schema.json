@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "JSON definition schema",
+  "description": "Schema for JSON definition validation",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "isSubDocument": {
+      "type": "boolean"
+    },
+    "description": {
+      "type": "string"
+    },
+    "service": {
+      "type": "object"
+    },
+    "target": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "target"
+  ],
+  "additionalProperties": false
+}
