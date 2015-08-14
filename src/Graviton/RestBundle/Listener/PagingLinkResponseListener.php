@@ -59,7 +59,7 @@ class PagingLinkResponseListener
 
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $rql = array();
+            $rql = '';
             if ($request->attributes->get('hasRql', false)) {
                 $rql = $request->attributes->get('rawRql', '');
             }
