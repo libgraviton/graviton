@@ -75,7 +75,13 @@ class ExtReferenceSearchListener
             return $event;
         }
 
-        $dbRef = $this->converter->getDbRef($node->getValue());
+        try {
+            $dbRef = $this->converter->getDbRef($node->getValue());
+        } catch (\InvalidArgumentException $e) {
+            //make up some invalid refs to ensure we find nothing if an invalid url was given
+            $dbRef['$ref'] = false;
+            $dbRef['$id'] = false;
+        }
 
         $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')->equals($dbRef['$ref']);
         $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')->equals($dbRef['$id']);

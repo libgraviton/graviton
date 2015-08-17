@@ -192,7 +192,12 @@ class ModuleControllerTest extends RestTestCase
                 'service..gui.$ref',
                 'http://localhost/core/product/3',
                 1
-            ]
+            ],
+            'return nothing when searching with incomplete ref' => [
+                'app.$ref',
+                'http://localhost/core/app',
+                0
+            ],
         ];
     }
 
