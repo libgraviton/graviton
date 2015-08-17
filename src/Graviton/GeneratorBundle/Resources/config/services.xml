@@ -10,6 +10,7 @@
         <parameter key="graviton_generator.definition.loader.strategy.scan.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.json.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy</parameter>
         <parameter key="graviton_generator.definition.validator.class">Graviton\GeneratorBundle\Definition\Validator\Validator</parameter>
+        <parameter key="graviton_generator.definition.validator.schema.factory.class">Graviton\GeneratorBundle\Definition\Validator\SchemaFactory</parameter>
         <parameter key="graviton_generator.definition.validator.schema.uri"/>
         <parameter key="graviton_generator.resourcegenerator.field_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
@@ -39,13 +40,17 @@
         <service id="graviton_generator.resourcegenerator.field_json_mapper" class="%graviton_generator.resourcegenerator.field_json_mapper.class%"/>
 
         <!-- JSON schema -->
+        <service id="graviton_generator.definition.validator.schema.factory"
+                class="%graviton_generator.definition.validator.schema.factory.class%">
+            <argument type="service" id="json_schema.uri_retriever"/>
+        </service>
         <service id="graviton_generator.definition.validator"
                  class="%graviton_generator.definition.validator.class%">
             <argument type="service" id="json_schema.validator"/>
             <argument type="service">
                 <service class="stdClass"
-                         factory-service="json_schema.uri_retriever"
-                         factory-method="retrieve">
+                         factory-service="graviton_generator.definition.validator.schema.factory"
+                         factory-method="createSchema">
                     <argument>%graviton_generator.definition.validator.schema.uri%</argument>
                 </service>
             </argument>
