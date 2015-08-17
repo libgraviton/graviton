@@ -15,7 +15,6 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\Rql\Event\VisitNodeEvent;
 
 /**
@@ -39,11 +38,6 @@ class ExtReferenceSearchListener
      * @var Request
      */
     private $request;
-
-    /**
-     * @var DocumentManager
-     */
-    private $dm;
 
     /**
      * construct
