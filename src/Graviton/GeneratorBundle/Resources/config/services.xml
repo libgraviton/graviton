@@ -149,5 +149,15 @@
             <tag name="console.command" />
         </service>
 
+        <service id="graviton_generator.command.validatedefinition"
+                 class="Graviton\GeneratorBundle\Command\ValidateDefinitionCommand">
+            <call method="setValidator">
+                <argument type="service" id="graviton_generator.definition.validator"/>
+            </call>
+            <call method="setDefaultPath">
+                <argument>%kernel.root_dir%/..</argument>
+            </call>
+            <tag name="console.command" />
+        </service>
     </services>
 </container>
