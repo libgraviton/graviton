@@ -172,12 +172,12 @@ class ModuleControllerTest extends RestTestCase
                 'http://localhost/core/app/tablet',
                 5
             ],
-            'find nothing when searching for non used ref' => [
+            'find a linked record when searching for ref' => [
                 'app.$ref',
                 'http://localhost/core/app/admin',
                 1
             ],
-            'find nothing when searching for existing ref' => [
+            'find nothing when searching for inextistant (and unlinked) ref' => [
                 'app.$ref',
                 'http://localhost/core/app/inexistant',
                 0
