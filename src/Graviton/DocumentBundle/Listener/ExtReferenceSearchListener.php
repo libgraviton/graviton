@@ -77,14 +77,14 @@ class ExtReferenceSearchListener
 
         $fields = $this->fields[$route];
 
-        if (!in_array($node->getField(), $fields)) {
+        if (!in_array(strtr($node->getField(), ['..' => '.0.']), $fields)) {
             return $event;
         }
 
         $dbRef = $this->converter->getDbRef($node->getValue());
 
-        $builder->field(strtr($node->getField(), ['$' => '']) . '.$ref')->equals($dbRef['$ref']);
-        $builder->field(strtr($node->getField(), ['$' => '']) . '.$id')->equals($dbRef['$id']);
+        $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')->equals($dbRef['$ref']);
+        $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')->equals($dbRef['$id']);
 
         $event->setNode(null);
         $event->setBuilder($builder);

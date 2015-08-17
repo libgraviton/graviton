@@ -150,6 +150,7 @@ class ModuleControllerTest extends RestTestCase
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadProductData',
             ],
             null,
             'doctrine_mongodb'
@@ -182,6 +183,16 @@ class ModuleControllerTest extends RestTestCase
                 'http://localhost/core/app/inexistant',
                 0
             ],
+            'find in nested sets' => [
+                'service.0.gui.$ref',
+                'http://localhost/core/product/3',
+                1
+            ],
+            'find in nested sets (short syntax)' => [
+                'service..gui.$ref',
+                'http://localhost/core/product/3',
+                1
+            ]
         ];
     }
 
