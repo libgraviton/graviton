@@ -110,6 +110,15 @@
         "path": "/module/payandsave",
         "order": 5,
         "service": []
+      },
+      {
+        "key": "AdminRef",
+        "app": {
+          "$ref": "http://localhost/core/app/admin"
+        },
+        "name": {
+          "en": "Admin Ref Module"
+        }
       }
     ]
   },
