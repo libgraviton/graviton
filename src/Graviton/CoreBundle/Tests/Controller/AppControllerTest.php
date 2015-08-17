@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /core/app.
@@ -161,6 +162,55 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * RQL is parsed only when we get all apps
+     *
+     * @return void
+     */
+    public function testRqlIsParsedOnlyOnAllRequest()
+    {
+        $appData = [
+            'showInMenu' => false,
+            'order'      => 100,
+            'title'      => ['en' => 'Administration'],
+        ];
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/core/app?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach (['GET', 'OPTIONS'] as $method) {
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/collection?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/item?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/core/app/admin?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        }
+
+        $client = static::createRestClient();
+        $client->post('/core/app?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->put('/core/app/admin?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('DELETE', '/core/app/admin?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void
@@ -259,6 +309,21 @@ class AppControllerTest extends RestTestCase
             $response->getContent()
         );
 
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * test if we get a correct return if we post empty.
+     *
+     * @return void
+     */
+    public function testPostNonObjectApp()
+    {
+        $client = static::createRestClient();
+        $client->post('/core/app', "non-object value");
+
+        $response = $client->getResponse();
+        $this->assertContains('JSON request body must be an object', $response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
     }
 

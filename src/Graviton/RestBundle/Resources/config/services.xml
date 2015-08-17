@@ -15,10 +15,12 @@
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
         <parameter key="graviton.rest.listener.rqlselectresponselistener.class">Graviton\RestBundle\Listener\RqlSelectResponseListener</parameter>
+        <parameter key="graviton.rest.listener.rqlqueryrequestlistener.class">Graviton\RestBundle\Listener\RqlQueryRequestListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
+        <parameter key="graviton.rest.listener.rqlqueryrequestlistener.allowedroutes" type="collection"/>
     </parameters>
     <services>
         <!-- Serializer / Serializer context -->
@@ -187,6 +189,15 @@
                  class="%graviton.rest.listener.rqlselectresponselistener.class%">
             <argument type="service" id="graviton.rest.objectslicer"/>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+
+        <!-- RQL query listener (see RqlQueryDecoratorCompilerPass) -->
+        <service id="graviton.rest.listener.rqlqueryrequestlistener"
+                 class="%graviton.rest.listener.rqlqueryrequestlistener.class%"
+                 decorates="graviton.rql.listener.request"
+                 decoration-inner-name="graviton.rest.listener.rqlqueryrequestlistener.inner">
+            <argument type="service" id="graviton.rest.listener.rqlqueryrequestlistener.inner"/>
+            <argument>%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%</argument>
         </service>
 
         <!-- Validators -->
