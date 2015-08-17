@@ -235,14 +235,6 @@ class Swagger
                     'items' => array('$ref' => '#/definitions/' . $entityClassName)
                 )
             );
-
-            $thisPath['parameters'][] = array(
-                'name' => 'rql',
-                'in' => 'query',
-                'description' => 'Optional RQL filter, replaces the complete query string if available',
-                'required' => false,
-                'type' => 'string'
-            );
         }
 
         return $thisPath;
