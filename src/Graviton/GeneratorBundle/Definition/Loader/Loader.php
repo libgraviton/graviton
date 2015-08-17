@@ -13,6 +13,7 @@ namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use JMS\Serializer\SerializerInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,7 +25,21 @@ class Loader implements LoaderInterface
     /**
      * @var StrategyInterface[]
      */
-    protected $strategies = array();
+    private $strategies = [];
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * Constructor
+     *
+     * @param SerializerInterface $serializer Serializer
+     */
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
 
     /**
      * add a strategy to the loader
@@ -49,10 +64,26 @@ class Loader implements LoaderInterface
     {
         foreach ($this->strategies as $strategy) {
             if ($strategy->supports($input)) {
-                return $strategy->load($input);
+                return array_map([$this, 'createJsonDefinition'], $strategy->load($input));
             }
         }
 
         return [];
+    }
+
+    /**
+     * Deserialize JSON definition
+     *
+     * @param string $json JSON code
+     * @return JsonDefinition
+     */
+    protected function createJsonDefinition($json)
+    {
+        $definition = $this->serializer->deserialize(
+            $json,
+            'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+            'json'
+        );
+        return new JsonDefinition($definition);
     }
 }

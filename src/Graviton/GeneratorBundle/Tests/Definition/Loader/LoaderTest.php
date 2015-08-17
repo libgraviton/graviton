@@ -5,7 +5,9 @@
 
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;
+use Graviton\GeneratorBundle\Definition\Schema\Definition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -21,29 +23,31 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadCallsStrategy()
     {
-        $jsonDef = array(
-            $this
-                ->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinition')
-                ->disableOriginalConstructor()
-                ->getMock()
-            ,
-        );
-        $strategy = $this->getMock('\Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface');
+        $json = __METHOD__;
+        $definition = new Definition();
 
-        $strategy
-            ->expects($this->once())
+        $serializer = $this->getMockBuilder('Jms\Serializer\SerializerInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(['serialize', 'deserialize'])
+            ->getMock();
+        $serializer->expects($this->once())
+            ->method('deserialize')
+            ->with($json, 'Graviton\GeneratorBundle\Definition\Schema\Definition', 'json')
+            ->willReturn($definition);
+
+        $strategy = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface')
+            ->getMock();
+        $strategy->expects($this->once())
             ->method('supports')
             ->with(null)
             ->will($this->returnValue(true));
-
-        $strategy
-            ->expects($this->once())
+        $strategy->expects($this->once())
             ->method('load')
             ->with(null)
-            ->will($this->returnValue($jsonDef));
+            ->will($this->returnValue([$json]));
 
-        $sut = new Loader;
+        $sut = new Loader($serializer);
         $sut->addStrategy($strategy);
-        $this->assertEquals($jsonDef, $sut->load(null));
+        $this->assertEquals([new JsonDefinition($definition)], $sut->load(null));
     }
 }
