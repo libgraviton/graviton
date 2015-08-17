@@ -5,25 +5,293 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+      "title": "Definition ID",
+      "$ref": "#/definitions/collectionName"
     },
     "isSubDocument": {
+      "title": "Is sub-document",
       "type": "boolean"
     },
     "description": {
+      "title": "Definition description",
       "type": "string"
     },
     "service": {
-      "type": "object"
+      "title": "Service definition",
+      "$ref": "#/definitions/service"
     },
     "target": {
-      "type": "object"
+      "title": "Target definition",
+      "$ref": "#/definitions/target"
     }
   },
   "required": [
     "id",
     "target"
   ],
+  "definitions": {
+    "collectionName": {
+      "type": "string",
+      "pattern": "^[A-Z][a-zA-Z0-9_]*$"
+    },
+    "fieldName": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "fieldExposedName": {
+      "type": "string"
+    },
+    "fieldDefinitionName": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*(\\.(0\\.)?[a-zA-Z_][a-zA-Z0-9_]*)*$"
+    },
+    "fieldBasicType": {
+      "enum": [
+        "string",
+        "varchar",
+        "int",
+        "bigint",
+        "double",
+        "decimal",
+        "datetime",
+        "boolean",
+        "hash",
+        "object",
+        "extref"
+      ]
+    },
+    "fieldClassType": {
+      "type": "string",
+      "pattern": "^class:\\\\?[a-zA-Z_][a-zA-Z0-9_]*(\\\\[a-zA-Z_][a-zA-Z0-9_]*)*(\\[\\])?$"
+    },
+    "relationType": {
+      "enum": [
+        "embed",
+        "reference"
+      ]
+    },
+    "routerBase": {
+      "type": "string",
+      "pattern": "^\/?[a-z0-9_-]+(\/[a-z0-9_-]+)*\/?$"
+    },
+
+    "service": {
+      "type": "object",
+      "properties": {
+        "readOnly": {
+          "title": "Is service read-only",
+          "type": "boolean"
+        },
+        "routerBase": {
+          "title": "Router base path",
+          "$ref": "#/definitions/routerBase"
+        },
+        "parent": {
+          "title": "Parent service ID",
+          "type": "string"
+        },
+        "baseController": {
+          "title": "Base controller class",
+          "type": "string"
+        },
+        "roles": {
+          "title": "Role list",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "fixtureOrder": {
+          "title": "Fixture order number",
+          "type": "integer"
+        },
+        "fixtures": {
+          "title": "Service fixtures",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/serviceFixture"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "serviceFixture": {
+      "type": "object",
+      "additionalProperties": true
+    },
+
+    "target": {
+      "type": "object",
+      "properties": {
+        "indexes": {
+          "title": "Target indexes",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetIndex"
+          }
+        },
+        "relations": {
+          "title": "Target relations",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetRelation"
+          }
+        },
+        "fields": {
+          "title": "Target fields",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/targetField"
+          }
+        }
+      },
+      "required": [
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "targetIndex": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "targetRelation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Relation type",
+          "$ref": "#/definitions/relationType"
+        },
+        "collectionName": {
+          "title": "Related collection name",
+          "$ref": "#/definitions/collectionName"
+        },
+        "localProperty": {
+          "title": "Local relation property",
+          "$ref": "#/definitions/fieldDefinitionName"
+        },
+        "localValueField": {
+          "title": "Local value field",
+          "$ref": "#/definitions/fieldName"
+        },
+        "foreignProperty": {
+          "title": "Foreign relation field",
+          "$ref": "#/definitions/fieldName"
+        }
+      },
+      "required": [
+        "type",
+        "localProperty"
+      ],
+      "additionalProperties": false
+    },
+    "targetField": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Field name",
+          "$ref": "#/definitions/fieldDefinitionName"
+        },
+        "type": {
+          "title": "Field type",
+          "oneOf": [
+            {"$ref": "#/definitions/fieldBasicType"},
+            {"$ref": "#/definitions/fieldClassType"}
+          ]
+        },
+        "exposeAs": {
+          "title": "Field title",
+          "$ref": "#/definitions/fieldExposedName"
+        },
+        "title": {
+          "title": "Field title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Field description",
+          "type": "string"
+        },
+        "length": {
+          "title": "Field length",
+          "type": "integer",
+          "minimum": 1
+        },
+        "readOnly": {
+          "title": "Is field read-only",
+          "type": "boolean"
+        },
+        "required": {
+          "title": "Is field required",
+          "type": "boolean"
+        },
+        "translatable": {
+          "title": "Is field translatable",
+          "type": "boolean"
+        },
+        "constraints": {
+          "title": "Field constraints",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetFieldConstraint"
+          }
+        },
+        "collection": {
+          "title": "Allowed extref collections",
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"$ref": "#/definitions/collectionName"},
+              {"enum": ["*"]}
+            ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "targetFieldConstraint": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Constraint name",
+          "type": "string"
+        },
+        "options": {
+          "title": "Constraint options",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/targetFieldConstraintOption"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "targetFieldConstraintOption": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Constraint option name",
+          "type": "string"
+        },
+        "value": {
+          "title": "Constraint option value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
   "additionalProperties": false
 }
