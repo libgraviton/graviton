@@ -13,6 +13,7 @@ namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface;
 use JMS\Serializer\SerializerInterface;
 
 /**
@@ -30,14 +31,20 @@ class Loader implements LoaderInterface
      * @var SerializerInterface
      */
     private $serializer;
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
 
     /**
      * Constructor
      *
+     * @param ValidatorInterface  $validator  Validator
      * @param SerializerInterface $serializer Serializer
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(ValidatorInterface $validator, SerializerInterface $serializer)
     {
+        $this->validator = $validator;
         $this->serializer = $serializer;
     }
 
@@ -79,6 +86,8 @@ class Loader implements LoaderInterface
      */
     protected function createJsonDefinition($json)
     {
+        $this->validator->validateJsonDefinition($json);
+
         $definition = $this->serializer->deserialize(
             $json,
             'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',

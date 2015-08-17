@@ -52,6 +52,7 @@
         </service>
 
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
+            <argument type="service" id="graviton_generator.definition.validator"/>
             <argument type="service" id="jms_serializer"/>
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
