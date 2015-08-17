@@ -7,6 +7,7 @@ namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Definition\Validator\InvalidJsonException;
 use Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface;
+use HadesArchitect\JsonSchemaBundle\Error\Error;
 use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -91,51 +92,67 @@ class ValidateDefinitionCommand extends Command
             $path = $this->defaultPath;
         }
 
-        $rows = array_reduce(
+        $hasErrors = array_reduce(
             iterator_to_array($this->loadDefinitions($path)),
-            function ($rows, SplFileInfo $fileInfo) {
+            function ($hasErrors, SplFileInfo $fileInfo) use ($output) {
                 $errors = $this->validateJsonDefinitionFile($fileInfo->getContents());
                 if (!empty($errors)) {
-                    $rows[] = new TableSeparator();
-                    $rows[] = [
-                        $fileInfo->getBasename('.json'),
-                        implode(PHP_EOL, array_map('wordwrap', $errors)),
-                    ];
+                    $hasErrors = true;
+                    $this->outputErrors($output, $fileInfo, $errors);
                 }
 
-                return $rows;
+                return $hasErrors;
             },
-            []
+            false
         );
-        if (empty($rows)) {
-            return 0;
-        }
-
-        array_shift($rows);
-        (new Table($output))
-            ->setHeaders(['Definition', 'Errors'])
-            ->setRows($rows)
-            ->render();
-        return 1;
+        return $hasErrors ? 1 : 0;
     }
 
     /**
      * Validate JSON definition
      *
      * @param string $json JSON definition
-     * @return array
+     * @return Error[]
      */
     private function validateJsonDefinitionFile($json)
     {
         try {
             $this->validator->validateJsonDefinition($json);
         } catch (InvalidJsonException $e) {
-            return [$e->getMessage()];
+            return new Error('', $e->getMessage());
         } catch (ViolationException $e) {
             return $e->getErrors();
         }
 
         return [];
+    }
+
+    /**
+     * Convert errors to table rows
+     *
+     * @param OutputInterface $output   Output
+     * @param SplFileInfo     $fileInfo File info
+     * @param Error[]         $errors   Errors
+     * @return void
+     */
+    private function outputErrors(OutputInterface $output, SplFileInfo $fileInfo, array $errors)
+    {
+        $rows = [];
+        foreach ($errors as $error) {
+            $rows[] = new TableSeparator();
+            $rows[] = [
+                $error->getProperty(),
+                wordwrap($error->getViolation(), 80, PHP_EOL, false),
+            ];
+        }
+        array_shift($rows);
+
+        $output->writeln('<comment>'.$fileInfo->getRelativePathname().'</comment>');
+        (new Table($output))
+            ->setHeaders(['Path', 'Error'])
+            ->setRows($rows)
+            ->render();
+        $output->writeln('');
     }
 
     /**
