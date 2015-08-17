@@ -455,7 +455,7 @@ class ShowcaseControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testAddElementToAnyIndexInArrayPatch()
+    public function testAddElementToSpecificIndexInArrayPatch()
     {
         // Load fixtures
         $this->loadFixtures(
@@ -471,8 +471,8 @@ class ShowcaseControllerTest extends RestTestCase
             [
                 [
                     'op' => 'add',
-                    'path' => '/nestedArray/-',
-                    'value' => $newElement
+                    'path' => '/nestedArray/1',
+                    'value' => [$newElement]
                 ]
             ]
         );
@@ -487,7 +487,7 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(3, count($result->nestedArray));
         $this->assertJsonStringEqualsJsonString(
             json_encode($newElement),
-            json_encode($result->nestedArray[2])
+            json_encode($result->nestedArray[1])
         );
     }
 
