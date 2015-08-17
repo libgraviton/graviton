@@ -100,8 +100,8 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider getDbRefProvider
      *
-     * @param string $url      external link to convert
-     * @param array  $expected expected mogodb ref
+     * @param string       $url      external link to convert
+     * @param array|object $expected expected mogodb ref
      *
      * @return void
      */
@@ -134,18 +134,27 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     public function getDbRefProvider()
     {
         return [
-            ['http://localhost/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['/core/app/test', ['$ref' => 'App', '$id' => 'test']],
-            ['http://localhost/hans/showcase/blah', ['$ref' => 'ShowCase', '$id' => 'blah']],
+            [
+                'http://localhost/core/app/test',
+                \MongoDBRef::create('App', 'test'),
+            ],
+            [
+                '/core/app/test',
+                \MongoDBRef::create('App', 'test'),
+            ],
+            [
+                'http://localhost/hans/showcase/blah',
+                \MongoDBRef::create('ShowCase', 'blah'),
+            ],
         ];
     }
 
     /**
      * @dataProvider getUrlProvider
      *
-     * @param array  $ref     reference as from mongo
-     * @param string $routeId name of route that should get loaded
-     * @param string $url     url we expect to result from the conversion
+     * @param array|object $ref     reference as from mongo
+     * @param string       $routeId name of route that should get loaded
+     * @param string       $url     url we expect to result from the conversion
      *
      * @return void
      */
@@ -155,8 +164,8 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('generate')
             ->with(
-                $this->equalTo($routeId),
-                $this->equalTo(['id' => $ref['$id']])
+                $routeId,
+                ['id' => is_array($ref) ? $ref['$id'] : $ref->{'$id'}]
             )
             ->will($this->returnValue($url));
 
@@ -177,11 +186,15 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     public function getUrlProvider()
     {
         return [
-            [['$ref' => 'App', '$id' => 'test'], 'graviton.core.rest.app.get', 'http://localhost/core/app/test'],
             [
-                ['$ref' => 'Language', '$id' => 'en'],
+                \MongoDBRef::create('App', 'test'),
+                'graviton.core.rest.app.get',
+                'http://localhost/core/app/test',
+            ],
+            [
+                \MongoDBRef::create('Language', 'en'),
                 'graviton.i18n.rest.language.get',
-                'http://localhost/i18n/language/en'
+                'http://localhost/i18n/language/en',
             ],
         ];
     }

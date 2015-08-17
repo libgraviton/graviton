@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
-use Graviton\RestBundle\Event\RestEvent;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -60,9 +59,9 @@ class PagingLinkResponseListener
 
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $additionalParams = array();
+            $rql = '';
             if ($request->attributes->get('hasRql', false)) {
-                $additionalParams['q'] = $request->attributes->get('rawRql', '');
+                $rql = $request->attributes->get('rawRql', '');
             }
 
             $this->linkHeader = LinkHeader::fromResponse($response);
@@ -73,7 +72,7 @@ class PagingLinkResponseListener
                 $request->attributes->get('numPages'),
                 $request->attributes->get('perPage'),
                 $request,
-                $additionalParams
+                $rql
             );
             $response->headers->set(
                 'Link',
@@ -85,52 +84,58 @@ class PagingLinkResponseListener
     /**
      * generate headers for all paging links
      *
-     * @param string  $route            name of route
-     * @param integer $page             current page
-     * @param integer $numPages         number of all pages
-     * @param integer $perPage          number of records per page
-     * @param Request $request          request to get rawRql from
-     * @param array   $additionalParams Optional array of additional params to include
+     * @param string  $route    name of route
+     * @param integer $page     page to link to
+     * @param integer $numPages number of all pages
+     * @param integer $perPage  number of records per page
+     * @param Request $request  request to get rawRql from
+     * @param string  $rql      rql query string
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages, $perPage, Request $request, $additionalParams = array())
+    private function generateLinks($route, $page, $numPages, $perPage, Request $request, $rql)
     {
         if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first', $request, $additionalParams);
+            $this->generateLink($route, 1, $perPage, 'first', $request, $rql);
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev', $request, $additionalParams);
+            $this->generateLink($route, $page - 1, $perPage, 'prev', $request, $rql);
         }
         if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, $perPage, 'next', $request, $additionalParams);
+            $this->generateLink($route, $page + 1, $perPage, 'next', $request, $rql);
         }
         if ($page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last', $request, $additionalParams);
+            $this->generateLink($route, $numPages, $perPage, 'last', $request, $rql);
         }
     }
 
     /**
      * generate link header passed on params and type
      *
-     * @param string  $routeName        use with router to generate urls
-     * @param integer $page             page to link to
-     * @param integer $perPage          number of items per page
-     * @param string  $type             rel type of link to generate
-     * @param Request $request          request to get rawRql from
-     * @param array   $additionalParams Optional array of additional params to include
+     * @param string  $routeName use with router to generate urls
+     * @param integer $page      page to link to
+     * @param integer $perPage   number of items per page
+     * @param string  $type      rel type of link to generate
+     * @param Request $request   request to get rawRql from
+     * @param string  $rql       rql query string
      *
      * @return string
      */
-    private function generateLink($routeName, $page, $perPage, $type, Request $request, $additionalParams = array())
+    private function generateLink($routeName, $page, $perPage, $type, Request $request, $rql)
     {
-        $parameters = array_merge($additionalParams, array('page' => $page));
+        $limit = '';
         if ($perPage) {
-            $parameters['perPage'] = $perPage;
+            $page = ($page - 1) * $perPage;
+            $limit = sprintf('limit(%s,%s)', $perPage, $page);
+        }
+        if (strpos($rql, 'limit') !== false) {
+            $rql = preg_replace('/limit\(.*\)/', $limit, $rql);
+        } else {
+            $rql = $limit;
         }
         $url = $this->getRqlUrl(
             $request,
-            $this->router->generate($routeName, $parameters, true)
+            $this->router->generate($routeName, [], true) . '?' . strtr($rql, [',' => '%2C'])
         );
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));

@@ -26,9 +26,9 @@ interface ExtReferenceConverterInterface
     /**
      * return the extref URL
      *
-     * @param array $dbRef DB ref
+     * @param array|object $dbRef DB ref
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getUrl(array $dbRef);
+    public function getUrl($dbRef);
 }

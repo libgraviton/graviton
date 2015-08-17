@@ -9,6 +9,7 @@ use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 
 /**
  * GravitonMessagingBundleTest
@@ -60,10 +61,23 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('addCompilerPass'))
             ->getMock();
         $containerDouble
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('addCompilerPass')
             ->with(
                 $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass')
+            );
+        $containerDouble
+            ->expects($this->at(1))
+            ->method('addCompilerPass')
+            ->with(
+                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass')
+            );
+        $containerDouble
+            ->expects($this->at(2))
+            ->method('addCompilerPass')
+            ->with(
+                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryDecoratorCompilerPass'),
+                PassConfig::TYPE_OPTIMIZE
             );
 
         $bundle = new GravitonRestBundle();

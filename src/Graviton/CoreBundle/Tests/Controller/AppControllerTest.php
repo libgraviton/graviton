@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /core/app.
@@ -88,32 +89,32 @@ class AppControllerTest extends RestTestCase
     public function testGetAppWithFilteringAndPaging()
     {
         $client = static::createRestClient();
-        $_SERVER['QUERY_STRING'] = 'perPage=1&q=eq(showInMenu,true)';
-        $client->request('GET', '/core/app?perPage=1&q=eq(showInMenu,true)');
+        $_SERVER['QUERY_STRING'] = 'eq(showInMenu,true)&limit(1)';
+        $client->request('GET', '/core/app?eq(showInMenu,true)&limit(1)');
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)>; rel="self"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="next"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=eq(showInMenu%2Ctrue)&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
     }
 
     /**
-     * rql limit() should be *never* overwritten by $_GET['perPage'] *or* default value
+     * rql limit() should *never* be overwritten by default value
      *
      * @return void
      */
@@ -121,55 +122,92 @@ class AppControllerTest extends RestTestCase
     {
         // does limit work?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?q=limit(1)');
-        $this->assertEquals(1, count($client->getResults()));
-
-        // rql before GET?
-        $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&q=limit(1)');
+        $client->request('GET', '/core/app?limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)>; rel="self"',
+            '<http://localhost/core/app?limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="next"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1)&page=2&perPage=1>; rel="last"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
         // "page" override - rql before get
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?perPage=2&page=1&q=limit(1,1)');
+        $client->request('GET', '/core/app?limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?q=limit(1%2C1)>; rel="self"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        // we're passing page=1, but should be on last.. so next and last should be identical
-        $nextAndLastUrl = 'http://localhost/core/app?q=limit(1%2C1)&page=2&perPage=1';
-
+        // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="next"',
+            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
+    }
 
-        $this->assertContains(
-            '<'.$nextAndLastUrl.'>; rel="last"',
-            $response->headers->get('Link')
-        );
+    /**
+     * RQL is parsed only when we get all apps
+     *
+     * @return void
+     */
+    public function testRqlIsParsedOnlyOnAllRequest()
+    {
+        $appData = [
+            'showInMenu' => false,
+            'order'      => 100,
+            'title'      => ['en' => 'Administration'],
+        ];
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/core/app?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach (['GET', 'OPTIONS'] as $method) {
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/collection?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/item?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/core/app/admin?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        }
+
+        $client = static::createRestClient();
+        $client->post('/core/app?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->put('/core/app/admin?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('DELETE', '/core/app/admin?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -275,6 +313,21 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test if we get a correct return if we post empty.
+     *
+     * @return void
+     */
+    public function testPostNonObjectApp()
+    {
+        $client = static::createRestClient();
+        $client->post('/core/app', "non-object value");
+
+        $response = $client->getResponse();
+        $this->assertContains('JSON request body must be an object', $response->getContent());
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
      * test if 500 error is reported when posting an malformed input
      *
      * @return void
@@ -296,14 +349,14 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $content = $response->getContent();
+        // Check that error message contains detailed reason
+        json_decode($input);
+        $lastJsonError = function_exists('json_last_error_msg')
+            ? json_last_error_msg()
+            : 'Unable to decode JSON string';
         $this->assertContains(
-            'syntax error',
-            strtolower($content)
-        );
-        $this->assertContains(
-            'malformed JSON',
-            $content
+            $lastJsonError,
+            $client->getResults()->message
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -327,9 +380,6 @@ class AppControllerTest extends RestTestCase
             'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
             $client->getResults()[0]->message
         );
-
-
-
     }
     /**
      * test updating apps
@@ -566,7 +616,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request(
             'GET',
-            '/core/app?q='.$expr,
+            '/core/app?'.$expr,
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
@@ -602,7 +652,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/app?q=eq(name)');
+        $client->request('GET', '/core/app?eq(name)');
 
         $response = $client->getResponse();
         $results = $client->getResults();
