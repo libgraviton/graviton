@@ -3,7 +3,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
   <embedded-document name="Graviton\I18nBundle\Document\TranslatableLanguage" repository-class="Graviton\I18nBundle\Respository\TranslatableLanguageRepository">
-    <field fieldName="id" type="string" id="true"/>
+    <field fieldName="id" type="string" id="true" strategy="UUID"/>
     <field fieldName="ref" type="extref"/>
   </embedded-document>
 </doctrine-mongo-mapping>
