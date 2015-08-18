@@ -28,17 +28,17 @@ class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @param array $fields
      * @return array
      */
-    public function convert(array $data, $fields)
+    public function convert($data, $fields)
     {
-        if (is_array($data) && !empty($data) && !is_string(array_keys($data)[0])) {
+        if (is_array($data)) {
             foreach ($data as $index => $row) {
                 $data[$index] = $this->mapItem($row, $fields);
             }
-        } else {
+        } elseif (is_object($data)) {
             $data = $this->mapItem($data, $fields);
         }
 
@@ -48,12 +48,12 @@ class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
     /**
      * apply single mapping
      *
-     * @param array $item item to apply mapping to
+     * @param mixed $item item to apply mapping to
      * @param array $fields
      *
      * @return array
      */
-    private function mapItem(array $item, array $fields)
+    private function mapItem($item, array $fields)
     {
         foreach ($fields as $field) {
             $item = $this->mapField($item, $field);
@@ -65,44 +65,36 @@ class ExtReferenceJsonConverter implements ExtReferenceJsonConverterInterface
     /**
      * recursive mapper for embed-one fields
      *
-     * @param array  $item  item to map
+     * @param mixed  $item  item to map
      * @param string $field name of field to map
      *
      * @return array
      */
     private function mapField($item, $field)
     {
-        if (!is_array($item)) {
-            return $item;
-        }
-
-        if (strpos($field, '0.') === 0) {
-            $subField = substr($field, 2);
-
-            return array_map(
-                function ($subItem) use ($subField) {
-                    return $this->mapField($subItem, $subField);
-                },
-                $item
-            );
-        }
-
-        if (($pos = strpos($field, '.')) !== false) {
-            $topLevel = substr($field, 0, $pos);
-            $subField = substr($field, $pos + 1);
-
-            if (isset($item[$topLevel])) {
-                $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+        if (is_array($item)) {
+            if ($field === '0') {
+                $item = array_map([$this, 'convertToUrl'], $item);
+            } elseif (strpos($field, '0.') === 0) {
+                $subField = substr($field, 2);
+                $item = array_map(
+                    function ($subItem) use ($subField) {
+                        return $this->mapField($subItem, $subField);
+                    },
+                    $item
+                );
             }
-            return $item;
+        } elseif (is_object($item)) {
+            if (($pos = strpos($field, '.')) !== false) {
+                $topLevel = substr($field, 0, $pos);
+                $subField = substr($field, $pos + 1);
+                if (isset($item->$topLevel)) {
+                    $item->$topLevel = $this->mapField($item->$topLevel, $subField);
+                }
+            } elseif (isset($item->$field)) {
+                $item->$field = $this->convertToUrl($item->$field);
+            }
         }
-
-        if ($field === '0') {
-            $item = array_map([$this, 'convertToUrl'], $item);
-        } elseif (isset($item[$field])) {
-            $item[$field] = $this->convertToUrl($item[$field]);
-        }
-
         return $item;
     }
 

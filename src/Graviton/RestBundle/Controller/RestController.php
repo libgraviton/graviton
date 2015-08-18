@@ -468,7 +468,7 @@ class RestController
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
         $recordData = $this->extReferenceJsonConverter->convert(
-            json_decode($this->serialize($record), 1),
+            json_decode($this->serialize($record)),
             $this->extrefFields[$request->attributes->get('_route')]
         );
 

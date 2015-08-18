@@ -77,7 +77,7 @@ class ExtReferenceListener
             return;
         }
 
-        $data = json_decode($event->getResponse()->getContent(), true);
+        $data = json_decode($event->getResponse()->getContent());
 
         $event->getResponse()->setContent(
             json_encode(

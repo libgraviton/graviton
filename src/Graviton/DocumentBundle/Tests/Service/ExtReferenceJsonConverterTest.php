@@ -42,7 +42,7 @@ class ExtReferenceJsonConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvert()
     {
-        $before = [
+        $before = (object) [
             'name' => 'name',
             'ref' => '{"$ref":"toplevel","$id":123}',
             'array' => [
@@ -50,58 +50,58 @@ class ExtReferenceJsonConverterTest extends \PHPUnit_Framework_TestCase
                 '{"$ref":"array","$id":456}',
             ],
             'arrayhash' => [
-                [
+                (object) [
                     'ref' => '{"$ref":"arrayhash","$id":123}',
                 ],
-                [
+                (object) [
                     'ref' => '{"$ref":"arrayhash","$id":456}',
                 ],
             ],
-            'hash' => [
-                'c' => [
+            'hash' => (object) [
+                'c' => (object) [
                     'ref' => '{"$ref":"hash","$id":123}',
                 ],
-                'd' => [
+                'd' => (object) [
                     'ref' => '{"$ref":"notmapped","$id":123}',
                 ],
             ],
-            'deep' => [
-                'deep' => [
-                    'deep' => [
-                        'deep' => [
+            'deep' => (object) [
+                'deep' => (object) [
+                    'deep' => (object) [
+                        'deep' => (object) [
                             'ref' => '{"$ref":"deep","$id":123}',
                         ],
                     ],
                 ],
             ],
         ];
-        $after = [
+        $after = (object) [
             'name' => 'name',
             'ref' => 'url-toplevel-123',
             'array' => [
                 'url-array-123',
                 'url-array-456',
             ],
-            'hash' => [
-                'c' => [
+            'hash' => (object) [
+                'c' => (object) [
                     'ref' => 'url-hash-123',
                 ],
-                'd' => [
+                'd' => (object) [
                     'ref' => '{"$ref":"notmapped","$id":123}',
                 ],
             ],
             'arrayhash' => [
-                [
+                (object) [
                     'ref' => 'url-arrayhash-123',
                 ],
-                [
+                (object) [
                     'ref' => 'url-arrayhash-456',
                 ],
             ],
-            'deep' => [
-                'deep' => [
-                    'deep' => [
-                        'deep' => [
+            'deep' => (object) [
+                'deep' => (object) [
+                    'deep' => (object) [
+                        'deep' => (object) [
                             'ref' => 'url-deep-123',
                         ],
                     ],
