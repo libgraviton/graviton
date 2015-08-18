@@ -52,24 +52,24 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithPaging()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?perPage=1');
+        $client->request('GET', '/core/module?limit(1)');
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/module?page=1&perPage=1>; rel="self"',
+            '<http://localhost/core/module?limit(1)>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?page=2&perPage=1>; rel="next"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/module?limit(1%2C1)>; rel="next"',
+            $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?page=5&perPage=1>; rel="last"',
-            explode(',', $response->headers->get('Link'))
+            '<http://localhost/core/module?limit(1%2C5)>; rel="last"',
+            $response->headers->get('Link')
         );
 
         $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -130,6 +130,75 @@ class ModuleControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+    }
+
+    /**
+     * test finding of modules by ref
+     *
+     * @dataProvider findByAppRefProvider
+     *
+     * @param string  $ref   which reference to search in
+     * @param string  $url   ref to search for
+     * @param integer $count number of results to expect
+     *
+     * @return void
+     */
+    public function testFindByAppRef($ref, $url, $count)
+    {
+        $this->loadFixtures(
+            [
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadProductData',
+            ],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module?eq('.rawurlencode($ref).',' . rawurlencode($url).')');
+        $results = $client->getResults();
+        $this->assertCount($count, $results);
+    }
+
+    /**
+     * @return array
+     */
+    public function findByAppRefProvider()
+    {
+        return [
+            'find all tablet records' => [
+                'app.$ref',
+                'http://localhost/core/app/tablet',
+                5
+            ],
+            'find a linked record when searching for ref' => [
+                'app.$ref',
+                'http://localhost/core/app/admin',
+                1
+            ],
+            'find nothing when searching for inextistant (and unlinked) ref' => [
+                'app.$ref',
+                'http://localhost/core/app/inexistant',
+                0
+            ],
+            'find in nested sets' => [
+                'service.0.gui.$ref',
+                'http://localhost/core/product/3',
+                1
+            ],
+            'find in nested sets (short syntax)' => [
+                'service..gui.$ref',
+                'http://localhost/core/product/3',
+                1
+            ],
+            'return nothing when searching with incomplete ref' => [
+                'app.$ref',
+                'http://localhost/core/app',
+                0
+            ],
+        ];
     }
 
     /**
@@ -206,7 +275,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -258,7 +327,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -287,7 +356,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
@@ -331,7 +400,7 @@ class ModuleControllerTest extends RestTestCase
     public function testExtReferenceValidation()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?q=eq(key,investment)');
+        $client->request('GET', '/core/module?eq(key,investment)');
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];
