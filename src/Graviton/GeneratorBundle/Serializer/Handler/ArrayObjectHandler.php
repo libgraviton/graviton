@@ -26,8 +26,12 @@ class ArrayObjectHandler
      * @param Context          $context Context
      * @return \ArrayObject
      */
-    public function serializeArrayObjectToJson(VisitorInterface $visitor, \ArrayObject $data, array $type, Context $context)
-    {
+    public function serializeArrayObjectToJson(
+        VisitorInterface $visitor,
+        \ArrayObject $data,
+        array $type,
+        Context $context
+    ) {
         $type['name'] = 'array';
         return new \ArrayObject($visitor->visitArray($data->getArrayCopy(), $type, $context));
     }
@@ -41,8 +45,12 @@ class ArrayObjectHandler
      * @param Context          $context Context
      * @return \ArrayObject
      */
-    public function deserializeArrayObjectFromJson(VisitorInterface $visitor, array $data, array $type, Context $context)
-    {
+    public function deserializeArrayObjectFromJson(
+        VisitorInterface $visitor,
+        array $data,
+        array $type,
+        Context $context
+    ) {
         $type['name'] = 'array';
         return new \ArrayObject($visitor->visitArray($data, $type, $context));
     }

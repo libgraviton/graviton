@@ -39,7 +39,7 @@ class TestData
     }
 
     /**
-     * @param \ArrayObject $a
+     * @param \ArrayObject $a A
      * @return $this
      */
     public function setA(\ArrayObject $a)
@@ -57,7 +57,7 @@ class TestData
     }
 
     /**
-     * @param \ArrayObject[] $b
+     * @param \ArrayObject[] $b B
      * @return $this
      */
     public function setB(array $b)
