@@ -35,7 +35,11 @@
                     </{{ relType }}-one>
                 {% endif %}
             {% else %}
-                <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
+                {% if field.type == 'hash' %}
+                    <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% else %}
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </{{ docType }}>
