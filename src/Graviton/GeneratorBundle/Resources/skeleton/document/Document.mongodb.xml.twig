@@ -15,7 +15,7 @@
   {% if idField is defined %}
       <field fieldName="id" type="{{ idField.doctrineType }}" id="true"/>
   {% else %}
-      <field fieldName="id" type="string" id="true"/>
+      <field fieldName="id" type="string" id="true" strategy="UUID"/>
   {% endif %}
 
         {% for field in fields %}
@@ -38,7 +38,7 @@
                 {% if field.type == 'object' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
                 {% elseif field.type != 'hash' %}
-                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}
             {% endif %}
         {% endfor %}
