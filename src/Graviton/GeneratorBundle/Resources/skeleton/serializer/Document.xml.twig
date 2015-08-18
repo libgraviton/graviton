@@ -18,6 +18,12 @@
         <type><![CDATA[DateTime]]></type>
     </property>
 
+{% if recordOriginModifiable is defined %}
+    <property name="recordOrigin" serialized-name="recordOrigin" accessor-getter="getRecordOrigin" accessor-setter="getRecordOrigin">
+        <type><![CDATA[string]]></type>
+    </property>
+{% endif %}
+
 {% for field in fields %}
 
     {% if field.type == 'boolean' %}

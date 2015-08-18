@@ -42,5 +42,10 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
+
+        {% if recordOriginModifiable is defined %}
+            <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
+        {% endif %}
+
     </{{ docType }}>
 </doctrine-mongo-mapping>

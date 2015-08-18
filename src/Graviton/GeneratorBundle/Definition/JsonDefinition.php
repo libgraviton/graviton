@@ -364,4 +364,18 @@ class JsonDefinition
 
         return $this->def->getService()->getRoles();
     }
+
+    /**
+     * Can origin record be modify
+     *
+     * @return bool
+     */
+    public function isRecordOriginModifiable()
+    {
+        if ($this->def->getService() !== null || !is_object($this->def->getService())) {
+            return null;
+        }
+
+        return $this->def->getService()->getRecordOriginModifiable();
+    }
 }

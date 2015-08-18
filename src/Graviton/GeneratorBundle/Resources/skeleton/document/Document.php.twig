@@ -16,7 +16,7 @@ use JMS\Serializer\DeserializationContext;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class {{ document }} implements TranslatableDocumentInterface
+class {{ document }} implements TranslatableDocumentInterface, {% include 'document/RecordOriginInterfaceDefinition.php.twig' %}
 {
     /**
      * @var MongoId $id
@@ -27,6 +27,13 @@ class {{ document }} implements TranslatableDocumentInterface
      * @var Date $deletedDate
      */
     protected $deletedDate;
+
+{% if recordOriginModifiable is defined %}
+    /**
+     * @var string $recordOrigin
+     */
+    protected $recordOrigin;
+{% endif %}
 
 {% for field in fields %}
     /**
@@ -83,6 +90,48 @@ class {{ document }} implements TranslatableDocumentInterface
     {
     return $this->deletedDate;
     }
+
+{% if recordOriginModifiable is defined %}
+
+    /**
+     * Can record origin be modified
+     *
+     * @return bool true|false
+     */
+    public function isRecordOriginModifiable()
+    {
+        return {{ recordOriginModifiable }} ;
+    }
+
+    /**
+    * Get recordOrigin
+    *
+    * @return string $recordOrigin
+    */
+    public function getRecordOrigin()
+    {
+        return $this->recordOrigin;
+    }
+
+    /**
+     * Set recordOrigin
+     *
+     * @param string $recordOrigin origin of the record
+     *
+     * @return self
+     */
+    public function setRecordOrigin($recordOrigin)
+    {
+        if (!isset($this->recordOrigin)) {
+            $this->recordOrigin = $recordOrigin;
+        } else {
+            throw new \LogicException("recordOrigin can not be overwritten");
+        }
+
+        return $this;
+    }
+{% endif %}
+
 
 {% for field in fields %}
 
