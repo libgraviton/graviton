@@ -15,7 +15,7 @@ use Graviton\GeneratorBundle\Definition\Schema;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class JsonDefinitionFieldTest extends \PHPUnit_Framework_TestCase
+class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
 {
     /**
      * Test JsonDefinitionField::getDef()
@@ -150,82 +150,22 @@ class JsonDefinitionFieldTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDefAsArray()
     {
-        $definition = (new Schema\Field())
-            ->setName(__METHOD__.__LINE__)
-            ->setExposeAs(__METHOD__.__LINE__)
-            ->setTitle(__METHOD__.__LINE__)
-            ->setDescription(__METHOD__.__LINE__)
-            ->setType(__METHOD__.__LINE__)
-            ->setLength(__METHOD__.__LINE__)
-            ->setReadOnly(__METHOD__.__LINE__)
-            ->setTranslatable(__METHOD__.__LINE__)
-            ->setRequired(__METHOD__.__LINE__)
-            ->setCollection([__METHOD__.__LINE__])
-            ->setConstraints(
-                [
-                    (new Schema\Constraint())
-                        ->setName(__METHOD__.__LINE__)
-                        ->setOptions(
-                            [
-                                (new Schema\ConstraintOption())
-                                    ->setName(__METHOD__.__LINE__)
-                                    ->setValue(__METHOD__.__LINE__),
-                                (new Schema\ConstraintOption())
-                                    ->setName(__METHOD__.__LINE__)
-                                    ->setValue(__METHOD__.__LINE__),
-                            ]
-                        ),
-                    (new Schema\Constraint())
-                        ->setName(__METHOD__.__LINE__)
-                        ->setOptions(
-                            [
-                                (new Schema\ConstraintOption())
-                                    ->setName(__METHOD__.__LINE__)
-                                    ->setValue(__METHOD__.__LINE__),
-                                (new Schema\ConstraintOption())
-                                    ->setName(__METHOD__.__LINE__)
-                                    ->setValue(__METHOD__.__LINE__),
-                            ]
-                        ),
-                ]
-            );
+        $definition = $this->getBaseField();
 
         $field = new JsonDefinitionField('name', $definition);
         $this->assertEquals(
-            [
-                'length'            => $definition->getLength(),
-                'title'             => $definition->getTitle(),
-                'description'       => $definition->getDescription(),
-                'readOnly'          => $definition->getReadOnly(),
-                'required'          => $definition->getRequired(),
-                'translatable'      => $definition->getTranslatable(),
-                'collection'        => $definition->getCollection(),
-
-                'name'              => $field->getName(),
-                'type'              => $field->getType(),
-                'exposedName'       => $definition->getExposeAs(),
-                'doctrineType'      => $field->getTypeDoctrine(),
-                'serializerType'    => $field->getTypeSerializer(),
-                'relType'           => null,
-                'isClassType'       => false,
-                'constraints'       => array_map(
-                    function (Schema\Constraint $constraint) {
-                        return [
-                            'name'  => $constraint->getName(),
-                            'options'   => array_map(
-                                function (Schema\ConstraintOption $option) {
-                                    return [
-                                        'name'  => $option->getName(),
-                                        'value' => $option->getValue(),
-                                    ];
-                                },
-                                $constraint->getOptions()
-                            )
-                        ];
-                    },
-                    $definition->getConstraints()
-                ),
-            ],
+            array_replace(
+                $this->getBaseDefAsArray($definition),
+                [
+                    'name'              => $field->getName(),
+                    'type'              => $field->getType(),
+                    'exposedName'       => $definition->getExposeAs(),
+                    'doctrineType'      => $field->getTypeDoctrine(),
+                    'serializerType'    => $field->getTypeSerializer(),
+                    'relType'           => null,
+                    'isClassType'       => false,
+                ]
+            ),
             $field->getDefAsArray()
         );
     }
