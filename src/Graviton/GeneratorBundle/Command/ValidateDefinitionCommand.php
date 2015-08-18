@@ -5,10 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
-use Graviton\GeneratorBundle\Definition\Validator\InvalidJsonException;
 use Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface;
 use HadesArchitect\JsonSchemaBundle\Error\Error;
-use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -117,14 +115,10 @@ class ValidateDefinitionCommand extends Command
     private function validateJsonDefinitionFile($json)
     {
         try {
-            $this->validator->validateJsonDefinition($json);
-        } catch (InvalidJsonException $e) {
+            return $this->validator->validateJsonDefinition($json);
+        } catch (\Exception $e) {
             return new Error('', $e->getMessage());
-        } catch (ViolationException $e) {
-            return $e->getErrors();
         }
-
-        return [];
     }
 
     /**

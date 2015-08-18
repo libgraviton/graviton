@@ -5,7 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Definition\Validator;
 
-use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
+use HadesArchitect\JsonSchemaBundle\Error\Error;
 
 /**
  * JSON definition validation interface
@@ -20,9 +20,8 @@ interface ValidatorInterface
      * Validate raw JSON definition
      *
      * @param string $json JSON definition
-     * @return void
+     * @return Error[]
      * @throws InvalidJsonException If JSON is not valid
-     * @throws ViolationException   If definition is not valid
      */
     public function validateJsonDefinition($json);
 }
