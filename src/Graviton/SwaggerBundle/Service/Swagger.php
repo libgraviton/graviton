@@ -71,6 +71,10 @@ class Swagger
             foreach ($routes as $routeName => $route) {
                 $routeMethod = strtolower($route->getMethods()[0]);
 
+                if ($routeMethod == 'options') {
+                    continue;
+                }
+
                 // skip /schema/ stuff
                 if (strpos($route->getPath(), '/schema/') !== false) {
                     continue;
@@ -144,14 +148,6 @@ class Swagger
                         'schema' => array(
                             'type' => 'object'
                         )
-                    );
-                }
-
-                if ($routeMethod == 'options') {
-                    $thisPath['responses'][200] = array(
-                        'description' => 'Schema response',
-                        // http://json-schema.org/draft-04/schema
-                        'schema' => array('$ref' => '#/definitions/SchemaModel')
                     );
                 }
 
@@ -280,9 +276,6 @@ class Swagger
                 break;
             case 'post':
                 $ret = 'Create new ' . $entityName . ' resource';
-                break;
-            case 'options':
-                $ret = 'Get schema information for ' . $entityName . ' resource';
                 break;
             case 'put':
                 $ret = 'Update existing ' . $entityName . ' resource';
