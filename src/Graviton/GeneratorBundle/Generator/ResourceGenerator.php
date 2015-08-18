@@ -163,6 +163,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
+            ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
