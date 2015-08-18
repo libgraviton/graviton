@@ -107,24 +107,23 @@ class ArrayObjectHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerializer($serialized, $deserialized)
     {
-        $handler = new ArrayObjectHandler();
         $serializer = SerializerBuilder::create()
             ->addDefaultHandlers()
             ->addDefaultSerializationVisitors()
             ->addDefaultDeserializationVisitors()
             ->configureHandlers(
-                function (HandlerRegistry $registry) use ($handler) {
+                function (HandlerRegistry $registry) {
                     $registry->registerHandler(
                         GraphNavigator::DIRECTION_SERIALIZATION,
                         'ArrayObject',
                         'json',
-                        [$handler, 'serializeArrayObjectToJson']
+                        [new ArrayObjectHandler(), 'serializeArrayObjectToJson']
                     );
                     $registry->registerHandler(
                         GraphNavigator::DIRECTION_DESERIALIZATION,
                         'ArrayObject',
                         'json',
-                        [$handler, 'deserializeArrayObjectFromJson']
+                        [new ArrayObjectHandler(), 'deserializeArrayObjectFromJson']
                     );
                 }
             )
