@@ -77,6 +77,8 @@ class Swagger
 
                 // skip /schema/ stuff
                 if (strpos($route->getPath(), '/schema/') !== false) {
+                    list($pattern, $method, $data) = $this->getSchemaRoutes($route);
+                    $paths[$pattern][$method] = $data;
                     continue;
                 }
 
@@ -240,15 +242,16 @@ class Swagger
      * Returns the tags (which influences the grouping visually) for a given route
      *
      * @param Route $route route
+     * @param int   $part  part of route to use for generating a tag
      *
      * @return array Array of tags..
      */
-    protected function getPathTags(Route $route)
+    protected function getPathTags(Route $route, $part = 1)
     {
         $ret = array();
         $routeParts = explode('/', $route->getPath());
-        if (isset($routeParts[1])) {
-            $ret[] = ucfirst($routeParts[1]);
+        if (isset($routeParts[$part])) {
+            $ret[] = ucfirst($routeParts[$part]);
         }
         return $ret;
     }
@@ -284,5 +287,37 @@ class Swagger
                 $ret = 'Delete existing ' . $entityName . ' resource';
         }
         return $ret;
+    }
+
+    /**
+     * @param Route $route route
+     *
+     * @return array
+     */
+    protected function getSchemaRoutes(Route $route)
+    {
+        $path = $route->getPath();
+
+        $describedService = substr(substr($path, 7), 0, substr($path, -5) == '/item' ? -7 : -10);
+
+        $tags = array_merge(['Schema'], $this->getPathTags($route, 2));
+
+        return [
+            $path,
+            'get',
+            [
+                'produces' => [
+                    'application/json',
+                ],
+                'responses' => [
+                    200 => [
+                        'description' => 'JSON-Schema for ' . $describedService . '.',
+                        'schema' => ['$ref' => '#/definitions/SchemaModel'],
+                    ]
+                ],
+                'tags' => $tags,
+                'summary' => 'Get schema information for ' . $describedService . ' endpoints.',
+            ]
+        ];
     }
 }
