@@ -32,7 +32,6 @@ class ArrayObjectHandler
         array $type,
         Context $context
     ) {
-        $type['name'] = 'array';
         return new \ArrayObject($visitor->visitArray($data->getArrayCopy(), $type, $context));
     }
 
@@ -51,7 +50,6 @@ class ArrayObjectHandler
         array $type,
         Context $context
     ) {
-        $type['name'] = 'array';
         return new \ArrayObject($visitor->visitArray($data, $type, $context));
     }
 }

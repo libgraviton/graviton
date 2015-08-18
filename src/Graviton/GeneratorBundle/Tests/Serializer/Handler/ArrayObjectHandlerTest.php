@@ -41,11 +41,7 @@ class ArrayObjectHandlerTest extends \PHPUnit_Framework_TestCase
         $serializationVisitor
             ->expects($this->once())
             ->method('visitArray')
-            ->with(
-                $deserialized->getArrayCopy(),
-                array_merge($type, ['name' => 'array']),
-                $context
-            )
+            ->with($deserialized->getArrayCopy(), $type, $context)
             ->willReturn($serialized);
 
         $this->assertEquals(
@@ -79,11 +75,7 @@ class ArrayObjectHandlerTest extends \PHPUnit_Framework_TestCase
         $deserializationVisitor
             ->expects($this->once())
             ->method('visitArray')
-            ->with(
-                $serialized,
-                array_merge($type, ['name' => 'array']),
-                $context
-            )
+            ->with($serialized, $type, $context)
             ->willReturn($deserialized->getArrayCopy());
 
         $this->assertEquals(
