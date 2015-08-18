@@ -18,10 +18,6 @@ use JsonSchema\RefResolver;
 class SchemaFactory
 {
     /**
-     * @var UriRetrieverServiceInterface
-     */
-    private $uriRetriever;
-    /**
      * @var RefResolver
      */
     private $refResolver;
@@ -29,12 +25,11 @@ class SchemaFactory
     /**
      * Constructor
      *
-     * @param UriRetrieverServiceInterface $uriRetriever URI retriever
+     * @param RefResolver $resolver Ref resolver
      */
-    public function __construct(UriRetrieverServiceInterface $uriRetriever)
+    public function __construct(RefResolver $resolver)
     {
-        $this->uriRetriever = $uriRetriever;
-        $this->refResolver = new RefResolver($this->uriRetriever);
+        $this->refResolver = $resolver;
     }
 
     /**
@@ -45,13 +40,15 @@ class SchemaFactory
      */
     public function createSchema($uri)
     {
-        $prevDepth = RefResolver::$maxDepth;
-        RefResolver::$maxDepth = PHP_INT_MAX;
+        $resolver = $this->refResolver;
 
-        $schema = $this->uriRetriever->retrieve($uri);
-        $this->refResolver->resolve($schema, $uri);
+        $prevDepth = $resolver::$maxDepth;
+        $resolver::$maxDepth = PHP_INT_MAX;
 
-        RefResolver::$maxDepth = $prevDepth;
+        $schema = $resolver->getUriRetriever()->retrieve($uri);
+        $resolver->resolve($schema, $uri);
+
+        $resolver::$maxDepth = $prevDepth;
 
         return $schema;
     }

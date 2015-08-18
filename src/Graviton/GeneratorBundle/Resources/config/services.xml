@@ -42,7 +42,11 @@
         <!-- JSON schema -->
         <service id="graviton_generator.definition.validator.schema.factory"
                 class="%graviton_generator.definition.validator.schema.factory.class%">
-            <argument type="service" id="json_schema.uri_retriever"/>
+            <argument type="service">
+                <service class="JsonSchema\RefResolver">
+                    <argument type="service" id="json_schema.uri_retriever"/>
+                </service>
+            </argument>
         </service>
         <service id="graviton_generator.definition.validator"
                  class="%graviton_generator.definition.validator.class%">
