@@ -6,7 +6,8 @@
 namespace Graviton\GeneratorBundle\Serializer\Handler;
 
 use JMS\Serializer\Context;
-use JMS\Serializer\VisitorInterface;
+use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\JsonSerializationVisitor;
 
 /**
  * ArrayObject handler
@@ -20,14 +21,14 @@ class ArrayObjectHandler
     /**
      * Serialize ArrayObject
      *
-     * @param VisitorInterface $visitor Visitor
-     * @param \ArrayObject     $data    Data
-     * @param array            $type    Type
-     * @param Context          $context Context
+     * @param JsonSerializationVisitor $visitor Visitor
+     * @param \ArrayObject             $data    Data
+     * @param array                    $type    Type
+     * @param Context                  $context Context
      * @return \ArrayObject
      */
     public function serializeArrayObjectToJson(
-        VisitorInterface $visitor,
+        JsonSerializationVisitor $visitor,
         \ArrayObject $data,
         array $type,
         Context $context
@@ -38,14 +39,14 @@ class ArrayObjectHandler
     /**
      * Deserialize ArrayObject
      *
-     * @param VisitorInterface $visitor Visitor
-     * @param array            $data    Data
-     * @param array            $type    Type
-     * @param Context          $context Context
+     * @param JsonDeserializationVisitor $visitor Visitor
+     * @param array                      $data    Data
+     * @param array                      $type    Type
+     * @param Context                    $context Context
      * @return \ArrayObject
      */
     public function deserializeArrayObjectFromJson(
-        VisitorInterface $visitor,
+        JsonDeserializationVisitor $visitor,
         array $data,
         array $type,
         Context $context
