@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
+use Graviton\RestBundle\Model\RecordOriginInterface;
+use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
@@ -151,6 +153,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
+        $this->checkIfOriginRecord($entity);
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
         $manager->flush();
@@ -179,6 +182,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function updateRecord($documentId, $entity)
     {
         $manager = $this->repository->getDocumentManager();
+        // In both cases the document attribute named originRecord must not be 'core'
+        $this->checkIfOriginRecord($entity);
+        $this->checkIfOriginRecord($this->find($documentId));
         $entity = $manager->merge($entity);
         $manager->flush();
 
@@ -199,6 +205,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $return = $entity;
         if ($entity) {
+            $this->checkIfOriginRecord($entity);
             $manager->remove($entity);
             $manager->flush();
             $return = null;
@@ -251,5 +258,22 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $this->visitor->setBuilder($queryBuilder);
         return $this->visitor->visit($query);
+    }
+
+    protected function checkIfOriginRecord($record)
+    {
+        if ($record instanceof RecordOriginInterface
+            && $this->container->hasParameter('graviton.not_modifiable.origin.records')
+            && !$record->isRecordOriginModifiable()
+        ) {
+            $values = $this->container->getParameter('graviton.not_modifiable.origin.records');
+            $originValue = strtolower(trim($record->getRecordOrigin()));
+
+            if (in_array($originValue, $values)) {
+                $msg = sprintf("Must not be one of the following keywords: %s", implode(', ', $values));
+
+                throw new RecordOriginModifiedException($msg);
+            }
+        }
     }
 }
