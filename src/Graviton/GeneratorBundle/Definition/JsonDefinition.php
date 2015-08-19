@@ -372,10 +372,10 @@ class JsonDefinition
      */
     public function isRecordOriginModifiable()
     {
-        if ($this->def->getService() !== null || !is_object($this->def->getService())) {
-            return null;
+        if ($this->def->getService() !== null && is_object($this->def->getService())) {
+            return $this->def->getService()->getRecordOriginModifiable();
         }
 
-        return $this->def->getService()->getRecordOriginModifiable();
+        return null;
     }
 }
