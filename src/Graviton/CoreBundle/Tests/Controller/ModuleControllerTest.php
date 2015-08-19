@@ -52,23 +52,23 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithPaging()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?limit(1)');
+        $client->request('GET', '/core/module/?limit(1)');
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1)>; rel="self"',
+            '<http://localhost/core/module/?limit(1)>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/module/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1%2C5)>; rel="last"',
+            '<http://localhost/core/module/?limit(1%2C5)>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -85,7 +85,7 @@ class ModuleControllerTest extends RestTestCase
         // reset fixtures since we already have some from setUp
         $this->loadFixtures(array(), null, 'doctrine_mongodb');
         $client = static::createRestClient();
-        $client->request('GET', '/core/module');
+        $client->request('GET', '/core/module/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -157,7 +157,7 @@ class ModuleControllerTest extends RestTestCase
         );
 
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq('.rawurlencode($ref).',' . rawurlencode($url).')');
+        $client->request('GET', '/core/module/?eq('.rawurlencode($ref).',' . rawurlencode($url).')');
         $results = $client->getResults();
         $this->assertCount($count, $results);
     }
@@ -218,7 +218,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->order = 50;
 
         $client = static::createRestClient();
-        $client->post('/core/module', $testModule);
+        $client->post('/core/module/', $testModule);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
 
@@ -275,7 +275,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -327,7 +327,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -356,7 +356,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
@@ -400,7 +400,7 @@ class ModuleControllerTest extends RestTestCase
     public function testExtReferenceValidation()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];

@@ -69,7 +69,7 @@ class MainControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app>; rel="apps"; type="application/json"',
+            '<http://localhost/core/app/>; rel="apps"; type="application/json"',
             $response->headers->get('Link')
         );
     }

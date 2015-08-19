@@ -29,7 +29,7 @@ class LanguageControllerTest extends RestTestCase
     public function testFindAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/language');
+        $client->request('GET', '/i18n/language/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -63,7 +63,7 @@ class LanguageControllerTest extends RestTestCase
         );
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/language');
+        $client->request('GET', '/i18n/language/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -97,7 +97,7 @@ class LanguageControllerTest extends RestTestCase
         $newLang->name->en = 'German';
 
         $client = static::createRestClient();
-        $client->post('/i18n/language', $newLang);
+        $client->post('/i18n/language/', $newLang);
         $response = $client->getResponse();
 
         $client = static::createRestClient();
@@ -110,7 +110,7 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/language', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/i18n/language/', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
         $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
 
         $client = static::createRestClient();
@@ -148,7 +148,7 @@ class LanguageControllerTest extends RestTestCase
         $newLang->name->en = 'Spanish';
 
         $client = static::createRestClient();
-        $client->post('/i18n/language', $newLang);
+        $client->post('/i18n/language/', $newLang);
         $response = $client->getResponse();
 
         $client = static::createRestClient();
