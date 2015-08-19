@@ -29,10 +29,9 @@ class RecordOriginExceptionListener extends RestExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof RecordOriginModifiedException) {
-
             $content = array(
                 "propertyPath" => "data.recordOrigin",
-                "message"      => $exception->getMessage()
+                "message"      => $exception->getMessage(),
             );
 
             // Set status code and content

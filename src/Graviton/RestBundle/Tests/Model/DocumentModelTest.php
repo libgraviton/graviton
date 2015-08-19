@@ -17,15 +17,26 @@ use lapistano\ProxyObject\ProxyBuilder;
 class DocumentModelTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var ContainerInterface
+     */
     private $containerMock;
 
+    /**
+     * @var DocumentModel
+     */
     private $documentModel;
 
+    /**
+     * @var RecordOriginInterface
+     */
     private $testRecord;
 
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
+     *
+     * @return void
      */
     protected function setUp()
     {
@@ -46,11 +57,18 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * CheckIfOriginRecord test
+     *
+     * @param bool   $hasContainerParam exist container parameter
+     * @param string $retContainerParam container parameter
+     * @param bool   $isModifiable      can record be modified
+     * @param string $recordOrigin      record origin
+     *
+     * @return void
      *
      * @dataProvider dataProvider
-     * @return void
      */
-    public function testCheckIfOriginRecord($hasContainerParam, $retContainerParam, $isModifiable, $originRecord)
+    public function testCheckIfOriginRecord($hasContainerParam, $retContainerParam, $isModifiable, $recordOrigin)
     {
         $this->containerMock
             ->expects($this->once())
@@ -70,7 +88,7 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
         $this->testRecord
             ->expects($this->any())
             ->method("getRecordOrigin")
-            ->willReturn($originRecord);
+            ->willReturn($recordOrigin);
 
 
         $this->documentModel->container = $this->containerMock;
@@ -79,9 +97,11 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * CheckIfOriginRecordFailure test
+     *
+     * @return void
      *
      * @expectedException Graviton\ExceptionBundle\Exception\RecordOriginModifiedException
-     * @return void
      */
     public function testCheckIfOriginRecordFailure()
     {

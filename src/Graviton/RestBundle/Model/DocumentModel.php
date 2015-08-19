@@ -260,6 +260,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
         return $this->visitor->visit($query);
     }
 
+    /**
+     * Checks the recordOrigin attribute of a record and will throw an exception if value is not allowed
+     *
+     * @param Object $record record
+     *
+     * @return void
+     */
     protected function checkIfOriginRecord($record)
     {
         if ($record instanceof RecordOriginInterface
