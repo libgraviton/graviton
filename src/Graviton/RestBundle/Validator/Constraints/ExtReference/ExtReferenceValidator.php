@@ -55,10 +55,10 @@ class ExtReferenceValidator extends ConstraintValidator
         }
 
         try {
-            $extref = $this->converter->getDbRef($value);
+            $extref = (object) $this->converter->getDbRef($value);
             if (is_array($constraint->allowedCollections) &&
                 !in_array('*', $constraint->allowedCollections, true) &&
-                !in_array($extref['$ref'], $constraint->allowedCollections, true)
+                !in_array($extref->{'$ref'}, $constraint->allowedCollections, true)
             ) {
                 $this->context->addViolation($constraint->notAllowedMessage, ['%url%' => $value]);
             }

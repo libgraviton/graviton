@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Functional test for /hans/showcase
@@ -33,6 +34,50 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function setUp()
     {
+    }
+
+    /**
+     * checks empty objects
+     *
+     * @return void
+     */
+    public function testGetEmptyObject()
+    {
+        $showCase = (object) [
+            'anotherInt'            => 100,
+            'aBoolean'              => true,
+            'testField'             => ['en' => 'test'],
+            'someOtherField'        => ['en' => 'other'],
+            'contactCode'           => [
+                'someDate'          => '2015-06-07T06:30:00+0000',
+                'text'              => ['en' => 'text'],
+            ],
+            'contact'               => [
+                'type'      => 'type',
+                'value'     => 'value',
+                'protocol'  => 'protocol',
+                'uri'       => 'protocol:value',
+            ],
+
+            'nestedApps'            => [],
+            'unstructuredObject'    => (object) [],
+        ];
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $showCase);
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+        $this->assertNull($client->getResults());
+
+        $url = $client->getResponse()->headers->get('Location');
+        $this->assertNotNull($url);
+
+        $client = static::createRestClient();
+        $client->request('GET', $url);
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $created = $client->getResults();
+        $this->assertEquals($showCase->nestedApps, $created->nestedApps);
+        $this->assertEquals($showCase->unstructuredObject, $created->unstructuredObject);
     }
 
     /**
@@ -193,7 +238,7 @@ class ShowcaseControllerTest extends RestTestCase
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
 
         $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase?q='.$rqlSelect);
+        $client->request('GET', '/hans/showcase?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
     }
 

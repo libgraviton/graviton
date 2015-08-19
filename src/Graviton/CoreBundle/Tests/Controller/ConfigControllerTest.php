@@ -47,8 +47,8 @@ class ConfigControllerTest extends RestTestCase
     public function testLinkHeaderEncodingDash($expression, $resultCount)
     {
         $client = static::createRestClient();
-        $_SERVER['QUERY_STRING'] = 'q=' . $expression;
-        $client->request('GET', '/core/config?q='.$expression);
+        $_SERVER['QUERY_STRING'] = $expression;
+        $client->request('GET', '/core/config?'.$expression);
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
