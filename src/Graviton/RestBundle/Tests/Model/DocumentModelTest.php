@@ -1,15 +1,19 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: samuel
- * Date: 17.08.15
- * Time: 14:12
+ * DocumentModelTest class
  */
 
 namespace Graviton\RestBundle\Tests\Model;
 
 use lapistano\ProxyObject\ProxyBuilder;
 
+/**
+ * DocumentModel test
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class DocumentModelTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -29,8 +33,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->setMethods(["hasParameter", "getParameter"])
             ->getMockForAbstractClass();
 
-        $this->testRecord = $this->getMockBuilder("\Graviton\RestBundle\Model\OriginRecordInterface")
-            ->setMethods(["isOriginRecordModifiable", "getOriginRecord"])
+        $this->testRecord = $this->getMockBuilder("\Graviton\RestBundle\Model\RecordOriginInterface")
+            ->setMethods(["isRecordOriginModifiable", "getRecordOrigin"])
             ->getMockForAbstractClass();
 
         $proxyBuilder = new ProxyBuilder("\Graviton\RestBundle\Model\DocumentModel");
@@ -61,11 +65,11 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
 
         $this->testRecord
             ->expects($this->any())
-            ->method("isOriginRecordModifiable")
+            ->method("isRecordOriginModifiable")
             ->willReturn($isModifiable);
         $this->testRecord
             ->expects($this->any())
-            ->method("getOriginRecord")
+            ->method("getRecordOrigin")
             ->willReturn($originRecord);
 
 
@@ -73,9 +77,10 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
 
         $this->documentModel->checkIfOriginRecord($this->testRecord);
     }
+
     /**
      *
-     * @expectedException Graviton\ExceptionBundle\Exception\RestOriginRecordModifiedException
+     * @expectedException Graviton\ExceptionBundle\Exception\RecordOriginModifiedException
      * @return void
      */
     public function testCheckIfOriginRecordFailure()
@@ -93,17 +98,22 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
 
         $this->testRecord
             ->expects($this->once())
-            ->method("isOriginRecordModifiable")
+            ->method("isRecordOriginModifiable")
             ->willReturn(false);
         $this->testRecord
             ->expects($this->once())
-            ->method("getOriginRecord")
+            ->method("getRecordOrigin")
             ->willReturn('core');
 
         $this->documentModel->container = $this->containerMock;
         $this->documentModel->checkIfOriginRecord($this->testRecord);
     }
 
+    /**
+     * supplies different data
+     *
+     * @return array
+     */
     public function dataProvider()
     {
         return array(
@@ -111,7 +121,7 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             array(true, array('core'), false, 'notCore'),
             array(true, array('core'), true, 'notCore'),
             array(true, array('core'), true, null),
-            array(true, array('core', 'otherCore'), true, 'notCore')
+            array(true, array('core', 'otherCore'), true, 'notCore'),
         );
     }
 }
