@@ -235,31 +235,6 @@ class Swagger
                     'items' => array('$ref' => '#/definitions/' . $entityClassName)
                 )
             );
-
-            $thisPath['parameters'][] = array(
-                'name' => 'q',
-                'in' => 'query',
-                'description' => 'Optional RQL filter',
-                'required' => false,
-                'type' => 'string'
-            );
-            // paging params
-            $thisPath['parameters'][] = array(
-                'name' => 'page',
-                'in' => 'query',
-                'description' => '(Paging) Page to fetch',
-                'required' => false,
-                'default' => 1,
-                'type' => 'integer'
-            );
-            $thisPath['parameters'][] = array(
-                'name' => 'perPage',
-                'in' => 'query',
-                'description' => '(Paging) Items per page',
-                'required' => false,
-                'default' => 10,
-                'type' => 'integer'
-            );
         }
 
         return $thisPath;

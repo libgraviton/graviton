@@ -33,6 +33,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     public function __construct()
     {
         Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
+        Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
     }
 
     /**

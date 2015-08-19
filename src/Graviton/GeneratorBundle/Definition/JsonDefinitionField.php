@@ -21,7 +21,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DECIMAL => 'float',
         self::TYPE_DATETIME => 'date',
         self::TYPE_BOOLEAN => 'boolean',
-        self::TYPE_OBJECT => 'object',
+        self::TYPE_OBJECT => 'hash',
         self::TYPE_EXTREF => 'extref',
     ];
 
@@ -33,7 +33,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DECIMAL => 'double',
         self::TYPE_DATETIME => 'DateTime',
         self::TYPE_BOOLEAN => 'boolean',
-        self::TYPE_OBJECT => 'array',
+        self::TYPE_OBJECT => 'Graviton\DocumentBundle\Entity\Hash',
         self::TYPE_EXTREF => 'string',
     ];
 
