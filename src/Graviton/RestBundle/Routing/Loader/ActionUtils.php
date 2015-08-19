@@ -55,7 +55,7 @@ class ActionUtils
         );
 
         foreach ($parameters as $paramName => $paramPattern) {
-            $pattern .= '/{' . $paramName . '}';
+            $pattern .= '{' . $paramName . '}';
             $requirements[$paramName] = $paramPattern;
         }
 
@@ -85,7 +85,7 @@ class ActionUtils
             $entity = array_pop($parts);
             $module = $parts[1];
 
-            $base = '/' . $module . '/' . $entity;
+            $base = '/' . $module . '/' . $entity . '/';
         }
 
         return $base;
