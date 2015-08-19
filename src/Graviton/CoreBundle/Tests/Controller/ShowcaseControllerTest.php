@@ -213,18 +213,10 @@ class ShowcaseControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
-        $initial = json_decode(
-            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-initial.json'),
-            false
-        );
         $filtred = json_decode(
             file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-filtred.json'),
             false
         );
-
-        $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase');
-        $this->assertEquals($initial, $client->getResults());
 
         $fields = [
             'someFloatyDouble',

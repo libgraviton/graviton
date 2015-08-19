@@ -12,6 +12,28 @@
     "uri": "mailto:joe@example.com"
   },
   "contacts": [],
+  "deepNestedArray": {
+    "very": {
+      "deep": {
+        "glorious": []
+      }
+    }
+  },
+  "deepNestedProperty": {
+    "thisis": {
+      "one": {
+        "goes": {
+          "very": {
+            "deep": {
+              "down": {
+                "thats": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "nestedCustomers": [],
   "contactCode": {
     "someDate": "1984-05-01T00:00:00+0000",
