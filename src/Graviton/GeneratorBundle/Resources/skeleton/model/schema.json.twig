@@ -36,10 +36,12 @@
     "id": {
       "title": "ID",
       "description": "Unique identifier"
+{% if recordOriginModifiable is not null %}
     },
     "recordOrigin": {
       "title": "record origin",
-      "description": "test"
+      "description": "A small string like 'core' to determine the record origin"
+{% endif %}
     }
   },
   "required": {{ requiredFields|json_encode() }}

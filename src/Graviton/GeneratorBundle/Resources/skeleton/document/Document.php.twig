@@ -16,7 +16,7 @@ use JMS\Serializer\DeserializationContext;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class {{ document }} implements TranslatableDocumentInterface, {% include 'document/RecordOriginInterfaceDefinition.php.twig' %}
+class {{ document }} implements TranslatableDocumentInterface{% include 'document/RecordOriginInterfaceDefinition.php.twig' %}
 {
     /**
      * @var MongoId $id
@@ -28,7 +28,7 @@ class {{ document }} implements TranslatableDocumentInterface, {% include 'docum
      */
     protected $deletedDate;
 
-{% if recordOriginModifiable is defined %}
+{% if recordOriginModifiable is not null %}
     /**
      * @var string $recordOrigin
      */
@@ -91,7 +91,7 @@ class {{ document }} implements TranslatableDocumentInterface, {% include 'docum
     return $this->deletedDate;
     }
 
-{% if recordOriginModifiable is defined %}
+{% if recordOriginModifiable is not null %}
 
     /**
      * Can record origin be modified
@@ -100,7 +100,7 @@ class {{ document }} implements TranslatableDocumentInterface, {% include 'docum
      */
     public function isRecordOriginModifiable()
     {
-        return {{ recordOriginModifiable }} ;
+        return {{ recordOriginModifiable }};
     }
 
     /**
