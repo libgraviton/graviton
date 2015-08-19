@@ -20,7 +20,7 @@
                   type="integer"
                   serialized-name="fixtureOrder"/>
         <property name="fixtures"
-                  type="array&lt;array&gt;"
+                  type="array&lt;ArrayObject&gt;"
                   serialized-name="fixtures"/>
     </class>
 </serializer>
