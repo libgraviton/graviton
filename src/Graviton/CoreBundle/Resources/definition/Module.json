@@ -24,11 +24,8 @@
             "description" : {
               "en": "..."
             },
-            "gui": {
-              "$ref": "/core/product/1"
-            },
             "service": {
-              "$ref": "/core/product/2"
+              "$ref": "/core/product/1"
             }
           }
         ]
@@ -52,11 +49,8 @@
             "description" : {
               "en": "..."
             },
-            "gui": {
-              "$ref": "/core/product/3"
-            },
             "service": {
-              "$ref": "/core/product/4"
+              "$ref": "/core/product/2"
             }
           },
           {
@@ -66,11 +60,8 @@
             "description" : {
               "en": "..."
             },
-            "gui": {
-              "$ref": "/core/product/5"
-            },
             "service": {
-              "$ref": "/core/product/6"
+              "$ref": "/core/product/3"
             }
           }
         ]
@@ -185,22 +176,12 @@
         "translatable": true
       },
       {
-        "name": "service.0.gui.ref",
-        "type": "extref",
-        "title": "Service GUI Link",
-        "description": "Link to GUI endpoint used for displaying this service.",
-        "exposeAs": "$ref",
-        "required": true,
-        "collection": ["*"]
-      },
-      {
         "name": "service.0.service.ref",
-        "type": "extref",
+        "type": "varchar",
         "title": "Service Link",
         "description": "Link to service referenced by this module.",
         "exposeAs": "$ref",
-        "required": true,
-        "collection": ["*"]
+        "required": true
       }
     ]
   }
