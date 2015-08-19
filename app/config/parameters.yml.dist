@@ -8,6 +8,8 @@ parameters:
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 
+    graviton.not_modifiable.origin.records: ['core']
+
     graviton.security.oauth.github.client_id: ~
     graviton.security.oauth.github.client_secret: ~
 
