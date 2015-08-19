@@ -78,7 +78,7 @@ class ActionUtils
     private static function getBaseFromService($service, $serviceConfig)
     {
         if (isset($serviceConfig[0]['router-base']) && strlen($serviceConfig[0]['router-base']) > 0) {
-            $base = $serviceConfig[0]['router-base'];
+            $base = $serviceConfig[0]['router-base'] . '/';
         } else {
             $parts = explode('.', $service);
 
@@ -174,7 +174,7 @@ class ActionUtils
     public static function getCanonicalSchemaRoute($service, $serviceConfig, $type = 'item', $option = false)
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
-        $pattern = '/schema' . $pattern . '/' . $type;
+        $pattern = '/schema' . $pattern . $type;
 
         $action = 'schemaAction';
         $method = 'GET';
