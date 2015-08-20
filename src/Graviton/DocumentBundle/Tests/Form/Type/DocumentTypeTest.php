@@ -17,11 +17,6 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    private $classMap;
-
-    /**
-     * @var array
-     */
     private $fieldMap;
 
     /**
@@ -31,10 +26,6 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->classMap = [
-            'graviton.core.controller.app' => 'Graviton\CoreBundle\Document\App',
-            'Graviton\CoreBundle\Document\App' => 'Graviton\CoreBundle\Document\App',
-        ];
         $this->fieldMap = [
             'Graviton\CoreBundle\Document\App' => [
                 ['title', 'titleExposed', 'translatable', []],
@@ -53,7 +44,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName($class, $name)
     {
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
         $this->assertEquals($name, $sut->getName());
@@ -72,9 +63,9 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 
         $resolverDouble->expects($this->once())
             ->method('setDefaults')
-            ->with(['data_class' => $this->classMap[$class]]);
+            ->with(['data_class' => $class]);
 
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
         $sut->configureOptions($resolverDouble);
@@ -100,7 +91,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 ->method('add')
                 ->with($field['name'], $field['type'], $field['options']);
         }
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
         $sut->buildForm($builderDouble, []);
@@ -115,22 +106,6 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         return [
             'build from classname' => [
                 'Graviton\CoreBundle\Document\App',
-                'graviton_corebundle_document_app',
-                [
-                    [
-                        'name' => 'titleExposed',
-                        'type' => 'translatable', # alias to i18n form service
-                        'options' => ['property_path' => 'title'],
-                    ],
-                    [
-                        'name' => 'showInMenu',
-                        'type' => 'checkbox',
-                        'options' => [],
-                    ],
-                ],
-            ],
-            'build from service id' => [
-                'graviton.core.controller.app',
                 'graviton_corebundle_document_app',
                 [
                     [

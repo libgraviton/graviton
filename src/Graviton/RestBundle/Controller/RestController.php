@@ -629,9 +629,8 @@ class RestController
      */
     private function getForm(Request $request)
     {
-        list($service) = explode(':', $request->attributes->get('_controller'));
-        $this->formType->initialize($service);
-        return $this->formFactory->create($this->formType, null, array('method'=> $request->getMethod()));
+        $this->formType->initialize($this->getModel()->getEntityClass());
+        return $this->formFactory->create($this->formType, null, ['method' => $request->getMethod()]);
     }
 
     /**

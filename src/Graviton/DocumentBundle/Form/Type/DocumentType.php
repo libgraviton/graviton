@@ -20,41 +20,30 @@ class DocumentType extends AbstractType
      * @var string
      */
     private $dataClass;
-
-    /**
-     * @var array
-     */
-    private $classMap;
-
     /**
      * @var array
      */
     private $fieldMap;
 
     /**
-     * @param array $classMap array for mappings from service id et al to classname
      * @param array $fieldMap array to map document class names to fields
      */
-    public function __construct(array $classMap, array $fieldMap)
+    public function __construct(array $fieldMap)
     {
-        $this->classMap = $classMap;
         $this->fieldMap = $fieldMap;
     }
 
     /**
-     * @param string $id identifier of service, maybe be a classname, serviceId
-     *
+     * @param string $documentClass Document class
      * @return void
      */
-    public function initialize($id)
+    public function initialize($documentClass)
     {
-        if (is_null($id)) {
-            throw new \RuntimeException(__CLASS__.'::initialize called with NULL id');
+        if (!isset($this->fieldMap[$documentClass])) {
+            throw new \RuntimeException(sprintf('Could not find form config for document %s', $documentClass));
         }
-        if (!array_key_exists($id, $this->classMap)) {
-            throw new \RuntimeException(sprintf('Could not map service %s to class for form generator', $id));
-        }
-        $this->dataClass = $this->classMap[$id];
+
+        $this->dataClass = $documentClass;
     }
 
     /**
@@ -65,10 +54,6 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (!isset($this->fieldMap[$this->dataClass])) {
-            throw new \RuntimeException(sprintf('Could not find form config for document %s', $this->dataClass));
-        }
-
         foreach ($this->fieldMap[$this->dataClass] as $field) {
             list($fieldName, $formName, $type, $options)  = $field;
             if ($fieldName !== $formName) {
