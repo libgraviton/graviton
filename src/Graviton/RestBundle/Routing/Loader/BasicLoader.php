@@ -144,7 +144,7 @@ class BasicLoader extends Loader
         $this->routes->add($resource . '.put', $actionPut);
 
         $actionPostNoSlash = ActionUtils::getRoutePost($service, $serviceConfig);
-        $actionPostNoSlash->setPath(substr($actionPostNoSlash->getPath(), 0 , -1));
+        $actionPostNoSlash->setPath(substr($actionPostNoSlash->getPath(), 0, -1));
         $this->routes->add($resource . '.postNoSlash', $actionPostNoSlash);
 
         $actionDelete = ActionUtils::getRouteDelete($service, $serviceConfig);
