@@ -87,7 +87,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
                 ->name('*.xml')
         );
 
-        $container->addCompilerPass(new ExtRefMappingCompilerPass);
+        $container->addCompilerPass(new ExtRefMappingCompilerPass());
         $container->addCompilerPass(new ExtRefFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormMapCompilerPass($documentMap));
