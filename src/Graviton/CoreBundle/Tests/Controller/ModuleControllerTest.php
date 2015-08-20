@@ -72,7 +72,7 @@ class ModuleControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $client->getResults()[0]->app->{'$ref'});
     }
 
     /**
