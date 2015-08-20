@@ -28,14 +28,19 @@ class FormDataMapper implements FormDataMapperInterface
     }
 
     /**
-     * Convert document to form data
+     * Convert request to form data
      *
-     * @param object $document  Document from request
+     * @param string $request   Request data
      * @param string $className Document class
      * @return array
      */
-    public function convertToFormData($document, $className)
+    public function convertToFormData($request, $className)
     {
+        $document = json_decode($request);
+        if (!is_object($document)) {
+            return [];
+        }
+
         if (isset($this->mapping[$className])) {
             foreach ($this->mapping[$className] as $path => $name) {
                 $this->mapField($document, $path, $name);

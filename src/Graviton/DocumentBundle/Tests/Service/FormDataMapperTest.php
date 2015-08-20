@@ -5,10 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\Service;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverter;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RouterInterface;
+use Graviton\DocumentBundle\Service\FormDataMapper;
 
 /**
  * FormDataMapper test
@@ -19,183 +16,58 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class FormDataMapperTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $router;
-    /**
-     * @var RouteCollection|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $collection;
-    /**
-     * @var Route[]
-     */
-    private $routes;
-
-    /**
-     * setup type we want to test
-     *
-     * @return void
-     */
-    public function setUp()
+    public function testConvertToFormData()
     {
-        $this->router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
-            ->disableOriginalConstructor()
-            ->setMethods(['getRouteCollection', 'generate'])
-            ->getMock();
+        $fieldMap = [
+            '$field'                => '_field_',
 
-        $this->collection = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\RouteCollection')
-            ->setMethods(['all'])
-            ->getMock();
+            '$hash.$field'          => '_hash_field_',
+            '$hash'                 => '_hash_',
 
-        $this->routes = [
-            new Route(
-                '/core/app/{id}',
-                [
-                    '_controller' => 'graviton.core.controller.app:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
-            new Route(
-                '/core/app',
-                [
-                    '_controller' => 'graviton.core.controller.app.appAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                ]
-            ),
-            new Route(
-                '/i18n/language/{id}',
-                [
-                    '_controller' => 'graviton.i18n.controller.language:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
-            new Route(
-                '/hans/showcase/{id}',
-                [
-                    '_controller' => 'gravitondyn.showcase.controller.showcase:getAction',
-                    '_format' => '~'
-                ],
-                [
-                    '_method' => 'GET',
-                    'id' => '[a-zA-Z0-9\-_\/]+',
-                ]
-            ),
+            '$arrayhash.0.$field'   => '_arrayhash_field_',
+            '$arrayhash'            => '_arrayhash_',
         ];
-    }
+        $requestData = (object) [
+            '$field'        => 1,
+            'abc'           => 11,
+            '$hash'         => (object) [
+                '$field'    => 2,
+                'def'       => 22,
+            ],
+            '$arrayhash'    => [
+                (object) [
+                    '$field' => 3,
+                    'ghi'    => 33,
+                ],
+                (object) [
+                    '$field' => 4,
+                    'ghi'    => 44,
+                ],
+            ],
+        ];
+        $formData = [
+            '_field_'       => 1,
+            'abc'           => 11,
+            '_hash_'        => [
+                '_hash_field_' => 2,
+                'def'          => 22,
+            ],
+            '_arrayhash_'   => [
+                [
+                    '_arrayhash_field_' => 3,
+                    'ghi'               => 33,
+                ],
+                [
+                    '_arrayhash_field_' => 4,
+                    'ghi'               => 44,
+                ],
+            ],
+        ];
 
-    /**
-     * verify that we get a mongodbref
-     *
-     * @dataProvider getDbRefProvider
-     *
-     * @param string       $url      external link to convert
-     * @param array|object $expected expected mogodb ref
-     *
-     * @return void
-     */
-    public function testGetDbRef($url, $expected)
-    {
-        $this->router
-            ->expects($this->once())
-            ->method('getRouteCollection')
-            ->will($this->returnValue($this->collection));
-
-        $this->collection
-            ->expects($this->once())
-            ->method('all')
-            ->will($this->returnValue($this->routes));
-
-        $converter = new ExtReferenceConverter(
-            $this->router,
-            [
-                'App' => 'graviton.core.rest.app.get',
-                'Language' => 'graviton.i18n.rest.language.get',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
-            ]
+        $formDataMapper = new FormDataMapper(['A' => $fieldMap]);
+        $this->assertEquals(
+            $formData,
+            $formDataMapper->convertToFormData(json_encode($requestData), 'A')
         );
-        $this->assertEquals($expected, $converter->getDbRef($url));
-    }
-
-    /**
-     * @return array
-     */
-    public function getDbRefProvider()
-    {
-        return [
-            [
-                'http://localhost/core/app/test',
-                \MongoDBRef::create('App', 'test'),
-            ],
-            [
-                '/core/app/test',
-                \MongoDBRef::create('App', 'test'),
-            ],
-            [
-                'http://localhost/hans/showcase/blah',
-                \MongoDBRef::create('ShowCase', 'blah'),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider getUrlProvider
-     *
-     * @param array|object $ref     reference as from mongo
-     * @param string       $routeId name of route that should get loaded
-     * @param string       $url     url we expect to result from the conversion
-     *
-     * @return void
-     */
-    public function testGetUrl($ref, $routeId, $url)
-    {
-        $this->router
-            ->expects($this->once())
-            ->method('generate')
-            ->with(
-                $routeId,
-                ['id' => is_array($ref) ? $ref['$id'] : $ref->{'$id'}]
-            )
-            ->will($this->returnValue($url));
-
-        $converter = new ExtReferenceConverter(
-            $this->router,
-            [
-                'App' => 'graviton.core.rest.app.get',
-                'Language' => 'graviton.i18n.rest.language.get',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
-            ]
-        );
-        $this->assertEquals($url, $converter->getUrl($ref));
-    }
-
-    /**
-     * @return array
-     */
-    public function getUrlProvider()
-    {
-        return [
-            [
-                \MongoDBRef::create('App', 'test'),
-                'graviton.core.rest.app.get',
-                'http://localhost/core/app/test',
-            ],
-            [
-                \MongoDBRef::create('Language', 'en'),
-                'graviton.i18n.rest.language.get',
-                'http://localhost/i18n/language/en',
-            ],
-        ];
     }
 }

@@ -642,8 +642,10 @@ class RestController
      */
     private function checkForm(FormInterface $form, Request $request)
     {
-        $document = json_decode($request->getContent());
-        $document = $this->formDataMapper->convertToFormData($document, $this->getModel()->getEntityClass());
+        $document = $this->formDataMapper->convertToFormData(
+            $request->getContent(),
+            $this->getModel()->getEntityClass()
+        );
         $form->submit($document, true);
 
         if (!$form->isValid()) {

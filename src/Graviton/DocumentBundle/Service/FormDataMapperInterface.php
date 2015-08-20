@@ -13,11 +13,11 @@ namespace Graviton\DocumentBundle\Service;
 interface FormDataMapperInterface
 {
     /**
-     * Convert document to form data
+     * Convert request to form data
      *
-     * @param object $document  Document from request
+     * @param string $request   Request data
      * @param string $className Document class
      * @return array
      */
-    public function convertToFormData($document, $className);
+    public function convertToFormData($request, $className);
 }
