@@ -55,7 +55,7 @@ class AppControllerTest extends RestTestCase
     public function testFindAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/app');
+        $client->request('GET', '/core/app/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -75,7 +75,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(1, $results[1]->order);
 
         $this->assertContains(
-            '<http://localhost/core/app>; rel="self"',
+            '<http://localhost/core/app/>; rel="self"',
             $response->headers->get('Link')
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -90,24 +90,24 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $_SERVER['QUERY_STRING'] = 'eq(showInMenu,true)&limit(1)';
-        $client->request('GET', '/core/app?eq(showInMenu,true)&limit(1)');
+        $client->request('GET', '/core/app/?eq(showInMenu,true)&limit(1)');
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -122,41 +122,41 @@ class AppControllerTest extends RestTestCase
     {
         // does limit work?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?limit(1)');
+        $client->request('GET', '/core/app/?limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1)>; rel="self"',
+            '<http://localhost/core/app/?limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
         // "page" override - rql before get
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?limit(1,1)');
+        $client->request('GET', '/core/app/?limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="self"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
     }
@@ -175,12 +175,12 @@ class AppControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?invalidrqlquery');
+        $client->request('GET', '/core/app/?invalidrqlquery');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertContains('syntax error in rql', $client->getResults()->message);
 
         $client = static::createRestClient();
-        $client->request('OPTIONS', '/core/app?invalidrqlquery');
+        $client->request('OPTIONS', '/core/app/?invalidrqlquery');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         foreach (['GET', 'OPTIONS'] as $method) {
@@ -198,7 +198,7 @@ class AppControllerTest extends RestTestCase
         }
 
         $client = static::createRestClient();
-        $client->post('/core/app?invalidrqlquery', $appData);
+        $client->post('/core/app/?invalidrqlquery', $appData);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
 
         $client = static::createRestClient();
@@ -220,7 +220,7 @@ class AppControllerTest extends RestTestCase
         // reset fixtures since we already have some from setUp
         $this->loadFixtures(array(), null, 'doctrine_mongodb');
         $client = static::createRestClient();
-        $client->request('GET', '/core/app');
+        $client->request('GET', '/core/app/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -268,13 +268,13 @@ class AppControllerTest extends RestTestCase
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
-        $client->post('/core/app', $testApp);
+        $client->post('/core/app/', $testApp);
         $response = $client->getResponse();
         $results = $client->getResults();
 
         // we sent a location header so we don't want a body
         $this->assertNull($results);
-        $this->assertContains('/core/app', $response->headers->get('Location'));
+        $this->assertContains('/core/app/', $response->headers->get('Location'));
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
@@ -300,7 +300,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // send nothing really..
-        $client->post('/core/app', "", array(), array(), array(), false);
+        $client->post('/core/app/', "", array(), array(), array(), false);
 
         $response = $client->getResponse();
 
@@ -320,7 +320,7 @@ class AppControllerTest extends RestTestCase
     public function testPostNonObjectApp()
     {
         $client = static::createRestClient();
-        $client->post('/core/app', "non-object value");
+        $client->post('/core/app/', "non-object value");
 
         $response = $client->getResponse();
         $this->assertContains('JSON request body must be an object', $response->getContent());
@@ -345,7 +345,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // make sure this is sent as 'raw' input (not json_encoded again)
-        $client->post('/core/app', $input, array(), array(), array(), false);
+        $client->post('/core/app/', $input, array(), array(), array(), false);
 
         $response = $client->getResponse();
 
@@ -616,7 +616,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request(
             'GET',
-            '/core/app?'.$expr,
+            '/core/app/?'.$expr,
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
@@ -652,7 +652,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/app?eq(name)');
+        $client->request('GET', '/core/app/?eq(name)');
 
         $response = $client->getResponse();
         $results = $client->getResults();
