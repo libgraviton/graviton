@@ -7,7 +7,7 @@ namespace Graviton\DocumentBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -98,11 +98,11 @@ class DocumentType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver resolver
+     * @param OptionsResolver $resolver resolver
      *
      * @return void
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => $this->dataClass]);
     }
