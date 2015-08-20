@@ -43,7 +43,7 @@
       "title": "Collection",
       "type": "array",
       "items": {
-        "type": "exref"
+        "type": "string"
       },
       "description": "Array of required field names"
     }
