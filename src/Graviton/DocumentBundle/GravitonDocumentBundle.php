@@ -5,6 +5,8 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
@@ -74,9 +76,20 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/../..')
+                ->path('Resources/config/doctrine')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/../..')
+                ->path('Resources/config/serializer')
+                ->name('*.xml')
+        );
+
         $container->addCompilerPass(new ExtRefMappingCompilerPass);
         $container->addCompilerPass(new ExtRefFieldsCompilerPass);
-        $container->addCompilerPass(new TranslatableFieldsCompilerPass);
+        $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormMapCompilerPass);
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass);
     }
