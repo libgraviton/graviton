@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -13,12 +14,22 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsInterface
+class DocumentFormMapCompilerPass implements CompilerPassInterface
 {
     /**
-     * @see \Graviton\DocumentBundle\DependencyInjection\Compiler\LoadFieldsTrait
+     * @var DocumentMap
      */
-    use LoadFieldsTrait;
+    private $documentMap;
+
+    /**
+     * Constructor
+     *
+     * @param DocumentMap $documentMap Document map
+     */
+    public function __construct(DocumentMap $documentMap)
+    {
+        $this->documentMap = $documentMap;
+    }
 
     /**
      * load services
@@ -27,34 +38,22 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsIn
      *
      * @return void
      */
-    final public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container)
     {
-        $map = [];
-        $gravitonServices = $container->findTaggedServiceIds(
-            'graviton.rest'
-        );
-        foreach ($gravitonServices as $id => $tag) {
+        $map = ['stdclass' => 'stdclass'];
+
+        $services = array_keys($container->findTaggedServiceIds('graviton.rest'));
+        foreach ($services as $id) {
             $service = $container->getDefinition($id);
             $serviceClass = $service->getClass();
-            $classname = $this->getDocumentClassFromControllerClass(
-                $serviceClass
-            );
-            $map[$id] = $classname;
-            $map[$classname] = $classname;
-            $map[$serviceClass] = $classname;
+            $documentClass = $this->getDocumentClassFromControllerClass($serviceClass);
 
-            list($ns, $bundle,, $doc) = explode('.', $id);
-            if (empty($bundle) || empty($doc)) {
-                continue;
-            }
-            if ($bundle == 'core' && $doc == 'main') {
-                continue;
-            }
-            list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
-            $this->loadFields($map, $ns, $bundle, $doc);
+            $map[$id] = $documentClass;
+            $map[$serviceClass] = $documentClass;
+            $map[$documentClass] = $documentClass;
         }
-        if (!isset($map['stdclass'])) {
-            $map['stdclass'] = 'stdclass';
+        foreach ($this->documentMap->getDocuments() as $document) {
+            $map[$document->getClass()] = $document->getClass();
         }
         $container->setParameter('graviton.document.form.type.document.service_map', $map);
     }
@@ -74,47 +73,5 @@ class DocumentFormMapCompilerPass implements CompilerPassInterface, LoadFieldsIn
         }
         $documentClass = str_replace('.controller.', '.document.', $documentClass);
         return $documentClass;
-    }
-
-    /**
-     * @param array     $map      map to add entries to
-     * @param \DOMXPath $xpath    xpath access to doctrine config dom
-     * @param string    $ns       namespace
-     * @param string    $bundle   bundle name
-     * @param string    $doc      document name
-     * @param boolean   $embedded is this an embedded doc, further args are only for embeddeds
-     * @param string    $name     name prefix of document the embedded field belongs to
-     * @param string    $prefix   prefix to add to embedded field name
-     *
-     * @return void
-     */
-    public function loadFieldsFromDOM(
-        array &$map,
-        \DOMXPath $xpath,
-        $ns,
-        $bundle,
-        $doc,
-        $embedded,
-        $name = '',
-        $prefix = ''
-    ) {
-        foreach ([
-                     '//*[self::doctrine:embed-one or self::doctrine:reference-one]',
-                     '//*[self::doctrine:embed-many or self::doctrine:reference-many]'
-            ] as $basePath) {
-            $embedNodes = $xpath->query($basePath);
-            foreach ($embedNodes as $node) {
-                $fieldName = $node->getAttribute('field');
-                $targetDocument = $node->getAttribute('target-document');
-
-                $this->loadEmbeddedDocuments(
-                    $map,
-                    $xpath->query(sprintf("%s[@field='%s']", $basePath, $fieldName)),
-                    $targetDocument,
-                    (strpos($basePath, '-many') !== false)
-                );
-                $map[$targetDocument] = $targetDocument;
-            }
-        }
     }
 }

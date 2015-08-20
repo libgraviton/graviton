@@ -6,6 +6,8 @@
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,22 +26,37 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess($id, $key)
     {
-        $containerDouble = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
-        $serviceDouble = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/Resources/doctrine/form')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/serializer/form')
+                ->name('*.xml')
+        );
+        $mappingClasses = [
+            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A',
+            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B',
+            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C',
+        ];
 
-        $containerDouble
-            ->expects($this->once())
-            ->method('findTaggedServiceIds')
-            ->willReturn($this->taggedServicesData());
-
-        $containerDouble
-            ->method('getDefinition')
-            ->willReturn($serviceDouble);
-
+        $serviceDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')
+            ->disableOriginalConstructor()
+            ->getMock();
         $serviceDouble
             ->method('getClass')
             ->will(new \PHPUnit_Framework_MockObject_Stub_ConsecutiveCalls($this->getClassData()));
 
+        $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $containerDouble
+            ->expects($this->once())
+            ->method('findTaggedServiceIds')
+            ->willReturn($this->taggedServicesData());
+        $containerDouble
+            ->method('getDefinition')
+            ->willReturn($serviceDouble);
         $containerDouble
             ->expects($this->once())
             ->method('setParameter')
@@ -47,11 +64,14 @@ class DocumentFormMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo('graviton.document.form.type.document.service_map'),
                 $this->logicalAnd(
                     $this->arrayHasKey($id),
-                    $this->contains($key)
+                    $this->contains($key),
+                    new \PHPUnit_Framework_Constraint_ArraySubset(
+                        array_combine($mappingClasses, $mappingClasses)
+                    )
                 )
             );
 
-        $sut = new DocumentFormMapCompilerPass;
+        $sut = new DocumentFormMapCompilerPass($documentMap);
         $sut->process($containerDouble);
     }
 
