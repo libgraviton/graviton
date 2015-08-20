@@ -31,6 +31,33 @@
       "uri": "mailto:joe3@example.com"
     }
   ],
+  "deepNestedArray": {
+    "very": {
+      "deep": {
+        "glorious": [
+          {"object": "the dude"},
+          {"object": "the dude2"}
+        ]
+      }
+    }
+  },
+  "deepNestedProperty": {
+    "thisis": {
+      "one": {
+        "goes": {
+          "very": {
+            "deep": {
+              "down": {
+                "thats": {
+                  "good": "it's probably a good thing"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "nestedArray": [
     {"name": "element one"},
     {"name": "element two"}

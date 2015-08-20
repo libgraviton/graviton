@@ -13,7 +13,7 @@
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
 
   {% if idField is defined %}
-      <field fieldName="id" type="{{ idField.doctrineType }}" id="true"/>
+      <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>
   {% endif %}
@@ -34,10 +34,10 @@
                         </cascade>
                     </{{ relType }}-one>
                 {% endif %}
-            {% elseif 'Graviton' not in field.type %}
-                {% if field.type == 'object' %}
+            {% else %}
+                {% if field.type == 'hash' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
-                {% elseif field.type != 'hash' %}
+                {% else %}
                     <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}
             {% endif %}
