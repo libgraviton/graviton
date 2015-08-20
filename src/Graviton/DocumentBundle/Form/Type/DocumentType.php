@@ -49,7 +49,7 @@ class DocumentType extends AbstractType
     public function initialize($id)
     {
         if (is_null($id)) {
-            throw new \RunTimeException(__CLASS__.'::initialize called with NULL id');
+            throw new \RuntimeException(__CLASS__.'::initialize called with NULL id');
         }
         if (!array_key_exists($id, $this->classMap)) {
             throw new \RuntimeException(sprintf('Could not map service %s to class for form generator', $id));
@@ -65,9 +65,15 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $class = $this->dataClass;
-        foreach ($this->fieldMap[$class] as $field) {
-            list($name, $type, $options)  = $field;
+        if (!isset($this->fieldMap[$this->dataClass])) {
+            throw new \RuntimeException(sprintf('Could not find form config for document %s', $this->dataClass));
+        }
+
+        foreach ($this->fieldMap[$this->dataClass] as $field) {
+            list($fieldName, $formName, $type, $options)  = $field;
+            if ($fieldName !== $formName) {
+                $options['property_path'] = $fieldName;
+            }
 
             if ($type == 'form') {
                 $type = clone $this;
@@ -85,7 +91,7 @@ class DocumentType extends AbstractType
                 $options['allow_add'] = true;
                 $options['allow_delete'] = true;
             }
-            $builder->add($name, $type, $options);
+            $builder->add($formName, $type, $options);
         }
     }
 

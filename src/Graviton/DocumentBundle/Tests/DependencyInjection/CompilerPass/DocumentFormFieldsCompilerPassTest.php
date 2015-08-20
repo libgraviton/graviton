@@ -36,50 +36,60 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\A' => [
                         [
                             'id',
+                            'id',
                             'text',
                             [],
                         ],
                         [
                             'integer',
+                            'integerA',
                             'integer',
                             [],
                         ],
                         [
                             'title',
+                            'titleA',
                             'translatable',
                             [],
                         ],
                         [
                             'extref',
+                            'extrefA',
                             'extref',
                             [],
                         ],
                         [
                             'boolean',
+                            'booleanA',
                             'checkbox',
                             [],
                         ],
                         [
                             'datetime',
+                            'datetimeA',
                             'datetime',
                             [],
                         ],
                         [
                             'float',
+                            'floatA',
                             'number',
                             [],
                         ],
                         [
                             'unstruct',
+                            'unstructA',
                             'freeform',
                             [],
                         ],
                         [
                             'achild',
+                            'achild',
                             'form',
                             ['data_class' => $baseNamespace.'\B'],
                         ],
                         [
+                            'achildren',
                             'achildren',
                             'collection',
                             [
@@ -91,20 +101,24 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\B' => [
                         [
                             'id',
+                            'id',
                             'text',
                             [],
                         ],
                         [
                             'field',
+                            'fieldB',
                             'text',
                             [],
                         ],
                         [
                             'bchild',
+                            'bchild',
                             'form',
                             ['data_class' => $baseNamespace.'\C'],
                         ],
                         [
+                            'bchildren',
                             'bchildren',
                             'collection',
                             [
@@ -116,11 +130,13 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\C' => [
                         [
                             'id',
+                            'id',
                             'text',
                             [],
                         ],
                         [
                             'field',
+                            'fieldC',
                             'text',
                             [],
                         ],

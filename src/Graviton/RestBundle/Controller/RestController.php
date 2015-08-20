@@ -625,7 +625,7 @@ class RestController
      */
     private function checkForm(FormInterface $form, Request $request)
     {
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $request->getContent()), true), true);
+        $form->submit(json_decode($request->getContent(), true), true);
 
         if (!$form->isValid()) {
             throw new ValidationException($form->getErrors(true));
