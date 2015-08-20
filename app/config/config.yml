@@ -153,3 +153,23 @@ eo_airbrake:
         ignored_exceptions: 
             - 'Symfony\Component\HttpKernel\Exception\HttpException'
             - 'Xiag\Rql\Parser\Exception\SyntaxErrorException'
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     %graviton.rabbitmq.host%
+            port:     %graviton.rabbitmq.port%
+            user:     %graviton.rabbitmq.user%
+            password: %graviton.rabbitmq.password%
+            vhost:    %graviton.rabbitmq.vhost%
+            lazy:     false
+            connection_timeout: 3
+            read_write_timeout: 3
+
+            # requires php-amqplib v2.4.1+ and PHP5.4+
+            keepalive: false
+
+            # requires php-amqplib v2.4.1+
+            heartbeat: 0
+    producers:
+    consumers:
