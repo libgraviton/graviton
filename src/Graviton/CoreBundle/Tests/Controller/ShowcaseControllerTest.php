@@ -64,7 +64,7 @@ class ShowcaseControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/hans/showcase', $showCase);
+        $client->post('/hans/showcase/', $showCase);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         $this->assertNull($client->getResults());
 
@@ -138,7 +138,7 @@ class ShowcaseControllerTest extends RestTestCase
         );
 
         $client = static::createRestClient();
-        $client->post('/hans/showcase', $document);
+        $client->post('/hans/showcase/', $document);
         $response = $client->getResponse();
 
         $client = static::createRestClient();
@@ -230,7 +230,7 @@ class ShowcaseControllerTest extends RestTestCase
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
 
         $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase?'.$rqlSelect);
+        $client->request('GET', '/hans/showcase/?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
     }
 
@@ -251,5 +251,17 @@ class ShowcaseControllerTest extends RestTestCase
                 '~' => '%7E',
             ]
         );
+    }
+
+    /**
+     * Trigger a 301 Status code
+     *
+     * @return void
+     */
+    private function trigger301()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase');
+        $this->assertEquals(301, $client->getResponse()->getStatusCode());
     }
 }

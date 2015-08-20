@@ -51,7 +51,7 @@ class ProductControllerTest extends RestTestCase
     public function testFindAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/product');
+        $client->request('GET', '/core/product/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -77,7 +77,7 @@ class ProductControllerTest extends RestTestCase
         }
 
         $this->assertContains(
-            '<http://localhost/core/product>; rel="self"',
+            '<http://localhost/core/product/>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
