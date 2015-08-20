@@ -263,5 +263,6 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase');
         $this->assertEquals(301, $client->getResponse()->getStatusCode());
+        $this->assertEquals('http://localhost/hans/showcase/', $client->getResponse()->headers->get('Location'));
     }
 }
