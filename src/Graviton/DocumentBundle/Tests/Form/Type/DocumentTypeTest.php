@@ -37,8 +37,8 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         ];
         $this->fieldMap = [
             'Graviton\CoreBundle\Document\App' => [
-                ['title', 'translatable', []],
-                ['showInMenu', 'checkbox', []],
+                ['title', 'titleExposed', 'translatable', []],
+                ['showInMenu', 'showInMenu', 'checkbox', []],
             ],
         ];
     }
@@ -66,9 +66,9 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testSetDefaultOptions($class)
+    public function testConfigureOptions($class)
     {
-        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolverInterface');
+        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
 
         $resolverDouble->expects($this->once())
             ->method('setDefaults')
@@ -77,7 +77,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $sut = new DocumentType($this->classMap, $this->fieldMap);
         $sut->initialize($class);
 
-        $sut->setDefaultOptions($resolverDouble);
+        $sut->configureOptions($resolverDouble);
     }
 
     /**
@@ -118,9 +118,9 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 'graviton_corebundle_document_app',
                 [
                     [
-                        'name' => 'title',
+                        'name' => 'titleExposed',
                         'type' => 'translatable', # alias to i18n form service
-                        'options' => [],
+                        'options' => ['property_path' => 'title'],
                     ],
                     [
                         'name' => 'showInMenu',
@@ -134,9 +134,9 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 'graviton_corebundle_document_app',
                 [
                     [
-                        'name' => 'title',
+                        'name' => 'titleExposed',
                         'type' => 'translatable', # alias to i18n form service
-                        'options' => [],
+                        'options' => ['property_path' => 'title'],
                     ],
                     [
                         'name' => 'showInMenu',

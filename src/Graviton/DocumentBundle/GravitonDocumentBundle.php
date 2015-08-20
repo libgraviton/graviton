@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormDataMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -92,5 +93,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormMapCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
     }
 }

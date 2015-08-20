@@ -2,17 +2,19 @@
 <serializer>
     <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A">
         <property name="id" type="string"/>
-        <property name="integer" serialized-name="integerA" type="integer"/>
-        <property name="title" serialized-name="titleA" type="string"/>
-        <property name="extref" serialized-name="extrefA" type="string"/>
-        <property name="boolean" serialized-name="booleanA" type="boolean"/>
-        <property name="datetime" serialized-name="datetimeA" type="datetime"/>
-        <property name="float" serialized-name="floatA" type="float"/>
-        <property name="unstruct" serialized-name="unstructA" type="Hash"/>
+        <property name="integer" serialized-name="$integerA" type="integer"/>
+        <property name="title" serialized-name="$titleA" type="string"/>
+        <property name="extref" serialized-name="$extrefA" type="string"/>
+        <property name="boolean" serialized-name="$booleanA" type="boolean"/>
+        <property name="datetime" serialized-name="$datetimeA" type="datetime"/>
+        <property name="float" serialized-name="$floatA" type="float"/>
+        <property name="unstruct" serialized-name="$unstructA" type="Hash"/>
 
         <property name="achild"
+                  serialized-name="$achild"
                   type="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B"/>
         <property name="achildren"
+                  serialized-name="$achildren"
                   type="array&lt;Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B&gt;"/>
     </class>
 </serializer>

@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
@@ -75,6 +76,11 @@ class RestController
     private $schemaUtils;
 
     /**
+     * @var FormDataMapperInterface
+     */
+    private $formDataMapper;
+
+    /**
      * @var Router
      */
     private $router;
@@ -120,6 +126,17 @@ class RestController
         $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
+    }
+
+    /**
+     * Set form data mapper
+     *
+     * @param FormDataMapperInterface $formDataMapper Form data mapper
+     * @return void
+     */
+    public function setFormDataMapper(FormDataMapperInterface $formDataMapper)
+    {
+        $this->formDataMapper = $formDataMapper;
     }
 
 
@@ -625,7 +642,9 @@ class RestController
      */
     private function checkForm(FormInterface $form, Request $request)
     {
-        $form->submit(json_decode($request->getContent(), true), true);
+        $document = json_decode($request->getContent());
+        $document = $this->formDataMapper->convertToFormData($document, $this->getModel()->getEntityClass());
+        $form->submit($document, true);
 
         if (!$form->isValid()) {
             throw new ValidationException($form->getErrors(true));
