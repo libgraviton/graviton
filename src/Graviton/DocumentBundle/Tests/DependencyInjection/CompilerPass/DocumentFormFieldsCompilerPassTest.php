@@ -6,6 +6,8 @@
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -19,38 +21,123 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess()
     {
-        $containerDouble = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
-        $serviceDouble = $this->getMock('Symfony\Component\DependencyInjection\Definition');
+        $baseNamespace = 'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document';
 
-        $containerDouble
-            ->method('getDefinition')
-            ->willReturn($serviceDouble);
-
-        $containerDouble
-            ->expects($this->at(0))
-            ->method('getParameter')
-            ->with('graviton.document.form.type.document.service_map')
-            ->willReturn(
-                [
-                    'graviton.core.controller.app' => '%graviton.core.document.app.class%',
-                ]
-            );
-
-        $containerDouble
-            ->expects($this->at(1))
-            ->method('findTaggedServiceIds')
-            ->with('graviton.rest')
-            ->willReturn([]);
-
+        $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+            ->disableOriginalConstructor()
+            ->getMock();
         $containerDouble
             ->expects($this->once())
             ->method('setParameter')
             ->with(
-                $this->equalTo('graviton.document.form.type.document.field_map'),
-                ['stdclass' => []]
+                'graviton.document.form.type.document.field_map',
+                [
+                    'stdclass' => [],
+                    $baseNamespace.'\A' => [
+                        [
+                            'id',
+                            'text',
+                            [],
+                        ],
+                        [
+                            'integer',
+                            'integer',
+                            [],
+                        ],
+                        [
+                            'title',
+                            'translatable',
+                            [],
+                        ],
+                        [
+                            'extref',
+                            'extref',
+                            [],
+                        ],
+                        [
+                            'boolean',
+                            'checkbox',
+                            [],
+                        ],
+                        [
+                            'datetime',
+                            'datetime',
+                            [],
+                        ],
+                        [
+                            'float',
+                            'number',
+                            [],
+                        ],
+                        [
+                            'unstruct',
+                            'freeform',
+                            [],
+                        ],
+                        [
+                            'achild',
+                            'form',
+                            ['data_class' => $baseNamespace.'\B'],
+                        ],
+                        [
+                            'achildren',
+                            'collection',
+                            [
+                                'type' => 'form',
+                                'options' => ['data_class' => $baseNamespace.'\B'],
+                            ],
+                        ],
+                    ],
+                    $baseNamespace.'\B' => [
+                        [
+                            'id',
+                            'text',
+                            [],
+                        ],
+                        [
+                            'field',
+                            'text',
+                            [],
+                        ],
+                        [
+                            'bchild',
+                            'form',
+                            ['data_class' => $baseNamespace.'\C'],
+                        ],
+                        [
+                            'bchildren',
+                            'collection',
+                            [
+                                'type' => 'form',
+                                'options' => ['data_class' => $baseNamespace.'\C'],
+                            ],
+                        ],
+                    ],
+                    $baseNamespace.'\C' => [
+                        [
+                            'id',
+                            'text',
+                            [],
+                        ],
+                        [
+                            'field',
+                            'text',
+                            [],
+                        ],
+                    ],
+                ]
             );
 
-        $sut = new DocumentFormFieldsCompilerPass;
-        $sut->process($containerDouble);
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/Resources/doctrine/form')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/serializer/form')
+                ->name('*.xml')
+        );
+
+        $compilerPass = new DocumentFormFieldsCompilerPass($documentMap);
+        $compilerPass->process($containerDouble);
     }
 }

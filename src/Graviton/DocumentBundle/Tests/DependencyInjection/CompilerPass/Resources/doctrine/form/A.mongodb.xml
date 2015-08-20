@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+    <document name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A">
+        <field fieldName="id" type="string" id="true" strategy="UUID"/>
+        <field fieldName="integer" type="int"/>
+        <field fieldName="title" type="string"/>
+        <field fieldName="extref" type="extref"/>
+        <field fieldName="boolean" type="boolean"/>
+        <field fieldName="datetime" type="date"/>
+        <field fieldName="float" type="float"/>
+        <field fieldName="unstruct" type="hash"/>
+
+        <embed-one field="achild"
+                   target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B">
+        </embed-one>
+        <embed-many field="achildren"
+                    target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B"
+                    strategy="set">
+        </embed-many>
+    </document>
+</doctrine-mongo-mapping>
