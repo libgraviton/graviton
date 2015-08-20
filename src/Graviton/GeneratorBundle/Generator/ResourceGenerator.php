@@ -748,13 +748,7 @@ class ResourceGenerator extends AbstractGenerator
                     'service' => $repoName
                 ],
             ),
-            null,
-            [
-                [
-                    'type' => 'service',
-                    'id' => 'graviton.rql.visitor.mongodb',
-                ],
-            ]
+            null
         );
 
         $this->persistServicesXML($dir);

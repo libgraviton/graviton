@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
@@ -50,12 +51,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $visitor;
 
     /**
-     * @param Visitor $visitor rql query visitor
+     * @var array
      */
-    public function __construct(Visitor $visitor)
+    protected $notModifiableOriginRecords;
+
+    /**
+     * @param Visitor $visitor                    rql query visitor
+     * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     */
+    public function __construct(Visitor $visitor, $notModifiableOriginRecords)
     {
         parent::__construct();
         $this->visitor = $visitor;
+        $this->notModifiableOriginRecords = $notModifiableOriginRecords;
     }
 
     /**
@@ -270,10 +278,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected function checkIfOriginRecord($record)
     {
         if ($record instanceof RecordOriginInterface
-            && $this->container->hasParameter('graviton.not_modifiable.origin.records')
             && !$record->isRecordOriginModifiable()
         ) {
-            $values = $this->container->getParameter('graviton.not_modifiable.origin.records');
+            $values = $this->notModifiableOriginRecords;
             $originValue = strtolower(trim($record->getRecordOrigin()));
 
             if (in_array($originValue, $values)) {

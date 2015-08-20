@@ -25,7 +25,7 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    private $container;
 
     /**
      * load some schema info for the model

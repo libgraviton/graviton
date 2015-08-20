@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Tests\Model;
 
+use Graviton\RestBundle\Model\DocumentModel;
 use lapistano\ProxyObject\ProxyBuilder;
 
 /**
@@ -16,16 +17,10 @@ use lapistano\ProxyObject\ProxyBuilder;
  */
 class DocumentModelTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @var ContainerInterface
-     */
-    private $containerMock;
-
     /**
      * @var DocumentModel
      */
-    private $documentModel;
+    private $stu;
 
     /**
      * @var RecordOriginInterface
@@ -40,26 +35,21 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->containerMock = $this->getMockBuilder("\Symfony\Component\DependencyInjection\ContainerInterface")
-            ->setMethods(["hasParameter", "getParameter"])
-            ->getMockForAbstractClass();
-
         $this->testRecord = $this->getMockBuilder("\Graviton\RestBundle\Model\RecordOriginInterface")
             ->setMethods(["isRecordOriginModifiable", "getRecordOrigin"])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $proxyBuilder = new ProxyBuilder("\Graviton\RestBundle\Model\DocumentModel");
-        $this->documentModel = $proxyBuilder
+        $this->stu = $proxyBuilder
             ->disableOriginalConstructor()
+            ->setProperties(array('notModifiableOriginRecords'))
             ->setMethods(['checkIfOriginRecord'])
-            ->setProperties(['container'])
             ->getProxy();
     }
 
     /**
      * CheckIfOriginRecord test
      *
-     * @param bool   $hasContainerParam exist container parameter
      * @param string $retContainerParam container parameter
      * @param bool   $isModifiable      can record be modified
      * @param string $recordOrigin      record origin
@@ -68,19 +58,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider dataProvider
      */
-    public function testCheckIfOriginRecord($hasContainerParam, $retContainerParam, $isModifiable, $recordOrigin)
+    public function testCheckIfOriginRecord($retContainerParam, $isModifiable, $recordOrigin)
     {
-        $this->containerMock
-            ->expects($this->once())
-            ->method("hasParameter")
-            ->with("graviton.not_modifiable.origin.records")
-            ->willReturn($hasContainerParam);
-        $this->containerMock
-            ->expects($this->any())
-            ->method("getParameter")
-            ->with("graviton.not_modifiable.origin.records")
-            ->willReturn($retContainerParam);
-
         $this->testRecord
             ->expects($this->any())
             ->method("isRecordOriginModifiable")
@@ -90,10 +69,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->method("getRecordOrigin")
             ->willReturn($recordOrigin);
 
-
-        $this->documentModel->container = $this->containerMock;
-
-        $this->documentModel->checkIfOriginRecord($this->testRecord);
+        $this->stu->notModifiableOriginRecords = $retContainerParam;
+        $this->stu->checkIfOriginRecord($this->testRecord);
     }
 
     /**
@@ -105,17 +82,6 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheckIfOriginRecordFailure()
     {
-        $this->containerMock
-            ->expects($this->once())
-            ->method("hasParameter")
-            ->with("graviton.not_modifiable.origin.records")
-            ->willReturn(true);
-        $this->containerMock
-            ->expects($this->once())
-            ->method("getParameter")
-            ->with("graviton.not_modifiable.origin.records")
-            ->willReturn(['core']);
-
         $this->testRecord
             ->expects($this->once())
             ->method("isRecordOriginModifiable")
@@ -125,8 +91,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->method("getRecordOrigin")
             ->willReturn('core');
 
-        $this->documentModel->container = $this->containerMock;
-        $this->documentModel->checkIfOriginRecord($this->testRecord);
+        $this->stu->notModifiableOriginRecords = array('core');
+        $this->stu->checkIfOriginRecord($this->testRecord);
     }
 
     /**
