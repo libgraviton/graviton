@@ -81,7 +81,7 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * Returns the bare schema
      *
-     * @return stdClass Schema
+     * @return \stdClass Schema
      */
     public function getSchema()
     {

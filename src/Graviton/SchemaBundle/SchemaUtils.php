@@ -7,6 +7,7 @@ namespace Graviton\SchemaBundle;
 
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Repository\LanguageRepository;
+use Graviton\RestBundle\Model\ModelInterface;
 use Graviton\SchemaBundle\Document\Schema;
 use Symfony\Component\Routing\Router;
 
@@ -81,7 +82,7 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public function getModelSchema($modelName, $model)
+    public function getModelSchema($modelName, ModelInterface $model)
     {
         // build up schema data
         $schema = new Schema;

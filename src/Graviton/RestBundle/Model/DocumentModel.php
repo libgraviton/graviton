@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
@@ -38,7 +38,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $requiredFields = array();
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var DocumentRepository
      */
     private $repository;
 
@@ -59,7 +59,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * get repository instance
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return DocumentRepository
      */
     public function getRepository()
     {
@@ -69,11 +69,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * create new app model
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository $repository Repository of countries
+     * @param DocumentRepository $repository Repository of countries
      *
      * @return \Graviton\RestBundle\Model\DocumentModel
      */
-    public function setRepository(ObjectRepository $repository)
+    public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
 
