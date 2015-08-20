@@ -16,6 +16,11 @@ use Graviton\DocumentBundle\Service\FormDataMapper;
  */
 class FormDataMapperTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Test FormDataMapper::convertToFormData()
+     *
+     * @return void
+     */
     public function testConvertToFormData()
     {
         $fieldMap = [
