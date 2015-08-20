@@ -252,4 +252,16 @@ class ShowcaseControllerTest extends RestTestCase
             ]
         );
     }
+
+    /**
+     * Trigger a 301 Status code
+     *
+     * @return void
+     */
+    private function trigger301()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase');
+        $this->assertEquals(301, $client->getResponse()->getStatusCode());
+    }
 }
