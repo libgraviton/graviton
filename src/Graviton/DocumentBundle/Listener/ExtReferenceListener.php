@@ -149,7 +149,7 @@ class ExtReferenceListener
     private function convertToUrl($ref)
     {
         try {
-            $ref = json_decode($ref, true);
+            $ref = json_decode($ref);
             return $this->converter->getUrl($ref);
         } catch (\InvalidArgumentException $e) {
             return '';
