@@ -137,9 +137,9 @@ class ModuleControllerTest extends RestTestCase
      *
      * @dataProvider findByAppRefProvider
      *
-     * @param string|string[]  $ref   which reference to search in
-     * @param mixed            $url   ref to search for
-     * @param integer          $count number of results to expect
+     * @param string|string[] $ref   which reference to search in
+     * @param mixed           $url   ref to search for
+     * @param integer         $count number of results to expect
      *
      * @return void
      */
@@ -696,7 +696,8 @@ class ModuleControllerTest extends RestTestCase
     private function encodeRqlString($value)
     {
         return strtr(
-            rawurlencode($value), [
+            rawurlencode($value),
+            [
                 '-' => '%2D',
                 '_' => '%5F',
                 '.' => '%2E',
