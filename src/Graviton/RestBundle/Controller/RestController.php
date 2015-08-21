@@ -33,6 +33,7 @@ use Rs\Json\Patch;
 use Rs\Json\Patch\InvalidPatchDocumentJsonException;
 use Rs\Json\Patch\InvalidTargetDocumentJsonException;
 use Rs\Json\Patch\InvalidOperationException;
+use Rs\Json\Patch\FailedTestException;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -481,6 +482,8 @@ class RestController
         } catch (InvalidTargetDocumentJsonException $e) {
             throw new InvalidJsonPatchException($e->getMessage());
         } catch (InvalidOperationException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (FailedTestException $e) {
             throw new InvalidJsonPatchException($e->getMessage());
         }
 

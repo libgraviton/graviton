@@ -613,6 +613,37 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * Test PATCH: test operation to undefined index
+     *
+     * @group ref
+     * @return void
+     */
+    public function testPatchTestOperationToUndefinedIndexThrowsException()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request, add new element
+        $client = static::createRestClient();
+        $newApp = ['ref' => 'http://localhost/core/app/test'];
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'test',
+                    'path' => '/nestedApps/9',
+                    'value' => $newApp
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    /**
      * Test PATCH: add complex object App to array
      *
      * @group ref
