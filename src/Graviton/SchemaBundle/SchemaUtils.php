@@ -10,7 +10,7 @@ use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Utils for generating schemas.
@@ -32,7 +32,7 @@ class SchemaUtils
     /**
      * router
      *
-     * @var Router router
+     * @var RouterInterface router
      */
     private $router;
 
@@ -47,12 +47,12 @@ class SchemaUtils
      * Constructor
      *
      * @param LanguageRepository $languageRepository   repository
-     * @param Router             $router               router
+     * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
      */
     public function __construct(
         LanguageRepository $languageRepository,
-        Router $router,
+        RouterInterface $router,
         array $extrefServiceMapping
     ) {
         $this->languageRepository = $languageRepository;
