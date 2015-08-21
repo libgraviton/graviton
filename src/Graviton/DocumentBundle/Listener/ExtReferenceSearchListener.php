@@ -123,10 +123,26 @@ class ExtReferenceSearchListener
             $dbRef = (object) ['$ref' => false, '$id' => false];
         }
 
-        $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')
-            ->equals($dbRef->{'$ref'});
-        $builder->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')
-            ->equals($dbRef->{'$id'});
+        $operatorMap = [
+            'eq' => 'equals',
+            'ne' => 'notEqual',
+            'lt' => 'lt',
+            'gt' => 'gt',
+            'le' => 'lte',
+            'ge' => 'gte',
+        ];
+        if (!isset($operatorMap[$node->getNodeName()])) {
+            throw new \InvalidArgumentException(
+                sprintf('Could not apply operator "%s" to extref', $node->getNodeName())
+            );
+        }
+
+        $compareOperator = $operatorMap[$node->getNodeName()];
+        $builder
+            ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')
+            ->equals($dbRef->{'$ref'})
+            ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')
+            ->$compareOperator($dbRef->{'$id'});
     }
 
     /**
@@ -149,6 +165,16 @@ class ExtReferenceSearchListener
             return;
         }
 
+        $operatorMap = [
+            'in'  => ['addOr', 'equals'],
+            'out' => ['addAnd', 'notEqual'],
+        ];
+        if (!isset($operatorMap[$node->getNodeName()])) {
+            throw new \InvalidArgumentException(
+                sprintf('Could not apply operator "%s" to extref', $node->getNodeName())
+            );
+        }
+
         $values = [];
         foreach ($node->getValues() as $url) {
             try {
@@ -159,14 +185,17 @@ class ExtReferenceSearchListener
             }
         }
 
+
+        list($groupOperator, $compareOperator) = $operatorMap[$node->getNodeName()];
+
         $expr = $builder->expr();
         foreach ($values as $dbRef) {
-            $expr->addOr(
+            $expr->$groupOperator(
                 $builder->expr()
                     ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')
                     ->equals($dbRef->{'$ref'})
                     ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')
-                    ->equals($dbRef->{'$id'})
+                    ->$compareOperator($dbRef->{'$id'})
             );
         }
         $builder->addAnd($expr);
