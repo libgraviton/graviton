@@ -117,7 +117,7 @@ class SchemaModel implements ContainerAwareInterface
      *
      * @param string $mapping name of mapping class
      *
-     * @return self
+     * @return $this
      */
     public function manyPropertyModelForTarget($mapping)
     {

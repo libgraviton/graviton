@@ -508,17 +508,16 @@ class RestController
         $request->attributes->set('schemaRequest', true);
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-        $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
         $response->setPublic();
 
-        $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schemaMethod = 'getCollectionSchema';
+            $schema = $this->schemaUtils->getCollectionSchema($modelName, $this->getModel());
+        } else {
+            $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
         }
-        $schema = $this->schemaUtils->$schemaMethod($modelName, $model);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';

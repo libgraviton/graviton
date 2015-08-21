@@ -6,8 +6,9 @@
 namespace Graviton\SchemaBundle;
 
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
-use Graviton\RestBundle\Model\ModelInterface;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
 use Symfony\Component\Routing\Router;
 
@@ -59,17 +60,17 @@ class SchemaUtils
     /**
      * get schema for an array of models
      *
-     * @param string $modelName name of model
-     * @param object $model     model
+     * @param string        $modelName name of model
+     * @param DocumentModel $model     model
      *
      * @return Schema
      */
-    public function getCollectionSchema($modelName, $model)
+    public function getCollectionSchema($modelName, DocumentModel $model)
     {
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
-        $collectionSchema->setItems(self::getModelSchema($modelName, $model));
+        $collectionSchema->setItems($this->getModelSchema($modelName, $model));
 
         return $collectionSchema;
     }
@@ -77,12 +78,12 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string $modelName name of mode to generate schema for
-     * @param object $model     model to generate schema for
+     * @param string        $modelName name of mode to generate schema for
+     * @param DocumentModel $model     model to generate schema for
      *
      * @return Schema
      */
-    public function getModelSchema($modelName, ModelInterface $model)
+    public function getModelSchema($modelName, DocumentModel $model)
     {
         // build up schema data
         $schema = new Schema;
@@ -108,7 +109,7 @@ class SchemaUtils
         }
 
         $languages = array_map(
-            function ($language) {
+            function (Language $language) {
                 return $language->getId();
             },
             $this->languageRepository->findAll()
@@ -128,17 +129,17 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems(self::getModelSchema($field, $propertyModel));
+                $property->setItems($this->getModelSchema($field, $propertyModel));
                 $property->setType('array');
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = self::getModelSchema($field, $propertyModel);
+                $property = $this->getModelSchema($field, $propertyModel);
             }
 
             if (in_array($field, $translatableFields)) {
-                $property = self::makeTranslatable($property, $languages);
+                $property = $this->makeTranslatable($property, $languages);
             }
 
             if ($meta->getTypeOfField($field) === 'extref') {
