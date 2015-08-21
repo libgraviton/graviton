@@ -42,6 +42,10 @@ class SchemaUtils
      * @var array service mapping
      */
     private $extrefServiceMapping;
+    /**
+     * @var array [document class => [field name -> exposed name]]
+     */
+    private $documentFieldNames;
 
     /**
      * Constructor
@@ -49,15 +53,18 @@ class SchemaUtils
      * @param LanguageRepository $languageRepository   repository
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
+     * @param array              $documentFieldNames   Document field names
      */
     public function __construct(
         LanguageRepository $languageRepository,
         RouterInterface $router,
-        array $extrefServiceMapping
+        array $extrefServiceMapping,
+        array $documentFieldNames
     ) {
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
+        $this->documentFieldNames = $documentFieldNames;
     }
 
     /**
@@ -99,17 +106,22 @@ class SchemaUtils
         $meta = $repo->getClassMetadata();
 
         // look for translatables in document class
-        $entityName = $repo->getClassName();
-        $translatableFields = array();
-        if (class_exists($entityName)) {
-            $documentClass = new $entityName();
-            if ($documentClass instanceof TranslatableDocumentInterface) {
-                $translatableFields = array_merge(
-                    $documentClass->getTranslatableFields(),
-                    $documentClass->getPreTranslatedFields()
-                );
-            }
+        $documentReflection = new \ReflectionClass($repo->getClassName());
+        if ($documentReflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
+            /** @var TranslatableDocumentInterface $documentInstance */
+            $documentInstance = $documentReflection->newInstanceWithoutConstructor();
+            $translatableFields = array_merge(
+                $documentInstance->getTranslatableFields(),
+                $documentInstance->getPreTranslatedFields()
+            );
+        } else {
+            $translatableFields = [];
         }
+
+        // exposed fields
+        $documentFieldNames = isset($this->documentFieldNames[$repo->getClassName()]) ?
+            $this->documentFieldNames[$repo->getClassName()] :
+            [];
 
         $languages = array_map(
             function (Language $language) {
@@ -119,8 +131,8 @@ class SchemaUtils
         );
 
         foreach ($meta->getFieldNames() as $field) {
-            // don't describe deletedDate in schema..
-            if ($field == 'deletedDate') {
+            // don't describe hidden fields
+            if (!isset($documentFieldNames[$field])) {
                 continue;
             }
 
@@ -141,7 +153,7 @@ class SchemaUtils
                 $property = $this->getModelSchema($field, $propertyModel);
             }
 
-            if (in_array($field, $translatableFields)) {
+            if (in_array($field, $translatableFields, true)) {
                 $property = $this->makeTranslatable($property, $languages);
             }
 
@@ -160,25 +172,23 @@ class SchemaUtils
                     }
                 }
                 $property->setRefCollection($urls);
-
-                if (substr($field, 0, 1) !== '$') {
-                    $field = '$'.$field;
-                }
             }
-            $schema->addProperty($field, $property);
+            $schema->addProperty($documentFieldNames[$field], $property);
         }
 
         if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
             $schema->removeProperty('id');
         }
 
-        $requiredFields = $model->getRequiredFields();
-        foreach ($requiredFields as $index => $requiredField) {
-            if ($requiredField === 'ref') {
-                $requiredFields[$index] = '$' . $requiredFields[$index];
+        $requiredFields = [];
+        foreach ($model->getRequiredFields() as $field) {
+            // don't describe hidden fields
+            if (!isset($documentFieldNames[$field])) {
+                continue;
             }
-        }
 
+            $requiredFields[] = $documentFieldNames[$field];
+        }
         $schema->setRequired($requiredFields);
 
 
