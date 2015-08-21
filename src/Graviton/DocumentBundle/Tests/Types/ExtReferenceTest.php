@@ -46,16 +46,6 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testExceptWithoutConverter()
-    {
-        $this->type->convertToDatabaseValue('');
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     *
-     * @return void
-     */
     public function testMongoRefFromValueWithException()
     {
         $url = __FILE__;
