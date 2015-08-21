@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0b9f21b1a07f2684648ad799a3065328",
+    "hash": "c3da2dfae614a1057693f8a2b15eb6b1",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -3016,21 +3016,24 @@
         },
         {
             "name": "php-jsonpatch/php-jsonpatch",
-            "version": "v1.2.0",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/raphaelstolt/php-jsonpatch.git",
-                "reference": "ad56ad31e20a8778bfafed865b7b09f7f4276c21"
+                "reference": "e57b7e02224d0266d5f7de970964b5302501125b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/ad56ad31e20a8778bfafed865b7b09f7f4276c21",
-                "reference": "ad56ad31e20a8778bfafed865b7b09f7f4276c21",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/e57b7e02224d0266d5f7de970964b5302501125b",
+                "reference": "e57b7e02224d0266d5f7de970964b5302501125b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0",
                 "php-jsonpointer/php-jsonpointer": "1.1.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.6.*"
             },
             "type": "library",
             "extra": {
@@ -3061,7 +3064,7 @@
                 "json modification",
                 "json patch"
             ],
-            "time": "2015-05-20 23:08:19"
+            "time": "2015-08-21 07:54:03"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",

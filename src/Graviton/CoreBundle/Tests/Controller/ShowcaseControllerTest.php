@@ -509,7 +509,7 @@ class ShowcaseControllerTest extends RestTestCase
                 [
                     'op' => 'add',
                     'path' => '/nestedArray/1',
-                    'value' => [$newElement]
+                    'value' => $newElement
                 ]
             ]
         );
@@ -526,6 +526,128 @@ class ShowcaseControllerTest extends RestTestCase
             json_encode($newElement),
             json_encode($result->nestedArray[1])
         );
+    }
+
+    /**
+     * Test PATCH: add complex object App to array
+     *
+     * @group ref
+     * @return void
+     */
+    public function testPatchAddComplexObjectToSpecificIndexInArray()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request, add new element
+        $client = static::createRestClient();
+        $newApp = ['ref' => 'http://localhost/core/app/admin'];
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'add',
+                    'path' => '/nestedApps/0',
+                    'value' => $newApp
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // Check patched result
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/500');
+
+        $result = $client->getResults();
+        $this->assertEquals(3, count($result->nestedApps));
+        $this->assertEquals(
+            'http://localhost/core/app/admin',
+            $result->nestedApps[0]->{'$ref'}
+        );
+    }
+
+    /**
+     * Test PATCH: add complex object App to array
+     *
+     * @group ref
+     * @return void
+     */
+    public function testPatchAddComplexObjectToTheEndOfArray()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request, add new element
+        $client = static::createRestClient();
+        $newApp = ['ref' => 'http://localhost/core/app/test'];
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'add',
+                    'path' => '/nestedApps/-',
+                    'value' => $newApp
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // Check patched result
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/500');
+
+        $result = $client->getResults();
+        $this->assertEquals(3, count($result->nestedApps));
+        $this->assertEquals(
+            'http://localhost/core/app/test',
+            $result->nestedApps[2]->{'$ref'}
+        );
+    }
+
+    /**
+     * Test PATCH: add complex object App to array
+     *
+     * @group ref
+     * @return void
+     */
+    public function testPatchAddElementToTooLargeIndexWillNotChangeDocument()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        // Apply PATCH request, add new element
+        $client = static::createRestClient();
+        $newApp = ['ref' => 'http://localhost/core/app/admin'];
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'add',
+                    'path' => '/nestedApps/9',
+                    'value' => $newApp
+                ]
+            ]
+        );
+        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // Check patched result
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/500');
+
+        $result = $client->getResults();
+        $this->assertEquals(2, count($result->nestedApps));
     }
 
     /**
