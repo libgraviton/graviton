@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
 
 /**
@@ -93,5 +93,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
+        $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
     }
 }
