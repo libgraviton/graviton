@@ -41,20 +41,23 @@ class SchemaUtils
      *
      * @var array service mapping
      */
-    private $serviceMapping;
+    private $extrefServiceMapping;
 
     /**
      * Constructor
      *
-     * @param LanguageRepository $languageRepository repository
-     * @param Router             $router             router
-     * @param array              $map                service mapping
+     * @param LanguageRepository $languageRepository   repository
+     * @param Router             $router               router
+     * @param array              $extrefServiceMapping Extref service mapping
      */
-    public function __construct(LanguageRepository $languageRepository, Router $router, array $map)
-    {
+    public function __construct(
+        LanguageRepository $languageRepository,
+        Router $router,
+        array $extrefServiceMapping
+    ) {
         $this->languageRepository = $languageRepository;
         $this->router = $router;
-        $this->serviceMapping = $map;
+        $this->extrefServiceMapping = $extrefServiceMapping;
     }
 
     /**
@@ -145,14 +148,14 @@ class SchemaUtils
             if ($meta->getTypeOfField($field) === 'extref') {
                 $urls = array();
                 $refCollections = $model->getRefCollectionOfField($field);
-                foreach ($refCollections as $val) {
-                    if (array_key_exists($val, $this->serviceMapping)) {
+                foreach ($refCollections as $collection) {
+                    if (isset($this->extrefServiceMapping[$collection])) {
                         $urls[] = $this->router->generate(
-                            substr($this->serviceMapping[$val], 0, strrpos($this->serviceMapping[$val], '.')).'.all',
-                            array(),
+                            $this->extrefServiceMapping[$collection].'.all',
+                            [],
                             true
                         );
-                    } elseif ($val == '*') {
+                    } elseif ($collection === '*') {
                         $urls[] = '*';
                     }
                 }

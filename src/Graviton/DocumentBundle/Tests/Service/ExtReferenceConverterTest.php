@@ -120,9 +120,9 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
         $converter = new ExtReferenceConverter(
             $this->router,
             [
-                'App' => 'graviton.core.rest.app.get',
-                'Language' => 'graviton.i18n.rest.language.get',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
+                'App' => 'graviton.core.rest.app',
+                'Language' => 'graviton.i18n.rest.language',
+                'ShowCase' => 'gravitondyn.showcase.rest.showcase',
             ]
         );
         $this->assertEquals($expected, $converter->getDbRef($url));
@@ -172,9 +172,9 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
         $converter = new ExtReferenceConverter(
             $this->router,
             [
-                'App' => 'graviton.core.rest.app.get',
-                'Language' => 'graviton.i18n.rest.language.get',
-                'ShowCase' => 'gravitondyn.showcase.rest.showcase.get',
+                'App' => 'graviton.core.rest.app',
+                'Language' => 'graviton.i18n.rest.language',
+                'ShowCase' => 'gravitondyn.showcase.rest.showcase',
             ]
         );
         $this->assertEquals($url, $converter->getUrl($ref));

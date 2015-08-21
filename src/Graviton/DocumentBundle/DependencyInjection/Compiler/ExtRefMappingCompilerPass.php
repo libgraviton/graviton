@@ -40,7 +40,7 @@ class ExtRefMappingCompilerPass implements CompilerPassInterface
                 $collection = ucfirst($doc);
             }
 
-            $map[$collection] = implode('.', [$ns, $bundle, 'rest', $doc, 'get']);
+            $map[$collection] = implode('.', [$ns, $bundle, 'rest', $doc]);
         }
         $container->setParameter('graviton.document.type.extref.mapping', $map);
     }

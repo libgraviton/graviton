@@ -86,7 +86,11 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
             throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($dbRef)));
         }
 
-        return $this->router->generate($this->mapping[$dbRef->{'$ref'}], ['id' => $dbRef->{'$id'}], true);
+        return $this->router->generate(
+            $this->mapping[$dbRef->{'$ref'}].'.get',
+            ['id' => $dbRef->{'$id'}],
+            true
+        );
     }
 
     /**
@@ -107,7 +111,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
 
             list($routeService) = explode(':', $route->getDefault('_controller'));
             list($core, $bundle,,$name) = explode('.', $routeService);
-            $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
+            $serviceName = implode('.', [$core, $bundle, 'rest', $name]);
             $collection = array_search($serviceName, $this->mapping);
 
             return [$collection, $id];

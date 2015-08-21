@@ -70,12 +70,12 @@ class ExtRefMappingCompilerPassTest extends \PHPUnit_Framework_TestCase
             [
                 'graviton.core.controller.noapp',
                 [['collection' => 'App']],
-                ['App' => 'graviton.core.rest.noapp.get']
+                ['App' => 'graviton.core.rest.noapp']
             ],
             [
                 'graviton.core.controller.config',
                 [],
-                ['Config' => 'graviton.core.rest.config.get']
+                ['Config' => 'graviton.core.rest.config']
             ],
         ];
     }
