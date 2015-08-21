@@ -3,7 +3,7 @@
  * core infrastructure like logging and framework.
  */
 
-namespace Graviton\CoreBundle;
+namespace Graviton\MessageBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
@@ -19,7 +19,6 @@ use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Graviton\FileBundle\GravitonFileBundle;
-use Graviton\MessageBundle\GravitonMessageBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -33,7 +32,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  */
-class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
+class GravitonMessageBundle extends Bundle implements GravitonBundleInterface
 {
     /**
      * {@inheritDoc}
@@ -45,19 +44,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-            new GravitonExceptionBundle(),
-            new GravitonDocumentBundle(),
-            new GravitonSchemaBundle(),
-            new GravitonRestBundle(),
-            new GravitonI18nBundle(),
-            new GravitonGeneratorBundle(),
-            new GravitonPersonBundle(),
-            new GravitonCacheBundle(),
-            new GravitonLogBundle(),
-            new GravitonSecurityBundle(),
-            new GravitonSwaggerBundle(),
-            new GravitonFileBundle(),
-            new GravitonMessageBundle(),
+
         );
     }
 }

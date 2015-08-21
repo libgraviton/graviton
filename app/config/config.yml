@@ -175,6 +175,17 @@ old_sound_rabbit_mq:
         default:
             connection: default
             exchange_options:
-                name: default
-                type: direct
+                name: test-topic
+                type: topic
     consumers:
+        test:
+            connection: default
+            exchange_options:
+                name: test-topic
+                type: topic
+            queue_options:
+                routing_keys:
+                    - gugus.*
+                    - gugus
+                    - console.*
+            callback:         test_consumer

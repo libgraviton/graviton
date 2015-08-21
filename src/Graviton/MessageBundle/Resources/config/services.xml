@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="graviton.message.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
+        <parameter key="graviton.message.doctrineeventsubscriber.class">Graviton\MessageBundle\Event\DoctrineEventSubscriber</parameter>
+    </parameters>
+    <services>
+        <!-- Serializer / Serializer context -->
+        <service id="graviton.message.serializer" alias="serializer">
+            <call method="setSerializerContext">
+                <argument type="service" id="graviton.message.serializer.serializercontext"/>
+            </call>
+            <call method="setDeserializerContext">
+                <argument type="service" id="graviton.message.serializer.deserializercontext"/>
+            </call>
+        </service>
+        <service id="graviton.message.serializer.serializercontext"
+                 class="%graviton.message.serializer.serializercontext.class%">
+            <call method="setSerializeNull">
+                <argument type="constant">false</argument>
+            </call>
+        </service>
+        <service id="graviton.message.doctrineeventsubscriber" class="%graviton.message.doctrineeventsubscriber.class%">
+            <argument type="service" id="graviton.message.serializer" />
+            <argument type="service" id="old_sound_rabbit_mq.default_producer" />
+            <tag name="doctrine_mongodb.odm.event_subscriber" />
+        </service>
+    </services>
+</container>
