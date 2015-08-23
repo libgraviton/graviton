@@ -43,7 +43,7 @@
             {% endif %}
         {% endfor %}
 
-        {% if recordOriginModifiable is not null %}
+        {% if isrecordOriginFlagSet %}
             <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
         {% endif %}
 

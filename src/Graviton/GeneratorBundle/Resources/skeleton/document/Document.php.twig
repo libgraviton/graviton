@@ -28,7 +28,7 @@ class {{ document }} implements TranslatableDocumentInterface{% include 'documen
      */
     protected $deletedDate;
 
-{% if recordOriginModifiable is not null %}
+{% if isrecordOriginFlagSet %}
     /**
      * @var string $recordOrigin
      */
@@ -91,7 +91,7 @@ class {{ document }} implements TranslatableDocumentInterface{% include 'documen
     return $this->deletedDate;
     }
 
-{% if recordOriginModifiable is not null %}
+{% if isrecordOriginFlagSet %}
 
     /**
      * Can record origin be modified

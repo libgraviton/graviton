@@ -36,11 +36,11 @@
     "id": {
       "title": "ID",
       "description": "Unique identifier"
-{% if recordOriginModifiable is not null %}
+{% if isrecordOriginFlagSet %}
     },
     "recordOrigin": {
       "title": "record origin",
-      "description": "A small string like 'core' to determine the record origin"
+      "description": "A small string like 'core' to determine the record origin. Documents from some sources must not be modified. The 'core' value is defined as readonly by default."
 {% endif %}
     }
   },
