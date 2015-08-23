@@ -20,7 +20,7 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
     /**
      * @var DocumentModel
      */
-    private $stu;
+    private $sut;
 
     /**
      * @var RecordOriginInterface
@@ -40,7 +40,7 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $proxyBuilder = new ProxyBuilder("\Graviton\RestBundle\Model\DocumentModel");
-        $this->stu = $proxyBuilder
+        $this->sut = $proxyBuilder
             ->disableOriginalConstructor()
             ->setProperties(array('notModifiableOriginRecords'))
             ->setMethods(['checkIfOriginRecord'])
@@ -69,8 +69,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->method("getRecordOrigin")
             ->willReturn($recordOrigin);
 
-        $this->stu->notModifiableOriginRecords = $retContainerParam;
-        $this->stu->checkIfOriginRecord($this->testRecord);
+        $this->sut->notModifiableOriginRecords = $retContainerParam;
+        $this->sut->checkIfOriginRecord($this->testRecord);
     }
 
     /**
@@ -91,8 +91,8 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
             ->method("getRecordOrigin")
             ->willReturn('core');
 
-        $this->stu->notModifiableOriginRecords = array('core');
-        $this->stu->checkIfOriginRecord($this->testRecord);
+        $this->sut->notModifiableOriginRecords = array('core');
+        $this->sut->checkIfOriginRecord($this->testRecord);
     }
 
     /**
@@ -103,11 +103,11 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
     public function dataProvider()
     {
         return array(
-            array(false, array('core'), false, 'notCore'),
-            array(true, array('core'), false, 'notCore'),
-            array(true, array('core'), true, 'notCore'),
-            array(true, array('core'), true, null),
-            array(true, array('core', 'otherCore'), true, 'notCore'),
+            array(array('core'), false, 'notCore'),
+            array(array('core'), false, 'notCore'),
+            array(array('core'), true, 'notCore'),
+            array(array('core'), true, null),
+            array(array('core', 'otherCore'), true, 'notCore')
         );
     }
 }
