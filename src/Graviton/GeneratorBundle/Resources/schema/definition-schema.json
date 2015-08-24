@@ -209,7 +209,6 @@
         "fields": {
           "title": "Target fields",
           "type": "array",
-          "minItems": 1,
           "items": {
             "$ref": "#/definitions/targetField"
           }
