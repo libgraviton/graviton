@@ -12,6 +12,10 @@
       "title": "Is sub-document",
       "type": "boolean"
     },
+    "title": {
+      "title": "Definition title",
+      "type": "string"
+    },
     "description": {
       "title": "Definition description",
       "type": "string"
