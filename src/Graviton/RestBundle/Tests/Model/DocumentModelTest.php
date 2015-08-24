@@ -18,7 +18,7 @@ use lapistano\ProxyObject\ProxyBuilder;
 class DocumentModelTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var DocumentModel
+     * @var DocumentModel|object
      */
     private $sut;
 
@@ -50,7 +50,7 @@ class DocumentModelTest extends \PHPUnit_Framework_TestCase
     /**
      * CheckIfOriginRecord test
      *
-     * @param string $retContainerParam container parameter
+     * @param array  $retContainerParam container parameter
      * @param bool   $isModifiable      can record be modified
      * @param string $recordOrigin      record origin
      *
