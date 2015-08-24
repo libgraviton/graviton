@@ -67,14 +67,13 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
 
                     // cheap attempt for arrays..
                     if (is_array($val) && isset($val[0]->$refName) && isset($val[0]->$idName)) {
-                        // clear first..
-                        $setterFunction = 'set'.ucfirst($key);
-                        $thisRecord->$setterFunction(array());
-
-                        foreach ($val as $subkey => $subval) {
-                            $addFunction = 'add'.ucfirst($key);
-                            $thisRecord->$addFunction($this->getReference($subval->$refName.'-'.$subval->$idName));
+                        $relRecs = [];
+                        foreach ($val as $subval) {
+                            $relRecs[] = $this->getReference($subval->$refName.'-'.$subval->$idName);
                         }
+
+                        $setterFunction = 'set'.ucfirst($key);
+                        $thisRecord->$setterFunction($relRecs);
                     }
                 }
 
