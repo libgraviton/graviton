@@ -256,13 +256,29 @@ class ShowcaseControllerTest extends RestTestCase
     /**
      * Trigger a 301 Status code
      *
+     * @param string $url         requested url
+     * @param string $redirectUrl redirected url
+     * @dataProvider rqlDataProvider
      * @return void
      */
-    private function trigger301()
+    public function testTrigger301($url, $redirectUrl)
     {
         $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase');
+        $client->request('GET', $url);
         $this->assertEquals(301, $client->getResponse()->getStatusCode());
-        $this->assertEquals('http://localhost/hans/showcase/', $client->getResponse()->headers->get('Location'));
+        $this->assertEquals($redirectUrl, $client->getResponse()->headers->get('Location'));
+    }
+
+    /**
+     * Provides urls for the testTrigger301() test.
+     *
+     * @return array
+     */
+    public function rqlDataProvider()
+    {
+        return [
+            'rql' => ['url' => '/hans/showcase?id=blah' , 'redirect_url' => 'http://localhost/hans/showcase/?id=blah'],
+            'noRql' => ['url' => '/hans/showcase' , 'redirect_url' => 'http://localhost/hans/showcase/']
+        ];
     }
 }
