@@ -23,6 +23,13 @@
     "target": {
       "title": "Target definition",
       "$ref": "#/definitions/target"
+    },
+    "source": {
+      "title": "Source list",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/source"
+      }
     }
   },
   "required": [
@@ -133,6 +140,33 @@
     },
     "serviceFixture": {
       "type": "object",
+      "additionalProperties": true
+    },
+
+    "source": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Source type",
+          "$ref": "#/definitions/sourceType"
+        },
+        "params": {
+          "title": "Source params",
+          "$ref": "#/definitions/sourceParams"
+        }
+      },
+      "required": [
+        "type",
+        "params"
+      ],
+      "additionalProperties": false
+    },
+    "sourceType": {
+      "type": "string"
+    },
+    "sourceParams": {
+      "type": "object",
+      "properties": {},
       "additionalProperties": true
     },
 
