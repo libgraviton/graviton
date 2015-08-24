@@ -165,7 +165,7 @@ class ProductControllerTest extends RestTestCase
         $this->assertEquals('A product.', $schema->description);
         $this->assertEquals('object', $schema->type);
 
-        $this->assertEquals('integer', $schema->properties->id->type);
+        $this->assertEquals('string', $schema->properties->id->type);
         $this->assertEquals('ID', $schema->properties->id->title);
         $this->assertEquals('Unique identifier for a product.', $schema->properties->id->description);
         $this->assertContains('id', $schema->required);
