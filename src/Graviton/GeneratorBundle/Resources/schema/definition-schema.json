@@ -194,6 +194,18 @@
           "items": {
             "$ref": "#/definitions/targetField"
           }
+        },
+        "connectionName": {
+          "title": "Connection name",
+          "type": "string"
+        },
+        "collectionName": {
+          "title": "Collection name",
+          "$ref": "#/definitions/collectionName"
+        },
+        "sqlFile": {
+          "title": "SQL file path",
+          "type": "string"
         }
       },
       "required": [
