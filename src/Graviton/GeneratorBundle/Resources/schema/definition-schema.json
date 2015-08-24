@@ -231,7 +231,7 @@
         "length": {
           "title": "Field length",
           "type": "integer",
-          "minimum": 1
+          "minimum": 0
         },
         "readOnly": {
           "title": "Is field read-only",
