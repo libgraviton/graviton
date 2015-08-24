@@ -34,6 +34,17 @@
       "items": {
         "$ref": "#/definitions/source"
       }
+    },
+    "loadPackage": {
+      "title": "Package name",
+      "type": "string"
+    },
+    "dependencies": {
+      "title": "Definition dependencies",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/collectionName"
+      }
     }
   },
   "required": [
