@@ -115,7 +115,12 @@ class MainController
         );
 
         foreach ($services as $key => $val) {
-            $sortArr[$key] = $val['$ref'];
+            if (substr($val['$ref'], -1) === '/') {
+                $sortArr[$key] = $val['$ref'];
+
+            } else {
+                unset($services[$key]);
+            }
         }
 
         array_multisort($sortArr, SORT_ASC, $services);
