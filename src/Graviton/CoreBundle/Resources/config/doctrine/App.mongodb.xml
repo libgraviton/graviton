@@ -4,7 +4,7 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
   <document name="Graviton\CoreBundle\Document\App" repository-class="Graviton\CoreBundle\Repository\AppRepository">
     <field fieldName="id" type="string" id="true" strategy="UUID"/>
-    <field fieldName="title" type="string"/>
+    <field fieldName="name" type="string"/>
     <field fieldName="showInMenu" type="boolean"/>
     <field fieldName="order" type="int"/>
   </document>

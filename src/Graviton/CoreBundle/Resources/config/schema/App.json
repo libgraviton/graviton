@@ -5,8 +5,8 @@
       "title": "ID",
       "description": "Unique identifier for an app."
     },
-    "title": {
-      "title": "Title",
+    "name": {
+      "title": "Name",
       "description": "Display name for an app."
     },
     "showInMenu": {
@@ -20,7 +20,7 @@
   },
   "required": [
     "id",
-    "title",
+    "name",
     "showInMenu",
     "order"
   ]
