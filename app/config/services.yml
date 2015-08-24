@@ -9,10 +9,4 @@ services:
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
     test_consumer:
         class: Graviton\MessageBundle\Consumer\TestConsumer
-    event_dispatcherr:
-        class: Graviton\MessageBundle\Event\EventDispatcher
-        arguments:
-            - @service_container
-        calls:
-            - [setProducer, ["@old_sound_rabbit_mq.default_producer"]]
 

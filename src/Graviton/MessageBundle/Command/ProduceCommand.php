@@ -32,7 +32,7 @@ class ProduceCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $producer = $this->getContainer()->get('old_sound_rabbit_mq.default_producer');
+        $producer = $this->getContainer()->get('old_sound_rabbit_mq.job_producer');
         $producer->setContentType('application/json');
         $producer->publish(
             $input->getArgument('data'),

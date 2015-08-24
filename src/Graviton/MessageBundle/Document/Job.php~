@@ -1,0 +1,14 @@
+<?php
+
+namespace Graviton\MessageBundle\Document;
+
+class Job
+{
+
+    protected $id;
+
+    public function getId(){
+        return $this->id;
+    }
+
+}

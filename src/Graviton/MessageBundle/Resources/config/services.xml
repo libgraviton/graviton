@@ -3,29 +3,38 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="graviton.message.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
-        <parameter key="graviton.message.doctrineeventsubscriber.class">Graviton\MessageBundle\Event\DoctrineEventSubscriber</parameter>
+        <parameter key="graviton.message.doctrineeventpublisher.class">Graviton\MessageBundle\Service\DoctrineEventPublisher</parameter>
+        <parameter key="graviton.message.repository.job.class">Graviton\MessageBundle\Repository\JobRepository</parameter>
+        <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     </parameters>
     <services>
-        <!-- Serializer / Serializer context -->
-        <service id="graviton.message.serializer" alias="serializer">
-            <call method="setSerializerContext">
-                <argument type="service" id="graviton.message.serializer.serializercontext"/>
-            </call>
-            <call method="setDeserializerContext">
-                <argument type="service" id="graviton.message.serializer.deserializercontext"/>
+        <service id="graviton.message.jobproducer" parent="old_sound_rabbit_mq.job_producer">
+            <property name="registeredRoutingKeys[]">core.app.create</property>
+            <call method="setJobRepository">
+                <argument type="service" id="service_container" />
             </call>
         </service>
-        <service id="graviton.message.serializer.serializercontext"
-                 class="%graviton.message.serializer.serializercontext.class%">
-            <call method="setSerializeNull">
-                <argument type="constant">false</argument>
-            </call>
-        </service>
-        <service id="graviton.message.doctrineeventsubscriber" class="%graviton.message.doctrineeventsubscriber.class%">
-            <argument type="service" id="graviton.message.serializer" />
-            <argument type="service" id="old_sound_rabbit_mq.default_producer" />
+        <service id="graviton.message.doctrineeventpublisher" class="%graviton.message.doctrineeventpublisher.class%">
+            <argument type="service" id="graviton.message.jobproducer" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="router" />
             <tag name="doctrine_mongodb.odm.event_subscriber" />
+            <property name="documents['Graviton\CoreBundle\Document\App']">graviton.core.rest.app.get</property>
+        </service>
+        <service id="graviton.message.repository.job"
+             class="%graviton.message.repository.job.class%"
+             factory-service="doctrine_mongodb.odm.default_document_manager"
+             factory-method="getRepository">
+            <argument type="string">GravitonMessageBundle:JobStatus</argument>
+        </service>
+
+
+        <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
+        <!-- Routing loader -->
+        <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
+            <argument type="service" id="graviton.rest.routing.collection"/>
+            <argument>%graviton.rest.services%</argument>
+            <tag name="routing.loader"/>
         </service>
     </services>
 </container>
