@@ -65,12 +65,12 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
-        $this->assertEquals('Administration', $results[0]->title->en);
+        $this->assertEquals('Administration', $results[0]->name->en);
         $this->assertEquals(true, $results[0]->showInMenu);
         $this->assertEquals(2, $results[0]->order);
 
         $this->assertEquals('tablet', $results[1]->id);
-        $this->assertEquals('Tablet', $results[1]->title->en);
+        $this->assertEquals('Tablet', $results[1]->name->en);
         $this->assertEquals(true, $results[1]->showInMenu);
         $this->assertEquals(1, $results[1]->order);
 
@@ -171,7 +171,7 @@ class AppControllerTest extends RestTestCase
         $appData = [
             'showInMenu' => false,
             'order'      => 100,
-            'title'      => ['en' => 'Administration'],
+            'name'      => ['en' => 'Administration'],
         ];
 
         $client = static::createRestClient();
@@ -245,7 +245,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('admin', $results->id);
-        $this->assertEquals('Administration', $results->title->en);
+        $this->assertEquals('Administration', $results->name->en);
         $this->assertEquals(true, $results->showInMenu);
 
         $this->assertContains(
@@ -263,8 +263,8 @@ class AppControllerTest extends RestTestCase
     public function testPostApp()
     {
         $testApp = new \stdClass;
-        $testApp->title = new \stdClass;
-        $testApp->title->en = 'new Test App';
+        $testApp->name = new \stdClass;
+        $testApp->name->en = 'new Test App';
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
@@ -282,7 +282,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertEquals('new Test App', $results->title->en);
+        $this->assertEquals('new Test App', $results->name->en);
         $this->assertTrue($results->showInMenu);
         $this->assertContains(
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
@@ -335,8 +335,8 @@ class AppControllerTest extends RestTestCase
     public function testPostMalformedApp()
     {
         $testApp = new \stdClass;
-        $testApp->title = new \stdClass;
-        $testApp->title->en = 'new Test App';
+        $testApp->name = new \stdClass;
+        $testApp->name->en = 'new Test App';
         $testApp->showInMenu = true;
 
         // malform it ;-)
@@ -390,8 +390,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass();
         $helloApp->id = "tablet";
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = "Tablet";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Tablet";
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -406,7 +406,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertEquals('Tablet', $results->title->en);
+        $this->assertEquals('Tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
         $this->assertContains(
             '<http://localhost/core/app/tablet>; rel="self"',
@@ -424,8 +424,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass();
         $helloApp->id = "tablet";
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = "Tablet";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Tablet";
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -450,8 +450,8 @@ class AppControllerTest extends RestTestCase
     public function testPutAppNoIdInPayload()
     {
         $helloApp = new \stdClass();
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = 'New tablet';
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = 'New tablet';
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -465,7 +465,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals('tablet', $results->id);
-        $this->assertEquals('New tablet', $results->title->en);
+        $this->assertEquals('New tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
     }
 
@@ -478,8 +478,8 @@ class AppControllerTest extends RestTestCase
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
-        $isnogudApp->title = new \stdClass;
-        $isnogudApp->title->en = 'I don\'t exist';
+        $isnogudApp->name = new \stdClass;
+        $isnogudApp->name->en = 'I don\'t exist';
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -496,7 +496,7 @@ class AppControllerTest extends RestTestCase
     {
         $testApp = new \stdClass;
         $testApp->id = 'tablet';
-        $testApp->title = 'Tablet';
+        $testApp->name = 'Tablet';
         $testApp->showInMenu = true;
         $testApp->order = 1;
 
@@ -523,8 +523,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass;
         $helloApp->id = 'tablet';
-        $helloApp->title = new \stdClass;
-        $helloApp->title->en = 'Tablet';
+        $helloApp->name = new \stdClass;
+        $helloApp->name->en = 'Tablet';
         $helloApp->showInMenu = [];
 
         $client = static::createRestClient();
@@ -634,12 +634,12 @@ class AppControllerTest extends RestTestCase
     public function searchableTranslationDataProvider()
     {
         return [
-            'simple-de' => array('eq(title.de,Die%20Administration)', 1),
-            'non-existent' => array('eq(title.de,Administration)', 0),
-            'english' => array('eq(title.en,Administration)', 1),
-            'no-lang' => array('eq(title,Administration)', 1),
-            'glob' => array('like(title.de,*Administr*)', 1),
-            'all-glob' => array('like(title.de,*a*)', 2)
+            'simple-de' => array('eq(name.de,Die%20Administration)', 1),
+            'non-existent' => array('eq(name.de,Administration)', 0),
+            'english' => array('eq(name.en,Administration)', 1),
+            'no-lang' => array('eq(name,Administration)', 1),
+            'glob' => array('like(name.de,*Administr*)', 1),
+            'all-glob' => array('like(name.de,*a*)', 2)
         ];
     }
 
@@ -694,12 +694,12 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
         $this->assertContains('id', $schema->required);
 
-        $this->assertEquals('object', $schema->properties->title->type);
-        $this->assertEquals('translatable', $schema->properties->title->format);
-        $this->assertEquals('Title', $schema->properties->title->title);
-        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
-        $this->assertEquals('string', $schema->properties->title->properties->en->type);
-        $this->assertContains('title', $schema->required);
+        $this->assertEquals('object', $schema->properties->name->type);
+        $this->assertEquals('translatable', $schema->properties->name->format);
+        $this->assertEquals('Name', $schema->properties->name->title);
+        $this->assertEquals('Display name for an app.', $schema->properties->name->description);
+        $this->assertEquals('string', $schema->properties->name->properties->en->type);
+        $this->assertContains('name', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);
         $this->assertEquals('Show in Menu', $schema->properties->showInMenu->title);
