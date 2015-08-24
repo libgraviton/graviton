@@ -214,8 +214,7 @@
       "additionalProperties": false
     },
     "targetIndex": {
-      "type": "object",
-      "additionalProperties": true
+      "type": "string"
     },
     "targetRelation": {
       "type": "object",
