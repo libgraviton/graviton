@@ -88,7 +88,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             JsonDefinitionField::TYPE_DECIMAL => 'float',
             JsonDefinitionField::TYPE_DATETIME => 'date',
             JsonDefinitionField::TYPE_BOOLEAN => 'boolean',
-            JsonDefinitionField::TYPE_OBJECT => 'object',
+            JsonDefinitionField::TYPE_OBJECT => 'hash',
             JsonDefinitionField::TYPE_EXTREF => 'extref',
         ];
         return array_map(
@@ -131,7 +131,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             JsonDefinitionField::TYPE_DECIMAL => 'double',
             JsonDefinitionField::TYPE_DATETIME => 'DateTime',
             JsonDefinitionField::TYPE_BOOLEAN => 'boolean',
-            JsonDefinitionField::TYPE_OBJECT => 'array',
+            JsonDefinitionField::TYPE_OBJECT => 'Graviton\DocumentBundle\Entity\Hash',
             JsonDefinitionField::TYPE_EXTREF => 'string',
         ];
         return array_map(
