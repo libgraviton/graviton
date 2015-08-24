@@ -153,7 +153,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
-        $manager->flush();
+        $manager->flush($entity);
 
         return $this->find($entity->getId());
     }
