@@ -36,7 +36,7 @@ interface DefinitionElementInterface
 
     const TYPE_EXTREF = 'extref';
 
-    const REL_TYPE_REF = 'reference';
+    const REL_TYPE_REF = 'ref';
 
     const REL_TYPE_EMBED = 'embed';
 

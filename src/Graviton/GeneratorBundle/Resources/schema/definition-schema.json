@@ -104,7 +104,7 @@
     "relationType": {
       "enum": [
         "embed",
-        "reference"
+        "ref"
       ]
     },
     "routerBase": {
