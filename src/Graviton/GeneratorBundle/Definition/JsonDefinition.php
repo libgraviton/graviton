@@ -373,7 +373,7 @@ class JsonDefinition
     public function isRecordOriginModifiable()
     {
         $retVal = false;
-        if ($this->checkRecordOriginFlag()) {
+        if ($this->isRecordOriginFlagSet()) {
             $retVal = $this->def->getService()->getRecordOriginModifiable();
         }
 
@@ -385,7 +385,7 @@ class JsonDefinition
      *
      * @return bool
      */
-    public function checkRecordOriginFlag()
+    public function isRecordOriginFlagSet()
     {
         $retVal = false;
         if ($this->def->getService() !== null

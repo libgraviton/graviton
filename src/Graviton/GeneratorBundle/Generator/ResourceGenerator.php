@@ -163,7 +163,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
-            ->setParameter('isrecordOriginFlagSet', $this->json->checkRecordOriginFlag())
+            ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->getParameters();
 
