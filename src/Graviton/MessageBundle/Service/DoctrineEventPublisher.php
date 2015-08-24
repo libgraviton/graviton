@@ -154,5 +154,4 @@ class DoctrineEventPublisher implements EventSubscriber
     {
         $document = new JobStatus();
     }
-
 }

@@ -23,5 +23,4 @@ class GravitonMessageExtension extends GravitonBundleExtension
     {
         return __DIR__.'/../Resources/config';
     }
-
 }
