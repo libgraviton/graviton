@@ -16,7 +16,7 @@ use JMS\Serializer\DeserializationContext;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class {{ document }} implements TranslatableDocumentInterface{% include 'document/RecordOriginInterfaceDefinition.php.twig' %}
+class {{ document }} implements TranslatableDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
     /**
      * @var MongoId $id
