@@ -117,7 +117,7 @@ class ValidateDefinitionCommand extends Command
         try {
             return $this->validator->validateJsonDefinition($json);
         } catch (\Exception $e) {
-            return new Error('', $e->getMessage());
+            return [new Error('', $e->getMessage())];
         }
     }
 
