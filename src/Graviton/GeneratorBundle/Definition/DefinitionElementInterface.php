@@ -22,6 +22,8 @@ interface DefinitionElementInterface
 
     const TYPE_LONG = 'bigint';
 
+    const TYPE_FLOAT = 'float';
+
     const TYPE_DOUBLE = 'double';
 
     const TYPE_DECIMAL = 'decimal';
