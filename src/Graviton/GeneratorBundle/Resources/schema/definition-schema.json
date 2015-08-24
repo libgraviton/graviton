@@ -71,6 +71,7 @@
       "enum": [
         "string",
         "varchar",
+        "text",
         "int",
         "bigint",
         "float",
@@ -87,6 +88,7 @@
       "enum": [
         "STRING",
         "VARCHAR",
+        "TEXT",
         "INT",
         "BIGINT",
         "FLOAT",
