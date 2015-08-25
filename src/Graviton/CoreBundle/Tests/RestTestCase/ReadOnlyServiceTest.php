@@ -38,35 +38,54 @@ class ReadOnlyServiceTest extends RestTestCase
      *
      * @return void
      */
-    public function testReadOnlyService()
+    public function testAllowedMethod()
     {
-        $url = "/testcase/readonly/";
-
         $client = static::createRestClient();
-        $client->request('GET', $url);
+        $client->request('GET', "/testcase/readonly/");
 
         $response = $client->getResponse();
         $result = $client->getResults();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertCount(2, $result);
+    }
 
+    /**
+     * test not allowed methods of a readOnly service
+     *
+     * @dataProvider dataProvider
+     *
+     * @param string $method http method
+     * @param string $url    url
+     * @param object $entry  entry
+     *
+     * @return void
+     */
+    public function testNotAllowedMethod($method, $url, $entry)
+    {
+        $client = static::createRestClient();
+        $client->request($method, $url, array(), array(), array(), $entry);
+        $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
+        $this->assertEquals("Method Not Allowed", $client->getResults()->error->message);
+    }
+
+    /**
+     * data provider
+     *
+     * @return array
+     */
+    public function dataProvider()
+    {
+        $url = "/testcase/readonly/";
         $testEntry = (object) [
             "name" => "otherTest",
         ];
-        $client = static::createRestClient();
-        $client->post($url, $testEntry);
-        $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
-        $this->assertEquals("Method Not Allowed", $client->getResults()->error->message);
 
-        $client = static::createRestClient();
-        $client->put($url.'100', $testEntry);
-        $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
-        $this->assertEquals("Method Not Allowed", $client->getResults()->error->message);
-
-        $client = static::createRestClient();
-        $client->request('DELETE', $url.'100', array(), array(), array(), $testEntry);
-        $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
-        $this->assertEquals("Method Not Allowed", $client->getResults()->error->message);
+        return array(
+            array('POST', $url, $testEntry),
+            array('PUT', $url.'101', $testEntry),
+            array('PUT', $url.'111', $testEntry),
+            array('DELETE', $url.'101', $testEntry),
+        );
     }
 }
