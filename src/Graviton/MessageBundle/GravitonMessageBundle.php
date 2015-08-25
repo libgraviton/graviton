@@ -35,5 +35,4 @@ class GravitonMessageBundle extends Bundle implements GravitonBundleInterface
 
         );
     }
-
 }

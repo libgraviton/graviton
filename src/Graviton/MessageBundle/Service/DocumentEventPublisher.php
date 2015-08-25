@@ -55,9 +55,9 @@ class DocumentEventPublisher implements EventSubscriber
     protected $router = null;
 
     /**
-     * @param ProducerInterface $rabbitMqProducer
-     * @param LoggerInterface $logger
-     * @param RouterInterface $router
+     * @param ProducerInterface $rabbitMqProducer RabbitMQ dependency
+     * @param LoggerInterface   $logger           Logger dependency
+     * @param RouterInterface   $router           Router dependency
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -84,7 +84,9 @@ class DocumentEventPublisher implements EventSubscriber
     /**
      * Doctrine postPersist event listener
      *
-     * @param LifecycleEventArgs $args
+     * @param LifecycleEventArgs $args Event Arguments
+     *
+     * @return void
      */
     public function postPersist(LifecycleEventArgs $args)
     {
@@ -94,7 +96,9 @@ class DocumentEventPublisher implements EventSubscriber
     /**
      * Doctrine postUpdate event listener
      *
-     * @param LifecycleEventArgs $args
+     * @param LifecycleEventArgs $args Event Arguments
+     *
+     * @return void
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
@@ -105,7 +109,9 @@ class DocumentEventPublisher implements EventSubscriber
     /**
      * Doctrine postRemove event listener
      *
-     * @param LifecycleEventArgs $args
+     * @param LifecycleEventArgs $args Event Arguments
+     *
+     * @return void
      */
     public function postRemove(LifecycleEventArgs $args)
     {
@@ -117,7 +123,7 @@ class DocumentEventPublisher implements EventSubscriber
      * Transforms a routeName into a rabbitmq topic based routing key.
      *
      * @param string $routeName The routeName
-     * @param string $suffix Suffix to append to the routing key
+     * @param string $suffix    Suffix to append to the routing key
      * @return string The routing key
      */
     private function toRoutingKey($routeName, $suffix = '')
@@ -130,8 +136,8 @@ class DocumentEventPublisher implements EventSubscriber
     /**
      * Transforms a given routeName and resource id to a resource URL.
      *
-     * @param $routeName The fully qualified route name
-     * @param $id The resource id
+     * @param string $routeName The fully qualified route name
+     * @param string $id        The resource id
      * @return string The generated URL
      */
     private function toUrl($routeName, $id)
@@ -146,8 +152,8 @@ class DocumentEventPublisher implements EventSubscriber
      * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
      * The message and routing key get determined by a given document and an action name.
      *
-     * @param $document The document for determining message and routin key
-     * @param $event The action name
+     * @param object          $document        The document for determining message and routin key
+     * @param string          $event           The action name
      * @param DocumentManager $documentManager A document manager to use for creating the JobStatus document
      * @return bool Whether a message has been successfully sent to the message bus or not
      */
@@ -185,5 +191,4 @@ class DocumentEventPublisher implements EventSubscriber
         $documentManager->flush();
         return $documentManager->find(get_class($document), $document->getId());
     }
-
 }

@@ -4,7 +4,7 @@
  * Consumes RabbitMQ messages and dumps them.
  */
 
-namespace Graviton\MessageBundle\Consumer;
+namespace Graviton\MessageBundle\Service;
 
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -23,6 +23,8 @@ class DumpConsumer implements ConsumerInterface
      * Callback executed when a message is received. Dumps the message body, delivery_info and properties.
      *
      * @param AMQPMessage $msg The rceived message.
+     *
+     * @return void
      */
     public function execute(AMQPMessage $msg)
     {

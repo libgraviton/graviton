@@ -30,31 +30,35 @@ class MessageProducer extends Producer
     public $registeredRoutingKeys = array();
 
     /**
-     * @override
+     * {@inheritDoc}
      *
      * Publishes a given message to the messaging bus.
      * If not already set, reply_to will be set to the default value.
      *
      * @see replyTo
      *
-     * @param string $msgBody The message
-     * @param string $routingKey The routing key
-     * @param array $additionalProperties All additional properties
+     * @param string $msgBody              The message
+     * @param string $routingKey           The routing key
+     * @param array  $additionalProperties All additional properties
      * @throws UnknownRoutingKeyException When the given routing key is not registered
+     *
+     * @return void
      */
     public function publish($msgBody, $routingKey = '', $additionalProperties = array())
     {
         $additionalProperties['reply_to'] = isset($additionalProperties['reply_to']) ?
             $additionalProperties['reply_to'] : $this->replyTo;
         $this->validateRoutingKey($routingKey);
-       parent::publish($msgBody, $routingKey, $additionalProperties);
+        parent::publish($msgBody, $routingKey, $additionalProperties);
     }
 
     /**
      * Validates whether the given routing key is registered or not.
      *
-     * @param $routingKey The routing key
+     * @param string $routingKey The routing key
      * @throws UnknownRoutingKeyException When the given routing key is not registered.
+     *
+     * @return void
      */
     public function validateRoutingKey($routingKey)
     {
@@ -62,5 +66,4 @@ class MessageProducer extends Producer
             throw new UnknownRoutingKeyException($routingKey);
         }
     }
-
 }
