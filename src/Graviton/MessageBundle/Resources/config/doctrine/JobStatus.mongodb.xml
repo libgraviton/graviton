@@ -2,7 +2,7 @@
 <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-  <document name="Graviton\MessageBundle\Document\JobStatus" repository-class="Graviton\MessageBundle\Repository\JobStatusRepository">
+  <document name="Graviton\MessageBundle\Document\JobStatus">
     <field fieldName="id" type="id" id="true" strategy="UUID"/>
   </document>
 </doctrine-mongo-mapping>

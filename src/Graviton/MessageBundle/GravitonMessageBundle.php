@@ -6,19 +6,7 @@
 namespace Graviton\MessageBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\CacheBundle\GravitonCacheBundle;
-use Graviton\ConsultationBundle\GravitonConsultationBundle;
-use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\ExceptionBundle\GravitonExceptionBundle;
-use Graviton\GeneratorBundle\GravitonGeneratorBundle;
-use Graviton\I18nBundle\GravitonI18nBundle;
-use Graviton\LogBundle\GravitonLogBundle;
-use Graviton\PersonBundle\GravitonPersonBundle;
-use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\SchemaBundle\GravitonSchemaBundle;
-use Graviton\SecurityBundle\GravitonSecurityBundle;
-use Graviton\SwaggerBundle\GravitonSwaggerBundle;
-use Graviton\FileBundle\GravitonFileBundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -47,4 +35,5 @@ class GravitonMessageBundle extends Bundle implements GravitonBundleInterface
 
         );
     }
+
 }
