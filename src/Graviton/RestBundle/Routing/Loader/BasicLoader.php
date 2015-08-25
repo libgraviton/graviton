@@ -106,6 +106,10 @@ class BasicLoader extends Loader
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig);
         $this->routes->add($resource . '.options', $actionOptions);
 
+        $actionOptionsNoSlash = ActionUtils::getRouteOptions($service, $serviceConfig);
+        $actionOptionsNoSlash->setPath(substr($actionOptionsNoSlash->getPath(), 0, -1));
+        $this->routes->add($resource . '.optionsNoSlash', $actionOptionsNoSlash);
+
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection');
         $this->routes->add($resource . '.canonicalSchema', $actionOptions);
 
@@ -138,6 +142,10 @@ class BasicLoader extends Loader
 
         $actionPut = ActionUtils::getRoutePut($service, $serviceConfig);
         $this->routes->add($resource . '.put', $actionPut);
+
+        $actionPostNoSlash = ActionUtils::getRoutePost($service, $serviceConfig);
+        $actionPostNoSlash->setPath(substr($actionPostNoSlash->getPath(), 0, -1));
+        $this->routes->add($resource . '.postNoSlash', $actionPostNoSlash);
 
         $actionPatch = ActionUtils::getRoutePatch($service, $serviceConfig);
         $this->routes->add($resource . '.patch', $actionPatch);

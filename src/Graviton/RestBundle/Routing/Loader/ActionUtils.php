@@ -55,7 +55,7 @@ class ActionUtils
         );
 
         foreach ($parameters as $paramName => $paramPattern) {
-            $pattern .= '/{' . $paramName . '}';
+            $pattern .= '{' . $paramName . '}';
             $requirements[$paramName] = $paramPattern;
         }
 
@@ -78,14 +78,14 @@ class ActionUtils
     private static function getBaseFromService($service, $serviceConfig)
     {
         if (isset($serviceConfig[0]['router-base']) && strlen($serviceConfig[0]['router-base']) > 0) {
-            $base = $serviceConfig[0]['router-base'];
+            $base = $serviceConfig[0]['router-base'] . '/';
         } else {
             $parts = explode('.', $service);
 
             $entity = array_pop($parts);
             $module = $parts[1];
 
-            $base = '/' . $module . '/' . $entity;
+            $base = '/' . $module . '/' . $entity . '/';
         }
 
         return $base;
@@ -187,7 +187,7 @@ class ActionUtils
     public static function getCanonicalSchemaRoute($service, $serviceConfig, $type = 'item', $option = false)
     {
         $pattern = self::getBaseFromService($service, $serviceConfig);
-        $pattern = '/schema' . $pattern . '/' . $type;
+        $pattern = '/schema' . $pattern . $type;
 
         $action = 'schemaAction';
         $method = 'GET';
