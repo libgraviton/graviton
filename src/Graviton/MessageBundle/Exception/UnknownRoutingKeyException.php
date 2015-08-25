@@ -13,5 +13,4 @@ class UnknownRoutingKeyException extends Exception
             'Tried to send a message with routing key "' . $routingKey . '", which is unknown.'
             . ' Add it to the list of allowed routing keys to publish such messages.';
     }
-
 }

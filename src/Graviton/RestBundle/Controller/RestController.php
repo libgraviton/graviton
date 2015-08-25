@@ -212,7 +212,7 @@ class RestController
      *
      * @return self
      */
-    public function fetModel($model)
+    public function setModel($model)
     {
         $this->model = $model;
 
