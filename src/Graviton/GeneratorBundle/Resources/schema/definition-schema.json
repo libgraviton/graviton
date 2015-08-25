@@ -325,6 +325,10 @@
             ]
           },
           "uniqueItems": true
+        },
+        "explodeBy": {
+          "title": "For internal usage only",
+          "type": "string"
         }
       },
       "required": [
