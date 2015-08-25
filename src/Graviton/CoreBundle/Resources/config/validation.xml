@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
   <class name="Graviton\CoreBundle\Document\App">
-    <property name="title">
+    <property name="name">
       <constraint name="NotBlank"/>
     </property>
     <property name="showInMenu">

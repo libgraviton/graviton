@@ -136,15 +136,15 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 'http://localhost/core/app/test',
-                \MongoDBRef::create('App', 'test'),
+                (object) \MongoDBRef::create('App', 'test'),
             ],
             [
                 '/core/app/test',
-                \MongoDBRef::create('App', 'test'),
+                (object) \MongoDBRef::create('App', 'test'),
             ],
             [
                 'http://localhost/hans/showcase/blah',
-                \MongoDBRef::create('ShowCase', 'blah'),
+                (object) \MongoDBRef::create('ShowCase', 'blah'),
             ],
         ];
     }
@@ -152,9 +152,9 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getUrlProvider
      *
-     * @param array|object $ref     reference as from mongo
-     * @param string       $routeId name of route that should get loaded
-     * @param string       $url     url we expect to result from the conversion
+     * @param object $ref     reference as from mongo
+     * @param string $routeId name of route that should get loaded
+     * @param string $url     url we expect to result from the conversion
      *
      * @return void
      */
@@ -165,7 +165,7 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
             ->method('generate')
             ->with(
                 $routeId,
-                ['id' => is_array($ref) ? $ref['$id'] : $ref->{'$id'}]
+                ['id' => $ref->{'$id'}]
             )
             ->will($this->returnValue($url));
 
@@ -187,12 +187,12 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                \MongoDBRef::create('App', 'test'),
+                (object) \MongoDBRef::create('App', 'test'),
                 'graviton.core.rest.app.get',
                 'http://localhost/core/app/test',
             ],
             [
-                \MongoDBRef::create('Language', 'en'),
+                (object) \MongoDBRef::create('Language', 'en'),
                 'graviton.i18n.rest.language.get',
                 'http://localhost/i18n/language/en',
             ],

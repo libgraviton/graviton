@@ -69,7 +69,7 @@ class MainControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app>; rel="apps"; type="application/json"',
+            '<http://localhost/core/app/>; rel="apps"; type="application/json"',
             $response->headers->get('Link')
         );
     }
@@ -100,7 +100,7 @@ class MainControllerTest extends RestTestCase
             },
             $results->services
         );
-        $this->assertContains('http://localhost/core/app', $serviceRefs);
+        $this->assertContains('http://localhost/core/app/', $serviceRefs);
 
         $profiles = array_map(
             function ($service) {
@@ -156,11 +156,11 @@ class MainControllerTest extends RestTestCase
     {
         $services = [
             [
-                '$ref'    => 'http://localhost/core/product',
+                '$ref'    => 'http://localhost/core/product/',
                 'profile' => 'http://localhost/schema/core/product/collection'
             ],
             [
-                '$ref'    => 'http://localhost/core/app',
+                '$ref'    => 'http://localhost/core/app/',
                 'profile' => 'http://localhost/schema/core/app/collection'
             ],
         ];
@@ -203,11 +203,11 @@ class MainControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 [
-                    '$ref'    => 'http://localhost/core/app',
+                    '$ref'    => 'http://localhost/core/app/',
                     'profile' => 'http://localhost/schema/core/app/collection'
                 ],
                 [
-                    '$ref'    => 'http://localhost/core/product',
+                    '$ref'    => 'http://localhost/core/product/',
                     'profile' => 'http://localhost/schema/core/product/collection'
                 ],
             ],
