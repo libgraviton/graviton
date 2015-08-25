@@ -378,4 +378,36 @@ class JsonDefinition
 
         return $this->def->getService()->getRoles();
     }
+
+    /**
+     * Can record origin be modified
+     *
+     * @return bool
+     */
+    public function isRecordOriginModifiable()
+    {
+        $retVal = false;
+        if ($this->isRecordOriginFlagSet()) {
+            $retVal = $this->def->getService()->getRecordOriginModifiable();
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * check if the RecordOriginModifiable flag is set
+     *
+     * @return bool
+     */
+    public function isRecordOriginFlagSet()
+    {
+        $retVal = false;
+        if ($this->def->getService() !== null
+            && is_object($this->def->getService())
+            && $this->def->getService()->getRecordOriginModifiable() !== null) {
+            $retVal = true;
+        }
+
+        return $retVal;
+    }
 }

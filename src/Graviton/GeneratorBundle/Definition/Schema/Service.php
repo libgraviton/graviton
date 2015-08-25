@@ -18,6 +18,10 @@ class Service
      */
     private $readOnly;
     /**
+     * @var bool
+     */
+    private $recordOriginModifiable;
+    /**
      * @var string
      */
     private $routerBase;
@@ -93,6 +97,25 @@ class Service
     public function setReadOnly($readOnly)
     {
         $this->readOnly = $readOnly;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRecordOriginModifiable()
+    {
+        return $this->recordOriginModifiable;
+    }
+
+    /**
+     * @param bool $recordOriginModifiable Is origin record modifiable
+     * @return $this
+     */
+    public function setRecordOriginModifiable($recordOriginModifiable)
+    {
+        $this->recordOriginModifiable = $recordOriginModifiable;
+
         return $this;
     }
 
