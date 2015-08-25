@@ -71,7 +71,7 @@
     },
     "roleName": {
       "type": "string",
-      "pattern": "^[A_Z0-9_-]+$"
+      "pattern": "^[A-Z0-9_-]+$"
     },
 
     "definition": {
