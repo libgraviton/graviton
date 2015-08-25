@@ -19,8 +19,12 @@
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
+        <parameter key="graviton.rest.model.documentmodel.class">Graviton\RestBundle\Model\DocumentModel</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
         <parameter key="graviton.rest.listener.rqlqueryrequestlistener.allowedroutes" type="collection"/>
+        <parameter key="graviton.rest.not_modifiable.origin.records" type="collection">
+            <parameter type="string">core</parameter>
+        </parameter>
     </parameters>
     <services>
         <!-- Serializer / Serializer context -->
@@ -80,7 +84,10 @@
         </service>
 
         <!-- Model -->
-        <service id="graviton.rest.model" abstract="true" parent="graviton.schema.model.schemamodel"/>
+        <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
+            <argument type="service" id="graviton.rql.visitor.mongodb" />
+            <argument>%graviton.rest.not_modifiable.origin.records%</argument>
+        </service>
 
         <!-- Response object wrapper with scope request (get a new one for each request) -->
         <service id="graviton.rest.response" class="%graviton.rest.response.class%"/>

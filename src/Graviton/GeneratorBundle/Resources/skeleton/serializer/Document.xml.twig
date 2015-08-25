@@ -17,6 +17,11 @@
     <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
         <type><![CDATA[DateTime]]></type>
     </property>
+{% if isrecordOriginFlagSet %}
+    <property name="recordOrigin" serialized-name="recordOrigin" accessor-getter="getRecordOrigin" accessor-setter="setRecordOrigin">
+        <type><![CDATA[string]]></type>
+    </property>
+{% endif %}
 
 {% for field in fields %}
 
