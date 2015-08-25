@@ -3,20 +3,21 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="graviton.message.doctrineeventpublisher.class">Graviton\MessageBundle\Service\DocumentEventPublisher</parameter>
+        <parameter key="graviton.message.documenteventpublisher.class">Graviton\MessageBundle\Service\DocumentEventPublisher</parameter>
+        <parameter key="graviton.message.consumer.dump.class">Graviton\MessageBundle\Consumer\DumpConsumer</parameter>
         <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     </parameters>
     <services>
-        <service id="graviton.message.consumer.dump" class="Graviton\MessageBundle\Consumer\DumpConsumer" />
+        <service id="graviton.message.consumer.dump" class="%graviton.message.consumer.dump.class%" />
         <service id="graviton.message.jobproducer" parent="old_sound_rabbit_mq.job_producer">
-            <property name="registeredRoutingKeys[]">core.app.create</property>
+            <property name="registeredRoutingKeys">%graviton.message.registeredroutingkeys%</property>
         </service>
-        <service id="graviton.message.doctrineeventpublisher" class="%graviton.message.doctrineeventpublisher.class%">
+        <service id="graviton.message.documenteventpublisher" class="%graviton.message.documenteventpublisher.class%">
             <argument type="service" id="graviton.message.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
             <tag name="doctrine_mongodb.odm.event_subscriber" />
-            <property name="documents['Graviton\CoreBundle\Document\App']">graviton.core.rest.app.get</property>
+            <property name="documents">%graviton.message.documents%</property>
         </service>
 
         <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>

@@ -21,7 +21,7 @@ class DumpConsumer implements ConsumerInterface
 
     /**
      * Callback executed when a message is received. Dumps the message body, delivery_info and properties.
-     * 
+     *
      * @param AMQPMessage $msg The rceived message.
      */
     public function execute(AMQPMessage $msg)
