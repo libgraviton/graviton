@@ -13,7 +13,7 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Graviton\RestBundle\Model\ModelInterface;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
@@ -41,7 +41,7 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 class RestController
 {
     /**
-     * @var ModelInterface
+     * @var DocumentModel
      */
     private $model;
 
@@ -211,7 +211,7 @@ class RestController
      *
      * @throws \Exception in case no model was defined.
      *
-     * @return ModelInterface $model Model
+     * @return DocumentModel $model Model
      */
     public function getModel()
     {
@@ -225,11 +225,11 @@ class RestController
     /**
      * Set the model class
      *
-     * @param object $model Model class
+     * @param DocumentModel $model Model class
      *
      * @return self
      */
-    public function setModel($model)
+    public function setModel(DocumentModel $model)
     {
         $this->model = $model;
 
