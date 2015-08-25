@@ -33,6 +33,8 @@
   <php>
     <ini name="error_reporting" value="E_ALL"/>
     <ini name="date.timezone" value="UTC"/>
+    <ini name="xdebug.max_nesting_level" value="200"/>
+    <ini name="memory_limit" value="-1"/>
   </php>
   <listeners>
     <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />

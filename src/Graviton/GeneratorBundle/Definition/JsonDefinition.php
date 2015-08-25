@@ -317,16 +317,18 @@ class JsonDefinition
      * @param string       $name       Field name
      * @param Schema\Field $definition Field
      *
-     * @return JsonDefinitionField
+     * @return DefinitionElementInterface
      */
     private function processSimpleField($name, Schema\Field $definition)
     {
-        $field = new JsonDefinitionField($name, $definition);
+        if (strpos($definition->getType(), 'class:') === 0) {
+            $field = new JsonDefinitionRel($name, $definition, $this->getRelation($name));
+        } else {
+            $field = new JsonDefinitionField($name, $definition);
+        }
 
-        $relations = $this->getRelations();
-        if (isset($relations[$definition->getName()]) &&
-            $relations[$definition->getName()]->getType() === DefinitionElementInterface::REL_TYPE_EMBED) {
-            $field->setRelType(DefinitionElementInterface::REL_TYPE_EMBED);
+        if (substr($definition->getType(), -2) === '[]') {
+            $field = new JsonDefinitionArray($name, $field);
         }
 
         return $field;
@@ -352,6 +354,18 @@ class JsonDefinition
     }
 
     /**
+     * Get relation by field name
+     *
+     * @param string $field Field name
+     * @return Schema\Relation|null
+     */
+    private function getRelation($field)
+    {
+        $relations = $this->getRelations();
+        return isset($relations[$field]) ? $relations[$field] : null;
+    }
+
+    /**
      * Provides the role set defined in the service section.
      *
      * @return array
@@ -363,5 +377,37 @@ class JsonDefinition
         }
 
         return $this->def->getService()->getRoles();
+    }
+
+    /**
+     * Can record origin be modified
+     *
+     * @return bool
+     */
+    public function isRecordOriginModifiable()
+    {
+        $retVal = false;
+        if ($this->isRecordOriginFlagSet()) {
+            $retVal = $this->def->getService()->getRecordOriginModifiable();
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * check if the RecordOriginModifiable flag is set
+     *
+     * @return bool
+     */
+    public function isRecordOriginFlagSet()
+    {
+        $retVal = false;
+        if ($this->def->getService() !== null
+            && is_object($this->def->getService())
+            && $this->def->getService()->getRecordOriginModifiable() !== null) {
+            $retVal = true;
+        }
+
+        return $retVal;
     }
 }

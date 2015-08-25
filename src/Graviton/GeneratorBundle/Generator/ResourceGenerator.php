@@ -163,6 +163,8 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
+            ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
+            ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
@@ -747,13 +749,7 @@ class ResourceGenerator extends AbstractGenerator
                     'service' => $repoName
                 ],
             ),
-            null,
-            [
-                [
-                    'type' => 'service',
-                    'id' => 'graviton.rql.visitor.mongodb',
-                ],
-            ]
+            null
         );
 
         $this->persistServicesXML($dir);

@@ -64,7 +64,7 @@ class ShowcaseControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/hans/showcase', $showCase);
+        $client->post('/hans/showcase/', $showCase);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         $this->assertNull($client->getResults());
 
@@ -138,7 +138,7 @@ class ShowcaseControllerTest extends RestTestCase
         );
 
         $client = static::createRestClient();
-        $client->post('/hans/showcase', $document);
+        $client->post('/hans/showcase/', $document);
         $response = $client->getResponse();
 
         $client = static::createRestClient();
@@ -213,18 +213,10 @@ class ShowcaseControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
-        $initial = json_decode(
-            file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-initial.json'),
-            false
-        );
         $filtred = json_decode(
             file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-filtred.json'),
             false
         );
-
-        $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase');
-        $this->assertEquals($initial, $client->getResults());
 
         $fields = [
             'someFloatyDouble',
@@ -238,7 +230,7 @@ class ShowcaseControllerTest extends RestTestCase
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
 
         $client = static::createRestClient();
-        $client->request('GET', '/hans/showcase?'.$rqlSelect);
+        $client->request('GET', '/hans/showcase/?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
     }
 
@@ -259,5 +251,34 @@ class ShowcaseControllerTest extends RestTestCase
                 '~' => '%7E',
             ]
         );
+    }
+
+    /**
+     * Trigger a 301 Status code
+     *
+     * @param string $url         requested url
+     * @param string $redirectUrl redirected url
+     * @dataProvider rqlDataProvider
+     * @return void
+     */
+    public function testTrigger301($url, $redirectUrl)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', $url);
+        $this->assertEquals(301, $client->getResponse()->getStatusCode());
+        $this->assertEquals($redirectUrl, $client->getResponse()->headers->get('Location'));
+    }
+
+    /**
+     * Provides urls for the testTrigger301() test.
+     *
+     * @return array
+     */
+    public function rqlDataProvider()
+    {
+        return [
+            'rql' => ['url' => '/hans/showcase?id=blah' , 'redirect_url' => 'http://localhost/hans/showcase/?id=blah'],
+            'noRql' => ['url' => '/hans/showcase' , 'redirect_url' => 'http://localhost/hans/showcase/']
+        ];
     }
 }
