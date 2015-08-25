@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Document holding a jobs status.
  */
@@ -17,12 +16,12 @@ class JobStatus
 {
 
     /**
-     * @var id
+     * @var string id
      */
     protected $id;
 
     /**
-     * @return mixed The id
+     * @return string The id
      */
     public function getId()
     {

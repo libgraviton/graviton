@@ -30,7 +30,7 @@ class DocumentEventPublisher implements EventSubscriber
 
     /**
      * @var array Holds additionalProperties to be sent with the message.
-     * @see puglishMessage()
+     * @see publishMessage()
      */
     public $additionalProperties = array();
 
@@ -152,7 +152,7 @@ class DocumentEventPublisher implements EventSubscriber
      * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
      * The message and routing key get determined by a given document and an action name.
      *
-     * @param object          $document        The document for determining message and routin key
+     * @param object          $document        The document for determining message and routing key
      * @param string          $event           The action name
      * @param DocumentManager $documentManager A document manager to use for creating the JobStatus document
      * @return bool Whether a message has been successfully sent to the message bus or not
@@ -172,6 +172,7 @@ class DocumentEventPublisher implements EventSubscriber
                 return true;
             } catch (UnknownRoutingKeyException $e) {
                 $this->logger->warn($e->getMessage());
+                // @todo: set job status to failed
                 return false;
             }
         }

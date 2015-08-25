@@ -47,3 +47,4 @@ parameters:
     # graviton message bundle
     graviton.message.registeredroutingkeys: []
     graviton.message.documents: {}
+    graviton.message.consumer.dump.routingkeys: core.app.*

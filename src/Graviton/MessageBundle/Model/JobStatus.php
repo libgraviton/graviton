@@ -14,6 +14,6 @@ use Graviton\RestBundle\Model\DocumentModel;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class Job extends DocumentModel
+class JobStatus extends DocumentModel
 {
 }

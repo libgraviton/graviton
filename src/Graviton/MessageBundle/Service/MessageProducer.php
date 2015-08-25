@@ -18,7 +18,6 @@ use OldSound\RabbitMqBundle\RabbitMq\Producer;
  */
 class MessageProducer extends Producer
 {
-
     /**
      * @var string Defines the default reply_to property
      */
@@ -30,15 +29,13 @@ class MessageProducer extends Producer
     public $registeredRoutingKeys = array();
 
     /**
-     * {@inheritDoc}
-     *
      * Publishes a given message to the messaging bus.
      * If not already set, reply_to will be set to the default value.
      *
      * @see replyTo
      *
-     * @param string $msgBody              The message
-     * @param string $routingKey           The routing key
+     * @param string $msgBody              The message to be sent to the queueing server.
+     * @param string $routingKey           The worker channel identifier to be used (e.g. core.app.create)
      * @param array  $additionalProperties All additional properties
      * @throws UnknownRoutingKeyException When the given routing key is not registered
      *
@@ -60,7 +57,7 @@ class MessageProducer extends Producer
      *
      * @return void
      */
-    public function validateRoutingKey($routingKey)
+    protected function validateRoutingKey($routingKey)
     {
         if (!in_array($routingKey, $this->registeredRoutingKeys)) {
             throw new UnknownRoutingKeyException($routingKey);
