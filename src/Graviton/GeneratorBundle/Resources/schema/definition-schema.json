@@ -1,56 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/definition",
+
   "title": "JSON definition schema",
   "description": "Schema for JSON definition validation",
-  "type": "object",
-  "properties": {
-    "id": {
-      "title": "Definition ID",
-      "$ref": "#/definitions/collectionName"
-    },
-    "isSubDocument": {
-      "title": "Is sub-document",
-      "type": "boolean"
-    },
-    "title": {
-      "title": "Definition title",
-      "type": "string"
-    },
-    "description": {
-      "title": "Definition description",
-      "type": "string"
-    },
-    "service": {
-      "title": "Service definition",
-      "$ref": "#/definitions/service"
-    },
-    "target": {
-      "title": "Target definition",
-      "$ref": "#/definitions/target"
-    },
-    "source": {
-      "title": "Source list",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/source"
-      }
-    },
-    "loadPackage": {
-      "title": "Package name",
-      "type": "string"
-    },
-    "dependencies": {
-      "title": "Definition dependencies",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/collectionName"
-      }
-    }
-  },
-  "required": [
-    "id",
-    "target"
-  ],
+
   "definitions": {
     "collectionName": {
       "type": "string",
@@ -115,6 +69,63 @@
       "type": "string",
       "pattern": "^\/?[a-z0-9_-]+(\/[a-z0-9_-]+)*\/?$"
     },
+    "roleName": {
+      "type": "string",
+      "pattern": "^[A_Z0-9_-]+$"
+    },
+
+    "definition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Definition ID",
+          "$ref": "#/definitions/collectionName"
+        },
+        "isSubDocument": {
+          "title": "Is sub-document",
+          "type": "boolean"
+        },
+        "title": {
+          "title": "Definition title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Definition description",
+          "type": "string"
+        },
+        "service": {
+          "title": "Service definition",
+          "$ref": "#/definitions/service"
+        },
+        "target": {
+          "title": "Target definition",
+          "$ref": "#/definitions/target"
+        },
+        "source": {
+          "title": "Source list",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/source"
+          }
+        },
+        "loadPackage": {
+          "title": "Package name",
+          "type": "string"
+        },
+        "dependencies": {
+          "title": "Definition dependencies",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/collectionName"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "target"
+      ],
+      "additionalProperties": false
+    },
 
     "service": {
       "type": "object",
@@ -139,7 +150,7 @@
           "title": "Role list",
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/roleName"
           },
           "uniqueItems": true
         },
@@ -375,6 +386,5 @@
       ],
       "additionalProperties": false
     }
-  },
-  "additionalProperties": false
+  }
 }
