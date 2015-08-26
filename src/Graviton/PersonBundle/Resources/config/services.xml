@@ -12,14 +12,6 @@
   </parameters>
   <services>
     <service id="graviton.person.controller.abstractcustomer" abstract="true" parent="graviton.rest.controller" class="%graviton.person.controller.abstractcustomer.class%">
-        <argument type="service" id="graviton.person.repository.customerdiff"/>
-    </service>
-    <service id="graviton.person.document.customerdiff" class="%graviton.person.document.customerdiff.class%"/>
-    <service id="graviton.person.repository.customerdiff"
-             class="%graviton.person.repository.customerdiff.class%"
-             factory-service="doctrine_mongodb.odm.default_document_manager"
-             factory-method="getRepository">
-      <argument type="string">GravitonPersonBundle:CustomerDiff</argument>
     </service>
     <service id="graviton.person.repository.personcontact"
              class="%graviton.person.repository.personcontact.class%"

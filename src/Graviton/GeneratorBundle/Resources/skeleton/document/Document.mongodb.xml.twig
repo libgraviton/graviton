@@ -47,5 +47,10 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
+
+        {% if isrecordOriginFlagSet %}
+            <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
+        {% endif %}
+
     </{{ docType }}>
 </doctrine-mongo-mapping>
