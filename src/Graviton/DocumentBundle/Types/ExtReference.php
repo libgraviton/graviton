@@ -39,14 +39,14 @@ class ExtReference extends Type
     /**
      * get php value when field is used as identifier
      *
-     * @param \MongoDBRef $value ref from mongodb
+     * @param array|object $value ref from mongodb
      *
      * @return string
      */
     public function convertToPHPValue($value)
     {
         try {
-            return $this->converter->getUrl($value);
+            return $this->converter->getUrl((object) $value);
         } catch (\InvalidArgumentException $e) {
             return '';
         }

@@ -29,7 +29,7 @@ class LoadAppData implements FixtureInterface
     {
         $tabletApp = new App;
         $tabletApp->setId('tablet');
-        $tabletApp->setTitle('Tablet');
+        $tabletApp->setName('Tablet');
         $tabletApp->setShowInMenu(true);
         $tabletApp->setOrder(1);
 
@@ -37,7 +37,7 @@ class LoadAppData implements FixtureInterface
 
         $adminApp = new App;
         $adminApp->setId('admin');
-        $adminApp->setTitle('Administration');
+        $adminApp->setName('Administration');
         $adminApp->setShowInMenu(true);
         $adminApp->setOrder(2);
 

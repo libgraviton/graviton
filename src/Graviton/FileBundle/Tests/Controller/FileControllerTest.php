@@ -52,7 +52,7 @@ class FileControllerTest extends RestTestCase
         // reset fixtures since we already have some from setUp
         $this->loadFixtures(array(), null, 'doctrine_mongodb');
         $client = static::createRestClient();
-        $client->request('GET', '/file');
+        $client->request('GET', '/file/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -72,7 +72,7 @@ class FileControllerTest extends RestTestCase
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
         $client = static::createRestClient();
         $client->post(
-            '/file',
+            '/file/',
             $fixtureData,
             [],
             [],
@@ -243,7 +243,7 @@ class FileControllerTest extends RestTestCase
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
         $client = static::createRestClient();
         $client->post(
-            '/file',
+            '/file/',
             $fixtureData,
             [],
             [],
@@ -280,7 +280,7 @@ class FileControllerTest extends RestTestCase
         $newData = "This is a new text!!!";
         $client = static::createRestClient();
         $client->post(
-            '/file',
+            '/file/',
             $fixtureData,
             [],
             [],

@@ -113,7 +113,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateNotAllowed()
     {
         $url = __METHOD__;
-        $extref = ['$ref' => 'App', '$id' => __LINE__];
+        $extref = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $constraint = new ExtReference();
         $constraint->allowedCollections = ['Product'];
@@ -139,7 +139,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateAllowedEmpty()
     {
         $url = __METHOD__;
-        $extref = ['$ref' => 'App', '$id' => __LINE__];
+        $extref = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $constraint = new ExtReference();
         $constraint->allowedCollections = null;
@@ -164,7 +164,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateAllowedAll()
     {
         $url = __METHOD__;
-        $extref = ['$ref' => 'App', '$id' => __LINE__];
+        $extref = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $constraint = new ExtReference();
         $constraint->allowedCollections = ['*'];
@@ -189,10 +189,10 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateAllowedNeeded()
     {
         $url = __METHOD__;
-        $extref = ['$ref' => 'App', '$id' => __LINE__];
+        $extref = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $constraint = new ExtReference();
-        $constraint->allowedCollections = ['App'];
+        $constraint->allowedCollections = [__METHOD__];
 
         $this->converter->expects($this->once())
             ->method('getDbRef')
