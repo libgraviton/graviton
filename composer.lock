@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c3da2dfae614a1057693f8a2b15eb6b1",
+    "hash": "318d420c398bdf5884938091bbfd99ac",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -162,7 +162,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/0b6e6cae88a3c9c359a796091ae9a2ba40f82859",
+                "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/69fd4782219ba22fcfe4c278de1eebbbe38f0950",
                 "reference": "0b6e6cae88a3c9c359a796091ae9a2ba40f82859",
                 "shasum": ""
             },
@@ -2169,7 +2169,7 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes Schmitt",
+                    "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -4032,16 +4032,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "191bb6219756c8cb54b448061232a2ebb853f9b9"
+                "reference": "708171bf9ace1726965c6f49c37b6dc534c33b3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/191bb6219756c8cb54b448061232a2ebb853f9b9",
-                "reference": "191bb6219756c8cb54b448061232a2ebb853f9b9",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/708171bf9ace1726965c6f49c37b6dc534c33b3f",
+                "reference": "708171bf9ace1726965c6f49c37b6dc534c33b3f",
                 "shasum": ""
             },
             "type": "library",
@@ -4056,10 +4056,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.5.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.6.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-07-27 08:30:06"
+            "time": "2015-08-19 10:23:04"
         },
         {
             "name": "johnkary/phpunit-speedtrap",

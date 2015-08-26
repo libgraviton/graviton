@@ -13,6 +13,7 @@
     <parameter key="kernel.listener.graviton_exception_rqlsyntaxerror.class">Graviton\ExceptionBundle\Listener\RqlSyntaxErrorListener</parameter>
     <parameter key="kernel.listener.graviton_exception_malformedinput_exception.class">Graviton\ExceptionBundle\Listener\MalformedInputExceptionListener</parameter>
     <parameter key="kernel.listener.graviton_exception_invalidjsonpatch_exception.class">Graviton\ExceptionBundle\Listener\InvalidJsonPatchExceptionListener</parameter>
+    <parameter key="kernel.listener.graviton_exception_recordoriginmodified_exception.class">Graviton\ExceptionBundle\Listener\RecordOriginExceptionListener</parameter>
   </parameters>
   <services>
     <!-- Abstract rest exception listener -->
@@ -78,5 +79,12 @@
              parent="kernel.listener.graviton_exception_rest_exception">
         <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
+
+      <!-- RecordOriginModified exception listener -->
+      <service id="kernel.listener.graviton_exception_recordoriginmodified_exception"
+               class="%kernel.listener.graviton_exception_recordoriginmodified_exception.class%"
+               parent="kernel.listener.graviton_exception_rest_exception">
+          <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
+      </service>
   </services>
 </container>

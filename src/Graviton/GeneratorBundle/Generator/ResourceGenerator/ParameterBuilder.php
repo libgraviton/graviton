@@ -43,9 +43,12 @@ class ParameterBuilder
                 $this->parameters['noIdField'] = true;
             }
             $this->parameters['parent'] = $value->getParentService();
+        } elseif ($name === 'recordOriginModifiable' && $value !== null) {
+            $this->parameters[$name] = ($value) ? 'true' : 'false';
         } else {
             $this->parameters[$name] = $value;
         }
+
         return $this;
     }
 
