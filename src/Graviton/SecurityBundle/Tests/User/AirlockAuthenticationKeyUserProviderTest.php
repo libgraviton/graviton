@@ -43,7 +43,7 @@ class AirlockAuthenticationKeyUserProviderTest extends \PHPUnit_Framework_TestCa
             ->method('getId')
             ->will($this->returnValue('515616161648151'));
 
-        $contractRepositoryMock = $this->getMockBuilder('\Doctrine\Common\Persistence\ObjectRepository')
+        $contractRepositoryMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentRepository')
             ->setMethods(array('findOneBy'))
             ->getMockForAbstractClass();
         $contractRepositoryMock

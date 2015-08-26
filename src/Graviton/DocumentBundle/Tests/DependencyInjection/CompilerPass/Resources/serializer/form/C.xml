@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C">
+        <property name="id" type="string"/>
+        <property name="field" serialized-name="$fieldC" type="string"/>
+    </class>
+</serializer>
