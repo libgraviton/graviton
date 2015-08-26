@@ -22,7 +22,7 @@ class DumpConsumer implements ConsumerInterface
     /**
      * Callback executed when a message is received. Dumps the message body, delivery_info and properties.
      *
-     * @param AMQPMessage $msg The rceived message.
+     * @param AMQPMessage $msg The received message.
      *
      * @return void
      */
@@ -32,13 +32,13 @@ class DumpConsumer implements ConsumerInterface
         echo "\t" . 'Delivery Info: ' . "\n";
         foreach ($msg->delivery_info as $key => $value) {
             if (is_scalar($value)) {
-                echo "\t\t: " . $key . ' ' . $value . "\n";
+                echo "\t\t" . $key . ': ' . $value . "\n";
             }
         }
         echo "\t" . 'Properties: ' . "\n";
         foreach ($msg->get_properties() as $property => $value) {
             if (is_scalar($value)) {
-                echo "\t\t: " . $property . ' ' . $value . "\n";
+                echo "\t\t" . $property . ': ' . $value . "\n";
             }
         }
     }
