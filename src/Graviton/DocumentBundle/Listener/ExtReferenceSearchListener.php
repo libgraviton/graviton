@@ -12,7 +12,6 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -109,14 +108,11 @@ class ExtReferenceSearchListener
             );
         }
 
-        $builder->addAnd(
-            $this->getCompareExpression(
-                $builder,
-                $this->getDbRefValue($node->getValue()),
-                $fieldName,
-                $operatorMap[$node->getNodeName()]
-            )
-        );
+        $compareOperator = $operatorMap[$node->getNodeName()];
+
+        $builder
+            ->field(strtr($fieldName, ['.0.' => '.']))
+            ->$compareOperator($this->getDbRefValue($node->getValue()));
     }
 
     /**
@@ -148,12 +144,9 @@ class ExtReferenceSearchListener
         $expr = $builder->expr();
         foreach ($node->getValues() as $extrefUrl) {
             $expr->$groupOperator(
-                $this->getCompareExpression(
-                    $builder,
-                    $this->getDbRefValue($extrefUrl),
-                    $fieldName,
-                    $compareOperator
-                )
+                $builder->expr()
+                    ->field(strtr($fieldName, ['.0.' => '.']))
+                    ->$compareOperator($this->getDbRefValue($extrefUrl))
             );
         }
         $builder->addAnd($expr);
@@ -193,24 +186,5 @@ class ExtReferenceSearchListener
             $this->fields[$route],
             true
         );
-    }
-
-    /**
-     * Get compare expression
-     *
-     * @param Builder $builder         Query builder
-     * @param object  $dbRef           DB reference
-     * @param string  $fieldName       Field name
-     * @param string  $compareOperator Compare operator
-     *
-     * @return Expr
-     */
-    private function getCompareExpression(Builder $builder, $dbRef, $fieldName, $compareOperator)
-    {
-        return $builder->expr()
-            ->field($fieldName.'.$ref')
-            ->equals($dbRef->{'$ref'})
-            ->field($fieldName.'.$id')
-            ->$compareOperator($dbRef->{'$id'});
     }
 }
