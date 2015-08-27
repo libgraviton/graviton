@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
@@ -13,7 +14,7 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Graviton\RestBundle\Model\ModelInterface;
+use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
@@ -47,7 +48,7 @@ use Rs\Json\Patch\FailedTestException;
 class RestController
 {
     /**
-     * @var ModelInterface
+     * @var DocumentModel
      */
     private $model;
 
@@ -80,6 +81,11 @@ class RestController
      * @var SchemaUtils
      */
     private $schemaUtils;
+
+    /**
+     * @var FormDataMapperInterface
+     */
+    private $formDataMapper;
 
     /**
      * @var Router
@@ -158,6 +164,17 @@ class RestController
     }
 
     /**
+     * Set form data mapper
+     *
+     * @param FormDataMapperInterface $formDataMapper Form data mapper
+     * @return void
+     */
+    public function setFormDataMapper(FormDataMapperInterface $formDataMapper)
+    {
+        $this->formDataMapper = $formDataMapper;
+    }
+
+    /**
      * Get the container object
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
@@ -228,7 +245,7 @@ class RestController
      *
      * @throws \Exception in case no model was defined.
      *
-     * @return ModelInterface $model Model
+     * @return DocumentModel $model Model
      */
     public function getModel()
     {
@@ -242,11 +259,11 @@ class RestController
     /**
      * Set the model class
      *
-     * @param object $model Model class
+     * @param DocumentModel $model Model class
      *
      * @return self
      */
-    public function setModel($model)
+    public function setModel(DocumentModel $model)
     {
         $this->model = $model;
 
@@ -574,17 +591,16 @@ class RestController
         $request->attributes->set('schemaRequest', true);
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-        $model = $this->container->get(implode('.', array($app, $module, 'model', $modelName)));
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
         $response->setPublic();
 
-        $schemaMethod = 'getModelSchema';
         if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schemaMethod = 'getCollectionSchema';
+            $schema = $this->schemaUtils->getCollectionSchema($modelName, $this->getModel());
+        } else {
+            $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
         }
-        $schema = $this->schemaUtils->$schemaMethod($modelName, $model);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
@@ -714,9 +730,8 @@ class RestController
      */
     private function getForm(Request $request)
     {
-        list($service) = explode(':', $request->attributes->get('_controller'));
-        $this->formType->initialize($service);
-        return $this->formFactory->create($this->formType, null, array('method'=> $request->getMethod()));
+        $this->formType->initialize($this->getModel()->getEntityClass());
+        return $this->formFactory->create($this->formType, null, ['method' => $request->getMethod()]);
     }
 
     /**
@@ -727,7 +742,11 @@ class RestController
      */
     private function checkForm(FormInterface $form, $jsonContent)
     {
-        $form->submit(json_decode(str_replace('"$ref"', '"ref"', $jsonContent), true), true);
+        $document = $this->formDataMapper->convertToFormData(
+            $jsonContent,
+            $this->getModel()->getEntityClass()
+        );
+        $form->submit($document, true);
 
         if (!$form->isValid()) {
             throw new ValidationException($form->getErrors(true));

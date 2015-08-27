@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,16 +20,16 @@ interface ModelInterface
     /**
      * Set document repository
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository $repository document repo
+     * @param DocumentRepository $repository document repo
      *
      * @return void
      */
-    public function setRepository(ObjectRepository $repository);
+    public function setRepository(DocumentRepository $repository);
 
     /**
      * get repository instance
      *
-     * @return ObjectRepository
+     * @return DocumentRepository
      */
     public function getRepository();
 

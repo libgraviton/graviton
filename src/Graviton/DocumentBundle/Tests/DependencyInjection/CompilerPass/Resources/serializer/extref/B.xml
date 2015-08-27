@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="GravitonTest\DocumentBundle\Document\B">
+        <property name="id" type="string"/>
+        <property name="key" type="string"/>
+        <property name="ref" serialized-name="$exposedRefB" type="string"/>
+
+        <property name="bchild"
+                  type="GravitonTest\DocumentBundle\Document\C"/>
+        <property name="bchildren"
+                  type="array&lt;GravitonTest\DocumentBundle\Document\C&gt;"/>
+    </class>
+</serializer>

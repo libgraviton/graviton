@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="graviton.document.service.extrefjsonconverter.class">Graviton\DocumentBundle\Service\ExtReferenceJsonConverter</parameter>
+        <parameter key="graviton.document.service.formdatamapper.class">Graviton\DocumentBundle\Service\FormDataMapper</parameter>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
         <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
@@ -13,6 +14,11 @@
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
     </parameters>
     <services>
+        <!-- form field mapper -->
+        <service id="graviton.document.service.formdatamapper" class="%graviton.document.service.formdatamapper.class%">
+            <argument>%graviton.document.form.data.map%</argument>
+        </service>
+
         <!-- extref converter -->
         <service id="graviton.document.service.extrefjsonconverter" class="%graviton.document.service.extrefjsonconverter.class%">
             <argument type="service" id="graviton.document.service.extrefconverter"/>
@@ -42,7 +48,6 @@
         </service>
         <!-- dynamic form builder -->
         <service id="graviton.document.form.type.document" class="%graviton.document.form.type.document.class%">
-            <argument>%graviton.document.form.type.document.service_map%</argument>
             <argument>%graviton.document.form.type.document.field_map%</argument>
         </service>
         <!-- freeform form type -->

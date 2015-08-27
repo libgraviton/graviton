@@ -87,6 +87,9 @@
             <call method="setExtrefFields">
                 <argument>%graviton.document.type.extref.fields%</argument>
             </call>
+            <call method="setFormDataMapper">
+                <argument type="service" id="graviton.document.service.formdatamapper"/>
+            </call>
         </service>
 
         <!-- Model -->
