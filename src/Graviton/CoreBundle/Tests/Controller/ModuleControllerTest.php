@@ -137,9 +137,9 @@ class ModuleControllerTest extends RestTestCase
      *
      * @dataProvider findByAppRefProvider
      *
-     * @param string|string[] $ref   which reference to search in
-     * @param mixed           $url   ref to search for
-     * @param integer         $count number of results to expect
+     * @param string  $ref   which reference to search in
+     * @param mixed   $url   ref to search for
+     * @param integer $count number of results to expect
      *
      * @return void
      */
@@ -156,20 +156,16 @@ class ModuleControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
-        if (is_array($url)) {
-            $rql = rawurlencode($ref).'=in=('.implode(',', array_map('rawurlencode', $url)).')';
-        } else {
-            $rql = rawurlencode($ref).'='.rawurlencode($url);
-        }
+        $url = sprintf(
+            '/core/module/?%s=%s',
+            $this->encodeRqlString($ref),
+            $this->encodeRqlString($url)
+        );
 
         $client = static::createRestClient();
-        $client->request('GET', '/core/module/?'.$rql);
+        $client->request('GET', $url);
         $results = $client->getResults();
         $this->assertCount($count, $results);
-
-        if (!is_array($url)) {
-            $this->testFindByAppRef($ref, [$url], $count);
-        }
     }
 
     /**
@@ -197,12 +193,6 @@ class ModuleControllerTest extends RestTestCase
                 'app.$ref',
                 'http://localhost/core/app',
                 0
-            ],
-
-            'find multiple test' => [
-                'service..gui.$ref',
-                ['http://localhost/core/product/1', 'http://localhost/core/product/3'],
-                2
             ],
         ];
     }
