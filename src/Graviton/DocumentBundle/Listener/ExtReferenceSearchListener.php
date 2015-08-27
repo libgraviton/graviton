@@ -154,13 +154,6 @@ class ExtReferenceSearchListener
      */
     private function processArrayNode(AbstractArrayOperatorNode $node, Builder $builder)
     {
-        $route = $this->request->attributes->get('_route');
-        if (!array_key_exists($route, $this->fields)) {
-            throw new \LogicException('Missing ' . $route . ' from extref fields map.');
-        }
-        if (!in_array(strtr($node->getField(), ['..' => '.0.']), $this->fields[$route])) {
-            return;
-        }
         if ($node->getValues() === []) {
             return;
         }
