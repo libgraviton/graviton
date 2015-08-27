@@ -5,12 +5,14 @@
 
 namespace Graviton\RestBundle\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
+use Graviton\RestBundle\Model\RecordOriginInterface;
+use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
@@ -38,7 +40,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $requiredFields = array();
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var DocumentRepository
      */
     private $repository;
 
@@ -48,18 +50,25 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $visitor;
 
     /**
-     * @param Visitor $visitor rql query visitor
+     * @var array
      */
-    public function __construct(Visitor $visitor)
+    protected $notModifiableOriginRecords;
+
+    /**
+     * @param Visitor $visitor                    rql query visitor
+     * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     */
+    public function __construct(Visitor $visitor, $notModifiableOriginRecords)
     {
         parent::__construct();
         $this->visitor = $visitor;
+        $this->notModifiableOriginRecords = $notModifiableOriginRecords;
     }
 
     /**
      * get repository instance
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return DocumentRepository
      */
     public function getRepository()
     {
@@ -69,11 +78,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * create new app model
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository $repository Repository of countries
+     * @param DocumentRepository $repository Repository of countries
      *
      * @return \Graviton\RestBundle\Model\DocumentModel
      */
-    public function setRepository(ObjectRepository $repository)
+    public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
 
@@ -151,6 +160,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity)
     {
+        $this->checkIfOriginRecord($entity);
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
         $manager->flush();
@@ -179,6 +189,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function updateRecord($documentId, $entity)
     {
         $manager = $this->repository->getDocumentManager();
+        // In both cases the document attribute named originRecord must not be 'core'
+        $this->checkIfOriginRecord($entity);
+        $this->checkIfOriginRecord($this->find($documentId));
         $entity = $manager->merge($entity);
         $manager->flush();
 
@@ -199,6 +212,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $return = $entity;
         if ($entity) {
+            $this->checkIfOriginRecord($entity);
             $manager->remove($entity);
             $manager->flush();
             $return = null;
@@ -251,5 +265,28 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $this->visitor->setBuilder($queryBuilder);
         return $this->visitor->visit($query);
+    }
+
+    /**
+     * Checks the recordOrigin attribute of a record and will throw an exception if value is not allowed
+     *
+     * @param Object $record record
+     *
+     * @return void
+     */
+    protected function checkIfOriginRecord($record)
+    {
+        if ($record instanceof RecordOriginInterface
+            && !$record->isRecordOriginModifiable()
+        ) {
+            $values = $this->notModifiableOriginRecords;
+            $originValue = strtolower(trim($record->getRecordOrigin()));
+
+            if (in_array($originValue, $values)) {
+                $msg = sprintf("Must not be one of the following keywords: %s", implode(', ', $values));
+
+                throw new RecordOriginModifiedException($msg);
+            }
+        }
     }
 }

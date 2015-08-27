@@ -52,27 +52,27 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithPaging()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?limit(1)');
+        $client->request('GET', '/core/module/?limit(1)');
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1)>; rel="self"',
+            '<http://localhost/core/module/?limit(1)>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/module/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/module?limit(1%2C5)>; rel="last"',
+            '<http://localhost/core/module/?limit(1%2C5)>; rel="last"',
             $response->headers->get('Link')
         );
 
-        $this->assertEquals('http://localhost/core/app/tablet', $client->getResults()[0]->app->{'$ref'});
+        $this->assertEquals('http://localhost/core/app/admin', $client->getResults()[0]->app->{'$ref'});
     }
 
     /**
@@ -85,7 +85,7 @@ class ModuleControllerTest extends RestTestCase
         // reset fixtures since we already have some from setUp
         $this->loadFixtures(array(), null, 'doctrine_mongodb');
         $client = static::createRestClient();
-        $client->request('GET', '/core/module');
+        $client->request('GET', '/core/module/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -103,7 +103,7 @@ class ModuleControllerTest extends RestTestCase
     public function testGetModuleWithKeyAndUseId()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -137,9 +137,9 @@ class ModuleControllerTest extends RestTestCase
      *
      * @dataProvider findByAppRefProvider
      *
-     * @param string  $ref   which reference to search in
-     * @param string  $url   ref to search for
-     * @param integer $count number of results to expect
+     * @param string|string[] $ref   which reference to search in
+     * @param mixed           $url   ref to search for
+     * @param integer         $count number of results to expect
      *
      * @return void
      */
@@ -156,10 +156,20 @@ class ModuleControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
+        if (is_array($url)) {
+            $rql = rawurlencode($ref).'=in=('.implode(',', array_map('rawurlencode', $url)).')';
+        } else {
+            $rql = rawurlencode($ref).'='.rawurlencode($url);
+        }
+
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq('.rawurlencode($ref).',' . rawurlencode($url).')');
+        $client->request('GET', '/core/module/?'.$rql);
         $results = $client->getResults();
         $this->assertCount($count, $results);
+
+        if (!is_array($url)) {
+            $this->testFindByAppRef($ref, [$url], $count);
+        }
     }
 
     /**
@@ -188,6 +198,203 @@ class ModuleControllerTest extends RestTestCase
                 'http://localhost/core/app',
                 0
             ],
+
+            'find multiple test' => [
+                'service..gui.$ref',
+                ['http://localhost/core/product/1', 'http://localhost/core/product/3'],
+                2
+            ],
+        ];
+    }
+
+    /**
+     * Apply RQL operators to extref fields
+     *
+     * @dataProvider dataExtrefOperators
+     *
+     * @param string $rqlQuery    RQL query
+     * @param array  $expectedIds Expected found IDs
+     *
+     * @return void
+     */
+    public function testExtrefOperators($rqlQuery, array $expectedIds)
+    {
+        $this->loadFixtures(
+            [
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadProductData',
+            ],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?'.$rqlQuery);
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $foundIds = array_map(
+            function ($item) {
+                return $item->id;
+            },
+            $client->getResults()
+        );
+
+        sort($foundIds);
+        sort($expectedIds);
+        $this->assertEquals($expectedIds, $foundIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function dataExtrefOperators()
+    {
+        $tabletIds = [
+            'tablet-realEstate',
+            'tablet-investment',
+            'tablet-retirement',
+            'tablet-requisition',
+            'tablet-payAndSave',
+        ];
+        $adminIds = [
+            'admin-AdminRef',
+        ];
+
+        return [
+            '== tablet' => [
+                sprintf(
+                    '%s=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $tabletIds,
+            ],
+            '!= tablet' => [
+                sprintf(
+                    '%s!=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $adminIds,
+            ],
+            '> tablet' => [
+                sprintf(
+                    '%s>%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                [],
+            ],
+            '< tablet' => [
+                sprintf(
+                    '%s<%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $adminIds,
+            ],
+            '>= tablet' => [
+                sprintf(
+                    '%s>=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $tabletIds,
+            ],
+            '<= tablet' => [
+                sprintf(
+                    '%s<=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                array_merge($tabletIds, $adminIds),
+            ],
+            '=in= tablet' => [
+                sprintf(
+                    '%s=in=(%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $tabletIds,
+            ],
+            '=out= tablet' => [
+                sprintf(
+                    '%s=out=(%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                $adminIds,
+            ],
+
+            '> admin' => [
+                sprintf(
+                    '%s>%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                $tabletIds,
+            ],
+            '< admin' => [
+                sprintf(
+                    '%s<%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                [],
+            ],
+            '>= admin' => [
+                sprintf(
+                    '%s>=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                array_merge($tabletIds, $adminIds),
+            ],
+            '<= admin' => [
+                sprintf(
+                    '%s<=%s',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                $adminIds,
+            ],
+            '=in= admin' => [
+                sprintf(
+                    '%s=in=(%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                $adminIds,
+            ],
+            '=out= admin' => [
+                sprintf(
+                    '%s=out=(%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin')
+                ),
+                $tabletIds,
+            ],
+
+            '=in= admin, tablet' => [
+                sprintf(
+                    '%s=in=(%s,%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                array_merge($adminIds, $tabletIds),
+            ],
+            '=out= admin, tablet' => [
+                sprintf(
+                    '%s=out=(%s,%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                [],
+            ],
         ];
     }
 
@@ -208,7 +415,7 @@ class ModuleControllerTest extends RestTestCase
         $testModule->order = 50;
 
         $client = static::createRestClient();
-        $client->post('/core/module', $testModule);
+        $client->post('/core/module/', $testModule);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
 
@@ -265,7 +472,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -317,7 +524,7 @@ class ModuleControllerTest extends RestTestCase
     {
         // get id first..
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $results = $client->getResults();
 
         // get entry by id
@@ -346,7 +553,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $results = $client->getResults();
         $this->assertCount(1, $results);
 
@@ -377,7 +584,7 @@ class ModuleControllerTest extends RestTestCase
     public function testExtReferenceValidation()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module?eq(key,investment)');
+        $client->request('GET', '/core/module/?eq(key,investment)');
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];
@@ -432,5 +639,24 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('string', $service->items->properties->description->properties->en->type);
         $this->assertEquals('object', $service->items->properties->service->type);
         $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
+    }
+
+    /**
+     * Encode RQL string
+     *
+     * @param string $value Value
+     * @return string
+     */
+    private function encodeRqlString($value)
+    {
+        return strtr(
+            rawurlencode($value),
+            [
+                '-' => '%2D',
+                '_' => '%5F',
+                '.' => '%2E',
+                '~' => '%7E',
+            ]
+        );
     }
 }

@@ -17,11 +17,6 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    private $classMap;
-
-    /**
-     * @var array
-     */
     private $fieldMap;
 
     /**
@@ -31,14 +26,10 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->classMap = [
-            'graviton.core.controller.app' => 'Graviton\CoreBundle\Document\App',
-            'Graviton\CoreBundle\Document\App' => 'Graviton\CoreBundle\Document\App',
-        ];
         $this->fieldMap = [
             'Graviton\CoreBundle\Document\App' => [
-                ['title', 'translatable', []],
-                ['showInMenu', 'checkbox', []],
+                ['title', 'titleExposed', 'translatable', []],
+                ['showInMenu', 'showInMenu', 'checkbox', []],
             ],
         ];
     }
@@ -53,7 +44,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName($class, $name)
     {
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
         $this->assertEquals($name, $sut->getName());
@@ -66,18 +57,18 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testSetDefaultOptions($class)
+    public function testConfigureOptions($class)
     {
-        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolverInterface');
+        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
 
         $resolverDouble->expects($this->once())
             ->method('setDefaults')
-            ->with(['data_class' => $this->classMap[$class]]);
+            ->with(['data_class' => $class]);
 
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
-        $sut->setDefaultOptions($resolverDouble);
+        $sut->configureOptions($resolverDouble);
     }
 
     /**
@@ -100,7 +91,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 ->method('add')
                 ->with($field['name'], $field['type'], $field['options']);
         }
-        $sut = new DocumentType($this->classMap, $this->fieldMap);
+        $sut = new DocumentType($this->fieldMap);
         $sut->initialize($class);
 
         $sut->buildForm($builderDouble, []);
@@ -118,25 +109,9 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
                 'graviton_corebundle_document_app',
                 [
                     [
-                        'name' => 'title',
+                        'name' => 'titleExposed',
                         'type' => 'translatable', # alias to i18n form service
-                        'options' => [],
-                    ],
-                    [
-                        'name' => 'showInMenu',
-                        'type' => 'checkbox',
-                        'options' => [],
-                    ],
-                ],
-            ],
-            'build from service id' => [
-                'graviton.core.controller.app',
-                'graviton_corebundle_document_app',
-                [
-                    [
-                        'name' => 'title',
-                        'type' => 'translatable', # alias to i18n form service
-                        'options' => [],
+                        'options' => ['property_path' => 'title'],
                     ],
                     [
                         'name' => 'showInMenu',

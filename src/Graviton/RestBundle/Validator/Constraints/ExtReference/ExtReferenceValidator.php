@@ -55,7 +55,7 @@ class ExtReferenceValidator extends ConstraintValidator
         }
 
         try {
-            $extref = (object) $this->converter->getDbRef($value);
+            $extref = $this->converter->getDbRef($value);
             if (is_array($constraint->allowedCollections) &&
                 !in_array('*', $constraint->allowedCollections, true) &&
                 !in_array($extref->{'$ref'}, $constraint->allowedCollections, true)

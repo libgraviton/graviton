@@ -7,7 +7,12 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -15,58 +20,80 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class TranslatableFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
+class TranslatableFieldsCompilerPass implements CompilerPassInterface
 {
     /**
-     * @var array Doctrine mappings
+     * @var DocumentMap
      */
-    protected $classMap = [];
+    private $documentMap;
 
     /**
-     * load services
+     * Constructor
+     *
+     * @param DocumentMap $documentMap Document map
+     */
+    public function __construct(DocumentMap $documentMap)
+    {
+        $this->documentMap = $documentMap;
+    }
+
+    /**
+     * Make translatable fields map and set it to parameter
      *
      * @param ContainerBuilder $container container builder
-     * @param array            $services  services to inspect
-     *
      * @return void
      */
-    public function processServices(ContainerBuilder $container, $services)
+    public function process(ContainerBuilder $container)
     {
         $map = [];
-        $this->classMap = $this->loadDoctrineClassMap();
-
-        foreach ($this->classMap as $className => $data) {
-            $map[$className] = $this->processDocument($className);
+        foreach ($this->documentMap->getDocuments() as $document) {
+            $map[$document->getClass()] = $this->getTranslatableFields($document);
         }
-
         $container->setParameter('graviton.document.type.translatable.fields', $map);
     }
 
-
     /**
-     * Get document translatable fields
+     * Get document fields
      *
-     * @param \DOMDocument $document Doctrine mapping XML document
+     * @param Document $document Document
+     * @param string   $prefix   Field prefix
      * @return array
      */
-    protected function filterDocumentFields(\DOMDocument $document)
+    private function getTranslatableFields(Document $document, $prefix = '')
     {
-        $xpath = new \DOMXPath($document);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-
-        // get class name
-        $className = $this->getDocumentClassName($document);
-        if (!class_exists($className)) {
-            return [];
+        $reflection = new \ReflectionClass($document->getClass());
+        if ($reflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
+            $instance = $reflection->newInstanceWithoutConstructor();
+            $translatableFields = $instance->getTranslatableFields();
+        } else {
+            $translatableFields = [];
         }
 
-        $class = new $className();
-        $fields = [];
-
-        if ($class instanceof TranslatableDocumentInterface) {
-            $fields = $class->getTranslatableFields();
+        $result = [];
+        foreach ($document->getFields() as $field) {
+            if ($field instanceof Field) {
+                if (in_array($field->getFieldName(), $translatableFields, true)) {
+                    $result[] = $prefix.$field->getExposedName();
+                }
+            } elseif ($field instanceof EmbedOne) {
+                $result = array_merge(
+                    $result,
+                    $this->getTranslatableFields(
+                        $field->getDocument(),
+                        $prefix.$field->getExposedName().'.'
+                    )
+                );
+            } elseif ($field instanceof EmbedMany) {
+                $result = array_merge(
+                    $result,
+                    $this->getTranslatableFields(
+                        $field->getDocument(),
+                        $prefix.$field->getExposedName().'.0.'
+                    )
+                );
+            }
         }
 
-        return $fields;
+        return $result;
     }
 }

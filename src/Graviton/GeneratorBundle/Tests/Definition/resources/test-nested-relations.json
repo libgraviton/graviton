@@ -1,0 +1,60 @@
+{
+  "id": "RelationTest",
+  "target": {
+    "indexes": [],
+    "relations": [
+      {
+        "type": "embed",
+        "localProperty": "hash.embedOne"
+      },
+      {
+        "type": "embed",
+        "localProperty": "hash.embedMany"
+      },
+
+      {
+        "type": "embed",
+        "localProperty": "deep.0.sub.embedOne"
+      },
+      {
+        "type": "embed",
+        "localProperty": "deep.0.sub.subsub.0.embedMany"
+      }
+    ],
+    "fields": [
+      {
+        "name": "hash.embedOne",
+        "type": "class:Entity"
+      },
+      {
+        "name": "hash.referenceOne",
+        "type": "class:Entity"
+      },
+      {
+        "name": "hash.embedMany",
+        "type": "class:Entity[]"
+      },
+      {
+        "name": "hash.referenceMany",
+        "type": "class:Entity[]"
+      },
+
+      {
+        "name": "deep.0.sub.embedOne",
+        "type": "class:Entity"
+      },
+      {
+        "name": "deep.0.sub.referenceOne",
+        "type": "class:Entity"
+      },
+      {
+        "name": "deep.0.sub.subsub.0.embedMany",
+        "type": "class:Entity[]"
+      },
+      {
+        "name": "deep.0.sub.subsub.0.referenceMany",
+        "type": "class:Entity[]"
+      }
+    ]
+  }
+}

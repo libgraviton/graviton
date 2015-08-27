@@ -9,6 +9,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -16,19 +17,19 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefMappingCompilerPass extends AbstractDocumentCompilerPass
+class ExtRefMappingCompilerPass implements CompilerPassInterface
 {
     /**
      * create mapping from services
      *
      * @param ContainerBuilder $container container builder
-     * @param array            $services  services to inspect
-     *
      * @return void
      */
-    public function processServices(ContainerBuilder $container, $services)
+    public function process(ContainerBuilder $container)
     {
         $map = [];
+
+        $services = array_keys($container->findTaggedServiceIds('graviton.rest'));
         foreach ($services as $id) {
             list($ns, $bundle,, $doc) = explode('.', $id);
 
@@ -39,7 +40,7 @@ class ExtRefMappingCompilerPass extends AbstractDocumentCompilerPass
                 $collection = ucfirst($doc);
             }
 
-            $map[$collection] = implode('.', [$ns, $bundle, 'rest', $doc, 'get']);
+            $map[$collection] = implode('.', [$ns, $bundle, 'rest', $doc]);
         }
         $container->setParameter('graviton.document.type.extref.mapping', $map);
     }

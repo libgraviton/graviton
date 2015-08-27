@@ -21,6 +21,7 @@
         {% for field in fields %}
             {% if 'Graviton' in field.type %}
                 {% if field.relType is defined %}{% set relType = field.relType %}{% else %}{% set relType = "reference" %}{% endif %}
+                {% if relType == 'ref' %}{% set relType = "reference" %}{% endif %}
                 {% if '[]' in field.type %}
                     <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}" strategy="set">
                         <cascade>
@@ -42,5 +43,10 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
+
+        {% if isrecordOriginFlagSet %}
+            <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
+        {% endif %}
+
     </{{ docType }}>
 </doctrine-mongo-mapping>

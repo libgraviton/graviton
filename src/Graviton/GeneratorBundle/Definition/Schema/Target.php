@@ -63,6 +63,16 @@ class Target
     }
 
     /**
+     * @param Relation $relation Relation
+     * @return $this
+     */
+    public function addRelation(Relation $relation)
+    {
+        $this->relations[] = $relation;
+        return $this;
+    }
+
+    /**
      * @return Field[]
      */
     public function getFields()
