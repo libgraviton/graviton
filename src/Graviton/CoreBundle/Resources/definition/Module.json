@@ -25,7 +25,7 @@
               "en": "..."
             },
             "service": {
-              "$ref": "/core/product/1"
+              "$ref": "/file/"
             }
           }
         ]
@@ -50,7 +50,7 @@
               "en": "..."
             },
             "service": {
-              "$ref": "/core/product/2"
+              "$ref": "/core/product/"
             }
           },
           {
@@ -61,7 +61,7 @@
               "en": "..."
             },
             "service": {
-              "$ref": "/core/product/3"
+              "$ref": "/core/config/"
             }
           }
         ]
