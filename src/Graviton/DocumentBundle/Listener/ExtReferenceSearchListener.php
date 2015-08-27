@@ -12,11 +12,11 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\Query\Expr;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 
@@ -64,65 +64,37 @@ class ExtReferenceSearchListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         $node = $event->getNode();
-        if (!$this->checkNode($node)) {
-            return $event;
-        }
-
         $builder = $event->getBuilder();
+
         if ($node instanceof AbstractScalarOperatorNode) {
-            $this->processScalarNode($node, $builder);
+            $fieldName = $this->getDocumentFieldName($node->getField());
+            if ($fieldName !== false) {
+                $this->processScalarNode($fieldName, $node, $builder);
+                $event->setNode(null);
+                $event->setBuilder($builder);
+            }
         } elseif ($node instanceof AbstractArrayOperatorNode) {
-            $this->processArrayNode($node, $builder);
-        } else {
-            return $event;
+            $fieldName = $this->getDocumentFieldName($node->getField());
+            if ($fieldName !== false) {
+                $this->processArrayNode($fieldName, $node, $builder);
+                $event->setNode(null);
+                $event->setBuilder($builder);
+            }
         }
 
-        $event->setNode(null);
-        $event->setBuilder($builder);
         return $event;
-    }
-
-    /**
-     * Is allowed node
-     *
-     * @param AbstractNode $node Query node
-     * @return bool
-     */
-    private function checkNode(AbstractNode $node)
-    {
-        $route = $this->request->attributes->get('_route');
-        if (!array_key_exists($route, $this->fields)) {
-            throw new \LogicException('Missing ' . $route . ' from extref fields map.');
-        }
-
-
-        if (!$node instanceof AbstractScalarOperatorNode &&
-            !$node instanceof AbstractArrayOperatorNode) {
-            return false;
-        }
-        if (!in_array(strtr($node->getField(), ['..' => '.0.']), $this->fields[$route])) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
      * Process scalar condition
      *
-     * @param AbstractScalarOperatorNode $node    Query node
-     * @param Builder                    $builder Query builder
+     * @param string                     $fieldName Document field name
+     * @param AbstractScalarOperatorNode $node      Query node
+     * @param Builder                    $builder   Query builder
      * @return void
      */
-    private function processScalarNode(AbstractScalarOperatorNode $node, Builder $builder)
+    private function processScalarNode($fieldName, AbstractScalarOperatorNode $node, Builder $builder)
     {
-        try {
-            $dbRef = $this->converter->getDbRef($node->getValue());
-        } catch (\InvalidArgumentException $e) {
-            //make up some invalid refs to ensure we find nothing if an invalid url was given
-            $dbRef = (object) ['$ref' => false, '$id' => false];
-        }
-
         $operatorMap = [
             'eq' => 'equals',
             'ne' => 'notEqual',
@@ -137,22 +109,25 @@ class ExtReferenceSearchListener
             );
         }
 
-        $compareOperator = $operatorMap[$node->getNodeName()];
-        $builder
-            ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')
-            ->equals($dbRef->{'$ref'})
-            ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')
-            ->$compareOperator($dbRef->{'$id'});
+        $builder->addAnd(
+            $this->getCompareExpression(
+                $builder,
+                $this->getDbRefValue($node->getValue()),
+                $fieldName,
+                $operatorMap[$node->getNodeName()]
+            )
+        );
     }
 
     /**
      * Process array condition
      *
-     * @param AbstractArrayOperatorNode $node    Query node
-     * @param Builder                   $builder Query builder
+     * @param string                    $fieldName Document field
+     * @param AbstractArrayOperatorNode $node      Query node
+     * @param Builder                   $builder   Query builder
      * @return void
      */
-    private function processArrayNode(AbstractArrayOperatorNode $node, Builder $builder)
+    private function processArrayNode($fieldName, AbstractArrayOperatorNode $node, Builder $builder)
     {
         if ($node->getValues() === []) {
             return;
@@ -168,29 +143,74 @@ class ExtReferenceSearchListener
             );
         }
 
-        $values = [];
-        foreach ($node->getValues() as $url) {
-            try {
-                $values[] = $this->converter->getDbRef($url);
-            } catch (\InvalidArgumentException $e) {
-                //make up some invalid refs to ensure we find nothing if an invalid url was given
-                $values[] = (object) ['$ref' => false, '$id' => false];
-            }
-        }
-
-
         list($groupOperator, $compareOperator) = $operatorMap[$node->getNodeName()];
 
         $expr = $builder->expr();
-        foreach ($values as $dbRef) {
+        foreach ($node->getValues() as $extrefUrl) {
             $expr->$groupOperator(
-                $builder->expr()
-                    ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$ref')
-                    ->equals($dbRef->{'$ref'})
-                    ->field(strtr($node->getField(), ['$' => '', '..' => '.0.']) . '.$id')
-                    ->$compareOperator($dbRef->{'$id'})
+                $this->getCompareExpression(
+                    $builder,
+                    $this->getDbRefValue($extrefUrl),
+                    $fieldName,
+                    $compareOperator
+                )
             );
         }
         $builder->addAnd($expr);
+    }
+
+    /**
+     * Get DbRef from extref URL
+     *
+     * @param string $url Extref URL representation
+     * @return object
+     */
+    private function getDbRefValue($url)
+    {
+        try {
+            return $this->converter->getDbRef($url);
+        } catch (\InvalidArgumentException $e) {
+            //make up some invalid refs to ensure we find nothing if an invalid url was given
+            return (object) ['$ref' => false, '$id' => false];
+        }
+    }
+
+    /**
+     * Get document field name by query name
+     *
+     * @param string $searchName Exposed field name from RQL query
+     * @return string|bool Field name or FALSE
+     */
+    private function getDocumentFieldName($searchName)
+    {
+        $route = $this->request->attributes->get('_route');
+        if (!isset($this->fields[$route])) {
+            throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $route));
+        }
+
+        return array_search(
+            strtr($searchName, ['..' => '.0.']),
+            $this->fields[$route],
+            true
+        );
+    }
+
+    /**
+     * Get compare expression
+     *
+     * @param Builder $builder         Query builder
+     * @param object  $dbRef           DB reference
+     * @param string  $fieldName       Field name
+     * @param string  $compareOperator Compare operator
+     *
+     * @return Expr
+     */
+    private function getCompareExpression(Builder $builder, $dbRef, $fieldName, $compareOperator)
+    {
+        return $builder->expr()
+            ->field($fieldName.'.$ref')
+            ->equals($dbRef->{'$ref'})
+            ->field($fieldName.'.$id')
+            ->$compareOperator($dbRef->{'$id'});
     }
 }
