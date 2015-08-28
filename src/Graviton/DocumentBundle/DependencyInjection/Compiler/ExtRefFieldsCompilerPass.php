@@ -110,24 +110,26 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
     /**
      * Recursive doctrine document processing
      *
-     * @param Document $document Document
-     * @param string   $prefix   Field prefix
+     * @param Document $document       Document
+     * @param string   $documentPrefix Document field prefix
+     * @param string   $exposedPrefix  Exposed field prefix
      * @return array
      */
-    private function processDocument(Document $document, $prefix = '')
+    private function processDocument(Document $document, $documentPrefix = '', $exposedPrefix = '')
     {
         $result = [];
         foreach ($document->getFields() as $field) {
             if ($field instanceof Field) {
                 if ($field->getType() === 'extref') {
-                    $result[] = $prefix.$field->getExposedName();
+                    $result[$documentPrefix.$field->getFieldName()] = $exposedPrefix.$field->getExposedName();
                 }
             } elseif ($field instanceof EmbedOne) {
                 $result = array_merge(
                     $result,
                     $this->processDocument(
                         $field->getDocument(),
-                        $prefix.$field->getExposedName().'.'
+                        $documentPrefix.$field->getFieldName().'.',
+                        $exposedPrefix.$field->getExposedName().'.'
                     )
                 );
             } elseif ($field instanceof EmbedMany) {
@@ -135,7 +137,8 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
                     $result,
                     $this->processDocument(
                         $field->getDocument(),
-                        $prefix.$field->getExposedName().'.0.'
+                        $documentPrefix.$field->getFieldName().'.0.',
+                        $exposedPrefix.$field->getExposedName().'.0.'
                     )
                 );
             }

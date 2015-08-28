@@ -53,26 +53,26 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo('graviton.document.type.extref.fields'),
                 [
                     'gravitontest.document.rest.a.get' => [
-                        '$exposedRefA',
+                        'ref'                         => '$exposedRefA',
 
-                        'achild.$exposedRefB',
-                        'achild.bchild.$exposedRefC',
-                        'achild.bchildren.0.$exposedRefC',
+                        'achild.ref'                  => 'achild.$exposedRefB',
+                        'achild.bchild.ref'           => 'achild.bchild.$exposedRefC',
+                        'achild.bchildren.0.ref'      => 'achild.bchildren.0.$exposedRefC',
 
-                        'achildren.0.$exposedRefB',
-                        'achildren.0.bchild.$exposedRefC',
-                        'achildren.0.bchildren.0.$exposedRefC',
+                        'achildren.0.ref'             => 'achildren.0.$exposedRefB',
+                        'achildren.0.bchild.ref'      => 'achildren.0.bchild.$exposedRefC',
+                        'achildren.0.bchildren.0.ref' => 'achildren.0.bchildren.0.$exposedRefC',
                     ],
                     'gravitontest.document.rest.a.all' => [
-                        '$exposedRefA',
+                        'ref'                         => '$exposedRefA',
 
-                        'achild.$exposedRefB',
-                        'achild.bchild.$exposedRefC',
-                        'achild.bchildren.0.$exposedRefC',
+                        'achild.ref'                  => 'achild.$exposedRefB',
+                        'achild.bchild.ref'           => 'achild.bchild.$exposedRefC',
+                        'achild.bchildren.0.ref'      => 'achild.bchildren.0.$exposedRefC',
 
-                        'achildren.0.$exposedRefB',
-                        'achildren.0.bchild.$exposedRefC',
-                        'achildren.0.bchildren.0.$exposedRefC',
+                        'achildren.0.ref'             => 'achildren.0.$exposedRefB',
+                        'achildren.0.bchild.ref'      => 'achildren.0.bchild.$exposedRefC',
+                        'achildren.0.bchildren.0.ref' => 'achildren.0.bchildren.0.$exposedRefC',
                     ],
                     'gravitontest.document.rest.a.patch' => [
                         '$exposedRefA',
