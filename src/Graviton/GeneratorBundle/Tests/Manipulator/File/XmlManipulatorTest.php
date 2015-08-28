@@ -52,6 +52,10 @@ class XmlManipulatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testSaveDocument()
     {
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped('HHVM failed with segfault when executing DOMDocument::save() with empty filename');
+        }
+
         $path = __DIR__ . '/../../Resources/validation.xml';
         $xml = file_get_contents($path);
 
