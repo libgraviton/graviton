@@ -186,5 +186,6 @@ old_sound_rabbit_mq:
                 name: test-topic
                 type: topic
             queue_options:
-                routing_keys: %graviton.message.consumer.dump.routingkeys%
+                routing_keys:
+                    - %graviton.message.consumer.dump.routingkeys%
             callback: graviton.message.consumer.dump
