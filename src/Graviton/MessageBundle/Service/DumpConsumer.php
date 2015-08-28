@@ -30,7 +30,7 @@ class DumpConsumer implements ConsumerInterface
     {
         echo 'Message received at ' . date('c') . ': ' . $msg->body . "\n";
         echo "\t" . 'Delivery Info: ' . "\n";
-        foreach ($msg->delivery_info as $key => $value) {
+        foreach ($msg->{'delivery_info'} as $key => $value) {
             if (is_scalar($value)) {
                 echo "\t\t" . $key . ': ' . $value . "\n";
             }
