@@ -3,7 +3,7 @@
  * test a readOnly service
  */
 
-namespace Graviton\CoreBundle\Tests\WebTestCase;
+namespace Graviton\CoreBundle\Tests\Services;
 
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
