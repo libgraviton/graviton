@@ -81,6 +81,9 @@
             <argument type="service" id="graviton.document.form.type.document"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="graviton.schema.utils"/>
+            <call method="setFormDataMapper">
+                <argument type="service" id="graviton.document.service.formdatamapper"/>
+            </call>
         </service>
 
         <!-- Model -->

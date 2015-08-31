@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B">
+        <property name="id" type="string"/>
+        <property name="key" type="string"/>
+        <property name="title" serialized-name="exposedTitleB" type="string"/>
+
+        <property name="bchild"
+                  type="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C"/>
+        <property name="bchildren"
+                  type="array&lt;Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C&gt;"/>
+    </class>
+</serializer>

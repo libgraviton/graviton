@@ -6,6 +6,5 @@
         <field fieldName="id" type="string" id="true" strategy="UUID"/>
         <field fieldName="key" type="string"/>
         <field fieldName="title" type="string"/>
-        <field fieldName="cref" type="extref"/>
     </document>
 </doctrine-mongo-mapping>

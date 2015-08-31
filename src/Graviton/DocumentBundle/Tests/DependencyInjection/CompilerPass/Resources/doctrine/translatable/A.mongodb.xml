@@ -6,7 +6,6 @@
         <field fieldName="id" type="string" id="true" strategy="UUID"/>
         <field fieldName="key" type="string"/>
         <field fieldName="title" type="string"/>
-        <field fieldName="aref" type="extref"/>
 
         <embed-one field="achild"
                    target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B">

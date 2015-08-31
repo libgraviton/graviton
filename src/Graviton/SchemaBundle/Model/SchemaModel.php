@@ -81,7 +81,7 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * Returns the bare schema
      *
-     * @return stdClass Schema
+     * @return \stdClass Schema
      */
     public function getSchema()
     {
@@ -117,7 +117,7 @@ class SchemaModel implements ContainerAwareInterface
      *
      * @param string $mapping name of mapping class
      *
-     * @return self
+     * @return $this
      */
     public function manyPropertyModelForTarget($mapping)
     {
