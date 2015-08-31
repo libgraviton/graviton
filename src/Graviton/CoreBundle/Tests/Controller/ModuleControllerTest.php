@@ -137,9 +137,9 @@ class ModuleControllerTest extends RestTestCase
      *
      * @dataProvider findByAppRefProvider
      *
-     * @param string|string[] $ref   which reference to search in
-     * @param mixed           $url   ref to search for
-     * @param integer         $count number of results to expect
+     * @param string  $ref   which reference to search in
+     * @param mixed   $url   ref to search for
+     * @param integer $count number of results to expect
      *
      * @return void
      */
@@ -156,20 +156,16 @@ class ModuleControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
-        if (is_array($url)) {
-            $rql = rawurlencode($ref).'=in=('.implode(',', array_map('rawurlencode', $url)).')';
-        } else {
-            $rql = rawurlencode($ref).'='.rawurlencode($url);
-        }
+        $url = sprintf(
+            '/core/module/?%s=%s',
+            $this->encodeRqlString($ref),
+            $this->encodeRqlString($url)
+        );
 
         $client = static::createRestClient();
-        $client->request('GET', '/core/module/?'.$rql);
+        $client->request('GET', $url);
         $results = $client->getResults();
         $this->assertCount($count, $results);
-
-        if (!is_array($url)) {
-            $this->testFindByAppRef($ref, [$url], $count);
-        }
     }
 
     /**
@@ -193,26 +189,10 @@ class ModuleControllerTest extends RestTestCase
                 'http://localhost/core/app/inexistant',
                 0
             ],
-            'find in nested sets' => [
-                'service.0.gui.$ref',
-                'http://localhost/core/product/3',
-                1
-            ],
-            'find in nested sets (short syntax)' => [
-                'service..gui.$ref',
-                'http://localhost/core/product/3',
-                1
-            ],
             'return nothing when searching with incomplete ref' => [
                 'app.$ref',
                 'http://localhost/core/app',
                 0
-            ],
-
-            'find multiple test' => [
-                'service..gui.$ref',
-                ['http://localhost/core/product/1', 'http://localhost/core/product/3'],
-                2
             ],
         ];
     }
@@ -570,17 +550,8 @@ class ModuleControllerTest extends RestTestCase
         $module = $results[0];
         $this->assertEquals('investment', $module->key);
         $this->assertEquals('http://localhost/core/app/tablet', $module->app->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/3', $module->service[0]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/4', $module->service[0]->service->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/5', $module->service[1]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/6', $module->service[1]->service->{'$ref'});
-
 
         $module->app->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[0]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[0]->service->{'$ref'} = 'http://localhost/core/product/1';
-        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/app/admin';
-        $module->service[1]->service->{'$ref'} = 'http://localhost/core/product/2';
 
         $client = static::createRestClient();
         $client->put('/core/module/'.$module->id, $module);
@@ -593,10 +564,6 @@ class ModuleControllerTest extends RestTestCase
 
         $module = $client->getResults();
         $this->assertEquals('http://localhost/core/app/admin', $module->app->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[0]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/1', $module->service[0]->service->{'$ref'});
-        $this->assertEquals('http://localhost/core/app/admin', $module->service[1]->gui->{'$ref'});
-        $this->assertEquals('http://localhost/core/product/2', $module->service[1]->service->{'$ref'});
     }
 
     /**
@@ -611,48 +578,29 @@ class ModuleControllerTest extends RestTestCase
         $this->assertCount(1, $client->getResults());
 
         $module = $client->getResults()[0];
-        $module->app->{'$ref'} = 'http://localhost';
-        $module->service[0]->gui->{'$ref'} = 'http://localhost/core';
-        $module->service[0]->service->{'$ref'} = 'http://localhost/core/app';
-        $module->service[1]->gui->{'$ref'} = 'http://localhost/core/noapp/admin';
-        $module->service[1]->service->{'$ref'} = 'http://localhost/core/app/admin';
 
-        $client = static::createRestClient();
-        $client->put('/core/module/'.$module->id, $module);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath' => 'data.app.ref',
-                    'message' => sprintf(
-                        'URL "%s" is not a valid ext reference.',
-                        $module->app->{'$ref'}
-                    ),
+        $urls = [
+            'http://localhost',
+            'http://localhost/core',
+            'http://localhost/core/app',
+            'http://localhost/core/noapp/admin',
+        ];
+        foreach ($urls as $url) {
+            $module->app->{'$ref'} = $url;
+
+            $client = static::createRestClient();
+            $client->put('/core/module/'.$module->id, $module);
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+            $this->assertEquals(
+                [
+                    (object) [
+                        'propertyPath' => 'data.app.ref',
+                        'message' => sprintf('URL "%s" is not a valid ext reference.', $url),
+                    ],
                 ],
-                (object) [
-                    'propertyPath' => 'data.service[0].gui.ref',
-                    'message' => sprintf(
-                        'URL "%s" is not a valid ext reference.',
-                        $module->service[0]->gui->{'$ref'}
-                    ),
-                ],
-                (object) [
-                    'propertyPath' => 'data.service[0].service.ref',
-                    'message' => sprintf(
-                        'URL "%s" is not a valid ext reference.',
-                        $module->service[0]->service->{'$ref'}
-                    ),
-                ],
-                (object) [
-                    'propertyPath' => 'data.service[1].gui.ref',
-                    'message' => sprintf(
-                        'URL "%s" is not a valid ext reference.',
-                        $module->service[1]->gui->{'$ref'}
-                    ),
-                ],
-            ],
-            $client->getResults()
-        );
+                $client->getResults()
+            );
+        }
     }
 
     /**
@@ -679,12 +627,8 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('string', $service->items->properties->name->properties->en->type);
         $this->assertEquals('object', $service->items->properties->description->type);
         $this->assertEquals('string', $service->items->properties->description->properties->en->type);
-        $this->assertEquals('object', $service->items->properties->gui->type);
         $this->assertEquals('object', $service->items->properties->service->type);
-        $this->assertEquals('string', $service->items->properties->gui->properties->{'$ref'}->type);
-        $this->assertEquals('extref', $service->items->properties->gui->properties->{'$ref'}->format);
         $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
-        $this->assertEquals('extref', $service->items->properties->service->properties->{'$ref'}->format);
     }
 
     /**

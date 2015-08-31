@@ -281,4 +281,64 @@ class ShowcaseControllerTest extends RestTestCase
             'noRql' => ['url' => '/hans/showcase' , 'redirect_url' => 'http://localhost/hans/showcase/']
         ];
     }
+
+    /**
+     * test finding of showcases by ref
+     *
+     * @dataProvider findByExtrefProvider
+     *
+     * @param string  $field which reference to search in
+     * @param mixed   $url   ref to search for
+     * @param integer $count number of results to expect
+     *
+     * @return void
+     */
+    public function testFindByExtref($field, $url, $count)
+    {
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $url = sprintf(
+            '/hans/showcase/?%s=%s',
+            $this->encodeRqlString($field),
+            $this->encodeRqlString($url)
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', $url);
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertCount($count, $client->getResults());
+    }
+
+    /**
+     * @return array
+     */
+    public function findByExtrefProvider()
+    {
+        return [
+            'find a linked record when searching for "tablet" ref by array field' => [
+                'nestedApps.0.$ref',
+                'http://localhost/core/app/tablet',
+                1
+            ],
+            'find a linked record when searching for "admin" ref by array field' => [
+                'nestedApps.0.$ref',
+                'http://localhost/core/app/admin',
+                1
+            ],
+            'find nothing when searching for inextistant (and unlinked) ref by array field' => [
+                'nestedApps.0.$ref',
+                'http://localhost/core/app/inexistant',
+                0
+            ],
+            'return nothing when searching with incomplete ref by array field' => [
+                'nestedApps.0.$ref',
+                'http://localhost/core/app',
+                0
+            ],
+        ];
+    }
 }

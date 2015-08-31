@@ -5,6 +5,9 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormDataMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
@@ -15,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
 
 /**
@@ -74,10 +77,22 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
-        $container->addCompilerPass(new ExtRefMappingCompilerPass);
-        $container->addCompilerPass(new ExtRefFieldsCompilerPass);
-        $container->addCompilerPass(new TranslatableFieldsCompilerPass);
-        $container->addCompilerPass(new DocumentFormMapCompilerPass);
-        $container->addCompilerPass(new DocumentFormFieldsCompilerPass);
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/../..')
+                ->path('Resources/config/doctrine')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/../..')
+                ->path('Resources/config/serializer')
+                ->name('*.xml')
+        );
+
+        $container->addCompilerPass(new ExtRefMappingCompilerPass());
+        $container->addCompilerPass(new ExtRefFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
+        $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
     }
 }

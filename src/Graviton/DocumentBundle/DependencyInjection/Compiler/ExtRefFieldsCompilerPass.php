@@ -9,33 +9,48 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ExtRefFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
+class ExtRefFieldsCompilerPass implements CompilerPassInterface
 {
     /**
-     * @var array Doctrine mappings
+     * @var DocumentMap
      */
-    protected $classMap = [];
+    private $documentMap;
 
     /**
-     * load services
+     * Constructor
+     *
+     * @param DocumentMap $documentMap Document map
+     */
+    public function __construct(DocumentMap $documentMap)
+    {
+        $this->documentMap = $documentMap;
+    }
+
+    /**
+     * Make extref fields map and set it to parameter
      *
      * @param ContainerBuilder $container container builder
-     * @param array            $services  services to inspect
-     *
      * @return void
      */
-    public function processServices(ContainerBuilder $container, $services)
+    public function process(ContainerBuilder $container)
     {
-        $this->classMap = $this->loadDoctrineClassMap();
-
         $map = [];
+
+        $services = array_keys($container->findTaggedServiceIds('graviton.rest'));
         foreach ($services as $id) {
             list($ns, $bundle, , $doc) = explode('.', $id);
             if (empty($bundle) || empty($doc)) {
@@ -51,7 +66,7 @@ class ExtRefFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
                 $bundle,
                 $doc
             );
-            $extRefFields = $this->processDocument($className);
+            $extRefFields = $this->processDocument($this->documentMap->getDocument($className));
             $routePrefix = strtolower($ns.'.'.$bundle.'.'.'rest'.'.'.$doc);
 
             $map[$routePrefix.'.get'] = $extRefFields;
@@ -63,23 +78,71 @@ class ExtRefFieldsCompilerPass extends AbstractDocumentFieldCompilerPass
 
 
     /**
-     * Get document $extref fields
+     * Get document class name from service
      *
-     * @param \DOMDocument $document Doctrine mapping XML document
+     * @param Definition $service Service definition
+     * @param string     $ns      Bundle namespace
+     * @param string     $bundle  Bundle name
+     * @param string     $doc     Document name
+     * @return string
+     */
+    private function getServiceDocument(Definition $service, $ns, $bundle, $doc)
+    {
+        $tags = $service->getTag('graviton.rest');
+        if (!empty($tags[0]['collection'])) {
+            $doc = $tags[0]['collection'];
+            $bundle = $tags[0]['collection'];
+        }
+
+        if (strtolower($ns) === 'gravitondyn') {
+            $ns = 'GravitonDyn';
+        }
+
+        return sprintf(
+            '%s\\%s\\Document\\%s',
+            ucfirst($ns),
+            ucfirst($bundle).'Bundle',
+            ucfirst($doc)
+        );
+    }
+
+    /**
+     * Recursive doctrine document processing
+     *
+     * @param Document $document       Document
+     * @param string   $documentPrefix Document field prefix
+     * @param string   $exposedPrefix  Exposed field prefix
      * @return array
      */
-    protected function filterDocumentFields(\DOMDocument $document)
+    private function processDocument(Document $document, $documentPrefix = '', $exposedPrefix = '')
     {
-        $xpath = new \DOMXPath($document);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+        $result = [];
+        foreach ($document->getFields() as $field) {
+            if ($field instanceof Field) {
+                if ($field->getType() === 'extref') {
+                    $result[$documentPrefix.$field->getFieldName()] = $exposedPrefix.$field->getExposedName();
+                }
+            } elseif ($field instanceof EmbedOne) {
+                $result = array_merge(
+                    $result,
+                    $this->processDocument(
+                        $field->getDocument(),
+                        $documentPrefix.$field->getFieldName().'.',
+                        $exposedPrefix.$field->getExposedName().'.'
+                    )
+                );
+            } elseif ($field instanceof EmbedMany) {
+                $result = array_merge(
+                    $result,
+                    $this->processDocument(
+                        $field->getDocument(),
+                        $documentPrefix.$field->getFieldName().'.0.',
+                        $exposedPrefix.$field->getExposedName().'.0.'
+                    )
+                );
+            }
+        }
 
-        return array_map(
-            function (\DOMElement $node) {
-                return '$'.$node->getAttribute('fieldName');
-            },
-            iterator_to_array(
-                $xpath->query('//doctrine:field[@type="extref"]')
-            )
-        );
+        return $result;
     }
 }

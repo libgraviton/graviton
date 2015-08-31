@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\User\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Model\ModelInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,18 +19,18 @@ use Symfony\Component\HttpFoundation\Request;
 class NullModel implements ModelInterface
 {
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var DocumentRepository
      */
     private $repository;
 
     /**
      * Set document repository
      *
-     * @param \Doctrine\Common\Persistence\ObjectRepository $repository document repo
+     * @param DocumentRepository $repository document repo
      *
      * @return void
      */
-    public function setRepository(ObjectRepository $repository)
+    public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -38,7 +38,7 @@ class NullModel implements ModelInterface
     /**
      * get repository instance
      *
-     * @return ObjectRepository
+     * @return DocumentRepository
      */
     public function getRepository()
     {
