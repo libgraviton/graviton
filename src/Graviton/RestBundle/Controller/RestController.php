@@ -35,6 +35,7 @@ use Rs\Json\Patch\InvalidPatchDocumentJsonException;
 use Rs\Json\Patch\InvalidTargetDocumentJsonException;
 use Rs\Json\Patch\InvalidOperationException;
 use Rs\Json\Patch\FailedTestException;
+use Graviton\RestBundle\Service\JsonPatchValidator;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -113,6 +114,11 @@ class RestController
     private $extrefFields;
 
     /**
+     * @var JsonPatchValidator
+     */
+    private $jsonPatchValidator;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -172,6 +178,15 @@ class RestController
     public function setFormDataMapper(FormDataMapperInterface $formDataMapper)
     {
         $this->formDataMapper = $formDataMapper;
+    }
+
+    /**
+     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
+     * @return void
+     */
+    public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
+    {
+        $this->jsonPatchValidator = $jsonPatchValidator;
     }
 
     /**
@@ -489,10 +504,16 @@ class RestController
             json_decode($this->serialize($record)),
             $this->extrefFields[$request->attributes->get('_route')]
         );
+        $jsonDocument = json_encode($recordData);
+
+        // Check/validate JSON Patch
+        if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {
+            throw new InvalidJsonPatchException($this->jsonPatchValidator->getException()->getMessage());
+        }
 
         try {
             // Apply JSON patches
-            $patch = new Patch(json_encode($recordData), $request->getContent());
+            $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
         } catch (InvalidPatchDocumentJsonException $e) {
             throw new InvalidJsonPatchException($e->getMessage());

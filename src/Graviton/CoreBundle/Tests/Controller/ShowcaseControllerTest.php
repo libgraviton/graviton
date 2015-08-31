@@ -649,7 +649,7 @@ class ShowcaseControllerTest extends RestTestCase
      * @group ref
      * @return void
      */
-    public function testPatchAddElementToTooLargeIndexWillNotChangeDocument()
+    public function testPatchAddElementToUndefinedIndexResponseAsBadRequest()
     {
         // Load fixtures
         $this->loadFixtures(
@@ -671,9 +671,9 @@ class ShowcaseControllerTest extends RestTestCase
             ]
         );
         $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        // Check patched result
+        // Check that patched document not changed
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/500');
 
