@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /core/app.
@@ -54,7 +55,7 @@ class AppControllerTest extends RestTestCase
     public function testFindAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/app');
+        $client->request('GET', '/core/app/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -64,17 +65,17 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
-        $this->assertEquals('Administration', $results[0]->title->en);
+        $this->assertEquals('Administration', $results[0]->name->en);
         $this->assertEquals(true, $results[0]->showInMenu);
         $this->assertEquals(2, $results[0]->order);
 
         $this->assertEquals('tablet', $results[1]->id);
-        $this->assertEquals('Tablet', $results[1]->title->en);
+        $this->assertEquals('Tablet', $results[1]->name->en);
         $this->assertEquals(true, $results[1]->showInMenu);
         $this->assertEquals(1, $results[1]->order);
 
         $this->assertContains(
-            '<http://localhost/core/app>; rel="self"',
+            '<http://localhost/core/app/>; rel="self"',
             $response->headers->get('Link')
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
@@ -89,24 +90,24 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $_SERVER['QUERY_STRING'] = 'eq(showInMenu,true)&limit(1)';
-        $client->request('GET', '/core/app?eq(showInMenu,true)&limit(1)');
+        $client->request('GET', '/core/app/?eq(showInMenu,true)&limit(1)');
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -121,43 +122,92 @@ class AppControllerTest extends RestTestCase
     {
         // does limit work?
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?limit(1)');
+        $client->request('GET', '/core/app/?limit(1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1)>; rel="self"',
+            '<http://localhost/core/app/?limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
 
         // "page" override - rql before get
         $client = static::createRestClient();
-        $client->request('GET', '/core/app?limit(1,1)');
+        $client->request('GET', '/core/app/?limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
 
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="self"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<http://localhost/core/app?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
+    }
+
+    /**
+     * RQL is parsed only when we get all apps
+     *
+     * @return void
+     */
+    public function testRqlIsParsedOnlyOnAllRequest()
+    {
+        $appData = [
+            'showInMenu' => false,
+            'order'      => 100,
+            'name'      => ['en' => 'Administration'],
+        ];
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/core/app/?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach (['GET', 'OPTIONS'] as $method) {
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/collection?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/schema/core/app/item?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request($method, '/core/app/admin?invalidrqlquery');
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        }
+
+        $client = static::createRestClient();
+        $client->post('/core/app/?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->put('/core/app/admin?invalidrqlquery', $appData);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('DELETE', '/core/app/admin?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -170,7 +220,7 @@ class AppControllerTest extends RestTestCase
         // reset fixtures since we already have some from setUp
         $this->loadFixtures(array(), null, 'doctrine_mongodb');
         $client = static::createRestClient();
-        $client->request('GET', '/core/app');
+        $client->request('GET', '/core/app/');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -195,7 +245,7 @@ class AppControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
 
         $this->assertEquals('admin', $results->id);
-        $this->assertEquals('Administration', $results->title->en);
+        $this->assertEquals('Administration', $results->name->en);
         $this->assertEquals(true, $results->showInMenu);
 
         $this->assertContains(
@@ -213,18 +263,18 @@ class AppControllerTest extends RestTestCase
     public function testPostApp()
     {
         $testApp = new \stdClass;
-        $testApp->title = new \stdClass;
-        $testApp->title->en = 'new Test App';
+        $testApp->name = new \stdClass;
+        $testApp->name->en = 'new Test App';
         $testApp->showInMenu = true;
 
         $client = static::createRestClient();
-        $client->post('/core/app', $testApp);
+        $client->post('/core/app/', $testApp);
         $response = $client->getResponse();
         $results = $client->getResults();
 
         // we sent a location header so we don't want a body
         $this->assertNull($results);
-        $this->assertContains('/core/app', $response->headers->get('Location'));
+        $this->assertContains('/core/app/', $response->headers->get('Location'));
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
@@ -232,7 +282,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertEquals('new Test App', $results->title->en);
+        $this->assertEquals('new Test App', $results->name->en);
         $this->assertTrue($results->showInMenu);
         $this->assertContains(
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
@@ -250,7 +300,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // send nothing really..
-        $client->post('/core/app', "", array(), array(), array(), false);
+        $client->post('/core/app/', "", array(), array(), array(), false);
 
         $response = $client->getResponse();
 
@@ -270,7 +320,7 @@ class AppControllerTest extends RestTestCase
     public function testPostNonObjectApp()
     {
         $client = static::createRestClient();
-        $client->post('/core/app', "non-object value");
+        $client->post('/core/app/', "non-object value");
 
         $response = $client->getResponse();
         $this->assertContains('JSON request body must be an object', $response->getContent());
@@ -285,8 +335,8 @@ class AppControllerTest extends RestTestCase
     public function testPostMalformedApp()
     {
         $testApp = new \stdClass;
-        $testApp->title = new \stdClass;
-        $testApp->title->en = 'new Test App';
+        $testApp->name = new \stdClass;
+        $testApp->name->en = 'new Test App';
         $testApp->showInMenu = true;
 
         // malform it ;-)
@@ -295,7 +345,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // make sure this is sent as 'raw' input (not json_encoded again)
-        $client->post('/core/app', $input, array(), array(), array(), false);
+        $client->post('/core/app/', $input, array(), array(), array(), false);
 
         $response = $client->getResponse();
 
@@ -340,8 +390,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass();
         $helloApp->id = "tablet";
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = "Tablet";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Tablet";
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -356,7 +406,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-        $this->assertEquals('Tablet', $results->title->en);
+        $this->assertEquals('Tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
         $this->assertContains(
             '<http://localhost/core/app/tablet>; rel="self"',
@@ -374,8 +424,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass();
         $helloApp->id = "tablet";
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = "Tablet";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Tablet";
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -400,8 +450,8 @@ class AppControllerTest extends RestTestCase
     public function testPutAppNoIdInPayload()
     {
         $helloApp = new \stdClass();
-        $helloApp->title = new \stdClass();
-        $helloApp->title->en = 'New tablet';
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = 'New tablet';
         $helloApp->showInMenu = false;
 
         $client = static::createRestClient();
@@ -415,7 +465,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals('tablet', $results->id);
-        $this->assertEquals('New tablet', $results->title->en);
+        $this->assertEquals('New tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
     }
 
@@ -428,8 +478,8 @@ class AppControllerTest extends RestTestCase
     {
         $isnogudApp = new \stdClass;
         $isnogudApp->id = 'isnogud';
-        $isnogudApp->title = new \stdClass;
-        $isnogudApp->title->en = 'I don\'t exist';
+        $isnogudApp->name = new \stdClass;
+        $isnogudApp->name->en = 'I don\'t exist';
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -446,7 +496,7 @@ class AppControllerTest extends RestTestCase
     {
         $testApp = new \stdClass;
         $testApp->id = 'tablet';
-        $testApp->title = 'Tablet';
+        $testApp->name = 'Tablet';
         $testApp->showInMenu = true;
         $testApp->order = 1;
 
@@ -473,8 +523,8 @@ class AppControllerTest extends RestTestCase
     {
         $helloApp = new \stdClass;
         $helloApp->id = 'tablet';
-        $helloApp->title = new \stdClass;
-        $helloApp->title->en = 'Tablet';
+        $helloApp->name = new \stdClass;
+        $helloApp->name->en = 'Tablet';
         $helloApp->showInMenu = [];
 
         $client = static::createRestClient();
@@ -566,7 +616,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request(
             'GET',
-            '/core/app?'.$expr,
+            '/core/app/?'.$expr,
             array(),
             array(),
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
@@ -584,12 +634,12 @@ class AppControllerTest extends RestTestCase
     public function searchableTranslationDataProvider()
     {
         return [
-            'simple-de' => array('eq(title.de,Die%20Administration)', 1),
-            'non-existent' => array('eq(title.de,Administration)', 0),
-            'english' => array('eq(title.en,Administration)', 1),
-            'no-lang' => array('eq(title,Administration)', 1),
-            'glob' => array('like(title.de,*Administr*)', 1),
-            'all-glob' => array('like(title.de,*a*)', 2)
+            'simple-de' => array('eq(name.de,Die%20Administration)', 1),
+            'non-existent' => array('eq(name.de,Administration)', 0),
+            'english' => array('eq(name.en,Administration)', 1),
+            'no-lang' => array('eq(name,Administration)', 1),
+            'glob' => array('like(name.de,*Administr*)', 1),
+            'all-glob' => array('like(name.de,*a*)', 2)
         ];
     }
 
@@ -602,7 +652,7 @@ class AppControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/app?eq(name)');
+        $client->request('GET', '/core/app/?eq(name)');
 
         $response = $client->getResponse();
         $results = $client->getResults();
@@ -644,12 +694,12 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Unique identifier for an app.', $schema->properties->id->description);
         $this->assertContains('id', $schema->required);
 
-        $this->assertEquals('object', $schema->properties->title->type);
-        $this->assertEquals('translatable', $schema->properties->title->format);
-        $this->assertEquals('Title', $schema->properties->title->title);
-        $this->assertEquals('Display name for an app.', $schema->properties->title->description);
-        $this->assertEquals('string', $schema->properties->title->properties->en->type);
-        $this->assertContains('title', $schema->required);
+        $this->assertEquals('object', $schema->properties->name->type);
+        $this->assertEquals('translatable', $schema->properties->name->format);
+        $this->assertEquals('Name', $schema->properties->name->title);
+        $this->assertEquals('Display name for an app.', $schema->properties->name->description);
+        $this->assertEquals('string', $schema->properties->name->properties->en->type);
+        $this->assertContains('name', $schema->required);
 
         $this->assertEquals('boolean', $schema->properties->showInMenu->type);
         $this->assertEquals('Show in Menu', $schema->properties->showInMenu->title);

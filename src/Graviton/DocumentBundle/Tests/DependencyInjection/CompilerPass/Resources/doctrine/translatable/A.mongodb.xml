@@ -3,10 +3,9 @@
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
     <document name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A">
-        <field fieldName="id" type="string" id="true"/>
+        <field fieldName="id" type="string" id="true" strategy="UUID"/>
         <field fieldName="key" type="string"/>
         <field fieldName="title" type="string"/>
-        <field fieldName="aref" type="extref"/>
 
         <embed-one field="achild"
                    target-document="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B">

@@ -5,6 +5,11 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -13,34 +18,34 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadFieldsInterface
+class DocumentFormFieldsCompilerPass implements CompilerPassInterface
 {
     /**
-     * @see \Graviton\DocumentBundle\DependencyInjection\Compiler\LoadFieldsTrait
+     * @var DocumentMap
      */
-    use LoadFieldsTrait;
-
-    /**
-     * @var array
-     */
-    private $serviceMap;
-
+    private $documentMap;
     /**
      * @var array
      */
     private $typeMap = [
-        'string' => 'text',
-        'extref' => 'extref',
-        'int' => 'integer',
-        'float' => 'number',
+        'string'  => 'text',
+        'extref'  => 'extref',
+        'int'     => 'integer',
+        'float'   => 'number',
         'boolean' => 'checkbox',
-        'date' => 'datetime',
+        'date'    => 'datetime',
     ];
 
     /**
-     * @var string
+     * Constructor
+     *
+     * @param DocumentMap $documentMap Document map
      */
-    private $className;
+    public function __construct(DocumentMap $documentMap)
+    {
+        $this->documentMap = $documentMap;
+    }
+
 
     /**
      * load services
@@ -49,136 +54,72 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface, LoadField
      *
      * @return void
      */
-    final public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container)
     {
-        $this->serviceMap = (array) $container->getParameter(
-            'graviton.document.form.type.document.service_map'
-        );
-        $gravitonServices = $container->findTaggedServiceIds(
-            'graviton.rest'
-        );
-        $map = [];
-        foreach ($gravitonServices as $id => $tag) {
-            list($ns, $bundle,, $doc) = explode('.', $id);
-            if (empty($bundle) || empty($doc)) {
-                continue;
-            }
-            if ($bundle == 'core' && $doc == 'main') {
-                continue;
-            }
-            list($doc, $bundle) = $this->getInfoFromTag($tag, $doc, $bundle);
-
-            $this->className  = $container->getParameter(
-                substr(
-                    substr(
-                        $this->serviceMap[strtolower(implode('.', [$ns, $bundle, 'controller', $doc]))],
-                        1
-                    ),
-                    0,
-                    -1
-                )
-            );
-            $this->loadFields($map, $ns, $bundle, $doc);
-            $this->className = null;
-        }
-        if (!isset($map['stdclass'])) {
-            $map['stdclass'] = [];
+        $map = ['stdclass' => []];
+        foreach ($this->documentMap->getDocuments() as $document) {
+            $map[$document->getClass()] = $this->getFormFields($document);
         }
         $container->setParameter('graviton.document.form.type.document.field_map', $map);
     }
 
     /**
-     * @param array     $map      map to add entries to
-     * @param \DOMXPath $xpath    xpath access to doctrine config dom
-     * @param string    $ns       namespace
-     * @param string    $bundle   bundle name
-     * @param string    $doc      document name
-     * @param boolean   $embedded is this an embedded doc, further args are only for embeddeds
-     * @param string    $name     name prefix of document the embedded field belongs to
-     * @param string    $prefix   prefix to add to embedded field name
+     * Get document fields
      *
-     * @return void
+     * @param Document $document Document
+     * @return array
      */
-    public function loadFieldsFromDOM(
-        array &$map,
-        \DOMXPath $xpath,
-        $ns,
-        $bundle,
-        $doc,
-        $embedded,
-        $name = '',
-        $prefix = ''
-    ) {
-        $fieldNodes = $xpath->query("//doctrine:field");
-
-        $class = $this->className;
-        if ($name !== '') {
-            $class = $name;
-        }
-
-        $map[$class] = [];
-        foreach ($fieldNodes as $node) {
-            $fieldName = $node->getAttribute('fieldName');
-            $doctrineType = $node->getAttribute('type');
-
+    private function getFormFields(Document $document)
+    {
+        $reflection = new \ReflectionClass($document->getClass());
+        if ($reflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
+            $instance = $reflection->newInstanceWithoutConstructor();
+            $translatableFields = $instance->getTranslatableFields();
+        } else {
             $translatableFields = [];
-            if (in_array(
-                'Graviton\I18nBundle\Document\TranslatableDocumentInterface',
-                array_keys(class_implements($class))
-            )) {
-                $fieldInstance = new $class;
-                $translatableFields = $fieldInstance->getTranslatableFields();
+        }
+
+        $result = [];
+        foreach ($document->getFields() as $field) {
+            if ($field instanceof Field) {
+                if (in_array($field->getFieldName(), $translatableFields, true)) {
+                    $type = 'translatable';
+                } elseif ($field->getType() === 'hash') {
+                    $type = 'freeform';
+                } elseif (isset($this->typeMap[$field->getType()])) {
+                    $type = $this->typeMap[$field->getType()];
+                } else {
+                    $type = 'text';
+                }
+
+                $result[] = [
+                    $field->getFieldName(),
+                    $field->getFormName(),
+                    $type,
+                    [],
+                ];
+            } elseif ($field instanceof EmbedOne) {
+                $result[] = [
+                    $field->getFieldName(),
+                    $field->getFormName(),
+                    'form',
+                    ['data_class' => $field->getDocument()->getClass()],
+                ];
+            } elseif ($field instanceof EmbedMany) {
+                $result[] = [
+                    $field->getFieldName(),
+                    $field->getFormName(),
+                    'collection',
+                    [
+                        'type' => 'form',
+                        'options' => [
+                            'data_class' => $field->getDocument()->getClass(),
+                            'required' => false,
+                        ],
+                    ],
+                ];
             }
-
-            $type = 'text';
-            $options = [];
-            if (in_array($fieldName, $translatableFields)) {
-                $type = 'translatable';
-            } elseif ($doctrineType == 'hash') {
-                $type = 'freeform';
-            } elseif (array_key_exists($doctrineType, $this->typeMap)) {
-                $type = $this->typeMap[$doctrineType];
-            }
-            $map[$class][] = [$fieldName, $type, $options];
         }
-
-        $embedNodes = $xpath->query("//*[self::doctrine:embed-one or self::doctrine:reference-one]");
-        foreach ($embedNodes as $node) {
-            $fieldName = $node->getAttribute('field');
-            $targetDocument = $node->getAttribute('target-document');
-
-            $this->loadEmbeddedDocuments(
-                $map,
-                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
-                $targetDocument
-            );
-            $map[$class][] = [
-                $fieldName,
-                'form',
-                ['data_class' => $targetDocument, 'required' => false],
-            ];
-        }
-        $embedNodes = $xpath->query("////*[self::doctrine:embed-many or self::doctrine:reference-many]");
-        foreach ($embedNodes as $node) {
-            $fieldName = $node->getAttribute('field');
-            $targetDocument = $node->getAttribute('target-document');
-
-            $this->loadEmbeddedDocuments(
-                $map,
-                $xpath->query("//doctrine:".$node->nodeName."[@field='".$fieldName."']"),
-                $targetDocument,
-                true
-            );
-            $map[$class][] = [
-                $fieldName,
-                'collection',
-                [
-                    'type' => 'form',
-                    'options' => [
-                        'data_class' => $targetDocument
-                    ]
-                ]
-            ];
-        }
+        return $result;
     }
 }

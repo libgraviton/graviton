@@ -13,14 +13,15 @@
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
 
   {% if idField is defined %}
-      <field fieldName="id" type="{{ idField.doctrineType }}" id="true"/>
+      <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
   {% else %}
-      <field fieldName="id" type="string" id="true"/>
+      <field fieldName="id" type="string" id="true" strategy="UUID"/>
   {% endif %}
 
         {% for field in fields %}
             {% if 'Graviton' in field.type %}
                 {% if field.relType is defined %}{% set relType = field.relType %}{% else %}{% set relType = "reference" %}{% endif %}
+                {% if relType == 'ref' %}{% set relType = "reference" %}{% endif %}
                 {% if '[]' in field.type %}
                     <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}" strategy="set">
                         <cascade>
@@ -34,13 +35,18 @@
                         </cascade>
                     </{{ relType }}-one>
                 {% endif %}
-            {% elseif 'Graviton' not in field.type %}
-                {% if field.type == 'object' %}
+            {% else %}
+                {% if field.type == 'hash' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
-                {% elseif field.type != 'hash' %}
-                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
+                {% else %}
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}
             {% endif %}
         {% endfor %}
+
+        {% if isrecordOriginFlagSet %}
+            <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
+        {% endif %}
+
     </{{ docType }}>
 </doctrine-mongo-mapping>

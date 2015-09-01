@@ -18,7 +18,7 @@ interface ExtReferenceConverterInterface
      * return the mongodb representation from a extref URL
      *
      * @param string $url Extref URL
-     * @return array
+     * @return object
      * @throws \InvalidArgumentException
      */
     public function getDbRef($url);
@@ -26,7 +26,7 @@ interface ExtReferenceConverterInterface
     /**
      * return the extref URL
      *
-     * @param array|object $dbRef DB ref
+     * @param object $dbRef DB ref
      * @return string
      * @throws \InvalidArgumentException
      */

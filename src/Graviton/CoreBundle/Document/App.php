@@ -22,9 +22,9 @@ class App implements TranslatableDocumentInterface
     protected $id;
 
     /**
-     * @var string app title
+     * @var string app Name
      */
-    protected $title;
+    protected $name;
 
     /**
      * @var boolean show app in menu
@@ -37,13 +37,13 @@ class App implements TranslatableDocumentInterface
     protected $order;
 
     /**
-     * make title translatable
+     * make name translatable
      *
      * @return string[]
      */
     public function getTranslatableFields()
     {
-        return array('title');
+        return array('name');
     }
 
     /**
@@ -81,27 +81,27 @@ class App implements TranslatableDocumentInterface
     }
 
     /**
-     * Set title
+     * Set name
      *
-     * @param string $title title used for display
+     * @param string $name name used for display
      *
      * @return self
      */
-    public function setTitle($title)
+    public function setName($name)
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get title
+     * Get name
      *
-     * @return string $title
+     * @return string $name
      */
-    public function getTitle()
+    public function getName()
     {
-        return $this->title;
+        return $this->name;
     }
 
     /**

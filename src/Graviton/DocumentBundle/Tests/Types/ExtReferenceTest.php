@@ -46,16 +46,6 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testExceptWithoutConverter()
-    {
-        $this->type->convertToDatabaseValue('');
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     *
-     * @return void
-     */
     public function testMongoRefFromValueWithException()
     {
         $url = __FILE__;
@@ -78,10 +68,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     public function testMongoRefFromValue()
     {
         $url = __FILE__;
-        $dbRef = [
-            '$ref' => __METHOD__,
-            '$id' => __LINE__,
-        ];
+        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $this->converter
             ->expects($this->once())
@@ -100,10 +87,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertToPHPValueWithException()
     {
-        $dbRef = [
-            '$ref' => __METHOD__,
-            '$id' => __LINE__,
-        ];
+        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $this->converter
             ->expects($this->once())
@@ -122,10 +106,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertToPHPValue()
     {
-        $dbRef = [
-            '$ref' => __METHOD__,
-            '$id' => __LINE__,
-        ];
+        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
 
         $this->converter
             ->expects($this->once())

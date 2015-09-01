@@ -4,6 +4,9 @@
         <property name="readOnly"
                   type="boolean"
                   serialized-name="readOnly"/>
+        <property name="recordOriginModifiable"
+                  type="boolean"
+                  serialized-name="recordOriginModifiable"/>
         <property name="routerBase"
                   type="string"
                   serialized-name="routerBase"/>
@@ -20,7 +23,7 @@
                   type="integer"
                   serialized-name="fixtureOrder"/>
         <property name="fixtures"
-                  type="array&lt;array&gt;"
+                  type="array&lt;ArrayObject&gt;"
                   serialized-name="fixtures"/>
     </class>
 </serializer>

@@ -42,7 +42,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
      * return the mongodb representation from a extref URL
      *
      * @param string $url Extref URL
-     * @return array
+     * @return object
      * @throws \InvalidArgumentException
      */
     public function getDbRef($url)
@@ -66,27 +66,30 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
             throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
         }
 
-        return \MongoDBRef::create($collection, $id);
+        return (object) \MongoDBRef::create($collection, $id);
     }
 
     /**
      * return the extref URL
      *
-     * @param array|object $dbRef DB value
+     * @param object $dbRef DB value
      * @return string
      */
     public function getUrl($dbRef)
     {
-        if (!\MongoDBRef::isRef($dbRef)) {
+        if (!is_object($dbRef) && !\MongoDBRef::isRef($dbRef)) {
             throw new \InvalidArgumentException(sprintf('Value "%s" must be a valid MongoDbRef', json_encode($dbRef)));
         }
 
-        $dbRef = (object) $dbRef;
         if (!isset($this->mapping[$dbRef->{'$ref'}])) {
             throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($dbRef)));
         }
 
-        return $this->router->generate($this->mapping[$dbRef->{'$ref'}], ['id' => $dbRef->{'$id'}], true);
+        return $this->router->generate(
+            $this->mapping[$dbRef->{'$ref'}].'.get',
+            ['id' => $dbRef->{'$id'}],
+            true
+        );
     }
 
     /**
@@ -107,7 +110,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
 
             list($routeService) = explode(':', $route->getDefault('_controller'));
             list($core, $bundle,,$name) = explode('.', $routeService);
-            $serviceName = implode('.', [$core, $bundle, 'rest', $name, 'get']);
+            $serviceName = implode('.', [$core, $bundle, 'rest', $name]);
             $collection = array_search($serviceName, $this->mapping);
 
             return [$collection, $id];

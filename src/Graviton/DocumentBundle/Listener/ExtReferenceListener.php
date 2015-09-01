@@ -72,13 +72,10 @@ class ExtReferenceListener
             return;
         }
 
-        $data = json_decode($event->getResponse()->getContent(), true);
-
-        if (is_array($data) && !empty($data) && !is_string(array_keys($data)[0])) {
-            foreach ($data as $index => $row) {
-                $data[$index] = $this->mapItem($row);
-            }
-        } else {
+        $data = json_decode($event->getResponse()->getContent());
+        if (is_array($data)) {
+            $data = array_map([$this, 'mapItem'], $data);
+        } elseif (is_object($data)) {
             $data = $this->mapItem($data);
         }
 
@@ -88,11 +85,11 @@ class ExtReferenceListener
     /**
      * apply single mapping
      *
-     * @param array $item item to apply mapping to
+     * @param mixed $item item to apply mapping to
      *
      * @return array
      */
-    private function mapItem(array $item)
+    private function mapItem($item)
     {
         if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
             return $item;
@@ -107,42 +104,37 @@ class ExtReferenceListener
     /**
      * recursive mapper for embed-one fields
      *
-     * @param array  $item  item to map
+     * @param mixed  $item  item to map
      * @param string $field name of field to map
      *
      * @return array
      */
     private function mapField($item, $field)
     {
-        if (!is_array($item)) {
-            return $item;
-        }
+        if (is_array($item)) {
+            if ($field === '0') {
+                $item = array_map([$this, 'convertToUrl'], $item);
+            } elseif (strpos($field, '0.') === 0) {
+                $subField = substr($field, 2);
 
-        if (strpos($field, '0.') === 0) {
-            $subField = substr($field, 2);
-
-            return array_map(
-                function ($subItem) use ($subField) {
-                    return $this->mapField($subItem, $subField);
-                },
-                $item
-            );
-        }
-
-        if (($pos = strpos($field, '.')) !== false) {
-            $topLevel = substr($field, 0, $pos);
-            $subField = substr($field, $pos + 1);
-
-            if (isset($item[$topLevel])) {
-                $item[$topLevel] = $this->mapField($item[$topLevel], $subField);
+                $item = array_map(
+                    function ($subItem) use ($subField) {
+                        return $this->mapField($subItem, $subField);
+                    },
+                    $item
+                );
             }
-            return $item;
-        }
+        } elseif (is_object($item)) {
+            if (($pos = strpos($field, '.')) !== false) {
+                $topLevel = substr($field, 0, $pos);
+                $subField = substr($field, $pos + 1);
 
-        if ($field === '0') {
-            $item = array_map([$this, 'convertToUrl'], $item);
-        } elseif (isset($item[$field])) {
-            $item[$field] = $this->convertToUrl($item[$field]);
+                if (isset($item->$topLevel)) {
+                    $item->$topLevel = $this->mapField($item->$topLevel, $subField);
+                }
+            } elseif (isset($item->$field)) {
+                $item->$field = $this->convertToUrl($item->$field);
+            }
         }
 
         return $item;
@@ -157,7 +149,7 @@ class ExtReferenceListener
     private function convertToUrl($ref)
     {
         try {
-            $ref = json_decode($ref, true);
+            $ref = json_decode($ref);
             return $this->converter->getUrl($ref);
         } catch (\InvalidArgumentException $e) {
             return '';

@@ -7,11 +7,14 @@ namespace Graviton\RestBundle;
 
 use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
+use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryDecoratorCompilerPass;
+use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass;
 
 /**
  * GravitonRestBundle
@@ -50,5 +53,7 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         parent::build($container);
 
         $container->addCompilerPass(new RestServicesCompilerPass);
+        $container->addCompilerPass(new RqlQueryRoutesCompilerPass());
+        $container->addCompilerPass(new RqlQueryDecoratorCompilerPass(), PassConfig::TYPE_OPTIMIZE);
     }
 }
