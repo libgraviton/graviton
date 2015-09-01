@@ -280,7 +280,7 @@ class JsonDefinition
     private function createFieldHierarchyRecursive(Schema\Field $definition, $path)
     {
         if (!preg_match('/^(?P<name>[^\.]+)(\.(?P<sub>.+))?$/', $path, $matches)) {
-            throw new \InvalidArgumentException(sprintf('Invalid field name "%s" defintion', $definition->getName()));
+            throw new \InvalidArgumentException(sprintf('Invalid field name "%s" definition', $definition->getName()));
         }
 
         $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
