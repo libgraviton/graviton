@@ -4,13 +4,13 @@
  * Publishes document level messages to the messaging bus.
  */
 
-namespace Graviton\MessageBundle\Service;
+namespace Graviton\RabbitMqBundle\Service;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Graviton\MessageBundle\Document\JobStatus;
-use Graviton\MessageBundle\Exception\UnknownRoutingKeyException;
+use Graviton\RabbitMqBundle\Document\JobStatus;
+use Graviton\RabbitMqBundle\Exception\UnknownRoutingKeyException;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;

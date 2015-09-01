@@ -8,5 +8,5 @@ services:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
     test_consumer:
-        class: Graviton\MessageBundle\Consumer\TestConsumer
+        class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 

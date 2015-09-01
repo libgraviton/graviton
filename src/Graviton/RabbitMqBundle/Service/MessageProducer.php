@@ -4,9 +4,9 @@
  * Publishes messages to the messaging bus. This producer only allows specifically white-listed messages (config).
  */
 
-namespace Graviton\MessageBundle\Service;
+namespace Graviton\RabbitMqBundle\Service;
 
-use Graviton\MessageBundle\Exception\UnknownRoutingKeyException;
+use Graviton\RabbitMqBundle\Exception\UnknownRoutingKeyException;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 /**

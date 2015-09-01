@@ -4,7 +4,7 @@
  * Sends a given message to the message bus.
  */
 
-namespace Graviton\MessageBundle\Command;
+namespace Graviton\RabbitMqBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;

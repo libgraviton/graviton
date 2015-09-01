@@ -4,7 +4,7 @@
  * Consumes RabbitMQ messages and dumps them.
  */
 
-namespace Graviton\MessageBundle\Service;
+namespace Graviton\RabbitMqBundle\Service;
 
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
