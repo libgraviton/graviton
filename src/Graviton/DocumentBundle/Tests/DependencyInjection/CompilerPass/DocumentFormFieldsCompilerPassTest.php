@@ -86,7 +86,10 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                             'achild',
                             'achild',
                             'form',
-                            ['data_class' => $baseNamespace.'\B'],
+                            [
+                                'data_class' => $baseNamespace.'\B',
+                                'required' => false,
+                            ],
                         ],
                         [
                             'achildren',
@@ -115,7 +118,10 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                             'bchild',
                             'bchild',
                             'form',
-                            ['data_class' => $baseNamespace.'\C'],
+                            [
+                                'data_class' => $baseNamespace.'\C',
+                                'required' => false,
+                            ],
                         ],
                         [
                             'bchildren',

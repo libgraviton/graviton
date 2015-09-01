@@ -103,7 +103,10 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                     $field->getFieldName(),
                     $field->getFormName(),
                     'form',
-                    ['data_class' => $field->getDocument()->getClass()],
+                    [
+                        'data_class' => $field->getDocument()->getClass(),
+                        'required' => false,
+                    ],
                 ];
             } elseif ($field instanceof EmbedMany) {
                 $result[] = [
@@ -112,10 +115,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                     'collection',
                     [
                         'type' => 'form',
-                        'options' => [
-                            'data_class' => $field->getDocument()->getClass(),
-                            'required' => false,
-                        ],
+                        'options' => ['data_class' => $field->getDocument()->getClass()],
                     ],
                 ];
             }
