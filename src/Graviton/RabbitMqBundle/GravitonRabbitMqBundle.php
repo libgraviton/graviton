@@ -3,7 +3,7 @@
  * core infrastructure like logging and framework.
  */
 
-namespace Graviton\MessageBundle;
+namespace Graviton\RabbitMqBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  */
-class GravitonMessageBundle extends Bundle implements GravitonBundleInterface
+class GravitonRabbitMqBundle extends Bundle implements GravitonBundleInterface
 {
     /**
      * {@inheritDoc}

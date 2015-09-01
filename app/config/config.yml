@@ -71,7 +71,7 @@ doctrine_mongodb:
             retry_query: 1
             mappings:
                 GravitonCoreBundle: ~
-                GravitonMessageBundle: ~
+                GravitonRabbitMqBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
@@ -174,7 +174,7 @@ old_sound_rabbit_mq:
             heartbeat: 0
     producers:
         job:
-            class: Graviton\MessageBundle\Service\MessageProducer
+            class: Graviton\RabbitMqBundle\Service\MessageProducer
             connection: default
             exchange_options:
                 name: test-topic

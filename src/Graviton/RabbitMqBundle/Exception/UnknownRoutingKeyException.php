@@ -4,7 +4,7 @@
  * Exception thrown when a message is published under an unknown routing key is used.
  */
 
-namespace Graviton\MessageBundle\Exception;
+namespace Graviton\RabbitMqBundle\Exception;
 
 use Exception;
 

@@ -3,7 +3,7 @@
  * basic app model
  */
 
-namespace Graviton\MessageBundle\Model;
+namespace Graviton\RabbitMqBundle\Model;
 
 use Graviton\RestBundle\Model\DocumentModel;
 

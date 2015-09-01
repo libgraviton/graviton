@@ -3,7 +3,7 @@
  * load services into di
  */
 
-namespace Graviton\MessageBundle\DependencyInjection;
+namespace Graviton\RabbitMqBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
 
@@ -12,7 +12,7 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GravitonMessageExtension extends GravitonBundleExtension
+class GravitonRabbitMqExtension extends GravitonBundleExtension
 {
     /**
      * {@inheritDoc}

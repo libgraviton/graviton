@@ -3,7 +3,7 @@
  * Document holding a jobs status.
  */
 
-namespace Graviton\MessageBundle\Document;
+namespace Graviton\RabbitMqBundle\Document;
 
 /**
  * Document holding a jobs status.

@@ -3,8 +3,8 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="graviton.message.documenteventpublisher.class">Graviton\MessageBundle\Service\DocumentEventPublisher</parameter>
-        <parameter key="graviton.message.consumer.dump.class">Graviton\MessageBundle\Service\DumpConsumer</parameter>
+        <parameter key="graviton.message.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
+        <parameter key="graviton.message.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
         <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     </parameters>
     <services>
