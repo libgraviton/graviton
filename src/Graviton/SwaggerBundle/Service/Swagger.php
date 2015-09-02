@@ -174,11 +174,13 @@ class Swagger
     {
         $ret = array();
         $ret['swagger'] = '2.0';
+        $date = date('Y-m-d');
         $ret['info'] = array(
             // @todo this should be a real version - but should it be the version of graviton or which one?
             'version' => '0.1',
             'title' => 'Graviton REST Services',
-            'description' => 'Testable API Documentation of this Graviton instance.'
+            'description' => 'Testable API Documentation of this Graviton instance.',
+            'lastUpdate' => $date
         );
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');
