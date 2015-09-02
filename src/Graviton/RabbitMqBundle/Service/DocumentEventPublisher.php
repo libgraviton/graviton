@@ -145,6 +145,7 @@ class DocumentEventPublisher implements EventSubscriber
     {
         $obj = new \stdClass();
         $obj->className = get_class($document);
+        $obj->recordId = $document->getId();
         $obj->event = $event;
 
         // get the public facing url (if available)
