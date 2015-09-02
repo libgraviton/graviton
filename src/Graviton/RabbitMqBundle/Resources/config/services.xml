@@ -14,6 +14,7 @@
             <argument type="service" id="graviton.rabbitmq.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
+            <argument>%graviton.document.type.extref.mapping%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
         </service>
 
