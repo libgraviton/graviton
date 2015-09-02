@@ -156,6 +156,9 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.mongodb.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/form')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/validation/form')
                 ->name('*.xml')
         );
 

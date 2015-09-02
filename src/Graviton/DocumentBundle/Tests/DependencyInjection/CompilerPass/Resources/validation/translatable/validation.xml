@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\A"/>
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B"/>
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C"/>
+</constraint-mapping>
