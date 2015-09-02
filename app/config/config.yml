@@ -174,7 +174,7 @@ old_sound_rabbit_mq:
             heartbeat: 0
     producers:
         job:
-            class: Graviton\RabbitMqBundle\Service\MessageProducer
+            class: OldSound\RabbitMqBundle\RabbitMq\Producer
             connection: default
             exchange_options:
                 name: graviton
