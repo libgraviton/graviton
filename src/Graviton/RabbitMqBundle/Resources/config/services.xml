@@ -5,9 +5,12 @@
     <parameters>
         <parameter key="graviton.rabbitmq.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
         <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
+        <parameter key="graviton.rabbitmq.document.queueevent.class">Graviton\RabbitMqBundle\Document\QueueEvent</parameter>
+
     </parameters>
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
+        <service id="graviton.rabbitmq.document.queueevent" class="%graviton.rabbitmq.document.queueevent.class%" />
         <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.job_producer">
             <call method="setContentType">
                 <argument>application/json</argument>
@@ -17,7 +20,7 @@
             <argument type="service" id="graviton.rabbitmq.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
-            <!--<argument type="service" id="gravitondyn.financinginterestrate.repository.financinginterestrate" />-->
+            <argument type="service" id="graviton.rabbitmq.document.queueevent" />
             <argument>%graviton.document.type.extref.mapping%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
         </service>

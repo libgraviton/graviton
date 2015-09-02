@@ -9,6 +9,7 @@ namespace Graviton\RabbitMqBundle\Service;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RabbitMqBundle\Exception\UnknownRoutingKeyException;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -54,20 +55,28 @@ class DocumentEventPublisher implements EventSubscriber
     private $documentMapping = array();
 
     /**
-     * @param ProducerInterface $rabbitMqProducer RabbitMQ dependency
-     * @param LoggerInterface   $logger           Logger dependency
-     * @param RouterInterface   $router           Router dependency
-     * @param array             $documentMapping  document mapping
+     * @var QueueEvent queueevent document
+     */
+    private $queueEventDocument;
+
+    /**
+     * @param ProducerInterface $rabbitMqProducer   RabbitMQ dependency
+     * @param LoggerInterface   $logger             Logger dependency
+     * @param RouterInterface   $router             Router dependency
+     * @param QueueEvent        $queueEventDocument queueevent document
+     * @param array             $documentMapping    document mapping
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
         LoggerInterface $logger,
         RouterInterface $router,
+        QueueEvent $queueEventDocument,
         $documentMapping
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->logger = $logger;
         $this->router = $router;
+        $this->queueEventDocument = $queueEventDocument;
         $this->documentMapping = $documentMapping;
     }
 
@@ -143,20 +152,20 @@ class DocumentEventPublisher implements EventSubscriber
      */
     private function createQueueEventObject($document, $event)
     {
-        $obj = new \stdClass();
-        $obj->className = get_class($document);
-        $obj->recordId = $document->getId();
-        $obj->event = $event;
+        $obj = clone $this->queueEventDocument;
+        $obj->setClassname(get_class($document));
+        $obj->setRecordid($document->getId());
+        $obj->setEvent($event);
 
         // get the public facing url (if available)
         $documentClass = new \ReflectionClass($document);
         $shortName = $documentClass->getShortName();
         if (isset($this->documentMapping[$shortName])) {
-            $obj->publicUrl = $this->router->generate(
+            $obj->setPublicurl($this->router->generate(
                 $this->documentMapping[$shortName].'.get',
                 ['id' => $document->getId()],
                 true
-            );
+            ));
         }
 
         return $obj;
