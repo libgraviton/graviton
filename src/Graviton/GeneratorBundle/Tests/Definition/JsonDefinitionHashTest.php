@@ -112,6 +112,49 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                 'relType'           => JsonDefinitionHash::REL_TYPE_EMBED,
                 'isClassType'       => true,
                 'constraints'       => [],
+                'required'          => true,
+            ],
+            $field->getDefAsArray()
+        );
+    }
+
+    /**
+     * Test JsonDefinitionHash::getDefAsArray() with field definition
+     *
+     * @return void
+     */
+    public function testGetDefAsArrayWithDefinition()
+    {
+        $name = __FUNCTION__.__LINE__;
+        $id = __FUNCTION__.__LINE__;
+        $namespace = __NAMESPACE__;
+
+        $parent = new JsonDefinition((new Schema\Definition())->setId($id));
+        $parent->setNamespace($namespace);
+
+        $definition = (new Schema\Field())
+            ->setTitle(__FUNCTION__.__LINE__)
+            ->setDescription(__FUNCTION__.__LINE__)
+            ->setExposeAs(__FUNCTION__.__LINE__)
+            ->setReadOnly(true)
+            ->setRequired(true);
+
+        $field = new JsonDefinitionHash($name, $parent, [], $definition);
+        $this->assertEquals(
+            [
+                'name'              => $field->getName(),
+                'type'              => $field->getType(),
+                'exposedName'       => $definition->getExposeAs(),
+                'doctrineType'      => $field->getTypeDoctrine(),
+                'serializerType'    => $field->getTypeSerializer(),
+                'relType'           => JsonDefinitionHash::REL_TYPE_EMBED,
+                'isClassType'       => true,
+                'constraints'       => [],
+
+                'title'             => $definition->getTitle(),
+                'description'       => $definition->getDescription(),
+                'readOnly'          => $definition->getReadOnly(),
+                'required'          => $definition->getRequired(),
             ],
             $field->getDefAsArray()
         );

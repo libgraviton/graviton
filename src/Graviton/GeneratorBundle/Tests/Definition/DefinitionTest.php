@@ -275,7 +275,12 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                                 ->setName('hash.def')
                                 ->setType('boolean')
                         ),
-                    ]
+                    ],
+                    (new Schema\Field())
+                        ->setName('hash')
+                        ->setType('hash')
+                        ->setExposeAs('$hash')
+                        ->setRequired(true)
                 ),
                 'array' => new JsonDefinitionArray(
                     'array',
@@ -350,7 +355,12 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                                                         ),
                                                     ]
                                                 ),
-                                            ]
+                                            ],
+                                            (new Schema\Field())
+                                                ->setName('deep.0.b.0.c')
+                                                ->setType('hash')
+                                                ->setExposeAs('$c')
+                                                ->setRequired(false)
                                         ),
                                     ]
                                 )

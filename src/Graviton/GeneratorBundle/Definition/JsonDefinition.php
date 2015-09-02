@@ -283,34 +283,49 @@ class JsonDefinition
             throw new \InvalidArgumentException(sprintf('Invalid field name "%s" definition', $definition->getName()));
         }
 
-        $name = ctype_digit($matches['name']) ? '$' : $matches['name'];
+        $name = ctype_digit($matches['name']) ? "\x00array" : $matches['name'];
         if (isset($matches['sub'])) {
             $definition = $this->createFieldHierarchyRecursive($definition, $matches['sub']);
+        } else {
+            $definition = ["\x00field" => $definition];
         }
 
         return [$name => $definition];
     }
 
     /**
-     * @param string                      $name
-     * @param Schema\Field|Schema\Field[] $definition
+     * @param string $name Field name
+     * @param array  $data Field data
      *
      * @return DefinitionElementInterface
      */
-    private function processFieldHierarchyRecursive($name, $definition)
+    private function processFieldHierarchyRecursive($name, $data)
     {
-        if ($definition instanceof Schema\Field) {
-            return $this->processSimpleField($name, $definition);
-        } elseif (array_keys($definition) === ['$']) {
-            return new JsonDefinitionArray($name, $this->processFieldHierarchyRecursive($name, $definition['$']));
-        } else {
-            $fields = [];
-            foreach ($definition as $subname => $subdefinition) {
-                $fields[$subname] = $this->processFieldHierarchyRecursive($subname, $subdefinition);
-            }
-
-            return new JsonDefinitionHash($name, $this, $fields);
+        // array field
+        if (isset($data["\x00array"])) {
+            return new JsonDefinitionArray(
+                $name,
+                $this->processFieldHierarchyRecursive($name, $data["\x00array"])
+            );
         }
+
+        // simple field
+        if (array_keys($data) === ["\x00field"]) {
+            return $this->processSimpleField($name, $data["\x00field"]);
+        }
+
+
+        // hash field
+        $fields = [];
+        $definition = null;
+        foreach ($data as $subname => $subdata) {
+            if ($subname === "\x00field") {
+                $definition = $subdata;
+            } else {
+                $fields[$subname] = $this->processFieldHierarchyRecursive($subname, $subdata);
+            }
+        }
+        return new JsonDefinitionHash($name, $this, $fields, $definition);
     }
 
     /**

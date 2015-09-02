@@ -22,19 +22,25 @@ class JsonDefinitionHash implements DefinitionElementInterface
      * @var DefinitionElementInterface[] Array of fields..
      */
     private $fields = [];
+    /**
+     * @var Schema\Field Field definition
+     */
+    private $definition;
 
     /**
      * Constructor
      *
-     * @param string                       $name   Name of this hash
-     * @param JsonDefinition               $parent Parent definiton
-     * @param DefinitionElementInterface[] $fields Fields of the hash
+     * @param string                       $name       Name of this hash
+     * @param JsonDefinition               $parent     Parent definiton
+     * @param DefinitionElementInterface[] $fields     Fields of the hash
+     * @param Schema\Field                 $definition Field definition
      */
-    public function __construct($name, JsonDefinition $parent, array $fields)
+    public function __construct($name, JsonDefinition $parent, array $fields, Schema\Field $definition = null)
     {
         $this->name = $name;
         $this->parent = $parent;
         $this->fields = $fields;
+        $this->definition = $definition;
     }
 
     /**
@@ -54,16 +60,27 @@ class JsonDefinitionHash implements DefinitionElementInterface
      */
     public function getDefAsArray()
     {
-        return [
-            'name'              => $this->getName(),
-            'type'              => $this->getType(),
-            'exposedName'       => $this->getName(),
-            'doctrineType'      => $this->getTypeDoctrine(),
-            'serializerType'    => $this->getTypeSerializer(),
-            'relType'           => self::REL_TYPE_EMBED,
-            'isClassType'       => true,
-            'constraints'       => [],
-        ];
+        return array_replace(
+            [
+                'name'              => $this->getName(),
+                'type'              => $this->getType(),
+                'exposedName'       => $this->getName(),
+                'doctrineType'      => $this->getTypeDoctrine(),
+                'serializerType'    => $this->getTypeSerializer(),
+                'relType'           => self::REL_TYPE_EMBED,
+                'isClassType'       => true,
+                'constraints'       => [],
+                'required'          => true,
+            ],
+            $this->definition === null ? [] : [
+                'exposedName'       => $this->definition->getExposeAs() ?: $this->getName(),
+
+                'title'             => $this->definition->getTitle(),
+                'description'       => $this->definition->getDescription(),
+                'readOnly'          => $this->definition->getReadOnly(),
+                'required'          => $this->definition->getRequired(),
+            ]
+        );
     }
 
     /**
