@@ -15,25 +15,44 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CoreUtils
 {
     /**
+     * @var string absolute path to cache directory
+     */
+    private $cacheDir;
+
+    /**
+     * @param $cacheDir string path to cache directory
+     */
+    public function __construct($cacheDir){
+        $this->cacheDir = $cacheDir;
+    }
+
+    /**
      * Gets the current version we're running on..
      *
      * @param string $composerFile Absolute path to the json file providing version information.
      *
      * @return string version
      */
-    public function getVersion($composerFile = '')
+    public function getVersion()
     {
         //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
-        $composerFile = !empty($composerFile) ? $composerFile : __DIR__ . '/../../../../composer.json';
+        $versionFilePath = $this->cacheDir . '/swagger/versions.json';
 
-        if (file_exists($composerFile)) {
-            $composer = json_decode(file_get_contents($composerFile), true);
+        if (file_exists($versionFilePath)) {
+            $versions = json_decode(file_get_contents($versionFilePath), true);
 
-            if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-                return $composer['version'];
+            if (JSON_ERROR_NONE === json_last_error()) {
+
+                $versionHeader = '';
+                foreach ($versions as $name => $version) {
+                    $versionHeader .= $name . ': ' . $version. '; ';
+                }
+
+                return $versionHeader;
+
             } else {
                 $message = sprintf(
-                    'Unable to extract version from composer.json file (Error code: %s)',
+                    'Unable to extract versions from versions.json file (Error code: %s)',
                     json_last_error()
                 );
 

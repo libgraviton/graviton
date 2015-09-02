@@ -131,11 +131,14 @@ class SwaggerGenerateCommand extends Command
 
         $this->filesystem->dumpFile(
             $this->rootDir.'/../web/swagger.json',
-            json_encode($this->apidoc->getSwaggerSpec())
+            json_encode($this->apidoc->getSwaggerSpec(),JSON_PRETTY_PRINT)
         );
+        $sdf=sys_get_temp_dir();
+        $cacheDir = $this->container->getParameter('kernel.cache_dir');
+
         $this->filesystem->dumpFile(
-            $this->rootDir.'/../web/test.json',
-            json_encode($this->apidoc->getServiceVersions())
+            $cacheDir . '/swagger/versions.json',
+            json_encode($this->apidoc->getServiceVersions(),JSON_PRETTY_PRINT)
         );
     }
 }

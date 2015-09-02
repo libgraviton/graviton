@@ -68,6 +68,8 @@
             </call>
         </service>
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
-        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%" />
+        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
+            <argument type="string">%kernel.cache_dir%</argument>
+                </service>
     </services>
 </container>
