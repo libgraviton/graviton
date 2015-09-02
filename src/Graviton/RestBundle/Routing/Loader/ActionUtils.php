@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
  */
 class ActionUtils
 {
-    const ID_PATTERN = '[a-zA-Z0-9\-_\/]+';
+    const ID_PATTERN = '[a-zA-Z0-9\-_\/\+]+';
 
     /**
      * Get route for GET requests
