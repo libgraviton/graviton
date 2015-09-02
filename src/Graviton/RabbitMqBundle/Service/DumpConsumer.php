@@ -28,17 +28,21 @@ class DumpConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        echo 'Message received at ' . date('c') . ': ' . $msg->body . "\n";
-        echo "\t" . 'Delivery Info: ' . "\n";
+        echo str_repeat('-', 60).PHP_EOL;
+
+        echo '[RECV ' . date('c') . ']' . PHP_EOL .'<content>' .
+            PHP_EOL . $msg->body . PHP_EOL . '</content>'.PHP_EOL.PHP_EOL;
+
+        echo "*" . ' INFO ' . PHP_EOL;
         foreach ($msg->{'delivery_info'} as $key => $value) {
             if (is_scalar($value)) {
-                echo "\t\t" . $key . ': ' . $value . "\n";
+                echo "** " . $key . ' = ' . $value . PHP_EOL;
             }
         }
-        echo "\t" . 'Properties: ' . "\n";
+        echo "*" . ' PROPERTIES ' . PHP_EOL;
         foreach ($msg->get_properties() as $property => $value) {
             if (is_scalar($value)) {
-                echo "\t\t" . $property . ': ' . $value . "\n";
+                echo "** " . $property . ' = ' . $value . PHP_EOL;
             }
         }
     }
