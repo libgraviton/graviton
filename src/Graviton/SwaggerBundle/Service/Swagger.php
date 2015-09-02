@@ -322,4 +322,18 @@ class Swagger
             ]
         ];
     }
+    public function getServiceVersions(){
+        $packageNames = shell_exec('composer show -i');
+        $packages = explode(PHP_EOL, $packageNames);
+        //last index is always empty
+        array_pop($packages);
+
+        $versions = array();
+        foreach ($packages as $package) {
+            preg_match_all('/([^\s]+)/', $package, $match);
+            $versions[$match[0][0]] = $match[0][1];
+        }
+
+        return $versions;
+    }
 }
