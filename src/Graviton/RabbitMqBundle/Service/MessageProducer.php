@@ -21,12 +21,7 @@ class MessageProducer extends Producer
     /**
      * @var string Defines the default reply_to property
      */
-    public $replyTo = 'graviton.message.status';
-
-    /**
-     * @var array Holds all registered / allowed routing keys
-     */
-    public $registeredRoutingKeys = array();
+    public $replyTo = 'graviton.rabbitmq.event';
 
     /**
      * Publishes a given message to the messaging bus.
@@ -37,6 +32,7 @@ class MessageProducer extends Producer
      * @param string $msgBody              The message to be sent to the queueing server.
      * @param string $routingKey           The worker channel identifier to be used (e.g. core.app.create)
      * @param array  $additionalProperties All additional properties
+     *
      * @throws UnknownRoutingKeyException When the given routing key is not registered
      *
      * @return void
@@ -45,22 +41,8 @@ class MessageProducer extends Producer
     {
         $additionalProperties['reply_to'] = isset($additionalProperties['reply_to']) ?
             $additionalProperties['reply_to'] : $this->replyTo;
-        //$this->validateRoutingKey($routingKey);
+
         parent::publish($msgBody, $routingKey, $additionalProperties);
     }
 
-    /**
-     * Validates whether the given routing key is registered or not.
-     *
-     * @param string $routingKey The routing key
-     * @throws UnknownRoutingKeyException When the given routing key is not registered.
-     *
-     * @return void
-     */
-    protected function validateRoutingKey($routingKey)
-    {
-        if (!in_array($routingKey, $this->registeredRoutingKeys)) {
-            throw new UnknownRoutingKeyException($routingKey);
-        }
-    }
 }
