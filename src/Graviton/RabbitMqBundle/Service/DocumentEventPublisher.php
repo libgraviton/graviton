@@ -9,7 +9,6 @@ namespace Graviton\RabbitMqBundle\Service;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Graviton\RabbitMqBundle\Document\JobStatus;
 use Graviton\RabbitMqBundle\Exception\UnknownRoutingKeyException;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -35,11 +34,6 @@ class DocumentEventPublisher implements EventSubscriber
     public $additionalProperties = array();
 
     /**
-     * @var array Holds the supported document types
-     */
-    public $documents = array();
-
-    /**
      * @var ProducerInterface Producer for publishing messages.
      */
     protected $rabbitMqProducer = null;
@@ -55,18 +49,26 @@ class DocumentEventPublisher implements EventSubscriber
     protected $router = null;
 
     /**
+     * @var array mapping from class shortname ("collection") to controller service
+     */
+    private $documentMapping = array();
+
+    /**
      * @param ProducerInterface $rabbitMqProducer RabbitMQ dependency
      * @param LoggerInterface   $logger           Logger dependency
      * @param RouterInterface   $router           Router dependency
+     * @param array             $documentMapping  document mapping
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
         LoggerInterface $logger,
-        RouterInterface $router
+        RouterInterface $router,
+        $documentMapping
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->logger = $logger;
         $this->router = $router;
+        $this->documentMapping = $documentMapping;
     }
 
     /**
@@ -90,7 +92,7 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postPersist(LifecycleEventArgs $args)
     {
-        $this->publishEvent($args->getDocument(), 'create', $args->getDocumentManager());
+        $this->publishEvent($args->getDocument(), 'create');
     }
 
     /**
@@ -102,8 +104,7 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
-          $this->publishEvent($args->getDocument(), 'update', $args->getDocumentManager());
-
+        $this->publishEvent($args->getDocument(), 'update');
     }
 
     /**
@@ -115,8 +116,7 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postRemove(LifecycleEventArgs $args)
     {
-          $this->publishEvent($args->getDocument(), 'delete', $args->getDocumentManager());
-
+        $this->publishEvent($args->getDocument(), 'delete');
     }
 
     /**
@@ -134,49 +134,57 @@ class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
-     * Transforms a given routeName and resource id to a resource URL.
+     * Created the structured object that will be sent to the queue
      *
-     * @param string $routeName The fully qualified route name
-     * @param string $id        The resource id
-     * @return string The generated URL
+     * @param object $document The document for determining message and routing key
+     * @param string $event    What type of event
+     *
+     * @return \stdClass
      */
-    private function toUrl($routeName, $id)
+    private function createQueueEventObject($document, $event)
     {
-        return $this->router
-            ->getGenerator()
-            ->generate($routeName, ['id' => $id]);
-    }
+        $obj = new \stdClass();
+        $obj->className = get_class($document);
+        $obj->event = $event;
 
+        // get the public facing url (if available)
+        $documentClass = new \ReflectionClass($document);
+        $shortName = $documentClass->getShortName();
+        if (isset($this->documentMapping[$shortName])) {
+            $obj->publicUrl = $this->router->generate(
+                $this->documentMapping[$shortName].'.get',
+                ['id' => $document->getId()],
+                true
+            );
+        }
+
+        return $obj;
+    }
 
     /**
      * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
      * The message and routing key get determined by a given document and an action name.
      *
-     * @param object          $document        The document for determining message and routing key
-     * @param string          $event           The action name
-     * @param DocumentManager $documentManager A document manager to use for creating the JobStatus document
+     * @param object $document The document for determining message and routing key
+     * @param string $event    The action name
+     *
      * @return bool Whether a message has been successfully sent to the message bus or not
      */
-    public function publishEvent($document, $event, DocumentManager $documentManager)
+    public function publishEvent($document, $event)
     {
-        $documentClass = get_class($document);
-        //if (isset($this->documents[$documentClass])) {
-            $additionalProperties = $this->additionalProperties;
-            //$additionalProperties['correlation_id'] = $this->createJobStatus($documentManager)->getId();
-            try {
-                $this->rabbitMqProducer->publish(
-                    'class = '.$documentClass.', id = '.$document->getId(),
-                    'core.app.dude',
-                    $additionalProperties
-                );
-                return true;
-            } catch (UnknownRoutingKeyException $e) {
-                $this->logger->warn($e->getMessage());
-                // @todo: set job status to failed
-                return false;
-            }
-        //}
-        return false;
+        $queueObject = $this->createQueueEventObject($document, $event);
+
+        try {
+            $this->rabbitMqProducer->publish(
+                json_encode($queueObject),
+                'core.app.dude'
+            );
+        } catch (UnknownRoutingKeyException $e) {
+            $this->logger->warn($e->getMessage());
+            // @todo: set job status to failed
+            return false;
+        }
+        return true;
     }
 
     /**
