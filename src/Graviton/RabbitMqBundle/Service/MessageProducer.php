@@ -45,7 +45,7 @@ class MessageProducer extends Producer
     {
         $additionalProperties['reply_to'] = isset($additionalProperties['reply_to']) ?
             $additionalProperties['reply_to'] : $this->replyTo;
-        $this->validateRoutingKey($routingKey);
+        //$this->validateRoutingKey($routingKey);
         parent::publish($msgBody, $routingKey, $additionalProperties);
     }
 

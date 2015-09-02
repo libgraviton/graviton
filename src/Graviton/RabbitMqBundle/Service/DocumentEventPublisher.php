@@ -160,13 +160,13 @@ class DocumentEventPublisher implements EventSubscriber
     public function publishEvent($document, $event, DocumentManager $documentManager)
     {
         $documentClass = get_class($document);
-        if (isset($this->documents[$documentClass])) {
+        //if (isset($this->documents[$documentClass])) {
             $additionalProperties = $this->additionalProperties;
-            $additionalProperties['correlation_id'] = $this->createJobStatus($documentManager)->getId();
+            //$additionalProperties['correlation_id'] = $this->createJobStatus($documentManager)->getId();
             try {
                 $this->rabbitMqProducer->publish(
-                    $this->toUrl($this->documents[$documentClass], $document->getId()),
-                    $this->toRoutingKey($this->documents[$documentClass], $event),
+                    'class = '.$documentClass.', id = '.$document->getId(),
+                    'core.app.dude',
                     $additionalProperties
                 );
                 return true;
@@ -175,7 +175,7 @@ class DocumentEventPublisher implements EventSubscriber
                 // @todo: set job status to failed
                 return false;
             }
-        }
+        //}
         return false;
     }
 
@@ -187,9 +187,11 @@ class DocumentEventPublisher implements EventSubscriber
      */
     private function createJobStatus(DocumentManager $documentManager)
     {
+        /*
         $document = new JobStatus();
         $documentManager->persist($document);
         $documentManager->flush();
         return $documentManager->find(get_class($document), $document->getId());
+        */
     }
 }
