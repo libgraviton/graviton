@@ -1,0 +1,44 @@
+{
+  "id": "QueueEvent",
+  "description": "An object serving as model on what we send to our message queue",
+  "service": {
+    "readOnly": false,
+    "routerBase": null
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier"
+      },
+      {
+        "name": "className",
+        "type": "varchar",
+        "title": "Class name",
+        "description": "The class name the events concerns"
+      },
+      {
+        "name": "recordId",
+        "type": "varchar",
+        "title": "Record ID",
+        "description": "The ID of the affected record"
+      },
+      {
+        "name": "event",
+        "type": "varchar",
+        "title": "Event",
+        "description": "The event that happened (create, update, delete)"
+      },
+      {
+        "name": "publicUrl",
+        "type": "varchar",
+        "title": "Public URL",
+        "description": "An optional URL from which the affected resource can be fetched."
+      }
+    ]
+  }
+}
