@@ -5,24 +5,21 @@
     <parameters>
         <parameter key="graviton.rabbitmq.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
         <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
-        <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
     </parameters>
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
-        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.job_producer" />
+        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.job_producer">
+            <call method="setContentType">
+                <argument>application/json</argument>
+            </call>
+        </service>
         <service id="graviton.rabbitmq.documenteventpublisher" class="%graviton.rabbitmq.documenteventpublisher.class%">
             <argument type="service" id="graviton.rabbitmq.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
+            <!--<argument type="service" id="gravitondyn.financinginterestrate.repository.financinginterestrate" />-->
             <argument>%graviton.document.type.extref.mapping%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
-        </service>
-
-        <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
-        <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
-            <argument type="service" id="graviton.rest.routing.collection"/>
-            <argument>%graviton.rest.services%</argument>
-            <tag name="routing.loader"/>
         </service>
     </services>
 </container>
