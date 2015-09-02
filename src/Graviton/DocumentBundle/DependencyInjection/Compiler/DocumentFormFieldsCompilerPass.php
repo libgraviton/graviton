@@ -105,7 +105,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                     'form',
                     [
                         'data_class' => $field->getDocument()->getClass(),
-                        'required' => false,
+                        'required' => $field->isRequired(),
                     ],
                 ];
             } elseif ($field instanceof EmbedMany) {

@@ -120,7 +120,7 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                             'form',
                             [
                                 'data_class' => $baseNamespace.'\C',
-                                'required' => false,
+                                'required' => true,
                             ],
                         ],
                         [
