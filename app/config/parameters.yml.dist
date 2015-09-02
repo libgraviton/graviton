@@ -43,9 +43,5 @@ parameters:
     graviton.rabbitmq.user: guest
     graviton.rabbitmq.password: guest
     graviton.rabbitmq.vhost: /
-
-    # graviton message bundle
-    graviton.message.registeredroutingkeys: []
-    graviton.message.documents: {}
-    graviton.message.consumer.dump.routingkeys:
+    graviton.rabbitmq.consumer.dump.routingkeys:
         - 'core.app.*'
