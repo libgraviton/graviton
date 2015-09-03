@@ -1,4 +1,7 @@
 <?php
+/**
+ * document class for {{ base }}Document\{{ document }}
+ */
 
 namespace {{ base }}Document;
 
@@ -13,6 +16,7 @@ use JMS\Serializer\DeserializationContext;
 /**
  * {{ base }}Document\{{ document }}
  *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
@@ -263,5 +267,4 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
         return ['{{ preTranslatedFields|join('\',\'') }}'];
 {% endif %}
     }
-
 }
