@@ -7,6 +7,8 @@
         <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
         <parameter key="graviton.rabbitmq.document.queueevent.class">Graviton\RabbitMqBundle\Document\QueueEvent</parameter>
 
+        <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
+        <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
     </parameters>
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
@@ -22,6 +24,8 @@
             <argument type="service" id="router" />
             <argument type="service" id="graviton.rabbitmq.document.queueevent" />
             <argument>%graviton.document.type.extref.mapping%</argument>
+            <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
         </service>
     </services>
