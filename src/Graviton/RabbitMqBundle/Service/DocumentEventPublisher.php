@@ -23,29 +23,23 @@ use Symfony\Component\Routing\RouterInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DocumentEventPublisher implements EventSubscriber
+final class DocumentEventPublisher implements EventSubscriber
 {
-
-    /**
-     * @var array Holds additionalProperties to be sent with the message.
-     * @see publishMessage()
-     */
-    public $additionalProperties = array();
 
     /**
      * @var ProducerInterface Producer for publishing messages.
      */
-    protected $rabbitMqProducer = null;
+    private $rabbitMqProducer = null;
 
     /**
      * @var Logger Logger
      */
-    protected $logger = null;
+    private $logger = null;
 
     /**
      * @var RouterInterface Router to generate resource URLs
      */
-    protected $router = null;
+    private $router = null;
 
     /**
      * @var array mapping from class shortname ("collection") to controller service
@@ -58,24 +52,40 @@ class DocumentEventPublisher implements EventSubscriber
     private $queueEventDocument;
 
     /**
-     * @param ProducerInterface $rabbitMqProducer   RabbitMQ dependency
-     * @param LoggerInterface   $logger             Logger dependency
-     * @param RouterInterface   $router             Router dependency
-     * @param QueueEvent        $queueEventDocument queueevent document
-     * @param array             $documentMapping    document mapping
+     * @var string classname of the EventWorker document
+     */
+    private $eventWorkerClassname;
+
+    /**
+     * @var string classname of the EventStatus document
+     */
+    private $eventStatusClassname;
+
+    /**
+     * @param ProducerInterface $rabbitMqProducer     RabbitMQ dependency
+     * @param LoggerInterface   $logger               Logger dependency
+     * @param RouterInterface   $router               Router dependency
+     * @param QueueEvent        $queueEventDocument   queueevent document
+     * @param array             $documentMapping      document mapping
+     * @param string            $eventWorkerClassname classname of the EventWorker document
+     * @param string            $eventStatusClassname classname of the EventStatus document
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
         LoggerInterface $logger,
         RouterInterface $router,
         QueueEvent $queueEventDocument,
-        $documentMapping
+        array $documentMapping,
+        $eventWorkerClassname,
+        $eventStatusClassname
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->logger = $logger;
         $this->router = $router;
         $this->queueEventDocument = $queueEventDocument;
         $this->documentMapping = $documentMapping;
+        $this->eventWorkerClassname = $eventWorkerClassname;
+        $this->eventStatusClassname = $eventStatusClassname;
     }
 
     /**
@@ -99,7 +109,7 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postPersist(LifecycleEventArgs $args)
     {
-        $this->publishEvent($args->getDocument(), 'create');
+        $this->publishEvent($args, 'create');
     }
 
     /**
@@ -111,7 +121,7 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
-        $this->publishEvent($args->getDocument(), 'update');
+        $this->publishEvent($args, 'update');
     }
 
     /**
@@ -123,7 +133,37 @@ class DocumentEventPublisher implements EventSubscriber
      */
     public function postRemove(LifecycleEventArgs $args)
     {
-        $this->publishEvent($args->getDocument(), 'delete');
+        $this->publishEvent($args, 'delete');
+    }
+
+    /**
+     * Returns whether our needed Model classes are currently available or not
+     *
+     * @return bool true if yes, false if not
+     */
+    private function isPublishableContext()
+    {
+        return (class_exists($this->eventWorkerClassname) && class_exists($this->eventStatusClassname));
+    }
+
+    /**
+     * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
+     * The message and routing key get determined by a given document and an action name.
+     *
+     * @param LifecycleEventArgs $args  Event Arguments
+     * @param string             $event The action name
+     *
+     * @return void
+     */
+    private function publishEvent(LifecycleEventArgs $args, $event)
+    {
+        $queueObject = $this->createQueueEventObject($args->getDocument(), $event);
+        $workerIds = $this->getSubscribedWorkerIds($args, $queueObject);
+
+        $this->rabbitMqProducer->publish(
+            json_encode($queueObject),
+            $queueObject->getRoutingKey()
+        );
     }
 
     /**
@@ -174,23 +214,41 @@ class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
-     * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
-     * The message and routing key get determined by a given document and an action name.
+     * Checks EventWorker for worker that are subscribed to our event and returns
+     * their workerIds as array
      *
-     * @param object $document The document for determining message and routing key
-     * @param string $event    The action name
+     * @param LifecycleEventArgs $args       doctrine event args
+     * @param QueueEvent         $queueEvent queueevent object
      *
-     * @return bool Whether a message has been successfully sent to the message bus or not
+     * @return array array of worker ids
      */
-    public function publishEvent($document, $event)
+    private function getSubscribedWorkerIds(LifecycleEventArgs $args, QueueEvent $queueEvent)
     {
-        $queueObject = $this->createQueueEventObject($document, $event);
+        // compose our regex to match stars ;-)
+        // results in = /([\*|document]+)\.([\*|dude]+)\.([\*|config]+)\.([\*|update]+)/
+        $routingArgs = explode('.', $queueEvent->getRoutingKey());
+        $regex =
+            '/'.
+            implode(
+                '\.',
+                array_map(
+                    function ($arg) {
+                        return '([\*|'.$arg.']+)';
+                    },
+                    $routingArgs
+                )
+            ).
+            '/';
 
-        $this->rabbitMqProducer->publish(
-            json_encode($queueObject),
-            $queueObject->getRoutingKey()
-        );
+        $dm = $args->getDocumentManager()->createQueryBuilder($this->eventWorkerClassname);
 
-        return true;
+        $data = $dm
+            ->select('id')
+            ->field('subscription.event')
+            ->equals(new \MongoRegex($regex))
+            ->getQuery()
+            ->execute()->toArray();
+
+        return array_keys($data);
     }
 }
