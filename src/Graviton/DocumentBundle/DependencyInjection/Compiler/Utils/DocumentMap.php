@@ -295,12 +295,10 @@ class DocumentMap
 
         return array_map(
             function (\DOMElement $element) use ($xpath) {
+                $constraints = $xpath->query('constraint:constraint[@name="NotBlank" or @name="NotNull"]', $element);
                 return [
                     'fieldName' => $element->getAttribute('name'),
-                    'required'  => $xpath->query(
-                            'constraint:constraint[@name="NotBlank" or @name="NotNull"]',
-                            $element
-                        )->length > 0,
+                    'required'  => $constraints->length > 0,
                 ];
             },
             iterator_to_array($xpath->query('constraint:property', $mapping))
