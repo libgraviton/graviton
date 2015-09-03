@@ -7,7 +7,6 @@
 namespace Graviton\RabbitMqBundle\Service;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Monolog\Logger;
@@ -145,10 +144,11 @@ class DocumentEventPublisher implements EventSubscriber
         // get the public facing url (if available)
         $documentClass = new \ReflectionClass($document);
         $shortName = $documentClass->getShortName();
+
         if (isset($this->documentMapping[$shortName])) {
             $obj->setPublicurl(
                 $this->router->generate(
-                    $this->documentMapping[$shortName].'.get',
+                    $this->documentMapping[$shortName] . '.get',
                     ['id' => $document->getId()],
                     true
                 )
@@ -192,21 +192,5 @@ class DocumentEventPublisher implements EventSubscriber
         );
 
         return true;
-    }
-
-    /**
-     * Creates a JobStatus Document
-     *
-     * @param DocumentManager $documentManager A document manager to use for creating the JobStatus document
-     * @return object The created Document
-     */
-    private function createJobStatus(DocumentManager $documentManager)
-    {
-        /*
-        $document = new JobStatus();
-        $documentManager->persist($document);
-        $documentManager->flush();
-        return $documentManager->find(get_class($document), $document->getId());
-        */
     }
 }
