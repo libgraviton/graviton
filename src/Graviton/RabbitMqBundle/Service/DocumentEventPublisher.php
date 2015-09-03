@@ -10,7 +10,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
-use Graviton\RabbitMqBundle\Exception\UnknownRoutingKeyException;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
@@ -129,20 +128,6 @@ class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
-     * Transforms a routeName into a rabbitmq topic based routing key.
-     *
-     * @param string $routeName The routeName
-     * @param string $suffix    Suffix to append to the routing key
-     * @return string The routing key
-     */
-    private function toRoutingKey($routeName, $suffix = '')
-    {
-        $prefix = $this->router->getRouteCollection()->get($routeName)->compile()->getStaticPrefix();
-        $baseKey = str_replace('/', '.', trim($prefix, '/'));
-        return strlen($suffix) ? $baseKey . '.' . $suffix : $baseKey;
-    }
-
-    /**
      * Created the structured object that will be sent to the queue
      *
      * @param object $document The document for determining message and routing key
@@ -161,12 +146,29 @@ class DocumentEventPublisher implements EventSubscriber
         $documentClass = new \ReflectionClass($document);
         $shortName = $documentClass->getShortName();
         if (isset($this->documentMapping[$shortName])) {
-            $obj->setPublicurl($this->router->generate(
-                $this->documentMapping[$shortName].'.get',
-                ['id' => $document->getId()],
-                true
-            ));
+            $obj->setPublicurl(
+                $this->router->generate(
+                    $this->documentMapping[$shortName].'.get',
+                    ['id' => $document->getId()],
+                    true
+                )
+            );
         }
+
+        // compose routing key
+        // here, we're generating something arbitrary that is properly topic based (namespaced)
+        $baseKey = str_replace('\\', '.', strtolower($obj->getClassname()));
+        list(, $bundle, , $document) = explode('.', $baseKey);
+
+        // will be ie. 'document.core.app.create' for /core/app creation
+        $routingKey = 'document.'.
+            str_replace('bundle', '', $bundle).
+            '.'.
+            $document.
+            '.'.
+            $event;
+
+        $obj->setRoutingKey($routingKey);
 
         return $obj;
     }
@@ -184,16 +186,11 @@ class DocumentEventPublisher implements EventSubscriber
     {
         $queueObject = $this->createQueueEventObject($document, $event);
 
-        try {
-            $this->rabbitMqProducer->publish(
-                json_encode($queueObject),
-                'core.app.dude'
-            );
-        } catch (UnknownRoutingKeyException $e) {
-            $this->logger->warn($e->getMessage());
-            // @todo: set job status to failed
-            return false;
-        }
+        $this->rabbitMqProducer->publish(
+            json_encode($queueObject),
+            $queueObject->getRoutingKey()
+        );
+
         return true;
     }
 
