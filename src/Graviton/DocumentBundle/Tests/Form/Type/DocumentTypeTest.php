@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\Tests\Form\Type;
 
 use Graviton\DocumentBundle\Form\Type\DocumentType;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -15,111 +16,76 @@ use Graviton\DocumentBundle\Form\Type\DocumentType;
 class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array
-     */
-    private $fieldMap;
-
-    /**
-     * prepare env for sut
+     * Test DocumentType::getName()
      *
      * @return void
+     * @expectedException \RuntimeException
      */
-    public function setUp()
+    public function testInitialize()
     {
-        $this->fieldMap = [
-            'Graviton\CoreBundle\Document\App' => [
-                ['title', 'titleExposed', 'translatable', []],
-                ['showInMenu', 'showInMenu', 'checkbox', []],
-            ],
-        ];
+        $class = __CLASS__;
+
+        $sut = new DocumentType([]);
+        $sut->initialize($class);
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class class name
-     * @param string $name  expected name
+     * Test DocumentType::getName()
      *
      * @return void
      */
-    public function testGetName($class, $name)
+    public function testGetName()
     {
-        $sut = new DocumentType($this->fieldMap);
+        $class = __CLASS__;
+
+        $sut = new DocumentType([$class => []]);
         $sut->initialize($class);
 
-        $this->assertEquals($name, $sut->getName());
+        $this->assertEquals(strtolower(strtr($class, '\\', '_')), $sut->getName());
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class class name
+     * Test DocumentType::configureOptions()
      *
      * @return void
      */
-    public function testConfigureOptions($class)
+    public function testConfigureOptions()
     {
-        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
+        $class = __CLASS__;
 
-        $resolverDouble->expects($this->once())
+        $sut = new DocumentType([$class => []]);
+        $sut->initialize($class);
+
+        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
+        $resolverDouble
+            ->expects($this->once())
             ->method('setDefaults')
             ->with(['data_class' => $class]);
-
-        $sut = new DocumentType($this->fieldMap);
-        $sut->initialize($class);
-
         $sut->configureOptions($resolverDouble);
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class  class name
-     * @param string $name   form name
-     * @param array  $fields fields for builder
+     * Test DocumentType::buildForm()
      *
      * @return void
+     * @todo Refactor DocumentType and add unit tests for Form::submit()
      */
-    public function testBuildForm($class, $name, $fields)
+    public function testBuildForm()
     {
-        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $class = __CLASS__;
 
-        $i = 0;
-        foreach ($fields as $field) {
-            $builderDouble
-                ->expects($this->at($i++))
-                ->method('add')
-                ->with($field['name'], $field['type'], $field['options']);
-        }
-        $sut = new DocumentType($this->fieldMap);
+        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $builderDouble
+            ->expects($this->once())
+            ->method('addEventListener')
+            ->with(
+                $this->equalTo(FormEvents::PRE_SUBMIT),
+                $this->isInstanceOf('Closure')
+            );
+
+        $sut = new DocumentType([$class => []]);
         $sut->initialize($class);
 
         $sut->buildForm($builderDouble, []);
-        $this->assertEquals($name, $sut->getName());
-    }
-
-    /**
-     * @return array
-     */
-    public function testData()
-    {
-        return [
-            'build from classname' => [
-                'Graviton\CoreBundle\Document\App',
-                'graviton_corebundle_document_app',
-                [
-                    [
-                        'name' => 'titleExposed',
-                        'type' => 'translatable', # alias to i18n form service
-                        'options' => ['property_path' => 'title'],
-                    ],
-                    [
-                        'name' => 'showInMenu',
-                        'type' => 'checkbox',
-                        'options' => [],
-                    ],
-                ],
-            ],
-        ];
     }
 }

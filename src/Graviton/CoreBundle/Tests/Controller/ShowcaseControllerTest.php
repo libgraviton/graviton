@@ -148,6 +148,18 @@ class ShowcaseControllerTest extends RestTestCase
                     'propertyPath'  => 'children[someOtherField]',
                     'message'       => 'This value is not valid.',
                 ],
+                (object) [
+                    'propertyPath'  => 'data.contact.type',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.protocol',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.value',
+                    'message'       => 'This value should not be blank.',
+                ],
             ],
             $client->getResults()
         );
