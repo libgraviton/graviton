@@ -38,6 +38,11 @@ class QueueEvent implements TranslatableDocumentInterface
     public $publicUrl;
 
     /**
+     * @var string $statusUrl
+     */
+    public $statusUrl;
+
+    /**
      * @var string $routingKey
      */
     public $routingKey;
@@ -134,6 +139,30 @@ class QueueEvent implements TranslatableDocumentInterface
     public function setPublicurl($publicUrl)
     {
         $this->publicUrl = $publicUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get statusUrl
+     *
+     * @return string $statusUrl
+     */
+    public function getStatusurl()
+    {
+        return $this->statusUrl;
+    }
+
+    /**
+     * Set statusUrl
+     *
+     * @param string $statusUrl value for statusUrl
+     *
+     * @return self
+     */
+    public function setStatusurl($statusUrl)
+    {
+        $this->statusUrl = $statusUrl;
 
         return $this;
     }
