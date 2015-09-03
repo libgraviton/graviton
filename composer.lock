@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e4429d3516da1aacec8aaeda7a42c8fd",
+    "hash": "24bfe43111856f3fd70e9fe0eb9e6e95",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -5248,7 +5248,6 @@
         "php-jsonpointer/php-jsonpointer": 5,
         "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
-        "oldsound/rabbitmq-bundle": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
