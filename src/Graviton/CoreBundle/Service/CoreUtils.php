@@ -20,16 +20,15 @@ class CoreUtils
     private $cacheDir;
 
     /**
-     * @param $cacheDir string path to cache directory
+     * @param string $cacheDir string path to cache directory
      */
-    public function __construct($cacheDir){
+    public function __construct($cacheDir)
+    {
         $this->cacheDir = $cacheDir;
     }
 
     /**
-     * Gets the current version we're running on..
-     *
-     * @param string $composerFile Absolute path to the json file providing version information.
+     * Reads the package versions from the cache
      *
      * @return string version
      */
@@ -42,7 +41,6 @@ class CoreUtils
             $versions = json_decode(file_get_contents($versionFilePath), true);
 
             if (JSON_ERROR_NONE === json_last_error()) {
-
                 $versionHeader = '';
                 foreach ($versions as $name => $version) {
                     $versionHeader .= $name . ': ' . $version. '; ';

@@ -20,6 +20,11 @@
                  class="Symfony\Component\Filesystem\Filesystem">
         </service>
 
+        <service id="graviton.swagger.controller.version"
+                     class="Graviton\SwaggerBundle\Controller\SwaggerController" parent="graviton.rest.controller">
+            <argument type="string">%kernel.cache_dir%</argument>
+        </service>
+
         <service id="graviton.swagger.command.swaggercopy"
                  class="Graviton\SwaggerBundle\Command\SwaggerCopyCommand">
             <call method="setRootDir">

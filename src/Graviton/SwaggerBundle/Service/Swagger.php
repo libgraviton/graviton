@@ -322,7 +322,12 @@ class Swagger
             ]
         ];
     }
-    public function getServiceVersions(){
+
+    /**
+     * @return array version numbers of packages
+     */
+    public function getPackageVersions()
+    {
         $packageNames = shell_exec('composer show -i');
         $packages = explode(PHP_EOL, $packageNames);
         //last index is always empty
