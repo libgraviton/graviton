@@ -38,20 +38,35 @@ class Swagger
     private $schemaUtils;
 
     /**
+     * @var string
+     */
+    private $cacheDir;
+
+    /**
+     * @var string
+     */
+    private $rootDir;
+    /**
      * Constructor
      *
      * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
      * @param SchemaUtils $schemaUtils schema utils
+     * @param string      $cacheDir    path to cache directory
+     * @param string      $rootDir     path to root directory
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
-        SchemaUtils $schemaUtils
+        SchemaUtils $schemaUtils,
+        $cacheDir,
+        $rootDir
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
+        $this->cacheDir = $cacheDir;
+        $this->rootDir = $rootDir;
     }
 
     /**
@@ -175,9 +190,10 @@ class Swagger
         $ret = array();
         $ret['swagger'] = '2.0';
         $date = date('Y-m-d');
+        $version = json_decode(file_get_contents($this->cacheDir . '/swagger/versions.json'));
         $ret['info'] = array(
             // @todo this should be a real version - but should it be the version of graviton or which one?
-            'version' => '0.1',
+            'version' => $version->graviton,
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
             'lastUpdate' => $date
@@ -337,6 +353,14 @@ class Swagger
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
             $versions[$match[0][0]] = $match[0][1];
+        }
+        $composerFile = !empty($composerFile) ? $composerFile : $this->rootDir . '/../composer.json';
+        var_dump($composerFile);
+        if (file_exists($composerFile)) {
+            $composer = json_decode(file_get_contents($composerFile), true);
+            if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
+                $versions['graviton'] = $composer['version'];
+            }
         }
 
         return $versions;

@@ -14,6 +14,8 @@
             <argument type="service" id="graviton.rest.restutils"></argument>
             <argument type="service" id="graviton.schema.model.schemamodel"></argument>
             <argument type="service" id="graviton.schema.utils"></argument>
+            <argument type="string">%kernel.cache_dir%</argument>
+            <argument type="string">%kernel.root_dir%</argument>
         </service>
 
         <service id="graviton.swagger.command.swaggercopy.filesystem"
@@ -49,6 +51,9 @@
             </call>
             <call method="setApidoc">
                 <argument type="service" id="graviton.rest.apidoc"/>
+            </call>
+            <call method="setCacheDir">
+                <argument type="string">%kernel.cache_dir%</argument>
             </call>
             <tag name="console.command" />
         </service>
