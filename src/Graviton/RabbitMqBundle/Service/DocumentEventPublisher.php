@@ -62,13 +62,20 @@ final class DocumentEventPublisher implements EventSubscriber
     private $eventStatusClassname;
 
     /**
-     * @param ProducerInterface $rabbitMqProducer     RabbitMQ dependency
-     * @param LoggerInterface   $logger               Logger dependency
-     * @param RouterInterface   $router               Router dependency
-     * @param QueueEvent        $queueEventDocument   queueevent document
-     * @param array             $documentMapping      document mapping
-     * @param string            $eventWorkerClassname classname of the EventWorker document
-     * @param string            $eventStatusClassname classname of the EventStatus document
+     * @var string route name of the /event/status route
+     */
+    private $eventStatusRouteName;
+
+    /**
+     * @param ProducerInterface $rabbitMqProducer           RabbitMQ dependency
+     * @param LoggerInterface   $logger                     Logger dependency
+     * @param RouterInterface   $router                     Router dependency
+     * @param QueueEvent        $queueEventDocument         queueevent document
+     * @param array             $documentMapping            document mapping
+     * @param string            $eventWorkerClassname       classname of the EventWorker document
+     * @param string            $eventStatusClassname       classname of the EventStatus document
+     * @param string            $eventStatusStatusClassname classname of the EventStatusStatus document
+     * @param string            $eventStatusRouteName       name of the route to EventStatus
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -77,7 +84,9 @@ final class DocumentEventPublisher implements EventSubscriber
         QueueEvent $queueEventDocument,
         array $documentMapping,
         $eventWorkerClassname,
-        $eventStatusClassname
+        $eventStatusClassname,
+        $eventStatusStatusClassname,
+        $eventStatusRouteName
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->logger = $logger;
@@ -86,6 +95,8 @@ final class DocumentEventPublisher implements EventSubscriber
         $this->documentMapping = $documentMapping;
         $this->eventWorkerClassname = $eventWorkerClassname;
         $this->eventStatusClassname = $eventStatusClassname;
+        $this->eventStatusStatusClassname = $eventStatusStatusClassname;
+        $this->eventStatusRouteName = $eventStatusRouteName;
     }
 
     /**
@@ -137,16 +148,6 @@ final class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
-     * Returns whether our needed Model classes are currently available or not
-     *
-     * @return bool true if yes, false if not
-     */
-    private function isPublishableContext()
-    {
-        return (class_exists($this->eventWorkerClassname) && class_exists($this->eventStatusClassname));
-    }
-
-    /**
      * Creates a new JobStatus document. Then publishes it's id with a message onto the message bus.
      * The message and routing key get determined by a given document and an action name.
      *
@@ -157,8 +158,7 @@ final class DocumentEventPublisher implements EventSubscriber
      */
     private function publishEvent(LifecycleEventArgs $args, $event)
     {
-        $queueObject = $this->createQueueEventObject($args->getDocument(), $event);
-        $workerIds = $this->getSubscribedWorkerIds($args, $queueObject);
+        $queueObject = $this->createQueueEventObject($args, $event);
 
         $this->rabbitMqProducer->publish(
             json_encode($queueObject),
@@ -169,35 +169,37 @@ final class DocumentEventPublisher implements EventSubscriber
     /**
      * Created the structured object that will be sent to the queue
      *
-     * @param object $document The document for determining message and routing key
-     * @param string $event    What type of event
+     * @param LifecycleEventArgs $args  doctrine event args
+     * @param string             $event What type of event
      *
      * @return \stdClass
      */
-    private function createQueueEventObject($document, $event)
+    private function createQueueEventObject(LifecycleEventArgs $args, $event)
     {
         $obj = clone $this->queueEventDocument;
-        $obj->setClassname(get_class($document));
-        $obj->setRecordid($document->getId());
+        $obj->setClassname(get_class($args->getDocument()));
+        $obj->setRecordid($args->getDocument()->getId());
         $obj->setEvent($event);
+        $obj->setPublicurl($this->getPublicResourceUrl($args));
+        $obj->setRoutingKey($this->generateRoutingKey($args, $event));
+        $obj->setStatusurl($this->getStatusUrl($args, $obj));
+        return $obj;
+    }
 
-        // get the public facing url (if available)
-        $documentClass = new \ReflectionClass($document);
-        $shortName = $documentClass->getShortName();
-
-        if (isset($this->documentMapping[$shortName])) {
-            $obj->setPublicurl(
-                $this->router->generate(
-                    $this->documentMapping[$shortName] . '.get',
-                    ['id' => $document->getId()],
-                    true
-                )
-            );
-        }
-
-        // compose routing key
-        // here, we're generating something arbitrary that is properly topic based (namespaced)
-        $baseKey = str_replace('\\', '.', strtolower($obj->getClassname()));
+    /**
+     * compose our routingKey. this will have the form of 'document.[bundle].[document].[event]'
+     * rules:
+     *  * always 4 parts divided by points.
+     *  * in this context (doctrine/odm stuff) we prefix with 'document.'
+     *
+     * @param LifecycleEventArgs $args  doctrine event args
+     * @param string             $event What type of event
+     *
+     * @return string routing key
+     */
+    private function generateRoutingKey(LifecycleEventArgs $args, $event)
+    {
+        $baseKey = str_replace('\\', '.', strtolower(get_class($args->getDocument())));
         list(, $bundle, , $document) = explode('.', $baseKey);
 
         // will be ie. 'document.core.app.create' for /core/app creation
@@ -208,9 +210,75 @@ final class DocumentEventPublisher implements EventSubscriber
             '.'.
             $event;
 
-        $obj->setRoutingKey($routingKey);
+        return $routingKey;
+    }
 
-        return $obj;
+    /**
+     * get public url to our affected resource
+     *
+     * @param LifecycleEventArgs $args doctrine event args
+     *
+     * @return string url
+     */
+    private function getPublicResourceUrl(LifecycleEventArgs $args)
+    {
+        $documentClass = new \ReflectionClass($args->getDocument());
+        $shortName = $documentClass->getShortName();
+        $url = null;
+
+        if (isset($this->documentMapping[$shortName])) {
+            $url = $this->router->generate(
+                $this->documentMapping[$shortName] . '.get',
+                [
+                    'id' => $args->getDocument()
+                                 ->getId()
+                ],
+                true
+            );
+        }
+
+        return $url;
+    }
+
+    /**
+     * Creates a EventStatus object that gets persisted..
+     *
+     * @param LifecycleEventArgs $args       doctrine event args
+     * @param QueueEvent         $queueEvent queueevent object
+     *
+     * @return array array of worker ids
+     */
+    private function getStatusUrl(LifecycleEventArgs $args, QueueEvent $queueEvent)
+    {
+        $workerIds = $this->getSubscribedWorkerIds($args, $queueEvent);
+        if (empty($workerIds)) {
+            return null;
+        }
+
+        // we have subscribers; create the EventStatus entry
+        $eventStatus = new $this->eventStatusClassname();
+        $eventStatus->setCreatedate(new \DateTime());
+
+        foreach ($workerIds as $workerId) {
+            $eventStatusStatus = new $this->eventStatusStatusClassname();
+            $eventStatusStatus->setWorkerid($workerId);
+            $eventStatusStatus->setStatus('opened');
+            $eventStatus->addStatus($eventStatusStatus);
+        }
+
+        $args->getDocumentManager()->persist($eventStatus);
+        $args->getDocumentManager()->flush();
+
+        // get the url..
+        $url = $this->router->generate(
+            $this->eventStatusRouteName,
+            [
+                'id' => $eventStatus->getId()
+            ],
+            true
+        );
+
+        return $url;
     }
 
     /**

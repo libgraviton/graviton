@@ -6,9 +6,12 @@
         <parameter key="graviton.rabbitmq.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
         <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
         <parameter key="graviton.rabbitmq.document.queueevent.class">Graviton\RabbitMqBundle\Document\QueueEvent</parameter>
-
         <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
+        <parameter key="graviton.rabbitmq.document.eventstatusstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatusStatus</parameter>
+
+        <!-- this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
+        <parameter key="graviton.rabbitmq.document.eventstatusstatus.route">gravitondyn.eventstatus.rest.eventstatus.get</parameter>
     </parameters>
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
@@ -26,6 +29,8 @@
             <argument>%graviton.document.type.extref.mapping%</argument>
             <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
         </service>
     </services>
