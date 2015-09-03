@@ -1,4 +1,7 @@
 <?php
+/**
+ * queueevent
+ */
 
 namespace Graviton\RabbitMqBundle\Document;
 
@@ -7,14 +10,12 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 /**
  * Graviton\RabbitMqBundle\Document\QueueEvent
  *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class QueueEvent implements TranslatableDocumentInterface {
-    /**
-     * @var MongoId $id
-     */
-    public $id;
+class QueueEvent implements TranslatableDocumentInterface
+{
 
     /**
      * @var string $className
@@ -37,31 +38,14 @@ class QueueEvent implements TranslatableDocumentInterface {
     public $publicUrl;
 
     /**
-     * Get id
-     *
-     * @return string $id
+     * @var string $routingKey
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set id
-     *
-     * @param mixed $id id
-     *
-     * @return void
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
+    public $routingKey;
 
     /**
      * Get className
      *
-     * @return string $className
+     * @return string $className classname
      */
     public function getClassname()
     {
@@ -85,7 +69,7 @@ class QueueEvent implements TranslatableDocumentInterface {
     /**
      * Get recordId
      *
-     * @return string $recordId
+     * @return string $recordId recordId
      */
     public function getRecordid()
     {
@@ -155,6 +139,30 @@ class QueueEvent implements TranslatableDocumentInterface {
     }
 
     /**
+     * Get routingKey
+     *
+     * @return string $routingKey
+     */
+    public function getRoutingKey()
+    {
+        return $this->routingKey;
+    }
+
+    /**
+     * Set routingKey
+     *
+     * @param string $routingKey routingKey
+     *
+     * @return self
+     */
+    public function setRoutingKey($routingKey)
+    {
+        $this->routingKey = $routingKey;
+
+        return $this;
+    }
+
+    /**
      * return translatable field names
      *
      * @return string[]
@@ -173,5 +181,4 @@ class QueueEvent implements TranslatableDocumentInterface {
     {
         return [];
     }
-
 }
