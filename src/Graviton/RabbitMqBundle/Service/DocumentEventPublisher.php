@@ -12,6 +12,8 @@ use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -42,6 +44,11 @@ final class DocumentEventPublisher implements EventSubscriber
     private $router = null;
 
     /**
+     * @var RequestStack request stack
+     */
+    private $requestStack;
+
+    /**
      * @var array mapping from class shortname ("collection") to controller service
      */
     private $documentMapping = array();
@@ -70,6 +77,7 @@ final class DocumentEventPublisher implements EventSubscriber
      * @param ProducerInterface $rabbitMqProducer           RabbitMQ dependency
      * @param LoggerInterface   $logger                     Logger dependency
      * @param RouterInterface   $router                     Router dependency
+     * @param RequestStack      $requestStack               Request stack
      * @param QueueEvent        $queueEventDocument         queueevent document
      * @param array             $documentMapping            document mapping
      * @param string            $eventWorkerClassname       classname of the EventWorker document
@@ -81,6 +89,7 @@ final class DocumentEventPublisher implements EventSubscriber
         ProducerInterface $rabbitMqProducer,
         LoggerInterface $logger,
         RouterInterface $router,
+        RequestStack $requestStack,
         QueueEvent $queueEventDocument,
         array $documentMapping,
         $eventWorkerClassname,
@@ -91,6 +100,7 @@ final class DocumentEventPublisher implements EventSubscriber
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->logger = $logger;
         $this->router = $router;
+        $this->requestStack = $requestStack;
         $this->queueEventDocument = $queueEventDocument;
         $this->documentMapping = $documentMapping;
         $this->eventWorkerClassname = $eventWorkerClassname;
@@ -159,6 +169,13 @@ final class DocumentEventPublisher implements EventSubscriber
     private function publishEvent(LifecycleEventArgs $args, $event)
     {
         $queueObject = $this->createQueueEventObject($args, $event);
+
+        // should we set QueueEvent in request attributes for our Link header Listener?
+        if ($this->requestStack->getCurrentRequest() instanceof Request &&
+            !is_null($queueObject->getStatusurl())
+        ) {
+            $this->requestStack->getCurrentRequest()->attributes->set('eventStatus', $queueObject);
+        }
 
         $this->rabbitMqProducer->publish(
             json_encode($queueObject),

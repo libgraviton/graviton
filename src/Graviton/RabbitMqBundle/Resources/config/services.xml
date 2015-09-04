@@ -6,6 +6,7 @@
         <parameter key="graviton.rabbitmq.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
         <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
         <parameter key="graviton.rabbitmq.document.queueevent.class">Graviton\RabbitMqBundle\Document\QueueEvent</parameter>
+        <parameter key="graviton.rabbitmq.listener.eventstatusresponselistener.class">Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener</parameter>
         <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatusstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatusStatus</parameter>
@@ -21,10 +22,14 @@
                 <argument>application/json</argument>
             </call>
         </service>
+        <service id="graviton.rabbitmq.listener.eventstatusresponselistener" class="%graviton.rabbitmq.listener.eventstatusresponselistener.class%">
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
         <service id="graviton.rabbitmq.documenteventpublisher" class="%graviton.rabbitmq.documenteventpublisher.class%">
             <argument type="service" id="graviton.rabbitmq.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
+            <argument type="service" id="request_stack" />
             <argument type="service" id="graviton.rabbitmq.document.queueevent" />
             <argument>%graviton.document.type.extref.mapping%</argument>
             <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
