@@ -49,13 +49,6 @@ class SwaggerGenerateCommand extends Command
     private $apidoc;
 
     /**
-     * cache directory
-     *
-     * @var string
-     */
-    private $cacheDir;
-
-    /**
      * {@inheritDoc}
      *
      * @return void
@@ -119,18 +112,6 @@ class SwaggerGenerateCommand extends Command
     }
 
     /**
-     * sets cacheDir
-     *
-     * @param string $cacheDir cache directory
-     *
-     * @return void
-     */
-    public function setCacheDir($cacheDir)
-    {
-        $this->cacheDir = $cacheDir;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @param InputInterface  $input  input
@@ -147,11 +128,6 @@ class SwaggerGenerateCommand extends Command
          */
         $this->container->enterScope('request');
         $this->container->set('request', new Request(), 'request');
-
-        $this->filesystem->dumpFile(
-            $this->cacheDir . '/swagger/versions.json',
-            json_encode($this->apidoc->getPackageVersions(), JSON_PRETTY_PRINT)
-        );
 
         $this->filesystem->dumpFile(
             $this->rootDir.'/../web/swagger.json',

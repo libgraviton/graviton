@@ -43,30 +43,23 @@ class Swagger
     private $cacheDir;
 
     /**
-     * @var string
-     */
-    private $rootDir;
-    /**
      * Constructor
      *
      * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
      * @param SchemaUtils $schemaUtils schema utils
      * @param string      $cacheDir    path to cache directory
-     * @param string      $rootDir     path to root directory
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
         SchemaUtils $schemaUtils,
-        $cacheDir,
-        $rootDir
+        $cacheDir
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
         $this->cacheDir = $cacheDir;
-        $this->rootDir = $rootDir;
     }
 
     /**
@@ -190,7 +183,7 @@ class Swagger
         $ret = array();
         $ret['swagger'] = '2.0';
         $date = date('Y-m-d');
-        $version = json_decode(file_get_contents($this->cacheDir . '/swagger/versions.json'));
+        $version = json_decode(file_get_contents($this->cacheDir . '/core/versions.json'));
         $ret['info'] = array(
             // @todo this should be a real version - but should it be the version of graviton or which one?
             'version' => $version->graviton,
@@ -337,34 +330,5 @@ class Swagger
                 'summary' => 'Get schema information for ' . $describedService . ' endpoints.',
             ]
         ];
-    }
-
-    /**
-     * @return array version numbers of packages
-     */
-    public function getPackageVersions()
-    {
-        // -i installed packages
-        $packageNames = shell_exec('composer show -i');
-        $packages = explode(PHP_EOL, $packageNames);
-        //last index is always empty
-        array_pop($packages);
-
-        $versions = array();
-        foreach ($packages as $package) {
-            preg_match_all('/([^\s]+)/', $package, $match);
-            if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
-                $versions[$match[0][0]] = $match[0][1];
-            }
-        }
-        $composerFile = !empty($composerFile) ? $composerFile : $this->rootDir . '/../composer.json';
-        if (file_exists($composerFile)) {
-            $composer = json_decode(file_get_contents($composerFile), true);
-            if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-                $versions['graviton'] = $composer['version'];
-            }
-        }
-
-        return $versions;
     }
 }

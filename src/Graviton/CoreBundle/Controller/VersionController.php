@@ -78,7 +78,6 @@ class VersionController extends RestController
     public function allAction(Request $request)
     {
         $versions['versions'] = json_decode(file_get_contents($this->cacheDir.'/swagger/versions.json'));
-        $versions = array('graviton' => '0.25.1');
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
