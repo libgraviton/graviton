@@ -344,6 +344,7 @@ class Swagger
      */
     public function getPackageVersions()
     {
+        // -i installed packages
         $packageNames = shell_exec('composer show -i');
         $packages = explode(PHP_EOL, $packageNames);
         //last index is always empty
@@ -352,7 +353,7 @@ class Swagger
         $versions = array();
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
-            if(strpos($match[0][0],'grv') === 0 | $match[0][0] === 'graviton') {
+            if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
                 $versions[$match[0][0]] = $match[0][1];
             }
         }

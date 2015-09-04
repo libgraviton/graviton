@@ -3,7 +3,7 @@
  * Controller for core/version endpoint
  */
 
-namespace Graviton\SwaggerBundle\Controller;
+namespace Graviton\CoreBundle\Controller;
 
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Controller\RestController;
@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class SwaggerController extends RestController
+class VersionController extends RestController
 {
 
     /**
@@ -78,6 +78,7 @@ class SwaggerController extends RestController
     public function allAction(Request $request)
     {
         $versions['versions'] = json_decode(file_get_contents($this->cacheDir.'/swagger/versions.json'));
+        $versions = array('graviton' => '0.25.1');
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
