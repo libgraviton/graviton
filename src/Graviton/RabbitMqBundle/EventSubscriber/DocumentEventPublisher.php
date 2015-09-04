@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Publishes document level messages to the messaging bus and creates a new JobStatus Document.
+ * Publishes document level messages to the messaging bus and creates a new EventStatus Document.
  * Moreover, this class can be used as a Doctrine Event Subscriber to automatically publish the postPersist,
  * postUpdate and postRemove events.
  *
@@ -110,6 +110,8 @@ final class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
+     * returns subscribed events
+     *
      * @return array Defines the doctrine events to subscribe to.
      */
     public function getSubscribedEvents()
@@ -184,7 +186,7 @@ final class DocumentEventPublisher implements EventSubscriber
     }
 
     /**
-     * Created the structured object that will be sent to the queue
+     * Creates the structured object that will be sent to the queue
      *
      * @param LifecycleEventArgs $args  doctrine event args
      * @param string             $event What type of event
