@@ -4,7 +4,7 @@
  * Publishes document level messages to the messaging bus.
  */
 
-namespace Graviton\RabbitMqBundle\Service;
+namespace Graviton\RabbitMqBundle\EventSubscriber;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
