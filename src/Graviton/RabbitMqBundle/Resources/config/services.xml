@@ -17,7 +17,7 @@
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
         <service id="graviton.rabbitmq.document.queueevent" class="%graviton.rabbitmq.document.queueevent.class%" />
-        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.job_producer">
+        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.document_event_producer">
             <call method="setContentType">
                 <argument>application/json</argument>
             </call>
