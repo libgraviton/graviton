@@ -175,6 +175,10 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                         ->setFields(
                             [
                                 (new Schema\Field())
+                                    ->setName('hash')
+                                    ->setType('hash')
+                                    ->setDescription('description'),
+                                (new Schema\Field())
                                     ->setName('hash.b')
                                     ->setType('class:B'),
                                 (new Schema\Field())
@@ -206,6 +210,7 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
             new JsonDefinition(
                 (new Schema\Definition())
                     ->setId('ParentHash')
+                    ->setDescription('description')
                     ->setIsSubDocument(true)
                     ->setTarget(
                         (new Schema\Target())

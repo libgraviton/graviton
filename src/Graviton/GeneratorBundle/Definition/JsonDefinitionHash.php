@@ -125,6 +125,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     {
         $definition = (new Schema\Definition())
             ->setId($this->getClassName())
+            ->setDescription($this->definition === null ? null : $this->definition->getDescription())
             ->setIsSubDocument(true)
             ->setTarget(new Schema\Target());
 

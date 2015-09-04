@@ -48,6 +48,7 @@
         "name": "deep.0.b.0.c",
         "type": "hash",
         "exposeAs": "$c",
+        "description": "description",
         "required": false
       },
       {
