@@ -87,30 +87,23 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testMissingFields()
     {
-        $document = [
-            'anotherInt'  => 6555488894525,
-            'testField'   => ['en' => 'a test string'],
-            'contactCode' => [
-                'text'     => ['en' => 'Some Text'],
-                'someDate' => '1984-05-01T00:00:00+0000',
-            ],
-        ];
+        $document = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/showcase-incomplete.json'),
+            true
+        );
 
         $client = static::createRestClient();
         $client->post('/hans/showcase', $document);
 
-        $this->assertEquals(
-            Response::HTTP_BAD_REQUEST,
-            $client->getResponse()->getStatusCode()
-        );
-        $this->assertEquals(
-            [
-                (object) [
-                    'propertyPath'  => 'children[someOtherField]',
-                    'message'       => 'This value is not valid.',
-                ],
-            ],
-            $client->getResults()
+        $expectedErrors = [];
+        $expectedError = new \stdClass();
+        $expectedError->propertyPath = "children[someOtherField]";
+        $expectedError->message = "This value is not valid.";
+        $expectedErrors[] = $expectedError;
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expectedErrors),
+            json_encode($client->getResults())
         );
     }
 
