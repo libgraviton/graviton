@@ -49,6 +49,10 @@ class ExtReferenceValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\ExtReference');
         }
 
+        if ($value === null) {
+            return;
+        }
+
         try {
             $extref = $this->converter->getDbRef($value);
             if (is_array($constraint->allowedCollections) &&

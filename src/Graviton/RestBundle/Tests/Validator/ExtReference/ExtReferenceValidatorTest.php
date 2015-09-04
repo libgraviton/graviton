@@ -83,6 +83,23 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test validate() null value
+     *
+     * @return void
+     */
+    public function testValidateNull()
+    {
+        $url = null;
+        $constraint = new ExtReference();
+
+        $this->converter->expects($this->never())
+            ->method('getDbRef');
+
+        $validator = $this->createValidator();
+        $validator->validate($url, $constraint);
+    }
+
+    /**
      * Test validate()
      *
      * @return void
