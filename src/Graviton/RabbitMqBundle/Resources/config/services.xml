@@ -3,28 +3,40 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="graviton.message.documenteventpublisher.class">Graviton\RabbitMqBundle\Service\DocumentEventPublisher</parameter>
-        <parameter key="graviton.message.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
-        <parameter key="graviton.rest.routing.collection.class">Symfony\Component\Routing\RouteCollection</parameter>
+        <parameter key="graviton.rabbitmq.documenteventpublisher.class">Graviton\RabbitMqBundle\EventSubscriber\DocumentEventPublisher</parameter>
+        <parameter key="graviton.rabbitmq.consumer.dump.class">Graviton\RabbitMqBundle\Service\DumpConsumer</parameter>
+        <parameter key="graviton.rabbitmq.document.queueevent.class">Graviton\RabbitMqBundle\Document\QueueEvent</parameter>
+        <parameter key="graviton.rabbitmq.listener.eventstatusresponselistener.class">Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener</parameter>
+        <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
+        <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
+        <parameter key="graviton.rabbitmq.document.eventstatusstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatusStatus</parameter>
+
+        <!-- this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
+        <parameter key="graviton.rabbitmq.document.eventstatusstatus.route">gravitondyn.eventstatus.rest.eventstatus.get</parameter>
     </parameters>
     <services>
-        <service id="graviton.message.consumer.dump" class="%graviton.message.consumer.dump.class%" />
-        <service id="graviton.message.jobproducer" parent="old_sound_rabbit_mq.job_producer">
-            <property name="registeredRoutingKeys">%graviton.message.registeredroutingkeys%</property>
+        <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
+        <service id="graviton.rabbitmq.document.queueevent" class="%graviton.rabbitmq.document.queueevent.class%" />
+        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.document_event_producer">
+            <call method="setContentType">
+                <argument>application/json</argument>
+            </call>
         </service>
-        <service id="graviton.message.documenteventpublisher" class="%graviton.message.documenteventpublisher.class%">
-            <argument type="service" id="graviton.message.jobproducer" />
+        <service id="graviton.rabbitmq.listener.eventstatusresponselistener" class="%graviton.rabbitmq.listener.eventstatusresponselistener.class%">
+            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
+        </service>
+        <service id="graviton.rabbitmq.documenteventpublisher" class="%graviton.rabbitmq.documenteventpublisher.class%">
+            <argument type="service" id="graviton.rabbitmq.jobproducer" />
             <argument type="service" id="logger" />
             <argument type="service" id="router" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="graviton.rabbitmq.document.queueevent" />
+            <argument>%graviton.document.type.extref.mapping%</argument>
+            <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
             <tag name="doctrine_mongodb.odm.event_subscriber" />
-            <property name="documents">%graviton.message.documents%</property>
-        </service>
-
-        <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>
-        <service id="graviton.rest.routing.loader" class="%graviton.rest.routing.loader.class%">
-            <argument type="service" id="graviton.rest.routing.collection"/>
-            <argument>%graviton.rest.services%</argument>
-            <tag name="routing.loader"/>
         </service>
     </services>
 </container>

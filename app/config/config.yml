@@ -151,7 +151,7 @@ knp_gaufrette:
 eo_airbrake:
         host: %graviton.errbit.host%
         api_key: %graviton.errbit.api_key%
-        ignored_exceptions: 
+        ignored_exceptions:
             - 'Symfony\Component\HttpKernel\Exception\HttpException'
             - 'Xiag\Rql\Parser\Exception\SyntaxErrorException'
 
@@ -173,18 +173,18 @@ old_sound_rabbit_mq:
             # requires php-amqplib v2.4.1+
             heartbeat: 0
     producers:
-        job:
-            class: Graviton\RabbitMqBundle\Service\MessageProducer
+        document_event:
+            class: OldSound\RabbitMqBundle\RabbitMq\Producer
             connection: default
             exchange_options:
-                name: test-topic
+                name: graviton
                 type: topic
     consumers:
         dump:
             connection: default
             exchange_options:
-                name: test-topic
+                name: graviton
                 type: topic
             queue_options:
-                routing_keys: %graviton.message.consumer.dump.routingkeys%
-            callback: graviton.message.consumer.dump
+                routing_keys: %graviton.rabbitmq.consumer.dump.routingkeys%
+            callback: graviton.rabbitmq.consumer.dump

@@ -1,0 +1,53 @@
+{
+  "id": "EventStatus",
+  "description": "A service providing resources providing status' on events subscribed by workers.",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/event/status/"
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier"
+      },
+      {
+        "name": "createDate",
+        "type": "datetime",
+        "title": "Creation date",
+        "description": "Creation date",
+        "readOnly": true
+      },
+      {
+        "name": "status.0.workerId",
+        "type": "string",
+        "title": "Worker ID",
+        "description": "ID of a worker",
+        "required": true
+      },
+      {
+        "name": "status.0.status",
+        "type": "string",
+        "title": "Status",
+        "description": "A string representing the status (opened, working, failed, done)",
+        "required": true
+      },
+      {
+        "name": "errorInformation.0.workerId",
+        "type": "string",
+        "title": "Worker ID",
+        "description": "ID of a worker"
+      },
+      {
+        "name": "errorInformation.0.content",
+        "type": "string",
+        "title": "Error output",
+        "description": "A place where a worker can put error information"
+      }
+    ]
+  }
+}
