@@ -113,10 +113,7 @@ class DocumentType extends AbstractType
     private function buildDynamicForm(FormInterface $form, $data)
     {
         foreach ($this->fieldMap[$this->dataClass] as $field) {
-            list($fieldName, $formName, $type, $options) = $field;
-            if ($fieldName !== $formName) {
-                $options['property_path'] = $fieldName;
-            }
+            list($name, $type, $options) = $field;
 
             if ($type == 'form') {
                 $type = clone $this;
@@ -127,7 +124,7 @@ class DocumentType extends AbstractType
                 // we set "required" flag to "true" if submitted data is not null
                 // because required field cannot be a child of the optional field
                 if (!isset($options['required']) || !$options['required']) {
-                    $options['required'] = is_array($data) && isset($data[$formName]);
+                    $options['required'] = is_array($data) && isset($data[$name]);
                 }
                 $type->initialize($options['data_class']);
             } elseif ($type === 'date' || $type == 'datetime') {
@@ -140,7 +137,7 @@ class DocumentType extends AbstractType
                 $options['allow_add'] = true;
                 $options['allow_delete'] = true;
             }
-            $form->add($formName, $type, $options);
+            $form->add($name, $type, $options);
         }
     }
 }
