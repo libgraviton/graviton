@@ -123,7 +123,13 @@ class DocumentType extends AbstractType
         foreach ($this->fieldMap[$this->dataClass] as $config) {
             list($name, $type, $options) = $config;
             if (!$this->fieldBuilder->supportsField($type, $options)) {
-                throw new \LogicException(sprintf('Could not build field "%s" with options "%s"', $type, json_encode($options)));
+                throw new \LogicException(
+                    sprintf(
+                        'Could not build field "%s" with options "%s"',
+                        $type,
+                        json_encode($options)
+                    )
+                );
             }
 
             $this->fieldBuilder->buildField(

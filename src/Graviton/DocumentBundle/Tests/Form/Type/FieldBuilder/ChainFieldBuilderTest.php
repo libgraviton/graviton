@@ -27,32 +27,32 @@ class ChainFieldBuilderTest extends \PHPUnit_Framework_TestCase
         $sut = new ChainFieldBuilder();
         $this->assertFalse($sut->supportsField('type'));
 
-        $builder1 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderOne = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder1->expects($this->once())
+        $builderOne->expects($this->once())
             ->method('supportsField')
             ->with($type, $options)
             ->willReturn(false);
 
-        $builder2 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderTwo = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder2->expects($this->once())
+        $builderTwo->expects($this->once())
             ->method('supportsField')
             ->with($type, $options)
             ->willReturn(true);
 
-        $builder3 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderThree = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder3->expects($this->never())
+        $builderThree->expects($this->never())
             ->method('supportsField');
 
         $sut = new ChainFieldBuilder();
-        $sut->addFormFieldBuilder($builder1);
-        $sut->addFormFieldBuilder($builder2);
-        $sut->addFormFieldBuilder($builder3);
+        $sut->addFormFieldBuilder($builderOne);
+        $sut->addFormFieldBuilder($builderTwo);
+        $sut->addFormFieldBuilder($builderThree);
         $this->assertTrue($sut->supportsField($type, $options));
     }
 
@@ -75,39 +75,39 @@ class ChainFieldBuilderTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $builder1 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderOne = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder1->expects($this->once())
+        $builderOne->expects($this->once())
             ->method('supportsField')
             ->with($type, $options)
             ->willReturn(false);
-        $builder1->expects($this->never())
+        $builderOne->expects($this->never())
             ->method('buildField');
 
-        $builder2 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderTwo = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder2->expects($this->once())
+        $builderTwo->expects($this->once())
             ->method('supportsField')
             ->with($type, $options)
             ->willReturn(true);
-        $builder2->expects($this->once())
+        $builderTwo->expects($this->once())
             ->method('buildField')
             ->with($document, $form, $name, $type, $options, $data);
 
-        $builder3 = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+        $builderThree = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $builder3->expects($this->never())
+        $builderThree->expects($this->never())
             ->method('supportsField');
-        $builder3->expects($this->never())
+        $builderThree->expects($this->never())
             ->method('buildField');
 
         $sut = new ChainFieldBuilder();
-        $sut->addFormFieldBuilder($builder1);
-        $sut->addFormFieldBuilder($builder2);
-        $sut->addFormFieldBuilder($builder3);
+        $sut->addFormFieldBuilder($builderOne);
+        $sut->addFormFieldBuilder($builderTwo);
+        $sut->addFormFieldBuilder($builderThree);
         $sut->buildField($document, $form, $name, $type, $options, $data);
     }
 }
