@@ -181,7 +181,7 @@ final class DocumentEventPublisher implements EventSubscriber
 
         $this->rabbitMqProducer->publish(
             json_encode($queueObject),
-            $queueObject->getRoutingKey()
+            $queueObject->getRoutingkey()
         );
     }
 
@@ -200,7 +200,7 @@ final class DocumentEventPublisher implements EventSubscriber
         $obj->setRecordid($args->getDocument()->getId());
         $obj->setEvent($event);
         $obj->setPublicurl($this->getPublicResourceUrl($args));
-        $obj->setRoutingKey($this->generateRoutingKey($args, $event));
+        $obj->setRoutingkey($this->generateRoutingKey($args, $event));
         $obj->setStatusurl($this->getStatusUrl($args, $obj));
         return $obj;
     }
@@ -313,7 +313,7 @@ final class DocumentEventPublisher implements EventSubscriber
     {
         // compose our regex to match stars ;-)
         // results in = /([\*|document]+)\.([\*|dude]+)\.([\*|config]+)\.([\*|update]+)/
-        $routingArgs = explode('.', $queueEvent->getRoutingKey());
+        $routingArgs = explode('.', $queueEvent->getRoutingkey());
         $regex =
             '/'.
             implode(

@@ -172,7 +172,7 @@ class QueueEvent implements TranslatableDocumentInterface
      *
      * @return string $routingKey
      */
-    public function getRoutingKey()
+    public function getRoutingkey()
     {
         return $this->routingKey;
     }
@@ -184,7 +184,7 @@ class QueueEvent implements TranslatableDocumentInterface
      *
      * @return self
      */
-    public function setRoutingKey($routingKey)
+    public function setRoutingkey($routingKey)
     {
         $this->routingKey = $routingKey;
 
