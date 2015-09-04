@@ -68,7 +68,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
      * Test validate()
      *
      * @return void
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
      */
     public function testValidateInvalidConstraint()
     {

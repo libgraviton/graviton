@@ -8,6 +8,7 @@ namespace Graviton\RestBundle\Validator\Constraints\ExtReference;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Validator for the extref type
@@ -45,13 +46,7 @@ class ExtReferenceValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof ExtReference) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Constraint must be instance of %s (%s given)',
-                    'Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReference',
-                    get_class($constraint)
-                )
-            );
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\ExtReference');
         }
 
         try {
