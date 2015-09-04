@@ -46,11 +46,33 @@ class RequiredHashControllerTest extends RestTestCase
                 'name'     => 'abc',
                 'value'    => 123,
                 'optional' => '2015-09-03T12:00:00+0000',
+
+                'optionalSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
+                'requiredSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
             ],
             'requiredHash' => [
                 'name'     => 'abc',
                 'value'    => 123,
                 'optional' => '2015-09-03T12:00:00+0000',
+
+                'optionalSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
+                'requiredSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
             ],
         ];
 
@@ -73,6 +95,12 @@ class RequiredHashControllerTest extends RestTestCase
                 'name'     => 'abc',
                 'value'    => 123,
                 'optional' => '2015-09-03T12:00:00+0000',
+
+                'requiredSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
             ],
         ];
 
@@ -98,6 +126,15 @@ class RequiredHashControllerTest extends RestTestCase
                 'name'     => 'abc',
                 'value'    => 123,
                 'optional' => '2015-09-03T12:00:00+0000',
+
+                'optionalSubHash' => [
+                    'name'     => 'abc',
+                ],
+                'requiredSubHash' => [
+                    'name'     => 'abc',
+                    'value'    => 123,
+                    'optional' => '2015-09-03T12:00:00+0000',
+                ],
             ],
         ];
 
@@ -108,6 +145,18 @@ class RequiredHashControllerTest extends RestTestCase
             [
                 (object) [
                     'propertyPath'  => 'data.optionalHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.optionalHash.requiredSubHash.name',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.optionalHash.requiredSubHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.optionalSubHash.value',
                     'message'       => 'This value should not be blank.',
                 ],
             ],
@@ -137,6 +186,14 @@ class RequiredHashControllerTest extends RestTestCase
                 ],
                 (object) [
                     'propertyPath'  => 'data.requiredHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
                     'message'       => 'This value should not be blank.',
                 ],
             ],
@@ -178,6 +235,22 @@ class RequiredHashControllerTest extends RestTestCase
                     'propertyPath'  => 'data.optionalHash.value',
                     'message'       => 'This value should not be blank.',
                 ],
+                (object) [
+                    'propertyPath'  => 'data.optionalHash.requiredSubHash.name',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.optionalHash.requiredSubHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
             ],
             $client->getResults()
         );
@@ -210,6 +283,14 @@ class RequiredHashControllerTest extends RestTestCase
                 ],
                 (object) [
                     'propertyPath'  => 'data.requiredHash.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
                     'message'       => 'This value should not be blank.',
                 ],
             ],
