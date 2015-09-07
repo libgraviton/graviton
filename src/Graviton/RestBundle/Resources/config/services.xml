@@ -85,6 +85,9 @@
                 <argument type="service" id="graviton.document.service.formdatamapper"/>
             </call>
         </service>
+        <service id="graviton.rest.proxycontroller" abstract="true" parent="graviton.rest.controller">
+            <argument type="service" id="guzzle.client" />
+        </service>
 
         <!-- Model -->
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
