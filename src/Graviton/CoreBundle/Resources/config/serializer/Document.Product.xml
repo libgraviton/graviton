@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
   <class name="Graviton\CoreBundle\Document\Product">
-    <property name="id" type="integer" accessor-getter="getId"/>
+    <property name="id" type="string" accessor-getter="getId"/>
     <property name="name" accessor-getter="getName">
       <type><![CDATA[array<string,string>]]></type>
     </property>
