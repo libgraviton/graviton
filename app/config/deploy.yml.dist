@@ -11,4 +11,5 @@ deploy-scripts:
   cf_services:
     mongodb: advanced
     atmoss3: free
+    rabbitmq: default
   cf_environment_vars: { "ERRBIT_API_KEY": "", "ERRBIT_HOST": "errbit.nova.scapp.io" }

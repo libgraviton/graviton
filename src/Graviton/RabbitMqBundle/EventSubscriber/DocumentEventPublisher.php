@@ -9,7 +9,6 @@ namespace Graviton\RabbitMqBundle\EventSubscriber;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
-use Monolog\Logger;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +33,7 @@ final class DocumentEventPublisher implements EventSubscriber
     private $rabbitMqProducer = null;
 
     /**
-     * @var Logger Logger
+     * @var LoggerInterface Logger
      */
     private $logger = null;
 
@@ -67,6 +66,11 @@ final class DocumentEventPublisher implements EventSubscriber
      * @var string classname of the EventStatus document
      */
     private $eventStatusClassname;
+
+    /**
+     * @var string classname of the EventStatusStatus document
+     */
+    private $eventStatusStatusClassname;
 
     /**
      * @var string route name of the /event/status route
