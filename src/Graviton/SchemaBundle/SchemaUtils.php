@@ -141,6 +141,7 @@ class SchemaUtils
             $property->setDescription($model->getDescriptionOfField($field));
 
             $property->setType($meta->getTypeOfField($field));
+            $property->setReadOnly($model->getReadOnlyOfField($field));
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
@@ -190,7 +191,6 @@ class SchemaUtils
             $requiredFields[] = $documentFieldNames[$field];
         }
         $schema->setRequired($requiredFields);
-
 
         return $schema;
     }

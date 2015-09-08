@@ -155,6 +155,17 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get readOnly flag for a given field
+     *
+     * @param string $field field name
+     * @return bool the readOnly flag
+     */
+    public function getReadOnlyOfField($field)
+    {
+        return $this->getSchemaField($field, 'readOnly', false);
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name

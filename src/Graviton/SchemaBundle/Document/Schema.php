@@ -60,6 +60,11 @@ class Schema
     protected $refCollection = array();
 
     /**
+     * @var bool
+     */
+    protected $readOnly = false;
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -351,5 +356,26 @@ class Schema
         }
 
         return $collection;
+    }
+
+    /**
+     * Set the readOnly flag
+     *
+     * @param bool $readOnly ReadOnly flag
+     */
+    public function setReadOnly($readOnly)
+    {
+        $this->readOnly = (bool) $readOnly;
+    }
+
+    /**
+     * Get the readOnly flag.
+     * Returns null if the flag is set to false so the serializer will ignore it.
+     *
+     * @return bool|null true if readOnly isset to true or null if not
+     */
+    public function getReadOnly()
+    {
+        return $this->readOnly ? true : null;
     }
 }
