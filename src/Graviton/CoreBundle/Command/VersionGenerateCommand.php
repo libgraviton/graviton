@@ -150,14 +150,14 @@ class VersionGenerateCommand extends Command
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
             if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
-                $versions[$match[0][0]] = $match[0][1];
+                array_push($versions, array('id' => $match[0][0], 'version' => $match[0][1] ));
             }
         }
         $composerFile = !empty($composerFile) ? $composerFile : $this->rootDir . '/../composer.json';
         if (file_exists($composerFile)) {
             $composer = json_decode(file_get_contents($composerFile), true);
             if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-                $versions['graviton'] = $composer['version'];
+                array_push($versions, array('id' => 'graviton', 'version' => $composer['version'] ));
             }
         }
 

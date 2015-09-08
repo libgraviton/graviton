@@ -73,7 +73,11 @@
                 </service>
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
-            <argument type="string">%kernel.cache_dir%</argument>
+            <argument type="service" id="graviton.core.utils"></argument>
+        </service>
+
+        <service id="graviton.core.command.versiongenerate.filesystem"
+                 class="Symfony\Component\Filesystem\Filesystem">
         </service>
 
         <service id="graviton.core.command.versiongenerate"
@@ -82,7 +86,7 @@
                 <argument type="service" id="service_container"></argument>
             </call>
             <call method="setFilesystem">
-                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+                <argument type="service" id="graviton.core.command.versiongenerate.filesystem"/>
             </call>
             <call method="setCacheDir">
                 <argument type="string">%kernel.cache_dir%</argument>

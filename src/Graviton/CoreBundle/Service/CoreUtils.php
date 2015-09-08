@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -20,6 +18,11 @@ class CoreUtils
     private $cacheDir;
 
     /**
+     * @var array holds all version numbers of installed packages
+     */
+    private $versions;
+
+    /**
      * @param string $cacheDir string path to cache directory
      */
     public function __construct($cacheDir)
@@ -28,34 +31,66 @@ class CoreUtils
     }
 
     /**
-     * Reads the package versions from the cache
+     * returns versions in response header format
      *
      * @return string version
      */
-    public function getVersion()
+    public function getVersionInHeaderFormat()
     {
         //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
-        $versionFilePath = $this->cacheDir . '/swagger/versions.json';
+
+        $versions = $this->getVersion();
+
+        $versionHeader = '';
+        foreach ($versions as $name => $version) {
+            $versionHeader .= $version->id . ': ' . $version->version . '; ';
+        }
+
+        return $versionHeader;
+    }
+
+    /**
+     * reads versions from versions.json
+     *
+     * @return void
+     */
+    private function setVersion()
+    {
+        $versionFilePath = $this->cacheDir . '/core/versions.json';
 
         if (file_exists($versionFilePath)) {
-            $versions = json_decode(file_get_contents($versionFilePath), true);
+            $this->versions = json_decode(file_get_contents($versionFilePath));
 
-            if (JSON_ERROR_NONE === json_last_error()) {
-                $versionHeader = '';
-                foreach ($versions as $name => $version) {
-                    $versionHeader .= $name . ': ' . $version. '; ';
-                }
+        } else {
+            throw new \RuntimeException('Unable to find versions.json in cache');
+        }
 
-                return $versionHeader;
+    }
 
-            } else {
-                $message = sprintf(
-                    'Unable to extract versions from versions.json file (Error code: %s)',
-                    json_last_error()
-                );
+    /**
+     * @return array versions
+     */
+    public function getVersion()
+    {
+        if ($this->versions) {
+            return $this->versions;
+        } else {
+            $this->setVersion();
+            return $this->versions;
+        }
+    }
 
-                throw new \RuntimeException($message);
+    /**
+     * @param string $idadd package name
+     * @return object single entry
+     */
+    public function getVersionById($id)
+    {
+        foreach ($this->getVersion() as $version) {
+            if ($version->id == $id) {
+                return $version;
             }
         }
+
     }
 }

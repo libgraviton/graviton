@@ -55,7 +55,7 @@ class XVersionResponseListener
         $response = $event->getResponse();
         $response->headers->set(
             'X-Version',
-            $this->coreUtils->getVersion()
+            $this->coreUtils->getVersionInHeaderFormat()
         );
     }
 }

@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Controller;
 
+use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Graviton\CoreBundle\Model\Version;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,9 +28,9 @@ class VersionController extends RestController
 {
 
     /**
-     * @var string path to cache dir
+     * @var coreUtils
      */
-    private $cacheDir = '';
+    private $coreUtils;
 
     /**
      * @param Response           $response    Response
@@ -40,7 +42,7 @@ class VersionController extends RestController
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils schema utils
-     * @param string             $cacheDir    cache directory
+     * @param CoreUtils          $coreUtils   coreUtils
      */
     public function __construct(
         Response $response,
@@ -52,7 +54,7 @@ class VersionController extends RestController
         DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
-        $cacheDir
+        CoreUtils $coreUtils
     ) {
         parent::__construct(
             $response,
@@ -65,7 +67,26 @@ class VersionController extends RestController
             $container,
             $schemaUtils
         );
-        $this->cacheDir = $cacheDir;
+        $this->coreUtils = $coreUtils;
+    }
+
+    /**
+     * Returns a single record
+     *
+     * @param Request $request Current http request
+     * @param string  $id      ID of record
+     *
+     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     */
+    public function getAction(Request $request, $id)
+    {
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_OK);
+        return $this->render(
+            'GravitonRestBundle:Main:index.json.twig',
+            ['response' => json_encode($this->coreUtils->getVersionById($id))],
+            $response
+        );
     }
 
     /**
@@ -77,14 +98,12 @@ class VersionController extends RestController
      */
     public function allAction(Request $request)
     {
-        $versions['versions'] = json_decode(file_get_contents($this->cacheDir.'/swagger/versions.json'));
-
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($versions)],
+            ['response' => json_encode($this->coreUtils->getVersion())],
             $response
         );
     }

@@ -5,6 +5,7 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
@@ -38,9 +39,9 @@ class Swagger
     private $schemaUtils;
 
     /**
-     * @var string
+     * @var CoreUtils
      */
-    private $cacheDir;
+    private $coreUtils;
 
     /**
      * Constructor
@@ -48,18 +49,18 @@ class Swagger
      * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
      * @param SchemaUtils $schemaUtils schema utils
-     * @param string      $cacheDir    path to cache directory
+     * @param CoreUtils   $coreUtils   coreUtils
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
         SchemaUtils $schemaUtils,
-        $cacheDir
+        CoreUtils $coreUtils
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
-        $this->cacheDir = $cacheDir;
+        $this->coreUtils = $coreUtils;
     }
 
     /**
@@ -183,10 +184,9 @@ class Swagger
         $ret = array();
         $ret['swagger'] = '2.0';
         $date = date('Y-m-d');
-        $version = json_decode(file_get_contents($this->cacheDir . '/core/versions.json'));
         $ret['info'] = array(
             // @todo this should be a real version - but should it be the version of graviton or which one?
-            'version' => $version->graviton,
+            'version' => $this->coreUtils->getVersionById('graviton')->version,
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
             'lastUpdate' => $date
