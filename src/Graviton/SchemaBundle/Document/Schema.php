@@ -362,6 +362,8 @@ class Schema
      * Set the readOnly flag
      *
      * @param bool $readOnly ReadOnly flag
+     *
+     * @return void
      */
     public function setReadOnly($readOnly)
     {
