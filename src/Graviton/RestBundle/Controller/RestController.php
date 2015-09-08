@@ -239,7 +239,7 @@ class RestController
     /**
      * Serialize the given record and throw an exception if something went wrong
      *
-     * @param object $result Record
+     * @param object|object[] $result Record(s)
      *
      * @throws \Graviton\ExceptionBundle\Exception\SerializationException
      *
@@ -250,14 +250,24 @@ class RestController
         $response = $this->getResponse();
 
         try {
-            $content = $this->getRestUtils()->serializeContent($result);
+            // array is serialized as an object {"0":{...},"1":{...},...} when data contains an empty objects
+            // we serialize each item because we can assume this bug affects only root array element
+            if (is_array($result) && array_keys($result) === range(0, count($result) - 1)) {
+                $result = array_map(
+                    function ($item) {
+                        return $this->getRestUtils()->serializeContent($item);
+                    },
+                    $result
+                );
+                return '['.implode(',', $result).']';
+            }
+
+            return $this->getRestUtils()->serializeContent($result);
         } catch (\Exception $e) {
             $exception = new SerializationException($e);
             $exception->setResponse($response);
             throw $exception;
         }
-
-        return $content;
     }
 
     /**
