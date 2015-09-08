@@ -26,6 +26,7 @@
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="router"/>
       <argument>%graviton.document.type.extref.mapping%</argument>
+      <argument>%graviton.document.field.names%</argument>
     </service>
   </services>
 </container>

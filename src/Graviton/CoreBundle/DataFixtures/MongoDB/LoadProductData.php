@@ -47,14 +47,14 @@ class LoadProductData implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $manager)
     {
         $products = array(
-            array('id' => 1, 'name' => array('en' => 'Checking account')),
-            array('id' => 2, 'name' => array('en' => 'Savings Account')),
-            array('id' => 3, 'name' => array('en' => 'Money market account')),
-            array('id' => 4, 'name' => array('en' => 'Mortgage')),
-            array('id' => 5, 'name' => array('en' => 'Personal loan')),
-            array('id' => 6, 'name' => array('en' => 'Mutual fund')),
-            array('id' => 7, 'name' => array('en' => 'Revolving credit')),
-            array('id' => 8, 'name' => array('en' => 'Business loan')),
+            array('id' => '1', 'name' => array('en' => 'Checking account')),
+            array('id' => '2', 'name' => array('en' => 'Savings Account')),
+            array('id' => '3', 'name' => array('en' => 'Money market account')),
+            array('id' => '4', 'name' => array('en' => 'Mortgage')),
+            array('id' => '5', 'name' => array('en' => 'Personal loan')),
+            array('id' => '6', 'name' => array('en' => 'Mutual fund')),
+            array('id' => '7', 'name' => array('en' => 'Revolving credit')),
+            array('id' => '8', 'name' => array('en' => 'Business loan')),
         );
         $serializer = $this->container->get('serializer');
 
