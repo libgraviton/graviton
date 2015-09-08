@@ -14,6 +14,7 @@ use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
@@ -56,6 +57,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonSecurityBundle(),
             new GravitonSwaggerBundle(),
             new GravitonFileBundle(),
+            new GravitonProxyBundle(),
         );
     }
 }
