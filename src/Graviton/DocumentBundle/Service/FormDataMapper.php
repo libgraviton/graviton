@@ -82,7 +82,7 @@ class FormDataMapper implements FormDataMapperInterface
                 if (isset($item->$topLevel)) {
                     $this->mapField($item->$topLevel, $subField, $name);
                 }
-            } elseif (isset($item->$path)) {
+            } elseif (isset($item->$path) || property_exists($item, $path)) {
                 $item->$name = $item->$path;
                 unset($item->$path);
             }
