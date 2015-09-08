@@ -5,6 +5,8 @@
 
 namespace Graviton\CoreBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\MissingVersionFileException;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -62,7 +64,8 @@ class CoreUtils
             $this->versions = json_decode(file_get_contents($versionFilePath));
 
         } else {
-            throw new \RuntimeException('Unable to find versions.json in cache');
+            $e = new MissingVersionFileException("versions.json not found!");
+            throw $e;
         }
 
     }
@@ -81,7 +84,7 @@ class CoreUtils
     }
 
     /**
-     * @param string $idadd package name
+     * @param string $id add package name
      * @return object single entry
      */
     public function getVersionById($id)
