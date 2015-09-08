@@ -3,7 +3,8 @@
   "properties": {
     "ref": {
       "title": "Language-Link",
-      "description": "Link to language document."
+      "description": "Link to language document.",
+      "collection": ["Language"]
     }
   },
   "required": []

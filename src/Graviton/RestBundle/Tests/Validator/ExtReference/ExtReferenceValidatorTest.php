@@ -68,12 +68,29 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
      * Test validate()
      *
      * @return void
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
      */
     public function testValidateInvalidConstraint()
     {
         $url = __METHOD__;
         $constraint = new Choice();
+
+        $this->converter->expects($this->never())
+            ->method('getDbRef');
+
+        $validator = $this->createValidator();
+        $validator->validate($url, $constraint);
+    }
+
+    /**
+     * Test validate() null value
+     *
+     * @return void
+     */
+    public function testValidateNull()
+    {
+        $url = null;
+        $constraint = new ExtReference();
 
         $this->converter->expects($this->never())
             ->method('getDbRef');
