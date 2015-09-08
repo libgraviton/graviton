@@ -306,6 +306,12 @@ class JsonDefinition
         } else {
             $fields = [];
             foreach ($definition as $subname => $subdefinition) {
+                // TODO: this is hotfix for new hash field syntax
+                // TODO: this must be removed in PR #224
+                if (!$subdefinition instanceof Schema\Field && !is_array($subdefinition)) {
+                    continue;
+                }
+
                 $fields[$subname] = $this->processFieldHierarchyRecursive($subname, $subdefinition);
             }
 
