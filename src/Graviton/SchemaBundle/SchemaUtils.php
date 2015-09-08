@@ -141,7 +141,9 @@ class SchemaUtils
             $property->setDescription($model->getDescriptionOfField($field));
 
             $property->setType($meta->getTypeOfField($field));
-            $property->setReadOnly($model->getReadOnlyOfField($field));
+            $property->setReadOnly(
+                $model->getReadOnlyOfField($field) || ($meta->isIdentifier($field) && !$meta->isIdGeneratorNone())
+            );
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
