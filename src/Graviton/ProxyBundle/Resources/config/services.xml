@@ -2,4 +2,12 @@
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="graviton.proxy.controller.proxy.class">Graviton\ProxyBundle\Controller\ProxyController</parameter>
+    </parameters>
+    <services>
+        <service id="graviton.proxy.controller.proxy" class="%graviton.proxy.controller.proxy.class%">
+            <argument type="service" id="guzzle.client" />
+        </service>
+    </services>
 </container>
