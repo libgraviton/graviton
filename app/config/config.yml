@@ -158,11 +158,11 @@ eo_airbrake:
 old_sound_rabbit_mq:
     connections:
         default:
-            host:     %graviton.rabbitmq.host%
-            port:     %graviton.rabbitmq.port%
-            user:     %graviton.rabbitmq.user%
-            password: %graviton.rabbitmq.password%
-            vhost:    %graviton.rabbitmq.vhost%
+            host:     "%rabbitmq.host%"
+            port:     "%rabbitmq.port%"
+            user:     "%rabbitmq.user%"
+            password: "%rabbitmq.password%"
+            vhost:    "%rabbitmq.vhost%"
             lazy:     true
             connection_timeout: 3
             read_write_timeout: 3
