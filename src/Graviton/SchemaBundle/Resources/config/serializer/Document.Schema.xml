@@ -4,7 +4,7 @@
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle" expose="true"/>
     <property name="description" type="string" accessor-getter="getDescription" accessor-setter="setDescription" expose="true"/>
     <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
-    <property name="readOnly" type="boolean" accessor-getter="getReadOnly" accessor-setter="setReadOnly" expose="true"/>
+    <property name="readOnly" type="boolean" accessor-getter="getReadOnly" accessor-setter="setReadOnly" serialized-name="readonly" expose="true"/>
     <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
     <property name="refCollection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
