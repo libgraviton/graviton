@@ -15,21 +15,16 @@ use Graviton\ExceptionBundle\Exception\MissingVersionFileException;
 class CoreUtils
 {
     /**
-     * @var string absolute path to cache directory
-     */
-    private $cacheDir;
-
-    /**
      * @var array holds all version numbers of installed packages
      */
     private $versions;
 
     /**
-     * @param string $cacheDir string path to cache directory
+     * @param array $versions Array containing version numbers of installed packages
      */
-    public function __construct($cacheDir)
+    public function __construct($versions)
     {
-        $this->cacheDir = $cacheDir;
+        $this->versions = $versions;
     }
 
     /**
@@ -41,34 +36,14 @@ class CoreUtils
     {
         //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
 
-        $versions = $this->getVersion();
-
         $versionHeader = '';
-        foreach ($versions as $name => $version) {
-            $versionHeader .= $version->id . ': ' . $version->version . '; ';
+        foreach ($this->versions as $name => $version) {
+            $versionHeader .= $version['id'] . ': ' . $version['version'] . '; ';
         }
 
         return $versionHeader;
     }
 
-    /**
-     * reads versions from versions.json
-     *
-     * @return void
-     */
-    private function setVersion()
-    {
-        $versionFilePath = $this->cacheDir . '/core/versions.json';
-
-        if (file_exists($versionFilePath)) {
-            $this->versions = json_decode(file_get_contents($versionFilePath));
-
-        } else {
-            $e = new MissingVersionFileException("versions.json not found!");
-            throw $e;
-        }
-
-    }
 
     /**
      * @return array versions
@@ -76,9 +51,6 @@ class CoreUtils
     public function getVersion()
     {
         if ($this->versions) {
-            return $this->versions;
-        } else {
-            $this->setVersion();
             return $this->versions;
         }
     }
@@ -89,8 +61,8 @@ class CoreUtils
      */
     public function getVersionById($id)
     {
-        foreach ($this->getVersion() as $version) {
-            if ($version->id == $id) {
+        foreach ($this->versions as $version) {
+            if ($version['id'] == $id) {
                 return $version;
             }
         }

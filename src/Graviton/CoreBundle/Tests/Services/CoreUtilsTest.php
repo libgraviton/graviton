@@ -19,15 +19,14 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider versionAndFileProvider
      *
-     * @param string $version  Version string to be used
-     * @param string $filePath Location of the file containing the version information.
+     * @param array $version Version array to be used
      *
      * @return void
      */
-    public function testGetVersion($version, $filePath = '')
+    public function testGetVersion($version)
     {
-        $utils = new CoreUtils($filePath);
-        $this->assertEquals($version, $utils->getVersionById('graviton')->version);
+        $utils = new CoreUtils($version);
+        $this->assertEquals($version[0]['version'], $utils->getVersionById('graviton')['version']);
     }
 
     /**
@@ -38,20 +37,20 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
     public function versionAndFileProvider()
     {
         return array(
-            'get from default file' => array('0.25.1', __DIR__ . '/../../../../../app/cache/test/'),
+            'get from default file' => array(array(array("id" => "graviton", "version" => "0.25.1"))),
         );
     }
-
-    /**
-     * Verifies the correct behavior of getVersion()
-     *
-     * @return void
-     */
-    public function testGetDefaultVersion()
-    {
-        $utils = new CoreUtils('notARealPath');
-
-        $this->setExpectedException('\Graviton\ExceptionBundle\Exception\MissingVersionFileException');
-        $utils->getVersion(__DIR__ . '/../fixtures/invalid_composer.json');
-    }
+    //
+    //    /**
+    //     * Verifies the correct behavior of getVersion()
+    //     *
+    //     * @return void
+    //     */
+    //    public function testGetDefaultVersion()
+    //    {
+    //        $utils = new CoreUtils(array(array("id" => "graviton", "version" => "0.25.1")));
+    //
+    //        $this->setExpectedException('\Graviton\ExceptionBundle\Exception\MissingVersionFileException');
+    //        $utils->getVersion(__DIR__ . '/../fixtures/invalid_composer.json');
+    //    }
 }

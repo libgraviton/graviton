@@ -72,7 +72,6 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionJson",
             "Graviton\\SwaggerBundle\\Composer\\ScriptHandler::generateSwaggerJson"
 
         ],

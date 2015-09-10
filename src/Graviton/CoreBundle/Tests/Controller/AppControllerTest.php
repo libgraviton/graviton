@@ -45,14 +45,7 @@ class AppControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
-
-        $cacheDir = $this->getContainer()->getParameter('kernel.cache_dir');
-        if (!is_dir($cacheDir . '/core')) {
-            mkdir($cacheDir . '/core', 0777, true);
-        }
-        file_put_contents($cacheDir . '/core/versions.json', '[{"id": "graviton", "version":"0.25.1"}]');
     }
-
     /**
      * check if all fixtures are returned on GET
      *

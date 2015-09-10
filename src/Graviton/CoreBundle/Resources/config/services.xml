@@ -69,7 +69,7 @@
         </service>
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
         <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
-            <argument type="string">%kernel.cache_dir%</argument>
+            <argument type="string">%graviton.core.version.data%</argument>
                 </service>
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
@@ -78,23 +78,6 @@
 
         <service id="graviton.core.command.versiongenerate.filesystem"
                  class="Symfony\Component\Filesystem\Filesystem">
-        </service>
-
-        <service id="graviton.core.command.versiongenerate"
-                 class="Graviton\CoreBundle\Command\VersionGenerateCommand">
-            <call method="setContainer">
-                <argument type="service" id="service_container"></argument>
-            </call>
-            <call method="setFilesystem">
-                <argument type="service" id="graviton.core.command.versiongenerate.filesystem"/>
-            </call>
-            <call method="setCacheDir">
-                <argument type="string">%kernel.cache_dir%</argument>
-            </call>
-            <call method="setRootDir">
-                <argument type="string">%kernel.root_dir%</argument>
-            </call>
-            <tag name="console.command" />
         </service>
     </services>
 </container>

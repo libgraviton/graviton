@@ -49,7 +49,7 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $composer = new CoreUtils($this->getContainer()->getParameter('kernel.cache_dir'));
+        $composer = new CoreUtils($this->getContainer()->getParameter('graviton.core.version.data'));
 
         $response = $client->getResponse();
 

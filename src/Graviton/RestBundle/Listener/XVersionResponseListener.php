@@ -53,6 +53,7 @@ class XVersionResponseListener
 
         /** @var \Symfony\Component\HttpFoundation\Response $response */
         $response = $event->getResponse();
+        
         $response->headers->set(
             'X-Version',
             $this->coreUtils->getVersionInHeaderFormat()
