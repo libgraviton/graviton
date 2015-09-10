@@ -95,7 +95,7 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
