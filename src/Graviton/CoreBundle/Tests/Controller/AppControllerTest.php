@@ -45,6 +45,12 @@ class AppControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+
+        $cacheDir = $this->getContainer()->getParameter('kernel.cache_dir');
+        if (!is_dir($cacheDir . '/core')) {
+            mkdir($cacheDir . '/core', 0777, true);
+        }
+        file_put_contents($cacheDir . '/core/versions.json', '[{"id": "graviton", "version":"0.25.1"}]');
     }
 
     /**
@@ -61,7 +67,6 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
-
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);

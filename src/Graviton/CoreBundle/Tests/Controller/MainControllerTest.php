@@ -49,11 +49,11 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $composer = new CoreUtils();
+        $composer = new CoreUtils($this->getContainer()->getParameter('kernel.cache_dir'));
 
         $response = $client->getResponse();
 
-        $this->assertEquals($composer->getVersion(), $response->headers->get('X-Version'));
+        $this->assertEquals($composer->getVersionInHeaderFormat(), $response->headers->get('X-Version'));
     }
 
     /**

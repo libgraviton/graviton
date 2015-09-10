@@ -26,8 +26,8 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetVersion($version, $filePath = '')
     {
-        $utils = new CoreUtils();
-        $this->assertEquals($version, $utils->getVersion($filePath));
+        $utils = new CoreUtils($filePath);
+        $this->assertEquals($version, $utils->getVersionById('graviton')->version);
     }
 
     /**
@@ -37,11 +37,8 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function versionAndFileProvider()
     {
-        $composer = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
-
         return array(
-            'get from default file' => array($composer['version']),
-            'other file'            => array('0.1.0-dev', __DIR__ . '/../fixtures/valid_composer.json'),
+            'get from default file' => array('0.25.1', __DIR__ . '/../../../../../app/cache/test/'),
         );
     }
 
@@ -52,9 +49,9 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDefaultVersion()
     {
-        $utils = new CoreUtils();
+        $utils = new CoreUtils('notARealPath');
 
-        $this->setExpectedException('\RuntimeException');
+        $this->setExpectedException('\Graviton\ExceptionBundle\Exception\MissingVersionFileException');
         $utils->getVersion(__DIR__ . '/../fixtures/invalid_composer.json');
     }
 }

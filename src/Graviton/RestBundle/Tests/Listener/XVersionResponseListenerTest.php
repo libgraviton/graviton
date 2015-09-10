@@ -24,7 +24,7 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelResponse()
     {
         $response = new Response();
-        $version = '0.1.0-alpha';
+        $version = '0.25.1';
 
         $eventDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\FilterResponseEvent')
             ->disableOriginalConstructor()
@@ -47,12 +47,13 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->with($this->contains('Unable to extract version from composer.json file'));
 
         $serviceDouble = $this->getMockBuilder('\Graviton\CoreBundle\Service\CoreUtils')
-            ->setMethods(array('getVersion'))
+            ->setMethods(array('getVersionInHeaderFormat'))
+            ->setConstructorArgs(array(__DIR__ . '/../../../../../app/cache/test'))
             ->getMock();
         $serviceDouble
             ->expects($this->once())
-            ->method('getVersion')
-            ->will($this->returnValue('0.1.0-alpha'));
+            ->method('getVersionInHeaderFormat')
+            ->will($this->returnValue('0.25.1'));
 
         $listener = new XVersionResponseListener($serviceDouble, $loggerDouble);
         $listener->onKernelResponse($eventDouble);
@@ -79,7 +80,11 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false));
 
         $loggerDouble = $this->getMockForAbstractClass('\Psr\Log\LoggerInterface');
-        $serviceDouble = $this->getMock('\Graviton\CoreBundle\Service\CoreUtils');
+        $serviceDouble = $this->getMock(
+            '\Graviton\CoreBundle\Service\CoreUtils',
+            array(),
+            array(__DIR__ . '/../../../../../app/cache/test')
+        );
 
         $listener = new XVersionResponseListener($serviceDouble, $loggerDouble);
         $listener->onKernelResponse($eventDouble);
