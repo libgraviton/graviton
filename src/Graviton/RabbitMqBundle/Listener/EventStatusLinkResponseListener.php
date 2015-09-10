@@ -1,6 +1,7 @@
 <?php
 /**
- * Response listener that adds an eventStatus to Link header if necessary and creates an EventStatus resource
+ * Response listener that adds an eventStatus to Link header if necessary, creates an EventStatus resource
+ * and publishes the change to the queue
  */
 
 namespace Graviton\RabbitMqBundle\Listener;
@@ -11,7 +12,6 @@ use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,8 +19,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Response listener that adds an eventStatus to Link header if necessary
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
@@ -34,11 +32,6 @@ class EventStatusLinkResponseListener
     private $rabbitMqProducer = null;
 
     /**
-     * @var LoggerInterface Logger
-     */
-    private $logger = null;
-
-    /**
      * @var RouterInterface Router to generate resource URLs
      */
     private $router = null;
@@ -47,16 +40,6 @@ class EventStatusLinkResponseListener
      * @var Request request
      */
     private $request;
-
-    /**
-     * @var array mapping from class shortname ("collection") to controller service
-     */
-    private $documentMapping = array();
-
-    /**
-     * @var array if routinkey contains any strings in this array, we do nothing
-     */
-    private $bannedRoutingkeys = array();
 
     /**
      * @var QueueEvent queueevent document
@@ -96,13 +79,10 @@ class EventStatusLinkResponseListener
 
     /**
      * @param ProducerInterface $rabbitMqProducer           RabbitMQ dependency
-     * @param LoggerInterface   $logger                     Logger dependency
      * @param RouterInterface   $router                     Router dependency
      * @param RequestStack      $requestStack               Request stack
      * @param DocumentManager   $documentManager            Doctrine document manager
      * @param QueueEvent        $queueEventDocument         queueevent document
-     * @param array             $documentMapping            document mapping
-     * @param array             $bannedRoutingkeys          banned routing keys
      * @param string            $eventWorkerClassname       classname of the EventWorker document
      * @param string            $eventStatusClassname       classname of the EventStatus document
      * @param string            $eventStatusStatusClassname classname of the EventStatusStatus document
@@ -110,25 +90,20 @@ class EventStatusLinkResponseListener
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
-        LoggerInterface $logger,
         RouterInterface $router,
         RequestStack $requestStack,
         DocumentManager $documentManager,
         QueueEvent $queueEventDocument,
-        array $documentMapping,
-        array $bannedRoutingkeys,
         $eventWorkerClassname,
         $eventStatusClassname,
         $eventStatusStatusClassname,
         $eventStatusRouteName
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
-        $this->logger = $logger;
         $this->router = $router;
         $this->request = $requestStack->getCurrentRequest();
         $this->documentManager = $documentManager;
         $this->queueEventDocument = $queueEventDocument;
-        $this->documentMapping = $documentMapping;
         $this->eventWorkerClassname = $eventWorkerClassname;
         $this->eventStatusClassname = $eventStatusClassname;
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
