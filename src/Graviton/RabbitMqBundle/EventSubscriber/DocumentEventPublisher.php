@@ -53,6 +53,11 @@ final class DocumentEventPublisher implements EventSubscriber
     private $documentMapping = array();
 
     /**
+     * @var array if routinkey contains any strings in this array, we do nothing
+     */
+    private $bannedRoutingkeys = array();
+
+    /**
      * @var QueueEvent queueevent document
      */
     private $queueEventDocument;
@@ -84,6 +89,7 @@ final class DocumentEventPublisher implements EventSubscriber
      * @param RequestStack      $requestStack               Request stack
      * @param QueueEvent        $queueEventDocument         queueevent document
      * @param array             $documentMapping            document mapping
+     * @param array             $bannedRoutingkeys          banned routing keys
      * @param string            $eventWorkerClassname       classname of the EventWorker document
      * @param string            $eventStatusClassname       classname of the EventStatus document
      * @param string            $eventStatusStatusClassname classname of the EventStatusStatus document
@@ -96,6 +102,7 @@ final class DocumentEventPublisher implements EventSubscriber
         RequestStack $requestStack,
         QueueEvent $queueEventDocument,
         array $documentMapping,
+        array $bannedRoutingkeys,
         $eventWorkerClassname,
         $eventStatusClassname,
         $eventStatusStatusClassname,
@@ -176,6 +183,11 @@ final class DocumentEventPublisher implements EventSubscriber
     {
         $queueObject = $this->createQueueEventObject($args, $event);
 
+        // did we already create a status? -> don't do more
+        if ($this->statusAlreadyPresent()) {
+            return true;
+        }
+
         // should we set QueueEvent in request attributes for our Link header Listener?
         if ($this->requestStack->getCurrentRequest() instanceof Request &&
             !is_null($queueObject->getStatusurl())
@@ -203,10 +215,44 @@ final class DocumentEventPublisher implements EventSubscriber
         $obj->setClassname(get_class($args->getDocument()));
         $obj->setRecordid($args->getDocument()->getId());
         $obj->setEvent($event);
-        $obj->setPublicurl($this->getPublicResourceUrl($args));
         $obj->setRoutingkey($this->generateRoutingKey($args, $event));
+        $obj->setPublicurl($this->getPublicUrl($args, $obj));
         $obj->setStatusurl($this->getStatusUrl($args, $obj));
+
         return $obj;
+    }
+
+    /**
+     * if for any case there are many events firing in this request, we should just create
+     * 1 status resource per request!
+     *
+     * @return bool true if yes, false if not
+     */
+    private function statusAlreadyPresent()
+    {
+        $ret = false;
+        if ($this->requestStack->getCurrentRequest() instanceof Request) {
+            $ret = $this->requestStack->getCurrentRequest()->attributes->has('eventStatus');
+        }
+        return $ret;
+    }
+
+    /**
+     * determines if the routing key is banned -> no EventStatus entry
+     *
+     * @param QueueEvent $event event
+     *
+     * @return bool true if yes, false if not
+     */
+    private function isBannedRoutingKey(QueueEvent $event)
+    {
+        $ret = false;
+        foreach ($this->bannedRoutingkeys as $bannedRoutingKey) {
+            if (strpos($event->getRoutingkey(), $bannedRoutingKey) !== false) {
+                $ret = true;
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -239,11 +285,12 @@ final class DocumentEventPublisher implements EventSubscriber
     /**
      * get public url to our affected resource
      *
-     * @param LifecycleEventArgs $args doctrine event args
+     * @param LifecycleEventArgs $args  doctrine event args
+     * @param QueueEvent         $event queue event
      *
      * @return string url
      */
-    private function getPublicResourceUrl(LifecycleEventArgs $args)
+    private function getPublicUrl(LifecycleEventArgs $args, QueueEvent $event)
     {
         $documentClass = new \ReflectionClass($args->getDocument());
         $shortName = $documentClass->getShortName();
@@ -253,8 +300,7 @@ final class DocumentEventPublisher implements EventSubscriber
             $url = $this->router->generate(
                 $this->documentMapping[$shortName] . '.get',
                 [
-                    'id' => $args->getDocument()
-                                 ->getId()
+                    'id' => $event->getRecordid()
                 ],
                 true
             );
@@ -273,6 +319,20 @@ final class DocumentEventPublisher implements EventSubscriber
      */
     private function getStatusUrl(LifecycleEventArgs $args, QueueEvent $queueEvent)
     {
+        /*
+         * we don't create a status entry if any of this is true
+         * * no workers are subscribed
+         * * the routing key is banned via config.yml
+         * * the event has no controller (thus no publicUrl) as it would lead the Link
+         * header to be in the wrong response anyway
+         */
+        if ($this->isBannedRoutingKey($queueEvent) ||
+            is_null($queueEvent->getPublicurl())
+        ) {
+            return null;
+        }
+
+        // this has to be checked after cause we should not call getSubscribedWorkerIds() if above is true
         $workerIds = $this->getSubscribedWorkerIds($args, $queueEvent);
         if (empty($workerIds)) {
             return null;
@@ -281,6 +341,7 @@ final class DocumentEventPublisher implements EventSubscriber
         // we have subscribers; create the EventStatus entry
         $eventStatus = new $this->eventStatusClassname();
         $eventStatus->setCreatedate(new \DateTime());
+        $eventStatus->setEventname($queueEvent->getRoutingkey());
 
         foreach ($workerIds as $workerId) {
             $eventStatusStatus = new $this->eventStatusStatusClassname();
@@ -315,6 +376,11 @@ final class DocumentEventPublisher implements EventSubscriber
      */
     private function getSubscribedWorkerIds(LifecycleEventArgs $args, QueueEvent $queueEvent)
     {
+        // don't even check for 'eventstatus' stuff..
+        if (strpos($queueEvent->getRoutingkey(), 'eventstatus') !== false) {
+            return [];
+        }
+
         // compose our regex to match stars ;-)
         // results in = /([\*|document]+)\.([\*|dude]+)\.([\*|config]+)\.([\*|update]+)/
         $routingArgs = explode('.', $queueEvent->getRoutingkey());

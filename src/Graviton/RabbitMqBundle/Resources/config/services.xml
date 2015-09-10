@@ -32,6 +32,7 @@
             <argument type="service" id="request_stack" />
             <argument type="service" id="graviton.rabbitmq.document.queueevent" />
             <argument>%graviton.document.type.extref.mapping%</argument>
+            <argument>%graviton.rabbitmq.banned.routingkeys.contains%</argument>
             <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>

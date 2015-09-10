@@ -5,6 +5,9 @@ imports:
 parameters:
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     graviton.translator.default.locale: en
+    graviton.rabbitmq.banned.routingkeys.contains:
+      - '.i18n.'
+      - 'eventstatus'
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html

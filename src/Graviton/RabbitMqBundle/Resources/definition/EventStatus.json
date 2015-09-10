@@ -23,6 +23,13 @@
         "readOnly": true
       },
       {
+        "name": "eventName",
+        "type": "varchar",
+        "title": "Event Name",
+        "description": "Name of the created event",
+        "readOnly": true
+      },
+      {
         "name": "status.0.workerId",
         "type": "string",
         "title": "Worker ID",
