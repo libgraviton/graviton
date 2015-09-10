@@ -18,7 +18,7 @@
       "type": "string",
       "description": "Primitive data type of the property"
     },
-    "readonly": {
+    "readOnly": {
       "title": "Readonly",
       "type": "boolean",
       "description": "Defines whether the property is readonly"
