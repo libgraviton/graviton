@@ -18,16 +18,6 @@ class QueueEvent implements TranslatableDocumentInterface
 {
 
     /**
-     * @var string $className
-     */
-    public $className;
-
-    /**
-     * @var string $recordId
-     */
-    public $recordId;
-
-    /**
      * @var string $event
      */
     public $event;
@@ -41,59 +31,6 @@ class QueueEvent implements TranslatableDocumentInterface
      * @var string $statusUrl
      */
     public $statusUrl;
-
-    /**
-     * @var string $routingKey
-     */
-    public $routingKey;
-
-    /**
-     * Get className
-     *
-     * @return string $className classname
-     */
-    public function getClassname()
-    {
-        return $this->className;
-    }
-
-    /**
-     * Set className
-     *
-     * @param string $className value for className
-     *
-     * @return self
-     */
-    public function setClassname($className)
-    {
-        $this->className = $className;
-
-        return $this;
-    }
-
-    /**
-     * Get recordId
-     *
-     * @return string $recordId recordId
-     */
-    public function getRecordid()
-    {
-        return $this->recordId;
-    }
-
-    /**
-     * Set recordId
-     *
-     * @param string $recordId value for recordId
-     *
-     * @return self
-     */
-    public function setRecordid($recordId)
-    {
-        $this->recordId = $recordId;
-
-        return $this;
-    }
 
     /**
      * Get event
@@ -163,30 +100,6 @@ class QueueEvent implements TranslatableDocumentInterface
     public function setStatusurl($statusUrl)
     {
         $this->statusUrl = $statusUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get routingKey
-     *
-     * @return string $routingKey
-     */
-    public function getRoutingkey()
-    {
-        return $this->routingKey;
-    }
-
-    /**
-     * Set routingKey
-     *
-     * @param string $routingKey routingKey
-     *
-     * @return self
-     */
-    public function setRoutingkey($routingKey)
-    {
-        $this->routingKey = $routingKey;
 
         return $this;
     }
