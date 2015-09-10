@@ -194,11 +194,6 @@ class FileController extends RestController
             $routeName = substr($routeName, 0, -3) . 'get';
         }
 
-        $response->headers->set(
-            'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
-        );
-
         return $response;
     }
 
