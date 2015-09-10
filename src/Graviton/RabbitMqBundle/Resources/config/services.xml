@@ -35,19 +35,5 @@
             <!-- the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
             <tag name="kernel.event_listener" event="graviton.rest.response.selfaware" method="onKernelResponse"/>
         </service>
-        <service id="graviton.rabbitmq.documenteventpublisher" class="%graviton.rabbitmq.documenteventpublisher.class%">
-            <argument type="service" id="graviton.rabbitmq.jobproducer" />
-            <argument type="service" id="logger" />
-            <argument type="service" id="router" />
-            <argument type="service" id="request_stack" />
-            <argument type="service" id="graviton.rabbitmq.document.queueevent" />
-            <argument>%graviton.document.type.extref.mapping%</argument>
-            <argument>%graviton.rabbitmq.banned.routingkeys.contains%</argument>
-            <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
-            <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
-            <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
-            <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
-            <!--<tag name="doctrine_mongodb.odm.event_subscriber" />-->
-        </service>
     </services>
 </container>
