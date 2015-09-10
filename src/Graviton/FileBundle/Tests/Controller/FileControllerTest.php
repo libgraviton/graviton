@@ -447,5 +447,4 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
-
 }
