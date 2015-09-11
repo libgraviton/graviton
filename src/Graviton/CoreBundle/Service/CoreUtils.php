@@ -67,5 +67,7 @@ class CoreUtils
             }
         }
 
+        return array('error' => 'This id could not be resolved');
+
     }
 }

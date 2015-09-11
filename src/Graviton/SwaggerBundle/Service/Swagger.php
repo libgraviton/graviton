@@ -186,7 +186,7 @@ class Swagger
         $date = date('Y-m-d');
         $ret['info'] = array(
             // @todo this should be a real version - but should it be the version of graviton or which one?
-            'version' => $this->coreUtils->getVersionById('graviton')['version'],
+            'version' => $this->coreUtils->getVersionById('graviton/graviton')['version'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
             'lastUpdate' => $date
