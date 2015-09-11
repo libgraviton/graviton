@@ -83,10 +83,12 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 
+        $fileLocation = $response->headers->get('Location');
+
         // update file contents to update mod date
         $client = static::createRestClient();
         $client->put(
-            $response->headers->get('Location'),
+            $fileLocation,
             $fixtureData,
             [],
             [],
@@ -95,10 +97,10 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $fileLocation);
         $data = $client->getResults();
 
         // check for valid format
