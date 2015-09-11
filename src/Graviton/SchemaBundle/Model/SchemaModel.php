@@ -173,7 +173,7 @@ class SchemaModel implements ContainerAwareInterface
      * @param string $property      property name
      * @param mixed  $fallbackValue fallback value if property isn't set
      *
-     * @return array
+     * @return mixed
      */
     private function getSchemaField($field, $property, $fallbackValue = '')
     {
