@@ -158,7 +158,8 @@ class SchemaModel implements ContainerAwareInterface
      * get readOnly flag for a given field
      *
      * @param string $field field name
-     * @return bool the readOnly flag
+     *
+     * @return boolean the readOnly flag
      */
     public function getReadOnlyOfField($field)
     {
