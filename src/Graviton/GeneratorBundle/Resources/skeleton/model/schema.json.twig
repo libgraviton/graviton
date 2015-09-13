@@ -21,6 +21,10 @@
       "collection": {{ field.collection|json_encode() }},
 {% endif %}
 
+{% if field.readOnly is defined and field.readOnly == true %}
+      "readOnly": {{ field.readOnly|json_encode() }},
+{% endif %}
+
 {% if field.description is defined %}
       "description": {{ field.description|json_encode() }}
 {% else %}
