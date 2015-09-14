@@ -15,8 +15,8 @@ namespace Graviton\CoreBundle\Service;
 class CoreUtilsTest extends \PHPUnit_Framework_TestCase
 {
     private $versions = array(
-                array("id" => "graviton", "version" => "0.25.1", "isWrapper" => true),
-                array("id" => "financing", "version" => "0.1", "isWrapper" => false),
+                array("id" => "self", "version" => "0.25.1"),
+                array("id" => "financing", "version" => "0.1"),
             );
     /**
      * Verifies the correct behavior of getVersion()
@@ -26,7 +26,7 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
     public function testGetVersionById()
     {
         $utils = new CoreUtils($this->versions);
-        $this->assertEquals($this->versions[0]['version'], $utils->getVersionById('graviton')['version']);
+        $this->assertEquals($this->versions[0]['version'], $utils->getVersionById('self')['version']);
     }
 
     /**
@@ -38,7 +38,7 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $utils = new CoreUtils($this->versions);
         $this->assertEquals(
-            array("id" => "graviton", "version" => "0.25.1", "isWrapper" => true),
+            array("id" => "self", "version" => "0.25.1"),
             $utils->getWrapperVersion()
         );
         $this->assertInternalType('array', $utils->getWrapperVersion());
@@ -53,7 +53,7 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $utils = new CoreUtils($this->versions);
         $this->assertEquals(
-            'graviton: 0.25.1; financing: 0.1; ',
+            'self: 0.25.1; financing: 0.1; ',
             $utils->getVersionInHeaderFormat()
         );
         $this->assertInternalType('string', $utils->getVersionInHeaderFormat());

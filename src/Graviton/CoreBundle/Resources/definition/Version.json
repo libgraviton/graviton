@@ -22,12 +22,6 @@
         "type": "varchar",
         "title": "version",
         "description": "version number of package"
-      },
-      {
-        "name": "isWrapper",
-        "type": "boolean",
-        "title": "isWrapper",
-        "description": "indicates if it's the wrapper version or not"
       }
     ]
   }

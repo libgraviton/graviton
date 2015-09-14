@@ -74,7 +74,7 @@ class CoreUtils
     public function getWrapperVersion()
     {
         foreach ($this->versions as $version) {
-            if ($version['isWrapper']) {
+            if ($version['id'] === 'self') {
                 return $version;
             }
         }

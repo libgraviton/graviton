@@ -58,10 +58,7 @@ class VersionCompilerPass implements CompilerPassInterface
             if (strpos($line, 'versions') !== false) {
                 $wrapperVersionArr = explode(':', $line);
                 $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
-            } elseif (strpos($line, 'name') !== false) {
-                $wrapperNameArr = explode(':', $line);
-                $wrapper['id'] = trim($wrapperNameArr[1]);
-                $wrapper['isWrapper'] = true;
+                $wrapper['id'] = 'self';
             }
         }
 

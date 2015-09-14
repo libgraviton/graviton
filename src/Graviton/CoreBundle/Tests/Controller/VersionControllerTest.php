@@ -30,7 +30,6 @@ class VersionControllerTest extends RestTestCase
 
         $this->assertContains('"id":', $response->getContent());
         $this->assertContains('"version":', $response->getContent());
-        $this->assertContains('"isWrapper":', $response->getContent());
         $this->assertInternalType('string', $response->getContent());
     }
 
