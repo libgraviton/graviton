@@ -38,7 +38,7 @@ class VersionCompilerPass implements CompilerPassInterface
     private function getPackageVersions($rootDir)
     {
         $versions = array();
-        array_push($versions, $this->getContextVersion());
+        array_push($versions, $this->getContextVersion($rootDir));
         $versions = $this->getInstalledPackagesVersion($rootDir, $versions);
 
         return $versions;
@@ -47,18 +47,23 @@ class VersionCompilerPass implements CompilerPassInterface
     /**
      * returns the version of graviton or wrapper
      *
+     * @param string $rootDir path to root dir
      * @return array
      */
-    private function getContextVersion()
+    private function getContextVersion($rootDir)
     {
-        $result = shell_exec('composer show -s --no-ansi');
+        if (strpos($rootDir, 'vendor')) {
+            $result = shell_exec('cd ' . escapeshellarg($rootDir) . '/../../../../  && composer show -s --no-ansi');
+        } else {
+            $result = shell_exec('composer show -s --no-ansi');
+        }
         $lines = explode(PHP_EOL, $result);
         $wrapper = array();
         foreach ($lines as $line) {
             if (strpos($line, 'versions') !== false) {
                 $wrapperVersionArr = explode(':', $line);
-                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
                 $wrapper['id'] = 'self';
+                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
             }
         }
 
@@ -75,7 +80,7 @@ class VersionCompilerPass implements CompilerPassInterface
     private function getInstalledPackagesVersion($rootDir, $versions)
     {
         if (strpos($rootDir, 'vendor')) {
-            $command = escapeshellcmd('cd ' . $rootDir . '/../../../../ && composer show -i');
+            $command = 'cd ' . escapeshellarg($rootDir) . '/../../../../ && composer show -i';
             $packageNames = shell_exec($command);
         } else {
             $packageNames = shell_exec('composer show -i');

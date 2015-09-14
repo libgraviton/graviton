@@ -185,7 +185,6 @@ class Swagger
         $ret['swagger'] = '2.0';
         $date = date('Y-m-d');
         $ret['info'] = array(
-            // @todo this should be a real version - but should it be the version of graviton or which one?
             'version' => $this->coreUtils->getWrapperVersion()['version'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
