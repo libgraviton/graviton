@@ -34,8 +34,6 @@ class CoreUtils
      */
     public function getVersionInHeaderFormat()
     {
-        //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
-
         $versionHeader = '';
         foreach ($this->versions as $name => $version) {
             $versionHeader .= $version['id'] . ': ' . $version['version'] . '; ';
@@ -50,9 +48,7 @@ class CoreUtils
      */
     public function getVersion()
     {
-        if ($this->versions) {
             return $this->versions;
-        }
     }
 
     /**

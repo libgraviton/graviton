@@ -78,7 +78,8 @@ class VersionCompilerPass implements CompilerPassInterface
     private function getInstalledPackagesVersion($rootDir, $versions)
     {
         if (strpos($rootDir, 'vendor')) {
-            $packageNames = shell_exec('cd '.$rootDir.'/../../../../ && composer show -i');
+            $command = escapeshellcmd('cd ' . $rootDir . '/../../../../ && composer show -i');
+            $packageNames = shell_exec($command);
         } else {
             $packageNames = shell_exec('composer show -i');
         }
