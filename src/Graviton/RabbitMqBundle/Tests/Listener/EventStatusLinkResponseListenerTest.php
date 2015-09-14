@@ -32,34 +32,34 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         $producerMock->expects($this->once())->method('publish');
 
         $routerMock = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor(
-            )->setMethods(['generate'])->getMockForAbstractClass();
+        )->setMethods(['generate'])->getMockForAbstractClass();
         $routerMock->expects($this->once())->method('generate')->willReturn(
-                'http://graviton-test.lo/worker/123jkl890yui567mkl'
-            );
+            'http://graviton-test.lo/worker/123jkl890yui567mkl'
+        );
 
         $requestMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')->disableOriginalConstructor(
-            )->setMethods(['get'])->getMock();
+        )->setMethods(['get'])->getMock();
         $requestMock->expects($this->atLeastOnce())->method('get')->will(
-                $this->onConsecutiveCalls(
-                    'graviton.core.rest.product.post',
-                    'graviton.core.rest.product.post',
-                    'graviton-api-test/core/product'
-                )
-            );
+            $this->onConsecutiveCalls(
+                'graviton.core.rest.product.post',
+                'graviton.core.rest.product.post',
+                'graviton-api-test/core/product'
+            )
+        );
         $requestStackMock = $this->getMockBuilder(
             '\Symfony\Component\HttpFoundation\RequestStack'
         )->disableOriginalConstructor()->setMethods(['getCurrentRequest'])->getMock();
         $requestStackMock->expects($this->once())->method('getCurrentRequest')->willReturn($requestMock);
 
         $cursorMock = $this->getMockBuilder('\Doctrine\MongoDB\CursorInterface')->disableOriginalConstructor(
-            )->getMockForAbstractClass();
+        )->getMockForAbstractClass();
         $cursorMock->expects($this->once())->method('toArray')->willReturn(['someWorkerId' => 'some content']);
 
         $queryMock = $this->getMockBuilder('\Doctrine\MongoDB\Query\Query')->disableOriginalConstructor()->getMock();
         $queryMock->expects($this->once())->method('execute')->willReturn($cursorMock);
 
         $queryBuilderMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\Query\Builder')->disableOriginalConstructor(
-            )->getMock();
+        )->getMock();
         $queryBuilderMock->expects($this->once())->method('select')->willReturnSelf();
         $queryBuilderMock->expects($this->once())->method('field')->willReturnSelf();
         $queryBuilderMock->expects($this->once())->method('equals')->willReturnSelf();
@@ -70,8 +70,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         )->disableOriginalConstructor()->setMethods(['createQueryBuilder', 'persist', 'flush'])->getMock();
         $documentManagerMock->expects($this->once())->method('createQueryBuilder')->willReturn($queryBuilderMock);
         $documentManagerMock->expects($this->once())->method('persist')->with(
-                $this->isInstanceOf('\GravitonDyn\EventStatusBundle\Document\EventStatus')
-            );
+            $this->isInstanceOf('\GravitonDyn\EventStatusBundle\Document\EventStatus')
+        );
         $documentManagerMock->expects($this->once())->method('flush');
 
         $queueEventMock = $this->getMockBuilder(
