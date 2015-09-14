@@ -91,7 +91,7 @@ class VersionCompilerPass implements CompilerPassInterface
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
             if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
-                array_push($versions, array('id' => $match[0][0], 'version' => $match[0][1], 'isWrapper' => false ));
+                array_push($versions, array('id' => $match[0][0], 'version' => $match[0][1]));
             }
         }
 
