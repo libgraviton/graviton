@@ -1,6 +1,6 @@
 <?php
 /**
- * functional test for /core/config
+ * functional test for /core/version
  */
 
 namespace Graviton\CoreBundle\Tests\Controller;
@@ -14,84 +14,37 @@ use Graviton\TestBundle\Test\RestTestCase;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ConfigControllerTest extends RestTestCase
+class VersionControllerTest extends RestTestCase
 {
 
     /**
-     * setup client and load fixtures
+     * Tests if get request returns data in right schema format
      *
      * @return void
      */
-    public function setUp()
-    {
-        $this->loadFixtures(
-            array(
-                'GravitonDyn\ConfigBundle\DataFixtures\MongoDB\LoadConfigData'
-            ),
-            null,
-            'doctrine_mongodb'
-        );
-    }
-
-    /**
-     * We need to make sure that our Link headers are properly encoded for our RQL parser.
-     * This test tries to ensure that as we have resources named-like-this in /core/config.
-     *
-     * @param string $expression  expression
-     * @param int    $resultCount expected res count
-     *
-     * @dataProvider rqlCheckDataProvider
-     *
-     * @return void
-     */
-    public function testLinkHeaderEncodingDash($expression, $resultCount)
+    public function testGetAllAction()
     {
         $client = static::createRestClient();
-        $_SERVER['QUERY_STRING'] = $expression;
-        $client->request('GET', '/core/config?'.$expression);
-        unset($_SERVER['QUERY_STRING']);
+        $client->request('GET', '/core/version/');
         $response = $client->getResponse();
 
-        $this->assertContains($expression, $response->headers->get('Link'));
-        $this->assertEquals($resultCount, count($client->getResults()));
+        $this->assertContains('"id":', $response->getContent());
+        $this->assertContains('"version":', $response->getContent());
+        $this->assertContains('"isWrapper":', $response->getContent());
+        $this->assertInternalType('string', $response->getContent());
     }
 
     /**
-     * Data provider for self-Link-header check
+     * Tests if error message is shown
      *
-     * @return array data
+     * @return void
      */
-    public function rqlCheckDataProvider()
+    public function testWrongParamName()
     {
-        return array(
-            array(
-                'eq(id'.$this->encodeString(',tablet-hello-message').')',
-                1
-            ),
-            array(
-                'eq(id'.$this->encodeString(',admin-additional+setting').')',
-                1
-            ),
-            array(
-                'like(key'.$this->encodeString(',hello-').'*)',
-                1
-            )
-        );
-    }
+        $client = static::createRestClient();
+        $client->request('GET', '/core/version/NotExsiting');
+        $response = $client->getResponse();
 
-    /**
-     * Encodes our expressions
-     *
-     * @param string $value value
-     *
-     * @return string encoded value
-     */
-    private function encodeString($value)
-    {
-        return str_replace(
-            array('-', '_', '.', '~'),
-            array('%2D', '%5F', '%2E', '%7E'),
-            rawurlencode($value)
-        );
+        $this->assertEquals('{"error":"This id could not be resolved"}', $response->getContent());
     }
 }
