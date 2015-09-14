@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.25.1",
+    "version": "0.26.1",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",

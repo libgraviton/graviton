@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C">
+        <property name="id" type="string"/>
+        <property name="key" type="string"/>
+        <property name="title" serialized-name="exposedTitleC" type="string"/>
+    </class>
+</serializer>

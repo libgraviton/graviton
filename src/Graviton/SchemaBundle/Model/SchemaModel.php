@@ -81,7 +81,7 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * Returns the bare schema
      *
-     * @return stdClass Schema
+     * @return \stdClass Schema
      */
     public function getSchema()
     {
@@ -117,7 +117,7 @@ class SchemaModel implements ContainerAwareInterface
      *
      * @param string $mapping name of mapping class
      *
-     * @return self
+     * @return $this
      */
     public function manyPropertyModelForTarget($mapping)
     {
@@ -155,13 +155,25 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get readOnly flag for a given field
+     *
+     * @param string $field field name
+     *
+     * @return boolean the readOnly flag
+     */
+    public function getReadOnlyOfField($field)
+    {
+        return $this->getSchemaField($field, 'readOnly', false);
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name
      * @param string $property      property name
      * @param mixed  $fallbackValue fallback value if property isn't set
      *
-     * @return array
+     * @return mixed
      */
     private function getSchemaField($field, $property, $fallbackValue = '')
     {
