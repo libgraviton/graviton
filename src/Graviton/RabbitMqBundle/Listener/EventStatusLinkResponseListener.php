@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -126,8 +127,11 @@ class EventStatusLinkResponseListener
         // only if we have subscribers, it will create more load as it persists an EventStatus
         $queueEvent = $this->createQueueEventObject();
 
-        if (!is_null($queueEvent->getStatusurl())) {
-            $linkHeader = LinkHeader::fromResponse($event->getResponse());
+        /** @var Response $response */
+        $response = $event->getResponse();
+
+        if (!empty($queueEvent->getStatusurl())) {
+            $linkHeader = LinkHeader::fromResponse($response);
             $linkHeader->add(
                 new LinkHeaderItem(
                     $queueEvent->getStatusurl(),
@@ -135,7 +139,7 @@ class EventStatusLinkResponseListener
                 )
             );
 
-            $event->getResponse()->headers->set(
+            $response->headers->set(
                 'Link',
                 (string) $linkHeader
             );
@@ -156,7 +160,7 @@ class EventStatusLinkResponseListener
     private function isNotConcerningRequest()
     {
         return in_array(
-            substr($this->request->attributes->get('_route'), -4),
+            substr($this->request->get('_route'), -4),
             ['.get', '.all']
         );
     }
@@ -170,7 +174,7 @@ class EventStatusLinkResponseListener
     {
         $obj = clone $this->queueEventDocument;
         $obj->setEvent($this->generateRoutingKey());
-        $obj->setPublicurl($this->request->attributes->get('selfLink'));
+        $obj->setPublicurl($this->request->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
 
         return $obj;
@@ -186,8 +190,10 @@ class EventStatusLinkResponseListener
      */
     private function generateRoutingKey()
     {
-        $route = $this->request->attributes->get('_route');
+        $route = $this->request->get('_route');
 
+        // Notice:
+        // 1st & 3rd elements are skipped
         list(, $bundle, , $document, $action) = explode('.', $route);
 
         $routingKey = 'document.'.
@@ -205,22 +211,24 @@ class EventStatusLinkResponseListener
      *
      * @param QueueEvent $queueEvent queueEvent object
      *
-     * @return array array of worker ids
+     * @return string
      */
     private function getStatusUrl($queueEvent)
     {
         // this has to be checked after cause we should not call getSubscribedWorkerIds() if above is true
         $workerIds = $this->getSubscribedWorkerIds($queueEvent);
         if (empty($workerIds)) {
-            return null;
+            return '';
         }
 
         // we have subscribers; create the EventStatus entry
+        /** @var \GravitonDyn\EventStatusBundle\Document\EventStatus $eventStatus **/
         $eventStatus = new $this->eventStatusClassname();
         $eventStatus->setCreatedate(new \DateTime());
         $eventStatus->setEventname($queueEvent->getEvent());
 
         foreach ($workerIds as $workerId) {
+            /** @var \GravitonDyn\EventStatusBundle\Document\EventStatusStatus $eventStatusStatus **/
             $eventStatusStatus = new $this->eventStatusStatusClassname();
             $eventStatusStatus->setWorkerid($workerId);
             $eventStatusStatus->setStatus('opened');
@@ -268,14 +276,15 @@ class EventStatusLinkResponseListener
             ).
             '/';
 
-        $dm = $this->documentManager->createQueryBuilder($this->eventWorkerClassname);
-
-        $data = $dm
+        // look up workers by class name
+        $qb = $this->documentManager->createQueryBuilder($this->eventWorkerClassname);
+        $data = $qb
             ->select('id')
             ->field('subscription.event')
             ->equals(new \MongoRegex($regex))
             ->getQuery()
-            ->execute()->toArray();
+            ->execute()
+            ->toArray();
 
         return array_keys($data);
     }
