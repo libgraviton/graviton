@@ -57,7 +57,7 @@ class CoreUtils
 
     /**
      * @param string $id add package name
-     * @return object single entry
+     * @return array single entry
      */
     public function getVersionById($id)
     {
@@ -69,5 +69,18 @@ class CoreUtils
 
         return array('error' => 'This id could not be resolved');
 
+    }
+
+    /**
+     *
+     * @return array wrapper version
+     */
+    public function getWrapperVersion()
+    {
+        foreach ($this->versions as $version) {
+            if ($version['isWrapper']) {
+                return $version;
+            }
+        }
     }
 }

@@ -39,10 +39,7 @@ class VersionCompilerPass implements CompilerPassInterface
     {
         $versions = array();
         array_push($versions, $this->getContextVersion());
-        $installedPackages = $this->getInstalledPackagesVersion($rootDir);
-        if (!empty($installedPackages)) {
-            array_push($versions, $installedPackages);
-        }
+        $versions = $this->getInstalledPackagesVersion($rootDir, $versions);
 
         return $versions;
     }
@@ -64,6 +61,7 @@ class VersionCompilerPass implements CompilerPassInterface
             } elseif (strpos($line, 'name') !== false) {
                 $wrapperNameArr = explode(':', $line);
                 $wrapper['id'] = trim($wrapperNameArr[1]);
+                $wrapper['isWrapper'] = true;
             }
         }
 
@@ -73,27 +71,27 @@ class VersionCompilerPass implements CompilerPassInterface
     /**
      * returns version for every installed package
      *
-     * @param string $rootDir path to root directory
+     * @param string $rootDir  path to root directory
+     * @param array  $versions versions array
      * @return array
      */
-    private function getInstalledPackagesVersion($rootDir)
+    private function getInstalledPackagesVersion($rootDir, $versions)
     {
         if (strpos($rootDir, 'vendor')) {
             $packageNames = shell_exec('cd '.$rootDir.'/../../../../ && composer show -i');
         } else {
             $packageNames = shell_exec('composer show -i');
         }
-        $ver = array();
         $packages = explode(PHP_EOL, $packageNames);
         //last index is always empty
         array_pop($packages);
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
             if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
-                array_push($ver, array('id' => $match[0][0], 'version' => $match[0][1] ));
+                array_push($versions, array('id' => $match[0][0], 'version' => $match[0][1], 'isWrapper' => false ));
             }
         }
 
-        return $ver;
+        return $versions;
     }
 }
