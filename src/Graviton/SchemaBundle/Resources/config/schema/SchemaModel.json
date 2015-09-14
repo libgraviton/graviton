@@ -18,6 +18,11 @@
       "type": "string",
       "description": "Primitive data type of the property"
     },
+    "readOnly": {
+      "title": "Read-only",
+      "type": "boolean",
+      "description": "Defines whether the property is read-only"
+    },
     "format": {
       "title": "Format",
       "type": "string",
