@@ -21,6 +21,7 @@
              <argument type="service" id="graviton.rest.response" strict="false"/>
              <argument type="service" id="graviton.rest.restutils"/>
              <argument type="service" id="templating"/>
+             <argument type="service" id="graviton.proxy.service.swaggerapiloader"/>
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"

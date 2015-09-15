@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Controller;
 
+use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -42,22 +43,30 @@ class MainController
     private $templating;
 
     /**
-     * @param Router             $router     router
-     * @param Response           $response   prepared response
-     * @param RestUtilsInterface $restUtils  rest-utils from GravitonRestBundle
-     * @param EngineInterface    $templating templating-engine
+     * @var ApiDefinitionLoader
+     */
+    private $apiLoader;
+
+    /**
+     * @param Router              $router     router
+     * @param Response            $response   prepared response
+     * @param RestUtilsInterface  $restUtils  rest-utils from GravitonRestBundle
+     * @param EngineInterface     $templating templating-engine
+     * @param ApiDefinitionLoader $apiLoader  loader for third party api definition
      *
      */
     public function __construct(
         Router $router,
         Response $response,
         RestUtilsInterface $restUtils,
-        EngineInterface $templating
+        EngineInterface $templating,
+        ApiDefinitionLoader $apiLoader
     ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->templating = $templating;
+        $this->apiLoader = $apiLoader;
     }
 
     /**
@@ -69,11 +78,18 @@ class MainController
     {
         $response = $this->response;
 
-        $mainPage = new \stdClass;
+        $this->apiLoader->setOption(
+            array(
+                "prefix" => "petstore",
+                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
+            )
+        );
+        $mainPage = new \stdClass();
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = $this->determineServices(
             $this->restUtils->getOptionRoutes()
         );
+        $mainPage->thirdparty = $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints());
 
         $response->setContent(json_encode($mainPage));
         $response->setStatusCode(Response::HTTP_OK);
@@ -141,12 +157,41 @@ class MainController
                 $this->router->generate('graviton.core.rest.app.all', array(), true),
                 array(
                     'rel'  => 'apps',
-                    'type' => 'application/json'
+                    'type' => 'application/json',
                 )
             )
         );
 
         return (string) $links;
+    }
+
+    /**
+     * resolve all third party routes and add schema info
+     *
+     * @param array $thirdApiRoutes list of all routes from an API
+     *
+     * @return array
+     */
+    protected function determineThirdPartyServices(array $thirdApiRoutes)
+    {
+        $definition = $this->apiLoader;
+        $mainRoute = $this->router->generate(
+            'graviton.core.static.main.all',
+            array(),
+            true
+        );
+        $services = array_map(
+            function ($apiRoute) use ($mainRoute, $definition) {
+
+                return array(
+                    '$ref' => $mainRoute.$apiRoute,
+                    'profile' => $mainRoute."schema/".$apiRoute."/item",
+                );
+            },
+            $thirdApiRoutes
+        );
+
+        return $services;
     }
 
     /**
