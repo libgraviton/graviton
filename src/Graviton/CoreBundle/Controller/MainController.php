@@ -6,12 +6,13 @@
 namespace Graviton\CoreBundle\Controller;
 
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Router;
 
 /**
  * MainController
@@ -48,11 +49,17 @@ class MainController
     private $apiLoader;
 
     /**
-     * @param Router              $router     router
-     * @param Response            $response   prepared response
-     * @param RestUtilsInterface  $restUtils  rest-utils from GravitonRestBundle
-     * @param EngineInterface     $templating templating-engine
-     * @param ApiDefinitionLoader $apiLoader  loader for third party api definition
+     * @var array
+     */
+    private $proxySourceConfiguration;
+
+    /**
+     * @param Router              $router                   router
+     * @param Response            $response                 prepared response
+     * @param RestUtilsInterface  $restUtils                rest-utils from GravitonRestBundle
+     * @param EngineInterface     $templating               templating-engine
+     * @param ApiDefinitionLoader $apiLoader                loader for third party api definition
+     * @param array               $proxySourceConfiguration Set of sources to be recognized by the controller.
      *
      */
     public function __construct(
@@ -60,13 +67,15 @@ class MainController
         Response $response,
         RestUtilsInterface $restUtils,
         EngineInterface $templating,
-        ApiDefinitionLoader $apiLoader
+        ApiDefinitionLoader $apiLoader,
+        array $proxySourceConfiguration
     ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->templating = $templating;
         $this->apiLoader = $apiLoader;
+        $this->proxySourceConfiguration = $proxySourceConfiguration;
     }
 
     /**
@@ -78,18 +87,14 @@ class MainController
     {
         $response = $this->response;
 
-        $this->apiLoader->setOption(
-            array(
-                "prefix" => "petstore",
-                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
-            )
-        );
+
         $mainPage = new \stdClass();
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = $this->determineServices(
             $this->restUtils->getOptionRoutes()
         );
-        $mainPage->thirdparty = $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints());
+
+        $mainPage->thirdparty = $this->registerThirdPartyServices();
 
         $response->setContent(json_encode($mainPage));
         $response->setStatusCode(Response::HTTP_OK);
@@ -101,9 +106,23 @@ class MainController
 
         return $this->render(
             'GravitonCoreBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            array ('response' => $response->getContent()),
             $response
         );
+    }
+
+    /**
+     * Renders a view.
+     *
+     * @param string   $view       The view name
+     * @param array    $parameters An array of parameters to pass to the view
+     * @param Response $response   A response instance
+     *
+     * @return Response A Response instance
+     */
+    public function render($view, array $parameters = array (), Response $response = null)
+    {
+        return $this->templating->renderResponse($view, $parameters, $response);
     }
 
     /**
@@ -115,16 +134,16 @@ class MainController
      */
     protected function determineServices(array $optionRoutes)
     {
-        $sortArr = array();
+        $sortArr = array ();
         $router = $this->router;
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
-                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
+                $schemaRoute = implode('.', array ($app, $bundle, $rest, $document, 'canonicalSchema'));
 
-                return array(
-                    '$ref' => $router->generate($routeName, array(), true),
-                    'profile' => $router->generate($schemaRoute, array(), true),
+                return array (
+                    '$ref' => $router->generate($routeName, array (), true),
+                    'profile' => $router->generate($schemaRoute, array (), true),
                 );
             },
             array_keys($optionRoutes)
@@ -151,12 +170,11 @@ class MainController
      */
     protected function prepareLinkHeader()
     {
-        $links = new LinkHeader(array());
+        $links = new LinkHeader(array ());
         $links->add(
             new LinkHeaderItem(
-                $this->router->generate('graviton.core.rest.app.all', array(), true),
-                array(
-                    'rel'  => 'apps',
+                $this->router->generate('graviton.core.rest.app.all', array (), true), array (
+                    'rel' => 'apps',
                     'type' => 'application/json',
                 )
             )
@@ -177,13 +195,13 @@ class MainController
         $definition = $this->apiLoader;
         $mainRoute = $this->router->generate(
             'graviton.core.static.main.all',
-            array(),
+            array (),
             true
         );
         $services = array_map(
             function ($apiRoute) use ($mainRoute, $definition) {
 
-                return array(
+                return array (
                     '$ref' => $mainRoute.$apiRoute,
                     'profile' => $mainRoute."schema/".$apiRoute."/item",
                 );
@@ -195,16 +213,18 @@ class MainController
     }
 
     /**
-     * Renders a view.
-     *
-     * @param string   $view       The view name
-     * @param array    $parameters An array of parameters to pass to the view
-     * @param Response $response   A response instance
-     *
-     * @return Response A Response instance
+     * @return array
      */
-    public function render($view, array $parameters = array(), Response $response = null)
+    private function registerThirdPartyServices()
     {
-        return $this->templating->renderResponse($view, $parameters, $response);
+        $services = [];
+
+        foreach($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
+            $this->apiLoader->setOption($option);
+            //$services = array_merge($services, $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints()));
+            $services[$thirdparty] = $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints(false, true));
+        }
+
+        return $services;
     }
 }

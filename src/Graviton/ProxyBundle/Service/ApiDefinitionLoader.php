@@ -69,9 +69,9 @@ class ApiDefinitionLoader
      *
      * @return \stdClass
      */
-    public function getEndpointSchema($endpoint)
+    public function getEndpointSchema($endpoint, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
 
         return $this->definition->getSchema($endpoint);
     }
@@ -85,9 +85,9 @@ class ApiDefinitionLoader
      *
      * @return string
      */
-    public function getEndpoint($endpoint, $withHost = false, $method = null)
+    public function getEndpoint($endpoint, $withHost = false, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
         $url = "";
         if ($withHost) {
             $url = $this->definition->getHost();
@@ -115,18 +115,16 @@ class ApiDefinitionLoader
      *
      * @return array
      */
-    public function getAllEndpoints($withHost = false)
+    public function getAllEndpoints($withHost = false, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
 
         $prefix = self::PROXY_ROUTE;
         if (isset($this->options['prefix'])) {
             $prefix .= "/".$this->options['prefix'];
         }
 
-        $endpoints = $this->definition->getEndpoints($withHost, $prefix);
-
-        return $endpoints;
+        return $this->definition->getEndpoints($withHost, $prefix);
     }
 
     /**
@@ -134,12 +132,13 @@ class ApiDefinitionLoader
      *
      * @return void
      */
-    private function loadApiDefinition()
+    private function loadApiDefinition($forceReload = false)
     {
-        $supports = $this->definitionLoader->supports($this->options['uri']);
-        if ($this->definition == null && $supports) {
+        $supported = $this->definitionLoader->supports($this->options['uri']);
+
+        if ($forceReload || ($this->definition == null && $supported)) {
             $this->definition = $this->definitionLoader->load($this->options['uri']);
-        } elseif (!$supports) {
+        } elseif (!$supported) {
             throw new \RuntimeException("This resource (".$this->options['uri'].") is not supported.");
         }
     }
