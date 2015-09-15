@@ -62,14 +62,14 @@ class HttpLoader implements LoaderInterface
     /**
      * check if the url is valid
      *
-     * @param string $input url
+     * @param string $url url
      *
      * @return boolean
      */
-    public function supports($input)
+    public function supports($url)
     {
         $retVal = false;
-        $error = $this->validator->validate($input, [new Url()]);
+        $error = $this->validator->validate($url, [new Url()]);
         if (count($error) == 0) {
             $retVal = true;
         }
@@ -92,7 +92,13 @@ class HttpLoader implements LoaderInterface
             $response = $request->send();
             $content = $response->getBody(true);
             if ($this->strategy->supports($content)) {
-                $retVal = $this->strategy->process($content);
+
+                // store current host (name or ip) serving the API. This MUST be the host only and does not include the scheme
+                // nor sub-paths. It MAY include a port. If the host is not included, the host serving the documentation is to
+                // be used (including the port)
+                $fallbackHost['host'] = sprintf('%s://%s:%d', $request->getScheme(), $request->getHost(), $request->getPort());
+
+                $retVal = $this->strategy->process($content, $fallbackHost);
             }
         }
 

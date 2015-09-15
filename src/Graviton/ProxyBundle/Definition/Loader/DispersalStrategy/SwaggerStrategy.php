@@ -18,14 +18,22 @@ use Symfony\Component\Debug\Exception\ContextErrorException;
 class SwaggerStrategy implements DispersalStrategyInterface
 {
     /**
+     * @var array
+     */
+    private $fallbackData = [];
+
+    /**
      * process data
      *
-     * @param null|string $input input
+     * @param string $input        JSON information about the swagger service.
+     * @param array  $fallbackData Set of information to be registered in case the swagger info is not complete.
      *
      * @return ApiDefinition
      */
-    public function process($input)
+    public function process($input, array $fallbackData = [])
     {
+        $this->registerFallbackData($fallbackData);
+
         $apiDef = new ApiDefinition();
         $swagger = $this->decodeJson($input);
         if (is_object($swagger)) {
@@ -41,7 +49,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
 
                 // Schema
                 $definitionRef = $this->getEndpointDefinition($endpoint);
-                if ($definitionRef != null) {
+                if (! empty($definitionRef)) {
                     list (, $defNode, $defName) = explode('/', $definitionRef);
                     $schema = $swagger->$defNode->$defName;
                     $apiDef->addSchema($name, $schema);
@@ -93,9 +101,10 @@ class SwaggerStrategy implements DispersalStrategyInterface
      * @return void
      *
      */
-    private function setBaseValues(ApiDefinition &$apiDef, \stdClass $swagger)
+    private function setBaseValues(ApiDefinition $apiDef, \stdClass $swagger)
     {
-        $apiDef->setHost($swagger->host);
+        $this->registerHost($apiDef, $swagger);
+
         if (isset($swagger->basePath)) {
             $apiDef->setBasePath($swagger->basePath);
         }
@@ -106,12 +115,12 @@ class SwaggerStrategy implements DispersalStrategyInterface
      *
      * @param \stdClass $endpoint endpoint
      *
-     * @return string|null
+     * @return string
      */
     private function getEndpointDefinition($endpoint)
     {
         $refName = "\$ref";
-        $ref = null;
+        $ref = '';
         foreach ($endpoint as $actionName => $action) {
             try {
                 switch ($actionName) {
@@ -133,5 +142,32 @@ class SwaggerStrategy implements DispersalStrategyInterface
         }
 
         return $ref;
+    }
+
+    /**
+     * @param ApiDefinition $apiDef
+     * @param \stdClass     $swagger
+     */
+    private function registerHost(ApiDefinition $apiDef, \stdClass $swagger)
+    {
+        $host = $this->fallbackData['host'];
+
+        if (isset($swagger->host)) {
+            $host = $swagger->host;
+        }
+
+        $apiDef->setHost($host);
+    }
+
+    /**
+     * @param array $fallbackData
+     */
+    private function registerFallbackData(array $fallbackData)
+    {
+        if (!array_key_exists('host', $fallbackData)) {
+            throw new \RuntimeException('Missing mandatory key (host) in fallback data set.');
+        }
+
+        $this->fallbackData = $fallbackData;
     }
 }

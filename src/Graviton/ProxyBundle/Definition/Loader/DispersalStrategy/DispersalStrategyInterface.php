@@ -30,5 +30,5 @@ interface DispersalStrategyInterface
      *
      * @return ApiDefinition
      */
-    public function process($input);
+    public function process($input, array $fallbackData = []);
 }
