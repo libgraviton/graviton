@@ -81,10 +81,11 @@ class ApiDefinitionLoader
      *
      * @param string  $endpoint endpoint
      * @param boolean $withHost attach host name to the url
+     * @param string  $method   http method
      *
      * @return string
      */
-    public function getEndpoint($endpoint, $withHost = false)
+    public function getEndpoint($endpoint, $withHost = false, $method = null)
     {
         $this->loadApiDefinition();
         $url = "";
@@ -93,7 +94,14 @@ class ApiDefinitionLoader
         }
 
         $endpoints = $this->definition->getEndpoints(false);
-        if (in_array($endpoint, $endpoints)) {
+
+        //has url a id
+        $searchString = $endpoint;
+        if (preg_match("@\/[0-9]{1,}$@", $endpoint)) {
+            $searchString = substr($endpoint, 0, strrpos($endpoint, '/'));
+        }
+
+        if (in_array($searchString, $endpoints)) {
             $url .= $endpoint;
         }
 

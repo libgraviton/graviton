@@ -7,6 +7,7 @@ namespace Graviton\ProxyBundle\Controller;
 
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Proxy\Proxy;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -77,10 +78,21 @@ class ProxyController
 
         $response = null;
         try {
-            $newRequest = $request->createFromGlobals();
+            $newRequest = Request::create(
+                $request->getUri(),
+                $request->getMethod(),
+                array(),
+                array(),
+                array(),
+                array(),
+                $request->getContent()
+            );
+            $newRequest->headers->add($request->headers->all());
             $response = $this->proxy->forward($newRequest)->to($url);
         } catch (ClientException $e) {
             $response = $e->getResponse();
+        } catch (ServerException $serverException) {
+            $response = $serverException->getResponse();
         }
 
         return $response;
@@ -96,6 +108,12 @@ class ProxyController
     public function schemaAction(Request $request)
     {
         $api = $this->decideApiAndEnpoint($request->getScheme(), $request->getUri());
+        $this->apiLoader->setOption(
+            array(
+                "prefix" => "petstore",
+                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
+            )
+        );
         $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
 
         $response = new Response(json_encode($schema), 200);
@@ -120,7 +138,7 @@ class ProxyController
         $pattern = array(
             "@".$scheme.":\/\/@",
             "@3rdparty\/@",
-            "@schema@",
+            "@schema\/@",
             "@\/item$@",
         );
         $url = preg_replace($pattern, '', $url);
