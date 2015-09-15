@@ -57,7 +57,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
     /**
      * is input data valid json
      *
-     * @param string $input
+     * @param string $input json string
      *
      * @return boolean
      */
@@ -72,7 +72,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
     /**
      * decode a json string
      *
-     * @param string $input
+     * @param string $input json string
      *
      * @return \stdClass|null
      *

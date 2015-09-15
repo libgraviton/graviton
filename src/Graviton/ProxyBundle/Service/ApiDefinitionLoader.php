@@ -65,7 +65,7 @@ class ApiDefinitionLoader
     /**
      * get a schema for one endpoint
      *
-     * @param string $endpoint
+     * @param string $endpoint endpoint
      *
      * @return \stdClass
      */
@@ -79,7 +79,7 @@ class ApiDefinitionLoader
     /**
      * get an endpoint
      *
-     * @param string  $endpoint $endpoint
+     * @param string  $endpoint endpoint
      * @param boolean $withHost attach host name to the url
      *
      * @return string
@@ -123,6 +123,8 @@ class ApiDefinitionLoader
 
     /**
      * internal load method
+     *
+     * @return void
      */
     private function loadApiDefinition()
     {

@@ -89,7 +89,7 @@ class ProxyController
     /**
      * get schema info
      *
-     * @param Request $request
+     * @param Request $request request
      *
      * @return Response
      */
