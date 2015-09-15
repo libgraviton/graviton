@@ -6,7 +6,7 @@
 namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
-use Graviton\ProxyBundle\Definition\Loader\LoadStrategy\LoadStrategyInterface;
+use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 
 /**
  * LoaderInterface
@@ -20,11 +20,11 @@ interface LoaderInterface
     /**
      * set a load strategy
      *
-     * @param LoadStrategyInterface $strategy strategy to add
+     * @param DispersalStrategyInterface $strategy strategy to add
      *
      * @return LoaderInterface
      */
-    public function setLoadStrategy($strategy);
+    public function setDispersalStrategy($strategy);
 
     /**
      * check if the input is supported
