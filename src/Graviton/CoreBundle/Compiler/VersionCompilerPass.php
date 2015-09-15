@@ -53,6 +53,7 @@ class VersionCompilerPass implements CompilerPassInterface
     private function getContextVersion($rootDir)
     {
         if (strpos($rootDir, 'vendor')) {
+            //@todo shell exec needs to be refactored
             $result = shell_exec('cd ' . escapeshellarg($rootDir) . '/../../../../  && composer show -s --no-ansi');
         } else {
             $result = shell_exec('composer show -s --no-ansi');
@@ -90,7 +91,7 @@ class VersionCompilerPass implements CompilerPassInterface
         array_pop($packages);
         foreach ($packages as $package) {
             preg_match_all('/([^\s]+)/', $package, $match);
-            if (strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') {
+            if ((strpos($match[0][0], 'grv') === 0 | $match[0][0] === 'graviton') && !empty($match[0][1])) {
                 array_push($versions, array('id' => $match[0][0], 'version' => $match[0][1]));
             }
         }
