@@ -31,18 +31,4 @@ class VersionControllerTest extends RestTestCase
         $this->assertContains('"self":', $response->getContent());
         $this->assertInternalType('string', $response->getContent());
     }
-
-    /**
-     * Tests if error message is shown
-     *
-     * @return void
-     */
-    public function testWrongParamName()
-    {
-        $client = static::createRestClient();
-        $client->request('GET', '/core/version/NotExsiting');
-        $response = $client->getResponse();
-
-        $this->assertEquals('{"error":"This id could not be resolved"}', $response->getContent());
-    }
 }
