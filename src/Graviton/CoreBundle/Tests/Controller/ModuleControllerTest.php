@@ -525,10 +525,9 @@ class ModuleControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEmpty($response->getContent());
 
         $client->request('GET', '/core/module/'.$moduleId);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
