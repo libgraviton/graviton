@@ -50,11 +50,25 @@ class ApiDefinitionLoader
         $this->definitionLoader = $loader;
     }
 
+    /**
+     * set options for the loader
+     *
+     * @param array $options options [uri, prefix]
+     *
+     * @return void
+     */
     public function setOption(array $options)
     {
         $this->options = $options;
     }
 
+    /**
+     * get a schema for one endpoint
+     *
+     * @param string $endpoint
+     *
+     * @return \stdClass
+     */
     public function getEndpointSchema($endpoint)
     {
         $this->loadApiDefinition();
@@ -62,6 +76,14 @@ class ApiDefinitionLoader
         return $this->definition->getSchema($endpoint);
     }
 
+    /**
+     * get an endpoint
+     *
+     * @param string  $endpoint $endpoint
+     * @param boolean $withHost attach host name to the url
+     *
+     * @return string
+     */
     public function getEndpoint($endpoint, $withHost = false)
     {
         $this->loadApiDefinition();
@@ -78,6 +100,13 @@ class ApiDefinitionLoader
         return $url;
     }
 
+    /**
+     * get all endpoints for an API
+     *
+     * @param boolean $withHost attach host name to the url
+     *
+     * @return array
+     */
     public function getAllEndpoints($withHost = false)
     {
         $this->loadApiDefinition();
@@ -92,6 +121,9 @@ class ApiDefinitionLoader
         return $endpoints;
     }
 
+    /**
+     * internal load method
+     */
     private function loadApiDefinition()
     {
         $supports = $this->definitionLoader->supports($this->options['uri']);
