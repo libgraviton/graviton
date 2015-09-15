@@ -38,8 +38,24 @@ class JsonPatchValidator
                 $lastPart = end($pathParts);
 
                 if (is_numeric($lastPart)) {
-                    $this->setException($e);
-                    return false;
+                    /**
+                     * JSON Pointer library throws an Exception when INDEX is equal to number of elements in array
+                     * But JSON Patch allow this as described in RFC
+                     *
+                     * http://tools.ietf.org/html/rfc6902#section-4.1
+                     * "The specified index MUST NOT be greater than the number of elements in the array."
+                     */
+
+                    // Try to check previous element
+                    array_pop($pathParts);
+                    array_push($pathParts, $lastPart - 1);
+
+                    try {
+                        $pointer->get(implode('/', $pathParts));
+                    } catch(NonexistentValueReferencedException $e) {
+                        $this->setException($e);
+                        return false;
+                    }
                 }
             }
         }

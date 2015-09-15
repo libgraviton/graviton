@@ -41,6 +41,10 @@ class JsonPatchValidatorTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 '{"nestedApps":[{"name":"one"},{"name":"two"}]}',
+                '[{"op":"add","path":"/nestedApps/3","value":{"name":"seven"}}]'
+            ],
+            [
+                '{"nestedApps":[{"name":"one"},{"name":"two"}]}',
                 '[{"op":"add","path":"nestedApps/1","value":{"name":"seven"}}]'
             ],
             [
@@ -67,6 +71,10 @@ class JsonPatchValidatorTest extends \PHPUnit_Framework_TestCase
             [
                 '{"nestedApps":[{"name":"one"},{"name":"two"},{"name":"three"}]}',
                 '[{"op":"add","path":"/nestedApps/2","value":{"name":"new element"}}]'
+            ],
+            [
+                '{"nestedApps":[{"name":"one"},{"name":"two"},{"name":"three"}]}',
+                '[{"op":"add","path":"/nestedApps/3","value":{"name":"element to the end"}}]'
             ],
             [
                 '{"unstructuredObject":{"hashField":{"id":500,"name":"one"}}}',
