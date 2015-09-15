@@ -75,4 +75,50 @@ class FormDataMapperTest extends \PHPUnit_Framework_TestCase
             $formDataMapper->convertToFormData(json_encode($requestData), 'A')
         );
     }
+
+    /**
+     * Test FormDataMapper::convertToFormData() with NULL
+     *
+     * @return void
+     */
+    public function testConvertToFormDataWithNullValues()
+    {
+        $fieldMap = [
+            '$field'                => '_field_',
+
+            '$hash.$field'          => '_hash_field_',
+            '$hash'                 => '_hash_',
+
+            '$arrayhash.0.$field'   => '_arrayhash_field_',
+            '$arrayhash'            => '_arrayhash_',
+        ];
+        $requestData =[
+            '$field'        => null,
+            'abc'           => null,
+            '$hash'         => null,
+            '$arrayhash'    => [
+                [
+                    '$field' => null,
+                    'ghi'    => null,
+                ],
+            ],
+        ];
+        $formData = [
+            '_field_'       => null,
+            'abc'           => null,
+            '_hash_'        => null,
+            '_arrayhash_'   => [
+                [
+                    '_arrayhash_field_' => null,
+                    'ghi'               => null,
+                ],
+            ],
+        ];
+
+        $formDataMapper = new FormDataMapper(['NullableValues' => $fieldMap]);
+        $this->assertEquals(
+            $formData,
+            $formDataMapper->convertToFormData(json_encode($requestData), 'NullableValues')
+        );
+    }
 }
