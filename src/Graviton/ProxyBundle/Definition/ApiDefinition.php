@@ -30,6 +30,11 @@ class ApiDefinition
     private $endpoints;
 
     /**
+     * @var array
+     */
+    private $schemes;
+
+    /**
      * sets the base path of the api
      *
      * @param string $basePath API base path
@@ -54,14 +59,99 @@ class ApiDefinition
     }
 
     /**
+     * get the FQDN of the API
+     *
+     * @return string FQDN
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
      * add an endpoint
      *
      * @param string $endpoint endpoint
      *
      * @return void
      */
-    public function addEndpoints($endpoint)
+    public function addEndpoint($endpoint)
     {
         $this->endpoints[] = $endpoint;
+    }
+
+    /**
+     * check if an endpoint exists
+     *
+     * @param string $endpoint endpoint
+     *
+     * @return boolean
+     */
+    public function existEndpoint($endpoint)
+    {
+        $retVal = false;
+        if (isset($this->endpoints)) {
+            $retVal = in_array($endpoint, $this->endpoints);
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * get all defined API endpoints
+     *
+     * @param boolean $withHost url with hostname
+     * @param string  $prefix   add a prefix to the url (blub/endpoint/url)
+     *
+     * @return array
+     */
+    public function getEndpoints($withHost = true, $prefix = null)
+    {
+        $endpoints = array();
+        $basePath = "";
+        if ($withHost) {
+            $basePath = $this->getHost();
+        }
+        if ($prefix != null) {
+            $basePath .= $prefix;
+        }
+        if (isset($this->basePath)) {
+            $basePath .= $this->basePath;
+        }
+        foreach ($this->endpoints as $endpoint) {
+            $endpoints[] = $basePath.$endpoint;
+        }
+
+        return $endpoints;
+    }
+
+    /**
+     * add a schema for an endpoint
+     *
+     * @param string    $endpoint endpoint
+     * @param \stdClass $schema   schema
+     *
+     * @return void
+     */
+    public function addSchema($endpoint, $schema)
+    {
+        $this->schemes[$endpoint] = $schema;
+    }
+
+    /**
+     * get a schema for an endpoint
+     *
+     * @param string $endpoint endpoint
+     *
+     * @return \stdClass
+     */
+    public function getSchema($endpoint)
+    {
+        $retVal = \stdClass();
+        if (array_key_exists($endpoint, $this->schemes)) {
+            $retVal = $this->schemes[$endpoint];
+        }
+
+        return $retVal;
     }
 }
