@@ -3,10 +3,10 @@
  * SwaggerStrategy
  */
 
-namespace Graviton\ProxyBundle\Definition\Loader;
+namespace Graviton\ProxyBundle\Definition\Loader\DispersalStrategy;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
-use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 
 /**
  * process a swagger.json file and return an APi definition
@@ -26,7 +26,32 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     public function process($input)
     {
+        $apiDef = new ApiDefinition();
+        $swagger = $this->decodeJson($input);
+        if (is_object($swagger)) {
+            $this->setBaseValues($apiDef, $swagger);
 
+            foreach ($swagger->paths as $name => $endpoint) {
+                $name = preg_replace("@\/{[a-zA-Z]*\}$@", '', $name);
+
+                if ($apiDef->existEndpoint($name)) {
+                    continue;
+                }
+                $apiDef->addEndpoint($name);
+
+                // Schema
+                $definitionRef = $this->getEndpointDefinition($endpoint);
+                if ($definitionRef != null) {
+                    list (, $defNode, $defName) = explode('/', $definitionRef);
+                    $schema = $swagger->$defNode->$defName;
+                    $apiDef->addSchema($name, $schema);
+                } else {
+                    $apiDef->addSchema($name, new \stdClass());
+                }
+            }
+        }
+
+        return $apiDef;
     }
 
     /**
@@ -49,7 +74,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
      *
      * @param string $input
      *
-     * @return mixed
+     * @return \stdClass|null
      *
      */
     private function decodeJson($input)
@@ -57,5 +82,56 @@ class SwaggerStrategy implements DispersalStrategyInterface
         $input = trim($input);
 
         return json_decode($input);
+    }
+
+    /**
+     * set base values
+     *
+     * @param ApiDefinition $apiDef  API definition
+     * @param \stdClass     $swagger swagger object
+     *
+     * @return void
+     *
+     */
+    private function setBaseValues(ApiDefinition &$apiDef, \stdClass $swagger)
+    {
+        $apiDef->setHost($swagger->host);
+        if (isset($swagger->basePath)) {
+            $apiDef->setBasePath($swagger->basePath);
+        }
+    }
+
+    /**
+     * get the name of definition field for the schema
+     *
+     * @param \stdClass $endpoint endpoint
+     *
+     * @return string|null
+     */
+    private function getEndpointDefinition($endpoint)
+    {
+        $refName = "\$ref";
+        $ref = null;
+        foreach ($endpoint as $actionName => $action) {
+            try {
+                switch ($actionName) {
+                    case "post":
+                    case "put":
+                        $ref = $action->parameters[0]->schema->$refName;
+                        break 2;
+                    case "get":
+                        $statusCode = 200;
+                        $ref = $action->responses->schema->$statusCode->items->$refName;
+                        break 2;
+                    default:
+                        continue;
+                        break;
+                }
+            } catch (ContextErrorException $e) {
+                continue;
+            }
+        }
+
+        return $ref;
     }
 }

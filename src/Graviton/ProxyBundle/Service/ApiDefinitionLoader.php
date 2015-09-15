@@ -1,18 +1,28 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: samuel
- * Date: 09.09.15
- * Time: 10:25
+ * ApiDefinitionLoader
  */
 
 namespace Graviton\ProxyBundle\Service;
 
-
+use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\LoaderInterface;
 
+/**
+ * load API definition from  a external source
+ *
+ * @package Graviton\ProxyBundle\Service
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
+ */
 class ApiDefinitionLoader
 {
+    /**
+     * @var string
+     */
+    const PROXY_ROUTE = "3rdparty";
+
     /**
      * @var LoaderInterface
      */
@@ -23,28 +33,72 @@ class ApiDefinitionLoader
      */
     private $options;
 
-    public function __construct() {
+    /**
+     * @var ApiDefinition
+     */
+    private $definition;
 
-    }
-
-    public function setDefinitionLoader($loader) {
+    /**
+     * set loader
+     *
+     * @param LoaderInterface $loader loader
+     *
+     * @return void
+     */
+    public function setDefinitionLoader($loader)
+    {
         $this->definitionLoader = $loader;
     }
 
-    public function setOption(array $options) {
+    public function setOption(array $options)
+    {
         $this->options = $options;
     }
 
-    public function getEndpointScheme($apiName, $endpoint) {
+    public function getEndpointSchema($endpoint)
+    {
+        $this->loadApiDefinition();
 
+        return $this->definition->getSchema($endpoint);
     }
 
-    public function getAllEndpoints($apiname) {
-
-        if ($this->definitionLoader->supports($this->options['uri'])) {
-            $definition = $this->definitionLoader->load($this->options['uri']);
+    public function getEndpoint($endpoint, $withHost = false)
+    {
+        $this->loadApiDefinition();
+        $url = "";
+        if ($withHost) {
+            $url = $this->definition->getHost();
         }
 
-        return $definition;
+        $endpoints = $this->definition->getEndpoints(false);
+        if (in_array($endpoint, $endpoints)) {
+            $url .= $endpoint;
+        }
+
+        return $url;
+    }
+
+    public function getAllEndpoints($withHost = false)
+    {
+        $this->loadApiDefinition();
+
+        $prefix = self::PROXY_ROUTE;
+        if (isset($this->options['prefix'])) {
+            $prefix .= "/".$this->options['prefix'];
+        }
+
+        $endpoints = $this->definition->getEndpoints($withHost, $prefix);
+
+        return $endpoints;
+    }
+
+    private function loadApiDefinition()
+    {
+        $supports = $this->definitionLoader->supports($this->options['uri']);
+        if ($this->definition == null && $supports) {
+            $this->definition = $this->definitionLoader->load($this->options['uri']);
+        } elseif (!$supports) {
+            throw new \RuntimeException("This resource (".$this->options['uri'].") is not supported.");
+        }
     }
 }
