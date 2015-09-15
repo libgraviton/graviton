@@ -1,34 +1,138 @@
 <?php
 /**
- *
+ * ProxyController
  */
 
 namespace Graviton\ProxyBundle\Controller;
 
-
-use Guzzle\Service\Client;
+use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
+use GuzzleHttp\Exception\ClientException;
+use Proxy\Proxy;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * general controller for all proxy staff
+ *
+ * @package Graviton\ProxyBundle\Controller
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class ProxyController
 {
-    /*
-     * @var ClientInterface
+    /**
+     * @var Proxy
      */
-    private $client;
+    private $proxy;
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
+    /**
+     * @var EngineInterface
+     */
+    private $templating;
+
+    /**
+     * @var ApiDefinitionLoader
+     */
+    private $apiLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Proxy               $proxy      proxy
+     * @param EngineInterface     $templating twig templating engine
+     * @param ApiDefinitionLoader $loader     definition loader
+     */
+    public function __construct(
+        Proxy $proxy,
+        EngineInterface $templating,
+        ApiDefinitionLoader $loader
+    ) {
+        $this->proxy = $proxy;
+        $this->templating = $templating;
+        $this->apiLoader = $loader;
     }
 
+    /**
+     * action for routing all requests directly to the third party API
+     *
+     * @param Request $request request
+     *
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     */
     public function proxyAction(Request $request)
     {
-        $requestInfo = new \stdClass();
-        $requestInfo->url = $request->getUri();
-        $requestInfo->host = $request->getHost();
-        $requestInfo->method = $request->getMethod();
+        $scheme = $request->getScheme();
+        $api = $this->decideApiAndEnpoint($scheme, $request->getUri());
+        $this->apiLoader->setOption(
+            array(
+                "prefix" => "petstore",
+                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
+            )
+        );
 
-        return new Response(json_encode($requestInfo), 200);
+        $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
+        $url = $scheme."://".$url;
+
+        $response = null;
+        try {
+            $newRequest = $request->createFromGlobals();
+            $response = $this->proxy->forward($newRequest)->to($url);
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+        }
+
+        return $response;
+    }
+
+    /**
+     * get schema info
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function schemaAction(Request $request)
+    {
+        $api = $this->decideApiAndEnpoint($request->getScheme(), $request->getUri());
+        $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
+
+        $response = new Response(json_encode($schema), 200);
+
+        return $this->templating->renderResponse(
+            'GravitonCoreBundle:Main:index.json.twig',
+            array('response' => $response->getContent()),
+            $response
+        );
+    }
+
+    /**
+     * get API name and endpoint from the url (third party API)
+     *
+     * @param string $scheme http or https
+     * @param string $url    the url
+     *
+     * @return array
+     */
+    protected function decideApiAndEnpoint($scheme, $url)
+    {
+        $pattern = array(
+            "@".$scheme.":\/\/@",
+            "@3rdparty\/@",
+            "@schema@",
+            "@\/item$@",
+        );
+        $url = preg_replace($pattern, '', $url);
+        //remove host
+        $url = str_replace(substr($url, 0, strpos($url, '/') + 1), '', $url);
+        //get api name and endpoint
+        $apiName = substr($url, 0, strpos($url, '/'));
+        $endpoint = str_replace($apiName, '', $url);
+
+        return array(
+            "apiName" => $apiName,
+            "endpoint" => $endpoint,
+        );
     }
 }

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns="http://symfony.com/schema/routing">
+    <route id="graviton.proxy.static.proxy.canonicalIdSchema" path="/schema/3rdparty/{api}/item">
+        <default key="_controller">graviton.proxy.controller.proxy:schemaAction</default>
+        <requirement key="api">.{1,}</requirement>
+    </route>
     <route id="graviton.proxy.static.proxy.all" path="/3rdparty/{api}">
         <default key="_controller">graviton.proxy.controller.proxy:proxyAction</default>
         <requirement key="api">.{1,}</requirement>
