@@ -12,16 +12,10 @@
     "relations": [],
     "fields": [
       {
-        "name": "id",
-        "type": "varchar",
-        "title": "ID",
-        "description": "Unique identifier."
-      },
-      {
         "name": "version",
         "type": "varchar",
         "title": "version",
-        "description": "version number of package"
+        "description": "version numbers of packages"
       }
     ]
   }

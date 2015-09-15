@@ -48,7 +48,11 @@ class CoreUtils
      */
     public function getVersion()
     {
-            return $this->versions;
+        $ver = array();
+        foreach ($this->versions as $version) {
+            $ver[$version['id']]= $version['version'];
+        }
+            return $ver;
     }
 
     /**

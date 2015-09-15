@@ -71,25 +71,6 @@ class VersionController extends RestController
     }
 
     /**
-     * Returns a single record
-     *
-     * @param Request $request Current http request
-     * @param string  $id      ID of record
-     *
-     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
-     */
-    public function getAction(Request $request, $id)
-    {
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($this->coreUtils->getVersionById($id))],
-            $response
-        );
-    }
-
-    /**
      * Returns all version numbers
      *
      * @param Request $request Current http request
@@ -100,10 +81,11 @@ class VersionController extends RestController
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
-
+        $versions = array();
+        $versions['versions'] = $this->coreUtils->getVersion();
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($this->coreUtils->getVersion())],
+            ['response' => json_encode($versions, JSON_FORCE_OBJECT)],
             $response
         );
     }

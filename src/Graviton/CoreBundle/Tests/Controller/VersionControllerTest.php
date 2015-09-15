@@ -28,8 +28,7 @@ class VersionControllerTest extends RestTestCase
         $client->request('GET', '/core/version/');
         $response = $client->getResponse();
 
-        $this->assertContains('"id":', $response->getContent());
-        $this->assertContains('"version":', $response->getContent());
+        $this->assertContains('"self":', $response->getContent());
         $this->assertInternalType('string', $response->getContent());
     }
 
