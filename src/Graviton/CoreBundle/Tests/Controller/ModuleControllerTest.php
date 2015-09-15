@@ -385,6 +385,48 @@ class ModuleControllerTest extends RestTestCase
                 ),
                 [],
             ],
+
+            '== admin || == tablet' => [
+                sprintf(
+                    '(%s==%s|%s==%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin'),
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                array_merge($adminIds, $tabletIds),
+            ],
+            '== admin && == tablet' => [
+                sprintf(
+                    '(%s==%s&%s==%s)',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin'),
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet')
+                ),
+                [],
+            ],
+
+            '== admin || some logic' => [
+                sprintf(
+                    'or(eq(%s,%s),and(eq(id,%s),eq(id,%s)))',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/admin'),
+                    $this->encodeRqlString('not-existing-id-1'),
+                    $this->encodeRqlString('not-existing-id-2')
+                ),
+                $adminIds,
+            ],
+            '== tablet && some logic' => [
+                sprintf(
+                    'and(eq(%s,%s),or(eq(id,%s),eq(id,%s)))',
+                    $this->encodeRqlString('app.$ref'),
+                    $this->encodeRqlString('http://localhost/core/app/tablet'),
+                    $this->encodeRqlString($tabletIds[0]),
+                    $this->encodeRqlString($tabletIds[1])
+                ),
+                [$tabletIds[0], $tabletIds[1]]
+            ],
         ];
     }
 
