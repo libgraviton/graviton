@@ -161,9 +161,12 @@ class EventStatusLinkResponseListener
      */
     private function isNotConcerningRequest()
     {
-        return in_array(
-            substr($this->request->get('_route'), -4),
-            ['.get', '.all']
+        return (
+            in_array(
+                substr($this->request->get('_route'), -4),
+                ['.get', '.all']
+            ) ||
+            substr($this->request->get('_route'), -6) == 'Schema'
         );
     }
 
