@@ -27,7 +27,7 @@
             <argument type="service" id="request_stack" />
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
             <argument type="service" id="graviton.rabbitmq.document.queueevent" />
-            <argument>%graviton.eventmap.document%</argument>
+            <argument>%graviton.document.eventmap%</argument>
             <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>

@@ -6,7 +6,7 @@
 namespace Graviton\RabbitMqBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\RabbitMqBundle\DependencyInjection\Compiler\DocumentEventNameCompilerPass;
+use Graviton\RabbitMqBundle\DependencyInjection\Compiler\DocumentEventMapCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -41,6 +41,6 @@ class GravitonRabbitMqBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
-        $container->addCompilerPass(new DocumentEventNameCompilerPass());
+        $container->addCompilerPass(new DocumentEventMapCompilerPass());
     }
 }

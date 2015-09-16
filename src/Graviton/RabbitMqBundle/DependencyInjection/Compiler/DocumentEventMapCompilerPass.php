@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DocumentEventNameCompilerPass implements CompilerPassInterface
+class DocumentEventMapCompilerPass implements CompilerPassInterface
 {
     /**
      * create mapping from services
@@ -46,6 +46,6 @@ class DocumentEventNameCompilerPass implements CompilerPassInterface
             ];
         }
 
-        $container->setParameter('graviton.eventmap.document', $map);
+        $container->setParameter('graviton.document.eventmap', $map);
     }
 }
