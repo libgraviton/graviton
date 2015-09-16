@@ -34,14 +34,14 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             $this->returnCallback(
                 function ($message, $routingKey) {
                     \PHPUnit_Framework_Assert::assertSame(
-                        $message,
                         '{"event":"document.core.product.create","publicUrl":"graviton-api-test\/core\/product",'.
-                        '"statusUrl":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}'
+                        '"statusUrl":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}',
+                        $message
                     );
 
                     \PHPUnit_Framework_Assert::assertSame(
-                        $routingKey,
-                        'document.dude.config.create'
+                        'document.dude.config.create',
+                        $routingKey
                     );
                 }
             )
@@ -56,12 +56,20 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         $requestMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')->disableOriginalConstructor(
         )->setMethods(['get'])->getMock();
         $requestMock->expects($this->atLeastOnce())->method('get')->will(
-            $this->onConsecutiveCalls(
-                'graviton.core.rest.product.post',
-                'graviton.core.rest.product.post',
-                'graviton-api-test/core/product'
+            $this->returnCallback(
+                function () {
+                    switch (func_get_arg(0)) {
+                        case '_route':
+                            return 'graviton.core.rest.product.post';
+                            break;
+                        case 'selfLink':
+                            return 'graviton-api-test/core/product';
+                            break;
+                    }
+                }
             )
         );
+
         $requestStackMock = $this->getMockBuilder(
             '\Symfony\Component\HttpFoundation\RequestStack'
         )->disableOriginalConstructor()->setMethods(['getCurrentRequest'])->getMock();
@@ -109,6 +117,16 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             $requestStackMock,
             $documentManagerMock,
             $queueEventMock,
+            [
+              'Testing' => [
+                  'baseRoute' => 'graviton.core.rest.product',
+                  'events' => [
+                      'post' => 'document.core.product.create',
+                      'put' => 'document.core.product.update',
+                      'delete' => 'document.core.product.delete'
+                  ]
+              ]
+            ],
             '\GravitonDyn\EventWorkerBundle\Document\EventWorker',
             '\GravitonDyn\EventStatusBundle\Document\EventStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
