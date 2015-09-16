@@ -173,7 +173,8 @@ class MainController
         $links = new LinkHeader(array ());
         $links->add(
             new LinkHeaderItem(
-                $this->router->generate('graviton.core.rest.app.all', array (), true), array (
+                $this->router->generate('graviton.core.rest.app.all', array (), true),
+                array (
                     'rel' => 'apps',
                     'type' => 'application/json',
                 )
@@ -219,9 +220,8 @@ class MainController
     {
         $services = [];
 
-        foreach($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
+        foreach ($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
             $this->apiLoader->setOption($option);
-            //$services = array_merge($services, $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints()));
             $services[$thirdparty] = $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints(false, true));
         }
 

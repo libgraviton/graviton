@@ -92,11 +92,15 @@ class HttpLoader implements LoaderInterface
             $response = $request->send();
             $content = $response->getBody(true);
             if ($this->strategy->supports($content)) {
-
-                // store current host (name or ip) serving the API. This MUST be the host only and does not include the scheme
-                // nor sub-paths. It MAY include a port. If the host is not included, the host serving the documentation is to
-                // be used (including the port)
-                $fallbackHost['host'] = sprintf('%s://%s:%d', $request->getScheme(), $request->getHost(), $request->getPort());
+                // store current host (name or ip) serving the API. This MUST be the host only and does not include the
+                // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
+                // documentation is to be used (including the port)
+                $fallbackHost['host'] = sprintf(
+                    '%s://%s:%d',
+                    $request->getScheme(),
+                    $request->getHost(),
+                    $request->getPort()
+                );
 
                 $retVal = $this->strategy->process($content, $fallbackHost);
             }
