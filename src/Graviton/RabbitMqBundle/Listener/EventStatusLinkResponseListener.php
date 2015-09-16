@@ -75,18 +75,13 @@ class EventStatusLinkResponseListener
      */
     private $documentManager;
 
-    private $actionEventMap = [
-        'put' => 'update',
-        'post' => 'create',
-        'delete' => 'delete'
-    ];
-
     /**
      * @param ProducerInterface $rabbitMqProducer           RabbitMQ dependency
      * @param RouterInterface   $router                     Router dependency
      * @param RequestStack      $requestStack               Request stack
      * @param DocumentManager   $documentManager            Doctrine document manager
      * @param QueueEvent        $queueEventDocument         queueevent document
+     * @param array             $eventMap                   eventmap
      * @param string            $eventWorkerClassname       classname of the EventWorker document
      * @param string            $eventStatusClassname       classname of the EventStatus document
      * @param string            $eventStatusStatusClassname classname of the EventStatusStatus document
