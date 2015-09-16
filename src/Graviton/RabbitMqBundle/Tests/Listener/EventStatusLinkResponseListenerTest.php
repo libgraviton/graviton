@@ -29,7 +29,23 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         $producerMock = $this->getMockBuilder(
             '\OldSound\RabbitMqBundle\RabbitMq\ProducerInterface'
         )->disableOriginalConstructor()->setMethods(['publish'])->getMockForAbstractClass();
-        $producerMock->expects($this->once())->method('publish');
+        $producerMock->expects($this->once())->method('publish')
+        ->will(
+            $this->returnCallback(
+                function ($message, $routingKey) {
+                    \PHPUnit_Framework_Assert::assertSame(
+                        $message,
+                        '{"event":"document.core.product.create","publicUrl":"graviton-api-test\/core\/product",'.
+                        '"statusUrl":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}'
+                    );
+
+                    \PHPUnit_Framework_Assert::assertSame(
+                        $routingKey,
+                        'document.dude.config.create'
+                    );
+                }
+            )
+        );
 
         $routerMock = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor(
         )->setMethods(['generate'])->getMockForAbstractClass();
@@ -83,8 +99,9 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\Symfony\Component\HttpKernel\Event\FilterResponseEvent'
         )->disableOriginalConstructor()->setMethods(['isMasterRequest', 'getResponse'])->getMock();
         $filterResponseEventMock->expects($this->once())->method('isMasterRequest')->willReturn(true);
-        $filterResponseEventMock->expects($this->once())->method('getResponse')->willReturn(new Response());
 
+        $response = new Response();
+        $filterResponseEventMock->expects($this->once())->method('getResponse')->willReturn($response);
 
         $listener = new EventStatusLinkResponseListener(
             $producerMock,
@@ -99,5 +116,10 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         );
 
         $listener->onKernelResponse($filterResponseEventMock);
+
+        $this->assertEquals(
+            '<http://graviton-test.lo/worker/123jkl890yui567mkl>; rel="eventStatus"',
+            $response->headers->get('Link')
+        );
     }
 }
