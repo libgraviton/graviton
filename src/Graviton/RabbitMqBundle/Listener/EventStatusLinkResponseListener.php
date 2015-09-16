@@ -46,6 +46,11 @@ class EventStatusLinkResponseListener
     private $queueEventDocument;
 
     /**
+     * @var array
+     */
+    private $eventMap;
+
+    /**
      * @var string classname of the EventWorker document
      */
     private $eventWorkerClassname;
@@ -93,6 +98,7 @@ class EventStatusLinkResponseListener
         RequestStack $requestStack,
         DocumentManager $documentManager,
         QueueEvent $queueEventDocument,
+        array $eventMap,
         $eventWorkerClassname,
         $eventStatusClassname,
         $eventStatusStatusClassname,
@@ -103,6 +109,7 @@ class EventStatusLinkResponseListener
         $this->request = $requestStack->getCurrentRequest();
         $this->documentManager = $documentManager;
         $this->queueEventDocument = $queueEventDocument;
+        $this->eventMap = $eventMap;
         $this->eventWorkerClassname = $eventWorkerClassname;
         $this->eventStatusClassname = $eventStatusClassname;
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
@@ -190,18 +197,20 @@ class EventStatusLinkResponseListener
      */
     private function generateRoutingKey()
     {
-        $route = $this->request->get('_route');
+        $routeParts = explode('.', $this->request->get('_route'));
+        $action = array_pop($routeParts);
+        $baseRoute = implode('.', $routeParts);
 
-        // Notice:
-        // 1st & 3rd elements are skipped
-        list(, $bundle, , $document, $action) = explode('.', $route);
+        // find our route in the map
+        $routingKey = null;
 
-        $routingKey = 'document.'.
-            $bundle.
-            '.'.
-            $document.
-            '.'.
-            $this->actionEventMap[$action];
+        foreach ($this->eventMap as $mapElement) {
+            if ($mapElement['baseRoute'] == $baseRoute &&
+                isset($mapElement['events'][$action])
+            ) {
+                $routingKey = $mapElement['events'][$action];
+            }
+        }
 
         return $routingKey;
     }

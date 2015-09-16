@@ -29,7 +29,6 @@ class DocumentEventNameCompilerPass implements CompilerPassInterface
         $extRefMapping = $container->getParameter('graviton.document.type.extref.mapping');
 
         foreach ($extRefMapping as $documentName => $baseRouteName) {
-
             list(, $bundle, , $document) = explode('.', $baseRouteName);
 
             $baseRoutingKey = 'document.'.
@@ -47,7 +46,6 @@ class DocumentEventNameCompilerPass implements CompilerPassInterface
             ];
         }
 
-        $map = $container->setParameter('graviton.eventmap.document', $map);
-
+        $container->setParameter('graviton.eventmap.document', $map);
     }
 }
