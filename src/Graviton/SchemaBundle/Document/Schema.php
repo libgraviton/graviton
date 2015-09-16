@@ -368,13 +368,13 @@ class Schema
     /**
      * set an array of possible event names
      *
-     * @param array $eventName event names
+     * @param array $eventNames event names
      *
      * @return void
      */
-    public function setEventNames(array $eventName)
+    public function setEventNames(array $eventNames)
     {
-        $this->eventNames = $eventName;
+        $this->eventNames = $eventNames;
     }
 
     /**
