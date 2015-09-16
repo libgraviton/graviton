@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "de4afd3fc454ff9614619d0ad35f3ea4",
+    "hash": "8f6549dd9d79066c04d2754fee2c9f3b",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2646,7 +2646,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/b6dbd93d1263f3f57d9c0b5e3b5935b281fcbd9c",
+                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/bf9652537f8458b105613db64fdbc7ea087256fc",
                 "reference": "b6dbd93d1263f3f57d9c0b5e3b5935b281fcbd9c",
                 "shasum": ""
             },
@@ -4039,12 +4039,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnkary/phpunit-speedtrap.git",
-                "reference": "ad70c60c6d77ddd51e6aca9fdf165538e43b0193"
+                "reference": "76a26f8a903a9434608cdad2b41c40cd134ea326"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnkary/phpunit-speedtrap/zipball/ad70c60c6d77ddd51e6aca9fdf165538e43b0193",
-                "reference": "ad70c60c6d77ddd51e6aca9fdf165538e43b0193",
+                "url": "https://api.github.com/repos/johnkary/phpunit-speedtrap/zipball/76a26f8a903a9434608cdad2b41c40cd134ea326",
+                "reference": "76a26f8a903a9434608cdad2b41c40cd134ea326",
                 "shasum": ""
             },
             "require": {
@@ -4081,7 +4081,7 @@
                 "profile",
                 "slow"
             ],
-            "time": "2015-03-21 19:00:39"
+            "time": "2015-09-13 19:01:00"
         },
         {
             "name": "lapistano/proxy-object",
@@ -5149,7 +5149,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4"
+        "php": ">=5.5"
     },
     "platform-dev": []
 }
