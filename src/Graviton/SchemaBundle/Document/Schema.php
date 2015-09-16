@@ -60,6 +60,13 @@ class Schema
     protected $refCollection = array();
 
     /**
+     * possible event names this collection implements (queue events)
+     *
+     * @var array
+     */
+    protected $eventNames = array();
+
+    /**
      * @var bool
      */
     protected $readOnly = false;
@@ -351,6 +358,33 @@ class Schema
     public function getRefCollection()
     {
         $collection = $this->refCollection;
+        if (empty($collection)) {
+            $collection = null;
+        }
+
+        return $collection;
+    }
+
+    /**
+     * set an array of possible event names
+     *
+     * @param array $eventName event names
+     *
+     * @return void
+     */
+    public function setEventNames(array $eventName)
+    {
+        $this->eventNames = $eventName;
+    }
+
+    /**
+     * get a collection of possible event names
+     *
+     * @return array
+     */
+    public function getEventNames()
+    {
+        $collection = $this->eventNames;
         if (empty($collection)) {
             $collection = null;
         }

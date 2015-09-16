@@ -42,6 +42,7 @@ class SchemaUtils
      * @var array service mapping
      */
     private $extrefServiceMapping;
+
     /**
      * @var array [document class => [field name -> exposed name]]
      */
@@ -176,6 +177,9 @@ class SchemaUtils
             }
             $schema->addProperty($documentFieldNames[$field], $property);
         }
+
+        var_dump($this->extrefServiceMapping); die;
+
 
         if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
             $schema->removeProperty('id');
