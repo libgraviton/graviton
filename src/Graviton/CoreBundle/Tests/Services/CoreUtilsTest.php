@@ -14,47 +14,48 @@ namespace Graviton\CoreBundle\Service;
  */
 class CoreUtilsTest extends \PHPUnit_Framework_TestCase
 {
+    private $versions = array(
+                array("id" => "self", "version" => "0.25.1"),
+                array("id" => "financing", "version" => "0.1"),
+            );
     /**
      * Verifies the correct behavior of getVersion()
      *
-     * @dataProvider versionAndFileProvider
-     *
-     * @param string $version  Version string to be used
-     * @param string $filePath Location of the file containing the version information.
-     *
      * @return void
      */
-    public function testGetVersion($version, $filePath = '')
+    public function testGetVersionById()
     {
-        $utils = new CoreUtils();
-        $this->assertEquals($version, $utils->getVersion($filePath));
+        $utils = new CoreUtils($this->versions);
+        $this->assertEquals($this->versions[0]['version'], $utils->getVersionById('self')['version']);
     }
 
     /**
-     * Provides test sets for the getVersion() test.
+     * Verifies the correct behavior of getWrapperVersion()
      *
-     * @return array
+     * @return void
      */
-    public function versionAndFileProvider()
+    public function testGetWrapperVersion()
     {
-        $composer = json_decode(file_get_contents(__DIR__ . '/../../../../../composer.json'), true);
-
-        return array(
-            'get from default file' => array($composer['version']),
-            'other file'            => array('0.1.0-dev', __DIR__ . '/../fixtures/valid_composer.json'),
+        $utils = new CoreUtils($this->versions);
+        $this->assertEquals(
+            array("id" => "self", "version" => "0.25.1"),
+            $utils->getWrapperVersion()
         );
+        $this->assertInternalType('array', $utils->getWrapperVersion());
     }
 
     /**
-     * Verifies the correct behavior of getVersion()
+     * Verifies the correct behavior of getVersionInHeaderFormat()
      *
      * @return void
      */
-    public function testGetDefaultVersion()
+    public function testGetVersionInHeaderFormat()
     {
-        $utils = new CoreUtils();
-
-        $this->setExpectedException('\RuntimeException');
-        $utils->getVersion(__DIR__ . '/../fixtures/invalid_composer.json');
+        $utils = new CoreUtils($this->versions);
+        $this->assertEquals(
+            'self: 0.25.1; financing: 0.1; ',
+            $utils->getVersionInHeaderFormat()
+        );
+        $this->assertInternalType('string', $utils->getVersionInHeaderFormat());
     }
 }

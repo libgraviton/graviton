@@ -1,0 +1,22 @@
+{
+  "id": "Version",
+  "description": "Returns the version number of the installed packages",
+  "service": {
+    "readOnly": true,
+    "routerBase": "/core/version/",
+    "parent": "graviton.core.controller.version",
+    "baseController": "\\Graviton\\CoreBundle\\Controller\\VersionController"
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "version",
+        "type": "varchar",
+        "title": "version",
+        "description": "version numbers of packages"
+      }
+    ]
+  }
+}
