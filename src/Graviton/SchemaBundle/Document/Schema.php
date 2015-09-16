@@ -374,7 +374,7 @@ class Schema
      */
     public function setEventNames(array $eventNames)
     {
-        $this->eventNames = $eventNames;
+        $this->eventNames = array_values($eventNames);
     }
 
     /**
