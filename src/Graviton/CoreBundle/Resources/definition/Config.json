@@ -29,6 +29,11 @@
                     "$ref": "http://localhost/core/app/admin"
                 },
                 "default": "stronghold"
+            },
+            {
+                "id": "global-settingWithoutApp",
+                "key": "settingWithoutApp",
+                "default": ""
             }
         ]
     },
@@ -57,7 +62,7 @@
                 "description": "Link to the application this configuration value relates to.",
                 "exposeAs": "$ref",
                 "collection": ["App"],
-                "required": true
+                "required": false
             },
             {
                 "name": "default",
