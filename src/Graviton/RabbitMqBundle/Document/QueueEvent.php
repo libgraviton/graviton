@@ -23,14 +23,23 @@ class QueueEvent implements TranslatableDocumentInterface
     public $event;
 
     /**
-     * @var string $publicUrl
+     * @var \stdClass $document
      */
-    public $publicUrl;
+    public $document;
 
     /**
-     * @var string $statusUrl
+     * @var \stdClass $status
      */
-    public $statusUrl;
+    public $status;
+
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        $this->document = new \stdClass();
+        $this->status = new \stdClass();
+    }
 
     /**
      * Get event
@@ -57,37 +66,36 @@ class QueueEvent implements TranslatableDocumentInterface
     }
 
     /**
-     * Get publicUrl
+     * Get documentUrl
      *
-     * @return string $publicUrl
+     * @return string document url
      */
-    public function getPublicurl()
+    public function getDocumenturl()
     {
-        return $this->publicUrl;
+        return $this->document->{'$ref'};
     }
 
     /**
-     * Set publicUrl
+     * Set documentUrl
      *
-     * @param string $publicUrl value for publicUrl
+     * @param string $documentUrl value for documentUrl
      *
      * @return self
      */
-    public function setPublicurl($publicUrl)
+    public function setDocumenturl($documentUrl)
     {
-        $this->publicUrl = $publicUrl;
-
+        $this->document->{'$ref'} = $documentUrl;
         return $this;
     }
 
     /**
      * Get statusUrl
      *
-     * @return string $statusUrl
+     * @return string document url
      */
     public function getStatusurl()
     {
-        return $this->statusUrl;
+        return $this->status->{'$ref'};
     }
 
     /**
@@ -99,8 +107,7 @@ class QueueEvent implements TranslatableDocumentInterface
      */
     public function setStatusurl($statusUrl)
     {
-        $this->statusUrl = $statusUrl;
-
+        $this->status->{'$ref'} = $statusUrl;
         return $this;
     }
 

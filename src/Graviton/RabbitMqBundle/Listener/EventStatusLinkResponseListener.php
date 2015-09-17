@@ -179,7 +179,7 @@ class EventStatusLinkResponseListener
     {
         $obj = clone $this->queueEventDocument;
         $obj->setEvent($this->generateRoutingKey());
-        $obj->setPublicurl($this->request->get('selfLink'));
+        $obj->setDocumenturl($this->request->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
 
         return $obj;
