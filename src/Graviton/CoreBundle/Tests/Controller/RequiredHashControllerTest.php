@@ -77,7 +77,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResults());
     }
@@ -105,7 +105,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResults());
     }
@@ -139,7 +139,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(
             [
@@ -176,7 +176,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(
             [
@@ -223,7 +223,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(
             [
@@ -273,7 +273,7 @@ class RequiredHashControllerTest extends RestTestCase
         ];
 
         $client = static::createRestClient();
-        $client->post('/testcase/requiredHash/', $data);
+        $client->post('/testcase/requiredhash/', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(
             [
