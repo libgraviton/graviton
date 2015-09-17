@@ -8,6 +8,8 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Guzzle\Http\Client;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
