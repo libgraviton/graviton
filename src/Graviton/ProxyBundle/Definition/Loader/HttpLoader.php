@@ -70,13 +70,9 @@ class HttpLoader implements LoaderInterface
      */
     public function supports($url)
     {
-        $retVal = false;
         $error = $this->validator->validate($url, [new Url()]);
-        if (count($error) == 0) {
-            $retVal = true;
-        }
 
-        return $retVal;
+        return 0 === count($error);
     }
 
     /**
@@ -91,7 +87,19 @@ class HttpLoader implements LoaderInterface
         $retVal = null;
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
-            $response = $request->send();
+
+            try {
+                $response = $request->send();
+            } catch ( \Guzzle\Http\Exception\CurlException $e) {
+                throw new HttpException(
+                    Response::HTTP_BAD_GATEWAY,
+                    $e->getError(),
+                    $e,
+                    $e->getRequest()->getHeaders()->toArray(),
+                    $e->getCode()
+                );
+            }
+
             $content = $response->getBody(true);
             if ($this->strategy->supports($content)) {
                 // store current host (name or ip) serving the API. This MUST be the host only and does not include the
