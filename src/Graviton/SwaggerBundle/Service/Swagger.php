@@ -183,12 +183,10 @@ class Swagger
     {
         $ret = array();
         $ret['swagger'] = '2.0';
-        $date = date('Y-m-d');
         $ret['info'] = array(
             'version' => $this->coreUtils->getWrapperVersion()['version'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
-            'lastUpdate' => $date
         );
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');

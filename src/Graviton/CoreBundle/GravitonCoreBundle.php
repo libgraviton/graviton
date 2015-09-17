@@ -62,7 +62,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
     }
 
     /**
-     * load compiler pass rest route loader
+     * load version compiler pass
      *
      * @param ContainerBuilder $container container builder
      *

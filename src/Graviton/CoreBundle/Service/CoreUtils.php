@@ -52,7 +52,7 @@ class CoreUtils
         foreach ($this->versions as $version) {
             $ver[$version['id']]= $version['version'];
         }
-            return $ver;
+        return $ver;
     }
 
     /**
@@ -66,9 +66,6 @@ class CoreUtils
                 return $version;
             }
         }
-
-        return array('error' => 'This id could not be resolved');
-
     }
 
     /**
