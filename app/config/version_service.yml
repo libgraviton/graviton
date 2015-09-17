@@ -1,0 +1,7 @@
+#here you can configure which version numbers should be read
+
+desiredVersions:
+  - self
+  - symfony/symfony
+  - sebastian/environment
+  - graviton/graviton
