@@ -6,7 +6,6 @@
 namespace Graviton\GeneratorBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -26,21 +25,5 @@ class GravitonGeneratorBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array();
-    }
-
-    /**
-     * Build container
-     *
-     * @param ContainerBuilder $container Container builder
-     * @return void
-     */
-    public function build(ContainerBuilder $container)
-    {
-        parent::build($container);
-
-        $container->setParameter(
-            'graviton_generator.definition.validator.schema.uri',
-            'file://'.__DIR__.'/Resources/schema/definition-schema.json'
-        );
     }
 }

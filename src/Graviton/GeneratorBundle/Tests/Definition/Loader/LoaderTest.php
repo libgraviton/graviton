@@ -8,7 +8,7 @@ namespace Graviton\GeneratorBundle\Tests\Definition;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;
 use Graviton\GeneratorBundle\Definition\Schema\Definition;
-use Graviton\GeneratorBundle\Definition\Validator\InvalidJsonException;
+use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
 use HadesArchitect\JsonSchemaBundle\Error\Error;
 
 /**
@@ -28,7 +28,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $json = __METHOD__;
         $definition = new Definition();
 
-        $validator = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
             ->setMethods(['validateJsonDefinition'])
             ->getMock();
@@ -66,13 +66,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      * check if JSON is invalid
      *
      * @return void
-     * @expectedException \Graviton\GeneratorBundle\Definition\Validator\InvalidJsonException
+     * @expectedException \Graviton\JsonSchemaBundle\Validator\InvalidJsonException
      */
     public function testLoadInvalidJson()
     {
         $json = __METHOD__;
 
-        $validator = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
             ->setMethods(['validateJsonDefinition'])
             ->getMock();
@@ -115,7 +115,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $json = __METHOD__;
         $errors = [new Error(__FILE__, __CLASS__)];
 
-        $validator = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface')
+        $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()
             ->setMethods(['validateJsonDefinition'])
             ->getMock();

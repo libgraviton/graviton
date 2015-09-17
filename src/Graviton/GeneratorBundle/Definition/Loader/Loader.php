@@ -13,8 +13,8 @@ namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Validator\InvalidJsonException;
-use Graviton\GeneratorBundle\Definition\Validator\ValidatorInterface;
+use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
+use Graviton\JsonSchemaBundle\Validator\ValidatorInterface;
 use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
 use JMS\Serializer\SerializerInterface;
 

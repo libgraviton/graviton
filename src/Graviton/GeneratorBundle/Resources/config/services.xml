@@ -9,9 +9,6 @@
         <parameter key="graviton_generator.definition.loader.strategy.dir.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.scan.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy</parameter>
         <parameter key="graviton_generator.definition.loader.strategy.json.class">Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy</parameter>
-        <parameter key="graviton_generator.definition.validator.class">Graviton\GeneratorBundle\Definition\Validator\Validator</parameter>
-        <parameter key="graviton_generator.definition.validator.schema.factory.class">Graviton\GeneratorBundle\Definition\Validator\SchemaFactory</parameter>
-        <parameter key="graviton_generator.definition.validator.schema.uri"/>
         <parameter key="graviton_generator.resourcegenerator.field_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_name_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper</parameter>
@@ -48,29 +45,8 @@
                  format="json"/>
         </service>
 
-        <!-- JSON schema -->
-        <service id="graviton_generator.definition.validator.schema.factory"
-                class="%graviton_generator.definition.validator.schema.factory.class%">
-            <argument type="service">
-                <service class="JsonSchema\RefResolver">
-                    <argument type="service" id="json_schema.uri_retriever"/>
-                </service>
-            </argument>
-        </service>
-        <service id="graviton_generator.definition.validator"
-                 class="%graviton_generator.definition.validator.class%">
-            <argument type="service" id="json_schema.validator"/>
-            <argument type="service">
-                <service class="stdClass"
-                         factory-service="graviton_generator.definition.validator.schema.factory"
-                         factory-method="createSchema">
-                    <argument>%graviton_generator.definition.validator.schema.uri%</argument>
-                </service>
-            </argument>
-        </service>
-
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
-            <argument type="service" id="graviton_generator.definition.validator"/>
+            <argument type="service" id="graviton.jsonschema.validator"/>
             <argument type="service" id="jms_serializer"/>
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
@@ -164,17 +140,6 @@
             <argument>%generator.bundlebundle.additions%</argument>
             <argument>%generator.dynamicbundles.service.whitelist%</argument>
 
-            <tag name="console.command" />
-        </service>
-
-        <service id="graviton_generator.command.validatedefinition"
-                 class="Graviton\GeneratorBundle\Command\ValidateDefinitionCommand">
-            <call method="setValidator">
-                <argument type="service" id="graviton_generator.definition.validator"/>
-            </call>
-            <call method="setDefaultPath">
-                <argument>%kernel.root_dir%/..</argument>
-            </call>
             <tag name="console.command" />
         </service>
     </services>
