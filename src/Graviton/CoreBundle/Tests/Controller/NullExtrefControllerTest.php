@@ -41,7 +41,7 @@ class NullExtrefControllerTest extends RestTestCase
     public function testCheckGetOne()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/nullExtref/testdata');
+        $client->request('GET', '/testcase/nullextref/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResults());
 
@@ -69,7 +69,7 @@ class NullExtrefControllerTest extends RestTestCase
     public function testCheckGetAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/nullExtref/');
+        $client->request('GET', '/testcase/nullextref/');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertCount(1, $client->getResults());
 
@@ -99,7 +99,7 @@ class NullExtrefControllerTest extends RestTestCase
     public function testPostMethod(array $data)
     {
         $client = static::createRestClient();
-        $client->post('/testcase/nullExtref/', $data);
+        $client->post('/testcase/nullextref/', $data);
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResults());
 
@@ -130,12 +130,12 @@ class NullExtrefControllerTest extends RestTestCase
         $data['id'] = 'testdata';
 
         $client = static::createRestClient();
-        $client->put('/testcase/nullExtref/testdata', $data);
+        $client->put('/testcase/nullextref/testdata', $data);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResults());
 
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/nullExtref/testdata');
+        $client->request('GET', '/testcase/nullextref/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertJsonStringEqualsJsonString(
             json_encode($this->removeNullRefs($data)),
