@@ -94,7 +94,7 @@ class Swagger
 
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
-                $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel);
+                $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel, false);
 
                 $ret['definitions'][$entityClassName] = json_decode(
                     $this->restUtils->serializeContent($schema),
