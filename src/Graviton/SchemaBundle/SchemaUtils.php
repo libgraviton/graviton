@@ -66,7 +66,9 @@ class SchemaUtils
      * @param LanguageRepository $languageRepository   repository
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
+     * @param array              $eventMap             eventmap
      * @param array              $documentFieldNames   Document field names
+     * @param string             $defaultLocale        Default Language
      */
     public function __construct(
         LanguageRepository $languageRepository,
