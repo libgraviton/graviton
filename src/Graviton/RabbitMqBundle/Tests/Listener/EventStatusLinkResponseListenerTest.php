@@ -34,8 +34,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             $this->returnCallback(
                 function ($message, $routingKey) {
                     \PHPUnit_Framework_Assert::assertSame(
-                        '{"event":"document.core.product.create","publicUrl":"graviton-api-test\/core\/product",'.
-                        '"statusUrl":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}',
+                        '{"event":"document.core.product.create","document":{"$ref":"graviton-api-test\/core\/product'.
+                        '"},"status":{"$ref":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}}',
                         $message
                     );
 
@@ -100,7 +100,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
 
         $queueEventMock = $this->getMockBuilder(
             '\Graviton\RabbitMqBundle\Document\QueueEvent'
-        )->disableOriginalConstructor()->setMethods(['getEvent'])->getMock();
+        )->setMethods(['getEvent'])->getMock();
         $queueEventMock->expects($this->exactly(3))->method('getEvent')->willReturn('document.dude.config.create');
 
         $filterResponseEventMock = $this->getMockBuilder(
