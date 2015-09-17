@@ -56,12 +56,16 @@ class SchemaUtils
     private $documentFieldNames;
 
     /**
+     * @var string
+     */
+    private $defaultLocale;
+
+    /**
      * Constructor
      *
      * @param LanguageRepository $languageRepository   repository
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
-     * @param array              $eventMap             event map
      * @param array              $documentFieldNames   Document field names
      */
     public function __construct(
@@ -69,13 +73,15 @@ class SchemaUtils
         RouterInterface $router,
         array $extrefServiceMapping,
         array $eventMap,
-        array $documentFieldNames
+        array $documentFieldNames,
+        $defaultLocale
     ) {
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -101,10 +107,11 @@ class SchemaUtils
      *
      * @param string        $modelName name of mode to generate schema for
      * @param DocumentModel $model     model to generate schema for
+     * @param boolean       $online    if we are online and have access to mongodb during this build
      *
      * @return Schema
      */
-    public function getModelSchema($modelName, DocumentModel $model)
+    public function getModelSchema($modelName, DocumentModel $model, $online = true)
     {
         // build up schema data
         $schema = new Schema;
@@ -134,12 +141,18 @@ class SchemaUtils
             $this->documentFieldNames[$repo->getClassName()] :
             [];
 
-        $languages = array_map(
-            function (Language $language) {
-                return $language->getId();
-            },
-            $this->languageRepository->findAll()
-        );
+        if ($online) {
+            $languages = array_map(
+                function (Language $language) {
+                    return $language->getId();
+                },
+                $this->languageRepository->findAll()
+            );
+        } else {
+            $languages = [
+                $this->defaultLocale
+            ];
+        }
 
         // exposed events..
         $classShortName = $documentReflection->getShortName();
@@ -162,13 +175,13 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems($this->getModelSchema($field, $propertyModel));
+                $property->setItems($this->getModelSchema($field, $propertyModel, $online));
                 $property->setType('array');
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = $this->getModelSchema($field, $propertyModel);
+                $property = $this->getModelSchema($field, $propertyModel, $online);
             }
 
             if (in_array($field, $translatableFields, true)) {
