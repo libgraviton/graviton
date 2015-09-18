@@ -121,6 +121,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // define offset and limit
         if (!array_key_exists('skip', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->skip($startAt);
+        } else {
+            $startAt = (int) $queryBuilder->getQuery()->getQuery()['skip'];
         }
 
         if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
@@ -144,10 +146,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $totalCount = $query->count();
         $numPages = (int) ceil($totalCount / $numberPerPage);
+        $page = (int) ceil($startAt / $numberPerPage) + 1;
         if ($numPages > 1) {
             $request->attributes->set('paging', true);
+            $request->attributes->set('page', $page);
             $request->attributes->set('numPages', $numPages);
             $request->attributes->set('perPage', $numberPerPage);
+            $request->attributes->set('totalCount', $totalCount);
         }
 
         return $records;
