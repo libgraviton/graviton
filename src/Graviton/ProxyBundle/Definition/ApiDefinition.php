@@ -147,7 +147,7 @@ class ApiDefinition
      */
     public function getSchema($endpoint)
     {
-        $retVal = new   \stdClass();
+        $retVal = new \stdClass();
         if (array_key_exists($endpoint, $this->schemes)) {
             $retVal = $this->schemes[$endpoint];
         }

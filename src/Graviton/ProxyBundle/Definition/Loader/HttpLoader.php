@@ -90,7 +90,7 @@ class HttpLoader implements LoaderInterface
 
             try {
                 $response = $request->send();
-            } catch ( \Guzzle\Http\Exception\CurlException $e) {
+            } catch (\Guzzle\Http\Exception\CurlException $e) {
                 throw new HttpException(
                     Response::HTTP_BAD_GATEWAY,
                     $e->getError(),

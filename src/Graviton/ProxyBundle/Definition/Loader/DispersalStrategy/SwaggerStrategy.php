@@ -35,6 +35,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
         $this->registerFallbackData($fallbackData);
 
         $apiDef = new ApiDefinition();
+        /** @var \stdClass $swagger */
         $swagger = $this->decodeJson($input);
         if (is_object($swagger)) {
             $this->setBaseValues($apiDef, $swagger);
@@ -49,7 +50,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
 
                 // Schema
                 $definitionRef = $this->getEndpointDefinition($endpoint);
-                if (! empty($definitionRef)) {
+                if (!empty($definitionRef)) {
                     list (, $defNode, $defName) = explode('/', $definitionRef);
                     $schema = $swagger->$defNode->$defName;
                     $apiDef->addSchema($name, $schema);
@@ -71,25 +72,31 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     public function supports($input)
     {
-        $this->decodeJson($input);
+        /** @var array $swagger */
+        $swagger = $this->decodeJson($input, true);
 
-        // check if error occurred
-        return json_last_error() === JSON_ERROR_NONE;
+        $mandatoryFields = ['swagger', 'info', 'paths', 'version', 'title', 'definition'];
+        $fields = array_merge(array_keys($swagger), array_keys($swagger['info']));
+        $intersect = array_intersect($mandatoryFields, $fields);
+
+        // every mandatory field was found in provided json definition.
+        return empty(array_diff($intersect, $mandatoryFields));
     }
 
     /**
      * decode a json string
      *
      * @param string $input json string
+     * @param bool   $assoc Force the encoded result to be a hash.
      *
-     * @return \stdClass|null
+     * @return array|\stdClass
      *
      */
-    private function decodeJson($input)
+    private function decodeJson($input, $assoc = false)
     {
         $input = trim($input);
 
-        return json_decode($input);
+        return json_decode($input, $assoc);
     }
 
     /**
@@ -130,7 +137,10 @@ class SwaggerStrategy implements DispersalStrategyInterface
                         break 2;
                     case "get":
                         $statusCode = 200;
-                        $ref = $action->responses->schema->$statusCode->items->$refName;
+                        $ref = $this->extractReferenceDefinition(
+                            (array) $action->responses->$statusCode->schema,
+                            $refName
+                        );
                         break 2;
                     default:
                         continue;
@@ -145,8 +155,12 @@ class SwaggerStrategy implements DispersalStrategyInterface
     }
 
     /**
-     * @param ApiDefinition $apiDef
-     * @param \stdClass     $swagger
+     * Sets the destination host for the api definition.
+     *
+     * @param ApiDefinition $apiDef  Configuration for the swagger api to be recognized.
+     * @param \stdClass     $swagger Swagger configuration to be parsed.
+     *
+     * @return void
      */
     private function registerHost(ApiDefinition $apiDef, \stdClass $swagger)
     {
@@ -160,7 +174,11 @@ class SwaggerStrategy implements DispersalStrategyInterface
     }
 
     /**
-     * @param array $fallbackData
+     * Set of information to be used as default if not defined by the swagger configuration.
+     *
+     * @param array $fallbackData Set of default information (e.g. host)
+     *
+     * @return void
      */
     private function registerFallbackData(array $fallbackData)
     {
@@ -169,5 +187,27 @@ class SwaggerStrategy implements DispersalStrategyInterface
         }
 
         $this->fallbackData = $fallbackData;
+    }
+
+    /**
+     * Finds the definition of referred entities in the schema definition.
+     *
+     * @param array  $schema              Api schema to be scanned.
+     * @param string $referenceIdentifier Key of the identifier used to id a reference.
+     *
+     * @throws \Exception
+     * @return string
+     */
+    private function extractReferenceDefinition(array $schema, $referenceIdentifier)
+    {
+        if (array_key_exists($referenceIdentifier, $schema)) {
+            return $schema->$referenceIdentifier;
+        } else {
+            if (array_key_exists('items', $schema) && array_key_exists($referenceIdentifier, $schema['items'])) {
+                return $schema['items']->$referenceIdentifier;
+            }
+        }
+
+        throw new \Exception('Something went wrong!');
     }
 }

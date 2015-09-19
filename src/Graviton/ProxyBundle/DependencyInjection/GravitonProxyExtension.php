@@ -34,6 +34,8 @@ class GravitonProxyExtension extends GravitonBundleExtension
      *
      * @param array            $configs   Set of configuration options
      * @param ContainerBuilder $container Instance of the SF2 container
+     *
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {

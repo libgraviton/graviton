@@ -55,8 +55,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end() // swagger_proxy
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }
