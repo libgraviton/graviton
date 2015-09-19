@@ -60,7 +60,6 @@ class MainController
      * @param EngineInterface     $templating               templating-engine
      * @param ApiDefinitionLoader $apiLoader                loader for third party api definition
      * @param array               $proxySourceConfiguration Set of sources to be recognized by the controller.
-     *
      */
     public function __construct(
         Router $router,
@@ -106,7 +105,7 @@ class MainController
 
         return $this->render(
             'GravitonCoreBundle:Main:index.json.twig',
-            array ('response' => $response->getContent()),
+            array('response' => $response->getContent()),
             $response
         );
     }
@@ -120,7 +119,7 @@ class MainController
      *
      * @return Response A Response instance
      */
-    public function render($view, array $parameters = array (), Response $response = null)
+    public function render($view, array $parameters = array(), Response $response = null)
     {
         return $this->templating->renderResponse($view, $parameters, $response);
     }
@@ -134,16 +133,16 @@ class MainController
      */
     protected function determineServices(array $optionRoutes)
     {
-        $sortArr = array ();
+        $sortArr = array();
         $router = $this->router;
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
-                $schemaRoute = implode('.', array ($app, $bundle, $rest, $document, 'canonicalSchema'));
+                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
 
-                return array (
-                    '$ref' => $router->generate($routeName, array (), true),
-                    'profile' => $router->generate($schemaRoute, array (), true),
+                return array(
+                    '$ref' => $router->generate($routeName, array(), true),
+                    'profile' => $router->generate($schemaRoute, array(), true),
                 );
             },
             array_keys($optionRoutes)
@@ -170,7 +169,7 @@ class MainController
      */
     protected function prepareLinkHeader()
     {
-        $links = new LinkHeader(array ());
+        $links = new LinkHeader(array());
         $links->add(
             new LinkHeaderItem(
                 $this->router->generate('graviton.core.rest.app.all', array (), true),
@@ -185,7 +184,7 @@ class MainController
     }
 
     /**
-     * resolve all third party routes and add schema info
+     * Resolves all third party routes and add schema info
      *
      * @param array $thirdApiRoutes list of all routes from an API
      *
@@ -196,7 +195,7 @@ class MainController
         $definition = $this->apiLoader;
         $mainRoute = $this->router->generate(
             'graviton.core.static.main.all',
-            array (),
+            array(),
             true
         );
         $services = array_map(
