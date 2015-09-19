@@ -201,7 +201,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
     private function extractReferenceDefinition(array $schema, $referenceIdentifier)
     {
         if (array_key_exists($referenceIdentifier, $schema)) {
-            return $schema->$referenceIdentifier;
+            return $schema[$referenceIdentifier];
         } else {
             if (array_key_exists('items', $schema) && array_key_exists($referenceIdentifier, $schema['items'])) {
                 return $schema['items']->$referenceIdentifier;
@@ -225,10 +225,10 @@ class SwaggerStrategy implements DispersalStrategyInterface
      *
      * @return string
      *
-     * @todo: determine how to treat endpoints ith a variable within the path: /my/path/{id}/special
+     * @todo: determine how to treat endpoints with a variable within the path: /my/path/{id}/special
      */
     private function normalizePath($path)
     {
-        return preg_replace('@\{[a-zA-Z]*\}[^/]$@', '', $path);
+        return preg_replace('@\/(\{[a-zA-Z]*\})?$@', '', $path);
     }
 }
