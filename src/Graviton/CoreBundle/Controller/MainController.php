@@ -86,7 +86,6 @@ class MainController
     {
         $response = $this->response;
 
-
         $mainPage = new \stdClass();
         $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = $this->determineServices(
@@ -173,10 +172,7 @@ class MainController
         $links->add(
             new LinkHeaderItem(
                 $this->router->generate('graviton.core.rest.app.all', array (), true),
-                array (
-                    'rel' => 'apps',
-                    'type' => 'application/json',
-                )
+                array ('rel' => 'apps', 'type' => 'application/json')
             )
         );
 

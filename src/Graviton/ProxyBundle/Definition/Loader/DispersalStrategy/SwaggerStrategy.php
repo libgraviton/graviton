@@ -6,7 +6,7 @@
 namespace Graviton\ProxyBundle\Definition\Loader\DispersalStrategy;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
-use Symfony\Component\Debug\Exception\ContextErrorException;
+use Graviton\ProxyBundle\Exception\SchemaException;
 
 /**
  * process a swagger.json file and return an APi definition
@@ -133,20 +133,34 @@ class SwaggerStrategy implements DispersalStrategyInterface
                 switch ($actionName) {
                     case "post":
                     case "put":
-                        $ref = $action->parameters[0]->schema->$refName;
-                        break 2;
+                        /**
+                         * there is no schema information available, if $action->parameters[0]->in != 'body'
+                         *
+                         * @link http://swagger.io/specification/#parameterObject
+                         */
+                        if ('body' === $action->parameters[0]->in) {
+                            $ref = $this->extractReferenceDefinition(
+                                (array) $action->parameters[0]->schema,
+                                $refName
+                            );
+                            break 2;
+                        }
+                        continue 2;
                     case "get":
                         $statusCode = 200;
-                        $ref = $this->extractReferenceDefinition(
-                            (array) $action->responses->$statusCode->schema,
-                            $refName
-                        );
-                        break 2;
+                        if (!empty($action->responses->$statusCode)) {
+                            $ref = $this->extractReferenceDefinition(
+                                (array) $action->responses->$statusCode->schema,
+                                $refName
+                            );
+                            break 2;
+                        }
+                        continue 2;
                     default:
                         continue;
                         break;
                 }
-            } catch (ContextErrorException $e) {
+            } catch (SchemaException $e) {
                 continue;
             }
         }
@@ -208,7 +222,9 @@ class SwaggerStrategy implements DispersalStrategyInterface
             }
         }
 
-        throw new \Exception('Something went wrong!');
+        throw new SchemaException(
+            sprintf('Reference identifier (%s) was not available in provided schema!', $referenceIdentifier)
+        );
     }
 
     /**
