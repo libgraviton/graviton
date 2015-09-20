@@ -65,7 +65,8 @@ class ApiDefinitionLoader
     /**
      * get a schema for one endpoint
      *
-     * @param string $endpoint endpoint
+     * @param string $endpoint    endpoint
+     * @param bool   $forceReload Switch to force a new api definition object will be provided.
      *
      * @return \stdClass
      */
@@ -79,9 +80,9 @@ class ApiDefinitionLoader
     /**
      * get an endpoint
      *
-     * @param string  $endpoint endpoint
-     * @param boolean $withHost attach host name to the url
-     * @param string  $method   http method
+     * @param string  $endpoint    endpoint
+     * @param boolean $withHost    attach host name to the url
+     * @param bool    $forceReload Switch to force a new api definition object will be provided.
      *
      * @return string
      */
@@ -111,7 +112,8 @@ class ApiDefinitionLoader
     /**
      * get all endpoints for an API
      *
-     * @param boolean $withHost attach host name to the url
+     * @param boolean $withHost    attach host name to the url
+     * @param bool    $forceReload Switch to force a new api definition object will be provided.
      *
      * @return array
      */
@@ -129,6 +131,8 @@ class ApiDefinitionLoader
 
     /**
      * internal load method
+     *
+     * @param bool $forceReload Switch to force a new api definition object will be provided.
      *
      * @return void
      */

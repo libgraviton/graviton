@@ -16,6 +16,7 @@
             <argument type="service" id="graviton.proxy" />
             <argument type="service" id="templating" />
             <argument type="service" id="graviton.proxy.service.swaggerapiloader" />
+            <argument>%graviton.proxy.sources%</argument>
         </service>
         <service id="graviton.proxy.dispersalstrategy.swagger" class="%graviton.proxy.dispersalstrategy.swagger.class%"></service>
         <service id="graviton.proxy.definition.httploader" class="%graviton.proxy.definition.httploader.class%">

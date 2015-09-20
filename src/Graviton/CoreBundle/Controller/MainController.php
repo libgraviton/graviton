@@ -217,10 +217,14 @@ class MainController
     {
         $services = [];
 
-        //@todo: this needs to be refactored in case there are other sources than swagger configuration files
-        foreach ($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
-            $this->apiLoader->setOption($option);
-            $services[$thirdparty] = $this->determineThirdPartyServices($this->apiLoader->getAllEndpoints(false, true));
+        if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
+            //@todo: this needs to be refactored in case there are other sources than swagger configuration files
+            foreach ($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
+                $this->apiLoader->setOption($option);
+                $services[$thirdparty] = $this->determineThirdPartyServices(
+                    $this->apiLoader->getAllEndpoints(false, true)
+                );
+            }
         }
 
         return $services;
