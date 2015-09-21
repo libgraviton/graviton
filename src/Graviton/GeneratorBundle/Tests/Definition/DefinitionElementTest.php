@@ -250,6 +250,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
                 'serializerType' => '\Document\ShowcaseContactCode',
                 'isClassType' => true,
                 'constraints' => [],
+                'required' => true,
             ],
             $field->getDefAsArray()
         );

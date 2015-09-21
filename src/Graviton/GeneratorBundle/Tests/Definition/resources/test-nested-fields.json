@@ -10,6 +10,12 @@
       },
 
       {
+        "name": "hash",
+        "type": "hash",
+        "exposeAs": "$hash",
+        "required": true
+      },
+      {
         "name": "hash.abc",
         "type": "integer"
       },
@@ -37,6 +43,13 @@
         "type": "float"
       },
 
+      {
+        "name": "deep.0.b.0.c",
+        "type": "hash",
+        "exposeAs": "$c",
+        "description": "description",
+        "required": false
+      },
       {
         "name": "deep.0.b.0.c.d.e",
         "type": "varchar"
