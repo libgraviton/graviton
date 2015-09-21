@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "727e4a4a51f1fc11fb30c67bf3a142cd",
+    "hash": "c25d660a545127eafae95018c6f3adae",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2646,7 +2646,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/bf9652537f8458b105613db64fdbc7ea087256fc",
+                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/7edea6cfcc4718573f9cbd7bd1adcaf3c2319e8b",
                 "reference": "b6dbd93d1263f3f57d9c0b5e3b5935b281fcbd9c",
                 "shasum": ""
             },
