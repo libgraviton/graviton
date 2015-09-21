@@ -40,6 +40,12 @@
         "readOnly": true
       },
       {
+        "name": "metadata.action.0.command",
+        "type": "varchar",
+        "title": "Action command array",
+        "description": "An array of commands that will be executed by workers on this file"
+      },
+      {
         "name": "metadata.mime",
         "type": "string",
         "title": "MIME Type",
