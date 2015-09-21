@@ -68,7 +68,7 @@ class PagingLinkResponseListener
 
             $this->generateLinks(
                 $routeName,
-                $request->get('page', 1),
+                $request->attributes->get('page'),
                 $request->attributes->get('numPages'),
                 $request->attributes->get('perPage'),
                 $request,
@@ -77,6 +77,10 @@ class PagingLinkResponseListener
             $response->headers->set(
                 'Link',
                 (string) $this->linkHeader
+            );
+            $response->headers->set(
+                'X-Total-Count',
+                (string) $request->attributes->get('totalCount')
             );
         }
     }
