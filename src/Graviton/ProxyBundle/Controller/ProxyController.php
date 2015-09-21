@@ -134,18 +134,18 @@ class ProxyController
      */
     protected function decideApiAndEndpoint($scheme, $url)
     {
+        $path = parse_url($url, PHP_URL_PATH);
+
         $pattern = array (
-            "@".$scheme.":\/\/@",
-            "@3rdparty\/@",
+            "@^\/3rdparty\/@",
             "@schema\/@",
             "@\/item$@",
         );
-        $url = preg_replace($pattern, '', $url);
-        //remove host
-        $url = str_replace(substr($url, 0, strpos($url, '/') + 1), '', $url);
+        $path = preg_replace($pattern, '', $path);
+
         //get api name and endpoint
-        $apiName = substr($url, 0, strpos($url, '/'));
-        $endpoint = str_replace($apiName, '', $url);
+        $apiName = substr($path, 0, strpos($path, '/'));
+        $endpoint = str_replace($apiName, '', $path);
 
         return array (
             "apiName" => $apiName,
