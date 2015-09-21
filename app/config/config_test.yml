@@ -23,3 +23,9 @@ monolog:
     handler:
         name: main
         type: "test"
+graviton_proxy:
+    sources:
+        swagger:
+            petstore:
+                prefix: petstore
+                uri:    http://petstore.swagger.io/v2/swagger.json

@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * general controller for all proxy staff
  *
- * @package Graviton\ProxyBundle\Controller
+ * @package  Graviton\ProxyBundle\Controller
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
@@ -39,20 +39,28 @@ class ProxyController
     private $apiLoader;
 
     /**
+     * @var array
+     */
+    private $proxySourceConfiguration;
+
+    /**
      * Constructor
      *
-     * @param Proxy               $proxy      proxy
-     * @param EngineInterface     $templating twig templating engine
-     * @param ApiDefinitionLoader $loader     definition loader
+     * @param Proxy               $proxy                    proxy
+     * @param EngineInterface     $templating               twig templating engine
+     * @param ApiDefinitionLoader $loader                   definition loader
+     * @param array               $proxySourceConfiguration Set of sources to be recognized by the controller.
      */
     public function __construct(
         Proxy $proxy,
         EngineInterface $templating,
-        ApiDefinitionLoader $loader
+        ApiDefinitionLoader $loader,
+        array $proxySourceConfiguration
     ) {
         $this->proxy = $proxy;
         $this->templating = $templating;
         $this->apiLoader = $loader;
+        $this->proxySourceConfiguration = $proxySourceConfiguration;
     }
 
     /**
@@ -65,13 +73,8 @@ class ProxyController
     public function proxyAction(Request $request)
     {
         $scheme = $request->getScheme();
-        $api = $this->decideApiAndEnpoint($scheme, $request->getUri());
-        $this->apiLoader->setOption(
-            array(
-                "prefix" => "petstore",
-                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
-            )
-        );
+        $api = $this->decideApiAndEndpoint($scheme, $request->getUri());
+        $this->registerProxySources();
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
         $url = $scheme."://".$url;
@@ -81,10 +84,10 @@ class ProxyController
             $newRequest = Request::create(
                 $request->getUri(),
                 $request->getMethod(),
-                array(),
-                array(),
-                array(),
-                array(),
+                array (),
+                array (),
+                array (),
+                array (),
                 $request->getContent()
             );
             $newRequest->headers->add($request->headers->all());
@@ -107,20 +110,16 @@ class ProxyController
      */
     public function schemaAction(Request $request)
     {
-        $api = $this->decideApiAndEnpoint($request->getScheme(), $request->getUri());
-        $this->apiLoader->setOption(
-            array(
-                "prefix" => "petstore",
-                "uri"    => "http://petstore.swagger.io/v2/swagger.json",
-            )
-        );
+        $api = $this->decideApiAndEndpoint($request->getScheme(), $request->getUri());
+        $this->registerProxySources();
         $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
 
         $response = new Response(json_encode($schema), 200);
+        $response->headers->set('Content-Type', 'application/javascript');
 
         return $this->templating->renderResponse(
             'GravitonCoreBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
+            array ('response' => $response->getContent()),
             $response
         );
     }
@@ -133,9 +132,9 @@ class ProxyController
      *
      * @return array
      */
-    protected function decideApiAndEnpoint($scheme, $url)
+    protected function decideApiAndEndpoint($scheme, $url)
     {
-        $pattern = array(
+        $pattern = array (
             "@".$scheme.":\/\/@",
             "@3rdparty\/@",
             "@schema\/@",
@@ -148,9 +147,23 @@ class ProxyController
         $apiName = substr($url, 0, strpos($url, '/'));
         $endpoint = str_replace($apiName, '', $url);
 
-        return array(
+        return array (
             "apiName" => $apiName,
             "endpoint" => $endpoint,
         );
+    }
+
+    /**
+     * Registers configured external services to be proxied.
+     *
+     * @return Void
+     */
+    private function registerProxySources()
+    {
+        if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
+            foreach ($this->proxySourceConfiguration['swagger'] as $config) {
+                $this->apiLoader->setOption($config);
+            }
+        }
     }
 }

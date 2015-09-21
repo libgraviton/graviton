@@ -65,13 +65,14 @@ class ApiDefinitionLoader
     /**
      * get a schema for one endpoint
      *
-     * @param string $endpoint endpoint
+     * @param string $endpoint    endpoint
+     * @param bool   $forceReload Switch to force a new api definition object will be provided.
      *
      * @return \stdClass
      */
-    public function getEndpointSchema($endpoint)
+    public function getEndpointSchema($endpoint, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
 
         return $this->definition->getSchema($endpoint);
     }
@@ -79,15 +80,15 @@ class ApiDefinitionLoader
     /**
      * get an endpoint
      *
-     * @param string  $endpoint endpoint
-     * @param boolean $withHost attach host name to the url
-     * @param string  $method   http method
+     * @param string  $endpoint    endpoint
+     * @param boolean $withHost    attach host name to the url
+     * @param bool    $forceReload Switch to force a new api definition object will be provided.
      *
      * @return string
      */
-    public function getEndpoint($endpoint, $withHost = false, $method = null)
+    public function getEndpoint($endpoint, $withHost = false, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
         $url = "";
         if ($withHost) {
             $url = $this->definition->getHost();
@@ -111,35 +112,37 @@ class ApiDefinitionLoader
     /**
      * get all endpoints for an API
      *
-     * @param boolean $withHost attach host name to the url
+     * @param boolean $withHost    attach host name to the url
+     * @param bool    $forceReload Switch to force a new api definition object will be provided.
      *
      * @return array
      */
-    public function getAllEndpoints($withHost = false)
+    public function getAllEndpoints($withHost = false, $forceReload = false)
     {
-        $this->loadApiDefinition();
+        $this->loadApiDefinition($forceReload);
 
         $prefix = self::PROXY_ROUTE;
         if (isset($this->options['prefix'])) {
             $prefix .= "/".$this->options['prefix'];
         }
 
-        $endpoints = $this->definition->getEndpoints($withHost, $prefix);
-
-        return $endpoints;
+        return $this->definition->getEndpoints($withHost, $prefix);
     }
 
     /**
      * internal load method
      *
+     * @param bool $forceReload Switch to force a new api definition object will be provided.
+     *
      * @return void
      */
-    private function loadApiDefinition()
+    private function loadApiDefinition($forceReload = false)
     {
-        $supports = $this->definitionLoader->supports($this->options['uri']);
-        if ($this->definition == null && $supports) {
+        $supported = $this->definitionLoader->supports($this->options['uri']);
+
+        if ($forceReload || ($this->definition == null && $supported)) {
             $this->definition = $this->definitionLoader->load($this->options['uri']);
-        } elseif (!$supports) {
+        } elseif (!$supported) {
             throw new \RuntimeException("This resource (".$this->options['uri'].") is not supported.");
         }
     }

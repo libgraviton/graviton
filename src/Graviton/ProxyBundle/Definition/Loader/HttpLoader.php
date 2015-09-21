@@ -8,6 +8,8 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Guzzle\Http\Client;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -62,19 +64,15 @@ class HttpLoader implements LoaderInterface
     /**
      * check if the url is valid
      *
-     * @param string $input url
+     * @param string $url url
      *
      * @return boolean
      */
-    public function supports($input)
+    public function supports($url)
     {
-        $retVal = false;
-        $error = $this->validator->validate($input, [new Url()]);
-        if (count($error) == 0) {
-            $retVal = true;
-        }
+        $error = $this->validator->validate($url, [new Url()]);
 
-        return $retVal;
+        return 0 === count($error);
     }
 
     /**
@@ -89,10 +87,32 @@ class HttpLoader implements LoaderInterface
         $retVal = null;
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
-            $response = $request->send();
+
+            try {
+                $response = $request->send();
+            } catch (\Guzzle\Http\Exception\CurlException $e) {
+                throw new HttpException(
+                    Response::HTTP_BAD_GATEWAY,
+                    $e->getError(),
+                    $e,
+                    $e->getRequest()->getHeaders()->toArray(),
+                    $e->getCode()
+                );
+            }
+
             $content = $response->getBody(true);
             if ($this->strategy->supports($content)) {
-                $retVal = $this->strategy->process($content);
+                // store current host (name or ip) serving the API. This MUST be the host only and does not include the
+                // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
+                // documentation is to be used (including the port)
+                $fallbackHost['host'] = sprintf(
+                    '%s://%s:%d',
+                    $request->getScheme(),
+                    $request->getHost(),
+                    $request->getPort()
+                );
+
+                $retVal = $this->strategy->process($content, $fallbackHost);
             }
         }
 

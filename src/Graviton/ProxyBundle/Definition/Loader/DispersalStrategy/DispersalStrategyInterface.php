@@ -26,9 +26,10 @@ interface DispersalStrategyInterface
     /**
      * process
      *
-     * @param string|null $input input
+     * @param string|null $input        Data to be processed
+     * @param array       $fallbackData Default data (like host, basePath) to be used if not available in json.
      *
      * @return ApiDefinition
      */
-    public function process($input);
+    public function process($input, array $fallbackData = []);
 }
