@@ -42,22 +42,30 @@ class MainController
     private $templating;
 
     /**
-     * @param Router             $router     router
-     * @param Response           $response   prepared response
-     * @param RestUtilsInterface $restUtils  rest-utils from GravitonRestBundle
-     * @param EngineInterface    $templating templating-engine
+     * @var array
+     */
+    private $addditionalRoutes;
+
+    /**
+     * @param Router             $router           router
+     * @param Response           $response         prepared response
+     * @param RestUtilsInterface $restUtils        rest-utils from GravitonRestBundle
+     * @param EngineInterface    $templating       templating-engine
+     * @param array              $additionalRoutes custom routes
      *
      */
     public function __construct(
         Router $router,
         Response $response,
         RestUtilsInterface $restUtils,
-        EngineInterface $templating
+        EngineInterface $templating,
+        $additionalRoutes = array()
     ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->templating = $templating;
+        $this->addditionalRoutes = $additionalRoutes;
     }
 
     /**
@@ -101,6 +109,11 @@ class MainController
     {
         $sortArr = array();
         $router = $this->router;
+        foreach ($this->addditionalRoutes as $route) {
+            // hack because only array keys are used
+            $optionRoutes[$route] = null;
+        }
+
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
@@ -122,7 +135,6 @@ class MainController
                 unset($services[$key]);
             }
         }
-
         array_multisort($sortArr, SORT_ASC, $services);
 
         return $services;

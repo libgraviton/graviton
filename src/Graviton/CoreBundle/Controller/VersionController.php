@@ -77,15 +77,35 @@ class VersionController extends RestController
      *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function allAction(Request $request)
+    public function versionsAction(Request $request)
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Content-Type', 'application/json');
         $versions = array();
         $versions['versions'] = $this->coreUtils->getVersion();
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($versions, JSON_FORCE_OBJECT)],
+            ['response' => json_encode($versions)],
+            $response
+        );
+    }
+
+    /**
+     * Returns schema
+     *
+     * @param Request $request Current http request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
+     */
+    public function versionsSchemaAction(Request $request)
+    {
+        $response = $this->getResponse()
+            ->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Content-Type', 'application/json');
+        return $this->render(
+            'GravitonRestBundle:Main:index.json.twig',
+            ['response' => json_encode(array('toBe' => 'replaced'))],
             $response
         );
     }

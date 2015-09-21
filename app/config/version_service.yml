@@ -1,4 +1,4 @@
-#here you can configure which version numbers should be read
+#configure which version numbers should be read
 
 desiredVersions:
   - self

@@ -92,7 +92,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $output = $this->runCommandInContext('composer show -i');
+        $output = $this->runCommandInContext('composer show --installed');
 
         $packages = explode(PHP_EOL, $output);
         //last index is always empty

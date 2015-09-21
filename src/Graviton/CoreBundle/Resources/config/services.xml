@@ -13,6 +13,9 @@
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
+        <parameter key="graviton.core.links" type="collection">
+            <parameter>graviton.core.static.version.get</parameter>
+        </parameter>
     </parameters>
     <services>
         <service id="graviton.core.controller.main"
@@ -21,6 +24,7 @@
              <argument type="service" id="graviton.rest.response" strict="false"/>
              <argument type="service" id="graviton.rest.restutils"/>
              <argument type="service" id="templating"/>
+             <argument>%graviton.core.links%</argument>
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
@@ -74,10 +78,6 @@
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
             <argument type="service" id="graviton.core.utils"></argument>
-        </service>
-
-        <service id="graviton.core.command.versiongenerate.filesystem"
-                 class="Symfony\Component\Filesystem\Filesystem">
         </service>
     </services>
 </container>
