@@ -1,15 +1,19 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: samuel
- * Date: 15.09.15
- * Time: 17:05
+ * HttpLoaderTest
  */
 
 namespace Graviton\ProxyBundle\Tests\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\Loader\HttpLoader;
 
+/**
+ * tests for the HttpLoader class
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class HttpLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -20,7 +24,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
     /**
      * setup
      *
-     * return void
+     * @return void
      */
     public function setup()
     {
