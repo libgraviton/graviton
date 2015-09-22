@@ -85,8 +85,6 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
     /**
      * load method return null
      *
-     * @before
-     *
      * @return HttpLoader
      */
     public function testLoadReturnNull()
@@ -108,6 +106,8 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * test the load method
+     *
+     * @depends testLoadReturnNull
      *
      * @return void
      */
