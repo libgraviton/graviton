@@ -24,7 +24,7 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelResponse()
     {
         $response = new Response();
-        $version = '0.25.1';
+        $version = '0.1.0-alpha';
 
         $eventDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\FilterResponseEvent')
             ->disableOriginalConstructor()
@@ -53,7 +53,7 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
         $serviceDouble
             ->expects($this->once())
             ->method('getVersionInHeaderFormat')
-            ->will($this->returnValue('0.25.1'));
+            ->will($this->returnValue('0.1.0-alpha'));
 
         $listener = new XVersionResponseListener($serviceDouble, $loggerDouble);
         $listener->onKernelResponse($eventDouble);
