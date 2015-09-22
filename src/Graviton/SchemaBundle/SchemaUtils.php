@@ -10,6 +10,7 @@ use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Service\RepositoryFactory;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -54,8 +55,14 @@ class SchemaUtils
     private $defaultLocale;
 
     /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
+    /**
      * Constructor
      *
+     * @param RepositoryFactory  $repositoryFactory    Create repos from model class names
      * @param LanguageRepository $languageRepository   repository
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
@@ -63,12 +70,14 @@ class SchemaUtils
      * @param string             $defaultLocale        Default Language
      */
     public function __construct(
+        RepositoryFactory $repositoryFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
         array $documentFieldNames,
         $defaultLocale
     ) {
+        $this->repositoryFactory = $repositoryFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
