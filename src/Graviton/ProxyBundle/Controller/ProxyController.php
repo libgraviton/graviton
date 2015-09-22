@@ -127,7 +127,7 @@ class ProxyController
     /**
      * get API name and endpoint from the url (third party API)
      *
-     * @param string $url    the url
+     * @param string $url the url
      *
      * @return array
      */

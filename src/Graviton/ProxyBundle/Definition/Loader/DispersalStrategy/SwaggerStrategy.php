@@ -80,7 +80,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
         $intersect = array_intersect($mandatoryFields, $fields);
 
         // every mandatory field was found in provided json definition.
-        return empty(array_diff($intersect, $mandatoryFields));
+        return empty(array_diff($mandatoryFields, $intersect));
     }
 
     /**
