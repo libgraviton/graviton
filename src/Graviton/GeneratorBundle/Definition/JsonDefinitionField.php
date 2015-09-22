@@ -165,7 +165,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     }
 
     /**
-     * @return array|void
+     * @return XDynamicKey|void
      */
     public function getXDynamicKey()
     {
