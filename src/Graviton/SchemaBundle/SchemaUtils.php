@@ -42,10 +42,16 @@ class SchemaUtils
      * @var array service mapping
      */
     private $extrefServiceMapping;
+
     /**
      * @var array [document class => [field name -> exposed name]]
      */
     private $documentFieldNames;
+
+    /**
+     * @var string
+     */
+    private $defaultLocale;
 
     /**
      * Constructor
@@ -54,17 +60,20 @@ class SchemaUtils
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
      * @param array              $documentFieldNames   Document field names
+     * @param string             $defaultLocale        Default Language
      */
     public function __construct(
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
-        array $documentFieldNames
+        array $documentFieldNames,
+        $defaultLocale
     ) {
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->documentFieldNames = $documentFieldNames;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -90,10 +99,11 @@ class SchemaUtils
      *
      * @param string        $modelName name of mode to generate schema for
      * @param DocumentModel $model     model to generate schema for
+     * @param boolean       $online    if we are online and have access to mongodb during this build
      *
      * @return Schema
      */
-    public function getModelSchema($modelName, DocumentModel $model)
+    public function getModelSchema($modelName, DocumentModel $model, $online = true)
     {
         // build up schema data
         $schema = new Schema;
@@ -123,12 +133,18 @@ class SchemaUtils
             $this->documentFieldNames[$repo->getClassName()] :
             [];
 
-        $languages = array_map(
-            function (Language $language) {
-                return $language->getId();
-            },
-            $this->languageRepository->findAll()
-        );
+        if ($online) {
+            $languages = array_map(
+                function (Language $language) {
+                    return $language->getId();
+                },
+                $this->languageRepository->findAll()
+            );
+        } else {
+            $languages = [
+                $this->defaultLocale
+            ];
+        }
 
         foreach ($meta->getFieldNames() as $field) {
             // don't describe hidden fields
@@ -141,16 +157,17 @@ class SchemaUtils
             $property->setDescription($model->getDescriptionOfField($field));
 
             $property->setType($meta->getTypeOfField($field));
+            $property->setReadOnly($model->getReadOnlyOfField($field));
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems($this->getModelSchema($field, $propertyModel));
+                $property->setItems($this->getModelSchema($field, $propertyModel, $online));
                 $property->setType('array');
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = $this->getModelSchema($field, $propertyModel);
+                $property = $this->getModelSchema($field, $propertyModel, $online);
             }
 
             if (in_array($field, $translatableFields, true)) {
@@ -190,7 +207,6 @@ class SchemaUtils
             $requiredFields[] = $documentFieldNames[$field];
         }
         $schema->setRequired($requiredFields);
-
 
         return $schema;
     }

@@ -36,63 +36,58 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\A' => [
                         [
                             'id',
-                            'id',
                             'text',
-                            [],
+                            ['property_path' => 'id'],
                         ],
                         [
-                            'integer',
                             'integerA',
                             'integer',
-                            [],
+                            ['property_path' => 'integer'],
                         ],
                         [
-                            'title',
                             'titleA',
                             'translatable',
-                            [],
+                            ['property_path' => 'title'],
                         ],
                         [
-                            'extref',
                             'extrefA',
                             'extref',
-                            [],
+                            ['property_path' => 'extref'],
                         ],
                         [
-                            'boolean',
                             'booleanA',
                             'checkbox',
-                            [],
+                            ['property_path' => 'boolean'],
                         ],
                         [
-                            'datetime',
                             'datetimeA',
                             'datetime',
-                            [],
+                            ['property_path' => 'datetime'],
                         ],
                         [
-                            'float',
                             'floatA',
                             'number',
-                            [],
+                            ['property_path' => 'float'],
                         ],
                         [
-                            'unstruct',
                             'unstructA',
                             'freeform',
-                            [],
+                            ['property_path' => 'unstruct'],
                         ],
                         [
-                            'achild',
                             'achild',
                             'form',
-                            ['data_class' => $baseNamespace.'\B'],
+                            [
+                                'property_path' => 'achild',
+                                'data_class' => $baseNamespace.'\B',
+                                'required' => false,
+                            ],
                         ],
                         [
-                            'achildren',
                             'achildren',
                             'collection',
                             [
+                                'property_path' => 'achildren',
                                 'type' => 'form',
                                 'options' => ['data_class' => $baseNamespace.'\B'],
                             ],
@@ -101,27 +96,28 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\B' => [
                         [
                             'id',
-                            'id',
                             'text',
-                            [],
+                            ['property_path' => 'id'],
                         ],
                         [
-                            'field',
                             'fieldB',
                             'text',
-                            [],
+                            ['property_path' => 'field'],
                         ],
                         [
-                            'bchild',
                             'bchild',
                             'form',
-                            ['data_class' => $baseNamespace.'\C'],
+                            [
+                                'property_path' => 'bchild',
+                                'data_class' => $baseNamespace.'\C',
+                                'required' => true,
+                            ],
                         ],
                         [
-                            'bchildren',
                             'bchildren',
                             'collection',
                             [
+                                'property_path' => 'bchildren',
                                 'type' => 'form',
                                 'options' => ['data_class' => $baseNamespace.'\C'],
                             ],
@@ -130,15 +126,13 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $baseNamespace.'\C' => [
                         [
                             'id',
-                            'id',
                             'text',
-                            [],
+                            ['property_path' => 'id'],
                         ],
                         [
-                            'field',
                             'fieldC',
                             'text',
-                            [],
+                            ['property_path' => 'field'],
                         ],
                     ],
                 ]
@@ -150,6 +144,9 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.mongodb.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/form')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/validation/form')
                 ->name('*.xml')
         );
 

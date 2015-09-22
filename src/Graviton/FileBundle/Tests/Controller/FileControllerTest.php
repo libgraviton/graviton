@@ -83,10 +83,12 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
 
+        $fileLocation = $response->headers->get('Location');
+
         // update file contents to update mod date
         $client = static::createRestClient();
         $client->put(
-            $response->headers->get('Location'),
+            $fileLocation,
             $fixtureData,
             [],
             [],
@@ -95,10 +97,10 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertEmpty($client->getResults());
         $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $fileLocation);
         $data = $client->getResults();
 
         // check for valid format
@@ -137,6 +139,11 @@ class FileControllerTest extends RestTestCase
         $link->{'$ref'} = 'http://localhost/core/app/web';
         $data->links[] = $link;
 
+        // also add action command
+        $command = new \stdClass();
+        $command->command = 'print';
+        $data->metadata->action = [$command];
+
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
@@ -152,6 +159,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(18, $data->metadata->size);
         $this->assertEquals('text/plain', $data->metadata->mime);
         $this->assertEquals('test.txt', $data->metadata->filename);
+        $this->assertEquals('print', $data->metadata->action[0]->command);
         $this->assertNotNull($data->metadata->createDate);
         $this->assertNotNull($data->metadata->modificationDate);
 
@@ -316,5 +324,149 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(strlen($newData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
+    }
+
+    /**
+     * test getting collection schema
+     *
+     * @return void
+     */
+    public function testGetFileCollectionSchemaInformation()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/schema/file/collection');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType('application/schema+json', $response);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals('Array of file objects', $results->title);
+        $this->assertEquals('array', $results->type);
+        $this->assertIsFileSchema($results->items);
+
+        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertContains(
+            'Link',
+            explode(',', $response->headers->get('Access-Control-Expose-Headers'))
+        );
+
+        $this->assertContains(
+            '<http://localhost/schema/file/collection>; rel="self"',
+            explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * check if a schema is of the file type
+     *
+     * @param \stdClass $schema schema from service to validate
+     *
+     * @return void
+     */
+    private function assertIsFileSchema(\stdClass $schema)
+    {
+        $this->assertEquals('File', $schema->title);
+        $this->assertEquals('File storage service', $schema->description);
+        $this->assertEquals('object', $schema->type);
+
+        $this->assertEquals('string', $schema->properties->id->type);
+        $this->assertEquals('ID', $schema->properties->id->title);
+        $this->assertEquals('Unique identifier', $schema->properties->id->description);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->id);
+
+        // Metadata
+        $this->assertEquals('object', $schema->properties->metadata->type);
+        $this->assertEquals('Metadata', $schema->properties->metadata->title);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata);
+
+        // Metadata size
+        $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
+        $this->assertEquals('File size', $schema->properties->metadata->properties->size->title);
+        $this->assertEquals('Size of file', $schema->properties->metadata->properties->size->description);
+        $this->assertEquals(true, $schema->properties->metadata->properties->size->readOnly);
+
+        // Metadata mime
+        $this->assertEquals('string', $schema->properties->metadata->properties->mime->type);
+        $this->assertEquals('MIME Type', $schema->properties->metadata->properties->mime->title);
+        $this->assertEquals('MIME-Type of file.', $schema->properties->metadata->properties->mime->description);
+        $this->assertEquals(true, $schema->properties->metadata->properties->mime->readOnly);
+
+        // Metadata createDate
+        $this->assertEquals('string', $schema->properties->metadata->properties->createDate->type);
+        $this->assertEquals('date', $schema->properties->metadata->properties->createDate->format);
+        $this->assertEquals('Creation date', $schema->properties->metadata->properties->createDate->title);
+        $this->assertEquals(
+            'Timestamp of file upload',
+            $schema->properties->metadata->properties->createDate->description
+        );
+        $this->assertEquals(true, $schema->properties->metadata->properties->createDate->readOnly);
+
+        // Metadata modificationDate
+        $this->assertEquals('string', $schema->properties->metadata->properties->modificationDate->type);
+        $this->assertEquals('date', $schema->properties->metadata->properties->modificationDate->format);
+        $this->assertEquals('Modification date', $schema->properties->metadata->properties->modificationDate->title);
+        $this->assertEquals(
+            'Timestamp of the last file change',
+            $schema->properties->metadata->properties->modificationDate->description
+        );
+        $this->assertEquals(true, $schema->properties->metadata->properties->modificationDate->readOnly);
+
+        // Metadata filename
+        $this->assertEquals('string', $schema->properties->metadata->properties->filename->type);
+        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->title);
+        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->description);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
+
+        // metadata action.command array
+        $this->assertEquals(
+            'string',
+            $schema->properties->metadata->properties->action->items->properties->command->type
+        );
+        $this->assertEquals(
+            'Action command array',
+            $schema->properties->metadata->properties->action->items->properties->command->title
+        );
+        $this->assertObjectNotHasAttribute(
+            'readOnly',
+            $schema->properties->metadata->properties->action->items->properties->command
+        );
+
+        // Links
+        $this->assertEquals('array', $schema->properties->links->type);
+        $this->assertEquals('many', $schema->properties->links->format);
+        $this->assertEquals('links', $schema->properties->links->title);
+        $this->assertEquals('@todo replace me', $schema->properties->links->description);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links);
+
+
+        // Links items
+        $this->assertEquals('object', $schema->properties->links->items->type);
+        $this->assertEquals('Links', $schema->properties->links->items->title);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items);
+
+
+        // Links item type
+        $this->assertEquals('string', $schema->properties->links->items->properties->type->type);
+        $this->assertEquals('Type', $schema->properties->links->items->properties->type->title);
+        $this->assertEquals('Type of the link', $schema->properties->links->items->properties->type->description);
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->type);
+
+        // Links item $ref
+        $this->assertEquals('string', $schema->properties->links->items->properties->{'$ref'}->type);
+        $this->assertEquals('extref', $schema->properties->links->items->properties->{'$ref'}->format);
+        $this->assertEquals('Link', $schema->properties->links->items->properties->{'$ref'}->title);
+        $this->assertEquals(
+            'Link to any document.',
+            $schema->properties->links->items->properties->{'$ref'}->description
+        );
+        $this->assertEquals(
+            ['*'],
+            $schema->properties->links->items->properties->{'$ref'}->{'x-collection'}
+        );
+        $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
 }

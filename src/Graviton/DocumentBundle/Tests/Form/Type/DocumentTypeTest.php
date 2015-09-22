@@ -6,6 +6,9 @@
 namespace Graviton\DocumentBundle\Tests\Form\Type;
 
 use Graviton\DocumentBundle\Form\Type\DocumentType;
+use Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -15,111 +18,255 @@ use Graviton\DocumentBundle\Form\Type\DocumentType;
 class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array
+     * @var FieldBuilderInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $fieldMap;
+    private $fieldBuilderDouble;
 
     /**
-     * prepare env for sut
+     * Initialize test
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp()
     {
-        $this->fieldMap = [
-            'Graviton\CoreBundle\Document\App' => [
-                ['title', 'titleExposed', 'translatable', []],
-                ['showInMenu', 'showInMenu', 'checkbox', []],
-            ],
-        ];
+        $this->fieldBuilderDouble = $this
+            ->getMockBuilder('Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface')
+            ->getMock();
+
+        parent::setUp();
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class class name
-     * @param string $name  expected name
+     * Test DocumentType::initialize()
      *
      * @return void
      */
-    public function testGetName($class, $name)
+    public function testInitialize()
     {
-        $sut = new DocumentType($this->fieldMap);
+        $class = __CLASS__;
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
+        $sut->initialize($class);
+    }
+
+
+    /**
+     * Test DocumentType::initialize() with error
+     *
+     * @return void
+     * @expectedException \RuntimeException
+     */
+    public function testInitializeWithError()
+    {
+        $class = __CLASS__;
+
+        $sut = new DocumentType($this->fieldBuilderDouble, []);
+        $sut->initialize($class);
+    }
+
+    /**
+     * Test DocumentType::getName()
+     *
+     * @return void
+     */
+    public function testGetName()
+    {
+        $class = __CLASS__;
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
         $sut->initialize($class);
 
-        $this->assertEquals($name, $sut->getName());
+        $this->assertEquals(strtolower(strtr($class, '\\', '_')), $sut->getName());
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class class name
+     * Test DocumentType::configureOptions()
      *
      * @return void
      */
-    public function testConfigureOptions($class)
+    public function testConfigureOptions()
     {
-        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
+        $class = __CLASS__;
 
-        $resolverDouble->expects($this->once())
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
+        $sut->initialize($class);
+
+        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
+        $resolverDouble
+            ->expects($this->once())
             ->method('setDefaults')
             ->with(['data_class' => $class]);
-
-        $sut = new DocumentType($this->fieldMap);
-        $sut->initialize($class);
-
         $sut->configureOptions($resolverDouble);
     }
 
     /**
-     * @dataProvider testData
-     *
-     * @param string $class  class name
-     * @param string $name   form name
-     * @param array  $fields fields for builder
+     * Test DocumentType::buildForm()
      *
      * @return void
      */
-    public function testBuildForm($class, $name, $fields)
+    public function testBuildForm()
     {
-        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $class = __CLASS__;
 
-        $i = 0;
-        foreach ($fields as $field) {
-            $builderDouble
-                ->expects($this->at($i++))
-                ->method('add')
-                ->with($field['name'], $field['type'], $field['options']);
-        }
-        $sut = new DocumentType($this->fieldMap);
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
         $sut->initialize($class);
 
+        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $builderDouble
+            ->expects($this->once())
+            ->method('addEventListener')
+            ->with(
+                FormEvents::PRE_SUBMIT,
+                [$sut, 'handlePreSubmitEvent']
+            );
         $sut->buildForm($builderDouble, []);
-        $this->assertEquals($name, $sut->getName());
     }
 
     /**
-     * @return array
+     * Test DocumentType::handlePreSubmitEvent() with empty form fields
+     *
+     * @return void
      */
-    public function testData()
+    public function testHandlePreSubmitEventWithEmptyFields()
     {
-        return [
-            'build from classname' => [
-                'Graviton\CoreBundle\Document\App',
-                'graviton_corebundle_document_app',
-                [
-                    [
-                        'name' => 'titleExposed',
-                        'type' => 'translatable', # alias to i18n form service
-                        'options' => ['property_path' => 'title'],
-                    ],
-                    [
-                        'name' => 'showInMenu',
-                        'type' => 'checkbox',
-                        'options' => [],
-                    ],
-                ],
-            ],
+        $class = __CLASS__;
+        $fields = [];
+
+        $eventDouble = $this->getMockBuilder('Symfony\Component\Form\FormEvent')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $eventDouble
+            ->expects($this->never())
+            ->method('getForm');
+        $eventDouble
+            ->expects($this->never())
+            ->method('getData');
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => $fields]);
+        $sut->initialize($class);
+
+        $this->fieldBuilderDouble
+            ->expects($this->never())
+            ->method('supportsField');
+        $this->fieldBuilderDouble
+            ->expects($this->never())
+            ->method('buildField');
+
+        $sut->handlePreSubmitEvent($eventDouble);
+    }
+
+    /**
+     * Test DocumentType::handlePreSubmitEvent() with optional form and empty submmited data
+     *
+     * @return void
+     */
+    public function testHandlePreSubmitEventWithOptionalFormAndEmptySubmittedData()
+    {
+        $class = __CLASS__;
+        $fields = [['name', 'type', ['options']]];
+        $submittedData = null;
+
+        $formDouble = $this->getMockBuilder('Symfony\Component\Form\FormInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formDouble
+            ->expects($this->once())
+            ->method('isRequired')
+            ->willReturn(false);
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => $fields]);
+        $sut->initialize($class);
+
+        $this->fieldBuilderDouble
+            ->expects($this->never())
+            ->method('supportsField');
+        $this->fieldBuilderDouble
+            ->expects($this->never())
+            ->method('buildField');
+
+        $sut->handlePreSubmitEvent(new FormEvent($formDouble, $submittedData));
+    }
+
+    /**
+     * Test DocumentType::handlePreSubmitEvent() with unsupported field
+     *
+     * @return void
+     * @expectedException \LogicException
+     */
+    public function testHandlePreSubmitEventWithUnsupportedField()
+    {
+        $class = __CLASS__;
+        $fields = [['name', 'type', ['options']]];
+        $submittedData = [];
+
+        $formDouble = $this->getMockBuilder('Symfony\Component\Form\FormInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formDouble
+            ->expects($this->once())
+            ->method('isRequired')
+            ->willReturn(true);
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => $fields]);
+        $sut->initialize($class);
+
+        $this->fieldBuilderDouble
+            ->expects($this->once())
+            ->method('supportsField')
+            ->with('type', ['options'])
+            ->willReturn(false);
+        $this->fieldBuilderDouble
+            ->expects($this->never())
+            ->method('buildField');
+
+
+        $sut->handlePreSubmitEvent(new FormEvent($formDouble, $submittedData));
+    }
+
+    /**
+     * Test DocumentType::handlePreSubmitEvent()
+     *
+     * @return void
+     */
+    public function testHandlePreSubmitEvent()
+    {
+        $class = __CLASS__;
+        $fields = [
+            ['name1', 'type1', ['options1']],
+            ['name2', 'type2', ['options2']],
         ];
+        $submittedData = [
+            'name1' => 'data1',
+            'name2' => 'data2',
+        ];
+
+        $formDouble = $this->getMockBuilder('Symfony\Component\Form\FormInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formDouble
+            ->expects($this->once())
+            ->method('isRequired')
+            ->willReturn(true);
+
+        $sut = new DocumentType($this->fieldBuilderDouble, [$class => $fields]);
+        $sut->initialize($class);
+
+        $this->fieldBuilderDouble
+            ->expects($this->exactly(2))
+            ->method('supportsField')
+            ->withConsecutive(
+                ['type1', ['options1']],
+                ['type2', ['options2']]
+            )
+            ->willReturn(true);
+        $this->fieldBuilderDouble
+            ->expects($this->exactly(2))
+            ->method('buildField')
+            ->withConsecutive(
+                [$sut, $formDouble, 'name1', 'type1', ['options1'], 'data1'],
+                [$sut, $formDouble, 'name2', 'type2', ['options2'], 'data2']
+            );
+
+        $sut->handlePreSubmitEvent(new FormEvent($formDouble, $submittedData));
     }
 }

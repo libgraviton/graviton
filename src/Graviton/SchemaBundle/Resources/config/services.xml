@@ -27,6 +27,7 @@
       <argument type="service" id="router"/>
       <argument>%graviton.document.type.extref.mapping%</argument>
       <argument>%graviton.document.field.names%</argument>
+      <argument>%locale%</argument>
     </service>
   </services>
 </container>

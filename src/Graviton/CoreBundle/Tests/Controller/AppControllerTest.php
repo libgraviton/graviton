@@ -142,7 +142,9 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        // "page" override - rql before get
+        $this->assertSame('2', $response->headers->get('X-Total-Count'));
+
+        /*** pagination tests **/
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?limit(1,1)');
         $this->assertEquals(1, count($client->getResults()));
@@ -154,11 +156,18 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
 
-        // we're passing page=1 and are on the last page, so next isn't set here
         $this->assertContains(
-            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1%2C0)>; rel="prev"',
             $response->headers->get('Link')
         );
+
+        // we're on the 'last' page - so 'last' should not be in in Link header
+        $this->assertNotContains(
+            'rel="last"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertSame('2', $response->headers->get('X-Total-Count'));
     }
 
     /**
@@ -207,7 +216,7 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('DELETE', '/core/app/admin?invalidrqlquery');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -505,10 +514,9 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
-
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEmpty($response->getContent());
 
         $client->request('GET', '/core/app/tablet');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());

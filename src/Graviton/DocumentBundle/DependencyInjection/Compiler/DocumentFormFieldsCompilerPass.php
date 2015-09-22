@@ -93,24 +93,28 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                 }
 
                 $result[] = [
-                    $field->getFieldName(),
                     $field->getFormName(),
                     $type,
-                    [],
+                    [
+                        'property_path' => $field->getFieldName(),
+                    ],
                 ];
             } elseif ($field instanceof EmbedOne) {
                 $result[] = [
-                    $field->getFieldName(),
                     $field->getFormName(),
                     'form',
-                    ['data_class' => $field->getDocument()->getClass()],
+                    [
+                        'property_path' => $field->getFieldName(),
+                        'data_class' => $field->getDocument()->getClass(),
+                        'required' => $field->isRequired(),
+                    ],
                 ];
             } elseif ($field instanceof EmbedMany) {
                 $result[] = [
-                    $field->getFieldName(),
                     $field->getFormName(),
                     'collection',
                     [
+                        'property_path' => $field->getFieldName(),
                         'type' => 'form',
                         'options' => ['data_class' => $field->getDocument()->getClass()],
                     ],

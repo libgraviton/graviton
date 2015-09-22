@@ -100,22 +100,108 @@ class ShowcaseControllerTest extends RestTestCase
         $expectedError->propertyPath = "children[someOtherField]";
         $expectedError->message = "This value is not valid.";
         $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.contact.type";
-        $expectedError->message = "This value should not be blank.";
-        $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.contact.protocol";
-        $expectedError->message = "This value should not be blank.";
-        $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.contact.value";
-        $expectedError->message = "This value should not be blank.";
-        $expectedErrors[] = $expectedError;
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
             json_encode($client->getResults())
+        );
+    }
+
+    /**
+     * see how our empty fields are explained to us
+     *
+     * @return void
+     */
+    public function testEmptyAllFields()
+    {
+        $document = [
+            'anotherInt'  => 6555488894525,
+            'testField'   => ['en' => 'a test string'],
+            'contactCode' => [
+                'text'     => ['en' => 'Some Text'],
+                'someDate' => '1984-05-01T00:00:00+0000',
+            ],
+            'contact'     => [
+                'type'      => '',
+                'value'     => '',
+                'protocol'  => '',
+            ],
+        ];
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $document);
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(
+            [
+                (object) [
+                    'propertyPath'  => 'children[someOtherField]',
+                    'message'       => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.type',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.protocol',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+            ],
+            $client->getResults()
+        );
+    }
+
+    /**
+     * see how our empty fields are explained to us
+     *
+     * @return void
+     */
+    public function testEmptyFields()
+    {
+        $document = [
+            'anotherInt'  => 6555488894525,
+            'testField'   => ['en' => 'a test string'],
+            'contactCode' => [
+                'text'     => ['en' => 'Some Text'],
+                'someDate' => '1984-05-01T00:00:00+0000',
+            ],
+            'contact'     => [
+                'type'      => 'abc',
+                'value'     => '',
+                'protocol'  => '',
+            ],
+        ];
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $document);
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(
+            [
+                (object) [
+                    'propertyPath'  => 'children[someOtherField]',
+                    'message'       => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.protocol',
+                    'message'       => 'This value should not be blank.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.contact.value',
+                    'message'       => 'This value should not be blank.',
+                ],
+            ],
+            $client->getResults()
         );
     }
 

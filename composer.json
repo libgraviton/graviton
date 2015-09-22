@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.25.1",
+    "version": "0.29.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.5",
         "symfony/symfony": "~2.7",
         "doctrine/orm": "~2.4",
         "twig/extensions": "~1.0",

@@ -58,6 +58,9 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.mongodb.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/translatable')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/validation/translatable')
                 ->name('*.xml')
         );
 
