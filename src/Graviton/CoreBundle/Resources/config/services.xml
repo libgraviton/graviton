@@ -7,6 +7,7 @@
         <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
         <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
         <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+        <parameter key="graviton.core.model.version.class">Graviton\CoreBundle\Model\Version</parameter>
         <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
         <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
         <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
@@ -74,10 +75,14 @@
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
         <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
             <argument type="string">%graviton.core.version.data%</argument>
-                </service>
+        </service>
+        <service id="graviton.core.model.version" class="%graviton.core.model.version.class%" parent="graviton.rest.model"/>
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
             <argument type="service" id="graviton.core.utils"></argument>
+            <call method="setModel">
+                <argument type="service" id="graviton.core.model.version"/>
+            </call>
         </service>
     </services>
 </container>

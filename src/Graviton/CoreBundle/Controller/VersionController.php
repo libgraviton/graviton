@@ -103,9 +103,10 @@ class VersionController extends RestController
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', 'application/json');
+        $schema = $this->getModel()->getSchema();
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode(array('toBe' => 'replaced'))],
+            ['response' => json_encode($schema)],
             $response
         );
     }

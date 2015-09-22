@@ -1,0 +1,10 @@
+{
+  "description": "Reveals version numbers of configured packages",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID",
+      "description": "Unique identifier for the versions."
+    }
+  }
+}
