@@ -39,7 +39,7 @@ class ApiDefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($host, $sut->getHost());
         $this->assertCount(3, $apiEndpoints);
         foreach ($endpoints as $id => $endpoint) {
-            $this->assertTrue($sut->existEndpoint($endpoint));
+            $this->assertTrue($sut->hasEndpoint($endpoint));
             $this->assertEquals($basePath.$endpoint, $apiEndpoints[$id]);
         }
     }

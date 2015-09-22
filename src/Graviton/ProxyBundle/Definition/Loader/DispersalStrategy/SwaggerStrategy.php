@@ -43,7 +43,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
             foreach ($swagger->paths as $name => $endpoint) {
                 $name = $this->normalizePath($name);
 
-                if ($apiDef->existEndpoint($name)) {
+                if ($apiDef->hasEndpoint($name)) {
                     continue;
                 }
                 $apiDef->addEndpoint($name);
@@ -158,7 +158,6 @@ class SwaggerStrategy implements DispersalStrategyInterface
                         continue 2;
                     default:
                         continue;
-                        break;
                 }
             } catch (SchemaException $e) {
                 continue;

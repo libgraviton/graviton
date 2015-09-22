@@ -73,7 +73,7 @@ class ProxyController
     public function proxyAction(Request $request)
     {
         $scheme = $request->getScheme();
-        $api = $this->decideApiAndEndpoint($scheme, $request->getUri());
+        $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources();
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
@@ -88,7 +88,7 @@ class ProxyController
                 array (),
                 array (),
                 array (),
-                $request->getContent()
+                $request->getContent(false)
             );
             $newRequest->headers->add($request->headers->all());
             $response = $this->proxy->forward($newRequest)->to($url);
@@ -110,12 +110,12 @@ class ProxyController
      */
     public function schemaAction(Request $request)
     {
-        $api = $this->decideApiAndEndpoint($request->getScheme(), $request->getUri());
+        $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources();
         $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
 
         $response = new Response(json_encode($schema), 200);
-        $response->headers->set('Content-Type', 'application/javascript');
+        $response->headers->set('Content-Type', 'application/json');
 
         return $this->templating->renderResponse(
             'GravitonCoreBundle:Main:index.json.twig',
@@ -127,18 +127,17 @@ class ProxyController
     /**
      * get API name and endpoint from the url (third party API)
      *
-     * @param string $scheme http or https
      * @param string $url    the url
      *
      * @return array
      */
-    protected function decideApiAndEndpoint($scheme, $url)
+    protected function decideApiAndEndpoint($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
 
         $pattern = array (
-            "@^\/3rdparty\/@",
             "@schema\/@",
+            "@\/3rdparty\/@",
             "@\/item$@",
         );
         $path = preg_replace($pattern, '', $path);

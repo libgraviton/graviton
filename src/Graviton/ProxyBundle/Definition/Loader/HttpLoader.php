@@ -105,6 +105,7 @@ class HttpLoader implements LoaderInterface
                 // store current host (name or ip) serving the API. This MUST be the host only and does not include the
                 // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
                 // documentation is to be used (including the port)
+                $fallbackHost = array();
                 $fallbackHost['host'] = sprintf(
                     '%s://%s:%d',
                     $request->getScheme(),
