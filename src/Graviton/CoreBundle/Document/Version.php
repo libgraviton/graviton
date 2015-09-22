@@ -14,18 +14,4 @@ namespace Graviton\CoreBundle\Document;
  */
 class Version
 {
-    /**
-     * @var string versions id
-     */
-    protected $id;
-
-    /**
-     * Get id
-     *
-     * @return string $id
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 }
