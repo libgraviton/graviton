@@ -31,4 +31,24 @@ class VersionControllerTest extends RestTestCase
         $this->assertContains('"self":', $response->getContent());
         $this->assertInternalType('string', $response->getContent());
     }
+
+    /**
+     * Tests if schema returns the right values
+     *
+     * @return void
+     */
+    public function testVersionsSchemaAction()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/core/version/');
+        $response = $client->getResponse();
+
+        $this->assertEquals(
+            '{"title":"Versions","description":"Reveals version numbers of configured packages",'.
+            '"type":"object","properties":{"versions":{"title":"versions","description":"Object of versions",'.
+            '"additionalProperties":{"title":"Version Number","description":"The actual version","type":"string"}}}}',
+            $response->getContent()
+        );
+        $this->assertInternalType('string', $response->getContent());
+    }
 }
