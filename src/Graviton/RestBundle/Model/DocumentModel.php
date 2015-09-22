@@ -6,12 +6,12 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\Query\Builder;
-use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
-use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
+use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
