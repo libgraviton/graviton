@@ -164,6 +164,42 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'serializerType'    => $field->getTypeSerializer(),
                     'relType'           => null,
                     'isClassType'       => false,
+                    'xDynamicKey'       => null,
+                ]
+            ),
+            $field->getDefAsArray()
+        );
+    }
+
+    /**
+     * Test JsonDefinitionField::getXDynamicKey()
+     *
+     * @return void
+     */
+    public function testGetXDynamicKey()
+    {
+        $key = (new Schema\XDynamicKey())
+            ->setDocumentId(__CLASS__)
+            ->setRepositoryMethod(__LINE__)
+            ->setRecordGetter(__FILE__);
+
+        $definition = (new Schema\Field())
+            ->setXDynamicKey($key);
+
+        $field = new JsonDefinitionField('name', $definition);
+
+        $this->assertEquals(
+            array_replace(
+                $this->getBaseDefAsArray($definition),
+                [
+                    'name'              => $field->getName(),
+                    'type'              => $field->getType(),
+                    'exposedName'       => $definition->getExposeAs(),
+                    'doctrineType'      => $field->getTypeDoctrine(),
+                    'serializerType'    => $field->getTypeSerializer(),
+                    'relType'           => null,
+                    'isClassType'       => false,
+                    'xDynamicKey'       => $key,
                 ]
             ),
             $field->getDefAsArray()

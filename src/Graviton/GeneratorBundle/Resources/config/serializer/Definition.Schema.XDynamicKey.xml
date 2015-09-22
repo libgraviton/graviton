@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\XDynamicKey">
+        <property name="documentId"
+                  type="string"
+                  serialized-name="document-id"/>
+        <property name="repositoryMethod"
+                  type="string"
+                  serialized-name="repository-method"/>
+        <property name="recordGetter"
+                  type="string"
+                  serialized-name="record-getter"/>
+    </class>
+</serializer>
