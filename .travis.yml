@@ -13,14 +13,31 @@ php:
 - 5.6
 - 5.5
 - 7.0
+env:
+  matrix:
+    - COMPOSER_CHECK=true PHPUNIT=false
+    - COMPOSER_CHECK=false PHPUNIT=true
 matrix:
+  exclude:
+  - php: 5.5
+    env: COMPOSER_CHECK=true PHPUNIT=false
+  - php: 7
+    env: COMPOSER_CHECK=true PHPUNIT=false
+  - php: hhvm
+    env: COMPOSER_CHECK=true PHPUNIT=false
   allow_failures:
   - php: hhvm
   - php: 7.0
 script:
-- "./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover"
-- php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-- composer check
+- >
+    if [ "$PHPUNIT" = "true" ]; then
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover && \
+        php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
+    fi
+- >
+    if [ "$COMPOSER_CHECK" = "true" ]; then
+        composer check;
+    fi
 notifications:
   hipchat:
     rooms:
