@@ -38,4 +38,4 @@ parameters:
     graviton.errbit.host: ~
 
     # pagination defaults
-    graviton.rest.pagination.limit: 1000
+    graviton.rest.pagination.limit: 10

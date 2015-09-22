@@ -307,6 +307,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             return $this->paginationDefaultLimit;
         }
 
-        return 1000;
+        return 10;
     }
 }
