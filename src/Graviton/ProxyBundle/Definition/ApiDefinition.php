@@ -87,7 +87,7 @@ class ApiDefinition
      *
      * @return boolean
      */
-    public function existEndpoint($endpoint)
+    public function hasEndpoint($endpoint)
     {
         $retVal = false;
         if (isset($this->endpoints)) {
@@ -112,7 +112,7 @@ class ApiDefinition
         if ($withHost) {
             $basePath = $this->getHost();
         }
-        if ($prefix != null) {
+        if (!empty($prefix)) {
             $basePath .= $prefix;
         }
         if (isset($this->basePath)) {
@@ -147,6 +147,8 @@ class ApiDefinition
      */
     public function getSchema($endpoint)
     {
+        //remove base path
+        $endpoint = str_replace($this->basePath, '', $endpoint);
         $retVal = new \stdClass();
         if (array_key_exists($endpoint, $this->schemes)) {
             $retVal = $this->schemes[$endpoint];
