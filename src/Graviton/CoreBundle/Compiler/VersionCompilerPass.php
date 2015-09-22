@@ -156,15 +156,9 @@ class VersionCompilerPass implements CompilerPassInterface
     private function getVersionConfig()
     {
         $parser = new Parser();
-        if ($this->isWrapperContext()) {
-            $parsedConfig = $parser->parse(
-                file_get_contents($this->rootDir . '/../../../../app/config/version_service.yml')
-            );
-        } else {
-            $parsedConfig = $parser->parse(
-                file_get_contents($this->rootDir . '/config/version_service.yml')
-            );
-        }
+        $parsedConfig = $parser->parse(
+            file_get_contents($this->rootDir . '/config/version_service.yml')
+        );
 
         return $parsedConfig;
     }
