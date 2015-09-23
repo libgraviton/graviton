@@ -14,10 +14,13 @@ namespace Graviton\CoreBundle\Service;
  */
 class CoreUtilsTest extends \PHPUnit_Framework_TestCase
 {
-    private $versions = array(
-                array("id" => "self", "version" => "0.25.1"),
-                array("id" => "financing", "version" => "0.1"),
-            );
+    /**
+     * @var array
+     */
+    private $versions = [
+        array("id" => "self", "version" => "0.25.1"),
+        array("id" => "financing", "version" => "0.1")
+    ];
 
     /**
      * Verifies the correct behavior of getWrapperVersion()

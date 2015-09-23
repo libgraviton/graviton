@@ -28,7 +28,7 @@ class VersionController extends RestController
 {
 
     /**
-     * @var coreUtils
+     * @var CoreUtils
      */
     private $coreUtils;
 
@@ -73,11 +73,9 @@ class VersionController extends RestController
     /**
      * Returns all version numbers
      *
-     * @param Request $request Current http request
-     *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function versionsAction(Request $request)
+    public function versionsAction()
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);
@@ -94,11 +92,9 @@ class VersionController extends RestController
     /**
      * Returns schema
      *
-     * @param Request $request Current http request
-     *
      * @return \Symfony\Component\HttpFoundation\Response $response Response with result or error
      */
-    public function versionsSchemaAction(Request $request)
+    public function versionsSchemaAction()
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK);

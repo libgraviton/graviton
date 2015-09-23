@@ -18,12 +18,12 @@ class VersionCompilerPass implements CompilerPassInterface
 {
 
     /**
-     * @var rootDir
+     * @var string
      */
     private $rootDir;
 
     /**
-     * @var config
+     * @var array
      */
     private $config;
 
@@ -70,7 +70,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getContextVersion()
     {
-        $output = $this->runCommandInContext('composer show -s --no-ansi', $this->rootDir);
+        $output = $this->runCommandInContext('composer show -s --no-ansi');
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
         foreach ($lines as $line) {
