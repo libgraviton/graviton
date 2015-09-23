@@ -16,7 +16,8 @@ php:
 env:
   matrix:
     - COMPOSER_CHECK=true PHPUNIT=false
-    - COMPOSER_CHECK=false PHPUNIT=true
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
 matrix:
   exclude:
   - php: 5.5
@@ -31,7 +32,7 @@ matrix:
 script:
 - >
     if [ "$PHPUNIT" = "true" ]; then
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover && \
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite=$PHPUNIT_SUITE && \
         php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
     fi
 - >
