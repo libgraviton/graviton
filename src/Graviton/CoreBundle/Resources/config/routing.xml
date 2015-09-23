@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns="http://symfony.com/schema/routing">
-  <route id="graviton.core.static.main.all" path="/">
+  <route id="graviton.core.static.main.all" path="/" methods="GET">
     <default key="_controller">graviton.core.controller.main:indexAction</default>
-    <requirement key="_method">GET</requirement>
   </route>
-  <route id="graviton.core.static.main.options" path="/">
+  <route id="graviton.core.static.main.options" path="/" methods="OPTIONS">
     <default key="_controller">graviton.core.controller.main:optionsAction</default>
-    <requirement key="_method">OPTIONS</requirement>
   </route>
 </routes>
