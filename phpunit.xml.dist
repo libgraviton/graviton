@@ -12,9 +12,15 @@
     syntaxCheck                 = "false"
     bootstrap                   = "app/bootstrap.php.cache" >
   <testsuites>
-    <testsuite name="Graviton Test Suite">
+    <testsuite name="integration">
+      <directory>src/*/*Bundle/Tests/Controller</directory>
+      <directory>src/*/Bundle/*Bundle/Tests/Controller</directory>
+    </testsuite>
+    <testsuite name="unit">
       <directory>src/*/*Bundle/Tests</directory>
       <directory>src/*/Bundle/*Bundle/Tests</directory>
+      <exclude>src/*/*Bundle/Tests/Controller</exclude>>
+      <exclude>src/*/Bundle/*Bundle/Tests/Controller</exclude>
     </testsuite>
   </testsuites>
   <filter>
