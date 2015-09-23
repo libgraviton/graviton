@@ -257,7 +257,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
 
-        return 'graviton.'.$bundle;
+        return 'graviton.' . $bundle;
     }
 
     /**
