@@ -139,6 +139,11 @@ class FileControllerTest extends RestTestCase
         $link->{'$ref'} = 'http://localhost/core/app/web';
         $data->links[] = $link;
 
+        // also add action command
+        $command = new \stdClass();
+        $command->command = 'print';
+        $data->metadata->action = [$command];
+
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
@@ -154,6 +159,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(18, $data->metadata->size);
         $this->assertEquals('text/plain', $data->metadata->mime);
         $this->assertEquals('test.txt', $data->metadata->filename);
+        $this->assertEquals('print', $data->metadata->action[0]->command);
         $this->assertNotNull($data->metadata->createDate);
         $this->assertNotNull($data->metadata->modificationDate);
 
@@ -414,6 +420,20 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('file name', $schema->properties->metadata->properties->filename->title);
         $this->assertEquals('file name', $schema->properties->metadata->properties->filename->description);
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
+
+        // metadata action.command array
+        $this->assertEquals(
+            'string',
+            $schema->properties->metadata->properties->action->items->properties->command->type
+        );
+        $this->assertEquals(
+            'Action command array',
+            $schema->properties->metadata->properties->action->items->properties->command->title
+        );
+        $this->assertObjectNotHasAttribute(
+            'readOnly',
+            $schema->properties->metadata->properties->action->items->properties->command
+        );
 
         // Links
         $this->assertEquals('array', $schema->properties->links->type);

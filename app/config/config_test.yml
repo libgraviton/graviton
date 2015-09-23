@@ -25,6 +25,9 @@ monolog:
         name: main
         type: "test"
 
+eo_airbrake:
+    api_key: ~
+
 old_sound_rabbit_mq:
     connections:
         default:

@@ -26,11 +26,12 @@ class EmbedOne extends AbstractField
      * @param string   $fieldName   Field name
      * @param string   $exposedName Exposed name
      * @param bool     $readOnly    Read only
+     * @param bool     $required    Is required
      */
-    public function __construct(Document $document, $fieldName, $exposedName, $readOnly)
+    public function __construct(Document $document, $fieldName, $exposedName, $readOnly, $required)
     {
         $this->document = $document;
-        parent::__construct($fieldName, $exposedName, $readOnly);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required);
     }
 
     /**

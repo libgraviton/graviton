@@ -177,6 +177,9 @@
             <call method="addHeader">
                 <argument>Location</argument>
             </call>
+            <call method="addHeader">
+                <argument>X-Total-Count</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 

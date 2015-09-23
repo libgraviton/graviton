@@ -28,6 +28,10 @@ class AbstractField
      * @var bool
      */
     private $readOnly;
+    /**
+     * @var bool
+     */
+    private $required;
 
     /**
      * Constructor
@@ -35,12 +39,14 @@ class AbstractField
      * @param string $fieldName   Field name
      * @param string $exposedName Exposed name
      * @param bool   $readOnly    Read only
+     * @param bool   $required    Is required
      */
-    public function __construct($fieldName, $exposedName, $readOnly)
+    public function __construct($fieldName, $exposedName, $readOnly, $required)
     {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;
+        $this->required = $required;
     }
 
     /**
@@ -71,6 +77,16 @@ class AbstractField
     public function isReadOnly()
     {
         return $this->readOnly;
+    }
+
+    /**
+     * Is required
+     *
+     * @return bool
+     */
+    public function isRequired()
+    {
+        return $this->required;
     }
 
     /**
