@@ -184,11 +184,10 @@ class SchemaUtils
 
                         $repositoryMethod = $dynamicKeySpec->{'repository-method'};
                         $records = $dynamicRepository->$repositoryMethod();
-                        $recordGetter = $dynamicKeySpec->{'record-getter'};
 
                         $dynamicProperties = array_map(
-                            function ($record) use ($recordGetter) {
-                                return $record->$recordGetter();
+                            function ($record) {
+                                return $record->getId();
                             },
                             $records
                         );
