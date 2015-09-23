@@ -85,7 +85,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
             (new Finder())
                 ->in(__DIR__.'/../..')
                 ->path('Resources/config/serializer')
-                ->name('*.xml')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/../..')
+                ->path('Resources/config')
+                ->name('validation.xml')
         );
 
         $container->addCompilerPass(new ExtRefMappingCompilerPass());

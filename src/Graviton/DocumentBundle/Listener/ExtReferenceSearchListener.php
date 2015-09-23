@@ -11,7 +11,6 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
-use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -63,21 +62,15 @@ class ExtReferenceSearchListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         $node = $event->getNode();
-        $builder = $event->getBuilder();
-
         if ($node instanceof AbstractScalarOperatorNode) {
             $fieldName = $this->getDocumentFieldName($node->getField());
             if ($fieldName !== false) {
-                $this->processScalarNode($fieldName, $node, $builder);
-                $event->setNode(null);
-                $event->setBuilder($builder);
+                $event->setNode($this->processScalarNode($fieldName, $node));
             }
         } elseif ($node instanceof AbstractArrayOperatorNode) {
             $fieldName = $this->getDocumentFieldName($node->getField());
             if ($fieldName !== false) {
-                $this->processArrayNode($fieldName, $node, $builder);
-                $event->setNode(null);
-                $event->setBuilder($builder);
+                $event->setNode($this->processArrayNode($fieldName, $node));
             }
         }
 
@@ -89,30 +82,14 @@ class ExtReferenceSearchListener
      *
      * @param string                     $fieldName Document field name
      * @param AbstractScalarOperatorNode $node      Query node
-     * @param Builder                    $builder   Query builder
-     * @return void
+     * @return AbstractScalarOperatorNode
      */
-    private function processScalarNode($fieldName, AbstractScalarOperatorNode $node, Builder $builder)
+    private function processScalarNode($fieldName, AbstractScalarOperatorNode $node)
     {
-        $operatorMap = [
-            'eq' => 'equals',
-            'ne' => 'notEqual',
-            'lt' => 'lt',
-            'gt' => 'gt',
-            'le' => 'lte',
-            'ge' => 'gte',
-        ];
-        if (!isset($operatorMap[$node->getNodeName()])) {
-            throw new \InvalidArgumentException(
-                sprintf('Could not apply operator "%s" to extref', $node->getNodeName())
-            );
-        }
-
-        $compareOperator = $operatorMap[$node->getNodeName()];
-
-        $builder
-            ->field(strtr($fieldName, ['.0.' => '.']))
-            ->$compareOperator($this->getDbRefValue($node->getValue()));
+        $copy = clone $node;
+        $copy->setField(strtr($fieldName, ['.0.' => '.']));
+        $copy->setValue($this->getDbRefValue($node->getValue()));
+        return $copy;
     }
 
     /**
@@ -120,36 +97,14 @@ class ExtReferenceSearchListener
      *
      * @param string                    $fieldName Document field
      * @param AbstractArrayOperatorNode $node      Query node
-     * @param Builder                   $builder   Query builder
-     * @return void
+     * @return AbstractArrayOperatorNode
      */
-    private function processArrayNode($fieldName, AbstractArrayOperatorNode $node, Builder $builder)
+    private function processArrayNode($fieldName, AbstractArrayOperatorNode $node)
     {
-        if ($node->getValues() === []) {
-            return;
-        }
-
-        $operatorMap = [
-            'in'  => ['addOr', 'equals'],
-            'out' => ['addAnd', 'notEqual'],
-        ];
-        if (!isset($operatorMap[$node->getNodeName()])) {
-            throw new \InvalidArgumentException(
-                sprintf('Could not apply operator "%s" to extref', $node->getNodeName())
-            );
-        }
-
-        list($groupOperator, $compareOperator) = $operatorMap[$node->getNodeName()];
-
-        $expr = $builder->expr();
-        foreach ($node->getValues() as $extrefUrl) {
-            $expr->$groupOperator(
-                $builder->expr()
-                    ->field(strtr($fieldName, ['.0.' => '.']))
-                    ->$compareOperator($this->getDbRefValue($extrefUrl))
-            );
-        }
-        $builder->addAnd($expr);
+        $copy = clone $node;
+        $copy->setField(strtr($fieldName, ['.0.' => '.']));
+        $copy->setValues(array_map([$this, 'getDbRefValue'], $node->getValues()));
+        return $copy;
     }
 
     /**

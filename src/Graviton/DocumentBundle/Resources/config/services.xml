@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="graviton.document.service.extrefjsonconverter.class">Graviton\DocumentBundle\Service\ExtReferenceJsonConverter</parameter>
+        <parameter key="graviton.document.form.type.document.fieldbuilder.class">Graviton\DocumentBundle\Form\Type\FieldBuilder\ChainFieldBuilder</parameter>
         <parameter key="graviton.document.service.formdatamapper.class">Graviton\DocumentBundle\Service\FormDataMapper</parameter>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
         <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
@@ -47,7 +48,30 @@
             <tag name="form.type" alias="extref"/>
         </service>
         <!-- dynamic form builder -->
+        <service id="graviton.document.form.type.document.fieldbuilder" class="%graviton.document.form.type.document.fieldbuilder.class%">
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\DateFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\FormFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\CollectionFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\DefaultFieldBuilder"/>
+                </argument>
+            </call>
+        </service>
         <service id="graviton.document.form.type.document" class="%graviton.document.form.type.document.class%">
+            <argument type="service" id="graviton.document.form.type.document.fieldbuilder"/>
             <argument>%graviton.document.form.type.document.field_map%</argument>
         </service>
         <!-- freeform form type -->

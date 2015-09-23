@@ -43,7 +43,7 @@ class EmptyObjectControllerTest extends RestTestCase
     public function testCheckGetOne($id)
     {
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/emptyObject/?id='.$id);
+        $client->request('GET', '/testcase/emptyobject/?id='.$id);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertInternalType('array', $client->getResults());
         $this->assertCount(1, $client->getResults());
@@ -80,7 +80,7 @@ class EmptyObjectControllerTest extends RestTestCase
     public function testCheckGetAll()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/emptyObject/');
+        $client->request('GET', '/testcase/emptyobject/');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertInternalType('array', $client->getResults());
         $this->assertCount(4, $client->getResults());

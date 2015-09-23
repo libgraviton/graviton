@@ -5,8 +5,11 @@
 
 namespace Graviton\DocumentBundle\Form\Type;
 
+use Graviton\DocumentBundle\Form\Type\FieldBuilder\FieldBuilderInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -24,12 +27,20 @@ class DocumentType extends AbstractType
      * @var array
      */
     private $fieldMap;
+    /**
+     * @var FieldBuilderInterface
+     */
+    private $fieldBuilder;
 
     /**
-     * @param array $fieldMap array to map document class names to fields
+     * Constructor
+     *
+     * @param FieldBuilderInterface $fieldBuilder Field builder
+     * @param array                 $fieldMap     array to map document class names to fields
      */
-    public function __construct(array $fieldMap)
+    public function __construct(FieldBuilderInterface $fieldBuilder, array $fieldMap)
     {
+        $this->fieldBuilder = $fieldBuilder;
         $this->fieldMap = $fieldMap;
     }
 
@@ -47,6 +58,20 @@ class DocumentType extends AbstractType
     }
 
     /**
+     * Get child form with specified class
+     *
+     * @param string $documentClass Document class
+     * @return DocumentType
+     */
+    public function getChildForm($documentClass)
+    {
+        $clone = clone $this;
+        $clone->initialize($documentClass);
+
+        return $clone;
+    }
+
+    /**
      * @param FormBuilderInterface $builder form builder
      * @param array                $options array of options
      *
@@ -54,30 +79,9 @@ class DocumentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($this->fieldMap[$this->dataClass] as $field) {
-            list($fieldName, $formName, $type, $options)  = $field;
-            if ($fieldName !== $formName) {
-                $options['property_path'] = $fieldName;
-            }
-
-            if ($type == 'form') {
-                $type = clone $this;
-                if (!isset($options['data_class'])) {
-                    $options['data_class'] = 'stdclass';
-                }
-                $type->initialize($options['data_class']);
-            } elseif ($type === 'date' || $type == 'datetime') {
-                $options['widget'] = 'single_text';
-                $options['input'] = 'string';
-            } elseif ($type == 'collection' && $options['type'] == 'form') {
-                $subType = clone $this;
-                $subType->initialize($options['options']['data_class']);
-                $options['type'] = $subType;
-                $options['allow_add'] = true;
-                $options['allow_delete'] = true;
-            }
-            $builder->add($formName, $type, $options);
-        }
+        // We have to build a document form in PRE_SUBMIT event handler
+        // because we need to configure required flag depending on submitted data.
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'handlePreSubmitEvent']);
     }
 
     /**
@@ -96,5 +100,46 @@ class DocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['data_class' => $this->dataClass]);
+    }
+
+    /**
+     * Handle "presubmit" event
+     *
+     * @param FormEvent $event Submit event
+     * @return void
+     */
+    public function handlePreSubmitEvent(FormEvent $event)
+    {
+        if (empty($this->fieldMap[$this->dataClass])) {
+            return;
+        }
+
+        $form = $event->getForm();
+        $data = $event->getData();
+        if (!$form->isRequired() && $data === null) {
+            return;
+        }
+
+        foreach ($this->fieldMap[$this->dataClass] as $config) {
+            list($name, $type, $options) = $config;
+            if (!$this->fieldBuilder->supportsField($type, $options)) {
+                throw new \LogicException(
+                    sprintf(
+                        'Could not build field "%s" with options "%s"',
+                        $type,
+                        json_encode($options)
+                    )
+                );
+            }
+
+            $this->fieldBuilder->buildField(
+                $this,
+                $form,
+                $name,
+                $type,
+                $options,
+                is_array($data) && isset($data[$name]) ? $data[$name] : null
+            );
+        }
     }
 }
