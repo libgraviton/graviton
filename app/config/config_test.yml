@@ -23,6 +23,10 @@ monolog:
     handler:
         name: main
         type: "test"
+
+eo_airbrake:
+    api_key: ~
+
 graviton_proxy:
     sources:
         swagger:
