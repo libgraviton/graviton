@@ -39,10 +39,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $requiredFields = array();
     /**
-     * @var array
-     */
-    protected $notModifiableOriginRecords;
-    /**
      * @var DocumentRepository
      */
     private $repository;
@@ -50,6 +46,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var Visitor
      */
     private $visitor;
+    /**
+     * @var array
+     */
+    protected $notModifiableOriginRecords;
     /**
      * @var  integer
      */
@@ -106,7 +106,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
-        $queryBuilder = $this->repository->createQueryBuilder();
+        $queryBuilder = $this->repository
+            ->createQueryBuilder();
 
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
@@ -161,7 +162,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
+     * @param \Graviton\I18nBundle\Document\Translatable $entity entity to insert
      *
      * @return Object
      */
@@ -284,7 +285,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected function checkIfOriginRecord($record)
     {
-        if ($record instanceof RecordOriginInterface && !$record->isRecordOriginModifiable()) {
+        if ($record instanceof RecordOriginInterface
+            && !$record->isRecordOriginModifiable()
+        ) {
             $values = $this->notModifiableOriginRecords;
             $originValue = strtolower(trim($record->getRecordOrigin()));
 
