@@ -18,16 +18,6 @@ class CoreUtilsTest extends \PHPUnit_Framework_TestCase
                 array("id" => "self", "version" => "0.25.1"),
                 array("id" => "financing", "version" => "0.1"),
             );
-    /**
-     * Verifies the correct behavior of getVersion()
-     *
-     * @return void
-     */
-    public function testGetVersionById()
-    {
-        $utils = new CoreUtils($this->versions);
-        $this->assertEquals($this->versions[0]['version'], $utils->getVersionById('self')['version']);
-    }
 
     /**
      * Verifies the correct behavior of getWrapperVersion()

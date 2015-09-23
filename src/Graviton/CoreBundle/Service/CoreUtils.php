@@ -56,19 +56,6 @@ class CoreUtils
     }
 
     /**
-     * @param string $id add package name
-     * @return array single entry
-     */
-    public function getVersionById($id)
-    {
-        foreach ($this->versions as $version) {
-            if ($version['id'] == $id) {
-                return $version;
-            }
-        }
-    }
-
-    /**
      *
      * @return array wrapper version
      */
