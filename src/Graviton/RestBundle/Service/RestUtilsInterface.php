@@ -96,6 +96,15 @@ interface RestUtilsInterface
     public function getModelFromRoute(Route $route);
 
     /**
+     * Gets the Schema assigned to the RestController
+     *
+     * @param Route $route
+     * @return bool|object The schema or false
+     * @throws \Exception
+     */
+    public function getSchemaFromRoute(Route $route);
+
+    /**
      * Gets the controller from a Route
      *
      * @param Route $route Route

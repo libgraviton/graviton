@@ -226,6 +226,23 @@ final class RestUtils implements RestUtilsInterface
     }
 
     /**
+     * Gets the Schema assigned to the RestController
+     *
+     * @param Route $route
+     * @return bool|object The schema or false
+     * @throws \Exception
+     */
+    public function getSchemaFromRoute(Route $route)
+    {
+        $controller = $this->getControllerFromRoute($route);
+        if ($controller instanceof RestController) {
+            return $controller->getModelSchema('');
+        }
+
+        return false;
+    }
+
+    /**
      * Gets the controller from a Route
      *
      * @param Route $route Route
