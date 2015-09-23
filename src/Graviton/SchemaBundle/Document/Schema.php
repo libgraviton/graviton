@@ -45,7 +45,7 @@ class Schema
     protected $properties = array();
 
     /**
-     * @var Schema[]
+     * @var Schema
      */
     protected $additionalProperties;
 
