@@ -90,7 +90,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessSwagger()
     {
-        $this->testProcessMethod(0);
+        $this->callProcessMethod(0);
 
         $schema = array();
         $schema['$ref'] = '#/definitions/Person';
@@ -118,7 +118,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $person->properties->name = new \stdClass();
         $this->swagger->definitions->Person = $person;
 
-        $apiDefinition = $this->testProcessMethod(2);
+        $apiDefinition = $this->callProcessMethod(2);
         foreach ($apiDefinition->getEndpoints(false) as $endpoint) {
             $this->assertEquals($person, $apiDefinition->getSchema($endpoint));
         }
@@ -136,7 +136,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $deleteEndpoint['delete'] = new \stdClass();
         $path = '/delete/endpoint';
         $this->swagger->paths->$path = (object) $deleteEndpoint;
-        $this->testProcessMethod(1);
+        $this->callProcessMethod(1);
     }
 
     /**
@@ -150,7 +150,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $emptyEndpoint['get']['responses']['200']['schema'] = null;
         $path = '/no/schema/endpoint';
         $this->swagger->paths->$path = (object) $emptyEndpoint;
-        $this->testProcessMethod(1);
+        $this->callProcessMethod(1);
     }
 
     /**
@@ -160,7 +160,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      *
      * @return ApiDefinition
      */
-    private function testProcessMethod($count)
+    private function callProcessMethod($count)
     {
         $fallbackData = array('host' => 'localhost');
         $apiDefinition = $this->sut->process(json_encode($this->swagger), $fallbackData);
