@@ -125,8 +125,12 @@ class ApiDefinitionLoader
         if (isset($this->options['prefix'])) {
             $prefix .= "/".$this->options['prefix'];
         }
+        $retVal = array();
+        if (is_object($this->definition)) {
+            $retVal = $this->definition->getEndpoints($withHost, $prefix);
+        }
 
-        return $this->definition->getEndpoints($withHost, $prefix);
+        return$retVal;
     }
 
     /**

@@ -75,7 +75,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
         /** @var array $swagger */
         $swagger = $this->decodeJson($input, true);
 
-        $mandatoryFields = ['swagger', 'info', 'paths', 'version', 'title', 'definition'];
+        $mandatoryFields = ['swagger', 'info', 'paths', 'version', 'title', 'definitions'];
         $fields = array_merge(array_keys($swagger), array_keys($swagger['info']));
         $intersect = array_intersect($mandatoryFields, $fields);
 

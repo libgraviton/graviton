@@ -81,6 +81,11 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $this->sut->process('{}', array());
     }
 
+    /**
+     * test the process method
+     *
+     * @return void
+     */
     public function testProcess()
     {
         $fallbackData = array('host' => 'localhost');
