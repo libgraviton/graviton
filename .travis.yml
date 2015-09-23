@@ -2,22 +2,29 @@ language: php
 services: mongodb
 sudo: false
 before_script:
-- if [ $(phpenv version-name) != "hhvm" ] && [ $(phpenv version-name) != "7.0" ]; then echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
-- if [ $(phpenv version-name) = "hhvm" ] || [ $(phpenv version-name) = "7.0" ]; then composer require mongofill/mongofill --ignore-platform-reqs; fi
-- composer install --no-interaction  --ignore-platform-reqs
-- touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm
-- touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm
-- wget https://scrutinizer-ci.com/ocular.phar
+- >
+    if [ $(phpenv version-name) != "hhvm" ] && [ $(phpenv version-name) != "7.0" ]; then
+        echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; 
+    fi
+- >
+    if [ $(phpenv version-name) = "hhvm" ] || [ $(phpenv version-name) = "7.0" ]; then
+        composer require mongofill/mongofill --ignore-platform-reqs --no-update;
+    fi
+- composer install --no-interaction  --ignore-platform-reqs --no-scripts
+- >
+    if [ "$PHPUNIT" = "true" ]; then
+        wget https://scrutinizer-ci.com/ocular.phar
+    fi
 php:
-- hhvm
 - 5.6
 - 5.5
 - 7.0
+- hhvm
 env:
   matrix:
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
 matrix:
   exclude:
   - php: 5.5
@@ -32,7 +39,10 @@ matrix:
 script:
 - >
     if [ "$PHPUNIT" = "true" ]; then
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite=$PHPUNIT_SUITE && \
+        composer run-script post-install-cmd && \
+        touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm && \
+        touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm && \
+        vendor/bin/phpunit --coverage-clover=coverage.clover --testsuite=$PHPUNIT_SUITE && \
         php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
     fi
 - >
