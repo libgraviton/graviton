@@ -27,12 +27,12 @@ class ApiDefinition
     /**
      * @var array
      */
-    private $endpoints;
+    private $endpoints = array();
 
     /**
      * @var array
      */
-    private $schemes;
+    private $schemes = array();
 
     /**
      * sets the base path of the api

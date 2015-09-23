@@ -38,10 +38,12 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $this->swagger = new \stdClass();
         $this->swagger->swagger = "2.0";
         $this->swagger->paths = new \stdClass();
-        $this->swagger->definition = new \stdClass();
+        $this->swagger->definitions = new \stdClass();
         $this->swagger->info = new \stdClass();
         $this->swagger->info->title = "test swagger";
         $this->swagger->info->version = "1.0.0";
+        $this->swagger->basePath = "/api/prefix";
+        $this->swagger->host = "testapi.local";
     }
 
 
@@ -82,14 +84,89 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * test the process method
+     * processing swagger
      *
      * @return void
      */
-    public function testProcess()
+    public function testProcessSwagger()
+    {
+        $this->testProcessMethod(0);
+
+        $schema = array();
+        $schema['$ref'] = '#/definitions/Person';
+
+        $customer = array();
+        $otherParam = array('in' => 'blub');
+        $customer['post']['parameters'][] = $otherParam;
+        $customer['get']['responses']['200']['schema'] = $schema;
+        $customerPath = '/person/customer';
+        $this->swagger->paths->$customerPath = (object) $customer;
+
+        $bodyParam = array('in' => 'body', 'schema' => $schema);
+        $consultant = array();
+        $consultant['get']['responses']['400'] = new \stdClass();
+        $consultant['post']['parameters'][] = $bodyParam;
+        $consultantPath = '/person/consultant';
+        $consultantPathWithId = '/person/consultant/{id}';
+        $this->swagger->paths->$consultantPath = (object) $consultant;
+        $this->swagger->paths->$consultantPathWithId = (object) $consultant;
+
+        $person = new \stdClass();
+        $person->type = "object";
+        $person->properties = new \stdClass();
+        $person->properties->id = new \stdClass();
+        $person->properties->name = new \stdClass();
+        $this->swagger->definitions->Person = $person;
+
+        $apiDefinition = $this->testProcessMethod(2);
+        foreach ($apiDefinition->getEndpoints(false) as $endpoint) {
+            $this->assertEquals($person, $apiDefinition->getSchema($endpoint));
+        }
+    }
+
+    /**
+     * test a delete endpoint
+     *
+     * @return void
+     */
+    public function testProcessDeleteEndpoint()
+    {
+        $fallbackData = array('host' => 'localhost');
+        $deleteEndpoint = array();
+        $deleteEndpoint['delete'] = new \stdClass();
+        $path = '/delete/endpoint';
+        $this->swagger->paths->$path = (object) $deleteEndpoint;
+        $this->testProcessMethod(1);
+    }
+
+    /**
+     * test endpoint with no schema
+     *
+     * @return void
+     */
+    public function testProcessNoSchema()
+    {
+        $emptyEndpoint = array();
+        $emptyEndpoint['get']['responses']['200']['schema'] = null;
+        $path = '/no/schema/endpoint';
+        $this->swagger->paths->$path = (object) $emptyEndpoint;
+        $this->testProcessMethod(1);
+    }
+
+    /**
+     * test process method
+     *
+     * @param int $count number of endpoints
+     *
+     * @return ApiDefinition
+     */
+    private function testProcessMethod($count)
     {
         $fallbackData = array('host' => 'localhost');
         $apiDefinition = $this->sut->process(json_encode($this->swagger), $fallbackData);
         $this->assertInstanceOf('Graviton\ProxyBundle\Definition\ApiDefinition', $apiDefinition);
+        $this->assertCount($count, $apiDefinition->getEndpoints());
+
+        return $apiDefinition;
     }
 }
