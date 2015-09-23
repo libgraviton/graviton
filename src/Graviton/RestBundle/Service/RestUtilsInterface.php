@@ -98,7 +98,7 @@ interface RestUtilsInterface
     /**
      * Gets the Schema assigned to the RestController
      *
-     * @param Route $route
+     * @param Route $route Route
      * @return bool|object The schema or false
      * @throws \Exception
      */
