@@ -45,6 +45,11 @@ class Schema
     protected $properties = array();
 
     /**
+     * @var Schema[]
+     */
+    protected $additionalProperties;
+
+    /**
      * @var string[]
      */
     protected $required = array();
@@ -217,6 +222,27 @@ class Schema
     public function getItems()
     {
         return $this->items;
+    }
+
+    /**
+     * Set "additionalProperties" schema
+     *
+     * @param Schema|null $schema Properties schema
+     * @return void
+     */
+    public function setAdditionalProperties(Schema $schema = null)
+    {
+        $this->additionalProperties = $schema;
+    }
+
+    /**
+     * Get "additionalProperties" schema
+     *
+     * @return Schema|null
+     */
+    public function getAdditionalProperties()
+    {
+        return $this->additionalProperties;
     }
 
     /**
