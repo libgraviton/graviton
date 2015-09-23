@@ -5,6 +5,7 @@
 
 namespace Graviton\ProxyBundle\Tests\Definition\Loader\DispersalStrategy;
 
+use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy;
 
 /**
@@ -131,7 +132,6 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessDeleteEndpoint()
     {
-        $fallbackData = array('host' => 'localhost');
         $deleteEndpoint = array();
         $deleteEndpoint['delete'] = new \stdClass();
         $path = '/delete/endpoint';
