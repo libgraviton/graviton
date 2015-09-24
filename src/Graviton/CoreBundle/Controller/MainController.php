@@ -178,7 +178,8 @@ class MainController
      */
     private function isRelevantForMainPage($val)
     {
-        return (substr($val['$ref'], -1) === '/') || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
+        return (substr($val['$ref'], -1) === '/')
+            || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
     }
 
     /**

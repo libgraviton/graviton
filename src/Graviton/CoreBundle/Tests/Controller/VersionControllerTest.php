@@ -40,7 +40,7 @@ class VersionControllerTest extends RestTestCase
     public function testVersionsSchemaAction()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/schema/core/version/');
+        $client->request('GET', '/schema/core/version');
         $response = $client->getResponse();
 
         $this->assertEquals(
