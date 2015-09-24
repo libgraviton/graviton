@@ -37,6 +37,7 @@ class VersionCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $this->rootDir = $container->getParameter('kernel.root_dir');
+        $this->composerCmd = $container->getParameter('graviton.composer.cmd');
         $this->config = $this->getVersionConfig();
         $container->setParameter(
             'graviton.core.version.data',
@@ -70,7 +71,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getContextVersion()
     {
-        $output = $this->runCommandInContext('composer show -s --no-ansi');
+        $output = $this->runCommandInContext($this->composerCmd . ' show -s --no-ansi');
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
         foreach ($lines as $line) {
@@ -92,7 +93,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $output = $this->runCommandInContext('composer show --installed');
+        $output = $this->runCommandInContext($this->composerCmd . ' show --installed');
 
         $packages = explode(PHP_EOL, $output);
         //last index is always empty

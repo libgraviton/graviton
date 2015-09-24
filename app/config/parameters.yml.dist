@@ -39,3 +39,6 @@ parameters:
 
     # pagination defaults
     graviton.rest.pagination.limit: 10
+    
+    # how to call composer on this machine
+    graviton.composer.cmd: composer
