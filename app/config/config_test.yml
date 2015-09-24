@@ -23,3 +23,6 @@ monolog:
     handler:
         name: main
         type: "test"
+
+eo_airbrake:
+    api_key: ~
