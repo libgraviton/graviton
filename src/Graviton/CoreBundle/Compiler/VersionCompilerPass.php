@@ -71,7 +71,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getContextVersion()
     {
-        $output = $this->runCommandInContext($this->composerCmd . ' show -s --no-ansi');
+        $output = $this->runComposerInContext('show -s --no-ansi');
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
         foreach ($lines as $line) {
@@ -93,7 +93,7 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $output = $this->runCommandInContext($this->composerCmd . ' show --installed');
+        $output = $this->runComposerInContext('show --installed');
 
         $packages = explode(PHP_EOL, $output);
         //last index is always empty
@@ -110,18 +110,20 @@ class VersionCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * runs a bash/shell command depending on the context
+     * runs a composer command depending on the context
      *
-     * @param string $command shell/bash command
+     * @param string $command composer args
      * @return string
      */
-    private function runCommandInContext($command)
+    private function runComposerInContext($command)
     {
         if ($this->isWrapperContext()) {
-            $process = new Process('cd ' . escapeshellarg($this->rootDir) . '/../../../../  && ' . $command);
+            $contextDir = escapeshellarg($this->rootDir).'/../../../../';
         } else {
-            $process = new Process('cd ' . escapeshellarg($this->rootDir) . '/../ && ' . $command);
+            $contextDir = escapeshellarg($this->rootDir).'/../';
         }
+
+        $process = new Process('cd '.$contextDir.' && '.escapeshellarg($this->composerCmd).' '.$command);
 
         try {
             $process->mustRun();
