@@ -24,7 +24,7 @@ class XDynamicKey
     /**
      * @var string
      */
-    private $refField = '$ref';
+    private $refMethod = 'getRef';
 
     /**
      * @return string
@@ -65,18 +65,18 @@ class XDynamicKey
     /**
      * @return string
      */
-    public function getRefField()
+    public function getRefMethod()
     {
-        return $this->refField;
+        return $this->refMethod;
     }
 
     /**
-     * @param string $refField reference the dynamic field is resolved through
+     * @param string $refMethod reference the dynamic field is resolved through
      * @return $this
      */
-    public function setRefField($refField)
+    public function setRefMethod($refMethod)
     {
-        $this->refField = $refField;
+        $this->refMethod = $refMethod;
         return $this;
     }
 }

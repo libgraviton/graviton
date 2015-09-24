@@ -7,8 +7,8 @@
         <property name="repositoryMethod"
                   type="string"
                   serialized-name="repository-method"/>
-        <property name="refField"
+        <property name="refMethod"
                   type="string"
-                  serialized-name="ref-field"/>
+                  serialized-name="ref-method"/>
     </class>
 </serializer>
