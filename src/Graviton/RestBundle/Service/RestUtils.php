@@ -164,7 +164,7 @@ final class RestUtils implements RestUtilsInterface
             $router->getRouteCollection()
                    ->all(),
             function ($route) {
-                if ($route->getRequirement('_method') != 'OPTIONS') {
+                if (!in_array('OPTIONS', $route->getMethods())) {
                     return false;
                 }
                 // ignore all schema routes
