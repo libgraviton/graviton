@@ -41,7 +41,12 @@
         "type": "string",
         "title": "Status",
         "description": "A string representing the status (opened, working, failed, done)",
-        "required": true
+        "required": true,
+        "constraints": [
+          {
+            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidStatus"
+          }
+        ]
       },
       {
         "name": "errorInformation.0.workerId",
