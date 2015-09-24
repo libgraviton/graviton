@@ -36,3 +36,6 @@ parameters:
     # errbit config
     graviton.errbit.api_key: ~
     graviton.errbit.host: ~
+
+    # pagination defaults
+    graviton.rest.pagination.limit: 10
