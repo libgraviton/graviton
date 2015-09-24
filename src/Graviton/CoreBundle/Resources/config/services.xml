@@ -17,6 +17,9 @@
         <parameter key="graviton.core.links" type="collection">
             <parameter>graviton.core.static.version.get</parameter>
         </parameter>
+        <parameter key="graviton.core.main.path.whitelist" type="collection">
+            <parameter>/core/version</parameter>
+        </parameter>
     </parameters>
     <services>
         <service id="graviton.core.controller.main"
@@ -26,6 +29,7 @@
              <argument type="service" id="graviton.rest.restutils"/>
              <argument type="service" id="templating"/>
              <argument>%graviton.core.links%</argument>
+             <argument>%graviton.core.main.path.whitelist%</argument>
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
