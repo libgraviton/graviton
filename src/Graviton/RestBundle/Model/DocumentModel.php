@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
-use Graviton\RestBundle\Model\RecordOriginInterface;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
@@ -43,26 +42,30 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var DocumentRepository
      */
     private $repository;
-
     /**
      * @var Visitor
      */
     private $visitor;
-
     /**
      * @var array
      */
     protected $notModifiableOriginRecords;
+    /**
+     * @var  integer
+     */
+    private $paginationDefaultLimit;
 
     /**
      * @param Visitor $visitor                    rql query visitor
      * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param integer $paginationDefaultLimit     amount of data records to be returned when in pagination context.
      */
-    public function __construct(Visitor $visitor, $notModifiableOriginRecords)
+    public function __construct(Visitor $visitor, $notModifiableOriginRecords, $paginationDefaultLimit)
     {
         parent::__construct();
         $this->visitor = $visitor;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
+        $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
 
     /**
@@ -99,7 +102,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int) $request->query->get('perPage', 10);
+        $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
@@ -159,7 +162,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity entityy to insert
+     * @param \Graviton\I18nBundle\Document\Translatable $entity entity to insert
      *
      * @return Object
      */
@@ -269,6 +272,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected function doRqlQuery($queryBuilder, Query $query)
     {
         $this->visitor->setBuilder($queryBuilder);
+
         return $this->visitor->visit($query);
     }
 
@@ -293,5 +297,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 throw new RecordOriginModifiedException($msg);
             }
         }
+    }
+
+    /**
+     * Determines the configured amount fo data records to be returned in pagination context.
+     *
+     * @return int
+     */
+    private function getDefaultLimit()
+    {
+        if (0 < $this->paginationDefaultLimit) {
+            return $this->paginationDefaultLimit;
+        }
+
+        return 10;
     }
 }

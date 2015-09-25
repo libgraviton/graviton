@@ -1,0 +1,16 @@
+{
+  "title": "Versions",
+  "description": "Reveals version numbers of configured packages",
+  "type": "object",
+  "properties": {
+    "versions": {
+      "title": "versions",
+      "description": "Object of versions",
+      "additionalProperties": {
+        "title": "Version Number",
+        "description": "The actual version",
+        "type": "string"
+      }
+    }
+  }
+}

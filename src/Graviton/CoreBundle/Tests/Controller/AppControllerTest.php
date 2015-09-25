@@ -46,7 +46,6 @@ class AppControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
     }
-
     /**
      * check if all fixtures are returned on GET
      *
@@ -61,7 +60,6 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
-
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
