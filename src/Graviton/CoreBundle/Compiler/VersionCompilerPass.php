@@ -118,12 +118,12 @@ class VersionCompilerPass implements CompilerPassInterface
     private function runComposerInContext($command)
     {
         if ($this->isWrapperContext()) {
-            $contextDir = escapeshellarg($this->rootDir).'/../../../../';
+            $contextDir = escapeshellarg($this->rootDir.'/../../../../');
         } else {
-            $contextDir = escapeshellarg($this->rootDir).'/../';
+            $contextDir = escapeshellarg($this->rootDir.'/../');
         }
 
-        $process = new Process('cd '.$contextDir.' && '.escapeshellarg($this->composerCmd).' '.$command);
+        $process = new Process('cd '.$contextDir.' && '.escapeshellcmd($this->composerCmd).' '.$command);
 
         try {
             $process->mustRun();
