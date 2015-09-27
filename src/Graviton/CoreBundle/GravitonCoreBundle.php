@@ -20,6 +20,8 @@ use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Graviton\CoreBundle\Compiler\VersionCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * GravitonCoreBundle
@@ -58,5 +60,19 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonFileBundle(),
             new GravitonRabbitMqBundle(),
         );
+    }
+
+    /**
+     * load version compiler pass
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new VersionCompilerPass());
     }
 }

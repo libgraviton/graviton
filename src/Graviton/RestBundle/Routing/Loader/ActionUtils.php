@@ -50,9 +50,7 @@ class ActionUtils
             '_format' => '~',
         );
 
-        $requirements = array(
-            '_method' => $method,
-        );
+        $requirements = [];
 
         foreach ($parameters as $paramName => $paramPattern) {
             $pattern .= '{' . $paramName . '}';
@@ -60,6 +58,8 @@ class ActionUtils
         }
 
         $route = new Route($pattern, $defaults, $requirements);
+
+        $route->setMethods($method);
 
         return $route;
     }
@@ -188,11 +188,8 @@ class ActionUtils
             '_format' => '~',
         );
 
-        $requirements = array(
-            '_method' => $method,
-        );
-
-        $route = new Route($pattern, $defaults, $requirements);
+        $route = new Route($pattern, $defaults, []);
+        $route->setMethods($method);
 
         return $route;
     }

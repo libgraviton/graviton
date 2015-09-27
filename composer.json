@@ -123,7 +123,9 @@
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.errbit.api_key": "ERRBIT_API_KEY",
-                    "graviton.errbit.host": "ERRBIT_HOST"
+                    "graviton.errbit.host": "ERRBIT_HOST",
+                    "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
+                    "graviton.composer.cmd": "COMPOSER_CMD"
                 }
             },
             {
