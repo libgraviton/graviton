@@ -520,9 +520,9 @@ class RestController
         $response->setPublic();
 
         if (!$id && $schemaType != 'canonicalIdSchema') {
-            $schema = $this->schemaUtils->getCollectionSchema($modelName, $this->getModel());
+            $schema = $this->getCollectionSchema($modelName);
         } else {
-            $schema = $this->schemaUtils->getModelSchema($modelName, $this->getModel());
+            $schema = $this->getModelSchema($modelName);
         }
 
         // enabled methods for CorsListener
@@ -542,6 +542,38 @@ class RestController
             ['response' => $this->serialize($schema)],
             $response
         );
+    }
+
+    /**
+     * Get model schema
+     *
+     * @param string $modelName Model name
+     * @return \Graviton\SchemaBundle\Document\Schema
+     */
+    public function getModelSchema($modelName)
+    {
+        return $this->getSchemaUtils()->getModelSchema($modelName, $this->getModel());
+    }
+
+    /**
+     * Get collection schema
+     *
+     * @param string $modelName Model name
+     * @return \Graviton\SchemaBundle\Document\Schema
+     */
+    public function getCollectionSchema($modelName)
+    {
+        return $this->getSchemaUtils()->getCollectionSchema($modelName, $this->getModel());
+    }
+
+    /**
+     * Get schema utils
+     *
+     * @return SchemaUtils
+     */
+    public function getSchemaUtils()
+    {
+        return $this->schemaUtils;
     }
 
     /**

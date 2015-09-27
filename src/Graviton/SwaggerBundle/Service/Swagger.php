@@ -103,7 +103,15 @@ class Swagger
 
                 $entityClassName = str_replace('\\', '', get_class($thisModel));
 
-                $schema = $this->schemaUtils->getModelSchema($entityClassName, $thisModel, false);
+                $schema = $this->restUtils->getSchemaFromRoute($route);
+                if ($schema === false) {
+                    throw new \LogicException(
+                        sprintf(
+                            'Could not resolve route "%s" to schema',
+                            $routeName
+                        )
+                    );
+                }
 
                 $ret['definitions'][$entityClassName] = json_decode(
                     $this->restUtils->serializeContent($schema),
