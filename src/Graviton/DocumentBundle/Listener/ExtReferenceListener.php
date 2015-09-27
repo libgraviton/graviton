@@ -131,6 +131,11 @@ class ExtReferenceListener
 
                 if (isset($item->$topLevel)) {
                     $item->$topLevel = $this->mapField($item->$topLevel, $subField);
+                } else {
+                    // map available things since we found nothing on $topLevel and there might be some refs deeper down
+                    foreach (get_object_vars($item) as $subLevel => $subItem) {
+                        $item->$subLevel = $this->mapField($subItem, $subField);
+                    }
                 }
             } elseif (isset($item->$field)) {
                 $item->$field = $this->convertToUrl($item->$field);
