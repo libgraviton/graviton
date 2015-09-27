@@ -1,6 +1,8 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
+
 /**
  * A single field as specified in the json definition
  *
@@ -170,7 +172,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getXDynamicKey()
     {
         $key = $this->definition->getXDynamicKey();
-        if ($key) {
+        if ($key instanceof XDynamicKey) {
             return $key;
         }
     }
