@@ -32,19 +32,47 @@ class ScriptHandler extends ScriptHandlerBase
         $baseDir = __DIR__.'/../../../..';
         $rootDir = $baseDir.'/app';
 
-        $coreVersionUtils = new CoreVersionUtils(
-            getenv('COMPOSER_CMD') ? getenv('COMPOSER_CMD') : 'composer',
-            $rootDir,
-            new Dumper
-        );
-        $filesystem = new Filesystem;
+        if (self::hasComposerCommandInEnvVars()) {
+            $coreVersionUtils = new CoreVersionUtils(
+                self::getComposerCommand(),
+                $rootDir,
+                new Dumper
+            );
+            $filesystem = new Filesystem;
 
-        // read version config using composer
-        $coreVersionUtils->getVersionConfig();
+            // read version config using composer
+            $coreVersionUtils->getVersionConfig();
 
-        $filesystem->dumpFile(
-            $baseDir . '/versions.yml',
-            $coreVersionUtils->getPackageVersions()
-        );
+            $filesystem->dumpFile(
+                $baseDir . '/versions.yml',
+                $coreVersionUtils->getPackageVersions()
+            );
+        }
+    }
+
+    /**
+     * Finds the composer command set in environment var »COMPOSER_CMD«
+     *
+     * @return bool
+     */
+    private static function hasComposerCommandInEnvVars()
+    {
+        return false !== getenv('COMPOSER_CMD') && 'false' !== getenv('COMPOSER_CMD') ;
+    }
+
+    /**
+     * Finds the composer command on defined for the current instance.
+     *
+     * @return string
+     */
+    private static function getComposerCommand()
+    {
+        $composerCommand = getenv('COMPOSER_CMD');
+
+        if (empty($composerCommand)) {
+            $composerCommand = 'composer';
+        }
+
+        return $composerCommand;
     }
 }
