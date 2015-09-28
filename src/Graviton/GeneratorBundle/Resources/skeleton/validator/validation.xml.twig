@@ -69,6 +69,25 @@
         {% set thisCons = thisCons|merge([addedCon]) %}
     {% endif %}
 
+    {% if '[]' in field.type and 'Graviton' not in field.type %}
+        {% set addedCon = '' %}
+        {% set addedCon = addedCon ~ '<constraint name="Type">' %}
+        {% set addedCon = addedCon ~ '<option name="type">array</option>' %}
+        {% set addedCon = addedCon ~ '<option name="message">This value should be of type array.</option>' %}
+        {% set addedCon = addedCon ~ '</constraint>' %}
+        {% set thisCons = thisCons|merge([addedCon]) %}
+
+        {% set addedCon = '' %}
+        {% set addedCon = addedCon ~ '<constraint name="All">' %}
+        {% set addedCon = addedCon ~ '<option name="constraints">' %}
+        {% set addedCon = addedCon ~ '<constraint name="Type">' %}
+        {% set addedCon = addedCon ~ '<option name="type">' ~ field.type[0:-2] ~ '</option>' %}
+        {% set addedCon = addedCon ~ '</constraint>' %}
+        {% set addedCon = addedCon ~ '</option>' %}
+        {% set addedCon = addedCon ~ '</constraint>' %}
+        {% set thisCons = thisCons|merge([addedCon]) %}
+    {% endif %}
+
     {% if field.isClassType is defined and field.isClassType == true %}
         {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
     {% endif %}
