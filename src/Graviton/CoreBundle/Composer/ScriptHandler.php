@@ -42,7 +42,6 @@ class ScriptHandler extends ScriptHandlerBase
         // read version config using composer
         $coreVersionUtils->getVersionConfig();
 
-        var_dump($baseDir.'versions.yml');
         $filesystem->dumpFile(
             $baseDir . '/versions.yml',
             $coreVersionUtils->getPackageVersions()
