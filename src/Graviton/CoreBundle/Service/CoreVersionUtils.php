@@ -26,8 +26,9 @@ class CoreVersionUtils
      */
     private $rootDir;
 
+
     /**
-     * @param ComposerCmd                    $composerCmd ComposerCommand
+     * @param string                         $composerCmd ComposerCommand
      * @param string                         $rootDir     Path to root dir
      * @param \Symfony\Component\Yaml\Dumper $yamlDumper  Yaml dumper
      */
@@ -64,18 +65,24 @@ class CoreVersionUtils
      */
     private function getContextVersion()
     {
-        $output = $this->runComposerInContext('show -s --no-ansi');
-        $lines = explode(PHP_EOL, $output);
-        $wrapper = array();
-        foreach ($lines as $line) {
-            if (strpos($line, 'versions') !== false) {
-                $wrapperVersionArr = explode(':', $line);
-                $wrapper['id'] = 'self';
-                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
+        try {
+            $output = $this->runComposerInContext('show -s --no-ansi');
+            $lines = explode(PHP_EOL, $output);
+            $wrapper = array();
+            foreach ($lines as $line) {
+                if (strpos($line, 'versions') !== false) {
+                    $wrapperVersionArr = explode(':', $line);
+                    $wrapper['id'] = 'self';
+                    $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
+                }
             }
-        }
 
-        return $wrapper;
+            return $wrapper;
+        } catch (\RuntimeException $e) {
+            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
+        } catch (\LogicException $e) {
+            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
+        }
     }
 
     /**
@@ -86,20 +93,25 @@ class CoreVersionUtils
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $output = $this->runComposerInContext('show --installed');
+        try {
+            $output = $this->runComposerInContext('show --installed');
+            $packages = explode(PHP_EOL, $output);
+            //last index is always empty
+            array_pop($packages);
 
-        $packages = explode(PHP_EOL, $output);
-        //last index is always empty
-        array_pop($packages);
-
-        foreach ($packages as $package) {
-            $content = preg_split('/([\s]+)/', $package);
-            if ($this->isDesiredVersion($content[0])) {
-                array_push($versions, array('id' => $content[0], 'version' => $content[1]));
+            foreach ($packages as $package) {
+                $content = preg_split('/([\s]+)/', $package);
+                if ($this->isDesiredVersion($content[0])) {
+                    array_push($versions, array('id' => $content[0], 'version' => $content[1]));
+                }
             }
-        }
 
-        return $versions;
+            return $versions;
+        } catch (\RuntimeException $e) {
+            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
+        } catch (\LogicException $e) {
+            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
+        }
     }
 
     /**
@@ -107,24 +119,20 @@ class CoreVersionUtils
      *
      * @param string $command composer args
      * @return string
+     *
+     * @throws \RuntimeException
+     * @throws \LogicException
      */
     private function runComposerInContext($command)
     {
-        if ($this->isWrapperContext()) {
-            $contextDir = escapeshellarg($this->rootDir.'/../../../../');
-        } else {
-            $contextDir = escapeshellarg($this->rootDir.'/../');
-        }
-
+        $path =  ($this->isWrapperContext())
+            ? $this->rootDir.'/../../../../'
+            : $this->rootDir.'/../';
+        $contextDir = escapeshellarg($path);
         $process = new Process('cd '.$contextDir.' && '.escapeshellcmd($this->composerCmd).' '.$command);
+        $process->mustRun();
 
-        try {
-            $process->mustRun();
-
-            return $process->getOutput();
-        } catch (ProcessFailedException $e) {
-            echo $e->getMessage();
-        }
+        return $process->getOutput();
     }
 
     /**
@@ -157,22 +165,15 @@ class CoreVersionUtils
     /**
      * read and parses version config file
      *
-     * @return void
+     * @return string
      */
     public function getVersionConfig()
     {
-        $parser = new Parser();
-        if ($this->isWrapperContext()) {
-            $parsedConfig = $parser->parse(
-                file_get_contents($this->rootDir . '/../../../../app/config/version_service.yml')
-            );
-        } else {
-            $parsedConfig = $parser->parse(
-                file_get_contents($this->rootDir . '/config/version_service.yml')
-            );
-        }
+        $filePath = $this->isWrapperContext()
+            ? $this->rootDir . '/../../../../app/config/version_service.yml'
+            : $this->rootDir . '/config/version_service.yml';
 
-        $this->config = $parsedConfig;
+        return $this->getConfiguration($filePath);
     }
 
     /**
@@ -187,5 +188,20 @@ class CoreVersionUtils
         } else {
             return false;
         }
+    }
+
+    /**
+     * reads configuration information from the given file into an array.
+     *
+     * @param string $filePath Absolute path to the configuration file.
+     *
+     * @return array
+     */
+    private function getConfiguration($filePath)
+    {
+        $parser = new Parser();
+        $config = $parser->parse(file_get_contents($filePath));
+
+        return is_array($config) ? $config : [];
     }
 }
