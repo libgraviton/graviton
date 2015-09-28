@@ -62,8 +62,8 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     public function __construct()
     {
 {% for field in fields %}
-{% if '[]' in field.type %}
-        $this->{{ field.fieldName }} = new ArrayCollection();
+{% if '[]' in field.type or field.type == 'array' %}
+        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new ArrayCollection(){% else %}[]{% endif %};
 {% endif %}
 {% endfor %}
     }
@@ -186,7 +186,7 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% endif %}
     {
-{% if '[]' in field.type %}
+{% if '[]' in field.type and 'Graviton' in field.type %}
         $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
 {% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
@@ -221,7 +221,11 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
      */
     public function remove{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{ field.singularName }})
     {
+{% if '[]' in field.type and 'Graviton' in field.type %}
         $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
+{% else %}
+        $this->{{ field.fieldName }} = array_diff($this->{{ field.fieldName }}, [${{ field.singularName }}]);
+{% endif %}
 
         return $this;
     }

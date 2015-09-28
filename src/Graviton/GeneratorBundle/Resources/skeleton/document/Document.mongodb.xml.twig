@@ -38,6 +38,8 @@
             {% else %}
                 {% if field.type == 'hash' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif '[]' in field.type or field.type == 'array' %}
+                    <field fieldName="{{ field.fieldName }}" type="collection"/>
                 {% else %}
                     <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}
