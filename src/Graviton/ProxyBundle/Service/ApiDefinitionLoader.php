@@ -93,8 +93,9 @@ class ApiDefinitionLoader
         if ($withHost) {
             $url = $this->definition->getHost();
         }
+        //$this->definition->hasEndpoint($endpoint);
 
-        $endpoints = $this->definition->getEndpoints(false);
+        /*$endpoints = $this->definition->getEndpoints(false);
 
         //has url a id
         $searchString = $endpoint;
@@ -102,9 +103,9 @@ class ApiDefinitionLoader
             $searchString = substr($endpoint, 0, strrpos($endpoint, '/'));
         }
 
-        if (in_array($searchString, $endpoints)) {
+        if (in_array($searchString, $endpoints)) {*/
             $url .= $endpoint;
-        }
+        //}
 
         return $url;
     }
@@ -130,7 +131,7 @@ class ApiDefinitionLoader
             $retVal = $this->definition->getEndpoints($withHost, $prefix);
         }
 
-        return$retVal;
+        return $retVal;
     }
 
     /**
