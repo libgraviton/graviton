@@ -1,6 +1,8 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\GeneratorBundle\Definition\Schema\Service;
+
 /**
  * This class represents the json file that defines the structure
  * of a mongo collection that exists and serves as a base to generate
@@ -424,5 +426,21 @@ class JsonDefinition
         }
 
         return $retVal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceCollection()
+    {
+        $collectionName = $this->getId();
+
+        if ($this->def->getService() instanceof Service
+            && $this->def->getService()->getCollectionName()) {
+
+            $collectionName = $this->def->getService()->getCollectionName();
+        }
+
+        return $collectionName;
     }
 }
