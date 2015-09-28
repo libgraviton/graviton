@@ -49,22 +49,32 @@
         ]
       },
       {
+        "name": "information",
+        "type": "array",
+        "title": "Information",
+        "description": "An array of objects containing worker information",
+        "required": false
+      },
+      {
         "name": "information.0.workerId",
         "type": "string",
         "title": "Worker ID",
-        "description": "ID of a worker"
+        "description": "ID of a worker",
+        "required": true
       },
       {
         "name": "information.0.type",
         "type": "string",
         "title": "Information type",
-        "description": "The type of information the worker published"
+        "description": "The type of information the worker published",
+        "required": true
       },
       {
         "name": "information.0.content",
         "type": "string",
         "title": "Worker output",
-        "description": "A place where a worker can put any information content"
+        "description": "A place where a worker can put any information content",
+        "required": true
       }
     ]
   }
