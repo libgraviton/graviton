@@ -1,0 +1,19 @@
+{
+  "id": "PrimitiveArray",
+  "target": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "intarray",
+        "type": "int[]"
+      },
+      {
+        "name": "hash.intarray",
+        "type": "int[]"
+      }
+    ]
+  }
+}

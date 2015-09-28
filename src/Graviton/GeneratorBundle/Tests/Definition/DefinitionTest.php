@@ -584,6 +584,54 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Entity', $referenceField->getType());
     }
 
+
+    /**
+     * Primitive array test
+     *
+     * @return void
+     */
+    public function testPrimitiveArray()
+    {
+        $definition = $this->loadJsonDefinition(__DIR__.'/resources/test-primitive-array.json');
+        $this->assertEquals(
+            (new JsonDefinition(
+                (new Schema\Definition())
+                    ->setId('PrimitiveArray')
+                    ->setTarget(
+                        (new Schema\Target())
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('id')
+                                    ->setType('string')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('intarray')
+                                    ->setType('int[]')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('hash.intarray')
+                                    ->setType('int[]')
+                            )
+                    )
+            )),
+            $definition
+        );
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'hash.intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+    }
+
     /**
      * Get field by path
      *
