@@ -36,6 +36,11 @@
       },
       "description": "Array of properties"
     },
+    "additionalProperties": {
+      "title": "Additional Properties",
+      "type": "object",
+      "description": "Definition of additional properties"
+    },
     "required": {
       "title": "Required",
       "type": "array",

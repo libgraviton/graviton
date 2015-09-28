@@ -162,7 +162,16 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     public function get{{ field.fieldName|capitalize }}()
 {% endif %}
     {
+{% if field.xDynamicKey is defined and field.xDynamicKey != null %}
+        $records = [];
+        foreach ($this->{{ field.fieldName }} as $record) {
+            $ref = json_decode($record->{{ field.xDynamicKey.refMethod }}());
+            $records[$ref->{'$id'}] = $record;
+        }
+        return $records;
+{% else %}
         return $this->{{ field.fieldName }};
+{% endif %}
     }
 
     /**

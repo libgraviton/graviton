@@ -34,5 +34,8 @@
         <property name="collection"
                   type="array&lt;string&gt;"
                   serialized-name="collection"/>
+        <property name="xDynamicKey"
+                  type="Graviton\GeneratorBundle\Definition\Schema\XDynamicKey"
+                  serialized-name="x-dynamic-key"/>
     </class>
 </serializer>

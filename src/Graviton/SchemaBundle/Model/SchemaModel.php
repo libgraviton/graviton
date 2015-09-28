@@ -167,6 +167,30 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * tell us if a model what to be exposed using a key as field
+     *
+     * @param string $field field that we check for dynamic-key spec
+     *
+     * @return boolean
+     */
+    public function hasDynamicKey($field)
+    {
+        return $this->getSchemaField($field, 'x-dynamic-key', false) !== false;
+    }
+
+    /**
+     * Get field used for setting stringy key value
+     *
+     * @param string $field field that we get dynamic-key spec from
+     *
+     * @return object
+     */
+    public function getDynamicKeySpec($field)
+    {
+        return $this->getSchemaField($field, 'x-dynamic-key');
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name
