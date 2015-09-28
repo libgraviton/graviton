@@ -57,7 +57,7 @@ class ScriptHandler extends ScriptHandlerBase
      */
     private static function hasComposerCommandInEnvVars()
     {
-        return false !== getenv('COMPOSER_CMD') && 'false' !== getenv('COMPOSER_CMD') ;
+        return false !== getenv('COMPOSER_CMD') && 'false' !== getenv('COMPOSER_CMD');
     }
 
     /**
