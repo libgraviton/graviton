@@ -6,6 +6,9 @@
 namespace Graviton\CoreBundle\Composer;
 
 use Graviton\CoreBundle\Composer\ScriptHandlerBase;
+use Graviton\CoreBundle\Service\CoreVersionUtils;
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Filesystem\Filesystem;
 use Composer\Script\CommandEvent;
 
 /**
@@ -26,10 +29,23 @@ class ScriptHandler extends ScriptHandlerBase
      */
     public static function generateVersionYml(CommandEvent $event)
     {
-        $options = self::getOptions($event);
-        $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:core:generate:versionYml');
+        $baseDir = __DIR__.'/../../../..';
+        $rootDir = $baseDir.'/app';
 
-        self::executeCommand($event, $consolePath, $cmd);
+        $coreVersionUtils = new CoreVersionUtils(
+            getenv('COMPOSER_CMD') ? getenv('COMPOSER_CMD') : 'composer',
+            $rootDir,
+            new Dumper
+        );
+        $filesystem = new Filesystem;
+
+        // read version config using composer
+        $coreVersionUtils->getVersionConfig();
+
+        var_dump($baseDir.'versions.yml');
+        $filesystem->dumpFile(
+            $baseDir . '/versions.yml',
+            $coreVersionUtils->getPackageVersions()
+        );
     }
 }

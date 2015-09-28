@@ -98,18 +98,5 @@
             <argument type="service" id="graviton.yaml.dumper"/>
             <call method="getVersionConfig"></call>
         </service>
-        <service id="graviton.core.command.versionymlgenerate"
-                 class="Graviton\CoreBundle\Command\VersionGenerateYml">
-            <call method="setRootDir">
-                <argument>%kernel.root_dir%</argument>
-            </call>
-            <call method="setFilesystem">
-                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
-            </call>
-            <call method="setCoreVersionUtils">
-                <argument type="service" id="graviton.core.service.coreversionutils"/>
-            </call>
-            <tag name="console.command" />
-        </service>
     </services>
 </container>
