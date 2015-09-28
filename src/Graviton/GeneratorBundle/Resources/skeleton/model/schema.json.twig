@@ -25,7 +25,15 @@
       "readOnly": {{ field.readOnly|json_encode() }},
 {% endif %}
 
-{% if field.description is defined %}
+{% if field.xDynamicKey is defined and field.xDynamicKey != null %}
+      "x-dynamic-key": {
+          "document-id": "{{ field.xDynamicKey.documentId }}",
+          "repository-method": "{{ field.xDynamicKey.repositoryMethod }}",
+          "ref-method": "{{ field.xDynamicKey.refMethod }}"
+      },
+{% endif %}
+
+{% if field.description is defined and field.description != '' %}
       "description": {{ field.description|json_encode() }}
 {% else %}
       "description": "@todo replace me"

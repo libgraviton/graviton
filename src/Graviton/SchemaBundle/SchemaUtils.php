@@ -10,6 +10,7 @@ use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Service\RepositoryFactory;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -61,8 +62,14 @@ class SchemaUtils
     private $defaultLocale;
 
     /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
+    /**
      * Constructor
      *
+     * @param RepositoryFactory  $repositoryFactory    Create repos from model class names
      * @param LanguageRepository $languageRepository   repository
      * @param RouterInterface    $router               router
      * @param array              $extrefServiceMapping Extref service mapping
@@ -71,6 +78,7 @@ class SchemaUtils
      * @param string             $defaultLocale        Default Language
      */
     public function __construct(
+        RepositoryFactory $repositoryFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
@@ -78,6 +86,7 @@ class SchemaUtils
         array $documentFieldNames,
         $defaultLocale
     ) {
+        $this->repositoryFactory = $repositoryFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
@@ -177,8 +186,41 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems($this->getModelSchema($field, $propertyModel, $online));
-                $property->setType('array');
+
+                if ($model->hasDynamicKey($field)) {
+                    $property->setType('object');
+
+                    if ($online) {
+                        // we generate a complete list of possible keys when we have access to mongodb
+                        // this makes everything work with most json-schema v3 implementations (ie. schemaform.io)
+                        $dynamicKeySpec = $model->getDynamicKeySpec($field);
+
+                        $documentId = $dynamicKeySpec->{'document-id'};
+                        $dynamicRepository = $this->repositoryFactory->get($documentId);
+
+                        $repositoryMethod = $dynamicKeySpec->{'repository-method'};
+                        $records = $dynamicRepository->$repositoryMethod();
+
+                        $dynamicProperties = array_map(
+                            function ($record) {
+                                return $record->getId();
+                            },
+                            $records
+                        );
+                        foreach ($dynamicProperties as $propertyName) {
+                            $property->addProperty(
+                                $propertyName,
+                                $this->getModelSchema($field, $propertyModel, $online)
+                            );
+                        }
+                    } else {
+                        // in the swagger case we can use additionPorerties which where introduced by json-schema v4
+                        $property->setAdditionalProperties($this->getModelSchema($field, $propertyModel, $online));
+                    }
+                } else {
+                    $property->setItems($this->getModelSchema($field, $propertyModel, $online));
+                    $property->setType('array');
+                }
             }
 
             if ($meta->getTypeOfField($field) === 'one') {
