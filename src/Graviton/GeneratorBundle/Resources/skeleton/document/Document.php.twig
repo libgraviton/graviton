@@ -197,17 +197,17 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 
 
 {% if ('[]' in field.type or field.type == 'array') %}
-    {% set itemType = '[]' in field.type ? field.type[0:-2] : '' %}
-    {% set itemType = 'Graviton' in itemType ? '\\' ~ itemType : itemType %}
+    {% set itemTypeName = '[]' in field.type ? field.type[0:-2] : 'mixed' %}
+    {% set itemTypeHint = 'Graviton' in itemTypeName ? '\\' ~ itemTypeName : '' %}
 
     /**
      * add element to {{ field.fieldName }}
      *
-     * @param {{ itemType }} ${{ field.singularName }} value to add to {{ field.fieldName }}
+     * @param {{ itemTypeName }} ${{ field.singularName }} value to add to {{ field.fieldName }}
      *
      * @return self
      */
-    public function add{{ field.singularName|capitalize }}({{ itemType }} ${{field.singularName}})
+    public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
     {
         $this->{{ field.fieldName }}[] = ${{ field.singularName }};
     }
@@ -215,11 +215,11 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     /**
      * remove element from {{ field.fieldName }}
      *
-     * @param {{ itemType }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
+     * @param {{ itemTypeName }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
      *
      * @return self
      */
-    public function remove{{ field.singularName|capitalize }}({{ itemType }} ${{ field.singularName }})
+    public function remove{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{ field.singularName }})
     {
         $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
 
