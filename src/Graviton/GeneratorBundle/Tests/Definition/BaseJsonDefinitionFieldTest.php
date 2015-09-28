@@ -76,6 +76,7 @@ abstract class BaseJsonDefinitionFieldTest extends \PHPUnit_Framework_TestCase
             'required'          => $field->getRequired(),
             'translatable'      => $field->getTranslatable(),
             'collection'        => $field->getCollection(),
+            'xDynamicKey'       => null,
             'constraints'       => array_map(
                 function (Schema\Constraint $constraint) {
                     return [

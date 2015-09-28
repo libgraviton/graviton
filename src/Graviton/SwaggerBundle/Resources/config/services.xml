@@ -14,6 +14,7 @@
             <argument type="service" id="graviton.rest.restutils"></argument>
             <argument type="service" id="graviton.schema.model.schemamodel"></argument>
             <argument type="service" id="graviton.schema.utils"></argument>
+            <argument type="service" id="graviton.core.utils"></argument>
         </service>
 
         <service id="graviton.swagger.command.swaggercopy.filesystem"

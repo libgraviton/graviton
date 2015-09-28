@@ -7,12 +7,19 @@
         <parameter key="graviton.core.controller.app.class">Graviton\CoreBundle\Controller\AppController</parameter>
         <parameter key="graviton.core.repository.app.class">Graviton\CoreBundle\Repository\AppRepository</parameter>
         <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
+        <parameter key="graviton.core.model.version.class">Graviton\CoreBundle\Model\Version</parameter>
         <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
         <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
         <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
+        <parameter key="graviton.core.links" type="collection">
+            <parameter>graviton.core.static.version.get</parameter>
+        </parameter>
+        <parameter key="graviton.core.main.path.whitelist" type="collection">
+            <parameter>/core/version</parameter>
+        </parameter>
     </parameters>
     <services>
         <service id="graviton.core.controller.main"
@@ -21,6 +28,8 @@
              <argument type="service" id="graviton.rest.response" strict="false"/>
              <argument type="service" id="graviton.rest.restutils"/>
              <argument type="service" id="templating"/>
+             <argument>%graviton.core.links%</argument>
+             <argument>%graviton.core.main.path.whitelist%</argument>
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
@@ -68,6 +77,16 @@
             </call>
         </service>
         <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
-        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%" />
+        <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
+            <argument type="string">%graviton.core.version.data%</argument>
+        </service>
+        <service id="graviton.core.model.version" class="%graviton.core.model.version.class%" parent="graviton.rest.model"/>
+        <service id="graviton.core.controller.version"
+                 class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
+            <argument type="service" id="graviton.core.utils"></argument>
+            <call method="setModel">
+                <argument type="service" id="graviton.core.model.version"/>
+            </call>
+        </service>
     </services>
 </container>

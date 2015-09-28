@@ -42,22 +42,38 @@ class MainController
     private $templating;
 
     /**
-     * @param Router             $router     router
-     * @param Response           $response   prepared response
-     * @param RestUtilsInterface $restUtils  rest-utils from GravitonRestBundle
-     * @param EngineInterface    $templating templating-engine
+     * @var array
+     */
+    private $addditionalRoutes;
+
+    /**
+     * @var array
+     */
+    private $pathWhitelist;
+
+    /**
+     * @param Router             $router           router
+     * @param Response           $response         prepared response
+     * @param RestUtilsInterface $restUtils        rest-utils from GravitonRestBundle
+     * @param EngineInterface    $templating       templating-engine
+     * @param array              $additionalRoutes custom routes
+     * @param array              $pathWhitelist    serviec path that always get aded to the main page
      *
      */
     public function __construct(
         Router $router,
         Response $response,
         RestUtilsInterface $restUtils,
-        EngineInterface $templating
+        EngineInterface $templating,
+        $additionalRoutes = array(),
+        $pathWhitelist = []
     ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->templating = $templating;
+        $this->addditionalRoutes = $additionalRoutes;
+        $this->pathWhitelist = $pathWhitelist;
     }
 
     /**
@@ -101,6 +117,11 @@ class MainController
     {
         $sortArr = array();
         $router = $this->router;
+        foreach ($this->addditionalRoutes as $route) {
+            // hack because only array keys are used
+            $optionRoutes[$route] = null;
+        }
+
         $services = array_map(
             function ($routeName) use ($router) {
                 list($app, $bundle, $rest, $document) = explode('.', $routeName);
@@ -115,14 +136,13 @@ class MainController
         );
 
         foreach ($services as $key => $val) {
-            if (substr($val['$ref'], -1) === '/') {
+            if ($this->isRelevantForMainPage($val)) {
                 $sortArr[$key] = $val['$ref'];
 
             } else {
                 unset($services[$key]);
             }
         }
-
         array_multisort($sortArr, SORT_ASC, $services);
 
         return $services;
@@ -147,6 +167,19 @@ class MainController
         );
 
         return (string) $links;
+    }
+
+    /**
+     * tells if a service is relevant for the mainpage
+     *
+     * @param array $val value of service spec
+     *
+     * @return boolean
+     */
+    private function isRelevantForMainPage($val)
+    {
+        return (substr($val['$ref'], -1) === '/')
+            || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
     }
 
     /**
