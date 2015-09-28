@@ -49,16 +49,22 @@
         ]
       },
       {
-        "name": "errorInformation.0.workerId",
+        "name": "information.0.workerId",
         "type": "string",
         "title": "Worker ID",
         "description": "ID of a worker"
       },
       {
-        "name": "errorInformation.0.content",
+        "name": "information.0.type",
         "type": "string",
-        "title": "Error output",
-        "description": "A place where a worker can put error information"
+        "title": "Information type",
+        "description": "The type of information the worker published"
+      },
+      {
+        "name": "information.0.content",
+        "type": "string",
+        "title": "Worker output",
+        "description": "A place where a worker can put any information content"
       }
     ]
   }
