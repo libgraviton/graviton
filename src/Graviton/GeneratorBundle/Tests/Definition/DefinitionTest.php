@@ -482,7 +482,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @return void
-     * @group tmp
      */
     public function testNestedRelations()
     {
