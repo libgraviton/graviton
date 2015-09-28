@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.30.0",
+    "version": "0.30.1",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -68,6 +68,7 @@
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -78,6 +79,7 @@
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
