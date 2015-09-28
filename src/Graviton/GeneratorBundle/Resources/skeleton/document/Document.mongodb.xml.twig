@@ -10,7 +10,7 @@
         {% set docType = "document" %}
     {%  endif %}
 
-  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository">
+  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
 
   {% if idField is defined %}
       <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
