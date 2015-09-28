@@ -132,12 +132,22 @@ class CoreVersionUtils
      *
      * @param string $packageName package name
      * @return boolean
+     *
+     * @throws \RuntimeException
      */
     private function isDesiredVersion($packageName)
     {
-        foreach ($this->config['desiredVersions'] as $confEntry) {
-            if ($confEntry == $packageName) {
-                return true;
+        if (empty($packageName)) {
+            throw new \RuntimeException('Missing package name');
+        }
+
+        $config = $this->getVersionConfig();
+
+        if (!empty($config['desiredVersions'])) {
+            foreach ($config['desiredVersions'] as $confEntry) {
+                if ($confEntry == $packageName) {
+                    return true;
+                }
             }
         }
 
