@@ -67,7 +67,12 @@
         "type": "string",
         "title": "Information type",
         "description": "The type of information the worker published",
-        "required": true
+        "required": true,
+        "constraints": [
+          {
+            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidInformationType"
+          }
+        ]
       },
       {
         "name": "information.0.content",
@@ -75,6 +80,15 @@
         "title": "Worker output",
         "description": "A place where a worker can put any information content",
         "required": true
+      },
+      {
+        "name": "information.0.ref",
+        "type": "string",
+        "exposeAs": "$ref",
+        "title": "Ref",
+        "collection": ["*"],
+        "description": "An optional $ref that can be written by the worker",
+        "required": false
       }
     ]
   }

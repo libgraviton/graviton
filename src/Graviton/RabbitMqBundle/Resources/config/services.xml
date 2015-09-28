@@ -9,6 +9,7 @@
         <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatusstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatusStatus</parameter>
+        <parameter key="graviton.rabbitmq.validator.validinformationtype.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidInformationTypeValidator</parameter>
         <parameter key="graviton.rabbitmq.validator.validstatus.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidStatusValidator</parameter>
 
         <!-- this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
@@ -38,6 +39,22 @@
         </service>
 
         <!-- Validators -->
+        <service id="graviton.rabbitmq.validator.validinformationtype"
+                 class="%graviton.rabbitmq.validator.validinformationtype.class%">
+            <call method="addType">
+                <argument>debug</argument>
+            </call>
+            <call method="addType">
+                <argument>info</argument>
+            </call>
+            <call method="addType">
+                <argument>warning</argument>
+            </call>
+            <call method="addType">
+                <argument>error</argument>
+            </call>
+            <tag name="validator.constraint_validator" alias="graviton.rabbitmq.validator.validinformationtype"/>
+        </service>
         <service id="graviton.rabbitmq.validator.validstatus"
                  class="%graviton.rabbitmq.validator.validstatus.class%">
             <call method="addStatus">
