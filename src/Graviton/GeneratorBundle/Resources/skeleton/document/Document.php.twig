@@ -156,7 +156,7 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
      * @return {{ field.type }} ${{ field.fieldName }}
 {% endif %}
      */
-{% if 'boolean' in field.type %}
+{% if field.type == 'boolean' %}
     public function is{{ field.fieldName|capitalize }}()
 {% else %}
     public function get{{ field.fieldName|capitalize }}()
