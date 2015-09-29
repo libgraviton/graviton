@@ -82,22 +82,16 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
         $result = [];
         foreach ($document->getFields() as $field) {
             if ($field instanceof Field) {
-                if (in_array($field->getFieldName(), $translatableFields, true)) {
-                    $type = 'translatable';
-                } elseif ($field->getType() === 'hash') {
-                    $type = 'freeform';
-                } elseif (isset($this->typeMap[$field->getType()])) {
-                    $type = $this->typeMap[$field->getType()];
-                } else {
-                    $type = 'text';
-                }
+                list($type, $options) = $this->resolveFieldParams(
+                    $translatableFields,
+                    $field->getFieldName(),
+                    $field->getType()
+                );
 
                 $result[] = [
                     $field->getFormName(),
                     $type,
-                    [
-                        'property_path' => $field->getFieldName(),
-                    ],
+                    array_replace(['property_path' => $field->getFieldName()], $options),
                 ];
             } elseif ($field instanceof EmbedOne) {
                 $result[] = [
@@ -122,5 +116,35 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
             }
         }
         return $result;
+    }
+
+    /**
+     * Resolve simple field type
+     *
+     * @param array  $translatable Translatable fields
+     * @param string $fieldName    Field name
+     * @param string $fieldType    Field type
+     * @return array Form type and options
+     */
+    private function resolveFieldParams(array $translatable, $fieldName, $fieldType)
+    {
+        if (in_array($fieldName, $translatable, true)) {
+            $type = 'translatable';
+            $options = [];
+        } elseif ($fieldType === 'hash') {
+            $type = 'freeform';
+            $options = [];
+        } elseif ($fieldType === 'hasharray') {
+            $type = 'collection';
+            $options = ['type' => 'freeform'];
+        } elseif (isset($this->typeMap[$fieldType])) {
+            $type = $this->typeMap[$fieldType];
+            $options = [];
+        } else {
+            $type = 'text';
+            $options = [];
+        }
+
+        return [$type, $options];
     }
 }

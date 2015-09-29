@@ -38,6 +38,8 @@
             {% else %}
                 {% if field.type == 'hash' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif field.type == 'hash[]' %}
+                    <field fieldName="{{ field.fieldName }}" type="hasharray"/>
                 {% elseif '[]' in field.type or field.type == 'array' %}
                     <field fieldName="{{ field.fieldName }}" type="collection"/>
                 {% else %}

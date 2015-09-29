@@ -37,6 +37,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
         Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
+        Type::registerType('hasharray', Types\HashArrayType::class);
     }
 
     /**
