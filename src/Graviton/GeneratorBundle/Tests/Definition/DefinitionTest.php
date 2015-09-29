@@ -614,6 +614,11 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                                     ->setName('hash.intarray.0')
                                     ->setType('int')
                             )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('hasharray.0.intarray.0')
+                                    ->setType('int')
+                            )
                     )
             )),
             $definition
@@ -639,6 +644,18 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
         /** @var JsonDefinitionField $field */
         $field = $this->getFieldByPath($definition, 'hash.intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionArray $field */
+        $field = $this->getFieldByPath($definition, 'hasharray.0.intarray');
+        $this->assertInstanceOf(JsonDefinitionArray::class, $field);
+        $this->assertEquals('int[]', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'hasharray.0.intarray.0');
         $this->assertInstanceOf(JsonDefinitionField::class, $field);
         $this->assertEquals('int', $field->getType());
         $this->assertEquals('intarray', $field->getName());

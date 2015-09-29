@@ -13,6 +13,10 @@
       {
         "name": "hash.intarray.0",
         "type": "int"
+      },
+      {
+        "name": "hasharray.0.intarray.0",
+        "type": "int"
       }
     ]
   }
