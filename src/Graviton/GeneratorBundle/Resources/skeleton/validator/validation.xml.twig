@@ -32,9 +32,7 @@
 
     {% if field.type == 'boolean' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\BooleanStrict"/>']) %}
-    {% endif %}
-
-    {% if field.type == 'extref' %}
+    {% elseif field.type == 'extref' %}
         {% set addedCon = '' %}
         {% set addedCon = addedCon ~ '<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\ExtReference\\ExtReference">' %}
 
@@ -49,17 +47,11 @@
         {% set addedCon = addedCon ~ '</constraint>' %}
 
         {% set thisCons = thisCons|merge([addedCon]) %}
-    {% endif %}
-
-    {% if field.type == 'int' %}
+    {% elseif field.type == 'int' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">integer</option></constraint>']) %}
-    {% endif %}
-
-    {% if field.type == 'float' %}
+    {% elseif field.type == 'float' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">float</option></constraint>']) %}
-    {% endif %}
-
-    {% if field.type == 'object' %}
+    {% elseif field.type == 'object' %}
         {% set addedCon = '' %}
         {% set addedCon = addedCon ~ '<constraint name="Type">' %}
         {% set addedCon = addedCon ~ '<option name="type">array</option>' %}
@@ -67,9 +59,7 @@
         {% set addedCon = addedCon ~ '</constraint>' %}
 
         {% set thisCons = thisCons|merge([addedCon]) %}
-    {% endif %}
-
-    {% if '[]' in field.type and 'Graviton' not in field.type %}
+    {% elseif '[]' in field.type and 'Graviton' not in field.type %}
         {% set addedCon = '' %}
         {% set addedCon = addedCon ~ '<constraint name="Type">' %}
         {% set addedCon = addedCon ~ '<option name="type">array</option>' %}
@@ -86,9 +76,7 @@
         {% set addedCon = addedCon ~ '</option>' %}
         {% set addedCon = addedCon ~ '</constraint>' %}
         {% set thisCons = thisCons|merge([addedCon]) %}
-    {% endif %}
-
-    {% if field.isClassType is defined and field.isClassType == true %}
+    {% elseif field.isClassType is defined and field.isClassType == true %}
         {%  set thisCons = thisCons|merge(['<constraint name="Valid"/>']) %}
     {% endif %}
 
