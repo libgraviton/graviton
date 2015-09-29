@@ -45,6 +45,10 @@ class Service
      * @var array[]
      */
     private $fixtures = [];
+    /**
+     * @var string
+     */
+    private $collectionName;
 
     /**
      * @return string
@@ -188,6 +192,24 @@ class Service
     public function setFixtures(array $fixtures)
     {
         $this->fixtures = $fixtures;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionName()
+    {
+        return $this->collectionName;
+    }
+
+    /**
+     * @param string $collectionName name of colleciton
+     * @return $this
+     */
+    public function setCollectionName($collectionName)
+    {
+        $this->collectionName = $collectionName;
         return $this;
     }
 }

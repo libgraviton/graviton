@@ -88,5 +88,15 @@
                 <argument type="service" id="graviton.core.model.version"/>
             </call>
         </service>
+        <service id="graviton.yaml.dumper"
+                 class="Symfony\Component\Yaml\Dumper">
+        </service>
+        <service id="graviton.core.service.coreversionutils"
+                 class="Graviton\CoreBundle\Service\CoreVersionUtils">
+            <argument>%graviton.composer.cmd%</argument>
+            <argument>%kernel.root_dir%</argument>
+            <argument type="service" id="graviton.yaml.dumper"/>
+            <call method="getVersionConfig"></call>
+        </service>
     </services>
 </container>
