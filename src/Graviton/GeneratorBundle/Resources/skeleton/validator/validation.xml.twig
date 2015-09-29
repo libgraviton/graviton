@@ -51,7 +51,7 @@
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">integer</option></constraint>']) %}
     {% elseif field.type == 'float' %}
         {%  set thisCons = thisCons|merge(['<constraint name="Type"><option name="type">float</option></constraint>']) %}
-    {% elseif field.type == 'object' %}
+    {% elseif field.type == 'hash' %}
         {% set addedCon = '' %}
         {% set addedCon = addedCon ~ '<constraint name="Type">' %}
         {% set addedCon = addedCon ~ '<option name="type">array</option>' %}
