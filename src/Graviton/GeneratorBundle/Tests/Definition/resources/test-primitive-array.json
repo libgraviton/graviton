@@ -7,12 +7,12 @@
         "type": "string"
       },
       {
-        "name": "intarray",
-        "type": "int[]"
+        "name": "intarray.0",
+        "type": "int"
       },
       {
-        "name": "hash.intarray",
-        "type": "int[]"
+        "name": "hash.intarray.0",
+        "type": "int"
       }
     ]
   }
