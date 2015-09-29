@@ -130,13 +130,23 @@ class DocumentMap
                 $validationFields[$doctrineField['name']] :
                 null;
 
-            $fields[] = new Field(
-                $doctrineField['type'],
-                $doctrineField['name'],
-                $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
-                $serializerField === null ? false : $serializerField['readOnly'],
-                $validationField === null ? false : $validationField['required']
-            );
+            if ($doctrineField['type'] === 'collection') {
+                $fields[] = new ArrayField(
+                    $serializerField === null ? 'array<string>' : $serializerField['fieldType'],
+                    $doctrineField['name'],
+                    $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                    $serializerField === null ? false : $serializerField['readOnly'],
+                    $validationField === null ? false : $validationField['required']
+                );
+            } else {
+                $fields[] = new Field(
+                    $doctrineField['type'],
+                    $doctrineField['name'],
+                    $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                    $serializerField === null ? false : $serializerField['readOnly'],
+                    $validationField === null ? false : $validationField['required']
+                );
+            }
         }
         foreach ($this->getDoctrineEmbedOneFields($doctrineMapping) as $doctrineField) {
             $serializerField = isset($serializerFields[$doctrineField['name']]) ?
@@ -274,12 +284,31 @@ class DocumentMap
             function (\DOMElement $element) {
                 return [
                     'fieldName'   => $element->getAttribute('name'),
+                    'fieldType'   => $this->getSerializerFieldType($element),
                     'exposedName' => $element->getAttribute('serialized-name') ?: $element->getAttribute('name'),
                     'readOnly'    => $element->getAttribute('read-only') === 'true',
                 ];
             },
             iterator_to_array($xpath->query('property', $mapping))
         );
+    }
+
+    /**
+     * Get serializer field type
+     *
+     * @param \DOMElement $field Field node
+     * @return string|null
+     */
+    private function getSerializerFieldType(\DOMElement $field)
+    {
+        if ($field->getAttribute('type')) {
+            return $field->getAttribute('type');
+        }
+
+        $xpath = new \DOMXPath($field->ownerDocument);
+
+        $type = $xpath->query('type', $field)->item(0);
+        return $type === null ? null : $type->nodeValue;
     }
 
     /**

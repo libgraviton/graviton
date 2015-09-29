@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\ArrayField;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
@@ -92,6 +93,22 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                     $field->getFormName(),
                     $type,
                     array_replace(['property_path' => $field->getFieldName()], $options),
+                ];
+            } elseif ($field instanceof ArrayField) {
+                list($type, $options) = $this->resolveFieldParams(
+                    $translatableFields,
+                    $field->getFieldName(),
+                    $field->getItemType()
+                );
+
+                $result[] = [
+                    $field->getFormName(),
+                    'collection',
+                    [
+                        'property_path' => $field->getFieldName(),
+                        'type' => $type,
+                        'options' => $options,
+                    ],
                 ];
             } elseif ($field instanceof EmbedOne) {
                 $result[] = [
