@@ -93,12 +93,23 @@ class PrimitiveArrayControllerTest extends RestTestCase
     {
         $data = (object) [
             'intarray'  => [10, 20],
+            'strarray'  => ['a', 'b'],
+            'boolarray' => [true, false],
+            'hasharray' => [(object) ['x' => 'y'], (object) []],
+
             'hash'      => (object) [
-                'intarray'  => [30, 40],
+                'intarray'  => [10, 20],
+                'strarray'  => ['a', 'b'],
+                'boolarray' => [true, false],
+                'hasharray' => [(object) ['x' => 'y'], (object) []],
             ],
+
             'arrayhash' => [
                 (object) [
-                    'intarray' => [30, 40],
+                    'intarray'  => [10, 20],
+                    'strarray'  => ['a', 'b'],
+                    'boolarray' => [true, false],
+                    'hasharray' => [(object) ['x' => 'y'], (object) []],
                 ]
             ],
         ];
@@ -129,13 +140,25 @@ class PrimitiveArrayControllerTest extends RestTestCase
     {
         $data = (object) [
             'id'        => 'testdata',
+
             'intarray'  => [10, 20],
+            'strarray'  => ['a', 'b'],
+            'boolarray' => [true, false],
+            'hasharray' => [(object) ['x' => 'y'], (object) []],
+
             'hash'      => (object) [
-                'intarray'  => [30, 40],
+                'intarray'  => [10, 20],
+                'strarray'  => ['a', 'b'],
+                'boolarray' => [true, false],
+                'hasharray' => [(object) ['x' => 'y'], (object) []],
             ],
+
             'arrayhash' => [
                 (object) [
-                    'intarray' => [30, 40],
+                    'intarray'  => [10, 20],
+                    'strarray'  => ['a', 'b'],
+                    'boolarray' => [true, false],
+                    'hasharray' => [(object) ['x' => 'y'], (object) []],
                 ]
             ],
         ];
@@ -161,13 +184,25 @@ class PrimitiveArrayControllerTest extends RestTestCase
     {
         $data = (object) [
             'id'        => 'testdata',
-            'intarray'  => [true, false],
+
+            'intarray'  => [1, 'a'],
+            'strarray'  => ['a', false],
+            'boolarray' => [true, 'a'],
+            'hasharray' => [(object) ['x' => 'y'], 1.5],
+
             'hash'      => (object) [
-                'intarray'  => ['a', 'b'],
+                'intarray'  => [1, 'a'],
+                'strarray'  => ['a', false],
+                'boolarray' => [true, 'a'],
+                'hasharray' => [(object) ['x' => 'y'], 1.5],
             ],
+
             'arrayhash' => [
                 (object) [
-                    'intarray' => [1.5, 2.5],
+                    'intarray'  => [1, 'a'],
+                    'strarray'  => ['a', false],
+                    'boolarray' => [true, 'a'],
+                    'hasharray' => [(object) ['x' => 'y'], 1.5],
                 ]
             ],
         ];
@@ -176,32 +211,37 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $client->put('/testcase/primitivearray/testdata', $data);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertNotNull($client->getResults());
+
+        // boolean and string values are always converted to correct type by symfony form.
+        // we never get "This value is not valid" for such types
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath' => 'data.intarray[0]',
-                    'message'      => 'This value should be of type int.'
+                    'propertyPath' => 'children[intarray].children[1]',
+                    'message'      => 'This value is not valid.'
                 ],
                 (object) [
-                    'propertyPath' => 'data.intarray[1]',
-                    'message'      => 'This value should be of type int.'
+                    'propertyPath' => 'data.hasharray[1]',
+                    'message'      => 'This value should be of type object.',
+                ],
+
+                (object) [
+                    'propertyPath' => 'children[hash].children[intarray].children[1]',
+                    'message'      => 'This value is not valid.',
                 ],
                 (object) [
-                    'propertyPath' => 'data.hash.intarray[0]',
-                    'message'      => 'This value should be of type int.'
+                    'propertyPath' => 'data.hash.hasharray[1]',
+                    'message'      => 'This value should be of type object.',
+                ],
+
+                (object) [
+                    'propertyPath' => 'children[arrayhash].children[0].children[intarray].children[1]',
+                    'message'      => 'This value is not valid.',
                 ],
                 (object) [
-                    'propertyPath' => 'data.hash.intarray[1]',
-                    'message'      => 'This value should be of type int.'
+                    'propertyPath' => 'data.arrayhash[0].hasharray[1]',
+                    'message'      => 'This value should be of type object.',
                 ],
-                (object) [
-                    'propertyPath' => 'data.arrayhash[0].intarray[0]',
-                    'message'      => 'This value should be of type int.'
-                ],
-                (object) [
-                    'propertyPath' => 'data.arrayhash[0].intarray[1]',
-                    'message'      => 'This value should be of type int.'
-                ]
             ],
             $client->getResults()
         );
