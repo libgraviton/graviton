@@ -292,7 +292,7 @@ class SchemaUtils
                 $property->addProperty($language, $schema);
             }
         );
-
+        $property->setRequired(['en']);
         return $property;
     }
 
