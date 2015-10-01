@@ -186,19 +186,11 @@ class Swagger
         $ret = array();
         $ret['swagger'] = '2.0';
 
-        try {
-            $ret['info'] = array(
-                'version' => $this->coreUtils->getWrapperVersion()['version'],
-                'title' => 'Graviton REST Services',
-                'description' => 'Testable API Documentation of this Graviton instance.',
-            );
-        } catch (\RuntimeException $e) {
-            $ret['info'] = [
-                'version' => '',
-                'title' => 'Error occurred',
-                'description' => $e->getMessage(),
-            ];
-        }
+        $ret['info'] = array(
+            'version' => $this->coreUtils->getWrapperVersion()['version'],
+            'title' => 'Graviton REST Services',
+            'description' => 'Testable API Documentation of this Graviton instance.',
+        );
 
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');
