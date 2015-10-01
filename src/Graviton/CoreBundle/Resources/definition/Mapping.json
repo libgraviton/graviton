@@ -1,0 +1,50 @@
+{
+    "id": "CoreMapping",
+    "description": "A mapping from a module to several account types",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/mapping/",
+        "fixtures": [
+            {
+                "from": {
+                    "$ref": "http://localhost/core/module/admin-AdminRef"
+                },
+                "to": [
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-1"
+                    },
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-2"
+                    },
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-3"
+                    }
+                ]
+            }
+        ]
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "from.ref",
+                "type": "extref",
+                "title": "Module Link",
+                "description": "Link from which module to which account type",
+                "exposeAs": "$ref",
+                "collection": ["Module"],
+                "required": true
+            },
+            {
+                "name": "to.0.ref",
+                "type": "extref",
+                "title": "Account types",
+                "description": "Array of account types",
+                "exposeAs": "$ref",
+                "collection": ["Code"],
+                "required": true
+            }
+        ]
+    }
+}
