@@ -20,6 +20,29 @@
                         "$ref": "http://localhost/entity/code/accountType-3"
                     }
                 ]
+            },
+            {
+                "from": {
+                    "$ref": "http://localhost/core/product/1"
+                },
+                "to": [
+                    {
+                      "$ref": "http://localhost/core/module/tablet-payAndSave"
+                    },
+                    {
+                      "$ref": "http://localhost/core/module/tablet-realEstate"
+                    }
+                ]
+            },
+            {
+                "from": {
+                    "$ref": "http://localhost/i18n/language/de"
+                },
+                "to": [
+                    {
+                      "$ref": "http://localhost/person/customer/100"
+                    }
+                ]
             }
         ]
     },
@@ -31,16 +54,15 @@
                 "name": "from.ref",
                 "type": "extref",
                 "title": "Module Link",
-                "description": "Link from which module to which account type",
+                "description": "Link from a service",
                 "exposeAs": "$ref",
-                "collection": ["Module"],
                 "required": true
             },
             {
                 "name": "to.0.ref",
                 "type": "extref",
-                "title": "Account types",
-                "description": "Array of account types",
+                "title": "Entity codes",
+                "description": "Array of service entries",
                 "exposeAs": "$ref",
                 "collection": ["Code"],
                 "required": true
