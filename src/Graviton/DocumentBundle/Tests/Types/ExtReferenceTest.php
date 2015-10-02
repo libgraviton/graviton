@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
-class ExtReferenceTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceTest extends BaseDoctrineTypeTestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -116,5 +116,29 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
 
         $this->type->setConverter($this->converter);
         $this->assertEquals(__FILE__, $this->type->convertToPHPValue($dbRef));
+    }
+
+    /**
+     * Test ExtReference::closureToPHP()
+     *
+     * @return void
+     */
+    public function testClosureToPHP()
+    {
+        $this->assertEqualsClosure(
+            'null',
+            null,
+            $this->type->closureToPHP()
+        );
+        $this->assertEqualsClosure(
+            '{}',
+            (object) [],
+            $this->type->closureToPHP()
+        );
+        $this->assertEqualsClosure(
+            '{"$ref":"A","$id":"b"}',
+            (object) ['$ref' => 'A', '$id' => 'b'],
+            $this->type->closureToPHP()
+        );
     }
 }
