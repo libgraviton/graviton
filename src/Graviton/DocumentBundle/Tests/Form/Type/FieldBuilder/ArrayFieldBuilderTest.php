@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormInterface;
 class ArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test ArrayFieldBuilderTest::supportsField()
+     * Test ArrayFieldBuilder::supportsField()
      *
      * @param bool   $result  Expected result
      * @param string $type    Field type
@@ -33,7 +33,7 @@ class ArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data for ArrayFieldBuilderTest::supportsField() test
+     * Data for ArrayFieldBuilder::supportsField() test
      *
      * @return array
      */
@@ -53,7 +53,7 @@ class ArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test ArrayFieldBuilderTest::buildField()
+     * Test ArrayFieldBuilder::buildField()
      *
      * @return void
      */
