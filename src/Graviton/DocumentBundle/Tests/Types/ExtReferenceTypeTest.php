@@ -6,7 +6,7 @@
 namespace Graviton\DocumentBundle\Tests\Types;
 
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
-use Graviton\DocumentBundle\Types\ExtReference;
+use Graviton\DocumentBundle\Types\ExtReferenceType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
@@ -14,14 +14,14 @@ use Doctrine\ODM\MongoDB\Types\Type;
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
-class ExtReferenceTest extends BaseDoctrineTypeTestCase
+class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $converter;
     /**
-     * @var ExtReference
+     * @var ExtReferenceType
      */
     private $type;
 
@@ -32,10 +32,10 @@ class ExtReferenceTest extends BaseDoctrineTypeTestCase
      */
     public function setUp()
     {
-        Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
+        Type::registerType('extref', ExtReferenceType::class);
         $this->type = Type::getType('extref');
 
-        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
+        $this->converter = $this->getMockBuilder(ExtReferenceConverterInterface::class)
             ->disableOriginalConstructor()
             ->setMethods(['getDbRef', 'getUrl'])
             ->getMock();
