@@ -1691,16 +1691,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "dev-develop",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "974da70485c82e0d6f7f6e7930075bf224c99080"
+                "reference": "bcb54b0486b7226ac9a6e136afc3477a13d2c42f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/974da70485c82e0d6f7f6e7930075bf224c99080",
-                "reference": "974da70485c82e0d6f7f6e7930075bf224c99080",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/bcb54b0486b7226ac9a6e136afc3477a13d2c42f",
+                "reference": "bcb54b0486b7226ac9a6e136afc3477a13d2c42f",
                 "shasum": ""
             },
             "require": {
@@ -1734,7 +1734,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2015-09-14 16:19:19"
+            "time": "2015-10-02 07:21:48"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -5299,7 +5299,6 @@
         "php-jsonpointer/php-jsonpointer": 5,
         "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
-        "graviton/json-schema": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
