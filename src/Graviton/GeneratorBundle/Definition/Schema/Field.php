@@ -4,6 +4,8 @@
  */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
+use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
+
 /**
  * JSON definition "target.fields"
  *
@@ -58,6 +60,11 @@ class Field
      * @var array
      */
     private $collection = [];
+
+    /**
+     * @var XDynamicKey
+     */
+    private $xDynamicKey;
 
     /**
      * @return string
@@ -254,6 +261,24 @@ class Field
     public function setCollection(array $collection)
     {
         $this->collection = $collection;
+        return $this;
+    }
+
+    /**
+     * @return XDynamicKey
+     */
+    public function getXDynamicKey()
+    {
+        return $this->xDynamicKey;
+    }
+
+    /**
+     * @param XDynamicKey $xDynamicKey x-dynamic-key field value
+     * @return $this
+     */
+    public function setXDynamicKey(XDynamicKey $xDynamicKey)
+    {
+        $this->xDynamicKey = $xDynamicKey;
         return $this;
     }
 }

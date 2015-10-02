@@ -90,6 +90,7 @@
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
             <argument type="service" id="graviton.rql.visitor.mongodb" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
+            <argument>%graviton.rest.pagination.limit%</argument>
         </service>
 
         <!-- Response object wrapper with scope request (get a new one for each request) -->

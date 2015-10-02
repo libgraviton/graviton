@@ -1,6 +1,8 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
+
 /**
  * A single field as specified in the json definition
  *
@@ -107,6 +109,7 @@ class JsonDefinitionField implements DefinitionElementInterface
             'exposedName'       => $this->getExposedName(),
             'doctrineType'      => $this->getTypeDoctrine(),
             'serializerType'    => $this->getTypeSerializer(),
+            'xDynamicKey'       => $this->getXDynamicKey(),
             'relType'           => null,
             'isClassType'       => false,
             'constraints'       => array_map(
@@ -167,6 +170,17 @@ class JsonDefinitionField implements DefinitionElementInterface
 
         // our fallback default
         return self::$serializerTypeMap[self::TYPE_STRING];
+    }
+
+    /**
+     * @return XDynamicKey|void
+     */
+    public function getXDynamicKey()
+    {
+        $key = $this->definition->getXDynamicKey();
+        if ($key instanceof XDynamicKey) {
+            return $key;
+        }
     }
 
     /**

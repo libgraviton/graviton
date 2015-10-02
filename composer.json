@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.28.0",
+    "version": "0.31.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -69,6 +69,7 @@
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -79,6 +80,7 @@
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -124,7 +126,9 @@
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.errbit.api_key": "ERRBIT_API_KEY",
-                    "graviton.errbit.host": "ERRBIT_HOST"
+                    "graviton.errbit.host": "ERRBIT_HOST",
+                    "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
+                    "graviton.composer.cmd": "COMPOSER_CMD"
                 }
             },
             {

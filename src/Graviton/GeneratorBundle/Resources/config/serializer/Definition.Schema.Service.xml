@@ -25,5 +25,8 @@
         <property name="fixtures"
                   type="array&lt;ArrayObject&gt;"
                   serialized-name="fixtures"/>
+        <property name="collectionName"
+                  type="string"
+                  serialized-name="collectionName"/>
     </class>
 </serializer>
