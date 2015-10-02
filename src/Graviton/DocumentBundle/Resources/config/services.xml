@@ -60,6 +60,11 @@
             </call>
             <call method="addFormFieldBuilder">
                 <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\DateArrayFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
                     <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\ArrayFieldBuilder"/>
                 </argument>
             </call>

@@ -16,6 +16,9 @@ use GravitonDyn\TestCasePrimitiveArrayBundle\DataFixtures\MongoDB\LoadTestCasePr
  */
 class PrimitiveArrayControllerTest extends RestTestCase
 {
+    const DATE_FORMAT = 'Y-m-d\\TH:i:sO';
+    const DATE_TIMEZONE = 'UTC';
+
     /**
      * load fixtures
      *
@@ -35,6 +38,43 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
+     * Check fixture data
+     *
+     * @param object $data Fixture data
+     * @return void
+     */
+    private function checkFixtureData($data)
+    {
+        foreach ([$data, $data->hash, $data->arrayhash[0]] as $data) {
+            $this->assertInternalType('array', $data->intarray);
+            foreach ($data->intarray as $value) {
+                $this->assertInternalType('integer', $value);
+            }
+
+            $this->assertInternalType('array', $data->strarray);
+            foreach ($data->strarray as $value) {
+                $this->assertInternalType('string', $value);
+            }
+
+            $this->assertInternalType('array', $data->boolarray);
+            foreach ($data->boolarray as $value) {
+                $this->assertInternalType('boolean', $value);
+            }
+
+            $this->assertInternalType('array', $data->datearray);
+            foreach ($data->datearray as $value) {
+                $this->assertInternalType('string', $value);
+                $this->assertInstanceOf(\DateTime::class, \DateTime::createFromFormat(self::DATE_FORMAT, $value));
+            }
+
+            $this->assertInternalType('array', $data->hasharray);
+            foreach ($data->hasharray as $value) {
+                $this->assertInternalType('object', $value);
+            }
+        }
+    }
+
+    /**
      * Test GET one method
      *
      * @return void
@@ -46,17 +86,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResults());
 
-        $data = $client->getResults();
-
-        $this->assertInternalType('array', $data->intarray);
-        foreach ($data->intarray as $value) {
-            $this->assertInternalType('integer', $value);
-        }
-
-        $this->assertInternalType('array', $data->hash->intarray);
-        foreach ($data->hash->intarray as $value) {
-            $this->assertInternalType('integer', $value);
-        }
+        $this->checkFixtureData($client->getResults());
     }
 
     /**
@@ -71,23 +101,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertCount(1, $client->getResults());
 
-        $data = $client->getResults()[0];
-
-        $this->assertInternalType('array', $data->intarray);
-        foreach ($data->intarray as $value) {
-            $this->assertInternalType('integer', $value);
-        }
-
-        $this->assertInternalType('array', $data->hash->intarray);
-        foreach ($data->hash->intarray as $value) {
-            $this->assertInternalType('integer', $value);
-        }
+        $this->checkFixtureData($client->getResults()[0]);
     }
 
     /**
      * Test POST method
      *
      * @return void
+     * @group abc
      */
     public function testPostMethod()
     {
@@ -96,12 +117,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'strarray'  => ['a', 'b'],
             'boolarray' => [true, false],
             'hasharray' => [(object) ['x' => 'y'], (object) []],
+            'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
 
             'hash'      => (object) [
                 'intarray'  => [10, 20],
                 'strarray'  => ['a', 'b'],
                 'boolarray' => [true, false],
                 'hasharray' => [(object) ['x' => 'y'], (object) []],
+                'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
             ],
 
             'arrayhash' => [
@@ -110,6 +133,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'strarray'  => ['a', 'b'],
                     'boolarray' => [true, false],
                     'hasharray' => [(object) ['x' => 'y'], (object) []],
+                    'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
         ];
@@ -128,7 +152,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $result = $client->getResults();
         $this->assertNotNull($result->id);
         unset($result->id);
-        $this->assertEquals($data, $result);
+        $this->assertEquals($this->fixDateTimezone($data), $result);
     }
 
     /**
@@ -145,12 +169,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'strarray'  => ['a', 'b'],
             'boolarray' => [true, false],
             'hasharray' => [(object) ['x' => 'y'], (object) []],
+            'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
 
             'hash'      => (object) [
                 'intarray'  => [10, 20],
                 'strarray'  => ['a', 'b'],
                 'boolarray' => [true, false],
                 'hasharray' => [(object) ['x' => 'y'], (object) []],
+                'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
             ],
 
             'arrayhash' => [
@@ -159,6 +185,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'strarray'  => ['a', 'b'],
                     'boolarray' => [true, false],
                     'hasharray' => [(object) ['x' => 'y'], (object) []],
+                    'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
         ];
@@ -171,9 +198,30 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/primitivearray/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertEquals($data, $client->getResults());
+        $this->assertEquals($this->fixDateTimezone($data), $client->getResults());
     }
 
+    /**
+     * Fix date timezone
+     *
+     * @param object $data Request data
+     * @return object
+     */
+    private function fixDateTimezone($data)
+    {
+        foreach ([
+                     &$data->datearray,
+                     &$data->hash->datearray,
+                     &$data->arrayhash[0]->datearray,
+                 ] as &$datearray) {
+            foreach ($datearray as $i => $date) {
+                $datearray[$i] = \DateTime::createFromFormat(self::DATE_FORMAT, $date)
+                    ->setTimezone(new \DateTimeZone(self::DATE_TIMEZONE))
+                    ->format(self::DATE_FORMAT);
+            }
+        }
+        return $data;
+    }
 
     /**
      * Test validation

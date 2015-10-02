@@ -154,6 +154,9 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
         } elseif ($fieldType === 'hasharray') {
             $type = 'collection';
             $options = ['type' => 'freeform'];
+        } elseif ($fieldType === 'datearray') {
+            $type = 'datearray';
+            $options = [];
         } elseif (isset($this->typeMap[$fieldType])) {
             $type = $this->typeMap[$fieldType];
             $options = [];

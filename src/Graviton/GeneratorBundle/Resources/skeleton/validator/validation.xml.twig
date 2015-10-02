@@ -71,6 +71,15 @@
         {% set addedCon = addedCon ~ '</constraint>' %}
 
         {% set thisCons = thisCons|merge([addedCon]) %}
+    {% elseif field.type == 'date[]' %}
+        {% set addedCon = '' %}
+        {% set addedCon = addedCon ~ '<constraint name="All">' %}
+        {% set addedCon = addedCon ~ '<option name="constraints">' %}
+        {% set addedCon = addedCon ~ '<constraint name="DateTime"/>' %}
+        {% set addedCon = addedCon ~ '</option>' %}
+        {% set addedCon = addedCon ~ '</constraint>' %}
+
+        {% set thisCons = thisCons|merge([addedCon]) %}
     {% elseif '[]' in field.type and 'Graviton' not in field.type %}
         {% set addedCon = '' %}
         {% set addedCon = addedCon ~ '<constraint name="Type">' %}
