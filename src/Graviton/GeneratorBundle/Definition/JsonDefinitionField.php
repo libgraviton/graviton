@@ -148,7 +148,7 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
-        return rtrim(strtolower($this->definition->getType()), '[]');
+        return strtolower($this->definition->getType());
     }
 
     /**
