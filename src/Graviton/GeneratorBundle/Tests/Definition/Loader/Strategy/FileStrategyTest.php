@@ -5,8 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Schema\Definition;
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy;
 
 /**
@@ -23,33 +21,11 @@ class FileStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadReturnsSingleFileArray()
     {
-        $file = __DIR__.'/test.json';
+        $file = __DIR__.'/resources/definition/test1.json';
 
-        $serializer = $this
-            ->getMockBuilder('Jms\\Serializer\\SerializerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
-            ->getMock();
-        $serializer
-            ->expects($this->once())
-            ->method('deserialize')
-            ->with(
-                file_get_contents($file),
-                'Graviton\GeneratorBundle\Definition\Schema\Definition',
-                'json'
-            )
-            ->will(
-                $this->returnValue((new Definition())->setId('a'))
-            );
+        $sut = new FileStrategy();
 
-        $sut = new FileStrategy($serializer);
         $this->assertTrue($sut->supports($file));
-
-        $data = $sut->load($file);
-        $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
-        $this->assertEquals(
-            $data,
-            [new JsonDefinition((new Definition())->setId('a'))]
-        );
+        $this->assertEquals([file_get_contents($file)], $sut->load($file));
     }
 }

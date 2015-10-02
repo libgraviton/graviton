@@ -5,8 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Schema\Definition;
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy;
 
 /**
@@ -23,34 +21,18 @@ class ScanStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadDir()
     {
-        $file = __DIR__.'/resources/definition/test.json';
+        $dir = __DIR__;
 
-        $serializer = $this
-            ->getMockBuilder('Jms\\Serializer\\SerializerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
-            ->getMock();
-        $serializer
-            ->expects($this->once())
-            ->method('deserialize')
-            ->with(
-                file_get_contents($file),
-                'Graviton\GeneratorBundle\Definition\Schema\Definition',
-                'json'
-            )
-            ->will(
-                $this->returnValue((new Definition())->setId('a'))
-            );
+        $sut = new ScanStrategy();
+        $sut->setScanDir($dir);
 
-        $sut = new ScanStrategy($serializer);
-        $sut->setScanDir(__DIR__);
         $this->assertTrue($sut->supports(null));
-
-        $data = $sut->load(null);
-        $this->assertContainsOnlyInstancesOf('Graviton\GeneratorBundle\Definition\JsonDefinition', $data);
         $this->assertEquals(
-            $data,
-            [new JsonDefinition((new Definition())->setId('a'))]
+            [
+                file_get_contents($dir.'/resources/definition/test1.json'),
+                file_get_contents($dir.'/resources/definition/test2.json'),
+            ],
+            $sut->load($dir)
         );
     }
 }

@@ -17,8 +17,11 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     private static $doctrineTypeMap = [
         self::TYPE_STRING => 'string',
+        self::TYPE_VARCHAR => 'string',
+        self::TYPE_TEXT => 'string',
         self::TYPE_INTEGER => 'int',
         self::TYPE_LONG => 'int',
+        self::TYPE_FLOAT => 'float',
         self::TYPE_DOUBLE => 'float',
         self::TYPE_DECIMAL => 'float',
         self::TYPE_DATETIME => 'date',
@@ -29,8 +32,11 @@ class JsonDefinitionField implements DefinitionElementInterface
 
     private static $serializerTypeMap = [
         self::TYPE_STRING => 'string',
+        self::TYPE_VARCHAR => 'string',
+        self::TYPE_TEXT => 'string',
         self::TYPE_INTEGER => 'integer',
         self::TYPE_LONG => 'integer',
+        self::TYPE_FLOAT => 'double',
         self::TYPE_DOUBLE => 'double',
         self::TYPE_DECIMAL => 'double',
         self::TYPE_DATETIME => 'DateTime',
