@@ -1690,6 +1690,53 @@
             "time": "2015-09-13 13:50:48"
         },
         {
+            "name": "graviton/json-schema",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/json-schema.git",
+                "reference": "bcb54b0486b7226ac9a6e136afc3477a13d2c42f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/bcb54b0486b7226ac9a6e136afc3477a13d2c42f",
+                "reference": "bcb54b0486b7226ac9a6e136afc3477a13d2c42f",
+                "shasum": ""
+            },
+            "require": {
+                "hadesarchitect/json-schema-bundle": "~0.1.0",
+                "justinrainbow/json-schema": "~1.4",
+                "symfony/symfony": "~2.7"
+            },
+            "require-dev": {
+                "libgraviton/codesniffer": "~1.3",
+                "phpunit/phpunit": "~4.6",
+                "squizlabs/php_codesniffer": "~2.2"
+            },
+            "bin": [
+                "bin/graviton-validate-directory",
+                "bin/graviton-validate-file"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Graviton": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/json-schema/graphs/contributors"
+                }
+            ],
+            "description": "JSON Schemas describing the Graviton specific JSON formats",
+            "time": "2015-10-02 07:21:48"
+        },
+        {
             "name": "graviton/php-rql-parser",
             "version": "v2.0.0-alpha14",
             "source": {
@@ -1885,6 +1932,47 @@
                 "web service"
             ],
             "time": "2015-03-18 18:23:50"
+        },
+        {
+            "name": "hadesarchitect/json-schema-bundle",
+            "version": "0.1.0",
+            "target-dir": "HadesArchitect/JsonSchemaBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HadesArchitect/JsonSchemaBundle.git",
+                "reference": "f07070f6a36dc0c9c516b0b3c5b5863c68a47f83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HadesArchitect/JsonSchemaBundle/zipball/f07070f6a36dc0c9c516b0b3c5b5863c68a47f83",
+                "reference": "f07070f6a36dc0c9c516b0b3c5b5863c68a47f83",
+                "shasum": ""
+            },
+            "require": {
+                "justinrainbow/json-schema": "<2",
+                "symfony/framework-bundle": "~2.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "HadesArchitect\\JsonSchemaBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleksander Volochnev",
+                    "email": "a.volochnev@gmail.com"
+                }
+            ],
+            "description": "Symfony2 bundle for Justin Rainbow's json-schema library.",
+            "time": "2014-11-30 21:15:20"
         },
         {
             "name": "hwi/oauth-bundle",
@@ -2484,6 +2572,72 @@
                 "xml"
             ],
             "time": "2015-06-23 19:27:08"
+        },
+        {
+            "name": "justinrainbow/json-schema",
+            "version": "1.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justinrainbow/json-schema.git",
+                "reference": "8dc9b9d85ab639ca60ab4608b34c1279d6ae7bce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/8dc9b9d85ab639ca60ab4608b34c1279d6ae7bce",
+                "reference": "8dc9b9d85ab639ca60ab4608b34c1279d6ae7bce",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "json-schema/json-schema-test-suite": "1.1.0",
+                "phpdocumentor/phpdocumentor": "~2",
+                "phpunit/phpunit": "~3.7"
+            },
+            "bin": [
+                "bin/validate-json"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "JsonSchema": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Prieto Reis",
+                    "email": "bruno.p.reis@gmail.com"
+                },
+                {
+                    "name": "Justin Rainbow",
+                    "email": "justin.rainbow@gmail.com"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Robert Schönthal",
+                    "email": "seroscho@googlemail.com"
+                }
+            ],
+            "description": "A library to validate a json schema.",
+            "homepage": "https://github.com/justinrainbow/json-schema",
+            "keywords": [
+                "json",
+                "schema"
+            ],
+            "time": "2015-07-14 16:29:50"
         },
         {
             "name": "knplabs/gaufrette",

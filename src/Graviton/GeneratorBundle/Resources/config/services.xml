@@ -46,6 +46,8 @@
         </service>
 
         <service id="graviton_generator.definition.loader" class="%graviton_generator.definition.loader.class%">
+            <argument type="service" id="graviton.jsonschema.validator"/>
+            <argument type="service" id="jms_serializer"/>
             <call method="addStrategy">
                 <argument type="service" id="graviton_generator.definition.loader.strategy.file"/>
             </call>
@@ -59,9 +61,8 @@
                 <argument type="service" id="graviton_generator.definition.loader.strategy.json"/>
             </call>
         </service>
-        <service id="graviton_generator.definition.loader.strategy.abstract" abstract="true">
-            <argument type="service" id="jms_serializer"/>
-        </service>
+        <service id="graviton_generator.definition.loader.strategy.abstract"
+                 abstract="true"/>
         <service id="graviton_generator.definition.loader.strategy.file"
                  class="%graviton_generator.definition.loader.strategy.file.class%"
                  parent="graviton_generator.definition.loader.strategy.abstract">
@@ -141,6 +142,5 @@
 
             <tag name="console.command" />
         </service>
-
     </services>
 </container>
