@@ -18,21 +18,44 @@ use Graviton\DocumentBundle\Entity\Hash;
 class HashArrayType extends Type
 {
     /**
+     * Convert DB value to PHP representation
+     *
+     * @param mixed $value Value to convert
+     * @return Hash[]
+     */
+    public static function convertToPhp($value)
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map([HashType::class, 'convertToPhp'], $value)));
+    }
+
+    /**
+     * Convert PHP value to MongoDb representation
+     *
+     * @param mixed $value Value to convert
+     * @return object[]
+     */
+    public static function convertToDb($value)
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map([HashType::class, 'convertToDb'], $value)));
+    }
+
+    /**
      * Convert to PHP value
      *
      * @param mixed $value Db value
-     * @return array
+     * @return Hash[]
      */
     public function convertToPHPValue($value)
     {
-        $return = array_map(
-            function (array $value) {
-                return new Hash($value);
-            },
-            is_array($value) ? array_values(array_filter($value, 'is_array')) : []
-        );
-
-        return $return;
+        return static::convertToPhp($value);
     }
 
     /**
@@ -42,40 +65,18 @@ class HashArrayType extends Type
      */
     public function closureToPHP()
     {
-        return <<<'PHP'
-$return = array_map(
-    function (array $value) {
-        return new \Graviton\DocumentBundle\Entity\Hash($value);
-    },
-    is_array($value) ? array_values(array_filter($value, 'is_array')) : []
-);
-PHP;
+        return '$return = \\'.static::class.'::convertToPhp($value);';
     }
 
     /**
      * Convert to DB value
      *
      * @param mixed $value PHP value
-     * @return array
+     * @return object[]
      */
     public function convertToDatabaseValue($value)
     {
-        $return = array_map(
-            function ($value) {
-                if (is_array($value)) {
-                    return (object) $value;
-                } elseif ($value instanceof \ArrayObject) {
-                    return (object) $value->getArrayCopy();
-                } elseif (is_object($value)) {
-                    return (object) get_object_vars($value);
-                } else {
-                    return (object) [];
-                }
-            },
-            is_array($value) ? array_values($value) : []
-        );
-
-        return $return;
+        return static::convertToDb($value);
     }
 
     /**
@@ -85,21 +86,6 @@ PHP;
      */
     public function closureToMongo()
     {
-        return <<<'PHP'
-$return = array_map(
-    function ($value) {
-        if (is_array($value)) {
-            return (object) $value;
-        } elseif ($value instanceof \ArrayObject) {
-            return (object) $value->getArrayCopy();
-        } elseif (is_object($value)) {
-            return (object) get_object_vars($value);
-        } else {
-            return (object) [];
-        }
-    },
-    is_array($value) ? array_values($value) : []
-);
-PHP;
+        return '$return = \\'.static::class.'::convertToDb($value);';
     }
 }
