@@ -65,24 +65,18 @@ class CoreVersionUtils
      */
     private function getContextVersion()
     {
-        try {
-            $output = $this->runComposerInContext('show -s --no-ansi');
-            $lines = explode(PHP_EOL, $output);
-            $wrapper = array();
-            foreach ($lines as $line) {
-                if (strpos($line, 'versions') !== false) {
-                    $wrapperVersionArr = explode(':', $line);
-                    $wrapper['id'] = 'self';
-                    $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
-                }
+        $output = $this->runComposerInContext('show -s --no-ansi');
+        $lines = explode(PHP_EOL, $output);
+        $wrapper = array();
+        foreach ($lines as $line) {
+            if (strpos($line, 'versions') !== false) {
+                $wrapperVersionArr = explode(':', $line);
+                $wrapper['id'] = 'self';
+                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
             }
-
-            return $wrapper;
-        } catch (\RuntimeException $e) {
-            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
-        } catch (\LogicException $e) {
-            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
         }
+
+        return $wrapper;
     }
 
     /**
@@ -93,25 +87,19 @@ class CoreVersionUtils
      */
     private function getInstalledPackagesVersion($versions)
     {
-        try {
-            $output = $this->runComposerInContext('show --installed');
-            $packages = explode(PHP_EOL, $output);
-            //last index is always empty
-            array_pop($packages);
+        $output = $this->runComposerInContext('show --installed');
+        $packages = explode(PHP_EOL, $output);
+        //last index is always empty
+        array_pop($packages);
 
-            foreach ($packages as $package) {
-                $content = preg_split('/([\s]+)/', $package);
-                if ($this->isDesiredVersion($content[0])) {
-                    array_push($versions, array('id' => $content[0], 'version' => $content[1]));
-                }
+        foreach ($packages as $package) {
+            $content = preg_split('/([\s]+)/', $package);
+            if ($this->isDesiredVersion($content[0])) {
+                array_push($versions, array('id' => $content[0], 'version' => $content[1]));
             }
-
-            return $versions;
-        } catch (\RuntimeException $e) {
-            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
-        } catch (\LogicException $e) {
-            return ['id' => $e->getCode(), 'version' => $e->getMessage()];
         }
+
+        return $versions;
     }
 
     /**
