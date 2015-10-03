@@ -13,14 +13,19 @@
         </parameter>
 
         <parameter key="graviton.file.controller.file.class">Graviton\FileBundle\Controller\FileController</parameter>
+        <parameter key="graviton.file.file_manager.class">Graviton\FileBundle\FileManager</parameter>
     </parameters>
     <services>
         <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%" factory-class="%graviton.aws_s3.client.class%" factory-method="factory">
             <argument>%graviton.aws_s3.client.args%</argument>
         </service>
 
-        <service id="graviton.file.controller.file" class="%graviton.file.controller.file.class%" parent="graviton.rest.controller">
+        <service id="graviton.file.file_manager" class="%graviton.file.file_manager.class%">
             <argument type="service" id="gaufrette.file_service_filesystem"/>
+        </service>
+
+        <service id="graviton.file.controller.file" class="%graviton.file.controller.file.class%" parent="graviton.rest.controller">
+            <argument type="service" id="graviton.file.file_manager"/>
         </service>
     </services>
 </container>
