@@ -17,7 +17,6 @@ use GravitonDyn\TestCasePrimitiveArrayBundle\DataFixtures\MongoDB\LoadTestCasePr
 class PrimitiveArrayControllerTest extends RestTestCase
 {
     const DATE_FORMAT = 'Y-m-d\\TH:i:sO';
-    const DATE_TIMEZONE = 'UTC';
 
     /**
      * load fixtures
@@ -38,43 +37,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
-     * Check fixture data
-     *
-     * @param object $data Fixture data
-     * @return void
-     */
-    private function checkFixtureData($data)
-    {
-        foreach ([$data, $data->hash, $data->arrayhash[0]] as $data) {
-            $this->assertInternalType('array', $data->intarray);
-            foreach ($data->intarray as $value) {
-                $this->assertInternalType('integer', $value);
-            }
-
-            $this->assertInternalType('array', $data->strarray);
-            foreach ($data->strarray as $value) {
-                $this->assertInternalType('string', $value);
-            }
-
-            $this->assertInternalType('array', $data->boolarray);
-            foreach ($data->boolarray as $value) {
-                $this->assertInternalType('boolean', $value);
-            }
-
-            $this->assertInternalType('array', $data->datearray);
-            foreach ($data->datearray as $value) {
-                $this->assertInternalType('string', $value);
-                $this->assertInstanceOf(\DateTime::class, \DateTime::createFromFormat(self::DATE_FORMAT, $value));
-            }
-
-            $this->assertInternalType('array', $data->hasharray);
-            foreach ($data->hasharray as $value) {
-                $this->assertInternalType('object', $value);
-            }
-        }
-    }
-
-    /**
      * Test GET one method
      *
      * @return void
@@ -86,7 +48,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResults());
 
-        $this->checkFixtureData($client->getResults());
+        $this->assertFixtureData($client->getResults());
     }
 
     /**
@@ -101,7 +63,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertCount(1, $client->getResults());
 
-        $this->checkFixtureData($client->getResults()[0]);
+        $this->assertFixtureData($client->getResults()[0]);
     }
 
     /**
@@ -202,28 +164,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
-     * Fix date timezone
-     *
-     * @param object $data Request data
-     * @return object
-     */
-    private function fixDateTimezone($data)
-    {
-        foreach ([
-                     &$data->datearray,
-                     &$data->hash->datearray,
-                     &$data->arrayhash[0]->datearray,
-                 ] as &$datearray) {
-            foreach ($datearray as $i => $date) {
-                $datearray[$i] = \DateTime::createFromFormat(self::DATE_FORMAT, $date)
-                    ->setTimezone(new \DateTimeZone(self::DATE_TIMEZONE))
-                    ->format(self::DATE_FORMAT);
-            }
-        }
-        return $data;
-    }
-
-    /**
      * Test validation
      *
      * @return void
@@ -293,5 +233,69 @@ class PrimitiveArrayControllerTest extends RestTestCase
             ],
             $client->getResults()
         );
+    }
+
+    /**
+     * Fix date timezone
+     *
+     * @param object $data Request data
+     * @return object
+     */
+    private function fixDateTimezone($data)
+    {
+        $converter = function (&$date) {
+            $date = \DateTime::createFromFormat(self::DATE_FORMAT, $date)
+                ->setTimezone(new \DateTimeZone(date_default_timezone_get()))
+                ->format(self::DATE_FORMAT);
+        };
+
+        array_walk($data->datearray, $converter);
+        array_walk($data->hash->datearray, $converter);
+        array_walk($data->arrayhash[0]->datearray, $converter);
+
+        return $data;
+    }
+
+
+    /**
+     * Assert fixture data
+     *
+     * @param object $data Fixture data
+     * @return void
+     * @throws \PHPUnit_Framework_AssertionFailedError
+     */
+    private function assertFixtureData($data)
+    {
+        foreach ([
+                     $data,
+                     $data->hash,
+                     $data->arrayhash[0],
+                 ] as $data) {
+            $this->assertInternalType('array', $data->intarray);
+            foreach ($data->intarray as $value) {
+                $this->assertInternalType('integer', $value);
+            }
+
+            $this->assertInternalType('array', $data->strarray);
+            foreach ($data->strarray as $value) {
+                $this->assertInternalType('string', $value);
+            }
+
+            $this->assertInternalType('array', $data->boolarray);
+            foreach ($data->boolarray as $value) {
+                $this->assertInternalType('boolean', $value);
+            }
+
+            $this->assertInternalType('array', $data->datearray);
+            foreach ($data->datearray as $value) {
+                $this->assertInternalType('string', $value);
+                $this->assertInstanceOf(\DateTime::class, \DateTime::createFromFormat(self::DATE_FORMAT, $value));
+            }
+
+            $this->assertInternalType('array', $data->hasharray);
+            foreach ($data->hasharray as $value) {
+                $this->assertInternalType('object', $value);
+            }
+        }
     }
 }
