@@ -5,6 +5,7 @@
 
 namespace Graviton\FileBundle\Controller;
 
+use Graviton\FileBundle\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -16,8 +17,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactory;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
-use Gaufrette\FileSystem;
-use Gaufrette\File;
 use GravitonDyn\FileBundle\Document\FileMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -29,9 +28,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class FileController extends RestController
 {
     /**
-     * @var FileSystem
+     * @var FileManager
      */
-    private $gaufrette;
+    private $fileManager;
 
     /**
      * @param Response           $response    Response
@@ -43,7 +42,7 @@ class FileController extends RestController
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils schema utils
-     * @param FileSystem         $gaufrette   file system abstraction layer for s3 and more
+     * @param FileManager        $fileManager Handles file specific tasks
      */
     public function __construct(
         Response $response,
@@ -55,7 +54,7 @@ class FileController extends RestController
         DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
-        Filesystem $gaufrette
+        FileManager $fileManager
     ) {
         parent::__construct(
             $response,
@@ -68,7 +67,7 @@ class FileController extends RestController
             $container,
             $schemaUtils
         );
-        $this->gaufrette = $gaufrette;
+        $this->fileManager = $fileManager;
     }
 
     /**
@@ -81,44 +80,15 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
-
-        $entityClass = $this->getModel()->getEntityClass();
-        $record = new $entityClass;
-
-        // Insert the new record
-        $record = $this->getModel()->insertRecord($record);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
-
-        $file = $this->saveFile($record->getId(), $request->getContent());
-
-        // update record with file metadata
-        $meta = new FileMetadata();
-        $meta->setSize((int) $file->getSize())
-            ->setMime($request->headers->get('Content-Type'))
-            ->setCreatedate(new \DateTime())
-            ->setModificationdate(new \DateTime());
-
-        $record->setMetadata($meta);
-
-        $record = $this->getModel()->updateRecord($record->getId(), $record);
+        $files = $this->fileManager->saveFiles($request, $this->getModel());
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
-
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4).'get';
-        }
-
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+            $this->determineRoute($request->get('_route'), $files, ['post', 'postNoSlash'])
         );
+
         return $response;
     }
 
@@ -138,14 +108,14 @@ class FileController extends RestController
         }
         $response = $this->getResponse();
 
-        if (!$this->gaufrette->has($id)) {
+        if (!$this->fileManager->has($id)) {
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
 
             return $response;
         }
 
         $record = $this->findRecord($id);
-        $data = $this->gaufrette->read($id);
+        $data = $this->fileManager->read($id);
 
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', $record->getMetadata()->getMime());
@@ -172,10 +142,9 @@ class FileController extends RestController
             return parent::putAction($id, $request);
         }
 
+        $file = $this->fileManager->saveFile($id, $request->getContent());
+
         $record = $this->findRecord($id);
-
-        $file = $this->saveFile($id, $request->getContent());
-
         $record->getMetadata()
             ->setSize((int) $file->getSize())
             ->setMime($contentType)
@@ -183,20 +152,18 @@ class FileController extends RestController
 
         $this->getModel()->updateRecord($id, $record);
 
-        // store id of new record so we dont need to reparse body later when needed
+        // store id of new record so we don't need to re-parse body later when needed
         $request->attributes->set('id', $record->getId());
 
         $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
-
-        $routeName = $request->get('_route');
-        if (substr($routeName, 0, -4) == '.put') {
-            $routeName = substr($routeName, 0, -3) . 'get';
-        }
+        $response->headers->set(
+            'Location',
+            $this->determineRoute($request->get('_route'), [$file], ['put', 'putNoSlash'])
+        );
 
         return $response;
     }
-
 
     /**
      * Deletes a record
@@ -207,31 +174,33 @@ class FileController extends RestController
      */
     public function deleteAction($id)
     {
-        if ($this->gaufrette->has($id)) {
-            $this->gaufrette->delete($id);
+        if ($this->fileManager->has($id)) {
+            $this->fileManager->delete($id);
         }
 
         return parent::deleteAction($id);
     }
 
     /**
-     * Save or update a file
+     * @param string $routeName
+     * @param array  $files
+     * @param array  $routeTypes
      *
-     * @param Number $id   ID of file
-     * @param String $data content to save
-     *
-     * @return Gaufrette\File $file the saved file
-     *
-     * @throws BadRequestHttpException
+     * @return string
      */
-    private function saveFile($id, $data)
+    private function determineRoute($routeName, array $files, array $routeTypes)
     {
-        if (is_resource($data)) {
-            throw new BadRequestHttpException('/file does not support storing resources');
+        foreach($routeTypes as $routeType) {
+            $reduce = (-1) * strlen($routeType);
+            $routeName = substr($routeName, 0, $reduce).'get';
         }
-        $file = new File($id, $this->gaufrette);
-        $file->setContent($data);
 
-        return $file;
+        $locations = [];
+        foreach ($files as $id) {
+            $locations[] = $this->getRouter()->generate($routeName, array('id' => $id));
+        }
+
+        // TODO [lapistano]: this does not seem to be correct for multiple uploaded files!!
+        return implode(",", $locations);
     }
 }
