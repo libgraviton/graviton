@@ -37,6 +37,39 @@ class PrimitiveArrayControllerTest extends RestTestCase
     }
 
     /**
+     * Test item schema
+     *
+     * @return void
+     */
+    public function testItemSchema()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/testcase/primitivearray/item');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $schema = $client->getResults();
+        $this->assertEquals('object', $schema->type);
+        $this->assertItemSchema($schema);
+    }
+
+    /**
+     * Test collection schema
+     *
+     * @return void
+     */
+    public function testCollectionSchema()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/testcase/primitivearray/collection');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $schema = $client->getResults();
+        $this->assertEquals('array', $schema->type);
+        $this->assertEquals('object', $schema->items->type);
+        $this->assertItemSchema($schema->items);
+    }
+
+    /**
      * Test GET one method
      *
      * @return void
@@ -296,6 +329,38 @@ class PrimitiveArrayControllerTest extends RestTestCase
             foreach ($data->hasharray as $value) {
                 $this->assertInternalType('object', $value);
             }
+        }
+    }
+
+    /**
+     * Assert item schema
+     *
+     * @param object $schema Item schema
+     * @return void
+     * @throws \PHPUnit_Framework_AssertionFailedError
+     */
+    private function assertItemSchema($schema)
+    {
+        foreach ([
+                     $schema->properties,
+                     $schema->properties->hash->properties,
+                     $schema->properties->arrayhash->items->properties,
+                 ] as $schema) {
+            $this->assertEquals('array', $schema->intarray->type);
+            $this->assertEquals('integer', $schema->intarray->items->type);
+
+            $this->assertEquals('array', $schema->strarray->type);
+            $this->assertEquals('string', $schema->strarray->items->type);
+
+            $this->assertEquals('array', $schema->boolarray->type);
+            $this->assertEquals('boolean', $schema->boolarray->items->type);
+
+            $this->assertEquals('array', $schema->datearray->type);
+            $this->assertEquals('string', $schema->datearray->items->type);
+            $this->assertEquals('date-time', $schema->datearray->items->format);
+
+            $this->assertEquals('array', $schema->hasharray->type);
+            $this->assertEquals('object', $schema->hasharray->items->type);
         }
     }
 }
