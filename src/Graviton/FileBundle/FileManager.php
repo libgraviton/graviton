@@ -1,0 +1,156 @@
+<?php
+/**
+ * Handles file specific actions
+ */
+
+namespace Graviton\FileBundle;
+
+use Gaufrette\File;
+use Gaufrette\FileSystem;
+use Graviton\RestBundle\Model\DocumentModel;
+use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
+class FileManager
+{
+    /**
+     * @var FileSystem
+     */
+    private $fileSystem;
+
+    /**
+     * FileManager constructor.
+     *
+     * @param FileSystem $fileSystem file system abstraction layer for s3 and more
+     */
+    public function __construct(FileSystem $fileSystem)
+    {
+        $this->fileSystem = $fileSystem;
+    }
+
+    /**
+     * Indicates whether the file matching the specified key exists
+     *
+     * @param string $key
+     *
+     * @return boolean TRUE if the file exists, FALSE otherwise
+     */
+    public function has($key)
+    {
+        return $this->fileSystem->has($key);
+    }
+
+    /**
+     * Deletes the file matching the specified key
+     *
+     * @param string $key
+     *
+     * @throws \RuntimeException when cannot read file
+     *
+     * @return boolean
+     */
+    public function delete($key)
+    {
+        return $this->fileSystem->delete($key);
+    }
+
+    /**
+     * Reads the content from the file
+     *
+     * @param  string $key Key of the file
+     *
+     * @throws \Gaufrette\Exception\FileNotFound when file does not exist
+     * @throws \RuntimeException                 when cannot read file
+     *
+     * @return string
+     */
+    public function read($key)
+    {
+        return $this->fileSystem->read($key);
+    }
+
+    /**
+     * @param Request       $request
+     * @param DocumentModel $model
+     *
+     * @return array
+     */
+    public function saveFiles(Request $request, DocumentModel $model)
+    {
+        $inStore = [];
+        $files = $this->extractUploadedFiles($request);
+
+        foreach ($files as $key => $fileInfo) {
+            $entityClass = $model->getEntityClass();
+            $record = $model->insertRecord(new $entityClass());
+            $inStore[] = $record->getId();
+
+            $this->saveFile($record->getId(), $fileInfo['content']);
+
+            /** @var  $file \Symfony\Component\HttpFoundation\File\UploadedFile */
+            $file = $fileInfo['data'];
+
+            // update record with file metadata
+            $meta = new FileMetadata();
+            $meta
+                ->setSize((int) $file->getSize())
+                ->setMime($file->getMimeType())
+                ->setFilename($file->getClientOriginalName())
+                ->setCreatedate(new \DateTime())
+                ->setModificationdate(new \DateTime());
+
+            $record->setMetadata($meta);
+            $model->updateRecord($record->getId(), $record);
+        }
+
+        return $inStore;
+    }
+
+    /**
+     * Save or update a file
+     *
+     * @param Number $id   ID of file
+     * @param String $data content to save
+     *
+     * @return File
+     *
+     * @throws BadRequestHttpException
+     */
+    public function saveFile($id, $data)
+    {
+        if (is_resource($data)) {
+            throw new BadRequestHttpException('/file does not support storing resources');
+        }
+        $file = new File($id, $this->fileSystem);
+        $file->setContent($data);
+
+        return $file;
+    }
+
+    /**
+     * @param Request $request Current http request
+     *
+     * @return array
+     */
+    private function extractUploadedFiles(Request $request)
+    {
+        $uploadedFiles = [];
+
+        /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
+        foreach ($request->files->all() as $field => $uploadedFile) {
+            $movedFile = $uploadedFile->move('/tmp/');
+            $uploadedFiles[$field] = [
+                'data' => $uploadedFile,
+                'content' => file_get_contents($movedFile)
+            ];
+        }
+
+        return $uploadedFiles;
+    }
+}
