@@ -210,12 +210,14 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'strarray'  => ['a', false],
             'boolarray' => [true, 'a'],
             'hasharray' => [(object) ['x' => 'y'], 1.5],
+            'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
 
             'hash'      => (object) [
                 'intarray'  => [1, 'a'],
                 'strarray'  => ['a', false],
                 'boolarray' => [true, 'a'],
                 'hasharray' => [(object) ['x' => 'y'], 1.5],
+                'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
             ],
 
             'arrayhash' => [
@@ -224,6 +226,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'strarray'  => ['a', false],
                     'boolarray' => [true, 'a'],
                     'hasharray' => [(object) ['x' => 'y'], 1.5],
+                    'datearray' => ['2015-10-03T22:32:00+0600', 'abc'],
                 ]
             ],
         ];
@@ -242,6 +245,10 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'message'      => 'This value is not valid.'
                 ],
                 (object) [
+                    'propertyPath' => 'children[datearray].children[1]',
+                    'message'      => 'This value is not valid.',
+                ],
+                (object) [
                     'propertyPath' => 'data.hasharray[1]',
                     'message'      => 'This value should be of type object.',
                 ],
@@ -251,12 +258,20 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'message'      => 'This value is not valid.',
                 ],
                 (object) [
+                    'propertyPath' => 'children[hash].children[datearray].children[1]',
+                    'message'      => 'This value is not valid.',
+                ],
+                (object) [
                     'propertyPath' => 'data.hash.hasharray[1]',
                     'message'      => 'This value should be of type object.',
                 ],
 
                 (object) [
                     'propertyPath' => 'children[arrayhash].children[0].children[intarray].children[1]',
+                    'message'      => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath' => 'children[arrayhash].children[0].children[datearray].children[1]',
                     'message'      => 'This value is not valid.',
                 ],
                 (object) [
