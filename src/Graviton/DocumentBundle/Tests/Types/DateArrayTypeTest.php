@@ -1,24 +1,24 @@
 <?php
 /**
- * HashTypeTest class file
+ * DateArrayTypeTest class file
  */
+
 namespace Graviton\DocumentBundle\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
-use Graviton\DocumentBundle\Entity\Hash;
-use Graviton\DocumentBundle\Types\HashType;
+use Graviton\DocumentBundle\Types\DateArrayType;
 
 /**
- * HashType test
+ * DateArrayType test
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class HashTypeTest extends BaseDoctrineTypeTestCase
+class DateArrayTypeTest extends BaseDoctrineTypeTestCase
 {
     /**
-     * @var HashType
+     * @var DateArrayType
      */
     private $type;
 
@@ -29,141 +29,136 @@ class HashTypeTest extends BaseDoctrineTypeTestCase
      */
     public function setUp()
     {
-        Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
-        $this->type = Type::getType('hash');
+        Type::registerType('datearray', DateArrayType::class);
+        $this->type = Type::getType('datearray');
     }
 
     /**
-     * Test HashType::convertToDatabaseValue()
+     * Test DateArrayType::convertToDatabaseValue()
      *
      * @return void
      */
     public function testConvertToDatabaseValue()
     {
         $this->assertEquals(
-            null,
+            [],
             $this->type->convertToDatabaseValue(null)
         );
         $this->assertEquals(
-            null,
+            [],
             $this->type->convertToDatabaseValue('')
         );
         $this->assertEquals(
-            (object) [],
-            $this->type->convertToDatabaseValue([])
+            [],
+            $this->type->convertToDatabaseValue(['not a date'])
         );
         $this->assertEquals(
-            (object) ['a'],
-            $this->type->convertToDatabaseValue(['a'])
+            [],
+            $this->type->convertToDatabaseValue([(object) []])
         );
         $this->assertEquals(
-            (object) [],
-            $this->type->convertToDatabaseValue(new \ArrayObject())
-        );
-        $this->assertEquals(
-            (object) ['a' => 'b'],
-            $this->type->convertToDatabaseValue(new \ArrayObject(['a' => 'b']))
+            [new \MongoDate(strtotime('2015-10-02T15:04:00+06:00'))],
+            $this->type->convertToDatabaseValue(['2015-10-02T15:04:00+06:00'])
         );
     }
 
     /**
-     * Test HashType::closureToMongo()
+     * Test DateArrayType::closureToMongo()
      *
      * @return void
      */
     public function testClosureToMongo()
     {
         $this->assertEqualsClosure(
-            null,
+            [],
             null,
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            null,
+            [],
             '',
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            (object) [],
             [],
+            ['not a date'],
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            (object) ['a'],
-            ['a'],
+            [],
+            [(object) []],
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            (object) [],
-            new \ArrayObject(),
-            $this->type->closureToMongo()
-        );
-        $this->assertEqualsClosure(
-            (object) ['a' => 'b'],
-            new \ArrayObject(['a' => 'b']),
+            [new \MongoDate(strtotime('2015-10-02T15:04:00+06:00'))],
+            ['2015-10-02T15:04:00+06:00'],
             $this->type->closureToMongo()
         );
     }
 
     /**
-     * Test HashType::convertToPHPValue()
+     * Test DateArrayType::convertToPHPValue()
      *
      * @return void
      */
     public function testConvertToPHPValue()
     {
         $this->assertEquals(
-            null,
+            [],
             $this->type->convertToPHPValue(null)
         );
         $this->assertEquals(
-            null,
+            [],
             $this->type->convertToPHPValue('')
         );
         $this->assertEquals(
-            new Hash([]),
+            [],
             $this->type->convertToPHPValue([])
         );
         $this->assertEquals(
-            new Hash(['a']),
-            $this->type->convertToPHPValue(['a'])
+            [],
+            $this->type->convertToPHPValue(['not a date'])
         );
         $this->assertEquals(
-            new Hash(['a' => 'b']),
-            $this->type->convertToPHPValue(['a' => 'b'])
+            [],
+            $this->type->convertToPHPValue([(object) []])
+        );
+        $this->assertEquals(
+            [new \DateTime('2015-10-02T15:04:00+06:00')],
+            $this->type->convertToPHPValue(['2015-10-02T15:04:00+06:00'])
         );
     }
 
     /**
-     * Test HashType::closureToPHP()
+     * Test HashArrayType::closureToPHP()
      *
      * @return void
      */
     public function testClosureToPHP()
     {
         $this->assertEqualsClosure(
-            null,
+            [],
             null,
             $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(
-            null,
+            [],
             '',
             $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(
-            new Hash([]),
             [],
+            ['not a date'],
             $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(
-            new Hash(['a']),
-            ['a'],
+            [],
+            [(object) []],
             $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(
-            new Hash(['a' => 'b']),
-            ['a' => 'b'],
+            [new \DateTime('2015-10-02T15:04:00+06:00')],
+            ['2015-10-02T15:04:00+06:00'],
             $this->type->closureToPHP()
         );
     }
