@@ -39,7 +39,7 @@
         {% set addedCon = addedCon ~ '<constraint name="Graviton\\RestBundle\\Validator\\Constraints\\ExtReference\\ExtReference">' %}
 
         {% if field.collection is defined and field.collection is not empty %}
-            {% set addedCon = addedCon ~ '<option name="allowedCollections">' %}
+            {% set addedCon = addedCon ~ '<option name="collections">' %}
             {% for allowedExtrefCollection in field.collection %}
                 {% set addedCon = addedCon ~ '<value>' ~ allowedExtrefCollection ~ '</value>' %}
             {% endfor %}

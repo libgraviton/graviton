@@ -25,27 +25,27 @@ class ExtReferenceValidator extends ConstraintValidator
      * @param mixed      $value      The value that should be validated
      * @param Constraint $constraint The constraint for the validation
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedTypeException
      */
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof ExtReference) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\ExtReference');
+            throw new UnexpectedTypeException($constraint, ExtReference::class);
         }
 
         if ($value === null) {
             return;
         }
 
-        if ($value instanceof ExtRef) {
-            if (is_array($constraint->allowedCollections) &&
-                !in_array('*', $constraint->allowedCollections, true) &&
-                !in_array($value->getRef(), $constraint->allowedCollections, true)
-            ) {
-                $this->context->addViolation($constraint->notAllowedMessage, ['%url%' => $value]);
-            }
-        } else {
-            $this->context->addViolation($constraint->invalidMessage, ['%url%' => $value]);
+        if (!$value instanceof ExtRef) {
+            throw new UnexpectedTypeException($value, ExtRef::class);
+        }
+
+        if (!empty($constraint->collections) &&
+            !in_array('*', $constraint->collections, true) &&
+            !in_array($value->getRef(), $constraint->collections, true)
+        ) {
+            $this->context->addViolation($constraint->message, ['%collection%' => $value->getRef()]);
         }
     }
 }

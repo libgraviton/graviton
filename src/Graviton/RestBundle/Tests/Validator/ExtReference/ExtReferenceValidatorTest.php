@@ -6,7 +6,6 @@
 namespace Graviton\RestBundle\Tests\Validator\ExtReference;
 
 use Graviton\DocumentBundle\Entity\ExtReference as ExtRef;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReference;
 use Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -69,6 +68,21 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test validate()
+     *
+     * @return void
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
+     */
+    public function testValidateInvalidValue()
+    {
+        $extref = 'ibvalid extref value';
+        $constraint = new ExtReference();
+
+        $validator = $this->createValidator();
+        $validator->validate($extref, $constraint);
+    }
+
+    /**
      * Test validate() null value
      *
      * @return void
@@ -78,29 +92,11 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
         $url = null;
         $constraint = new ExtReference();
 
-        $this->converter->expects($this->never())
-            ->method('getDbRef');
+        $this->context->expects($this->never())
+            ->method('addViolation');
 
         $validator = $this->createValidator();
         $validator->validate($url, $constraint);
-    }
-
-    /**
-     * Test validate()
-     *
-     * @return void
-     */
-    public function testValidateWithException()
-    {
-        $extref = 'not extref';
-        $constraint = new ExtReference();
-
-        $this->context->expects($this->once())
-            ->method('addViolation')
-            ->with($constraint->invalidMessage, ['%url%' => '']);
-
-        $validator = $this->createValidator();
-        $validator->validate($extref, $constraint);
     }
 
     /**
@@ -113,11 +109,11 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
         $extref = ExtRef::create(__FILE__, __FUNCTION__);
 
         $constraint = new ExtReference();
-        $constraint->allowedCollections = [__CLASS__];
+        $constraint->collections = [__CLASS__];
 
         $this->context->expects($this->once())
             ->method('addViolation')
-            ->with($constraint->notAllowedMessage, ['%url%' => '']);
+            ->with($constraint->message, ['%collection%' => $extref->getRef()]);
 
         $validator = $this->createValidator();
         $validator->validate($extref, $constraint);
@@ -133,7 +129,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
         $extref = ExtRef::create(__FILE__, __FUNCTION__);
 
         $constraint = new ExtReference();
-        $constraint->allowedCollections = null;
+        $constraint->collections = [];
 
         $this->context->expects($this->never())
             ->method('addViolation');
@@ -152,7 +148,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
         $extref = ExtRef::create(__FILE__, __FUNCTION__);
 
         $constraint = new ExtReference();
-        $constraint->allowedCollections = ['*'];
+        $constraint->collections = ['*'];
 
         $this->context->expects($this->never())
             ->method('addViolation');
@@ -171,7 +167,7 @@ class ExtReferenceValidatorTest extends \PHPUnit_Framework_TestCase
         $extref = ExtRef::create(__FILE__, __FUNCTION__);
 
         $constraint = new ExtReference();
-        $constraint->allowedCollections = [__FILE__];
+        $constraint->collections = [__FILE__];
 
         $this->context->expects($this->never())
             ->method('addViolation');

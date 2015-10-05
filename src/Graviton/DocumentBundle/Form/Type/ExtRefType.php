@@ -42,7 +42,7 @@ class ExtRefType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['invalid_message' => 'The referenced URL is invalid.']);
+        $resolver->setDefaults(['invalid_message' => 'URL "{{ value }}" is not a valid ext reference.']);
     }
 
     /**
