@@ -9,11 +9,7 @@
 namespace Graviton\DocumentBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Graviton\DocumentBundle\Form\DataTransformer\ExtRefToMongoRefTransformer;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
