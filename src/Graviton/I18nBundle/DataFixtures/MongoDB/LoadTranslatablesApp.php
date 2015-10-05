@@ -7,6 +7,7 @@ namespace Graviton\I18nBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\I18nBundle\Document\Translatable;
 use Graviton\I18nBundle\Document\TranslatableLanguage;
 
@@ -36,7 +37,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $deAdmin->setTranslated('Die Administration');
         $deAdmin->setIsLocalized(true);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/de');
+        $language->setRef(ExtReference::create('Language', 'de'));
         $deAdmin->setLanguage($language);
         $manager->persist($deAdmin);
 
@@ -47,7 +48,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $frAdmin->setOriginal('Administration');
         $frAdmin->setIsLocalized(false);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/fr');
+        $language->setRef(ExtReference::create('Language', 'fr'));
         $frAdmin->setLanguage($language);
         $manager->persist($frAdmin);
 
@@ -59,7 +60,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $enAdmin->setTranslated('Administration');
         $enAdmin->setIsLocalized(true);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/en');
+        $language->setRef(ExtReference::create('Language', 'en'));
         $enAdmin->setLanguage($language);
         $manager->persist($enAdmin);
 
@@ -72,7 +73,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $deTablet->setOriginal('Tablet');
         $deTablet->setIsLocalized(false);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/de');
+        $language->setRef(ExtReference::create('Language', 'de'));
         $deTablet->setLanguage($language);
         $manager->persist($deTablet);
 
@@ -83,7 +84,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $frTablet->setOriginal('Tablet');
         $frTablet->setIsLocalized(false);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/fr');
+        $language->setRef(ExtReference::create('Language', 'fr'));
         $frTablet->setLanguage($language);
         $manager->persist($frTablet);
 
@@ -95,7 +96,7 @@ class LoadTranslatablesApp implements FixtureInterface
         $enTablet->setTranslated('Tablet');
         $enTablet->setIsLocalized(true);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/en');
+        $language->setRef(ExtReference::create('Language', 'en'));
         $enTablet->setLanguage($language);
         $manager->persist($enTablet);
 
