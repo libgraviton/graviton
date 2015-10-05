@@ -6,7 +6,6 @@
         <parameter key="graviton.document.form.type.document.fieldbuilder.class">Graviton\DocumentBundle\Form\Type\FieldBuilder\ChainFieldBuilder</parameter>
         <parameter key="graviton.document.service.formdatamapper.class">Graviton\DocumentBundle\Service\FormDataMapper</parameter>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
-        <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
@@ -25,13 +24,6 @@
             <argument>%graviton.document.type.extref.mapping%</argument>
         </service>
 
-        <!-- $ref output in responses -->
-        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%">
-             <argument type="service" id="graviton.document.service.extrefconverter" />
-             <argument>%graviton.document.type.extref.fields%</argument>
-             <argument type="service" id="request_stack"/>
-            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
-        </service>
         <service id="graviton.document.listener.extreferencesearchlistener" class="%graviton.document.listener.extreferencesearchlistener.class%">
              <argument type="service" id="graviton.document.service.extrefconverter" />
              <argument>%graviton.document.type.extref.fields%</argument>
