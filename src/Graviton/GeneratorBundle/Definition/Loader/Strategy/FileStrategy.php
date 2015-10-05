@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a file
+ * load json from a file
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
@@ -10,7 +10,7 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FileStrategy extends AbstractStrategy
+class FileStrategy implements StrategyInterface
 {
     /**
      * may the strategy handle this input
@@ -25,10 +25,13 @@ class FileStrategy extends AbstractStrategy
     }
 
     /**
-     * @param mixed $input Input from command
+     * load raw JSON data
+     *
+     * @param string|null $input input from command
+     *
      * @return string[]
      */
-    protected function getRawDefinitions($input)
+    public function load($input)
     {
         return [file_get_contents($input)];
     }

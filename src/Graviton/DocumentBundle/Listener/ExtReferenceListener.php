@@ -62,11 +62,12 @@ class ExtReferenceListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        $content = trim($event->getResponse()->getContent());
+
         if (!isset($this->fields[$this->request->attributes->get('_route')])) {
+            $event->getResponse()->setContent($content);
             return;
         }
-
-        $content = trim($event->getResponse()->getContent());
 
         if (!$event->isMasterRequest() || empty($content)) {
             return;
@@ -77,8 +78,7 @@ class ExtReferenceListener
             return;
         }
 
-        $data = json_decode($event->getResponse()->getContent());
-
+        $data = json_decode($content);
         $event->getResponse()->setContent(
             json_encode(
                 $this->converter->convert($data, $this->fields[$this->request->attributes->get('_route')])

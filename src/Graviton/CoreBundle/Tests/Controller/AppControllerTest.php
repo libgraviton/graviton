@@ -671,6 +671,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Array of app objects', $results->title);
         $this->assertEquals('array', $results->type);
         $this->assertIsAppSchema($results->items);
+        $this->assertEquals('en', $results->items->properties->name->required[0]);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));

@@ -15,12 +15,17 @@ namespace Graviton\GeneratorBundle\Definition;
  */
 interface DefinitionElementInterface
 {
+    const TYPE_STRING = 'string';
 
-    const TYPE_STRING = 'varchar';
+    const TYPE_VARCHAR = 'varchar';
+
+    const TYPE_TEXT = 'text';
 
     const TYPE_INTEGER = 'int';
 
     const TYPE_LONG = 'bigint';
+
+    const TYPE_FLOAT = 'float';
 
     const TYPE_DOUBLE = 'double';
 
@@ -36,7 +41,7 @@ interface DefinitionElementInterface
 
     const TYPE_EXTREF = 'extref';
 
-    const REL_TYPE_REF = 'reference';
+    const REL_TYPE_REF = 'ref';
 
     const REL_TYPE_EMBED = 'embed';
 

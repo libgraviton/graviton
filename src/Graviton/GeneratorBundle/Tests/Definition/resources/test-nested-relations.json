@@ -1,7 +1,6 @@
 {
   "id": "RelationTest",
   "target": {
-    "indexes": [],
     "relations": [
       {
         "type": "embed",

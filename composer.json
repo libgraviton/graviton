@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "version": "0.30.0",
+    "version": "0.31.0",
     "license": "GPL",
     "type": "project",
     "description": "The base package for graviton",
@@ -50,6 +50,8 @@
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.3",
         "graviton/deploy-scripts": ">=0.2.2",
+        "graviton/json-schema": "~0.4",
+        "hadesarchitect/json-schema-bundle": "~0.1.0",
         "php-jsonpatch/php-jsonpatch": "1.2.2"
     },
     "require-dev": {
@@ -68,6 +70,7 @@
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -78,6 +81,7 @@
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Graviton\\CoreBundle\\Composer\\ScriptHandler::generateVersionYml",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::cleanDynamicBundles",
             "Graviton\\GeneratorBundle\\Composer\\ScriptHandler::generateDynamicBundles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
