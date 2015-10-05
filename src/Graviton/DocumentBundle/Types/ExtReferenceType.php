@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
  * @license  http://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReference extends Type
+class ExtReferenceType extends Type
 {
     /**
      * get php value when field is used as identifier

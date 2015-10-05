@@ -1,6 +1,6 @@
 <?php
 /**
- * HashType class file
+ * HashArrayType class file
  */
 
 namespace Graviton\DocumentBundle\Types;
@@ -9,49 +9,49 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Graviton\DocumentBundle\Entity\Hash;
 
 /**
- * Hash type
+ * Hash array type
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class HashType extends Type
+class HashArrayType extends Type
 {
     /**
      * Convert DB value to PHP representation
      *
      * @param mixed $value Value to convert
-     * @return Hash|null
+     * @return Hash[]
      */
     public static function convertToPhp($value)
     {
-        return is_array($value) ? new Hash($value) : null;
+        if (!is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map([HashType::class, 'convertToPhp'], $value)));
     }
 
     /**
      * Convert PHP value to MongoDb representation
      *
      * @param mixed $value Value to convert
-     * @return object|null
+     * @return object[]
      */
     public static function convertToDb($value)
     {
-        if (is_array($value)) {
-            return (object) $value;
-        } elseif ($value instanceof \ArrayObject) {
-            return (object) $value->getArrayCopy();
-        } elseif (is_object($value)) {
-            return (object) get_object_vars($value);
-        } else {
-            return null;
+        if (!is_array($value)) {
+            return [];
         }
+
+        return array_values(array_filter(array_map([HashType::class, 'convertToDb'], $value)));
     }
 
     /**
      * Convert to PHP value
      *
      * @param mixed $value Db value
-     * @return Hash|null
+     * @return Hash[]
      */
     public function convertToPHPValue($value)
     {
@@ -72,7 +72,7 @@ class HashType extends Type
      * Convert to DB value
      *
      * @param mixed $value PHP value
-     * @return object|null
+     * @return object[]
      */
     public function convertToDatabaseValue($value)
     {

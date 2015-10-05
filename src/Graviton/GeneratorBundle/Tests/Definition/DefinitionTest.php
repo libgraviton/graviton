@@ -482,7 +482,6 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @return void
-     * @group tmp
      */
     public function testNestedRelations()
     {
@@ -583,6 +582,83 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionRel', $referenceField);
         $this->assertEquals(JsonDefinitionField::REL_TYPE_REF, $referenceField->getDefAsArray()['relType']);
         $this->assertEquals('Entity', $referenceField->getType());
+    }
+
+
+    /**
+     * Primitive array test
+     *
+     * @return void
+     */
+    public function testPrimitiveArray()
+    {
+        $definition = $this->loadJsonDefinition(__DIR__.'/resources/test-primitive-array.json');
+        $this->assertEquals(
+            (new JsonDefinition(
+                (new Schema\Definition())
+                    ->setId('PrimitiveArray')
+                    ->setTarget(
+                        (new Schema\Target())
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('id')
+                                    ->setType('string')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('intarray.0')
+                                    ->setType('int')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('hash.intarray.0')
+                                    ->setType('int')
+                            )
+                            ->addField(
+                                (new Schema\Field())
+                                    ->setName('hasharray.0.intarray.0')
+                                    ->setType('int')
+                            )
+                    )
+            )),
+            $definition
+        );
+
+        /** @var JsonDefinitionArray $field */
+        $field = $this->getFieldByPath($definition, 'intarray');
+        $this->assertInstanceOf(JsonDefinitionArray::class, $field);
+        $this->assertEquals('int[]', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionArray $field */
+        $field = $this->getFieldByPath($definition, 'hash.intarray');
+        $this->assertInstanceOf(JsonDefinitionArray::class, $field);
+        $this->assertEquals('int[]', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'hash.intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionArray $field */
+        $field = $this->getFieldByPath($definition, 'hasharray.0.intarray');
+        $this->assertInstanceOf(JsonDefinitionArray::class, $field);
+        $this->assertEquals('int[]', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
+
+        /** @var JsonDefinitionField $field */
+        $field = $this->getFieldByPath($definition, 'hasharray.0.intarray.0');
+        $this->assertInstanceOf(JsonDefinitionField::class, $field);
+        $this->assertEquals('int', $field->getType());
+        $this->assertEquals('intarray', $field->getName());
     }
 
     /**

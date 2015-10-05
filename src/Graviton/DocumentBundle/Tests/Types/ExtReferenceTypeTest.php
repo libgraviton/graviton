@@ -5,21 +5,19 @@
 
 namespace Graviton\DocumentBundle\Tests\Types;
 
-use Graviton\DocumentBundle\Types\ExtReference;
-use Graviton\DocumentBundle\Entity\ExtReference as ExtRef;
+use Graviton\DocumentBundle\Entity\ExtReference;
+use Graviton\DocumentBundle\Types\ExtReferenceType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
- * Test ExtReference
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
-class ExtReferenceTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
 {
     /**
-     * @var ExtReference
+     * @var ExtReferenceType
      */
     private $type;
 
@@ -30,28 +28,12 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        Type::registerType('extref', ExtReference::class);
+        Type::registerType('extref', ExtReferenceType::class);
         $this->type = Type::getType('extref');
     }
 
     /**
-     * Assert that expected result is equal to closure return value
-     *
-     * @param mixed  $expected      Expected value
-     * @param mixed  $value         This value will be passed to closure
-     * @param string $closureString Closure to eval
-     * @return void
-     */
-    private function assertEqualsClosure($expected, $value, $closureString)
-    {
-        $return = null;
-        eval($closureString);
-
-        $this->assertEquals($expected, $return);
-    }
-
-    /**
-     * Test ExtReference::convertToDatabaseValue()
+     * Test ExtReferenceType::convertToDatabaseValue()
      *
      * @return void
      */
@@ -59,7 +41,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             \MongoDBRef::create(__METHOD__, __FILE__),
-            $this->type->convertToDatabaseValue(ExtRef::create(__METHOD__, __FILE__))
+            $this->type->convertToDatabaseValue(ExtReference::create(__METHOD__, __FILE__))
         );
         $this->assertEquals(
             null,
@@ -76,7 +58,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEqualsClosure(
             \MongoDBRef::create(__METHOD__, __FILE__),
-            ExtRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__),
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
@@ -94,7 +76,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     public function testConvertToPHPValue()
     {
         $this->assertEquals(
-            ExtRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__),
             $this->type->convertToPHPValue(\MongoDBRef::create(__METHOD__, __FILE__))
         );
         $this->assertEquals(
@@ -111,7 +93,7 @@ class ExtReferenceTest extends \PHPUnit_Framework_TestCase
     public function testClosureToPHP()
     {
         $this->assertEqualsClosure(
-            ExtRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__),
             \MongoDBRef::create(__METHOD__, __FILE__),
             $this->type->closureToPHP()
         );
