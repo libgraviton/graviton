@@ -76,8 +76,10 @@ class FileManager
     }
 
     /**
-     * @param Request       $request
-     * @param DocumentModel $model
+     * Stores uploaded files to CDN
+     *
+     * @param Request       $request Current Http request
+     * @param DocumentModel $model   Model to be used to manage entity
      *
      * @return array
      */
@@ -85,6 +87,7 @@ class FileManager
     {
         $inStore = [];
         $files = $this->extractUploadedFiles($request);
+        $metaData = $request->get('metadata');
 
         foreach ($files as $key => $fileInfo) {
             $entityClass = $model->getEntityClass();
@@ -103,10 +106,18 @@ class FileManager
                 ->setMime($file->getMimeType())
                 ->setFilename($file->getClientOriginalName())
                 ->setCreatedate(new \DateTime())
-                ->setModificationdate(new \DateTime());
+                ->setModificationdate(new \DateTime())
+                ->setAction(
+                    (array_key_exists('action', $metaData) && !empty($metaData['action']))
+                        ? $metaData['action']
+                        : []
+                );
 
             $record->setMetadata($meta);
             $model->updateRecord($record->getId(), $record);
+
+            // TODO NOTICE: ONLY UPLOAD OF ONE FILE IS CURRENTLY SUPPORTED
+            break;
         }
 
         return $inStore;
@@ -134,6 +145,8 @@ class FileManager
     }
 
     /**
+     * Moves uploaded files to tmp directory
+     *
      * @param Request $request Current http request
      *
      * @return array
@@ -149,6 +162,9 @@ class FileManager
                 'data' => $uploadedFile,
                 'content' => file_get_contents($movedFile)
             ];
+
+            // delete moved file from /tmp
+            unlink($movedFile->getRealPath());
         }
 
         return $uploadedFiles;

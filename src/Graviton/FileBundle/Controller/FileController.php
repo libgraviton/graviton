@@ -17,8 +17,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactory;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
-use GravitonDyn\FileBundle\Document\FileMetadata;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -75,7 +73,7 @@ class FileController extends RestController
      *
      * @param Request $request Current http request
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
+     * @return Response $response Result of action with data (if successful)
      */
     public function postAction(Request $request)
     {
@@ -84,9 +82,12 @@ class FileController extends RestController
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
+
+        // TODO: this is correct for multiple uploaded files!!
+        // TODO: Probably use "Link" header to address this.
         $response->headers->set(
             'Location',
-            $this->determineRoute($request->get('_route'), $files, ['post', 'postNoSlash'])
+            implode(",", $this->determineRoutes($request->get('_route'), $files, ['post', 'postNoSlash']))
         );
 
         return $response;
@@ -157,9 +158,12 @@ class FileController extends RestController
 
         $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
+        // TODO: this is correct for multiple uploaded files!!
+        // TODO: Probably use "Link" header to address this.
         $response->headers->set(
             'Location',
-            $this->determineRoute($request->get('_route'), [$file], ['put', 'putNoSlash'])
+            implode(",", $this->determineRoutes($request->get('_route'), [$file], ['put', 'putNoSlash']))
         );
 
         return $response;
@@ -182,13 +186,15 @@ class FileController extends RestController
     }
 
     /**
-     * @param string $routeName
-     * @param array  $files
-     * @param array  $routeTypes
+     * Determines the routes and replaces the http method
      *
-     * @return string
+     * @param string $routeName  Name of the route to be generated
+     * @param array  $files      Set of uploaded files
+     * @param array  $routeTypes Set of route types to be recognized
+     *
+     * @return array
      */
-    private function determineRoute($routeName, array $files, array $routeTypes)
+    private function determineRoutes($routeName, array $files, array $routeTypes)
     {
         foreach($routeTypes as $routeType) {
             $reduce = (-1) * strlen($routeType);
@@ -200,7 +206,6 @@ class FileController extends RestController
             $locations[] = $this->getRouter()->generate($routeName, array('id' => $id));
         }
 
-        // TODO [lapistano]: this does not seem to be correct for multiple uploaded files!!
-        return implode(",", $locations);
+        return $locations;
     }
 }
