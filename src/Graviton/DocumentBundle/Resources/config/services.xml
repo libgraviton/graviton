@@ -7,10 +7,12 @@
         <parameter key="graviton.document.service.formdatamapper.class">Graviton\DocumentBundle\Service\FormDataMapper</parameter>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
+        <parameter key="graviton.document.form.datatransformer.extref.class">Graviton\DocumentBundle\Form\DataTransformer\ExtRefTransformer</parameter>
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
         <parameter key="graviton.document.form.type.freeform.class">Graviton\DocumentBundle\Form\Type\FreeForm</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
+        <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
     </parameters>
     <services>
         <!-- form field mapper -->
@@ -30,7 +32,11 @@
              <argument type="service" id="request_stack"/>
              <tag name="kernel.event_listener" event="rql.visit.node" method="onVisitNode"/>
         </service>
+        <service id="graviton.document.form.datatransformer.extref" class="%graviton.document.form.datatransformer.extref.class%">
+            <argument type="service" id="graviton.document.service.extrefconverter"/>
+        </service>
         <service id="graviton.document.form.type.extref" class="%graviton.document.form.type.extref.class%">
+            <argument type="service" id="graviton.document.form.datatransformer.extref"/>
             <tag name="form.type" alias="extref"/>
         </service>
         <!-- dynamic form builder -->
@@ -69,6 +75,13 @@
         <service id="graviton.document.serializer.handler.hash" class="%graviton.document.serializer.handler.hash.class%">
             <tag name="jms_serializer.handler"
                  type="Graviton\DocumentBundle\Entity\Hash"
+                 format="json"/>
+        </service>
+        <!-- extref serializer handler -->
+        <service id="graviton.document.serializer.handler.extref" class="%graviton.document.serializer.handler.extref.class%">
+            <argument type="service" id="graviton.document.service.extrefconverter"/>
+            <tag name="jms_serializer.handler"
+                 type="Graviton\DocumentBundle\Entity\ExtReference"
                  format="json"/>
         </service>
     </services>

@@ -8,7 +8,9 @@
 
 namespace Graviton\DocumentBundle\Form\Type;
 
+use Graviton\DocumentBundle\Form\DataTransformer\ExtRefTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -19,6 +21,21 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ExtRefType extends AbstractType
 {
     /**
+     * @var ExtRefTransformer
+     */
+    private $extRefTransformer;
+
+    /**
+     * Constructor
+     *
+     * @param ExtRefTransformer $extRefTransformer Ext reference data transformer
+     */
+    public function __construct(ExtRefTransformer $extRefTransformer)
+    {
+        $this->extRefTransformer = $extRefTransformer;
+    }
+
+    /**
      * @param OptionsResolver $resolver option resolver
      *
      * @return void
@@ -26,6 +43,19 @@ class ExtRefType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(['invalid_message' => 'The referenced URL is invalid.']);
+    }
+
+    /**
+     * Builds the form
+     *
+     * @param FormBuilderInterface $builder Builder
+     * @param array                $options Options
+     *
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->addModelTransformer($this->extRefTransformer);
     }
 
     /**

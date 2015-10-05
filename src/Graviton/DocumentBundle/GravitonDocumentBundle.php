@@ -39,18 +39,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
     }
 
-    /**
-     * inject services into custom type
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
-        $type = Type::getType('extref');
-        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
-    }
-
 
     /**
      * {@inheritDoc}

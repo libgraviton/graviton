@@ -1,6 +1,8 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
+use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
 
 /**
@@ -41,8 +43,8 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_DECIMAL => 'double',
         self::TYPE_DATETIME => 'DateTime',
         self::TYPE_BOOLEAN => 'boolean',
-        self::TYPE_OBJECT => 'Graviton\DocumentBundle\Entity\Hash',
-        self::TYPE_EXTREF => 'string',
+        self::TYPE_OBJECT => Hash::class,
+        self::TYPE_EXTREF => ExtReference::class,
     ];
 
     /**
