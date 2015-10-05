@@ -50,6 +50,7 @@
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.3",
         "graviton/deploy-scripts": ">=0.2.2",
+        "oldsound/rabbitmq-bundle": "~1.7",
         "graviton/json-schema": "~0.4",
         "hadesarchitect/json-schema-bundle": "~0.1.0"
     },
