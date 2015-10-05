@@ -1,11 +1,10 @@
 <?php
 /**
- * load all JsonDefinitions in a dir except those with _ at the start of their name
+ * load all json in a dir except those with _ at the start of their name
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
 
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
@@ -14,7 +13,7 @@ use Symfony\Component\Finder\Finder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DirStrategy extends AbstractStrategy
+class DirStrategy implements StrategyInterface
 {
     /**
      * may the strategy handle this input
@@ -29,10 +28,13 @@ class DirStrategy extends AbstractStrategy
     }
 
     /**
-     * @param mixed $input Input from command
+     * load raw JSON data
+     *
+     * @param string|null $input input from command
+     *
      * @return string[]
      */
-    protected function getRawDefinitions($input)
+    public function load($input)
     {
         return array_map(
             function (SplFileInfo $file) {

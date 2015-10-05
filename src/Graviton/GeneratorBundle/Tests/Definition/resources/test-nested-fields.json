@@ -2,7 +2,6 @@
   "id": "FieldTest",
   "description": "",
   "target": {
-    "indexes": [],
     "relations": [],
     "fields": [
       {

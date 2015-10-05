@@ -13,7 +13,6 @@
         ]
     },
     "target": {
-        "indexes": [],
         "relations": [],
         "fields": [
             {

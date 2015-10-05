@@ -1,6 +1,6 @@
 <?php
 /**
- * load JsonDefinition from a dir if json files are in a subdir called resources/definition
+ * load json from a dir if json files are in a subdir called resources/definition
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
