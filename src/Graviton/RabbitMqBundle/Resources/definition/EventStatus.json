@@ -50,7 +50,7 @@
       },
       {
         "name": "information",
-        "type": "array",
+        "type": "hash",
         "title": "Information",
         "description": "An array of objects containing worker information",
         "required": false
