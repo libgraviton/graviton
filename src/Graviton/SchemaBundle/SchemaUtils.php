@@ -11,6 +11,7 @@ use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
+use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -67,18 +68,25 @@ class SchemaUtils
     private $repositoryFactory;
 
     /**
+     * @var SerializerMetadataFactoryInterface
+     */
+    private $serializerMetadataFactory;
+
+    /**
      * Constructor
      *
-     * @param RepositoryFactory  $repositoryFactory    Create repos from model class names
-     * @param LanguageRepository $languageRepository   repository
-     * @param RouterInterface    $router               router
-     * @param array              $extrefServiceMapping Extref service mapping
-     * @param array              $eventMap             eventmap
-     * @param array              $documentFieldNames   Document field names
-     * @param string             $defaultLocale        Default Language
+     * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
+     * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
+     * @param LanguageRepository                 $languageRepository        repository
+     * @param RouterInterface                    $router                    router
+     * @param array                              $extrefServiceMapping      Extref service mapping
+     * @param array                              $eventMap                  eventmap
+     * @param array                              $documentFieldNames        Document field names
+     * @param string                             $defaultLocale             Default Language
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
+        SerializerMetadataFactoryInterface $serializerMetadataFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
@@ -87,6 +95,7 @@ class SchemaUtils
         $defaultLocale
     ) {
         $this->repositoryFactory = $repositoryFactory;
+        $this->serializerMetadataFactory = $serializerMetadataFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
@@ -247,6 +256,28 @@ class SchemaUtils
                     }
                 }
                 $property->setRefCollection($urls);
+            } elseif ($meta->getTypeOfField($field) === 'collection') {
+                $itemSchema = new Schema();
+                $property->setType('array');
+                $itemSchema->setType($this->getCollectionItemType($meta->name, $field));
+
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'datearray') {
+                $itemSchema = new Schema();
+                $property->setType('array');
+                $itemSchema->setType('string');
+                $itemSchema->setFormat('date-time');
+
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'hasharray') {
+                $itemSchema = new Schema();
+                $itemSchema->setType('object');
+
+                $property->setType('array');
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
             }
             $schema->addProperty($documentFieldNames[$field], $property);
         }
@@ -315,5 +346,28 @@ class SchemaUtils
         }
 
         return implode('.', array_merge($routeParts, array($realRouteType)));
+    }
+
+    /**
+     * Get item type of collection field
+     *
+     * @param string $className Class name
+     * @param string $fieldName Field name
+     * @return string|null
+     */
+    private function getCollectionItemType($className, $fieldName)
+    {
+        $serializerMetadata = $this->serializerMetadataFactory->getMetadataForClass($className);
+        if ($serializerMetadata === null) {
+            return null;
+        }
+        if (!isset($serializerMetadata->propertyMetadata[$fieldName])) {
+            return null;
+        }
+
+        $type = $serializerMetadata->propertyMetadata[$fieldName]->type;
+        return isset($type['name'], $type['params'][0]['name']) && $type['name'] === 'array' ?
+            $type['params'][0]['name'] :
+            null;
     }
 }

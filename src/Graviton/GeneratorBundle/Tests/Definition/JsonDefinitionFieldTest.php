@@ -194,7 +194,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                 [
                     'name'              => $field->getName(),
                     'type'              => $field->getType(),
-                    'exposedName'       => $definition->getExposeAs(),
+                    'exposedName'       => $field->getName(),
                     'doctrineType'      => $field->getTypeDoctrine(),
                     'serializerType'    => $field->getTypeSerializer(),
                     'relType'           => null,

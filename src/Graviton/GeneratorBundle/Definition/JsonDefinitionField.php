@@ -192,7 +192,7 @@ class JsonDefinitionField implements DefinitionElementInterface
     private function getExposedName()
     {
         return $this->definition->getExposeAs() === null ?
-            $this->definition->getName() :
+            $this->getName() :
             $this->definition->getExposeAs();
     }
 }
