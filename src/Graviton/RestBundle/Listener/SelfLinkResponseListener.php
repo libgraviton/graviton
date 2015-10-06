@@ -63,6 +63,10 @@ class SelfLinkResponseListener
             $routeName = substr($routeName, 0, -4).'get';
         }
 
+        if ($routeType == 'postNoSlash') {
+            $routeName = substr($routeName, 0, -11).'get';
+        }
+
         /** if the request failed in the RestController, $request will not have an record id in
          case of a POST and $router->generate() will fail. that's why we catch it and fail silently
          by not including our header in the response. i hope that's a good compromise. **/
@@ -113,7 +117,7 @@ class SelfLinkResponseListener
         // this is also flawed since it does not handle search actions
         $parameters = array();
 
-        if ($routeType == 'post') {
+        if ($routeType == 'post' || $routeType == 'postNoSlash') {
             // handle post request by rewriting self link to newly created resource
             $parameters = array('id' => $request->get('id'));
         } elseif ($routeType != 'all') {
