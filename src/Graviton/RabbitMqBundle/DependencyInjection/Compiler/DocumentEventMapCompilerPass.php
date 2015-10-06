@@ -41,6 +41,7 @@ class DocumentEventMapCompilerPass implements CompilerPassInterface
                 'events' => [
                     'put' => $baseRoutingKey.'.update',
                     'post' => $baseRoutingKey.'.create',
+                    'postNoSlash' => $baseRoutingKey.'.create',
                     'delete' => $baseRoutingKey.'.delete',
                 ]
             ];
