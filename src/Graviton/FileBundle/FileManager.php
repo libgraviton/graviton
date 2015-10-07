@@ -94,17 +94,15 @@ class FileManager
             $record = $model->insertRecord(new $entityClass());
             $inStore[] = $record->getId();
 
-            $this->saveFile($record->getId(), $fileInfo['content']);
-
-            /** @var  $file \Symfony\Component\HttpFoundation\File\UploadedFile */
-            $file = $fileInfo['data'];
+            /** @var \Gaufrette\File $file */
+            $file = $this->saveFile($record->getId(), $fileInfo['content']);
 
             // update record with file metadata
             $meta = new FileMetadata();
             $meta
                 ->setSize((int) $file->getSize())
-                ->setMime($file->getMimeType())
-                ->setFilename($file->getClientOriginalName())
+                ->setFilename($fileInfo['data']['filename'])
+                ->setMime($fileInfo['data']['mimetype'])
                 ->setCreatedate(new \DateTime())
                 ->setModificationdate(new \DateTime())
                 ->setAction(
@@ -155,16 +153,30 @@ class FileManager
     {
         $uploadedFiles = [];
 
+
         /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
         foreach ($request->files->all() as $field => $uploadedFile) {
             $movedFile = $uploadedFile->move('/tmp/');
             $uploadedFiles[$field] = [
-                'data' => $uploadedFile,
+                'data' => [
+                    'mimetype' => $uploadedFile->getMimeType(),
+                    'filename' => $uploadedFile->getClientOriginalName()
+                ],
                 'content' => file_get_contents($movedFile)
             ];
 
             // delete moved file from /tmp
             unlink($movedFile->getRealPath());
+        }
+
+        if (empty($uploadedFiles)) {
+            $uploadedFiles['upload'] = [
+                'data' => [
+                    'mimetype' => $request->headers->get('Content-Type'),
+                    'filename' => ''
+                ],
+                'content' => $request->getContent()
+            ];
         }
 
         return $uploadedFiles;
