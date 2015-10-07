@@ -198,14 +198,21 @@ class FileController extends RestController
      */
     private function determineRoutes($routeName, array $files, array $routeTypes)
     {
+        $locations = [];
+        $newRouteName = '';
         foreach($routeTypes as $routeType) {
-            $reduce = (-1) * strlen($routeType);
-            $routeName = substr($routeName, 0, $reduce).'get';
+            $routeParts = explode('.', $routeName);
+
+            if ($routeType == array_pop($routeParts)) {
+                $reduce = (-1) * strlen($routeType);
+                $newRouteName = substr($routeName, 0, $reduce).'get';
+            }
         }
 
-        $locations = [];
-        foreach ($files as $id) {
-            $locations[] = $this->getRouter()->generate($routeName, array('id' => $id));
+        if (!empty($newRouteName)) {
+            foreach ($files as $id) {
+                $locations[] = $this->getRouter()->generate($newRouteName, array('id' => $id));
+            }
         }
 
         return $locations;
