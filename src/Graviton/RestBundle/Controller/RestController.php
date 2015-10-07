@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Controller;
 
 use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
@@ -17,6 +18,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
+use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,6 +30,12 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Rs\Json\Patch;
+use Rs\Json\Patch\InvalidPatchDocumentJsonException;
+use Rs\Json\Patch\InvalidTargetDocumentJsonException;
+use Rs\Json\Patch\InvalidOperationException;
+use Rs\Json\Patch\FailedTestException;
+use Graviton\RestBundle\Service\JsonPatchValidator;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -96,6 +104,21 @@ class RestController
     private $templating;
 
     /**
+     * @var ExtReferenceJsonConverterInterface
+     */
+    private $extReferenceJsonConverter;
+
+    /**
+     * @var array
+     */
+    private $extrefFields;
+
+    /**
+     * @var JsonPatchValidator
+     */
+    private $jsonPatchValidator;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -129,6 +152,24 @@ class RestController
     }
 
     /**
+     * @param ExtReferenceJsonConverterInterface $extReferenceConverter Converter for $ref attributes
+     * @return void
+     */
+    public function setExtrefJsonConverter(ExtReferenceJsonConverterInterface $extReferenceConverter)
+    {
+        $this->extReferenceJsonConverter = $extReferenceConverter;
+    }
+
+    /**
+     * @param array $fields array of extref fields
+     * @return void
+     */
+    public function setExtrefFields(array $fields)
+    {
+        $this->extrefFields = $fields;
+    }
+
+    /**
      * Set form data mapper
      *
      * @param FormDataMapperInterface $formDataMapper Form data mapper
@@ -139,6 +180,14 @@ class RestController
         $this->formDataMapper = $formDataMapper;
     }
 
+    /**
+     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
+     * @return void
+     */
+    public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
+    {
+        $this->jsonPatchValidator = $jsonPatchValidator;
+    }
 
     /**
      * Get the container object
@@ -321,7 +370,7 @@ class RestController
         $this->checkJsonRequest($request, $response);
         $record = $this->checkForm(
             $this->getForm($request),
-            $request
+            $request->getContent()
         );
 
         // Insert the new record
@@ -333,17 +382,9 @@ class RestController
         // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
 
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
         );
 
         return $response;
@@ -410,7 +451,7 @@ class RestController
 
         $record = $this->checkForm(
             $this->getForm($request),
-            $request
+            $request->getContent()
         );
 
         // does it really exist??
@@ -445,6 +486,69 @@ class RestController
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
+
+        return $response;
+    }
+
+    /**
+     * Patch a record
+     *
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
+     *
+     * @throws MalformedInputException
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function patchAction($id, Request $request)
+    {
+        $response = $this->getResponse();
+        $this->checkJsonRequest($request, $response);
+
+        // Check JSON Patch request
+        $this->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+        // Find record && apply $ref converter
+        $record = $this->findRecord($id);
+        $recordData = $this->extReferenceJsonConverter->convert(
+            json_decode($this->serialize($record)),
+            $this->extrefFields[$request->attributes->get('_route')]
+        );
+        $jsonDocument = json_encode($recordData);
+
+        // Check/validate JSON Patch
+        if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {
+            throw new InvalidJsonPatchException($this->jsonPatchValidator->getException()->getMessage());
+        }
+
+        try {
+            // Apply JSON patches
+            $patch = new Patch($jsonDocument, $request->getContent());
+            $patchedDocument = $patch->apply();
+        } catch (InvalidPatchDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidTargetDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidOperationException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (FailedTestException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        }
+
+        // Validate result object
+        $record = $this->checkForm($this->getForm($request), $patchedDocument);
+
+        // Update object
+        $this->getModel()->updateRecord($id, $record);
+
+        // Set status code
+        $response->setStatusCode(Response::HTTP_OK);
+
+        // Set Content-Location header
+        $response->headers->set(
+            'Content-Location',
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
+        );
 
         return $response;
     }
@@ -612,6 +716,25 @@ class RestController
         }
     }
     /**
+     * Validate JSON patch for any object
+     *
+     * @param array $jsonPatch json patch as array
+     *
+     * @throws InvalidJsonPatchException
+     * @return void
+     */
+    private function checkJsonPatchRequest(array $jsonPatch)
+    {
+        foreach ($jsonPatch as $operation) {
+            if (!is_array($operation)) {
+                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
+            }
+            if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
+                throw new InvalidJsonPatchException('Change/remove of ID not allowed');
+            }
+        }
+    }
+    /**
      * Used for backwards compatibility to PHP 5.4
      *
      * @return string
@@ -639,15 +762,15 @@ class RestController
     }
 
     /**
-     * @param FormInterface $form    form to check
-     * @param Request       $request data request
+     * @param FormInterface $form        form to check
+     * @param string        $jsonContent json data
      *
      * @return mixed
      */
-    private function checkForm(FormInterface $form, Request $request)
+    private function checkForm(FormInterface $form, $jsonContent)
     {
         $document = $this->formDataMapper->convertToFormData(
-            $request->getContent(),
+            $jsonContent,
             $this->getModel()->getEntityClass()
         );
         $form->submit($document, true);
@@ -659,5 +782,22 @@ class RestController
         }
 
         return $record;
+    }
+
+    /**
+     * @param Request $request request
+     * @return string
+     */
+    private function getRouteName(Request $request)
+    {
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
+
+        if ($routeType == 'post') {
+            $routeName = substr($routeName, 0, -4) . 'get';
+        }
+
+        return $routeName;
     }
 }

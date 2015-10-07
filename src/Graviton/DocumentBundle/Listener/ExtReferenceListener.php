@@ -11,10 +11,11 @@
 
 namespace Graviton\DocumentBundle\Listener;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+
+use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,7 +25,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class ExtReferenceListener
 {
     /**
-     * @var ExtReferenceConverterInterface
+     * @var ExtReferenceJsonConverterInterface
      */
     private $converter;
 
@@ -41,11 +42,11 @@ class ExtReferenceListener
     /**
      * construct
      *
-     * @param ExtReferenceConverterInterface $converter Extref converter
-     * @param array                          $fields    map of fields to process
-     * @param RequestStack                   $requests  request
+     * @param ExtReferenceJsonConverterInterface $converter Extref converter
+     * @param array                              $fields    extref fields
+     * @param RequestStack                       $requests  request
      */
-    public function __construct(ExtReferenceConverterInterface $converter, array $fields, RequestStack $requests)
+    public function __construct(ExtReferenceJsonConverterInterface $converter, array $fields, RequestStack $requests)
     {
         $this->converter = $converter;
         $this->fields = $fields;
@@ -63,6 +64,11 @@ class ExtReferenceListener
     {
         $content = trim($event->getResponse()->getContent());
 
+        if (!isset($this->fields[$this->request->attributes->get('_route')])) {
+            $event->getResponse()->setContent($content);
+            return;
+        }
+
         if (!$event->isMasterRequest() || empty($content)) {
             return;
         }
@@ -72,92 +78,11 @@ class ExtReferenceListener
             return;
         }
 
-        $data = json_decode($event->getResponse()->getContent());
-        if (is_array($data)) {
-            $data = array_map([$this, 'mapItem'], $data);
-        } elseif (is_object($data)) {
-            $data = $this->mapItem($data);
-        }
-
-        $event->getResponse()->setContent(json_encode($data));
-    }
-
-    /**
-     * apply single mapping
-     *
-     * @param mixed $item item to apply mapping to
-     *
-     * @return array
-     */
-    private function mapItem($item)
-    {
-        if (!array_key_exists($this->request->attributes->get('_route'), $this->fields)) {
-            return $item;
-        }
-        foreach ($this->fields[$this->request->attributes->get('_route')] as $field) {
-            $item = $this->mapField($item, $field);
-        }
-
-        return $item;
-    }
-
-    /**
-     * recursive mapper for embed-one fields
-     *
-     * @param mixed  $item  item to map
-     * @param string $field name of field to map
-     *
-     * @return array
-     */
-    private function mapField($item, $field)
-    {
-        if (is_array($item)) {
-            if ($field === '0') {
-                $item = array_map([$this, 'convertToUrl'], $item);
-            } elseif (strpos($field, '0.') === 0) {
-                $subField = substr($field, 2);
-
-                $item = array_map(
-                    function ($subItem) use ($subField) {
-                        return $this->mapField($subItem, $subField);
-                    },
-                    $item
-                );
-            }
-        } elseif (is_object($item)) {
-            if (($pos = strpos($field, '.')) !== false) {
-                $topLevel = substr($field, 0, $pos);
-                $subField = substr($field, $pos + 1);
-
-                if (isset($item->$topLevel)) {
-                    $item->$topLevel = $this->mapField($item->$topLevel, $subField);
-                } else {
-                    // map available things since we found nothing on $topLevel and there might be some refs deeper down
-                    foreach ($item as $subLevel => $subItem) {
-                        $item->$subLevel = $this->mapField($subItem, $subField);
-                    }
-                }
-            } elseif (isset($item->$field)) {
-                $item->$field = $this->convertToUrl($item->$field);
-            }
-        }
-
-        return $item;
-    }
-
-    /**
-     * Convert extref to URL
-     *
-     * @param string $ref JSON encoded extref
-     * @return string
-     */
-    private function convertToUrl($ref)
-    {
-        try {
-            $ref = json_decode($ref);
-            return $this->converter->getUrl($ref);
-        } catch (\InvalidArgumentException $e) {
-            return '';
-        }
+        $data = json_decode($content);
+        $event->getResponse()->setContent(
+            json_encode(
+                $this->converter->convert($data, $this->fields[$this->request->attributes->get('_route')])
+            )
+        );
     }
 }
