@@ -87,7 +87,7 @@ class FileManager
     {
         $inStore = [];
         $files = $this->extractUploadedFiles($request);
-        $metaData = $request->get('metadata');
+        $metaData = json_decode($request->get('metadata'), true);
 
         foreach ($files as $key => $fileInfo) {
             $entityClass = $model->getEntityClass();
@@ -108,7 +108,7 @@ class FileManager
                 ->setCreatedate(new \DateTime())
                 ->setModificationdate(new \DateTime())
                 ->setAction(
-                    (array_key_exists('action', $metaData) && !empty($metaData['action']))
+                    (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action']))
                         ? $metaData['action']
                         : []
                 );
