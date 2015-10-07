@@ -83,11 +83,12 @@ class FileController extends RestController
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
 
-        // TODO: this is correct for multiple uploaded files!!
+        // TODO: this not is correct for multiple uploaded files!!
         // TODO: Probably use "Link" header to address this.
+        $locations = $this->determineRoutes($request->get('_route'), $files, ['post', 'postNoSlash']);
         $response->headers->set(
             'Location',
-            implode(",", $this->determineRoutes($request->get('_route'), $files, ['post', 'postNoSlash']))
+            $locations[0]
         );
 
         return $response;
@@ -159,11 +160,12 @@ class FileController extends RestController
         $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
-        // TODO: this is correct for multiple uploaded files!!
+        // TODO: this not is correct for multiple uploaded files!!
         // TODO: Probably use "Link" header to address this.
+        $locations = $this->determineRoutes($request->get('_route'), [$file], ['put', 'putNoSlash']);
         $response->headers->set(
             'Location',
-            implode(",", $this->determineRoutes($request->get('_route'), [$file], ['put', 'putNoSlash']))
+            $locations[0]
         );
 
         return $response;
