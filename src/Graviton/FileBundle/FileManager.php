@@ -201,10 +201,7 @@ class FileManager
                 $commandString = preg_replace('@[^a-zA-Z0-9_-]@', '', $command['command']);
                 if (!empty($command) && $command['command'] == $commandString) {
                     $fileMetadataAction = clone $this->fileMetadataAction;
-                    $reflection = new \ReflectionProperty(get_class($this->fileMetadataAction), 'command');
-                    $reflection->setAccessible(true);
-                    $reflection->setValue($fileMetadataAction, $commandString);
-                    $reflection->setAccessible(false);
+                    $fileMetadataAction->setCommand($commandString);
                     $action[] = $fileMetadataAction;
                 }
             }
