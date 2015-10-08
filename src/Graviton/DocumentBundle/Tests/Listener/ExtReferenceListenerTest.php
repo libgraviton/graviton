@@ -6,7 +6,7 @@
 namespace Graviton\DocumentBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Listener\ExtReferenceListener;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceJsonConverterInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $converter;
     /**
@@ -58,15 +58,20 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
+        $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface')
             ->disableOriginalConstructor()
-            ->setMethods(['getUrl', 'getDbRef'])
+            ->setMethods(['convert'])
             ->getMock();
 
         $this->requestAttrs = $this->getMockBuilder('\Symfony\Component\HttpFoundation\ParameterBag')
             ->disableOriginalConstructor()
             ->setMethods(['get'])
             ->getMock();
+        $this->requestAttrs
+            ->expects($this->any())
+            ->method('get')
+            ->with('_route')
+            ->willReturn('route.id');
 
         $this->request = new Request();
         $this->request->attributes = $this->requestAttrs;
@@ -109,7 +114,7 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
      */
     private function createListener(array $fields)
     {
-        return new ExtReferenceListener($this->converter, $fields, $this->requestStack);
+        return new ExtReferenceListener($this->converter, ['route.id' => $fields], $this->requestStack);
     }
 
     /**
@@ -186,80 +191,15 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnKernelResponse()
     {
-        $before = [
-            'name' => 'name',
-            'ref' => '{"$ref":"toplevel","$id":123}',
-            'array' => [
-                '{"$ref":"array","$id":123}',
-                '{"$ref":"array","$id":456}',
-            ],
-            'arrayhash' => [
-                [
-                    'ref' => '{"$ref":"arrayhash","$id":123}',
-                ],
-                [
-                    'ref' => '{"$ref":"arrayhash","$id":456}',
-                ],
-            ],
-            'hash' => [
-                'c' => [
-                    'ref' => '{"$ref":"hash","$id":123}',
-                ],
-                'd' => [
-                    'ref' => '{"$ref":"notmapped","$id":123}',
-                ],
-            ],
-            'deep' => [
-                'deep' => [
-                    'deep' => [
-                        'deep' => [
-                            'ref' => '{"$ref":"deep","$id":123}',
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        $after = [
-            'name' => 'name',
-            'ref' => 'url-toplevel-123',
-            'array' => [
-                'url-array-123',
-                'url-array-456',
-            ],
-            'hash' => [
-                'c' => [
-                    'ref' => 'url-hash-123',
-                ],
-                'd' => [
-                    'ref' => '{"$ref":"notmapped","$id":123}',
-                ],
-            ],
-            'arrayhash' => [
-                [
-                    'ref' => 'url-arrayhash-123',
-                ],
-                [
-                    'ref' => 'url-arrayhash-456',
-                ],
-            ],
-            'deep' => [
-                'deep' => [
-                    'deep' => [
-                        'deep' => [
-                            'ref' => 'url-deep-123',
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        $before = [__METHOD__.__LINE__];
+        $after = [__METHOD__.__LINE__];
+
         $fields = [
-            'route.id' => [
-                'ref',
-                'array.0',
-                'hash.c.ref',
-                'arrayhash.0.ref',
-                'deep.deep.deep.deep.ref',
-            ],
+            'ref',
+            'array.0',
+            'hash.c.ref',
+            'arrayhash.0.ref',
+            'deep.deep.deep.deep.ref'
         ];
 
         $this->response->expects($this->once())
@@ -274,29 +214,12 @@ class ExtReferenceListenerTest extends \PHPUnit_Framework_TestCase
         $this->responseHeaders->expects($this->once())
             ->method('get')
             ->willReturn('application/json');
-        $this->requestAttrs
-            ->expects($this->any())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
+
         $this->converter
             ->expects($this->any())
-            ->method('getUrl')
-            ->willReturnCallback(
-                function ($url) {
-                    $map = [
-                        '{"$ref":"toplevel","$id":123}'     => 'url-toplevel-123',
-                        '{"$ref":"array","$id":123}'        => 'url-array-123',
-                        '{"$ref":"array","$id":456}'        => 'url-array-456',
-                        '{"$ref":"hash","$id":123}'         => 'url-hash-123',
-                        '{"$ref":"arrayhash","$id":123}'    => 'url-arrayhash-123',
-                        '{"$ref":"arrayhash","$id":456}'    => 'url-arrayhash-456',
-                        '{"$ref":"deep","$id":123}'         => 'url-deep-123',
-                    ];
-
-                    return $map[json_encode($url)];
-                }
-            );
+            ->method('convert')
+            ->with($before, $fields)
+            ->willReturn($after);
 
         $listener = $this->createListener($fields);
         $listener->onKernelResponse($this->responseEvent);
