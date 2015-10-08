@@ -59,15 +59,11 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
         foreach ($this->router->getRouteCollection()->all() as $route) {
             list($collection, $id) = $this->getDataFromRoute($route, $path);
             if ($collection !== null && $id !== null) {
-                break;
+                return ExtReference::create($collection, $id);
             }
         }
 
-        if ($collection === null || $id === null) {
-            throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
-        }
-
-        return ExtReference::create($collection, $id);
+        throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
     }
 
     /**
