@@ -177,7 +177,7 @@ class SchemaUtils
         // exposed events..
         $classShortName = $documentReflection->getShortName();
         if (isset($this->eventMap[$classShortName])) {
-            $schema->setEventNames($this->eventMap[$classShortName]['events']);
+            $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
         }
 
         foreach ($meta->getFieldNames() as $field) {
