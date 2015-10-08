@@ -162,7 +162,7 @@ class FileController extends RestController
 
         // TODO: this not is correct for multiple uploaded files!!
         // TODO: Probably use "Link" header to address this.
-        $locations = $this->determineRoutes($request->get('_route'), [$file], ['put', 'putNoSlash']);
+        $locations = $this->determineRoutes($request->get('_route'), [$file->getName()], ['put', 'putNoSlash']);
         $response->headers->set(
             'Location',
             $locations[0]
@@ -206,6 +206,7 @@ class FileController extends RestController
             if ($routeType == array_pop($routeParts)) {
                 $reduce = (-1) * strlen($routeType);
                 $newRouteName = substr($routeName, 0, $reduce).'get';
+                break;
             }
         }
 
