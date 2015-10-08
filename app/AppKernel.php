@@ -86,6 +86,7 @@ class AppKernel extends Kernel
             $bundles[] = new \Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new \Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
+            $bundles[] = new \Graviton\EmbedTestBundle\GravitonEmbedTestBundle();
         }
 
         if (strpos($this->getEnvironment(), 'oauth') !== false) {
