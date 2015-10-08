@@ -70,6 +70,9 @@
             <tag name="routing.loader"/>
         </service>
 
+        <!-- Service for validating JSON Patches -->
+        <service id="graviton.rest.service.jsonpatchvalidator" class="Graviton\RestBundle\Service\JsonPatchValidator"/>
+
         <!-- Controller -->
         <service id="graviton.rest.controller" abstract="true">
             <argument type="service" id="graviton.rest.response" strict="false"/>
@@ -83,6 +86,9 @@
             <argument type="service" id="graviton.schema.utils"/>
             <call method="setFormDataMapper">
                 <argument type="service" id="graviton.document.service.formdatamapper"/>
+            </call>
+            <call method="setJsonPatchValidator">
+                <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
             </call>
         </service>
 
