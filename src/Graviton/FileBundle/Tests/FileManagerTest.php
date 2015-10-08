@@ -19,7 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class FileManagerTest extends WebTestCase
 {
+    /** @var \Gaufrette\Filesystem $fileSystem */
     private $fileSystem;
+
+    /** @var \GravitonDyn\FileBundle\Document\FileMetadataAction $fileMetadataAction */
+    private $fileMetadataAction;
 
     /**
      * Initiates mandatory properties
@@ -30,6 +34,9 @@ class FileManagerTest extends WebTestCase
     {
         $this->fileSystem = $this->getMockBuilder('\Gaufrette\Filesystem')
             ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->fileMetadataAction = $this->getMockBuilder('\GravitonDyn\FileBundle\Document\FileMetadataAction')
             ->getMock();
     }
 
@@ -45,7 +52,7 @@ class FileManagerTest extends WebTestCase
             ->method('has')
             ->willReturn(true);
 
-        $manager = new FileManager($this->fileSystem);
+        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
 
         $this->assertTrue($manager->has('myKey'));
     }
@@ -62,7 +69,7 @@ class FileManagerTest extends WebTestCase
             ->method('read')
             ->willReturn('myData');
 
-        $manager = new FileManager($this->fileSystem);
+        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
 
         $this->assertEquals('myData', $manager->read('myKey'));
     }
@@ -79,7 +86,7 @@ class FileManagerTest extends WebTestCase
             ->method('delete')
             ->willReturn(true);
 
-        $manager = new FileManager($this->fileSystem);
+        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
 
         $this->assertTrue($manager->delete('myKey'));
     }

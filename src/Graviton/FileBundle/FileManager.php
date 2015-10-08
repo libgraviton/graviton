@@ -197,11 +197,9 @@ class FileManager
 
         if (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action'])) {
             foreach ($metaData['action'] as $command) {
-                // remove potentially dangerous chars
-                $commandString = preg_replace('@[^a-zA-Z0-9_-]@', '', $command['command']);
-                if (!empty($command) && $command['command'] == $commandString) {
+                if (!empty($command) && !empty($command['command'])) {
                     $fileMetadataAction = clone $this->fileMetadataAction;
-                    $fileMetadataAction->setCommand($commandString);
+                    $fileMetadataAction->setCommand($command['command']);
                     $action[] = $fileMetadataAction;
                 }
             }
