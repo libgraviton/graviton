@@ -153,7 +153,6 @@ class FileManager
     {
         $uploadedFiles = [];
 
-
         /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
         foreach ($request->files->all() as $field => $uploadedFile) {
             $movedFile = $uploadedFile->move('/tmp/');
