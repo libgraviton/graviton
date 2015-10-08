@@ -200,7 +200,7 @@ class FileController extends RestController
     {
         $locations = [];
         $newRouteName = '';
-        foreach($routeTypes as $routeType) {
+        foreach ($routeTypes as $routeType) {
             $routeParts = explode('.', $routeName);
 
             if ($routeType == array_pop($routeParts)) {

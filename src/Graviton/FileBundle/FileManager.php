@@ -37,7 +37,7 @@ class FileManager
     /**
      * Indicates whether the file matching the specified key exists
      *
-     * @param string $key
+     * @param string $key Identifier to be found
      *
      * @return boolean TRUE if the file exists, FALSE otherwise
      */
@@ -49,7 +49,7 @@ class FileManager
     /**
      * Deletes the file matching the specified key
      *
-     * @param string $key
+     * @param string $key Identifier to be deleted
      *
      * @throws \RuntimeException when cannot read file
      *
@@ -107,8 +107,8 @@ class FileManager
                 ->setModificationdate(new \DateTime())
                 ->setAction(
                     (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action']))
-                        ? $metaData['action']
-                        : []
+                    ? $metaData['action']
+                    : []
                 );
 
             $record->setMetadata($meta);
