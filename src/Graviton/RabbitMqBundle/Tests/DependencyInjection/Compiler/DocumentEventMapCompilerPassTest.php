@@ -32,7 +32,8 @@ class DocumentEventMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 'events' => [
                     'put' => 'document.core.app.update',
                     'post' => 'document.core.app.create',
-                    'delete' => 'document.core.app.delete'
+                    'delete' => 'document.core.app.delete',
+                    'postNoSlash' => 'document.core.app.create'
                 ]
             ],
             'Hans' => [
@@ -40,7 +41,8 @@ class DocumentEventMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 'events' => [
                     'put' => 'document.hans.whatever.update',
                     'post' => 'document.hans.whatever.create',
-                    'delete' => 'document.hans.whatever.delete'
+                    'delete' => 'document.hans.whatever.delete',
+                    'postNoSlash' => 'document.hans.whatever.create'
                 ]
             ]
         ];
