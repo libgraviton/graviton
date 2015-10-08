@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="graviton.file.document.factory.class">Graviton\FileBundle\FileDocumentFactory</parameter>
         <parameter key="graviton.aws_s3.client.class">Aws\S3\S3Client</parameter>
 
         <parameter key="graviton.aws_s3.client.args" type="collection">
@@ -22,11 +23,13 @@
 
         <service id="graviton.file.file_manager" class="%graviton.file.file_manager.class%">
             <argument type="service" id="gaufrette.file_service_filesystem"/>
-            <argument type="service" id="gravitondyn.file.document.filemetadataaction"/>
+            <argument type="service" id="graviton.file.document.factory"/>
         </service>
 
         <service id="graviton.file.controller.file" class="%graviton.file.controller.file.class%" parent="graviton.rest.controller">
             <argument type="service" id="graviton.file.file_manager"/>
         </service>
+
+        <service id="graviton.file.document.factory" class="%graviton.file.document.factory.class%"/>
     </services>
 </container>

@@ -9,7 +9,6 @@ use Gaufrette\File;
 use Gaufrette\FileSystem;
 use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\FileMetadata;
-use GravitonDyn\FileBundle\Document\FileMetadataAction;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -25,19 +24,19 @@ class FileManager
      */
     private $fileSystem;
 
-    /** @var FileMetadataAction  */
+    /** @var \GravitonDyn\FileBundle\Document\FileMetadataAction  */
     private $fileMetadataAction;
 
     /**
      * FileManager constructor.
      *
-     * @param FileSystem         $fileSystem         file system abstraction layer for s3 and more
-     * @param FileMetadataAction $fileMetadataAction Instance to be used to create action entries.
+     * @param FileSystem          $fileSystem          file system abstraction layer for s3 and more
+     * @param FileDocumentFactory $fileDocumentFactory Instance to be used to create action entries.
      */
-    public function __construct(FileSystem $fileSystem, FileMetadataAction $fileMetadataAction)
+    public function __construct(FileSystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
     {
         $this->fileSystem = $fileSystem;
-        $this->fileMetadataAction = $fileMetadataAction;
+        $this->fileMetadataAction = $fileDocumentFactory->createFileMetadataAction();
     }
 
     /**

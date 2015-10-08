@@ -22,8 +22,8 @@ class FileManagerTest extends WebTestCase
     /** @var \Gaufrette\Filesystem $fileSystem */
     private $fileSystem;
 
-    /** @var \GravitonDyn\FileBundle\Document\FileMetadataAction $fileMetadataAction */
-    private $fileMetadataAction;
+    /** @var \Graviton\FileBundle\FileDocumentFactory $fileDocumentFactory */
+    private $fileDocumentFactory;
 
     /**
      * Initiates mandatory properties
@@ -36,7 +36,7 @@ class FileManagerTest extends WebTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->fileMetadataAction = $this->getMockBuilder('\GravitonDyn\FileBundle\Document\FileMetadataAction')
+        $this->fileDocumentFactory = $this->getMockBuilder('\Graviton\FileBundle\FileDocumentFactory')
             ->getMock();
     }
 
@@ -52,7 +52,7 @@ class FileManagerTest extends WebTestCase
             ->method('has')
             ->willReturn(true);
 
-        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
+        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
 
         $this->assertTrue($manager->has('myKey'));
     }
@@ -69,7 +69,7 @@ class FileManagerTest extends WebTestCase
             ->method('read')
             ->willReturn('myData');
 
-        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
+        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
 
         $this->assertEquals('myData', $manager->read('myKey'));
     }
@@ -86,7 +86,7 @@ class FileManagerTest extends WebTestCase
             ->method('delete')
             ->willReturn(true);
 
-        $manager = new FileManager($this->fileSystem, $this->fileMetadataAction);
+        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
 
         $this->assertTrue($manager->delete('myKey'));
     }
