@@ -9,6 +9,7 @@ use Gaufrette\File;
 use Gaufrette\FileSystem;
 use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\FileMetadata;
+use GravitonDyn\FileBundle\Document\FileMetadataAction;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -24,14 +25,19 @@ class FileManager
      */
     private $fileSystem;
 
+    /** @var FileMetadataAction  */
+    private $fileMetadataAction;
+
     /**
      * FileManager constructor.
      *
-     * @param FileSystem $fileSystem file system abstraction layer for s3 and more
+     * @param FileSystem         $fileSystem         file system abstraction layer for s3 and more
+     * @param FileMetadataAction $fileMetadataAction Instance to be used to create action entries.
      */
-    public function __construct(FileSystem $fileSystem)
+    public function __construct(FileSystem $fileSystem, FileMetadataAction $fileMetadataAction)
     {
         $this->fileSystem = $fileSystem;
+        $this->fileMetadataAction = $fileMetadataAction;
     }
 
     /**
@@ -88,6 +94,7 @@ class FileManager
         $inStore = [];
         $files = $this->extractUploadedFiles($request);
         $metaData = json_decode($request->get('metadata'), true);
+        $metaData = (empty($metaData)) ? [] : $metaData;
 
         foreach ($files as $key => $fileInfo) {
             $entityClass = $model->getEntityClass();
@@ -105,11 +112,7 @@ class FileManager
                 ->setMime($fileInfo['data']['mimetype'])
                 ->setCreatedate(new \DateTime())
                 ->setModificationdate(new \DateTime())
-                ->setAction(
-                    (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action']))
-                    ? $metaData['action']
-                    : []
-                );
+                ->setAction($this->transcodeAction($metaData));
 
             $record->setMetadata($meta);
             $model->updateRecord($record->getId(), $record);
@@ -179,5 +182,34 @@ class FileManager
         }
 
         return $uploadedFiles;
+    }
+
+    /**
+     * Transcodes the command array to the correct object.
+     *
+     * @param array $metaData Set of meta data to be parsed for commands.
+     *
+     * @return array
+     */
+    private function transcodeAction(array $metaData)
+    {
+        $action = [];
+
+        if (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action'])) {
+            foreach ($metaData['action'] as $command) {
+                // remove potentially dangerous chars
+                $commandString = preg_replace('@[^a-zA-Z0-9_-]@', '', $command['command']);
+                if (!empty($command) && $command['command'] == $commandString) {
+                    $fileMetadataAction = clone $this->fileMetadataAction;
+                    $reflection = new \ReflectionProperty(get_class($this->fileMetadataAction), 'command');
+                    $reflection->setAccessible(true);
+                    $reflection->setValue($fileMetadataAction, $commandString);
+                    $reflection->setAccessible(false);
+                    $action[] = $fileMetadataAction;
+                }
+            }
+        }
+
+        return $action;
     }
 }

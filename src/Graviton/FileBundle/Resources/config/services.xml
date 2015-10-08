@@ -22,6 +22,7 @@
 
         <service id="graviton.file.file_manager" class="%graviton.file.file_manager.class%">
             <argument type="service" id="gaufrette.file_service_filesystem"/>
+            <argument type="service" id="gravitondyn.file.document.filemetadataaction"/>
         </service>
 
         <service id="graviton.file.controller.file" class="%graviton.file.controller.file.class%" parent="graviton.rest.controller">
