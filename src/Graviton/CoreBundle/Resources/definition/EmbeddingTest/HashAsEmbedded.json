@@ -1,0 +1,32 @@
+{
+  "id": "EmbedTestHashAsEmbedded",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/testcase/embedtest-hash-as-embedded/",
+    "fixtures": [
+      {
+        "id": "test",
+        "document": {
+          "id": "one",
+          "data": "one"
+        }
+      }
+    ]
+  },
+  "target": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "document.id",
+        "type": "string"
+      },
+      {
+        "name": "document.data",
+        "type": "string"
+      }
+    ]
+  }
+}
