@@ -96,13 +96,10 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-document-as-embedded/test');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        // !!! uncomment this line !!!
-        // $this->assertEquals($data, $client->getResults());                   // why is the record not updated???
-        $this->assertEquals($original, $client->getResults());
+        $this->assertEquals($data, $client->getResults());
 
         // check entities again
-        // !!! uncomment this !!!
-        // $this->assertEntityExists('one', 'one');                             // where is the record "one"???
+        $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
     }
 
@@ -145,7 +142,9 @@ class EmbeddingDocumentsTest extends RestTestCase
         // check entities again
         $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
-        $this->assertEntityExists('three', 'three');                            // ok. new entity was added
+
+        // ok. new entity was added
+        $this->assertEntityExists('three', 'three');
     }
 
     /**
@@ -182,9 +181,7 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-hash-as-embedded/test');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        // !!! uncomment this line !!!
-        // $this->assertEquals($data, $client->getResults());                   // why is ID changed???
-        $results = $client->getResults(); $results->document->id = 'two'; $this->assertEquals($data, $results);
+        $this->assertEquals($data, $client->getResults());
 
         // check entities again
         $this->assertEntityExists('one', 'one');
