@@ -17,6 +17,11 @@ class LoadDocumentData extends AbstractFixture
                 (new Embedded())
                     ->setId('one')
                     ->setName('one')
+            )
+            ->addEmbedded(
+                (new Embedded())
+                    ->setId('a')
+                    ->setName('a')
             );
 
         $manager->persist($document);

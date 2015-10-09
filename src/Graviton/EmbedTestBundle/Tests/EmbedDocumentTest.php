@@ -45,7 +45,7 @@ class EmbeddedDocumentsTest extends WebTestCase
         $this->loadFixtures([LoadDocumentData::class], null, 'doctrine_mongodb');
     }
 
-    private function assertDocumentData($id, $name, $embedId, $embedName)
+    private function assertDocumentData($id, $name, $embedId, $embedName, array $many)
     {
         /** @var Document $original */
         $document = $this->repo->find('test');
@@ -58,11 +58,19 @@ class EmbeddedDocumentsTest extends WebTestCase
         $this->assertEquals($embedId, $document->getEmbedded()->getId());
         $this->assertEquals($embedName, $document->getEmbedded()->getName());
 
+        $this->assertCount(count($many), $document->getEmbeddeds());
+        $this->assertContainsOnlyInstancesOf(Embedded::class, $document->getEmbeddeds());
+        foreach ($many as $i => $embed) {
+            $this->assertArrayHasKey($i, $document->getEmbeddeds());
+            $this->assertEquals($embed[0], $document->getEmbeddeds()[$i]->getId());
+            $this->assertEquals($embed[1], $document->getEmbeddeds()[$i]->getName());
+        }
+
         // clear document manager
         $this->dm->clear();
     }
 
-    private function assertRawDocumentData($id, $name, $embedId, $embedName)
+    private function assertRawDocumentData($id, $name, $embedId, $embedName, array $many)
     {
         $this->assertEquals(
             [
@@ -72,6 +80,12 @@ class EmbeddedDocumentsTest extends WebTestCase
                     '_id' => $embedId,
                     'name' => $embedName,
                 ],
+                'embeddeds' => array_map(function ($item) {
+                    return [
+                        '_id' => $item[0],
+                        'name' => $item[1],
+                    ];
+                }, $many)
             ],
             $this->dm->getDocumentCollection(Document::class)->findOne(['_id' => 'test'])
         );
@@ -84,16 +98,19 @@ class EmbeddedDocumentsTest extends WebTestCase
         ///////////////////////////////////////////////////////////////////////
         $this->assertDocumentData(
             'test', 'original',
-            'one', 'one'
+            'one', 'one',
+            [['a', 'a']]
         );
         $this->assertRawDocumentData(
             'test', 'original',
-            'one', 'one'
+            'one', 'one',
+            [['a', 'a']]
         );
 
         ///////////////////////////////////////////////////////////////////////
         // update document
         ///////////////////////////////////////////////////////////////////////
+        /** @var Document $updated */
         $updated = $this->repo->find('test');
         $updated
             ->setName('updated')
@@ -101,23 +118,31 @@ class EmbeddedDocumentsTest extends WebTestCase
                 (new Embedded())
                     ->setId('two')
                     ->setName('two')
-            );
+            )
+            ->setEmbeddeds([
+                (new Embedded())
+                    ->setId('x')
+                    ->setName('x')
+            ]);
         $this->dm->persist($updated);
         $this->dm->flush();
         $this->dm->clear();
 
         $this->assertDocumentData(
             'test', 'updated',
-            'two', 'two'
+            'two', 'two',
+            [['x', 'x']]
         );
         $this->assertRawDocumentData(
             'test', 'updated',
-            'two', 'two'
+            'two', 'two',
+            [['x', 'x']]
         );
 
         ///////////////////////////////////////////////////////////////////////
         // upsert document
         ///////////////////////////////////////////////////////////////////////
+        /** @var Document $upserted */
         $upserted = (new Document())
             ->setId('test')
             ->setName('upserted')
@@ -125,18 +150,21 @@ class EmbeddedDocumentsTest extends WebTestCase
                 (new Embedded())
                     ->setId('three')
                     ->setName('three')
-            );
+            )
+            ->setEmbeddeds([]);
         $this->dm->persist($upserted);
         $this->dm->flush();
         $this->dm->clear();
 
         $this->assertDocumentData(
             'test', 'upserted',
-            'three', 'three'
+            'three', 'three',
+            []
         );
         $this->assertRawDocumentData(
             'test', 'upserted',
-            'three', 'three'
+            'three', 'three',
+            []
         );
     }
 }

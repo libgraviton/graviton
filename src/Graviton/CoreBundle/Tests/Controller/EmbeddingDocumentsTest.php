@@ -157,6 +157,10 @@ class EmbeddingDocumentsTest extends RestTestCase
         $original = (object) [
             'id' => 'test',
             'document' => (object) ['id' => 'one', 'data' => 'one'],
+            'documents' => [
+                (object) ['id' => 'one', 'data' => 'one'],
+                (object) ['id' => 'two', 'data' => 'two'],
+            ],
         ];
 
         // check entities
@@ -169,9 +173,35 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($original, $client->getResults());
 
+
+
         // update document
         $data = $client->getResults();
         $data->document = (object) ['id' => 'two', 'data' => 'two'];
+        $data->documents = [
+            (object) ['id' => 'three', 'data' => 'three'],
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/embedtest-hash-as-embedded/test', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // check data
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-hash-as-embedded/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($data, $client->getResults());
+
+        // check entities again
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+
+
+
+        // update document with empty embed-many
+        $data = $client->getResults();
+        $data->document = (object) ['id' => 'two', 'data' => 'two'];
+        $data->documents = [];
 
         $client = static::createRestClient();
         $client->put('/testcase/embedtest-hash-as-embedded/test', $data);

@@ -1,11 +1,19 @@
 <?php
 namespace Graviton\EmbedTestBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class Document
 {
     private $id;
     private $name;
     private $embedded;
+    private $embeddeds;
+
+    public function __construct()
+    {
+        $this->embeddeds = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -37,6 +45,23 @@ class Document
     public function setEmbedded(Embedded $embedded)
     {
         $this->embedded = $embedded;
+        return $this;
+    }
+
+    public function getEmbeddeds()
+    {
+        return $this->embeddeds;
+    }
+
+    public function setEmbeddeds($embeddeds)
+    {
+        $this->embeddeds = $embeddeds;
+        return $this;
+    }
+
+    public function addEmbedded(Embedded $embedded)
+    {
+        $this->embeddeds[] = $embedded;
         return $this;
     }
 }

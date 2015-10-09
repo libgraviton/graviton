@@ -10,7 +10,10 @@
                strategy="UUID"/>
         <field fieldName="name"
                type="string"/>
+
         <embed-one field="embedded"
                    target-document="Graviton\EmbedTestBundle\Document\Embedded"/>
+        <embed-many field="embeddeds"
+                    target-document="Graviton\EmbedTestBundle\Document\Embedded"/>
     </document>
 </doctrine-mongo-mapping>
