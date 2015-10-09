@@ -194,7 +194,7 @@ class FileManager
     {
         $action = [];
 
-        if (!empty($metaData) && array_key_exists('action', $metaData) && !empty($metaData['action'])) {
+        if (!empty($metaData) && !empty($metaData['action'])) {
             foreach ($metaData['action'] as $command) {
                 if (!empty($command) && !empty($command['command'])) {
                     $fileMetadataAction = clone $this->fileMetadataAction;
