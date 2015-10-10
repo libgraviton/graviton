@@ -24,8 +24,10 @@ class FileManager
      */
     private $fileSystem;
 
-    /** @var \GravitonDyn\FileBundle\Document\FileMetadataAction  */
-    private $fileMetadataAction;
+    /**
+     * @var FileDocumentFactory
+     */
+    private $fileDocumentFactory;
 
     /**
      * FileManager constructor.
@@ -36,7 +38,7 @@ class FileManager
     public function __construct(FileSystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
     {
         $this->fileSystem = $fileSystem;
-        $this->fileMetadataAction = $fileDocumentFactory->createFileMetadataAction();
+        $this->fileDocumentFactory = $fileDocumentFactory;
     }
 
     /**
@@ -104,15 +106,12 @@ class FileManager
             $file = $this->saveFile($record->getId(), $fileInfo['content']);
 
             // update record with file metadata
-            $meta = new FileMetadata();
-            $meta
-                ->setSize((int) $file->getSize())
-                ->setFilename($fileInfo['data']['filename'])
-                ->setMime($fileInfo['data']['mimetype'])
-                ->setCreatedate(new \DateTime())
-                ->setModificationdate(new \DateTime())
-                ->setAction($this->transcodeAction($metaData));
-
+            $meta = $this->fileDocumentFactory->initiateFileMataData(
+                (int) $file->getSize(),
+                $fileInfo['data']['filename'],
+                $fileInfo['data']['mimetype'],
+                $this->transcodeAction($metaData)
+            );
             $record->setMetadata($meta);
             $model->updateRecord($record->getId(), $record);
 
@@ -197,7 +196,7 @@ class FileManager
         if (!empty($metaData) && !empty($metaData['action'])) {
             foreach ($metaData['action'] as $command) {
                 if (!empty($command) && !empty($command['command'])) {
-                    $fileMetadataAction = clone $this->fileMetadataAction;
+                    $fileMetadataAction = $this->fileDocumentFactory->createFileMetadataAction();
                     $fileMetadataAction->setCommand($command['command']);
                     $action[] = $fileMetadataAction;
                 }
