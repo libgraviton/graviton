@@ -417,8 +417,8 @@ class FileControllerTest extends RestTestCase
 
         // Metadata filename
         $this->assertEquals('string', $schema->properties->metadata->properties->filename->type);
-        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->title);
-        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->description);
+        $this->assertEquals('File name', $schema->properties->metadata->properties->filename->title);
+        $this->assertEquals('File name', $schema->properties->metadata->properties->filename->description);
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
 
         // metadata action.command array
