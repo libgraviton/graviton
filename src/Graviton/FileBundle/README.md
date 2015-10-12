@@ -68,3 +68,15 @@ curl -X PUT \
      -H 'Accept: text/plain' \
      http://localhost/file/<id>
 ```
+
+## Creating a new file and sending meta data in one request
+Since this is basically a form submit the information is send as form fields:
+- *metadata* » use for the metadata formerly sent as payload in step 2
+- *upload* » use to send the file to be stored
+
+```bash
+curl -X POST \
+     -F 'metadata={"action":[{"command":"print"}]}' \
+     -F upload=@test.txt \
+     http://localhost/file
+```
