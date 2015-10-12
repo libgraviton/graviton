@@ -22,7 +22,7 @@
         "name": "links.0.type",
         "type": "varchar",
         "title": "Type",
-        "description": "Type of the link"
+        "description": "Type of the link."
       },
       {
         "name": "links.0.ref",
@@ -36,14 +36,14 @@
         "name": "metadata.size",
         "type": "int",
         "title": "File size",
-        "description": "Size of file",
+        "description": "Size of file.",
         "readOnly": true
       },
       {
         "name": "metadata.action.0.command",
         "type": "varchar",
         "title": "Action command array",
-        "description": "An array of commands that will be executed by workers on this file"
+        "description": "An array of commands that will be executed by workers on this file."
       },
       {
         "name": "metadata.mime",
@@ -56,21 +56,21 @@
         "name": "metadata.createDate",
         "type": "datetime",
         "title": "Creation date",
-        "description": "Timestamp of file upload",
+        "description": "Timestamp of file upload.",
         "readOnly": true
       },
       {
         "name": "metadata.modificationDate",
         "type": "datetime",
         "title": "Modification date",
-        "description": "Timestamp of the last file change",
+        "description": "Timestamp of the last file change.",
         "readOnly": true
       },
       {
         "name": "metadata.filename",
         "type": "string",
         "title": "File name",
-        "description": "File name"
+        "description": "Name of the file as it should get displayed to the user."
       }
     ]
   }
