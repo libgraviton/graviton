@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\Listener;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\Rql\Event\VisitNodeEvent;
@@ -91,7 +92,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->requestAttrs->expects($this->never())
             ->method('get');
         $this->converter->expects($this->never())
-            ->method('getDbRef');
+            ->method('getExtReference');
 
         $node = $this->getMockBuilder('Xiag\Rql\Parser\AbstractNode')
             ->disableOriginalConstructor()
@@ -123,7 +124,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with('_route')
             ->willReturn('route.id');
         $this->converter->expects($this->never())
-            ->method('getDbRef');
+            ->method('getExtReference');
 
         $node = $this->getMockBuilder('Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode')
             ->disableOriginalConstructor()
@@ -157,7 +158,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with('_route')
             ->willReturn('route.id');
         $this->converter->expects($this->never())
-            ->method('getDbRef');
+            ->method('getExtReference');
 
         $node = $this->getMockBuilder('Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode')
             ->disableOriginalConstructor()
@@ -189,14 +190,15 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
     {
         $extrefMapping = ['route.id' => ['originalField' => 'exposedField']];
         $extrefUrl = 'extref.url';
-        $extrefValue = (object) ['$ref' => 'Ref', '$id' => 'id'];
+        $extrefValue = ExtReference::create('Ref', 'id');
+        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
 
         $this->requestAttrs->expects($this->once())
             ->method('get')
             ->with('_route')
             ->willReturn('route.id');
         $this->converter->expects($this->once())
-            ->method('getDbRef')
+            ->method('getExtReference')
             ->with($extrefUrl)
             ->willReturn($extrefValue);
 
@@ -214,7 +216,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new EqNode('originalField', $extrefValue),
+            new EqNode('originalField', $dbRefValue),
             $event->getNode()
         );
     }
@@ -228,14 +230,15 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
     {
         $extrefMapping = ['route.id' => ['originalField.ref' => 'exposedField.0.$ref']];
         $extrefUrl = 'extref.url';
-        $extrefValue = (object) ['$ref' => 'Ref', '$id' => 'id'];
+        $extrefValue = ExtReference::create('Ref', 'id');
+        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
 
         $this->requestAttrs->expects($this->once())
             ->method('get')
             ->with('_route')
             ->willReturn('route.id');
         $this->converter->expects($this->exactly(2))
-            ->method('getDbRef')
+            ->method('getExtReference')
             ->with($extrefUrl)
             ->willReturn($extrefValue);
 
@@ -253,7 +256,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new InNode('originalField.ref', [$extrefValue, $extrefValue]),
+            new InNode('originalField.ref', [$dbRefValue, $dbRefValue]),
             $event->getNode()
         );
     }
@@ -267,14 +270,14 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
     {
         $extrefMapping = ['route.id' => ['originalField' => 'exposedField']];
         $extrefUrl = 'extref.url';
-        $extrefValue = (object) ['$ref' => false, '$id' => false];
+        $dbRefValue = \MongoDBRef::create(false, false);
 
         $this->requestAttrs->expects($this->once())
             ->method('get')
             ->with('_route')
             ->willReturn('route.id');
         $this->converter->expects($this->once())
-            ->method('getDbRef')
+            ->method('getExtReference')
             ->with($extrefUrl)
             ->willThrowException(new \InvalidArgumentException());
 
@@ -292,7 +295,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new EqNode('originalField', $extrefValue),
+            new EqNode('originalField', $dbRefValue),
             $event->getNode()
         );
     }

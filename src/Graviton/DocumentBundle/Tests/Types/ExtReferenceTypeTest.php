@@ -5,7 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\Types;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Types\ExtReferenceType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
@@ -16,10 +16,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
  */
 class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
 {
-    /**
-     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $converter;
     /**
      * @var ExtReferenceType
      */
@@ -34,88 +30,59 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     {
         Type::registerType('extref', ExtReferenceType::class);
         $this->type = Type::getType('extref');
-
-        $this->converter = $this->getMockBuilder(ExtReferenceConverterInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getDbRef', 'getUrl'])
-            ->getMock();
     }
 
     /**
-     * @expectedException \RuntimeException
+     * Test ExtReferenceType::convertToDatabaseValue()
      *
      * @return void
      */
-    public function testMongoRefFromValueWithException()
+    public function testConvertToDatabaseValue()
     {
-        $url = __FILE__;
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getDbRef')
-            ->with($url)
-            ->willThrowException(new \InvalidArgumentException);
-
-        $this->type->setConverter($this->converter);
-        $this->type->convertToDatabaseValue($url);
+        $this->assertEquals(
+            \MongoDBRef::create(__METHOD__, __FILE__),
+            $this->type->convertToDatabaseValue(ExtReference::create(__METHOD__, __FILE__))
+        );
+        $this->assertEquals(
+            null,
+            $this->type->convertToDatabaseValue(null)
+        );
     }
 
     /**
-     * verify that we get a mongodbref
+     * Test ExtReference::closureToMongo()
      *
      * @return void
      */
-    public function testMongoRefFromValue()
+    public function testClosureToMongo()
     {
-        $url = __FILE__;
-        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getDbRef')
-            ->with($url)
-            ->willReturn($dbRef);
-
-        $this->type->setConverter($this->converter);
-        $this->assertEquals($dbRef, $this->type->convertToDatabaseValue($url));
+        $this->assertEqualsClosure(
+            \MongoDBRef::create(__METHOD__, __FILE__),
+            ExtReference::create(__METHOD__, __FILE__),
+            $this->type->closureToMongo()
+        );
+        $this->assertEqualsClosure(
+            null,
+            null,
+            $this->type->closureToMongo()
+        );
     }
 
     /**
-     * Test ConvertToPHPValue
-     *
-     * @return void
-     */
-    public function testConvertToPHPValueWithException()
-    {
-        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getUrl')
-            ->with($dbRef)
-            ->willThrowException(new \InvalidArgumentException);
-
-        $this->type->setConverter($this->converter);
-        $this->assertEquals('', $this->type->convertToPHPValue($dbRef));
-    }
-
-    /**
-     * Test ConvertToPHPValue
+     * Test ExtReference::convertToPHPValue()
      *
      * @return void
      */
     public function testConvertToPHPValue()
     {
-        $dbRef = (object) \MongoDBRef::create(__METHOD__, __FILE__);
-
-        $this->converter
-            ->expects($this->once())
-            ->method('getUrl')
-            ->with($dbRef)
-            ->willReturn(__FILE__);
-
-        $this->type->setConverter($this->converter);
-        $this->assertEquals(__FILE__, $this->type->convertToPHPValue($dbRef));
+        $this->assertEquals(
+            ExtReference::create(__METHOD__, __FILE__),
+            $this->type->convertToPHPValue(\MongoDBRef::create(__METHOD__, __FILE__))
+        );
+        $this->assertEquals(
+            null,
+            $this->type->convertToPHPValue(null)
+        );
     }
 
     /**
@@ -126,18 +93,13 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
     public function testClosureToPHP()
     {
         $this->assertEqualsClosure(
-            'null',
+            ExtReference::create(__METHOD__, __FILE__),
+            \MongoDBRef::create(__METHOD__, __FILE__),
+            $this->type->closureToPHP()
+        );
+        $this->assertEqualsClosure(
             null,
-            $this->type->closureToPHP()
-        );
-        $this->assertEqualsClosure(
-            '{}',
-            (object) [],
-            $this->type->closureToPHP()
-        );
-        $this->assertEqualsClosure(
-            '{"$ref":"A","$id":"b"}',
-            (object) ['$ref' => 'A', '$id' => 'b'],
+            null,
             $this->type->closureToPHP()
         );
     }

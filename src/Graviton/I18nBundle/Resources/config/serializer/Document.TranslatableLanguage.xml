@@ -2,6 +2,8 @@
 <serializer>
   <class name="Graviton\I18nBundle\Document\TranslatableLanguage" exclusion-policy="ALL">
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId" expose="false"/>
-    <property name="ref" type="string" serialized-name="$ref" accessor-getter="getRef" accessor-setter="setRef" expose="true"/>
+    <property name="ref" serialized-name="$ref" accessor-getter="getRef" accessor-setter="setRef" expose="true">
+      <type><![CDATA[Graviton\DocumentBundle\Entity\ExtReference]]></type>
+    </property>
   </class>
 </serializer>
