@@ -69,8 +69,8 @@
       {
         "name": "metadata.filename",
         "type": "string",
-        "title": "file name",
-        "description": "file name"
+        "title": "File name",
+        "description": "File name"
       }
     ]
   }
