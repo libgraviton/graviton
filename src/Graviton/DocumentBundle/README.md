@@ -32,7 +32,9 @@ The serializer also needs to know how to properly expose the field.
 <serializer>
   <class name="MyDocument" exclusion-policy="ALL">
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId" expose="true"/>
-    <property name="ref" type="string" serialized-name="$ref" accessor-getter="getRef" accessor-setter="setRef" expose="true"/>
+    <property name="ref" serialized-name="$ref" accessor-getter="getRef" accessor-setter="setRef" expose="true">
+      <type><![CDATA[Graviton\DocumentBundle\Entity\ExtReference]]></type>
+    </property>
   </class>
 </serializer>
 ```

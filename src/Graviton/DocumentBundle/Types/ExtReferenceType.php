@@ -5,7 +5,7 @@
 
 namespace Graviton\DocumentBundle\Types;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
@@ -18,68 +18,74 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ExtReferenceType extends Type
 {
     /**
-     * @var ExtReferenceConverterInterface
+     * Convert DB value to PHP representation
+     *
+     * @param mixed $value Value to convert
+     * @return ExtReference|null
      */
-    private $converter;
-
-    /**
-     * inject a converter
-     *
-     * This uses setter injection due to the fact that doctrine doesn't do constructor injection
-     *
-     * @param ExtReferenceConverterInterface $converter Converter
-     *
-     * @return void
-     */
-    public function setConverter(ExtReferenceConverterInterface $converter)
+    public static function convertToPhp($value)
     {
-        $this->converter = $converter;
-    }
-
-    /**
-     * get php value when field is used as identifier
-     *
-     * @param array|object $value ref from mongodb
-     *
-     * @return string
-     */
-    public function convertToPHPValue($value)
-    {
-        try {
-            return $this->converter->getUrl((object) $value);
-        } catch (\InvalidArgumentException $e) {
-            return '';
+        if (is_array($value) && isset($value['$ref'], $value['$id'])) {
+            return ExtReference::create($value['$ref'], $value['$id']);
+        } elseif (is_object($value) && isset($value->{'$ref'}, $value->{'$id'})) {
+            return ExtReference::create($value->{'$ref'}, $value->{'$id'});
+        } else {
+            return null;
         }
     }
 
     /**
-     * return a closure as string that sets $return if field is a regular field
+     * Convert PHP value to MongoDb representation
+     *
+     * @param mixed $value Value to convert
+     * @return object|null
+     */
+    public static function convertToDb($value)
+    {
+        return $value instanceof ExtReference ?
+            \MongoDBRef::create($value->getRef(), $value->getId()) :
+            null;
+    }
+
+    /**
+     * Convert to PHP value
+     *
+     * @param mixed $value Db value
+     * @return ExtReference|null
+     */
+    public function convertToPHPValue($value)
+    {
+        return static::convertToPhp($value);
+    }
+
+    /**
+     * Closure to convert to PHP value
      *
      * @return string
      */
     public function closureToPHP()
     {
-        // return full value for later processing since we do not have mappings during hydrator generation
-        return '$return = json_encode($value);';
+        return '$return = \\'.static::class.'::convertToPhp($value);';
     }
 
     /**
-     * return the mongodb representation from a php value
+     * Convert to DB value
      *
-     * @param string $value value of reference as URI
-     *
-     * @return array
+     * @param mixed $value PHP value
+     * @return object|null
      */
     public function convertToDatabaseValue($value)
     {
-        try {
-            return $this->converter->getDbRef($value);
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(
-                sprintf('Could not read URL %s', $value),
-                0,
-                $e
-            );
-        }
+        return static::convertToDb($value);
+    }
+
+    /**
+     * Closure to convert to DB value
+     *
+     * @return string
+     */
+    public function closureToMongo()
+    {
+        return '$return = \\'.static::class.'::convertToDb($value);';
     }
 }

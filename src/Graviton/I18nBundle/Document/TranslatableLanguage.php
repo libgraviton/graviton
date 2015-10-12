@@ -5,6 +5,8 @@
 
 namespace Graviton\I18nBundle\Document;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
+
 /**
  * Graviton\I18nBundle\Document\TranslatableLanguage
  *
@@ -20,7 +22,7 @@ class TranslatableLanguage
     protected $id;
 
     /**
-     * @var extref $ref
+     * @var ExtReference $ref
      */
     protected $ref;
 
@@ -38,7 +40,7 @@ class TranslatableLanguage
     /**
      * Set ref
      *
-     * @param string $ref value of extref
+     * @param ExtReference $ref value of extref
      * @return self
      */
     public function setRef($ref)
@@ -50,7 +52,7 @@ class TranslatableLanguage
     /**
      * Get ref
      *
-     * @return string $ref
+     * @return ExtReference $ref
      */
     public function getRef()
     {
