@@ -200,8 +200,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // In both cases the document attribute named originRecord must not be 'core'
         $this->checkIfOriginRecord($entity);
         $this->checkIfOriginRecord($this->find($documentId));
-        $manager->persist($entity);
-        $manager->flush($entity);
+        $entity = $manager->merge($entity);
+        $manager->flush();
 
         return $entity;
     }
