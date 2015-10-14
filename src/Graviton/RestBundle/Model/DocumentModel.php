@@ -154,6 +154,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $request->attributes->set('paging', true);
             $request->attributes->set('page', $page);
             $request->attributes->set('numPages', $numPages);
+            $request->attributes->set('startAt', $startAt);
             $request->attributes->set('perPage', $numberPerPage);
             $request->attributes->set('totalCount', $totalCount);
         }
