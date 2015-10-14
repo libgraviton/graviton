@@ -25,6 +25,10 @@
     <parameter key="graviton.i18n.utils.class">Graviton\I18nBundle\Service\I18nUtils</parameter>
     <parameter key="graviton.i18n.form.transformer.translatabletodefaultstring.class">Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer</parameter>
     <parameter key="graviton.i18n.form.type.translatable.class">Graviton\I18nBundle\Form\Type\TranslatableType</parameter>
+
+    <!-- should we move this to somewhere else? -->
+    <parameter key="translator.class">Graviton\I18nBundle\Translator\Translator</parameter>
+
   </parameters>
   <services>
     <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
