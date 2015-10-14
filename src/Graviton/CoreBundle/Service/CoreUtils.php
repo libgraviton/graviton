@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Service;
 
-use Graviton\ExceptionBundle\Exception\MissingVersionFileException;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -42,7 +40,6 @@ class CoreUtils
         return $versionHeader;
     }
 
-
     /**
      * @return array versions
      */
@@ -56,8 +53,10 @@ class CoreUtils
     }
 
     /**
+     * Finds the version of the current wrapper.
      *
      * @return array wrapper version
+     * @throws \RuntimeException in case version was not found in versions stack.
      */
     public function getWrapperVersion()
     {
@@ -66,5 +65,7 @@ class CoreUtils
                 return $version;
             }
         }
+
+        throw new \RuntimeException('No version »self« available.');
     }
 }

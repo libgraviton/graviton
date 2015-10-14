@@ -14,6 +14,7 @@
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
+        <parameter key="graviton.core.service.coreversionutils.class">Graviton\CoreBundle\Service\CoreVersionUtils</parameter>
         <parameter key="graviton.core.links" type="collection">
             <parameter>graviton.core.static.version.get</parameter>
         </parameter>
@@ -83,7 +84,7 @@
         <service id="graviton.core.model.version" class="%graviton.core.model.version.class%" parent="graviton.rest.model"/>
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
-            <argument type="service" id="graviton.core.utils"></argument>
+            <argument type="service" id="graviton.core.utils"/>
             <call method="setModel">
                 <argument type="service" id="graviton.core.model.version"/>
             </call>
@@ -92,11 +93,10 @@
                  class="Symfony\Component\Yaml\Dumper">
         </service>
         <service id="graviton.core.service.coreversionutils"
-                 class="Graviton\CoreBundle\Service\CoreVersionUtils">
+                 class="%graviton.core.service.coreversionutils.class%">
             <argument>%graviton.composer.cmd%</argument>
             <argument>%kernel.root_dir%</argument>
             <argument type="service" id="graviton.yaml.dumper"/>
-            <call method="getVersionConfig"></call>
         </service>
     </services>
 </container>

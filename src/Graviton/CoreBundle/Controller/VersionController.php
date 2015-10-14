@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Graviton\CoreBundle\Model\Version;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -26,7 +25,6 @@ use Graviton\CoreBundle\Model\Version;
  */
 class VersionController extends RestController
 {
-
     /**
      * @var CoreUtils
      */
