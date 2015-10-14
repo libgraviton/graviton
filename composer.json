@@ -10,7 +10,7 @@
         }
     ],
     "autoload": {
-        "psr-0": {"": "src/", "Graviton": "src/", "Graviton": "/app/htdocs/src"}
+        "psr-0": {"": "src/", "Graviton": "src/"}
     },
     "repositories": [
         {
