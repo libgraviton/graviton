@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle\Service;
 
 use \Symfony\Component\Yaml\Parser;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -17,7 +16,7 @@ use Symfony\Component\Process\Process;
 class CoreVersionUtils
 {
     /**
-     * @var ?
+     * @var string
      */
     private $composerCmd;
 
@@ -26,6 +25,10 @@ class CoreVersionUtils
      */
     private $rootDir;
 
+    /**
+     * @var \Symfony\Component\Yaml\Dumper
+     */
+    private $yamlDumper;
 
     /**
      * @param string                         $composerCmd ComposerCommand
