@@ -470,6 +470,16 @@ class FileControllerTest extends RestTestCase
             ['*'],
             $schema->properties->links->items->properties->{'$ref'}->{'x-collection'}
         );
+
+        $this->assertEquals(
+            [
+                'document.file.file.update',
+                'document.file.file.create',
+                'document.file.file.delete'
+            ],
+            $schema->{'x-events'}
+        );
+
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
 }

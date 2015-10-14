@@ -71,6 +71,7 @@ doctrine_mongodb:
             retry_query: 1
             mappings:
                 GravitonCoreBundle: ~
+                GravitonRabbitMqBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
@@ -150,6 +151,40 @@ knp_gaufrette:
 eo_airbrake:
         host: %graviton.errbit.host%
         api_key: %graviton.errbit.api_key%
-        ignored_exceptions: 
+        ignored_exceptions:
             - 'Symfony\Component\HttpKernel\Exception\HttpException'
             - 'Xiag\Rql\Parser\Exception\SyntaxErrorException'
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     "%rabbitmq.host%"
+            port:     "%rabbitmq.port%"
+            user:     "%rabbitmq.user%"
+            password: "%rabbitmq.password%"
+            vhost:    "%rabbitmq.vhost%"
+            lazy:     true
+            connection_timeout: 3
+            read_write_timeout: 3
+
+            # requires php-amqplib v2.4.1+ and PHP5.4+
+            keepalive: false
+
+            # requires php-amqplib v2.4.1+
+            heartbeat: 0
+    producers:
+        document_event:
+            class: OldSound\RabbitMqBundle\RabbitMq\Producer
+            connection: default
+            exchange_options:
+                name: graviton
+                type: topic
+    consumers:
+        dump:
+            connection: default
+            exchange_options:
+                name: graviton
+                type: topic
+            queue_options:
+                routing_keys: %graviton.rabbitmq.consumer.dump.routingkeys%
+            callback: graviton.rabbitmq.consumer.dump

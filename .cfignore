@@ -1,6 +1,6 @@
 vendor/
 app/cache/
-app/log
+app/logs/*
 *.phar
 mongodata
 .git

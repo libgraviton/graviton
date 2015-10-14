@@ -46,6 +46,13 @@ class SchemaUtils
     private $extrefServiceMapping;
 
     /**
+     * event map
+     *
+     * @var array event map
+     */
+    private $eventMap;
+
+    /**
      * @var array [document class => [field name -> exposed name]]
      */
     private $documentFieldNames;
@@ -73,6 +80,7 @@ class SchemaUtils
      * @param LanguageRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
      * @param array                              $extrefServiceMapping      Extref service mapping
+     * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
      * @param string                             $defaultLocale             Default Language
      */
@@ -82,6 +90,7 @@ class SchemaUtils
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
+        array $eventMap,
         array $documentFieldNames,
         $defaultLocale
     ) {
@@ -90,6 +99,7 @@ class SchemaUtils
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
+        $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
     }
@@ -162,6 +172,12 @@ class SchemaUtils
             $languages = [
                 $this->defaultLocale
             ];
+        }
+
+        // exposed events..
+        $classShortName = $documentReflection->getShortName();
+        if (isset($this->eventMap[$classShortName])) {
+            $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
         }
 
         foreach ($meta->getFieldNames() as $field) {

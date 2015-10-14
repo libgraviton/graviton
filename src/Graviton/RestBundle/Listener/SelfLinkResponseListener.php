@@ -98,6 +98,10 @@ class SelfLinkResponseListener
 
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
+
+            // set in request and dispatch new event for interested parties
+            $event->getRequest()->attributes->set('selfLink', $url);
+            $event->getDispatcher()->dispatch('graviton.rest.response.selfaware', $event);
         }
     }
 
