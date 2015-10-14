@@ -638,6 +638,27 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * requests on OPTIONS and HEAD shall not lead graviton to get any data from mongodb.
+     * if we page limit(1) this will lead to presence of the x-total-count header if
+     * data is generated (asserted by testGetAppPagingWithRql()). thus, if we don't
+     * have this header, we can safely assume that no data has been processed in RestController.
+     *
+     * @return void
+     */
+    public function testNoRecordsAreGeneratedOnPreRequests()
+    {
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/core/app/?limit(1)');
+        $response = $client->getResponse();
+        $this->assertArrayNotHasKey('x-total-count', $response->headers->all());
+
+        $client = static::createRestClient();
+        $client->request('HEAD', '/core/app/?limit(1)');
+        $response = $client->getResponse();
+        $this->assertArrayNotHasKey('x-total-count', $response->headers->all());
+    }
+
+    /**
      * test getting schema information from canonical url
      *
      * @return void
