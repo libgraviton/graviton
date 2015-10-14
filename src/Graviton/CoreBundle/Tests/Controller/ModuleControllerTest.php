@@ -635,7 +635,7 @@ class ModuleControllerTest extends RestTestCase
             $this->assertEquals(
                 [
                     (object) [
-                        'propertyPath' => 'data.app.ref',
+                        'propertyPath' => 'children[app].children[ref]',
                         'message' => sprintf('URL "%s" is not a valid ext reference.', $url),
                     ],
                 ],

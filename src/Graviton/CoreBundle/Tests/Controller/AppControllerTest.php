@@ -423,6 +423,84 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * Test for PATCH Request
+     *
+     * @return void
+     */
+    public function testPatchAppRequestApplyChanges()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "testapp";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Test App";
+        $helloApp->showInMenu = false;
+
+        // 1. Create some App
+        $client = static::createRestClient();
+        $client->put('/core/app/' . $helloApp->id, $helloApp);
+
+        // 2. PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/name/en',
+                    'value' => 'Test App Patched'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // 3. Get changed App and check changed title
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/' . $helloApp->id);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertEquals('Test App Patched', $results->name->en);
+    }
+
+    /**
+     * Test for Malformed PATCH Request
+     *
+     * @return void
+     */
+    public function testMalformedPatchAppRequest()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "testapp";
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = "Test App";
+        $helloApp->showInMenu = false;
+
+        // 1. Create some App
+        $client = static::createRestClient();
+        $client->put('/core/app/' . $helloApp->id, $helloApp);
+
+        // 2. PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            array(
+                'op' => 'unknown',
+                'path' => '/title/en'
+            )
+        );
+        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertContains(
+            'Invalid JSON patch request',
+            $response->getContent()
+        );
+    }
+
+    /**
      * Try to update an app with a non matching ID in GET and req body
      *
      * @return void

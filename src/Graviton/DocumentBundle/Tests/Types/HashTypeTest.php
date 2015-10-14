@@ -15,7 +15,7 @@ use Graviton\DocumentBundle\Types\HashType;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class HashTypeTest extends \PHPUnit_Framework_TestCase
+class HashTypeTest extends BaseDoctrineTypeTestCase
 {
     /**
      * @var HashType
@@ -31,22 +31,6 @@ class HashTypeTest extends \PHPUnit_Framework_TestCase
     {
         Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
         $this->type = Type::getType('hash');
-    }
-
-    /**
-     * Assert that expected result is equal to closure return value
-     *
-     * @param mixed  $expected      Expected value
-     * @param mixed  $value         This value will be passed to closure
-     * @param string $closureString Closure to eval
-     * @return void
-     */
-    private function assertEqualsClosure($expected, $value, $closureString)
-    {
-        $return = null;
-        eval($closureString);
-
-        $this->assertEquals($expected, $return);
     }
 
     /**
@@ -160,7 +144,7 @@ class HashTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEqualsClosure(
             null,
             null,
-            $this->type->convertToPHPValue(null)
+            $this->type->closureToPHP()
         );
         $this->assertEqualsClosure(
             null,

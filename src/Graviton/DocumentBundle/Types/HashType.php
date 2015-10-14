@@ -18,14 +18,44 @@ use Graviton\DocumentBundle\Entity\Hash;
 class HashType extends Type
 {
     /**
+     * Convert DB value to PHP representation
+     *
+     * @param mixed $value Value to convert
+     * @return Hash|null
+     */
+    public static function convertToPhp($value)
+    {
+        return is_array($value) ? new Hash($value) : null;
+    }
+
+    /**
+     * Convert PHP value to MongoDb representation
+     *
+     * @param mixed $value Value to convert
+     * @return object|null
+     */
+    public static function convertToDb($value)
+    {
+        if (is_array($value)) {
+            return (object) $value;
+        } elseif ($value instanceof \ArrayObject) {
+            return (object) $value->getArrayCopy();
+        } elseif (is_object($value)) {
+            return (object) get_object_vars($value);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Convert to PHP value
      *
      * @param mixed $value Db value
-     * @return object|null
+     * @return Hash|null
      */
     public function convertToPHPValue($value)
     {
-        return is_array($value) ? new Hash($value) : null;
+        return static::convertToPhp($value);
     }
 
     /**
@@ -35,30 +65,18 @@ class HashType extends Type
      */
     public function closureToPHP()
     {
-        return <<<'PHP'
-$return = (is_array($value) ? new \Graviton\DocumentBundle\Entity\Hash($value) : null);
-PHP;
+        return '$return = \\'.static::class.'::convertToPhp($value);';
     }
 
     /**
      * Convert to DB value
      *
      * @param mixed $value PHP value
-     * @return array
+     * @return object|null
      */
     public function convertToDatabaseValue($value)
     {
-        if (is_array($value)) {
-            $return = (object) $value;
-        } elseif ($value instanceof \ArrayObject) {
-            $return = (object) $value->getArrayCopy();
-        } elseif (is_object($value)) {
-            $return = (object) get_object_vars($value);
-        } else {
-            $return = null;
-        }
-
-        return $return;
+        return static::convertToDb($value);
     }
 
     /**
@@ -68,16 +86,6 @@ PHP;
      */
     public function closureToMongo()
     {
-        return <<<'PHP'
-if (is_array($value)) {
-    $return = (object) $value;
-} elseif ($value instanceof \ArrayObject) {
-    $return = (object) $value->getArrayCopy();
-} elseif (is_object($value)) {
-    $return = (object) get_object_vars($value);
-} else {
-    $return = null;
-}
-PHP;
+        return '$return = \\'.static::class.'::convertToDb($value);';
     }
 }

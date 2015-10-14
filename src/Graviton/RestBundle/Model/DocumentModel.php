@@ -171,7 +171,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->checkIfOriginRecord($entity);
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
-        $manager->flush();
+        $manager->flush($entity);
 
         return $this->find($entity->getId());
     }

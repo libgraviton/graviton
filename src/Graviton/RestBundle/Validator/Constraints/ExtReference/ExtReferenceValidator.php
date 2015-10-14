@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Validator\Constraints\ExtReference;
 
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Entity\ExtReference as ExtRef;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -20,49 +20,32 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class ExtReferenceValidator extends ConstraintValidator
 {
     /**
-     * @var ExtReferenceConverterInterface
-     */
-    private $converter;
-
-    /**
-     * Inject extref converter
-     *
-     * @param ExtReferenceConverterInterface $converter Extref converter
-     * @return void
-     */
-    public function setConverter(ExtReferenceConverterInterface $converter)
-    {
-        $this->converter = $converter;
-    }
-
-    /**
      * Checks if the passed value is valid.
      *
      * @param mixed      $value      The value that should be validated
      * @param Constraint $constraint The constraint for the validation
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedTypeException
      */
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof ExtReference) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\ExtReference');
+            throw new UnexpectedTypeException($constraint, ExtReference::class);
         }
 
         if ($value === null) {
             return;
         }
 
-        try {
-            $extref = $this->converter->getDbRef($value);
-            if (is_array($constraint->allowedCollections) &&
-                !in_array('*', $constraint->allowedCollections, true) &&
-                !in_array($extref->{'$ref'}, $constraint->allowedCollections, true)
-            ) {
-                $this->context->addViolation($constraint->notAllowedMessage, ['%url%' => $value]);
-            }
-        } catch (\InvalidArgumentException $e) {
-            $this->context->addViolation($constraint->invalidMessage, ['%url%' => $value]);
+        if (!$value instanceof ExtRef) {
+            throw new UnexpectedTypeException($value, ExtRef::class);
+        }
+
+        if (!empty($constraint->collections) &&
+            !in_array('*', $constraint->collections, true) &&
+            !in_array($value->getRef(), $constraint->collections, true)
+        ) {
+            $this->context->addViolation($constraint->message, ['%collection%' => $value->getRef()]);
         }
     }
 }
