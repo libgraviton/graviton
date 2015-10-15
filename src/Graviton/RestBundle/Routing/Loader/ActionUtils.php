@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
  */
 class ActionUtils
 {
-    const ID_PATTERN = '[a-zA-Z0-9\-_\/]+';
+    const ID_PATTERN = '[a-zA-Z0-9\-_\/\+\040\'\.]+';
 
     /**
      * Get route for GET requests
@@ -58,7 +58,6 @@ class ActionUtils
         }
 
         $route = new Route($pattern, $defaults, $requirements);
-
         $route->setMethods($method);
 
         return $route;
@@ -131,6 +130,19 @@ class ActionUtils
     }
 
     /**
+     * Get route for PATCH requests
+     *
+     * @param string $service       service id
+     * @param array  $serviceConfig service configuration
+     *
+     * @return Route
+     */
+    public static function getRoutePatch($service, $serviceConfig)
+    {
+        return self::getRoute($service, 'PATCH', 'patchAction', $serviceConfig, array('id' => self::ID_PATTERN));
+    }
+
+    /**
      * Get route for DELETE requests
      *
      * @param string $service       service id
@@ -149,7 +161,7 @@ class ActionUtils
      * @param string  $service       service id
      * @param array   $serviceConfig service configuration
      * @param array   $parameters    service params
-     * @param boolean $useIdPattern  geenrate route with id param
+     * @param boolean $useIdPattern  generate route with id param
      *
      * @return Route
      */
@@ -159,6 +171,24 @@ class ActionUtils
             $parameters['id'] = self::ID_PATTERN;
         }
         return self::getRoute($service, 'OPTIONS', 'optionsAction', $serviceConfig, $parameters);
+    }
+
+    /**
+     * Get route for HEAD requests
+     *
+     * @param string  $service       service id
+     * @param array   $serviceConfig service configuration
+     * @param array   $parameters    service params
+     * @param boolean $useIdPattern  generate route with id param
+     *
+     * @return Route
+     */
+    public static function getRouteHead($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
+    {
+        if ($useIdPattern) {
+            $parameters['id'] = self::ID_PATTERN;
+        }
+        return self::getRoute($service, 'HEAD', 'optionsAction', $serviceConfig, $parameters);
     }
 
     /**

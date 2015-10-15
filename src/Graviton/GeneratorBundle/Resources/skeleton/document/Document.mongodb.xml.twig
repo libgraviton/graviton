@@ -20,8 +20,12 @@
 
         {% for field in fields %}
             {% if 'Graviton' in field.type %}
-                {% if field.relType is defined %}{% set relType = field.relType %}{% else %}{% set relType = "reference" %}{% endif %}
-                {% if relType == 'ref' %}{% set relType = "reference" %}{% endif %}
+                {% if field.relType is defined %}
+                    {% set relType = {"embed": "embed", "ref": "reference"}[field.relType] %}
+                {% else %}
+                    {% set relType = "reference" %}
+                {% endif %}
+
                 {% if '[]' in field.type %}
                     <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}" strategy="set">
                         <cascade>
@@ -38,6 +42,12 @@
             {% else %}
                 {% if field.type == 'hash' %}
                     <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif field.type == 'hash[]' %}
+                    <field fieldName="{{ field.fieldName }}" type="hasharray"/>
+                {% elseif field.type == 'date[]' %}
+                    <field fieldName="{{ field.fieldName }}" type="datearray"/>
+                {% elseif '[]' in field.type or field.type == 'array' %}
+                    <field fieldName="{{ field.fieldName }}" type="collection"/>
                 {% else %}
                     <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}

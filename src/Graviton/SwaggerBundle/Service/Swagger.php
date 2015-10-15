@@ -77,6 +77,7 @@ class Swagger
         foreach ($routingMap as $contName => $routes) {
             list(, $bundle,, $document) = explode('.', $contName);
 
+            /** @var Route  $route */
             foreach ($routes as $routeName => $route) {
                 $routeMethod = strtolower($route->getMethods()[0]);
 
@@ -91,6 +92,7 @@ class Swagger
                     continue;
                 }
 
+                /** @var \Graviton\RestBundle\Model\DocumentModel $thisModel */
                 $thisModel = $this->restUtils->getModelFromRoute($route);
                 if ($thisModel === false) {
                     throw new \LogicException(
@@ -183,11 +185,13 @@ class Swagger
     {
         $ret = array();
         $ret['swagger'] = '2.0';
+
         $ret['info'] = array(
             'version' => $this->coreUtils->getWrapperVersion()['version'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
         );
+
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');
 

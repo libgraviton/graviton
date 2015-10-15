@@ -1,11 +1,9 @@
 <?php
 /**
- * interfcae for definition loader strategies
+ * interface for definition loader strategies
  */
 
 namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
-
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,11 +22,11 @@ interface StrategyInterface
     public function supports($input);
 
     /**
-     * load
+     * load raw JSON data
      *
      * @param string|null $input input from command
      *
-     * @return JsonDefinition[]
+     * @return string[]
      */
     public function load($input);
 }

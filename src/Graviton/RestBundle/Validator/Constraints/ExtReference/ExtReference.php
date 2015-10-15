@@ -19,15 +19,11 @@ class ExtReference extends Constraint
     /**
      * @var string
      */
-    public $invalidMessage = 'URL "%url%" is not a valid ext reference.';
-    /**
-     * @var string
-     */
-    public $notAllowedMessage = 'URL "%url%" is not allowed.';
+    public $message = 'Reference to "%collection%" is not allowed.';
     /**
      * @var array
      */
-    public $allowedCollections;
+    public $collections = [];
 
     /**
      * Returns the name of the class that validates this constraint.
