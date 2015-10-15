@@ -9,7 +9,11 @@
         "document": {
           "id": "one",
           "data": "one"
-        }
+        },
+        "documents": [
+          {"id": "one", "data": "one"},
+          {"id": "two", "data": "two"}
+        ]
       }
     ]
   },
@@ -25,6 +29,14 @@
       },
       {
         "name": "document.data",
+        "type": "string"
+      },
+      {
+        "name": "documents.0.id",
+        "type": "string"
+      },
+      {
+        "name": "documents.0.data",
         "type": "string"
       }
     ]

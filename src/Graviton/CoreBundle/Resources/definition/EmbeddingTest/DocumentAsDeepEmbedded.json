@@ -1,0 +1,36 @@
+{
+  "id": "EmbedTestDocumentAsDeepEmbedded",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/testcase/embedtest-document-as-deep-embedded/",
+    "fixtures": [
+      {
+        "id": "test",
+        "deep": {
+          "document": {
+            "id": "one",
+            "data": "one"
+          }
+        }
+      }
+    ]
+  },
+  "target": {
+    "relations": [
+      {
+        "type": "embed",
+        "localProperty": "deep.document"
+      }
+    ],
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "deep.document",
+        "type": "class:GravitonDyn\\EmbedTestEntityBundle\\Document\\EmbedTestEntity"
+      }
+    ]
+  }
+}

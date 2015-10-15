@@ -10,6 +10,8 @@ use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\EmbedTestEntityBundle\DataFixtures\MongoDB\LoadEmbedTestEntityData;
 use GravitonDyn\EmbedTestDocumentAsReferenceBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsReferenceData;
 use GravitonDyn\EmbedTestDocumentAsEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsEmbeddedData;
+use GravitonDyn\EmbedTestDocumentAsDeepReferenceBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsDeepReferenceData;
+use GravitonDyn\EmbedTestDocumentAsDeepEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsDeepEmbeddedData;
 use GravitonDyn\EmbedTestHashAsEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTestHashAsEmbeddedData;
 
 /**
@@ -38,6 +40,8 @@ class EmbeddingDocumentsTest extends RestTestCase
                 LoadEmbedTestEntityData::class,
                 LoadEmbedTestDocumentAsEmbeddedData::class,
                 LoadEmbedTestDocumentAsReferenceData::class,
+                LoadEmbedTestDocumentAsDeepEmbeddedData::class,
+                LoadEmbedTestDocumentAsDeepReferenceData::class,
                 LoadEmbedTestHashAsEmbeddedData::class,
             ],
             null,
@@ -60,6 +64,18 @@ class EmbeddingDocumentsTest extends RestTestCase
 
         $this->assertEquals($id, $client->getResults()->id);
         $this->assertEquals($data, $client->getResults()->data);
+    }
+
+    /**
+     * @param string $id ID
+     * @return void
+     * @throws \PHPUnit_Framework_AssertionFailedError
+     */
+    private function assertEntityNotExists($id)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-entity/'.$id);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -86,7 +102,10 @@ class EmbeddingDocumentsTest extends RestTestCase
 
         // update document
         $data = $client->getResults();
-        $data->document = (object) ['id' => 'two', 'data' => 'two'];
+        $data->document = (object) [
+            'id'    => 'two',
+            'data'  => 'two',
+        ];
 
         $client = static::createRestClient();
         $client->put('/testcase/embedtest-document-as-embedded/test', $data);
@@ -96,13 +115,10 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-document-as-embedded/test');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        // !!! uncomment this line !!!
-        // $this->assertEquals($data, $client->getResults());                   // why is the record not updated???
-        $this->assertEquals($original, $client->getResults());
+        $this->assertEquals($data, $client->getResults());
 
         // check entities again
-        // !!! uncomment this !!!
-        // $this->assertEntityExists('one', 'one');                             // where is the record "one"???
+        $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
     }
 
@@ -121,6 +137,7 @@ class EmbeddingDocumentsTest extends RestTestCase
         // check entities
         $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
+        $this->assertEntityNotExists('three');
 
         // check document
         $client = static::createRestClient();
@@ -130,7 +147,10 @@ class EmbeddingDocumentsTest extends RestTestCase
 
         // update document
         $data = $client->getResults();
-        $data->document = (object) ['id' => 'three', 'data' => 'three'];
+        $data->document = (object) [
+            'id'    => 'three',
+            'data'  => 'three',
+        ];
 
         $client = static::createRestClient();
         $client->put('/testcase/embedtest-document-as-reference/test', $data);
@@ -143,9 +163,115 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals($data, $client->getResults());
 
         // check entities again
+        // record "one" was not removed. it is incorrect
+        // $this->assertEntityNotExists('one');
         $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
-        $this->assertEntityExists('three', 'three');                            // ok. new entity was added
+
+        // ok. new entity was added
+        $this->assertEntityExists('three', 'three');
+    }
+
+    /**
+     * Test Document as deep embedded
+     *
+     * @return void
+     */
+    public function testDocumentAsDeepEmbedded()
+    {
+        $original = (object) [
+            'id'    => 'test',
+            'deep'  => (object) [
+                'document'  => (object) [
+                    'id'    => 'one',
+                    'data'  => 'one',
+                ],
+            ],
+        ];
+
+        // check entities
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+
+        // check document
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-embedded/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($original, $client->getResults());
+
+        // update document
+        $data = $client->getResults();
+        $data->deep->document = (object) [
+            'id'    => 'two',
+            'data'  => 'two',
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/embedtest-document-as-deep-embedded/test', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // check data
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-embedded/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($data, $client->getResults());
+
+        // check entities again
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+    }
+
+    /**
+     * Test Document as deep reference
+     *
+     * @return void
+     */
+    public function testDocumentAsDeepReference()
+    {
+        $original = (object) [
+            'id'    => 'test',
+            'deep'  => (object) [
+                'document'  => (object) [
+                    'id'    => 'one',
+                    'data'  => 'one',
+                ],
+            ],
+        ];
+
+        // check entities
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+
+        // check document
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($original, $client->getResults());
+
+        // update document
+        $data = $client->getResults();
+        $data->deep->document = (object) [
+            'id'    => 'three',
+            'data'  => 'three',
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/embedtest-document-as-deep-reference/test', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // check data
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($data, $client->getResults());
+
+        // check entities again
+        // record "one" was removed. it is correct
+        $this->assertEntityNotExists('one');
+        $this->assertEntityExists('two', 'two');
+
+        // ok. new entity was added
+        $this->assertEntityExists('three', 'three');
     }
 
     /**
@@ -158,6 +284,10 @@ class EmbeddingDocumentsTest extends RestTestCase
         $original = (object) [
             'id' => 'test',
             'document' => (object) ['id' => 'one', 'data' => 'one'],
+            'documents' => [
+                (object) ['id' => 'one', 'data' => 'one'],
+                (object) ['id' => 'two', 'data' => 'two'],
+            ],
         ];
 
         // check entities
@@ -170,9 +300,14 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($original, $client->getResults());
 
+
+
         // update document
         $data = $client->getResults();
         $data->document = (object) ['id' => 'two', 'data' => 'two'];
+        $data->documents = [
+            (object) ['id' => 'three', 'data' => 'three'],
+        ];
 
         $client = static::createRestClient();
         $client->put('/testcase/embedtest-hash-as-embedded/test', $data);
@@ -182,11 +317,28 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-hash-as-embedded/test');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        // !!! uncomment this line !!!
-        // $this->assertEquals($data, $client->getResults());                   // why is ID changed???
-        $results = $client->getResults();
-        $results->document->id = 'two';
-        $this->assertEquals($data, $results);
+        $this->assertEquals($data, $client->getResults());
+
+        // check entities again
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+
+
+
+        // update document with empty embed-many
+        $data = $client->getResults();
+        $data->document = (object) ['id' => 'two', 'data' => 'two'];
+        $data->documents = [];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/embedtest-hash-as-embedded/test', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // check data
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-hash-as-embedded/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($data, $client->getResults());
 
         // check entities again
         $this->assertEntityExists('one', 'one');
