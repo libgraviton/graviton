@@ -132,7 +132,7 @@ class EventStatusLinkResponseListener
         /** @var Response $response */
         $response = $event->getResponse();
 
-        if (!empty($queueEvent->getStatusurl())) {
+        if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
             $linkHeader = LinkHeader::fromResponse($response);
             $linkHeader->add(
                 new LinkHeaderItem(
@@ -147,27 +147,23 @@ class EventStatusLinkResponseListener
             );
         }
 
-        // let's send it to the queue
-        $this->rabbitMqProducer->publish(
-            json_encode($queueEvent),
-            $queueEvent->getEvent()
-        );
+        // let's send it to the queue if appropriate
+        if (!empty($queueEvent->getEvent())) {
+            $this->rabbitMqProducer->publish(
+                json_encode($queueEvent),
+                $queueEvent->getEvent()
+            );
+        }
     }
 
     /**
-     * on GET requests, we don't want to do anything.. let's quickly find out..
+     * we only want to do something if we have a mapped event..
      *
      * @return boolean true if it should not concern us, false otherwise
      */
     private function isNotConcerningRequest()
     {
-        return (
-            in_array(
-                substr($this->request->get('_route'), -4),
-                ['.get', '.all']
-            ) ||
-            substr($this->request->get('_route'), -6) == 'Schema'
-        );
+        return is_null($this->generateRoutingKey());
     }
 
     /**
@@ -207,6 +203,7 @@ class EventStatusLinkResponseListener
                 isset($mapElement['events'][$action])
             ) {
                 $routingKey = $mapElement['events'][$action];
+                break;
             }
         }
 
