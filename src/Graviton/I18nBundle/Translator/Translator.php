@@ -18,19 +18,10 @@ class Translator extends BaseTranslator {
 
     public function __construct(ContainerInterface $container, MessageSelector $selector, $loaderIds = array(), array $options = array())
     {
+        $cacheUtils = $container->get('graviton.18n.cacheutils');
+        $options['resource_files'] = $cacheUtils->getResources($options['resource_files']);
 
-        print_r($options);
         parent::__construct($container, $selector, $loaderIds, $options);
-        print_r($this->options);
-        die;
-
-    }
-
-    protected function initialize()
-    {
-        print_r($this->loaderIds);
-        die;
-        parent::initialize();
     }
 
 }
