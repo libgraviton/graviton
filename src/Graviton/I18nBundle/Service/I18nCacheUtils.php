@@ -12,6 +12,8 @@
 namespace Graviton\I18nBundle\Service;
 
 use Doctrine\Common\Cache\FilesystemCache;
+use Graviton\I18nBundle\Event\TranslatablePersistEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -20,7 +22,7 @@ use Symfony\Component\Finder\Finder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class I18nCacheUtils
+class I18nCacheUtils implements EventSubscriberInterface
 {
     /**
      * full path to translations cache
@@ -122,6 +124,19 @@ class I18nCacheUtils
     }
 
     /**
+     * returns the events this listener subscribed to.
+     *
+     * @return array event map
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            TranslatablePersistEvent::EVENT_NAME => array('invalidate', 0),
+            'kernel.terminate' => array('onTerminate', 0)
+        );
+    }
+
+    /**
      * this shall be called by a Translator.
      * it adds our additions to the already existent ones in the Translator and returns it.
      * as this is called quite often, we cache the final result (the full map including the translator resources)
@@ -159,7 +174,7 @@ class I18nCacheUtils
     }
 
     /**
-     * shall be called by the PostPersistTranslatorListener (or other interested parties).
+     * will be executed on the event dispatched by PostPersistTranslatableListener.
      * if someone invalidates a locale & domain pair, this will lead to:
      * - removal of the symfony translation cache files
      * (if this pair has never been seen)
@@ -167,15 +182,17 @@ class I18nCacheUtils
      * - a regeneration of the full resource map for the translator
      *
      * please note that calling invalidate() will do the above mentioned in a lazy way
-     * on __destruct() of this object.
+     * when the kernel.terminate event fires.
      *
-     * @param string $locale locale (de,en)
-     * @param string $domain the domain
+     * @param TranslatablePersistEvent $event event object
      *
      * @return void
      */
-    public function invalidate($locale, $domain)
+    public function invalidate(TranslatablePersistEvent $event)
     {
+        $locale = $event->getLocale();
+        $domain = $event->getDomain();
+
         $filename = sprintf('%s.%s.%s', $domain, $locale, $this->loaderId);
 
         if (!isset($this->addedResources[$locale]) || !in_array($filename, $this->addedResources[$locale])) {
@@ -266,7 +283,7 @@ class I18nCacheUtils
                 ->name($deleteRegex);
 
             foreach ($finder as $file) {
-                //$fs->remove($file->getRealPath());
+                $fs->remove($file->getRealPath());
             }
         } catch (\InvalidArgumentException $e) {
             // happens when cache is non-existent
@@ -274,15 +291,12 @@ class I18nCacheUtils
     }
 
     /**
-     * magic method that makes sure our file cleaning and persisting only
-     * happens near the end of the request, making it possible to only doing it once
-     * as opposed to everytime ;-)
-     * it's not necessary that it happens exactly at the end of the request as when this
-     * gets destructed all important things have already taken place.
+     * this is hooked to the kernel.terminate event. makes sure we only process
+     * our stuff once per request.
      *
      * @return void
      */
-    public function __destruct()
+    public function onTerminate()
     {
         $this->processInvalidations();
 
