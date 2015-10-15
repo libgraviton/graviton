@@ -219,9 +219,7 @@ class I18nCacheUtils
 
                     // make sure the file exists
                     $fs = new Filesystem();
-                    if (!$fs->exists($resourceFile)) {
-                        $fs->touch($resourceFile);
-                    }
+                    $fs->touch($resourceFile);
 
                     $resources[$locale][] = $resourceFile;
                 }
@@ -252,6 +250,10 @@ class I18nCacheUtils
      */
     private function processInvalidations()
     {
+        if (empty($this->invalidations)) {
+            return;
+        }
+
         $fs = new Filesystem();
         $localesToClean = array_keys($this->invalidations);
         $deleteRegex = '/^catalogue\.(['.implode('|', $localesToClean).'])/';
@@ -264,7 +266,7 @@ class I18nCacheUtils
                 ->name($deleteRegex);
 
             foreach ($finder as $file) {
-                $fs->remove($file->getRealPath());
+                //$fs->remove($file->getRealPath());
             }
         } catch (\InvalidArgumentException $e) {
             // happens when cache is non-existent
