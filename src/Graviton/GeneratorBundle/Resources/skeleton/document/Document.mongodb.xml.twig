@@ -4,16 +4,20 @@
       xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    {% if docType is not defined and json is defined and json.isSubDocument() == true %}
-        {% set docType = "embedded-document" %}
-    {% else %}
+    {% if docType is not defined %}
         {% set docType = "document" %}
-    {%  endif %}
+    {% endif %}
+
+    {% if docType == "embedded-document" %}
+        {% set idField = false %}
+    {% endif %}
 
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
 
   {% if idField is defined %}
-      <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
+      {% if idField != false %}
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
+      {% endif %}
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>
   {% endif %}

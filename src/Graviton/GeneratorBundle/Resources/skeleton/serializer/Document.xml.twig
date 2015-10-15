@@ -2,7 +2,7 @@
 <serializer>
   <class name="{{ base }}Document\{{ document }}" exclusion-policy="none">
 
-{% if idField is defined %}
+{% if idField is defined and idField != false %}
     <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"{% if idField == false %} exclude="true"{% endif %}/>
 {% else %}
 

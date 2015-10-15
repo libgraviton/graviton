@@ -222,7 +222,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    'docType' => 'embedded',
+                    'docType' => 'embedded-document',
                 ]
             )
         );
