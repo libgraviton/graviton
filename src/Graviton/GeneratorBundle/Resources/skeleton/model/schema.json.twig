@@ -7,7 +7,7 @@
 {% endif %}
 
 {% if json is defined %}
-    "title": {{ json.getTitle()|json_encode() }},
+    "title": {{ json.getTitle() }},
 {% endif %}
 
   "properties": {
