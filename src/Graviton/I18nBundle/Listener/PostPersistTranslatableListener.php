@@ -22,8 +22,16 @@ use Symfony\Component\Filesystem\Filesystem;
 class PostPersistTranslatableListener implements EventSubscriber
 {
 
+    /**
+     * i18n cache utils
+     *
+     * @var I18nCacheUtils
+     */
     private $cacheUtils;
 
+    /**
+     * @param I18nCacheUtils $cacheUtils cache utils
+     */
     public function __construct(I18nCacheUtils $cacheUtils)
     {
         $this->cacheUtils = $cacheUtils;
@@ -50,36 +58,7 @@ class PostPersistTranslatableListener implements EventSubscriber
     {
         $object = $event->getObject();
         if ($object instanceof Translatable) {
-
-            /*
-            $domain = $object->getDomain();
-            $locale = $object->getLocale();
-            */
-
             $this->cacheUtils->invalidate($object->getLocale(), $object->getDomain());
         }
-            /**
-            $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            $cacheDirMask = __DIR__.'/../../../../app/cache/translations';
-
-            $fs = new Filesystem();
-            if (!$fs->exists($triggerFile)) {
-                $fs->touch($triggerFile);
-            }
-
-            try {
-                $finder = new Finder();
-                $finder
-                    ->files()
-                    ->in($cacheDirMask)
-                    ->name('*.' . $locale . '.*');
-
-                foreach ($finder as $file) {
-                    $fs->remove($file->getRealPath());
-                }
-            } catch (\InvalidArgumentException $e) {
-            }
-            **/
-        //}
     }
 }
