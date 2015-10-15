@@ -55,7 +55,15 @@
       "items": {
         "type": "string"
       },
-      "description": "Array of required field names"
+      "description": "Array of collection names this ref fields points to"
+    },
+    "x-events": {
+      "title": "Collection",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of queue events this service generates"
     }
   },
   "required": ["title", "description", "type"]

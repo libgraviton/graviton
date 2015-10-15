@@ -18,7 +18,6 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
-use Graviton\DocumentBundle\Service\ExtReferenceJsonConverterInterface;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -104,16 +103,6 @@ class RestController
     private $templating;
 
     /**
-     * @var ExtReferenceJsonConverterInterface
-     */
-    private $extReferenceJsonConverter;
-
-    /**
-     * @var array
-     */
-    private $extrefFields;
-
-    /**
      * @var JsonPatchValidator
      */
     private $jsonPatchValidator;
@@ -149,24 +138,6 @@ class RestController
         $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
-    }
-
-    /**
-     * @param ExtReferenceJsonConverterInterface $extReferenceConverter Converter for $ref attributes
-     * @return void
-     */
-    public function setExtrefJsonConverter(ExtReferenceJsonConverterInterface $extReferenceConverter)
-    {
-        $this->extReferenceJsonConverter = $extReferenceConverter;
-    }
-
-    /**
-     * @param array $fields array of extref fields
-     * @return void
-     */
-    public function setExtrefFields(array $fields)
-    {
-        $this->extrefFields = $fields;
     }
 
     /**
@@ -510,11 +481,7 @@ class RestController
 
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
-        $recordData = $this->extReferenceJsonConverter->convert(
-            json_decode($this->serialize($record)),
-            $this->extrefFields[$request->attributes->get('_route')]
-        );
-        $jsonDocument = json_encode($recordData);
+        $jsonDocument = $this->serialize($record);
 
         // Check/validate JSON Patch
         if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {

@@ -78,6 +78,7 @@ class AppKernel extends Kernel
             new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
             new \HadesArchitect\JsonSchemaBundle\JsonSchemaBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
+            new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {

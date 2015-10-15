@@ -42,18 +42,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         Type::registerType('datearray', Types\DateArrayType::class);
     }
 
-    /**
-     * inject services into custom type
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        /** @var Types\ExtReferenceType $type */
-        $type = Type::getType('extref');
-        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
-    }
-
 
     /**
      * {@inheritDoc}

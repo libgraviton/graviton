@@ -116,10 +116,11 @@ class ExtReferenceSearchListener
     private function getDbRefValue($url)
     {
         try {
-            return $this->converter->getDbRef($url);
+            $extref = $this->converter->getExtReference($url);
+            return \MongoDBRef::create($extref->getRef(), $extref->getId());
         } catch (\InvalidArgumentException $e) {
             //make up some invalid refs to ensure we find nothing if an invalid url was given
-            return (object) ['$ref' => false, '$id' => false];
+            return \MongoDBRef::create(false, false);
         }
     }
 

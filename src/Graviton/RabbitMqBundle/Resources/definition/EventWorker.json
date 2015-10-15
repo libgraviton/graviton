@@ -1,0 +1,49 @@
+{
+  "id": "EventWorker",
+  "description": "A service giving the possibility for EventWorkers to register themselves.",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/event/worker/",
+    "fixtures": [
+      {
+        "id": "worker1",
+        "subscription": [
+          {
+            "event": "document.core.app.*"
+          },
+          {
+            "event": "document.core.config.*"
+          }
+        ]
+      },
+      {
+        "id": "worker2",
+        "subscription": [
+          {
+            "event": "document.core.app.*"
+          }
+        ]
+      }
+    ]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "Worker ID",
+        "description": "Unique identifier and a short string identifying a single worker",
+        "required": true
+      },
+      {
+        "name": "subscription.0.event",
+        "type": "string",
+        "title": "Subscriptions",
+        "description": "An array of strings containing event names this worker should be notified of",
+        "required": true
+      }
+    ]
+  }
+}

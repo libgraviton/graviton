@@ -165,8 +165,10 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         $records = [];
         foreach ($this->{{ field.fieldName }} as $record) {
-            $ref = json_decode($record->{{ field.xDynamicKey.refMethod }}());
-            $records[$ref->{'$id'}] = $record;
+            $ref = $record->{{ field.xDynamicKey.refMethod }}();
+            if ($ref !== null) {
+                $records[$ref->getId()] = $record;
+            }
         }
         return $records;
 {% else %}

@@ -37,6 +37,14 @@ parameters:
     graviton.errbit.api_key: ~
     graviton.errbit.host: ~
 
+    # rabbitmq config
+    graviton.rabbitmq.host: localhost
+    graviton.rabbitmq.port: 5672
+    graviton.rabbitmq.user: guest
+    graviton.rabbitmq.password: guest
+    graviton.rabbitmq.vhost: /
+    graviton.rabbitmq.consumer.dump.routingkeys:
+        - 'document.#'
     # pagination defaults
     graviton.rest.pagination.limit: 10
     

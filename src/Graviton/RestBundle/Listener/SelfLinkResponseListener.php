@@ -98,6 +98,10 @@ class SelfLinkResponseListener
 
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
+
+            // set in request and dispatch new event for interested parties
+            $event->getRequest()->attributes->set('selfLink', $url);
+            $event->getDispatcher()->dispatch('graviton.rest.response.selfaware', $event);
         }
     }
 
@@ -125,10 +129,14 @@ class SelfLinkResponseListener
         }
 
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $parameters = array('page' => $request->get('page', 1));
-            if ($request->attributes->get('perPage')) {
-                $parameters['perPage'] = $request->attributes->get('perPage');
-            }
+            // no rql given, we can do our own limit
+            $limit = sprintf(
+                'limit(%s,%s)',
+                $request->attributes->get('startAt'),
+                $request->attributes->get('perPage')
+            );
+
+            $parameters = ['q' => $limit];
         }
 
         if ($routeType == 'all' && $request->attributes->get('hasRql')) {
