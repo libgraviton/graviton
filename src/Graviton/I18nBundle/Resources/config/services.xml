@@ -144,10 +144,11 @@
              class="%graviton.i18n.cacheutils.class%">
       <argument type="string">%kernel.cache_dir%</argument>
       <argument type="string">odm</argument>
+      <tag name="kernel.event_subscriber"/>
     </service>
 
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
-      <argument type="service" id="graviton.18n.cacheutils"/>
+      <argument type="service" id="event_dispatcher"/>
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
     </service>
     <service id="graviton.i18n.form.transformer.translatabletodefaultstring" class="%graviton.i18n.form.transformer.translatabletodefaultstring.class%">

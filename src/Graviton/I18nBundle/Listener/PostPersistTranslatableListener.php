@@ -8,7 +8,10 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
+use Graviton\I18nBundle\Event\TranslatablePersistEvent;
 use Graviton\I18nBundle\Service\I18nCacheUtils;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -23,18 +26,18 @@ class PostPersistTranslatableListener implements EventSubscriber
 {
 
     /**
-     * i18n cache utils
+     * dispatcher
      *
-     * @var I18nCacheUtils
+     * @var EventDispatcherInterface
      */
-    private $cacheUtils;
+    private $dispatcher;
 
     /**
-     * @param I18nCacheUtils $cacheUtils cache utils
+     * @param EventDispatcherInterface $dispatcher dispatcher
      */
-    public function __construct(I18nCacheUtils $cacheUtils)
+    public function __construct(EventDispatcherInterface $dispatcher)
     {
-        $this->cacheUtils = $cacheUtils;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -58,7 +61,8 @@ class PostPersistTranslatableListener implements EventSubscriber
     {
         $object = $event->getObject();
         if ($object instanceof Translatable) {
-            $this->cacheUtils->invalidate($object->getLocale(), $object->getDomain());
+            $event = new TranslatablePersistEvent($object->getLocale(), $object->getDomain());
+            $this->dispatcher->dispatch(TranslatablePersistEvent::EVENT_NAME, $event);
         }
     }
 }
