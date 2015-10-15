@@ -33,6 +33,10 @@ class Definition
      * @var Target
      */
     private $target;
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * @return string
@@ -58,6 +62,24 @@ class Definition
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title Title
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
     }
 
     /**
