@@ -1,6 +1,6 @@
 {
   "id": "File",
-  "title": "Files",
+  "title": "File",
   "description": "File storage service",
   "service": {
     "readOnly": false,
