@@ -4,7 +4,7 @@
       xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    {% if json is defined and json.isSubDocument() == true %}
+    {% if docType is not defined and json is defined and json.isSubDocument() == true %}
         {% set docType = "embedded-document" %}
     {% else %}
         {% set docType = "document" %}
@@ -27,13 +27,13 @@
                 {% endif %}
 
                 {% if '[]' in field.type %}
-                    <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}" strategy="set">
+                    <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}{% if relType == 'embed' %}Embedded{% endif %}" strategy="set">
                         <cascade>
                             <all/>
                         </cascade>
                     </{{ relType }}-many>
                 {% else %}
-                    <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
+                    <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}{% if relType == 'embed' %}Embedded{% endif %}">
                         <cascade>
                             <all/>
                         </cascade>

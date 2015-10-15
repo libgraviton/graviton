@@ -7,7 +7,7 @@ namespace Graviton\CoreBundle\Tests\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\TestBundle\Test\RestTestCase;
-Use GravitonDyn\EmbedTestEntityBundle\DataFixtures\MongoDB\LoadEmbedTestEntityData;
+use GravitonDyn\EmbedTestEntityBundle\DataFixtures\MongoDB\LoadEmbedTestEntityData;
 use GravitonDyn\EmbedTestDocumentAsReferenceBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsReferenceData;
 use GravitonDyn\EmbedTestDocumentAsEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTestDocumentAsEmbeddedData;
 use GravitonDyn\EmbedTestHashAsEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTestHashAsEmbeddedData;
@@ -184,7 +184,9 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         // !!! uncomment this line !!!
         // $this->assertEquals($data, $client->getResults());                   // why is ID changed???
-        $results = $client->getResults(); $results->document->id = 'two'; $this->assertEquals($data, $results);
+        $results = $client->getResults();
+        $results->document->id = 'two';
+        $this->assertEquals($data, $results);
 
         // check entities again
         $this->assertEntityExists('one', 'one');

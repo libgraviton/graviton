@@ -216,8 +216,26 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         $this->renderFile(
+            'document/Document.mongodb.xml.twig',
+            $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                    'docType' => 'embedded',
+                ]
+            )
+        );
+
+
+        $this->renderFile(
             'document/Document.php.twig',
             $dir . '/Document/' . $document . '.php',
+            $parameters
+        );
+        $this->renderFile(
+            'document/DocumentEmbedded.php.twig',
+            $dir . '/Document/' . $document . 'Embedded.php',
             $parameters
         );
 
@@ -306,6 +324,16 @@ class ResourceGenerator extends AbstractGenerator
                 'document/DocumentRepository.php.twig',
                 $dir . '/Repository/' . $document . 'Repository.php',
                 $parameters
+            );
+            $this->renderFile(
+                'document/DocumentRepository.php.twig',
+                $dir . '/Repository/' . $document . 'EmbeddedRepository.php',
+                array_merge(
+                    $parameters,
+                    [
+                        'document' => $document.'Embedded',
+                    ]
+                )
             );
         }
 
@@ -693,6 +721,25 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document)
     {
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir . '/Resources/config/serializer/Document.' . $document . 'Embedded.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                    'noIdField' => true,
+                    'idField' => false,
+                ]
+            )
+        );
+        foreach ($parameters['fields'] as $key => $field) {
+            if (substr($field['serializerType'], 0, 14) == 'array<Graviton') {
+                $parameters['fields'][$key]['serializerType'] = substr($field['serializerType'], 0, -1).'Embedded>';
+            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton') {
+                $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
+            }
+        }
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . '.xml',

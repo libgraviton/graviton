@@ -189,7 +189,13 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 {% if '[]' in field.type %}
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% else %}
-    public function set{{ field.fieldName|capitalize }}(\{{ field.type }} ${{ field.fieldName }})
+    {% if field.relType is defined %}
+        {% set relType = {"embed": "Embedded", "ref": ""}[field.relType] %}
+    {% else %}
+        {% set relType = "" %}
+    {% endif %}
+
+    public function set{{ field.fieldName|capitalize }}(\{{ field.type }}{{ relType }} ${{ field.fieldName }})
 {% endif %}
 {% else %}
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
