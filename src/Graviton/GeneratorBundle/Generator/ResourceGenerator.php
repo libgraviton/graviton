@@ -729,7 +729,7 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'document' => $document.'Embedded',
                     'noIdField' => true,
-                    'idField' => false,
+                    'hideIdField' => true
                 ]
             )
         );

@@ -9,14 +9,18 @@
     {% endif %}
 
     {% if docType == "embedded-document" %}
-        {% set idField = false %}
+        {% set hideIdField = false %}
+    {% else %}
+        {% set hideIdField = true %}
     {% endif %}
 
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
 
   {% if idField is defined %}
-      {% if idField != false %}
+      {% if hideIdField != false %}
           <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
+      {% else %}
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
       {% endif %}
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>
