@@ -1,4 +1,5 @@
 {
+  "title": "Person contact",
   "description": "Contact information for a person.",
   "properties": {
     "id": {
