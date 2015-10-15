@@ -14,10 +14,6 @@ namespace Graviton\GeneratorBundle\Definition\Schema;
 class Target
 {
     /**
-     * @var Index[]
-     */
-    private $indexes = [];
-    /**
      * @var Relation[]
      */
     private $relations = [];
@@ -25,24 +21,6 @@ class Target
      * @var Field[]
      */
     private $fields = [];
-
-    /**
-     * @return Index[]
-     */
-    public function getIndexes()
-    {
-        return $this->indexes;
-    }
-
-    /**
-     * @param Index[] $indexes Indexes
-     * @return $this
-     */
-    public function setIndexes(array $indexes)
-    {
-        $this->indexes = $indexes;
-        return $this;
-    }
 
     /**
      * @return Relation[]

@@ -35,20 +35,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function __construct()
     {
-        Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
-        Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
-    }
-
-    /**
-     * inject services into custom type
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
-        $type = Type::getType('extref');
-        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
+        // TODO: implement ExtReferenceArrayType
+        Type::registerType('extref', Types\ExtReferenceType::class);
+        Type::registerType('hash', Types\HashType::class);
+        Type::registerType('hasharray', Types\HashArrayType::class);
+        Type::registerType('datearray', Types\DateArrayType::class);
     }
 
 

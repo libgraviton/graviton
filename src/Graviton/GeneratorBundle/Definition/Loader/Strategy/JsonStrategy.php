@@ -8,7 +8,7 @@ namespace Graviton\GeneratorBundle\Definition\Loader\Strategy;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class JsonStrategy extends AbstractStrategy
+class JsonStrategy implements StrategyInterface
 {
     /**
      * may the strategy handle this input
@@ -23,10 +23,13 @@ class JsonStrategy extends AbstractStrategy
     }
 
     /**
-     * @param mixed $input Input from command
+     * load raw JSON data
+     *
+     * @param string|null $input input from command
+     *
      * @return string[]
      */
-    public function getRawDefinitions($input)
+    public function load($input)
     {
         return [$input];
     }

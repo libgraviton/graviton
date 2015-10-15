@@ -1,0 +1,95 @@
+{
+  "id": "EventStatus",
+  "description": "A service providing resources providing status' on events subscribed by workers.",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/event/status/"
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier"
+      },
+      {
+        "name": "createDate",
+        "type": "datetime",
+        "title": "Creation date",
+        "description": "Creation date",
+        "readOnly": true
+      },
+      {
+        "name": "eventName",
+        "type": "varchar",
+        "title": "Event Name",
+        "description": "Name of the created event",
+        "readOnly": true
+      },
+      {
+        "name": "status.0.workerId",
+        "type": "string",
+        "title": "Worker ID",
+        "description": "ID of a worker",
+        "required": true
+      },
+      {
+        "name": "status.0.status",
+        "type": "string",
+        "title": "Status",
+        "description": "A string representing the status (opened, working, failed, done)",
+        "required": true,
+        "constraints": [
+          {
+            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidStatus"
+          }
+        ]
+      },
+      {
+        "name": "information",
+        "type": "hash",
+        "title": "Information",
+        "description": "An array of objects containing worker information",
+        "required": false
+      },
+      {
+        "name": "information.0.workerId",
+        "type": "string",
+        "title": "Worker ID",
+        "description": "ID of a worker",
+        "required": true
+      },
+      {
+        "name": "information.0.type",
+        "type": "string",
+        "title": "Information type",
+        "description": "The type of information the worker published",
+        "required": true,
+        "constraints": [
+          {
+            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidInformationType"
+          }
+        ]
+      },
+      {
+        "name": "information.0.content",
+        "type": "string",
+        "title": "Worker output",
+        "description": "A place where a worker can put any information content",
+        "required": true
+      },
+      {
+        "name": "information.0.ref",
+        "type": "string",
+        "exposeAs": "$ref",
+        "title": "Ref",
+        "collection": ["*"],
+        "description": "An optional $ref that can be written by the worker",
+        "required": false
+      }
+    ]
+  }
+}

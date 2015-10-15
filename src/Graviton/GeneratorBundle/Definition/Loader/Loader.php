@@ -13,6 +13,10 @@ namespace Graviton\GeneratorBundle\Definition\Loader;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\StrategyInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
+use Graviton\JsonSchemaBundle\Validator\ValidatorInterface;
+use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
+use JMS\Serializer\SerializerInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,7 +28,27 @@ class Loader implements LoaderInterface
     /**
      * @var StrategyInterface[]
      */
-    protected $strategies = array();
+    private $strategies = [];
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * Constructor
+     *
+     * @param ValidatorInterface  $validator  Validator
+     * @param SerializerInterface $serializer Serializer
+     */
+    public function __construct(ValidatorInterface $validator, SerializerInterface $serializer)
+    {
+        $this->validator = $validator;
+        $this->serializer = $serializer;
+    }
 
     /**
      * add a strategy to the loader
@@ -49,10 +73,33 @@ class Loader implements LoaderInterface
     {
         foreach ($this->strategies as $strategy) {
             if ($strategy->supports($input)) {
-                return $strategy->load($input);
+                return array_map([$this, 'createJsonDefinition'], $strategy->load($input));
             }
         }
 
         return [];
+    }
+
+    /**
+     * Deserialize JSON definition
+     *
+     * @param string $json JSON code
+     * @return JsonDefinition
+     * @throws InvalidJsonException If JSON is invalid
+     * @throws ViolationException   If definition is not valid
+     */
+    protected function createJsonDefinition($json)
+    {
+        $errors = $this->validator->validateJsonDefinition($json);
+        if (!empty($errors)) {
+            throw new ViolationException($errors);
+        }
+
+        $definition = $this->serializer->deserialize(
+            $json,
+            'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
+            'json'
+        );
+        return new JsonDefinition($definition);
     }
 }

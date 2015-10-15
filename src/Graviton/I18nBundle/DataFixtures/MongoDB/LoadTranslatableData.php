@@ -7,6 +7,7 @@ namespace Graviton\I18nBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\I18nBundle\Document\Translatable;
 use Graviton\I18nBundle\Document\TranslatableLanguage;
 
@@ -46,7 +47,7 @@ class LoadTranslatableData implements FixtureInterface
         $deEnglish->setTranslated('Englisch');
         $deEnglish->setIsLocalized(true);
         $language = new TranslatableLanguage;
-        $language->setRef('http://localhost/i18n/language/de');
+        $language->setRef(ExtReference::create('Language', 'de'));
         $deEnglish->setLanguage($language);
 
         $manager->persist($deEnglish);

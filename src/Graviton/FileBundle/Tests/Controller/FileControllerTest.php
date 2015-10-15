@@ -386,7 +386,7 @@ class FileControllerTest extends RestTestCase
         // Metadata size
         $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
         $this->assertEquals('File size', $schema->properties->metadata->properties->size->title);
-        $this->assertEquals('Size of file', $schema->properties->metadata->properties->size->description);
+        $this->assertEquals('Size of file.', $schema->properties->metadata->properties->size->description);
         $this->assertEquals(true, $schema->properties->metadata->properties->size->readOnly);
 
         // Metadata mime
@@ -400,7 +400,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('date', $schema->properties->metadata->properties->createDate->format);
         $this->assertEquals('Creation date', $schema->properties->metadata->properties->createDate->title);
         $this->assertEquals(
-            'Timestamp of file upload',
+            'Timestamp of file upload.',
             $schema->properties->metadata->properties->createDate->description
         );
         $this->assertEquals(true, $schema->properties->metadata->properties->createDate->readOnly);
@@ -410,15 +410,18 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('date', $schema->properties->metadata->properties->modificationDate->format);
         $this->assertEquals('Modification date', $schema->properties->metadata->properties->modificationDate->title);
         $this->assertEquals(
-            'Timestamp of the last file change',
+            'Timestamp of the last file change.',
             $schema->properties->metadata->properties->modificationDate->description
         );
         $this->assertEquals(true, $schema->properties->metadata->properties->modificationDate->readOnly);
 
         // Metadata filename
         $this->assertEquals('string', $schema->properties->metadata->properties->filename->type);
-        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->title);
-        $this->assertEquals('file name', $schema->properties->metadata->properties->filename->description);
+        $this->assertEquals('File name', $schema->properties->metadata->properties->filename->title);
+        $this->assertEquals(
+            'Name of the file as it should get displayed to the user.',
+            $schema->properties->metadata->properties->filename->description
+        );
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
 
         // metadata action.command array
@@ -452,7 +455,7 @@ class FileControllerTest extends RestTestCase
         // Links item type
         $this->assertEquals('string', $schema->properties->links->items->properties->type->type);
         $this->assertEquals('Type', $schema->properties->links->items->properties->type->title);
-        $this->assertEquals('Type of the link', $schema->properties->links->items->properties->type->description);
+        $this->assertEquals('Type of the link.', $schema->properties->links->items->properties->type->description);
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->type);
 
         // Links item $ref
@@ -467,6 +470,16 @@ class FileControllerTest extends RestTestCase
             ['*'],
             $schema->properties->links->items->properties->{'$ref'}->{'x-collection'}
         );
+
+        $this->assertEquals(
+            [
+                'document.file.file.update',
+                'document.file.file.create',
+                'document.file.file.delete'
+            ],
+            $schema->{'x-events'}
+        );
+
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
     }
 }

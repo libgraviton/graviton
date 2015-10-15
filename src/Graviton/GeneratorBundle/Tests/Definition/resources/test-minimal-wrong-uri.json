@@ -6,7 +6,6 @@
     "readOnly": true
   },
   "target": {
-    "indexes": [],
     "relations": [],
     "fields": []
   }

@@ -62,8 +62,8 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     public function __construct()
     {
 {% for field in fields %}
-{% if '[]' in field.type %}
-        $this->{{ field.fieldName }} = new ArrayCollection();
+{% if '[]' in field.type or field.type == 'array' %}
+        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new ArrayCollection(){% else %}[]{% endif %};
 {% endif %}
 {% endfor %}
     }
@@ -156,7 +156,7 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
      * @return {{ field.type }} ${{ field.fieldName }}
 {% endif %}
      */
-{% if 'boolean' in field.type %}
+{% if field.type == 'boolean' %}
     public function is{{ field.fieldName|capitalize }}()
 {% else %}
     public function get{{ field.fieldName|capitalize }}()
@@ -165,8 +165,10 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         $records = [];
         foreach ($this->{{ field.fieldName }} as $record) {
-            $ref = json_decode($record->{{ field.xDynamicKey.refMethod }}());
-            $records[$ref->{'$id'}] = $record;
+            $ref = $record->{{ field.xDynamicKey.refMethod }}();
+            if ($ref !== null) {
+                $records[$ref->getId()] = $record;
+            }
         }
         return $records;
 {% else %}
@@ -195,7 +197,7 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
 {% endif %}
     {
-{% if '[]' in field.type %}
+{% if '[]' in field.type and 'Graviton' in field.type %}
         $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
 {% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
@@ -203,20 +205,20 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 
         return $this;
     }
+
+
 {% if ('[]' in field.type or field.type == 'array') %}
+    {% set itemTypeName = '[]' in field.type ? field.type[0:-2] : 'mixed' %}
+    {% set itemTypeHint = 'Graviton' in itemTypeName ? '\\' ~ itemTypeName : '' %}
 
     /**
      * add element to {{ field.fieldName }}
      *
-{% if 'Graviton' in field.type %}
-     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to add to {{ field.fieldName }}
-{% else %}
-     * @param {{ field.type }} ${{ field.singularName }} value to add to {{ field.fieldName }}
-{% endif %}
+     * @param {{ itemTypeName }} ${{ field.singularName }} value to add to {{ field.fieldName }}
      *
      * @return self
      */
-    public function add{{ field.singularName|capitalize }}(${{field.singularName}})
+    public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
     {
         $this->{{ field.fieldName }}[] = ${{ field.singularName }};
     }
@@ -224,25 +226,17 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     /**
      * remove element from {{ field.fieldName }}
      *
-{% if '[]' in field.type %}
-     * @param \{{ field.type[0:-2] }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
-{% else %}
-     * @param \{{ field.type }} ${{ field.singularName }} object to remove from {{ field.fieldName }}
-{% endif %}
+     * @param {{ itemTypeName }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
      *
      * @return self
      */
-{% if 'Graviton' in field.type %}
-{% if '[]' in field.type %}
-    public function remove{{ field.singularName|capitalize }}(\{{ field.type[0:-2] }} ${{ field.singularName }})
-{% else  %}
-    public function remove{{ field.singularName|capitalize }}(\{{ field.type }} ${{ field.singularName }})
-{% endif %}
-{% else  %}
-    public function remove{{ field.singularName|capitalize }}({{ field.type }} ${{ field.singularName }})
-{% endif %}
+    public function remove{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{ field.singularName }})
     {
+{% if '[]' in field.type and 'Graviton' in field.type %}
         $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
+{% else %}
+        $this->{{ field.fieldName }} = array_diff($this->{{ field.fieldName }}, [${{ field.singularName }}]);
+{% endif %}
 
         return $this;
     }

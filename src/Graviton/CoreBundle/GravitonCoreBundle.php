@@ -7,13 +7,13 @@ namespace Graviton\CoreBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
-use Graviton\ConsultationBundle\GravitonConsultationBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
@@ -58,6 +58,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonSecurityBundle(),
             new GravitonSwaggerBundle(),
             new GravitonFileBundle(),
+            new GravitonRabbitMqBundle(),
         );
     }
 

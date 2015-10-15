@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
  */
 class ActionUtils
 {
-    const ID_PATTERN = '[a-zA-Z0-9\-_\/]+';
+    const ID_PATTERN = '[a-zA-Z0-9\-_\/\+\040\'\.]+';
 
     /**
      * Get route for GET requests
@@ -128,6 +128,19 @@ class ActionUtils
     public static function getRoutePut($service, $serviceConfig)
     {
         return self::getRoute($service, 'PUT', 'putAction', $serviceConfig, array('id' => self::ID_PATTERN));
+    }
+
+    /**
+     * Get route for PATCH requests
+     *
+     * @param string $service       service id
+     * @param array  $serviceConfig service configuration
+     *
+     * @return Route
+     */
+    public static function getRoutePatch($service, $serviceConfig)
+    {
+        return self::getRoute($service, 'PATCH', 'patchAction', $serviceConfig, array('id' => self::ID_PATTERN));
     }
 
     /**
