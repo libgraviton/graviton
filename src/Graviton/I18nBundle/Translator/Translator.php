@@ -40,8 +40,11 @@ class Translator extends BaseTranslator
         $loaderIds = array(),
         array $options = array()
     ) {
-        $cacheUtils = $container->get('graviton.18n.cacheutils');
-        $options['resource_files'] = $cacheUtils->getResources($options['resource_files']);
+
+        $options['resource_files'] = $container
+            ->get('graviton.18n.cacheutils')
+            ->getResources($options['resource_files']);
+
         parent::__construct($container, $selector, $loaderIds, $options);
     }
 }
