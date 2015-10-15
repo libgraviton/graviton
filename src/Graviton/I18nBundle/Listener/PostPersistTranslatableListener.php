@@ -8,6 +8,7 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
+use Graviton\I18nBundle\Service\I18nCacheUtils;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -20,6 +21,14 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class PostPersistTranslatableListener implements EventSubscriber
 {
+
+    private $cacheUtils;
+
+    public function __construct(I18nCacheUtils $cacheUtils)
+    {
+        $this->cacheUtils = $cacheUtils;
+    }
+
     /**
      * {@inheritDocs}
      *
@@ -41,10 +50,17 @@ class PostPersistTranslatableListener implements EventSubscriber
     {
         $object = $event->getObject();
         if ($object instanceof Translatable) {
+
+            /*
             $domain = $object->getDomain();
             $locale = $object->getLocale();
+            */
+
+            $this->cacheUtils->invalidate($object->getLocale(), $object->getDomain());
+        }
+            /**
             $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            $cacheDirMask = __DIR__.'/../../../../app/cache/*/translations';
+            $cacheDirMask = __DIR__.'/../../../../app/cache/translations';
 
             $fs = new Filesystem();
             if (!$fs->exists($triggerFile)) {
@@ -62,9 +78,8 @@ class PostPersistTranslatableListener implements EventSubscriber
                     $fs->remove($file->getRealPath());
                 }
             } catch (\InvalidArgumentException $e) {
-                // InvalidArgumentException gets thrown if the translation cache dir doesn't exist.
-                // we ignore it since it's normal under some circumstances (no cache warmup yet)
             }
-        }
+            **/
+        //}
     }
 }
