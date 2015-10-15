@@ -1,4 +1,5 @@
 {
+  "title": "Products",
   "description": "A product.",
   "properties": {
     "id": {

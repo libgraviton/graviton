@@ -1,4 +1,5 @@
 {
+  "title": "Apps",
   "description": "A graviton based app.",
   "properties": {
     "id": {

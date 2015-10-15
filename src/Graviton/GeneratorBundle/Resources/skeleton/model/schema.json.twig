@@ -8,8 +8,6 @@
 
 {% if json is defined %}
     "title": {{ json.getTitle()|json_encode() }},
-{% else %}
-    "title": "No Title available",
 {% endif %}
 
   "properties": {
