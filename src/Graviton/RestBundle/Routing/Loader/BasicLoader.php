@@ -97,11 +97,6 @@ class BasicLoader extends Loader
      */
     public function loadReadOnlyRoutes($service, $resource, $serviceConfig)
     {
-        $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
-        $this->routes->add($resource . '.get', $actionGet);
-
-        $actionAll = ActionUtils::getRouteAll($service, $serviceConfig);
-        $this->routes->add($resource . '.all', $actionAll);
 
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig);
         $this->routes->add($resource . '.options', $actionOptions);
@@ -109,6 +104,18 @@ class BasicLoader extends Loader
         $actionOptionsNoSlash = ActionUtils::getRouteOptions($service, $serviceConfig);
         $actionOptionsNoSlash->setPath(substr($actionOptionsNoSlash->getPath(), 0, -1));
         $this->routes->add($resource . '.optionsNoSlash', $actionOptionsNoSlash);
+
+        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig);
+        $this->routes->add($resource . '.head', $actionHead);
+
+        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, array(), true);
+        $this->routes->add($resource . '.idHead', $actionHead);
+
+        $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
+        $this->routes->add($resource . '.get', $actionGet);
+
+        $actionAll = ActionUtils::getRouteAll($service, $serviceConfig);
+        $this->routes->add($resource . '.all', $actionAll);
 
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'collection');
         $this->routes->add($resource . '.canonicalSchema', $actionOptions);
