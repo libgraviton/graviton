@@ -122,6 +122,16 @@ class I18nCacheUtils
     }
 
     /**
+     * Gets the cache instance
+     *
+     * @return FilesystemCache cache
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
      * this shall be called by a Translator.
      * it adds our additions to the already existent ones in the Translator and returns it.
      * as this is called quite often, we cache the final result (the full map including the translator resources)
@@ -213,8 +223,15 @@ class I18nCacheUtils
     {
         foreach ($this->addedResources as $locale => $files) {
             foreach ($files as $file) {
-                $hits = preg_grep('/\/'.str_replace('.', '\\.', $file).'$/', $resources[$locale]);
-                if (count($hits) === 0) {
+                $isExistent = false;
+                if (isset($resources[$locale])) {
+                    $hits = preg_grep('/\/'.str_replace('.', '\\.', $file).'$/', $resources[$locale]);
+                    if (count($hits) > 0) {
+                        $isExistent = true;
+                    }
+                }
+
+                if (!$isExistent) {
                     $resourceFile = $this->resourceDir.$file;
 
                     // make sure the file exists
