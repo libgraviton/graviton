@@ -12,8 +12,6 @@
 namespace Graviton\I18nBundle\Service;
 
 use Doctrine\Common\Cache\FilesystemCache;
-use Graviton\I18nBundle\Event\TranslatablePersistEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -22,7 +20,7 @@ use Symfony\Component\Finder\Finder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class I18nCacheUtils implements EventSubscriberInterface
+class I18nCacheUtils
 {
     /**
      * full path to translations cache
@@ -32,7 +30,7 @@ class I18nCacheUtils implements EventSubscriberInterface
     private $cacheDirTranslations;
 
     /**
-     * our cache file for doctrien cache
+     * our cache file for doctrine cache
      *
      * @var string
      */
@@ -124,19 +122,6 @@ class I18nCacheUtils implements EventSubscriberInterface
     }
 
     /**
-     * returns the events this listener subscribed to.
-     *
-     * @return array event map
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            TranslatablePersistEvent::EVENT_NAME => array('invalidate', 0),
-            'kernel.terminate' => array('onTerminate', 0)
-        );
-    }
-
-    /**
      * this shall be called by a Translator.
      * it adds our additions to the already existent ones in the Translator and returns it.
      * as this is called quite often, we cache the final result (the full map including the translator resources)
@@ -184,15 +169,13 @@ class I18nCacheUtils implements EventSubscriberInterface
      * please note that calling invalidate() will do the above mentioned in a lazy way
      * when the kernel.terminate event fires.
      *
-     * @param TranslatablePersistEvent $event event object
+     * @param string $locale locale (de,en,fr)
+     * @param string $domain domain
      *
      * @return void
      */
-    public function invalidate(TranslatablePersistEvent $event)
+    public function invalidate($locale, $domain)
     {
-        $locale = $event->getLocale();
-        $domain = $event->getDomain();
-
         $filename = sprintf('%s.%s.%s', $domain, $locale, $this->loaderId);
 
         if (!isset($this->addedResources[$locale]) || !in_array($filename, $this->addedResources[$locale])) {
@@ -291,12 +274,11 @@ class I18nCacheUtils implements EventSubscriberInterface
     }
 
     /**
-     * this is hooked to the kernel.terminate event. makes sure we only process
-     * our stuff once per request.
+     * processes all pending operations
      *
      * @return void
      */
-    public function onTerminate()
+    public function processPending()
     {
         $this->processInvalidations();
 

@@ -19,6 +19,7 @@
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
     <parameter key="graviton.i18n.listener.i18ndeserializer.class">Graviton\I18nBundle\Listener\I18nDeserializationListener</parameter>
     <parameter key="graviton.i18n.listener.i18nrqlparsinglistener.class">Graviton\I18nBundle\Listener\I18nRqlParsingListener</parameter>
+    <parameter key="graviton.i18n.listener.i18ncachinglistener.class">Graviton\I18nBundle\Listener\I18nCachingListener</parameter>
     <parameter key="graviton.i18n.loader.doctrineodm.class">Graviton\I18nBundle\Translation\Loader\DoctrineODMLoader</parameter>
     <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
@@ -101,6 +102,11 @@
       <argument type="string">%graviton.translator.default.locale%</argument>
       <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
     </service>
+    <service id="graviton.i18n.listener.i18ncaching" class="%graviton.i18n.listener.i18ncachinglistener.class%">
+      <argument type="service" id="graviton.18n.cacheutils"/>
+      <tag name="kernel.event_listener" event="translatable.persist" method="onPersist"/>
+      <tag name="kernel.event_listener" event="kernel.terminate" method="onTerminate"/>
+    </service>
     <service id="graviton.i18n.loader.doctrineodm" class="%graviton.i18n.loader.doctrineodm.class%">
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatable"/>
@@ -144,7 +150,6 @@
              class="%graviton.i18n.cacheutils.class%">
       <argument type="string">%kernel.cache_dir%</argument>
       <argument type="string">odm</argument>
-      <tag name="kernel.event_subscriber"/>
     </service>
 
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
