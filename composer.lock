@@ -1739,16 +1739,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.0-alpha14",
+            "version": "dev-47970-add-elemmatch-operator",
             "source": {
                 "type": "git",
-                "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217"
+                "url": "https://github.com/mrix/php-rql-parser.git",
+                "reference": "fec7842798cde577fe5092b7f8630020b7fb0e7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/31f551b3a8d55b43df115bed2cb8d51365cd9217",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217",
+                "url": "https://api.github.com/repos/mrix/php-rql-parser/zipball/fec7842798cde577fe5092b7f8630020b7fb0e7f",
+                "reference": "fec7842798cde577fe5092b7f8630020b7fb0e7f",
                 "shasum": ""
             },
             "require": {
@@ -1770,7 +1770,19 @@
                     "Graviton\\Rql\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Graviton\\Rql\\": "test/"
+                }
+            },
+            "scripts": {
+                "check": [
+                    "./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards",
+                    "./vendor/bin/phpcs --standard=PSR1 --ignore='*.css' --ignore='*.js' src/ test/",
+                    "./vendor/bin/phpcs --standard=PSR2 --ignore='*.css' --ignore='*.js' src/ test/",
+                    "./vendor/bin/phpcs --standard=ENTB --ignore='*.css' --ignore='*.js' src/ test/"
+                ]
+            },
             "license": [
                 "GPL"
             ],
@@ -1792,24 +1804,27 @@
                 "rest",
                 "rql"
             ],
-            "time": "2015-08-11 08:15:37"
+            "support": {
+                "source": "https://github.com/mrix/php-rql-parser/tree/47970-add-elemmatch-operator"
+            },
+            "time": "2015-10-16 09:33:06"
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v0.9.0",
+            "version": "dev-47970-add-elemmatch-operator",
             "source": {
                 "type": "git",
-                "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929"
+                "url": "https://github.com/mrix/GravitonRqlParserBundle.git",
+                "reference": "db09e9c21b91a5f5b1f11df2ee8bdc7c8123038f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
+                "url": "https://api.github.com/repos/mrix/GravitonRqlParserBundle/zipball/db09e9c21b91a5f5b1f11df2ee8bdc7c8123038f",
+                "reference": "db09e9c21b91a5f5b1f11df2ee8bdc7c8123038f",
                 "shasum": ""
             },
             "require": {
-                "graviton/php-rql-parser": "~2.0@alpha",
+                "graviton/php-rql-parser": "dev-47970-add-elemmatch-operator",
                 "php": "~5.4",
                 "symfony/http-kernel": "~2.6"
             },
@@ -1826,7 +1841,19 @@
                     "Graviton\\RqlParserBundle\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Graviton\\RqlParserBundle\\": "test/"
+                }
+            },
+            "scripts": {
+                "check": [
+                    "./vendor/bin/phpcs --config-set installed_paths ../../libgraviton/codesniffer/CodeSniffer/Standards",
+                    "./vendor/bin/phpcs --standard=PSR1 --ignore='*.css' --ignore='*.js' src/ test/",
+                    "./vendor/bin/phpcs --standard=PSR2 --ignore='*.css' --ignore='*.js' src/ test/",
+                    "./vendor/bin/phpcs --standard=ENTB --ignore='*.css' --ignore='*.js' src/ test/"
+                ]
+            },
             "license": [
                 "GPL"
             ],
@@ -1837,7 +1864,10 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-08-13 10:45:35"
+            "support": {
+                "source": "https://github.com/mrix/GravitonRqlParserBundle/tree/47970-add-elemmatch-operator"
+            },
+            "time": "2015-10-16 10:15:40"
         },
         {
             "name": "guzzle/guzzle",
@@ -5459,13 +5489,27 @@
             "time": "2015-09-09 00:18:50"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "2.0.1",
+            "alias_normalized": "2.0.1.0",
+            "version": "dev-47970-add-elemmatch-operator",
+            "package": "graviton/php-rql-parser"
+        },
+        {
+            "alias": "0.9.1",
+            "alias_normalized": "0.9.1.0",
+            "version": "dev-47970-add-elemmatch-operator",
+            "package": "graviton/rql-parser-bundle"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
         "doctrine/mongodb-odm": 10,
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
-        "graviton/php-rql-parser": 15,
+        "graviton/php-rql-parser": 20,
+        "graviton/rql-parser-bundle": 20,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
     },
