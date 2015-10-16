@@ -11,7 +11,7 @@
 
 namespace Graviton\I18nBundle\Service;
 
-use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -22,19 +22,20 @@ use Symfony\Component\Finder\Finder;
  */
 class I18nCacheUtils
 {
+
+    /**
+     * doctrine cache
+     *
+     * @var CacheProvider
+     */
+    private $cache;
+
     /**
      * full path to translations cache
      *
      * @var string
      */
     private $cacheDirTranslations;
-
-    /**
-     * our cache file for doctrine cache
-     *
-     * @var string
-     */
-    private $cacheFile;
 
     /**
      * the cache key we use for our addition array
@@ -49,13 +50,6 @@ class I18nCacheUtils
      * @var string
      */
     private $cacheKeyFinalResource;
-
-    /**
-     * doctrine filesystemcache
-     *
-     * @var FilesystemCache
-     */
-    private $cache;
 
     /**
      * the loader id suffix (like 'odm')
@@ -96,21 +90,21 @@ class I18nCacheUtils
     /**
      * Constructor
      *
-     * @param string $cacheDir full path to cache dir
-     * @param string $loaderId loader id suffix
+     * @param CacheProvider $cache    cache
+     * @param string        $cacheDir full path to cache dir
+     * @param string        $loaderId loader id suffix
      */
     public function __construct(
+        CacheProvider $cache,
         $cacheDir,
         $loaderId
     ) {
-        // caching
+        $this->cache = $cache;
         $this->cacheDirTranslations = $cacheDir . '/translations';
-        $this->cacheFile = $cacheDir . '/addedI18nResources';
-        $this->cache = new FilesystemCache($this->cacheFile);
 
         // cache keys
-        $this->cacheKey = 'addedTranslations';
-        $this->cacheKeyFinalResource = 'finalResources';
+        $this->cacheKey = 'i18n.addedTranslations';
+        $this->cacheKeyFinalResource = 'i18n.finalResources';
 
         $this->loaderId = $loaderId;
         $this->resourceDir = __DIR__.'/../Resources/translations/';
@@ -124,11 +118,23 @@ class I18nCacheUtils
     /**
      * Gets the cache instance
      *
-     * @return FilesystemCache cache
+     * @return CacheProvider cache
      */
     public function getCache()
     {
         return $this->cache;
+    }
+
+    /**
+     * sets the resource dir
+     *
+     * @param string $dir resource dir
+     *
+     * @return void
+     */
+    public function setResourceDir($dir)
+    {
+        $this->resourceDir = $dir;
     }
 
     /**
@@ -194,18 +200,6 @@ class I18nCacheUtils
         }
 
         $this->invalidations[$locale] = '';
-    }
-
-    /**
-     * sets the resource dir
-     *
-     * @param string $dir resource dir
-     *
-     * @return void
-     */
-    public function setResourceDir($dir)
-    {
-        $this->resourceDir = $dir;
     }
 
     /**
