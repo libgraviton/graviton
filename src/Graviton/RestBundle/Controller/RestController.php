@@ -13,6 +13,7 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\ExceptionBundle\Exception\ValidationException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\RestBundle\Validator\Form;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
@@ -108,6 +109,11 @@ class RestController
     private $jsonPatchValidator;
 
     /**
+     * @var Form
+     */
+    private $formValidator;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -158,6 +164,16 @@ class RestController
     public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
     {
         $this->jsonPatchValidator = $jsonPatchValidator;
+    }
+
+    /**
+     * @param Form $validator
+     *
+     * @return void
+     */
+    public function setFormValidator(Form $validator)
+    {
+        $this->formValidator = $validator;
     }
 
     /**
@@ -337,10 +353,13 @@ class RestController
     {
         // Get the response object from container
         $response = $this->getResponse();
+        $model = $this->getModel();
 
-        $this->checkJsonRequest($request, $response);
-        $record = $this->checkForm(
-            $this->getForm($request),
+        $this->formValidator->checkJsonRequest($request, $response);
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
             $request->getContent()
         );
 
@@ -417,11 +436,14 @@ class RestController
     public function putAction($id, Request $request)
     {
         $response = $this->getResponse();
+        $model = $this->getModel();
 
-        $this->checkJsonRequest($request, $response);
+        $this->formValidator->checkJsonRequest($request, $response);
 
-        $record = $this->checkForm(
-            $this->getForm($request),
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
             $request->getContent()
         );
 
@@ -474,10 +496,10 @@ class RestController
     public function patchAction($id, Request $request)
     {
         $response = $this->getResponse();
-        $this->checkJsonRequest($request, $response);
+        $this->formValidator->checkJsonRequest($request, $response);
 
         // Check JSON Patch request
-        $this->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+        $this->formValidator->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
@@ -503,7 +525,13 @@ class RestController
         }
 
         // Validate result object
-        $record = $this->checkForm($this->getForm($request), $patchedDocument);
+        $model = $this->getModel();
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
+            $patchedDocument
+        );
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
@@ -637,118 +665,6 @@ class RestController
     public function render($view, array $parameters = array(), Response $response = null)
     {
         return $this->templating->renderResponse($view, $parameters, $response);
-    }
-
-    /**
-     * validate raw json input
-     *
-     * @param Request  $request  request
-     * @param Response $response response
-     *
-     * @return void
-     */
-    private function checkJsonRequest(Request $request, Response $response)
-    {
-        $content = $request->getContent();
-
-        if (is_resource($content)) {
-            throw new BadRequestHttpException('unexpected resource in validation');
-        }
-
-        // is request body empty
-        if ($content === '') {
-            $e = new NoInputException();
-            $e->setResponse($response);
-            throw $e;
-        }
-
-        $input = json_decode($content, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            $e = new MalformedInputException($this->getLastJsonErrorMessage());
-            $e->setErrorType(json_last_error());
-            $e->setResponse($response);
-            throw $e;
-        }
-        if (!is_array($input)) {
-            $e = new MalformedInputException('JSON request body must be an object');
-            $e->setResponse($response);
-            throw $e;
-        }
-
-        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
-            // we need to check for id mismatches....
-            if ($request->attributes->get('id') != $input['id']) {
-                throw new BadRequestHttpException('Record ID in your payload must be the same');
-            }
-        }
-    }
-    /**
-     * Validate JSON patch for any object
-     *
-     * @param array $jsonPatch json patch as array
-     *
-     * @throws InvalidJsonPatchException
-     * @return void
-     */
-    private function checkJsonPatchRequest(array $jsonPatch)
-    {
-        foreach ($jsonPatch as $operation) {
-            if (!is_array($operation)) {
-                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
-            }
-            if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
-                throw new InvalidJsonPatchException('Change/remove of ID not allowed');
-            }
-        }
-    }
-    /**
-     * Used for backwards compatibility to PHP 5.4
-     *
-     * @return string
-     */
-    private function getLastJsonErrorMessage()
-    {
-        $message = 'Unable to decode JSON string';
-
-        if (function_exists('json_last_error_msg')) {
-            $message = json_last_error_msg();
-        }
-
-        return $message;
-    }
-
-    /**
-     * @param Request $request request
-     *
-     * @return \Symfony\Component\Form\Form
-     */
-    private function getForm(Request $request)
-    {
-        $this->formType->initialize($this->getModel()->getEntityClass());
-        return $this->formFactory->create($this->formType, null, ['method' => $request->getMethod()]);
-    }
-
-    /**
-     * @param FormInterface $form        form to check
-     * @param string        $jsonContent json data
-     *
-     * @return mixed
-     */
-    private function checkForm(FormInterface $form, $jsonContent)
-    {
-        $document = $this->formDataMapper->convertToFormData(
-            $jsonContent,
-            $this->getModel()->getEntityClass()
-        );
-        $form->submit($document, true);
-
-        if (!$form->isValid()) {
-            throw new ValidationException($form->getErrors(true));
-        } else {
-            $record = $form->getData();
-        }
-
-        return $record;
     }
 
     /**
