@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -39,11 +40,13 @@ class SelfLinkResponseListener
     /**
      * add a rel=self Link header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param FilterResponseEvent      $event      response listener event
+     * @param string                   $eventName  event name
+     * @param EventDispatcherInterface $dispatcher dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         if (!$event->isMasterRequest()) {
             // don't do anything if it's not the master request
@@ -101,7 +104,7 @@ class SelfLinkResponseListener
 
             // set in request and dispatch new event for interested parties
             $event->getRequest()->attributes->set('selfLink', $url);
-            $event->getDispatcher()->dispatch('graviton.rest.response.selfaware', $event);
+            $dispatcher->dispatch('graviton.rest.response.selfaware', $event);
         }
     }
 
