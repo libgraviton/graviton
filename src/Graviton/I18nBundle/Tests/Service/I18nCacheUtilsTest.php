@@ -5,6 +5,8 @@
 
 namespace Graviton\I18nBundle\Tests\Service;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\CacheProvider;
 use Graviton\I18nBundle\Service\I18nCacheUtils;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -25,6 +27,13 @@ class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
     private $resourceDir;
 
     /**
+     * cache
+     *
+     * @var CacheProvider
+     */
+    private $cache;
+
+    /**
      * cache utils
      *
      * @var I18nCacheUtils
@@ -40,7 +49,8 @@ class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
     {
         $this->resourceDir = __DIR__.'/resources/translations/';
 
-        $this->cacheUtils = new I18nCacheUtils(__DIR__.'/resources/cache', 'odm');
+        $this->cache = new ArrayCache();
+        $this->cacheUtils = new I18nCacheUtils($this->cache, __DIR__.'/resources/cache', 'odm');
         $this->cacheUtils->setResourceDir($this->resourceDir);
     }
 
@@ -81,7 +91,7 @@ class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
         $finalResources = $this->cacheUtils->getResources($resources);
 
         // see if our final resource is in the cache
-        $this->assertEquals($finalResources, $this->cacheUtils->getCache()->fetch('finalResources'));
+        $this->assertEquals($finalResources, $this->cacheUtils->getCache()->fetch('i18n.finalResources'));
 
         // see if our files are in the arrays
         $this->assertEquals('/hans.po', $finalResources['de'][0]);
@@ -100,7 +110,7 @@ class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
         $finalResources = $this->cacheUtils->getResources($resources);
 
         // again put in cache?
-        $this->assertEquals($finalResources, $this->cacheUtils->getCache()->fetch('finalResources'));
+        $this->assertEquals($finalResources, $this->cacheUtils->getCache()->fetch('i18n.finalResources'));
 
         // file exists?
         $this->assertFileExists($this->resourceDir.'trudi.de.odm');
@@ -123,19 +133,6 @@ class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
             ->files()
             ->ignoreDotFiles(true)
             ->in(__DIR__ . '/resources/translations');
-
-        foreach ($finder as $file) {
-            $fs->remove($file->getRealPath());
-        }
-
-        // remove doctrine cache
-        $fs = new Filesystem();
-        $finder = new Finder();
-        $finder
-            ->directories()
-            ->in(__DIR__ . '/resources/cache')
-            ->depth(0)
-            ->name('addedI18nResources');
 
         foreach ($finder as $file) {
             $fs->remove($file->getRealPath());
