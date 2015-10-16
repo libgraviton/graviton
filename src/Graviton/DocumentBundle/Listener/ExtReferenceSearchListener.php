@@ -12,6 +12,7 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\Rql\Event\VisitNodeEvent;
@@ -63,12 +64,12 @@ class ExtReferenceSearchListener
     {
         $node = $event->getNode();
         if ($node instanceof AbstractScalarOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField());
+            $fieldName = $this->getDocumentFieldName($node->getField(), $event->getContext());
             if ($fieldName !== false) {
                 $event->setNode($this->processScalarNode($fieldName, $node));
             }
         } elseif ($node instanceof AbstractArrayOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField());
+            $fieldName = $this->getDocumentFieldName($node->getField(), $event->getContext());
             if ($fieldName !== false) {
                 $event->setNode($this->processArrayNode($fieldName, $node));
             }
@@ -127,18 +128,26 @@ class ExtReferenceSearchListener
     /**
      * Get document field name by query name
      *
-     * @param string $searchName Exposed field name from RQL query
+     * @param string    $searchName  Exposed field name from RQL query
+     * @param \SplStack $nodeContext Current node context
      * @return string|bool Field name or FALSE
      */
-    private function getDocumentFieldName($searchName)
+    private function getDocumentFieldName($searchName, \SplStack $nodeContext)
     {
         $route = $this->request->attributes->get('_route');
         if (!isset($this->fields[$route])) {
             throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $route));
         }
 
+        $fieldName = $searchName;
+        foreach ($nodeContext as $parentNode) {
+            if ($parentNode instanceof ElemMatchNode) {
+                $fieldName = $parentNode->getField().'..'.$fieldName;
+            }
+        }
+
         return array_search(
-            strtr($searchName, ['..' => '.0.']),
+            strtr($fieldName, ['..' => '.0.']),
             $this->fields[$route],
             true
         );
