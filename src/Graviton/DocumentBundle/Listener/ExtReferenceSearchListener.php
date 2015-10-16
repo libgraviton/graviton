@@ -116,6 +116,10 @@ class ExtReferenceSearchListener
      */
     private function getDbRefValue($url)
     {
+        if ($url === null) {
+            return null;
+        }
+
         try {
             $extref = $this->converter->getExtReference($url);
             return \MongoDBRef::create($extref->getRef(), $extref->getId());
