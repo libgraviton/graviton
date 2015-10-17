@@ -364,6 +364,8 @@ class FileControllerTest extends RestTestCase
 
     /**
      * test behavior when data sent was multipart/form-data
+     *
+     * @return void
      */
     public function testPutNewFileViaForm()
     {
