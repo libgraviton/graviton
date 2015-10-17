@@ -32,9 +32,12 @@ class FileManagerTest extends WebTestCase
      */
     public function setUp()
     {
-        $this->fileSystem = $this->getMockBuilder('\Gaufrette\Filesystem')->disableOriginalConstructor()->getMock();
+        $this->fileSystem = $this->getMockBuilder('\Gaufrette\Filesystem')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->fileDocumentFactory = $this->getMockBuilder('\Graviton\FileBundle\FileDocumentFactory')->getMock();
+        $this->fileDocumentFactory = $this->getMockBuilder('\Graviton\FileBundle\FileDocumentFactory')
+            ->getMock();
     }
 
     /**
