@@ -6,6 +6,8 @@
 namespace Graviton\FileBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /file
@@ -357,6 +359,59 @@ class FileControllerTest extends RestTestCase
         $this->assertContains(
             '<http://localhost/schema/file/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * test behavior when data sent was multipart/form-data
+     */
+    public function testPutNewFileViaForm()
+    {
+        copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
+        $file = sys_get_temp_dir() . '/test.txt';
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+
+        $jsonData = '{
+          "id": "myPersonalFile",
+          "links": [
+            {
+              "$ref": "http://localhost/testcase/readonly/101",
+              "type": "owner"
+            },
+            {
+              "$ref": "http://localhost/testcase/readonly/102",
+              "type": "module"
+            }
+          ],
+          "metadata": {
+            "action":[{"command":"print"},{"command":"archive"}]
+          }
+        }';
+
+        $client = static::createRestClient();
+        $client->put(
+            '/file/myPersonalFile',
+            [],
+            [
+                'metadata' => $jsonData,
+            ],
+            [
+                'upload' => $uploadedFile,
+            ],
+            [],
+            false
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEquals('http://localhost/file/myPersonalFile', $response->headers->get('location'));
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            $response->headers->get('location')
         );
     }
 

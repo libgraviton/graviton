@@ -9,6 +9,7 @@ use Graviton\FileBundle\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,7 +79,8 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
-        $files = $this->fileManager->saveFiles($request, $this->getModel());
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
@@ -144,25 +146,18 @@ class FileController extends RestController
             return parent::putAction($id, $request);
         }
 
-        $file = $this->fileManager->saveFile($id, $request->getContent());
-
-        $record = $this->findRecord($id);
-        $record->getMetadata()
-            ->setSize((int) $file->getSize())
-            ->setMime($contentType)
-            ->setModificationdate(new \DateTime());
-
-        $this->getModel()->updateRecord($id, $record);
+        $response = $this->getResponse();
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // store id of new record so we don't need to re-parse body later when needed
-        $request->attributes->set('id', $record->getId());
+        $request->attributes->set('id', $files[0]);
 
-        $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         // TODO: this not is correct for multiple uploaded files!!
         // TODO: Probably use "Link" header to address this.
-        $locations = $this->determineRoutes($request->get('_route'), [$file->getName()], ['put', 'putNoSlash']);
+        $locations = $this->determineRoutes($request->get('_route'), $files, ['put', 'putNoSlash']);
         $response->headers->set(
             'Location',
             $locations[0]
@@ -217,5 +212,29 @@ class FileController extends RestController
         }
 
         return $locations;
+    }
+
+    /**
+     * Validates the provided request
+     *
+     * @param Request  $request  Http request to be validated
+     * @param Response $response Http response to be returned in case of an error
+     * @param string   $fileData Alternative content to be validated
+     *
+     * @throws \Exception
+     * @return File
+     */
+    private function validateRequest(Request $request, Response $response, $fileData = '')
+    {
+        if (!empty($fileData)) {
+            $this->formValidator->checkJsonRequest($request, $response, $fileData);
+            $model = $this->getModel();
+            return $this->formValidator->checkForm(
+                $this->formValidator->getForm($request, $model),
+                $model,
+                $this->formDataMapper,
+                $fileData
+            );
+        }
     }
 }
