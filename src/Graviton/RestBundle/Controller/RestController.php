@@ -86,7 +86,7 @@ class RestController
     /**
      * @var FormDataMapperInterface
      */
-    private $formDataMapper;
+    protected $formDataMapper;
 
     /**
      * @var Router
@@ -111,7 +111,7 @@ class RestController
     /**
      * @var Form
      */
-    private $formValidator;
+    protected $formValidator;
 
     /**
      * @param Response           $response    Response
@@ -167,7 +167,9 @@ class RestController
     }
 
     /**
-     * @param Form $validator
+     * Defines the Form validator to be used.
+     *
+     * @param Form $validator Validator to be used
      *
      * @return void
      */

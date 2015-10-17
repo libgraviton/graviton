@@ -42,16 +42,15 @@ class Form
     private $validator;
 
     /**
-     * @param FormFactory        $formFactory
-     * @param DocumentType       $formType
-     * @param ValidatorInterface $validator
+     * @param FormFactory        $formFactory Factory, providing different file document instances.
+     * @param DocumentType       $formType    Type of form to be set
+     * @param ValidatorInterface $validator   Validator to verify correctness of the provided data
      */
     public function __construct(
         FormFactory $formFactory,
         DocumentType $formType,
         ValidatorInterface $validator
-    )
-    {
+    ) {
         $this->formFactory = $formFactory;
         $this->formType = $formType;
         $this->validator = $validator;
@@ -70,13 +69,22 @@ class Form
     }
 
     /**
-     * @param FormInterface $form        form to check
-     * @param string        $jsonContent json data
+     * Validates the provided information against a form.
      *
+     * @param FormInterface           $form           form to check
+     * @param DocumentModel           $model          Model to determine entity to be used
+     * @param FormDataMapperInterface $formDataMapper Mapps the entity to form fields
+     * @param string                  $jsonContent    json data
+     *
+     * @throws ValidationException
      * @return mixed
      */
-    public function checkForm(FormInterface $form, DocumentModel $model, FormDataMapperInterface $formDataMapper, $jsonContent)
-    {
+    public function checkForm(
+        FormInterface $form,
+        DocumentModel $model,
+        FormDataMapperInterface $formDataMapper,
+        $jsonContent
+    ) {
         $document = $formDataMapper->convertToFormData(
             $jsonContent,
             $model->getEntityClass()
@@ -97,12 +105,15 @@ class Form
      *
      * @param Request  $request  request
      * @param Response $response response
+     * @param string   $content  Alternative request content.
      *
      * @return void
      */
-    public function checkJsonRequest(Request $request, Response $response)
+    public function checkJsonRequest(Request $request, Response $response, $content = '')
     {
-        $content = $request->getContent();
+        if (empty($content)) {
+            $content = $request->getContent();
+        }
 
         if (is_resource($content)) {
             throw new BadRequestHttpException('unexpected resource in validation');
