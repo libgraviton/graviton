@@ -28,7 +28,7 @@
 
         <service id="graviton.document.listener.extreferencesearchlistener" class="%graviton.document.listener.extreferencesearchlistener.class%">
              <argument type="service" id="graviton.document.service.extrefconverter" />
-             <argument>%graviton.document.type.extref.fields%</argument>
+             <argument>%graviton.document.extref.fields%</argument>
              <argument type="service" id="request_stack"/>
              <tag name="kernel.event_listener" event="rql.visit.node" method="onVisitNode"/>
         </service>

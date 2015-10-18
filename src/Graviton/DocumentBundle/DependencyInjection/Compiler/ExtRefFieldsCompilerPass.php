@@ -9,6 +9,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\ArrayField;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
@@ -70,11 +71,10 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
             $routePrefix = strtolower($ns.'.'.$bundle.'.'.'rest'.'.'.$doc);
 
             $map[$routePrefix.'.get'] = $extRefFields;
-            $map[$routePrefix.'.patch'] = $extRefFields;
             $map[$routePrefix.'.all'] = $extRefFields;
         }
 
-        $container->setParameter('graviton.document.type.extref.fields', $map);
+        $container->setParameter('graviton.document.extref.fields', $map);
     }
 
 
@@ -110,25 +110,27 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
     /**
      * Recursive doctrine document processing
      *
-     * @param Document $document       Document
-     * @param string   $documentPrefix Document field prefix
-     * @param string   $exposedPrefix  Exposed field prefix
+     * @param Document $document      Document
+     * @param string   $exposedPrefix Exposed field prefix
      * @return array
      */
-    private function processDocument(Document $document, $documentPrefix = '', $exposedPrefix = '')
+    private function processDocument(Document $document, $exposedPrefix = '')
     {
         $result = [];
         foreach ($document->getFields() as $field) {
             if ($field instanceof Field) {
                 if ($field->getType() === 'extref') {
-                    $result[$documentPrefix.$field->getFieldName()] = $exposedPrefix.$field->getExposedName();
+                    $result[] = $exposedPrefix.$field->getExposedName();
+                }
+            } elseif ($field instanceof ArrayField) {
+                if ($field->getItemType() === 'extref') {
+                    $result[] = $exposedPrefix.$field->getExposedName().'.0';
                 }
             } elseif ($field instanceof EmbedOne) {
                 $result = array_merge(
                     $result,
                     $this->processDocument(
                         $field->getDocument(),
-                        $documentPrefix.$field->getFieldName().'.',
                         $exposedPrefix.$field->getExposedName().'.'
                     )
                 );
@@ -137,7 +139,6 @@ class ExtRefFieldsCompilerPass implements CompilerPassInterface
                     $result,
                     $this->processDocument(
                         $field->getDocument(),
-                        $documentPrefix.$field->getFieldName().'.0.',
                         $exposedPrefix.$field->getExposedName().'.0.'
                     )
                 );
