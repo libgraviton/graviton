@@ -9,6 +9,7 @@ use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\Rql\Event\VisitNodeEvent;
+use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -101,7 +102,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -139,7 +140,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
     }
@@ -173,7 +174,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -188,7 +189,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnVisitNodeWithMappedScalarField()
     {
-        $extrefMapping = ['route.id' => ['originalField' => 'exposedField']];
+        $extrefMapping = ['route.id' => ['field']];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
         $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
@@ -202,13 +203,13 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with($extrefUrl)
             ->willReturn($extrefValue);
 
-        $node = new EqNode('exposedField', $extrefUrl);
+        $node = new EqNode('field', $extrefUrl);
 
         $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -216,7 +217,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new EqNode('originalField', $dbRefValue),
+            new EqNode('field', $dbRefValue),
             $event->getNode()
         );
     }
@@ -228,7 +229,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnVisitNodeWithMappedArrayField()
     {
-        $extrefMapping = ['route.id' => ['originalField.ref' => 'exposedField.0.$ref']];
+        $extrefMapping = ['route.id' => ['field.0.$ref']];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
         $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
@@ -242,13 +243,13 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with($extrefUrl)
             ->willReturn($extrefValue);
 
-        $node = new InNode('exposedField..$ref', [$extrefUrl, $extrefUrl]);
+        $node = new InNode('field..$ref', [$extrefUrl, $extrefUrl]);
 
         $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -256,7 +257,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new InNode('originalField.ref', [$dbRefValue, $dbRefValue]),
+            new InNode('field..$ref', [$dbRefValue, $dbRefValue]),
             $event->getNode()
         );
     }
@@ -268,7 +269,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnVisitNodeWithInvalidExtref()
     {
-        $extrefMapping = ['route.id' => ['originalField' => 'exposedField']];
+        $extrefMapping = ['route.id' => ['field']];
         $extrefUrl = 'extref.url';
         $dbRefValue = \MongoDBRef::create(false, false);
 
@@ -281,13 +282,13 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with($extrefUrl)
             ->willThrowException(new \InvalidArgumentException());
 
-        $node = new EqNode('exposedField', $extrefUrl);
+        $node = new EqNode('field', $extrefUrl);
 
         $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack());
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -295,7 +296,51 @@ class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new EqNode('originalField', $dbRefValue),
+            new EqNode('field', $dbRefValue),
+            $event->getNode()
+        );
+    }
+
+
+    /**
+     * Test ExtReferenceSearchListener::onVisitNode() with context
+     *
+     * @return void
+     */
+    public function testOnVisitNodeWithContext()
+    {
+        $extrefMapping = ['route.id' => ['array.0.field.$ref']];
+        $extrefUrl = 'extref.url';
+        $extrefValue = ExtReference::create('Ref', 'id');
+        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
+
+        $this->requestAttrs->expects($this->once())
+            ->method('get')
+            ->with('_route')
+            ->willReturn('route.id');
+        $this->converter->expects($this->once())
+            ->method('getExtReference')
+            ->with($extrefUrl)
+            ->willReturn($extrefValue);
+
+        $node = new EqNode('field.$ref', $extrefUrl);
+        $context = new \SplStack();
+        $context->push(new ElemMatchNode('array', $node));
+
+
+        $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $event = new VisitNodeEvent($node, $builder, $context);
+        $listener = $this->createListener($extrefMapping);
+        $listener->onVisitNode($event);
+
+        $this->assertNotSame($node, $event->getNode());
+        $this->assertSame($builder, $event->getBuilder());
+
+        $this->assertEquals(
+            new EqNode('field.$ref', $dbRefValue),
             $event->getNode()
         );
     }

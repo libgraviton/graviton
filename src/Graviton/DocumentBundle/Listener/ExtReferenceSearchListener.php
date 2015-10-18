@@ -63,16 +63,12 @@ class ExtReferenceSearchListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         $node = $event->getNode();
-        if ($node instanceof AbstractScalarOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField(), $event->getContext());
-            if ($fieldName !== false) {
-                $event->setNode($this->processScalarNode($fieldName, $node));
-            }
-        } elseif ($node instanceof AbstractArrayOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField(), $event->getContext());
-            if ($fieldName !== false) {
-                $event->setNode($this->processArrayNode($fieldName, $node));
-            }
+        if ($node instanceof AbstractScalarOperatorNode &&
+            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $event->setNode($this->processScalarNode($node));
+        } elseif ($node instanceof AbstractArrayOperatorNode &&
+            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $event->setNode($this->processArrayNode($node));
         }
 
         return $event;
@@ -81,14 +77,12 @@ class ExtReferenceSearchListener
     /**
      * Process scalar condition
      *
-     * @param string                     $fieldName Document field name
-     * @param AbstractScalarOperatorNode $node      Query node
+     * @param AbstractScalarOperatorNode $node Query node
      * @return AbstractScalarOperatorNode
      */
-    private function processScalarNode($fieldName, AbstractScalarOperatorNode $node)
+    private function processScalarNode(AbstractScalarOperatorNode $node)
     {
         $copy = clone $node;
-        $copy->setField(strtr($fieldName, ['.0.' => '.']));
         $copy->setValue($this->getDbRefValue($node->getValue()));
         return $copy;
     }
@@ -96,14 +90,12 @@ class ExtReferenceSearchListener
     /**
      * Process array condition
      *
-     * @param string                    $fieldName Document field
-     * @param AbstractArrayOperatorNode $node      Query node
+     * @param AbstractArrayOperatorNode $node Query node
      * @return AbstractArrayOperatorNode
      */
-    private function processArrayNode($fieldName, AbstractArrayOperatorNode $node)
+    private function processArrayNode(AbstractArrayOperatorNode $node)
     {
         $copy = clone $node;
-        $copy->setField(strtr($fieldName, ['.0.' => '.']));
         $copy->setValues(array_map([$this, 'getDbRefValue'], $node->getValues()));
         return $copy;
     }
@@ -134,9 +126,9 @@ class ExtReferenceSearchListener
      *
      * @param string    $searchName  Exposed field name from RQL query
      * @param \SplStack $nodeContext Current node context
-     * @return string|bool Field name or FALSE
+     * @return bool
      */
-    private function getDocumentFieldName($searchName, \SplStack $nodeContext)
+    private function isExtrefField($searchName, \SplStack $nodeContext)
     {
         $route = $this->request->attributes->get('_route');
         if (!isset($this->fields[$route])) {
@@ -150,7 +142,7 @@ class ExtReferenceSearchListener
             }
         }
 
-        return array_search(
+        return in_array(
             strtr($fieldName, ['..' => '.0.']),
             $this->fields[$route],
             true
