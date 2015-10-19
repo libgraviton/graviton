@@ -69,6 +69,16 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get Title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->schema->title;
+    }
+
+    /**
      * get description
      *
      * @return string Description

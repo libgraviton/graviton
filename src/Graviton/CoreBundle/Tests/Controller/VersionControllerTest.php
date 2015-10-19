@@ -44,7 +44,7 @@ class VersionControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(
-            '{"title":"Versions","description":"Reveals version numbers of configured packages",'.
+            '{"title":"Version","description":"Reveals version numbers of configured packages",'.
             '"type":"object","properties":{"versions":{"title":"versions","description":"Object of versions",'.
             '"additionalProperties":{"title":"Version Number","description":"The actual version","type":"string"}}}}',
             $response->getContent()

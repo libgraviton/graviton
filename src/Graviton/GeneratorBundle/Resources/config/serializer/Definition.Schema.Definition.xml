@@ -7,6 +7,9 @@
         <property name="description"
                   type="string"
                   serialized-name="description"/>
+        <property name="title"
+                  type="string"
+                  serialized-name="title"/>
         <property name="isSubDocument"
                   type="boolean"
                   serialized-name="isSubDocument"/>
