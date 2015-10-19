@@ -4357,16 +4357,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "dev-47970-add-elemmatch-operator",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mrix/GravitonTestServicesBundle.git",
-                "reference": "a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e"
+                "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/GravitonTestServicesBundle/zipball/a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e",
-                "reference": "a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/51595263b0dbb49daf7f752318d62e11b7daa27d",
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d",
                 "shasum": ""
             },
             "type": "library",
@@ -4381,9 +4381,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/mrix/GravitonTestServicesBundle/tree/47970-add-elemmatch-operator"
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop",
+                "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-10-19 05:41:42"
+            "time": "2015-10-19 08:05:16"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -5500,12 +5501,6 @@
             "alias_normalized": "0.9.1.0",
             "version": "dev-47970-add-elemmatch-operator",
             "package": "graviton/rql-parser-bundle"
-        },
-        {
-            "alias": "0.11.1",
-            "alias_normalized": "0.11.1.0",
-            "version": "dev-47970-add-elemmatch-operator",
-            "package": "graviton/test-services-bundle"
         }
     ],
     "minimum-stability": "dev",
@@ -5516,8 +5511,7 @@
         "graviton/php-rql-parser": 20,
         "graviton/rql-parser-bundle": 20,
         "knplabs/knp-gaufrette-bundle": 20,
-        "lapistano/proxy-object": 20,
-        "graviton/test-services-bundle": 20
+        "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

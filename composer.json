@@ -24,10 +24,6 @@
         {
             "type": "vcs",
             "url": "git@github.com:mrix/GravitonRqlParserBundle.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:mrix/GravitonTestServicesBundle.git"
         }
     ],
     "require": {
@@ -73,7 +69,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "dev-47970-add-elemmatch-operator as 0.11.1"
+        "graviton/test-services-bundle": "^0"
     },
     "scripts": {
         "post-root-package-install": [
