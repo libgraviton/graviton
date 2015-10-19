@@ -28,6 +28,11 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     protected $id;
 
     /**
+     * @var MongoId $id
+     */
+    protected $realId;
+
+    /**
      * @var Date $deletedDate
      */
     protected $deletedDate;
@@ -89,6 +94,17 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
     {
         $this->id = $id;
     }
+
+    /**
+     * Get realId
+     *
+     * @return string $id
+     */
+    public function getRealId()
+    {
+        return $this->realId;
+    }
+
 
     public function getDeleteddate()
     {

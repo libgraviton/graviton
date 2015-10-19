@@ -4,23 +4,24 @@
       xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    {% if docType is not defined %}
-        {% set docType = "document" %}
-    {% endif %}
-
-    {% if docType == "embedded-document" %}
+    {% if docType is defined and docType == "embedded-document" %}
         {% set hideIdField = false %}
     {% else %}
         {% set hideIdField = true %}
+    {% endif %}
+
+    {% if docType is not defined %}
+        {% set docType = "document" %}
     {% endif %}
 
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
 
   {% if idField is defined %}
       {% if hideIdField != false %}
-          <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
+          <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="true"/>
       {% else %}
-          <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
+          <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="false"/>
+          <field fieldName="realId" type="{{ idField.doctrineType }}" id="true"/>
       {% endif %}
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>

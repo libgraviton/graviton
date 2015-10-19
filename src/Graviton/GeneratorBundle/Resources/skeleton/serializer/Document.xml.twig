@@ -3,15 +3,12 @@
   <class name="{{ base }}Document\{{ document }}" exclusion-policy="NONE">
 
 {% if idField is defined and idField != false %}
-    <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"{% if idField == false %} exclude="true"{% endif %}/>
+    <property name="id" serialized-name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
+    <!-- hidden id for embedding purposes -->
+    <property name="realId" serialized-name="realId" type="string" accessor-getter="getRealId" exclude="true"/>
 {% else %}
 
-{% if noIdField is not defined %}
     <property name="id" type="string" accessor-getter="getId"/>
-{% else %}
-    <property name="id" type="string" accessor-getter="getId" exclude="true"/>
-{% endif %}
-
 {% endif %}
 
     <property name="deletedDate" serialized-name="deletedDate" exclude="true" accessor-getter="getDeleteddate">
