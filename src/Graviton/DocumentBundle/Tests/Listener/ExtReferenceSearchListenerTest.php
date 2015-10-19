@@ -9,7 +9,7 @@ use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
+use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

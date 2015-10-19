@@ -8,7 +8,7 @@ namespace Graviton\DocumentBundle\Tests\Listener;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\DocumentBundle\Listener\FieldNameSearchListener;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
+use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

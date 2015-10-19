@@ -1743,12 +1743,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrix/php-rql-parser.git",
-                "reference": "844bc02bcf51670a7c63e8c75b01d6b5029c3db7"
+                "reference": "7289631e5ea3f6b738ee9f0794c9f47cac4b87aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/php-rql-parser/zipball/844bc02bcf51670a7c63e8c75b01d6b5029c3db7",
-                "reference": "844bc02bcf51670a7c63e8c75b01d6b5029c3db7",
+                "url": "https://api.github.com/repos/mrix/php-rql-parser/zipball/7289631e5ea3f6b738ee9f0794c9f47cac4b87aa",
+                "reference": "7289631e5ea3f6b738ee9f0794c9f47cac4b87aa",
                 "shasum": ""
             },
             "require": {
@@ -1807,7 +1807,7 @@
             "support": {
                 "source": "https://github.com/mrix/php-rql-parser/tree/47970-add-elemmatch-operator"
             },
-            "time": "2015-10-19 06:03:49"
+            "time": "2015-10-19 09:43:02"
         },
         {
             "name": "graviton/rql-parser-bundle",

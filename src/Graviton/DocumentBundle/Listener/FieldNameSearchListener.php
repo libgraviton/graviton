@@ -6,7 +6,7 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\Rql\Event\VisitNodeEvent;
-use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
+use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Xiag\Rql\Parser\Node\Query\AbstractComparisonOperatorNode;

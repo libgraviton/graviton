@@ -12,10 +12,10 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
-use Graviton\RqlParserBundle\Rql\Node\ElemMatchNode;
+use Graviton\Rql\Event\VisitNodeEvent;
+use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Graviton\Rql\Event\VisitNodeEvent;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 
