@@ -1815,12 +1815,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrix/GravitonRqlParserBundle.git",
-                "reference": "c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c"
+                "reference": "d95c94c1a90d4f4852b8c412a918da05fc9feff5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/GravitonRqlParserBundle/zipball/c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c",
-                "reference": "c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c",
+                "url": "https://api.github.com/repos/mrix/GravitonRqlParserBundle/zipball/d95c94c1a90d4f4852b8c412a918da05fc9feff5",
+                "reference": "d95c94c1a90d4f4852b8c412a918da05fc9feff5",
                 "shasum": ""
             },
             "require": {
@@ -1867,7 +1867,7 @@
             "support": {
                 "source": "https://github.com/mrix/GravitonRqlParserBundle/tree/47970-add-elemmatch-operator"
             },
-            "time": "2015-10-19 06:09:35"
+            "time": "2015-10-19 09:32:24"
         },
         {
             "name": "guzzle/guzzle",
