@@ -4361,12 +4361,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrix/GravitonTestServicesBundle.git",
-                "reference": "5581019fbb79feef8ce60d5f33e3103bc1929a08"
+                "reference": "a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/GravitonTestServicesBundle/zipball/5581019fbb79feef8ce60d5f33e3103bc1929a08",
-                "reference": "5581019fbb79feef8ce60d5f33e3103bc1929a08",
+                "url": "https://api.github.com/repos/mrix/GravitonTestServicesBundle/zipball/a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e",
+                "reference": "a58cf55607e3b2259c2cfbc1e70a7d7b8c5d152e",
                 "shasum": ""
             },
             "type": "library",
@@ -4383,7 +4383,7 @@
             "support": {
                 "source": "https://github.com/mrix/GravitonTestServicesBundle/tree/47970-add-elemmatch-operator"
             },
-            "time": "2015-10-18 10:05:24"
+            "time": "2015-10-19 05:41:42"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
