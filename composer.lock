@@ -1743,12 +1743,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrix/php-rql-parser.git",
-                "reference": "5eb8c01f2e7afee5eaa81cd675a329e7aed7d037"
+                "reference": "844bc02bcf51670a7c63e8c75b01d6b5029c3db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/php-rql-parser/zipball/5eb8c01f2e7afee5eaa81cd675a329e7aed7d037",
-                "reference": "5eb8c01f2e7afee5eaa81cd675a329e7aed7d037",
+                "url": "https://api.github.com/repos/mrix/php-rql-parser/zipball/844bc02bcf51670a7c63e8c75b01d6b5029c3db7",
+                "reference": "844bc02bcf51670a7c63e8c75b01d6b5029c3db7",
                 "shasum": ""
             },
             "require": {
@@ -1807,7 +1807,7 @@
             "support": {
                 "source": "https://github.com/mrix/php-rql-parser/tree/47970-add-elemmatch-operator"
             },
-            "time": "2015-10-18 09:39:30"
+            "time": "2015-10-19 06:03:49"
         },
         {
             "name": "graviton/rql-parser-bundle",
@@ -1815,12 +1815,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrix/GravitonRqlParserBundle.git",
-                "reference": "92fccd395061e6252e558c60de75d022790b7bf1"
+                "reference": "c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrix/GravitonRqlParserBundle/zipball/92fccd395061e6252e558c60de75d022790b7bf1",
-                "reference": "92fccd395061e6252e558c60de75d022790b7bf1",
+                "url": "https://api.github.com/repos/mrix/GravitonRqlParserBundle/zipball/c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c",
+                "reference": "c78d6f1cd1f660e7cd5feb12f4b121896d2f7d7c",
                 "shasum": ""
             },
             "require": {
@@ -1867,7 +1867,7 @@
             "support": {
                 "source": "https://github.com/mrix/GravitonRqlParserBundle/tree/47970-add-elemmatch-operator"
             },
-            "time": "2015-10-18 07:19:46"
+            "time": "2015-10-19 06:09:35"
         },
         {
             "name": "guzzle/guzzle",
