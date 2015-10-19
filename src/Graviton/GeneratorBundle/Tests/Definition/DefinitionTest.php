@@ -461,6 +461,14 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
                         (new Schema\Target())
                             ->addField(
                                 (new Schema\Field())
+                                    ->setName('b.0.c')
+                                    ->setType('hash')
+                                    ->setExposeAs('$c')
+                                    ->setDescription('description')
+                                    ->setRequired(false)
+                            )
+                            ->addField(
+                                (new Schema\Field())
                                     ->setName('b.0.c.d.e')
                                     ->setType('varchar')
                             )
