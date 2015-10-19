@@ -12,6 +12,7 @@
         <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
         <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
         <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
+        <parameter key="graviton.core.listener.requesthost.class">Graviton\CoreBundle\Listener\RequestHostListener</parameter>
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
         <parameter key="graviton.core.service.coreversionutils.class">Graviton\CoreBundle\Service\CoreVersionUtils</parameter>
@@ -82,6 +83,17 @@
             <argument type="string">%graviton.core.version.data%</argument>
         </service>
         <service id="graviton.core.model.version" class="%graviton.core.model.version.class%" parent="graviton.rest.model"/>
+
+        <!--request host listener -->
+        <service id="graviton.core.listener.requesthost"
+                 class="%graviton.core.listener.requesthost.class%">
+            <argument type="service" id="router"/>
+            <argument type="string">%graviton.router.host%</argument>
+            <argument type="string">%graviton.router.port_http%</argument>
+            <argument type="string">%graviton.router.port_https%</argument>
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest"/>
+        </service>
+
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
             <argument type="service" id="graviton.core.utils"/>
