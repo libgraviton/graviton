@@ -1,4 +1,5 @@
 {
+  "title": "Translatable languages",
   "description": "Reference to the language of a translatable.",
   "properties": {
     "ref": {

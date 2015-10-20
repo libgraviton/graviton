@@ -6,6 +6,10 @@
   "description": "@todo replace me",
 {% endif %}
 
+{% if json is defined %}
+    "title": "{{ json.getTitle() }}",
+{% endif %}
+
   "properties": {
 {% set requiredFields = [] %}
 {% for field in fields %}

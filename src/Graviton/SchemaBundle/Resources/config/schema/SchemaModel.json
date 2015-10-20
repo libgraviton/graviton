@@ -1,5 +1,5 @@
 {
-  "title": "SchemaModel",
+  "title": "Schema model",
   "type": "object",
   "description": "An object containing schema information about a resource",
   "properties": {
