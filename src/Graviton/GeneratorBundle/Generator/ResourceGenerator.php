@@ -754,6 +754,18 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir . '/Resources/config/serializer/Document.' . $document . 'Base.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Base',
+                    'realIdField' => false
+                ]
+            )
+        );
+
     }
 
     /**
