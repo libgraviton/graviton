@@ -5,11 +5,291 @@
 
 namespace {{ base }}Document;
 
+use \Doctrine\Common\Collections\ArrayCollection;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use JMS\Serializer\JsonDeserializationVisitor;
+use JMS\Serializer\DeserializationContext;
+
+{% set translatableFields = [] %}
+{% set preTranslatedFields = [] %}
+
 /**
+ * {{ base }}Document\{{ document }}
+ *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
- */
-class {{ document }}Embedded extends {{ document }}
+* @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+* @link     http://swisscom.ch
+*/
+class {{ document }}Embedded implements TranslatableDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
+/**
+* @var MongoId $id
+*/
+protected $id;
+
+/**
+* @var MongoId $id
+*/
+protected $realId;
+
+/**
+* @var Date $deletedDate
+*/
+protected $deletedDate;
+
+{% if isrecordOriginFlagSet %}
+    /**
+    * @var string $recordOrigin
+    */
+    protected $recordOrigin;
+{% endif %}
+
+{% for field in fields %}
+    /**
+    {% if 'Graviton' in field.type %}
+        * @var \{{ field.type }} ${{ field.fieldName }}
+    {% else %}
+        * @var {{ field.type }} ${{ field.fieldName }}
+    {% endif %}
+    */
+    {% if field.type == 'array' %}
+        protected ${{ field.fieldName }} = array();
+    {% else %}
+        protected ${{ field.fieldName }};
+    {% endif %}
+
+{% endfor %}
+/**
+* constructor
+*
+* @return self
+*/
+public function __construct()
+{
+{% for field in fields %}
+    {% if '[]' in field.type or field.type == 'array' %}
+        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new ArrayCollection(){% else %}[]{% endif %};
+    {% endif %}
+{% endfor %}
+}
+
+/**
+* Get id
+*
+* @return string $id
+*/
+public function getId()
+{
+return $this->id;
+}
+
+/**
+* Set id
+*
+* @param mixed $id id
+*
+* @return void
+*/
+public function setId($id)
+{
+$this->id = $id;
+}
+
+/**
+* Get realId
+*
+* @return string $id
+*/
+public function getRealId()
+{
+return $this->realId;
+}
+
+
+public function getDeleteddate()
+{
+return $this->deletedDate;
+}
+
+{% if isrecordOriginFlagSet %}
+
+    /**
+    * Can record origin be modified
+    *
+    * @return bool true|false
+    */
+    public function isRecordOriginModifiable()
+    {
+    return {{ recordOriginModifiable }};
+    }
+
+    /**
+    * Get recordOrigin
+    *
+    * @return string $recordOrigin
+    */
+    public function getRecordOrigin()
+    {
+    return $this->recordOrigin;
+    }
+
+    /**
+    * Set recordOrigin
+    *
+    * @param string $recordOrigin origin of the record
+    *
+    * @return self
+    */
+    public function setRecordOrigin($recordOrigin)
+    {
+    if (!isset($this->recordOrigin)) {
+    $this->recordOrigin = $recordOrigin;
+    } else {
+    throw new \LogicException("recordOrigin can not be overwritten");
+    }
+
+    return $this;
+    }
+{% endif %}
+
+
+{% for field in fields %}
+
+    {% if field.translatable is defined and field.translatable == true %}
+        {% set translatableFields = translatableFields|merge([field.fieldName]) %}
+    {% endif %}
+
+    {% if field.pretranslated is defined and field.pretranslated == true %}
+        {% set preTranslatedFields = preTranslatedFields|merge([field.fieldName]) %}
+    {% endif %}
+
+    /**
+    * Get {{ field.fieldName }}
+    *
+    {% if 'Graviton' in field.type %}
+        * @return \{{ field.type }} ${{ field.fieldName }}
+    {% else %}
+        * @return {{ field.type }} ${{ field.fieldName }}
+    {% endif %}
+    */
+    {% if field.type == 'boolean' %}
+        public function is{{ field.fieldName|capitalize }}()
+    {% else %}
+        public function get{{ field.fieldName|capitalize }}()
+    {% endif %}
+    {
+    {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
+        $records = [];
+        foreach ($this->{{ field.fieldName }} as $record) {
+        $ref = $record->{{ field.xDynamicKey.refMethod }}();
+        if ($ref !== null) {
+        $records[$ref->getId()] = $record;
+        }
+        }
+        return $records;
+    {% else %}
+        return $this->{{ field.fieldName }};
+    {% endif %}
+    }
+
+    /**
+    * Set {{ field.fieldName }}
+    *
+    {% if 'Graviton' in field.type %}
+        * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
+    {% else %}
+        * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+    {% endif %}
+    *
+    * @return self
+    */
+    {% if 'Graviton' in field.type %}
+        {% if '[]' in field.type %}
+            public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+        {% else %}
+            {% if field.relType is defined %}
+                {% set relType = {"embed": "Embedded", "ref": ""}[field.relType] %}
+            {% else %}
+                {% set relType = "" %}
+            {% endif %}
+
+            public function set{{ field.fieldName|capitalize }}(\{{ field.type }}{{ relType }} ${{ field.fieldName }})
+        {% endif %}
+    {% else %}
+        public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+    {% endif %}
+    {
+    {% if '[]' in field.type and 'Graviton' in field.type %}
+        $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
+    {% else %}
+        $this->{{ field.fieldName }} = ${{ field.fieldName }};
+    {% endif %}
+
+    return $this;
+    }
+
+
+    {% if ('[]' in field.type or field.type == 'array') %}
+        {% set itemTypeName = '[]' in field.type ? field.type[0:-2] : 'mixed' %}
+        {% set itemTypeHint = 'Graviton' in itemTypeName ? '\\' ~ itemTypeName : '' %}
+
+        /**
+        * add element to {{ field.fieldName }}
+        *
+        * @param {{ itemTypeName }} ${{ field.singularName }} value to add to {{ field.fieldName }}
+        *
+        * @return self
+        */
+        public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
+        {
+        $this->{{ field.fieldName }}[] = ${{ field.singularName }};
+        }
+
+        /**
+        * remove element from {{ field.fieldName }}
+        *
+        * @param {{ itemTypeName }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
+        *
+        * @return self
+        */
+        public function remove{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{ field.singularName }})
+        {
+        {% if '[]' in field.type and 'Graviton' in field.type %}
+            $this->{{ field.fieldName }}->removeElement(${{ field.singularName }});
+        {% else %}
+            $this->{{ field.fieldName }} = array_diff($this->{{ field.fieldName }}, [${{ field.singularName }}]);
+        {% endif %}
+
+        return $this;
+        }
+    {% endif %}
+{% endfor %}
+
+/**
+* return translatable field names
+*
+* @return string[]
+*/
+public function getTranslatableFields()
+{
+{% if translatableFields is empty %}
+    return [];
+{% else %}
+    return array('{{ translatableFields|join('\',\'') }}');
+{% endif %}
+}
+
+/**
+* return pretranslated field names
+*
+* @return string[]
+*/
+public function getPreTranslatedFields()
+{
+{% if preTranslatedFields is empty %}
+    return [];
+{% else %}
+    return ['{{ preTranslatedFields|join('\',\'') }}'];
+{% endif %}
+}
 }
