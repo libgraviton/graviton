@@ -238,6 +238,11 @@ class ResourceGenerator extends AbstractGenerator
             $dir . '/Document/' . $document . 'Embedded.php',
             $parameters
         );
+        $this->renderFile(
+            'document/DocumentBase.php.twig',
+            $dir . '/Document/' . $document . 'Base.php',
+            $parameters
+        );
 
         $this->generateServices($parameters, $dir, $document, $withRepository);
     }
@@ -729,7 +734,7 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'document' => $document.'Embedded',
                     'noIdField' => true,
-                    'hideIdField' => true
+                    'realIdField' => true
                 ]
             )
         );
@@ -743,7 +748,12 @@ class ResourceGenerator extends AbstractGenerator
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'realIdField' => false
+                ]
+            )
         );
     }
 

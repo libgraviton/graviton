@@ -4,6 +4,9 @@
       xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
+    <mapped-superclass name="{{ base }}Document\{{ document }}Base">
+    </mapped-superclass>
+
     {% if docType is defined and docType == "embedded-document" %}
         {% set hideIdField = true %}
     {% else %}
@@ -14,7 +17,7 @@
         {% set docType = "document" %}
     {% endif %}
 
-  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
+  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}" inheritance-type="COLLECTION_PER_CLASS">
 
   {% if idField is defined %}
       {% if hideIdField == false %}
