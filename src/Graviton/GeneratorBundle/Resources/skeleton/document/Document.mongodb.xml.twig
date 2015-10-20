@@ -18,10 +18,10 @@
 
   {% if idField is defined %}
       {% if hideIdField == false %}
-          <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID" />
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID" />
       {% else %}
-          <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="false"/>
-          <field fieldName="realId" type="{{ idField.doctrineType }}" id="true" strategy="UUID" />
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
+          <field fieldName="realId" type="{{ idField.doctrineType }}" id="true" strategy="AUTO" />
       {% endif %}
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>
@@ -37,15 +37,19 @@
 
                 {% if '[]' in field.type %}
                     <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}{% if relType == 'embed' %}Embedded{% endif %}" strategy="set">
+                        {% if relType == "reference" %}
                         <cascade>
                             <all/>
                         </cascade>
+                        {% endif %}
                     </{{ relType }}-many>
                 {% else %}
                     <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}{% if relType == 'embed' %}Embedded{% endif %}">
+                        {% if relType == "reference" %}
                         <cascade>
                             <all/>
                         </cascade>
+                        {% endif %}
                     </{{ relType }}-one>
                 {% endif %}
             {% else %}

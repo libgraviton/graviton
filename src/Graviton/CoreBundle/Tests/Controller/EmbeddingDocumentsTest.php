@@ -164,6 +164,12 @@ class EmbeddingDocumentsTest extends RestTestCase
 
         // check entities again
         // record "one" was not removed. it is incorrect
+
+        /**
+         * this is imho the good behavior. a referenced object shall *not* be deleted
+         * when it no longer has any references!
+         */
+
         // $this->assertEntityNotExists('one');
         $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
@@ -297,10 +303,9 @@ class EmbeddingDocumentsTest extends RestTestCase
         // check document
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-hash-as-embedded/test');
+
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($original, $client->getResults());
-
-
 
         // update document
         $data = $client->getResults();
