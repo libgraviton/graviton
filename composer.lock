@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9ef4e68ffc24c9233aba0486aaf4a46a",
-    "content-hash": "e1e4e20ff8d6e7e0e8bf05398a7a5f52",
+    "hash": "f1abbbafc5052cd0c1c129db54f646b0",
+    "content-hash": "f467cb848112a34603c1fe8bf9ca5208",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -5462,8 +5462,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "doctrine/mongodb-odm": 10,
-        "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
