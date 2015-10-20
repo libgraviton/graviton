@@ -739,9 +739,9 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
         foreach ($parameters['fields'] as $key => $field) {
-            if (substr($field['serializerType'], 0, 14) == 'array<Graviton') {
+            if (substr($field['serializerType'], 0, 14) == 'array<Graviton' && strpos($field['serializerType'], '\\Entity') === false) {
                 $parameters['fields'][$key]['serializerType'] = substr($field['serializerType'], 0, -1).'Embedded>';
-            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton') {
+            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton' && strpos($field['serializerType'], '\\Entity') === false) {
                 $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
             }
         }
