@@ -1739,16 +1739,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.0-alpha14",
+            "version": "v2.0.0-alpha15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217"
+                "reference": "5c5f4d18698e91d81b81ec1312a1d9abdf5b2925"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/31f551b3a8d55b43df115bed2cb8d51365cd9217",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/5c5f4d18698e91d81b81ec1312a1d9abdf5b2925",
+                "reference": "5c5f4d18698e91d81b81ec1312a1d9abdf5b2925",
                 "shasum": ""
             },
             "require": {
@@ -1792,24 +1792,24 @@
                 "rest",
                 "rql"
             ],
-            "time": "2015-08-11 08:15:37"
+            "time": "2015-10-20 10:09:06"
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v0.9.0",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929"
+                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/295f85880f0b54a632afc4a45ce21cd8dc482a2a",
+                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a",
                 "shasum": ""
             },
             "require": {
-                "graviton/php-rql-parser": "~2.0@alpha",
+                "graviton/php-rql-parser": ">=2.0.0-alpha15",
                 "php": "~5.4",
                 "symfony/http-kernel": "~2.6"
             },
@@ -1837,7 +1837,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-08-13 10:45:35"
+            "time": "2015-10-20 11:27:51"
         },
         {
             "name": "guzzle/guzzle",
@@ -4327,16 +4327,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.11.0",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "b5e1ddd4d91e63f7b6d88e65857534f57522d566"
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/b5e1ddd4d91e63f7b6d88e65857534f57522d566",
-                "reference": "b5e1ddd4d91e63f7b6d88e65857534f57522d566",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/51595263b0dbb49daf7f752318d62e11b7daa27d",
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d",
                 "shasum": ""
             },
             "type": "library",
@@ -4351,10 +4351,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.11.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-10-15 11:35:22"
+            "time": "2015-10-19 08:05:16"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -5465,7 +5465,6 @@
         "doctrine/mongodb-odm": 10,
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
-        "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
     },
