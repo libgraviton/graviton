@@ -19,12 +19,18 @@
     <parameter key="graviton.i18n.listener.i18nserializer.class">Graviton\I18nBundle\Listener\I18nSerializationListener</parameter>
     <parameter key="graviton.i18n.listener.i18ndeserializer.class">Graviton\I18nBundle\Listener\I18nDeserializationListener</parameter>
     <parameter key="graviton.i18n.listener.i18nrqlparsinglistener.class">Graviton\I18nBundle\Listener\I18nRqlParsingListener</parameter>
+    <parameter key="graviton.i18n.listener.i18ncachinglistener.class">Graviton\I18nBundle\Listener\I18nCachingListener</parameter>
     <parameter key="graviton.i18n.loader.doctrineodm.class">Graviton\I18nBundle\Translation\Loader\DoctrineODMLoader</parameter>
     <parameter key="graviton.i18n.request.class">Symfony\Component\HttpFoundation\Request</parameter>
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
     <parameter key="graviton.i18n.utils.class">Graviton\I18nBundle\Service\I18nUtils</parameter>
+    <parameter key="graviton.i18n.cacheutils.class">Graviton\I18nBundle\Service\I18nCacheUtils</parameter>
     <parameter key="graviton.i18n.form.transformer.translatabletodefaultstring.class">Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer</parameter>
     <parameter key="graviton.i18n.form.type.translatable.class">Graviton\I18nBundle\Form\Type\TranslatableType</parameter>
+
+    <!-- should we move this to somewhere else? -->
+    <parameter key="translator.class">Graviton\I18nBundle\Translator\Translator</parameter>
+
   </parameters>
   <services>
     <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
@@ -96,6 +102,11 @@
       <argument type="string">%graviton.translator.default.locale%</argument>
       <tag name="kernel.event_listener" event="kernel.request" method="onkernelrequest"/>
     </service>
+    <service id="graviton.i18n.listener.i18ncaching" class="%graviton.i18n.listener.i18ncachinglistener.class%">
+      <argument type="service" id="graviton.18n.cacheutils"/>
+      <tag name="kernel.event_listener" event="translatable.persist" method="onPersist"/>
+      <tag name="kernel.event_listener" event="kernel.terminate" method="onTerminate"/>
+    </service>
     <service id="graviton.i18n.loader.doctrineodm" class="%graviton.i18n.loader.doctrineodm.class%">
       <call method="setRepository">
         <argument type="service" id="graviton.i18n.repository.translatable"/>
@@ -135,7 +146,16 @@
       <argument type="service" id="graviton.i18n.request"/>
     </service>
 
+    <!-- I18nCacheUtils -->
+    <service id="graviton.18n.cacheutils"
+             class="%graviton.i18n.cacheutils.class%">
+      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument type="string">%kernel.cache_dir%</argument>
+      <argument type="string">odm</argument>
+    </service>
+
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
+      <argument type="service" id="event_dispatcher"/>
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
     </service>
     <service id="graviton.i18n.form.transformer.translatabletodefaultstring" class="%graviton.i18n.form.transformer.translatabletodefaultstring.class%">

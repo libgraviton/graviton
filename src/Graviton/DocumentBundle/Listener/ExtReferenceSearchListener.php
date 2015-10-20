@@ -12,9 +12,10 @@
 namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\Rql\Event\VisitNodeEvent;
+use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Graviton\Rql\Event\VisitNodeEvent;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 
@@ -62,16 +63,12 @@ class ExtReferenceSearchListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         $node = $event->getNode();
-        if ($node instanceof AbstractScalarOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField());
-            if ($fieldName !== false) {
-                $event->setNode($this->processScalarNode($fieldName, $node));
-            }
-        } elseif ($node instanceof AbstractArrayOperatorNode) {
-            $fieldName = $this->getDocumentFieldName($node->getField());
-            if ($fieldName !== false) {
-                $event->setNode($this->processArrayNode($fieldName, $node));
-            }
+        if ($node instanceof AbstractScalarOperatorNode &&
+            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $event->setNode($this->processScalarNode($node));
+        } elseif ($node instanceof AbstractArrayOperatorNode &&
+            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $event->setNode($this->processArrayNode($node));
         }
 
         return $event;
@@ -80,14 +77,12 @@ class ExtReferenceSearchListener
     /**
      * Process scalar condition
      *
-     * @param string                     $fieldName Document field name
-     * @param AbstractScalarOperatorNode $node      Query node
+     * @param AbstractScalarOperatorNode $node Query node
      * @return AbstractScalarOperatorNode
      */
-    private function processScalarNode($fieldName, AbstractScalarOperatorNode $node)
+    private function processScalarNode(AbstractScalarOperatorNode $node)
     {
         $copy = clone $node;
-        $copy->setField(strtr($fieldName, ['.0.' => '.']));
         $copy->setValue($this->getDbRefValue($node->getValue()));
         return $copy;
     }
@@ -95,14 +90,12 @@ class ExtReferenceSearchListener
     /**
      * Process array condition
      *
-     * @param string                    $fieldName Document field
-     * @param AbstractArrayOperatorNode $node      Query node
+     * @param AbstractArrayOperatorNode $node Query node
      * @return AbstractArrayOperatorNode
      */
-    private function processArrayNode($fieldName, AbstractArrayOperatorNode $node)
+    private function processArrayNode(AbstractArrayOperatorNode $node)
     {
         $copy = clone $node;
-        $copy->setField(strtr($fieldName, ['.0.' => '.']));
         $copy->setValues(array_map([$this, 'getDbRefValue'], $node->getValues()));
         return $copy;
     }
@@ -115,6 +108,10 @@ class ExtReferenceSearchListener
      */
     private function getDbRefValue($url)
     {
+        if ($url === null) {
+            return null;
+        }
+
         try {
             $extref = $this->converter->getExtReference($url);
             return \MongoDBRef::create($extref->getRef(), $extref->getId());
@@ -127,18 +124,26 @@ class ExtReferenceSearchListener
     /**
      * Get document field name by query name
      *
-     * @param string $searchName Exposed field name from RQL query
-     * @return string|bool Field name or FALSE
+     * @param string    $searchName  Exposed field name from RQL query
+     * @param \SplStack $nodeContext Current node context
+     * @return bool
      */
-    private function getDocumentFieldName($searchName)
+    private function isExtrefField($searchName, \SplStack $nodeContext)
     {
         $route = $this->request->attributes->get('_route');
         if (!isset($this->fields[$route])) {
             throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $route));
         }
 
-        return array_search(
-            strtr($searchName, ['..' => '.0.']),
+        $fieldName = $searchName;
+        foreach ($nodeContext as $parentNode) {
+            if ($parentNode instanceof ElemMatchNode) {
+                $fieldName = $parentNode->getField().'..'.$fieldName;
+            }
+        }
+
+        return in_array(
+            strtr($fieldName, ['..' => '.0.']),
             $this->fields[$route],
             true
         );

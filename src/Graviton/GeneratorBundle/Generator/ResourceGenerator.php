@@ -154,7 +154,6 @@ class ResourceGenerator extends AbstractGenerator
             },
             $fields
         );
-
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
@@ -773,7 +772,6 @@ class ResourceGenerator extends AbstractGenerator
             $dir . '/Model/' . $document . '.php',
             $parameters
         );
-
         $this->renderFile(
             'model/schema.json.twig',
             $dir . '/Resources/config/schema/' . $document . '.json',

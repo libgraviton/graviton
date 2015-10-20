@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e183a5fbe6fec18a97009631d5d9eee7",
-    "content-hash": "7fc78d6c2a4e9343f325c8d1fa468309",
+    "hash": "9ef4e68ffc24c9233aba0486aaf4a46a",
+    "content-hash": "e1e4e20ff8d6e7e0e8bf05398a7a5f52",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1739,16 +1739,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.0-alpha14",
+            "version": "v2.0.0-alpha15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217"
+                "reference": "5c5f4d18698e91d81b81ec1312a1d9abdf5b2925"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/31f551b3a8d55b43df115bed2cb8d51365cd9217",
-                "reference": "31f551b3a8d55b43df115bed2cb8d51365cd9217",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/5c5f4d18698e91d81b81ec1312a1d9abdf5b2925",
+                "reference": "5c5f4d18698e91d81b81ec1312a1d9abdf5b2925",
                 "shasum": ""
             },
             "require": {
@@ -1792,24 +1792,24 @@
                 "rest",
                 "rql"
             ],
-            "time": "2015-08-11 08:15:37"
+            "time": "2015-10-20 10:09:06"
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v0.9.0",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929"
+                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
-                "reference": "52212ada6a2d7ee970dccc839f8cb55ebbbfd929",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/295f85880f0b54a632afc4a45ce21cd8dc482a2a",
+                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a",
                 "shasum": ""
             },
             "require": {
-                "graviton/php-rql-parser": "~2.0@alpha",
+                "graviton/php-rql-parser": ">=2.0.0-alpha15",
                 "php": "~5.4",
                 "symfony/http-kernel": "~2.6"
             },
@@ -1837,7 +1837,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-08-13 10:45:35"
+            "time": "2015-10-20 11:27:51"
         },
         {
             "name": "guzzle/guzzle",
@@ -2913,16 +2913,16 @@
         },
         {
             "name": "kriswallsmith/assetic",
-            "version": "v1.3.1",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "cb92b179dddfb8a3f341d53bd27e088f24d9c2e5"
+                "reference": "56cb5d6dec9e7a68a4da2fa89844f39d41092f31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/cb92b179dddfb8a3f341d53bd27e088f24d9c2e5",
-                "reference": "cb92b179dddfb8a3f341d53bd27e088f24d9c2e5",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/56cb5d6dec9e7a68a4da2fa89844f39d41092f31",
+                "reference": "56cb5d6dec9e7a68a4da2fa89844f39d41092f31",
                 "shasum": ""
             },
             "require": {
@@ -2958,7 +2958,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "1.3-dev"
                 }
             },
             "autoload": {
@@ -2987,7 +2987,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2015-10-15 01:33:42"
+            "time": "2015-08-31 19:07:16"
         },
         {
             "name": "kriswallsmith/buzz",
@@ -3111,16 +3111,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.17.2",
+            "version": "1.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "bee7f0dc9c3e0b69a6039697533dca1e845c8c24"
+                "reference": "0524c87587ab85bc4c2d6f5b41253ccb930a5422"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bee7f0dc9c3e0b69a6039697533dca1e845c8c24",
-                "reference": "bee7f0dc9c3e0b69a6039697533dca1e845c8c24",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/0524c87587ab85bc4c2d6f5b41253ccb930a5422",
+                "reference": "0524c87587ab85bc4c2d6f5b41253ccb930a5422",
                 "shasum": ""
             },
             "require": {
@@ -3134,11 +3134,10 @@
                 "aws/aws-sdk-php": "^2.4.9",
                 "doctrine/couchdb": "~1.0@dev",
                 "graylog2/gelf-php": "~1.0",
-                "jakub-onderka/php-parallel-lint": "0.9",
                 "php-console/php-console": "^3.1.3",
                 "phpunit/phpunit": "~4.5",
                 "phpunit/phpunit-mock-objects": "2.3.0",
-                "raven/raven": "^0.13",
+                "raven/raven": "~0.11",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "swiftmailer/swiftmailer": "~5.3",
                 "videlalvaro/php-amqplib": "~2.4"
@@ -3184,7 +3183,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-10-14 12:51:02"
+            "time": "2015-08-31 09:17:37"
         },
         {
             "name": "oldsound/rabbitmq-bundle",
@@ -4168,16 +4167,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.22.3",
+            "version": "v1.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ebfc36b7e77b0c1175afe30459cf943010245540"
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ebfc36b7e77b0c1175afe30459cf943010245540",
-                "reference": "ebfc36b7e77b0c1175afe30459cf943010245540",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
                 "shasum": ""
             },
             "require": {
@@ -4225,7 +4224,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-10-13 07:07:02"
+            "time": "2015-09-22 13:59:32"
         },
         {
             "name": "videlalvaro/php-amqplib",
@@ -4328,16 +4327,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.11.0",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "b5e1ddd4d91e63f7b6d88e65857534f57522d566"
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/b5e1ddd4d91e63f7b6d88e65857534f57522d566",
-                "reference": "b5e1ddd4d91e63f7b6d88e65857534f57522d566",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/51595263b0dbb49daf7f752318d62e11b7daa27d",
+                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d",
                 "shasum": ""
             },
             "type": "library",
@@ -4352,10 +4351,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.11.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2015-10-15 11:35:22"
+            "time": "2015-10-19 08:05:16"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -4888,16 +4887,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.13",
+            "version": "4.8.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "be067d6105286b74272facefc2697038f8807b77"
+                "reference": "00194eb95989190a73198390ceca081ad3441a7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/be067d6105286b74272facefc2697038f8807b77",
-                "reference": "be067d6105286b74272facefc2697038f8807b77",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/00194eb95989190a73198390ceca081ad3441a7f",
+                "reference": "00194eb95989190a73198390ceca081ad3441a7f",
                 "shasum": ""
             },
             "require": {
@@ -4956,7 +4955,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-14 13:49:40"
+            "time": "2015-10-12 03:36:47"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -5463,9 +5462,9 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "doctrine/mongodb-odm": 10,
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
-        "graviton/php-rql-parser": 15,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
     },

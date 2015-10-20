@@ -74,6 +74,16 @@ class JsonDefinition
     }
 
     /**
+     * Returns the title
+     *
+     * @return string Title
+     */
+    public function getTitle()
+    {
+        return $this->def->getTitle();
+    }
+
+    /**
      * Returns whether this definition requires the generation
      * of a controller. normally yes, but sometimes not ;-)
      *

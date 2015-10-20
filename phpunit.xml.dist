@@ -10,7 +10,7 @@
     processIsolation            = "false"
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
-    bootstrap                   = "app/bootstrap.php.cache" >
+    bootstrap                   = "app/bootstrap.tests.php" >
   <testsuites>
     <testsuite name="integration">
       <directory>src/*/*Bundle/Tests/Controller</directory>
@@ -41,6 +41,7 @@
     <ini name="date.timezone" value="UTC"/>
     <ini name="xdebug.max_nesting_level" value="200"/>
     <ini name="memory_limit" value="-1"/>
+    <env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>
   </php>
   <listeners>
     <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
