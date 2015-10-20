@@ -725,6 +725,7 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document)
     {
+        // @TODO in Embedded and document just render the differences..
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . 'Embedded.xml',
