@@ -11,7 +11,6 @@ use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -253,72 +252,15 @@ class FileController extends RestController
      */
     private function normalizeRequest(Request $request)
     {
-        // split content
-        $contentType = $request->headers->get('Content-Type');
-        list(, $boundary) = explode('; boundary=', $contentType);
-
-        $content = $request->getContent();
-        list(, $metadataInfo, $fileInfo) = explode($boundary, $content);
-        $attributes = array_merge(
-            $request->attributes->all(),
-            $this->extractMetaData(explode("\r\n", ltrim($metadataInfo)))
-        );
-        $files = $this->extractFile(explode("\r\n\r\n", ltrim($fileInfo), 2));
-
+        $contentData = $this->fileManager->extractDataFromRequestContent($request);
         $normalized = $request->duplicate(
             null,
             null,
-            $attributes,
+            $contentData['attributes'],
             null,
-            $files
+            $contentData['files']
         );
 
         return $normalized;
-    }
-
-    /**
-     * Extracts meta information from request content.
-     *
-     * @param array $metadataInfo List of metadata information
-     *
-     * @return array
-     */
-    private function extractMetaData(array $metadataInfo)
-    {
-        return ['metadata' => $metadataInfo[2]];
-    }
-
-    /**
-     * Extracts file data from request content
-     *
-     * @param array $fileInfo information about uploaded files.
-     *
-     * @return array
-     */
-    private function extractFile(array $fileInfo)
-    {
-        // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
-        preg_match_all('@name=\"([^"]*)\";\sfilename=\"([^"]*)@', $fileInfo[0], $matches);
-        $originalName = $matches[2][0];
-        $dir = ini_get('upload_tmp_dir');
-        $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
-        $file = $dir . '/' . $originalName;
-
-        // create file
-        touch($file);
-        $size = file_put_contents($file, $fileInfo[1], LOCK_EX);
-
-        list(, $mimetype) = explode(": ", $fileInfo[1]);
-
-        $files = [
-            $matches[1][0] => new UploadedFile(
-                $file,
-                $originalName,
-                $mimetype,
-                $size
-            )
-        ];
-
-        return $files;
     }
 }

@@ -12,6 +12,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File as FileDocument;
 use GravitonDyn\FileBundle\Document\FileMetadata;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -261,5 +262,76 @@ class FileManager
         }
 
         return $meta;
+    }
+
+    /**
+     * Extracts different information sent in the request content.
+     *
+     * @param Request $request Current http request
+     *
+     * @return array
+     */
+    public function extractDataFromRequestContent(Request $request)
+    {
+        // split content
+        $contentType = $request->headers->get('Content-Type');
+        list(, $boundary) = explode('; boundary=', $contentType);
+
+        $content = $request->getContent();
+        list(, $metadataInfo, $fileInfo) = explode($boundary, $content);
+        $attributes = array_merge(
+            $request->attributes->all(),
+            $this->extractMetaDataFromContent($metadataInfo)
+        );
+        $files = $this->extractFileFromContent($fileInfo);
+
+        return ['files' => $files, 'attributes' => $attributes];
+    }
+
+    /**
+     * Extracts meta information from request content.
+     *
+     * @param string $metadataInfoString Information about metadata information
+     *
+     * @return array
+     */
+    private function extractMetaDataFromContent($metadataInfoString)
+    {
+        $metadataInfo = explode("\r\n", ltrim($metadataInfoString));
+        return ['metadata' => $metadataInfo[2]];
+    }
+
+    /**
+     * Extracts file data from request content
+     *
+     * @param string $fileInfoString Information about uploaded files.
+     *
+     * @return array
+     */
+    private function extractFileFromContent($fileInfoString)
+    {
+        $fileInfo = explode("\r\n\r\n", ltrim($fileInfoString), 2);
+
+        // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
+        preg_match('@name=\"([^"]*)\";\sfilename=\"([^"]*)\"\s*Content-Type:\s([^"]*)@', $fileInfo[0], $matches);
+        $originalName = $matches[2];
+        $dir = ini_get('upload_tmp_dir');
+        $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
+        $file = $dir . '/' . $originalName;
+
+        // create file
+        touch($file);
+        $size = file_put_contents($file, $fileInfo[1], LOCK_EX);
+
+        $files = [
+            $matches[1] => new UploadedFile(
+                $file,
+                $originalName,
+                $matches[3],
+                $size
+            )
+        ];
+
+        return $files;
     }
 }
