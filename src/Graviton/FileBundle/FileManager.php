@@ -10,6 +10,8 @@ use Gaufrette\FileSystem;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File as FileDocument;
+use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -104,11 +106,18 @@ class FileManager
 
             /** @var \Gaufrette\File $file */
             $file = $this->saveFile($record->getId(), $fileInfo['content']);
+            $actions = (!empty($fileData)) ? $fileData->getMetadata()->getAction()->toArray() : [];
+            $links = (!empty($fileData)) ? $fileData->getLinks()->toArray() : [];
 
-            $meta = $this->initOrUpdateMetadata($record, $file->getSize(), $fileInfo);
+            $meta = $this->initOrUpdateMetadata(
+                $record,
+                $file->getSize(),
+                $fileInfo,
+                $actions
+            );
+
             $record->setMetadata($meta);
-            $record->setLinks($record->getLinks()->toArray());
-
+            $record->setLinks($links);
             $model->updateRecord($record->getId(), $record);
 
             // TODO NOTICE: ONLY UPLOAD OF ONE FILE IS CURRENTLY SUPPORTED
@@ -152,17 +161,17 @@ class FileManager
 
         /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
         foreach ($request->files->all() as $field => $uploadedFile) {
-            $movedFile = $uploadedFile->move('/tmp/');
-            $uploadedFiles[$field] = [
-                'data' => [
-                    'mimetype' => $uploadedFile->getMimeType(),
-                    'filename' => $uploadedFile->getClientOriginalName()
-                ],
-                'content' => file_get_contents($movedFile)
-            ];
-
-            // delete moved file from /tmp
-            unlink($movedFile->getRealPath());
+            if (0 === $uploadedFile->getError()) {
+                $uploadedFiles[$field] = [
+                    'data' => [
+                        'mimetype' => $uploadedFile->getMimeType(),
+                        'filename' => $uploadedFile->getClientOriginalName()
+                    ],
+                    'content' => file_get_contents($uploadedFile->getPathName())
+                ];
+            } else {
+                throw new UploadException($uploadedFile->getErrorMessage());
+            }
         }
 
         if (empty($uploadedFiles)) {
@@ -222,37 +231,21 @@ class FileManager
     }
 
     /**
-     * Extracts meta information from given file.
-     *
-     * @param FileDocument $file File instance to extract the data from.
-     *
-     * @return array
-     */
-    private function extractMetadata(FileDocument $file)
-    {
-        $metaData = $file->getMetadata();
-        if (!empty($metaData)) {
-            return $metaData->getAction()->toArray();
-        }
-
-        return [];
-    }
-
-    /**
      * Provides a set up FileMetaData instance
      *
      * @param FileDocument $file     Document to be used
      * @param integer      $fileSize Size of the uploaded file
-     * @param array        $fileInfo Additinoal info about the file
+     * @param array        $fileInfo Additional info about the file
+     * @param array        $actions  List of actions to trigger workers
      *
-     * @return \GravitonDyn\FileBundle\Document\FileMetadata
+     * @return FileMetadata
      */
-    private function initOrUpdateMetadata(FileDocument $file, $fileSize, array $fileInfo)
+    private function initOrUpdateMetadata(FileDocument $file, $fileSize, array $fileInfo, array $actions)
     {
         $meta = $file->getMetadata();
         if (!empty($meta)) {
             $meta
-                ->setAction($this->extractMetadata($file))
+                ->setAction($actions)
                 ->setSize((int) $fileSize)
                 ->setMime($fileInfo['data']['mimetype'])
                 ->setModificationdate(new \DateTime());
@@ -263,7 +256,7 @@ class FileManager
                 (int) $fileSize,
                 $fileInfo['data']['filename'],
                 $fileInfo['data']['mimetype'],
-                $this->extractMetadata($file)
+                $actions
             );
         }
 
