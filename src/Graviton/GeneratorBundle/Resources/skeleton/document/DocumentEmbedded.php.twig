@@ -22,6 +22,7 @@ use JMS\Serializer\DeserializationContext;
 */
 class {{ document }}Embedded implements TranslatableDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
+
 /**
 * @var MongoId $id
 */
@@ -72,6 +73,7 @@ public function __construct()
     {% endif %}
 {% endfor %}
 }
+
 
 /**
 * Get id

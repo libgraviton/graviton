@@ -5,9 +5,9 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     {% if docType is defined and docType == "embedded-document" %}
-        {% set hideIdField = false %}
-    {% else %}
         {% set hideIdField = true %}
+    {% else %}
+        {% set hideIdField = false %}
     {% endif %}
 
     {% if docType is not defined %}
@@ -17,7 +17,7 @@
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
 
   {% if idField is defined %}
-      {% if hideIdField != false %}
+      {% if hideIdField == false %}
           <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="true"/>
       {% else %}
           <field fieldName="id" serialized-name="id" type="{{ idField.doctrineType }}" id="false"/>
