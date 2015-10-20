@@ -2,11 +2,16 @@
 <serializer>
   <class name="{{ base }}Document\{{ document }}" exclusion-policy="NONE">
 
-{% if idField is defined and idField != false %}
-    <property name="id" serialized-name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
+{% if idField is defined %}
+    <property name="id" type="{{ idField.serializerType }}" accessor-getter="getId"/>
 {% else %}
+{% if noIdField is not defined %}
     <property name="id" type="string" accessor-getter="getId"/>
+{% else %}
+    <property name="id" type="string" accessor-getter="getId" exclude="true"/>
 {% endif %}
+{% endif %}
+
 {% if realIdField == true %}
     <!-- hidden id for embedding purposes -->
     <property name="realId" serialized-name="realId" type="string" accessor-getter="getRealId" exclude="true"/>

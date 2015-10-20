@@ -12,4 +12,32 @@ namespace {{ base }}Document;
 */
 class {{ document }} extends {{ document }}Base
 {
+
+/**
+* @var mixed $id
+*/
+protected $id;
+
+/**
+* Get id
+*
+* @return string $id
+*/
+public function getId()
+{
+return $this->id;
+}
+
+/**
+* Set id
+*
+* @param mixed $id id
+*
+* @return void
+*/
+public function setId($id)
+{
+$this->id = $id;
+}
+
 }

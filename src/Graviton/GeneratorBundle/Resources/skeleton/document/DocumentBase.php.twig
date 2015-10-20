@@ -24,11 +24,6 @@ abstract class {{ document }}Base implements TranslatableDocumentInterface{% if 
 {
 
 /**
-* @var MongoId $id
-*/
-protected $id;
-
-/**
 * @var Date $deletedDate
 */
 protected $deletedDate;
@@ -67,29 +62,6 @@ public function __construct()
         $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new ArrayCollection(){% else %}[]{% endif %};
     {% endif %}
 {% endfor %}
-}
-
-
-/**
-* Get id
-*
-* @return string $id
-*/
-public function getId()
-{
-return $this->id;
-}
-
-/**
-* Set id
-*
-* @param mixed $id id
-*
-* @return void
-*/
-public function setId($id)
-{
-$this->id = $id;
 }
 
 public function getDeleteddate()
