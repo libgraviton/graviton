@@ -80,3 +80,14 @@ curl -X POST \
      -F upload=@test.txt \
      http://localhost/file
 ```
+
+In addition to the POST method, *multipart/form-data* was implemented for the PUT method as well.
+In order to update a file and its' metadata simultaneously, one needs to GET the file meta information first by 
+sending a request with the *Accept: application/json* header added.
+
+```bash
+curl -X PUT \
+    -F 'metadata={"id": "myPersonalFile","links":[],"metadata":{"action":[{"command":"print"}]}}' \
+    -F upload=@example.jpg \ 
+    http://example.org/file/myPersonalFile
+```
