@@ -277,8 +277,29 @@ class FileManager
         $contentType = $request->headers->get('Content-Type');
         list(, $boundary) = explode('; boundary=', $contentType);
 
+        // fix boundary dash count
+        $boundary = '--' . $boundary;
+
         $content = $request->getContent();
-        list(, $metadataInfo, $fileInfo) = explode($boundary, $content);
+        $contentBlocks = explode($boundary, $content, -1);
+        $metadataInfo = '';
+        $fileInfo = '';
+
+        // determine content blocks usage
+        foreach ($contentBlocks as $contentBlock) {
+            if (empty($contentBlock)) {
+                continue;
+            }
+            if (40 === strpos($contentBlock, 'upload')) {
+                $fileInfo = $contentBlock;
+                continue;
+            }
+            if (40 === strpos($contentBlock, 'metadata')) {
+                $metadataInfo = $contentBlock;
+                continue;
+            }
+        }
+
         $attributes = array_merge(
             $request->attributes->all(),
             $this->extractMetaDataFromContent($metadataInfo)
@@ -297,6 +318,10 @@ class FileManager
      */
     private function extractMetaDataFromContent($metadataInfoString)
     {
+        if (empty($metadataInfoString)) {
+            return ['metadata' => '{}'];
+        }
+
         $metadataInfo = explode("\r\n", ltrim($metadataInfoString));
         return ['metadata' => $metadataInfo[2]];
     }
@@ -310,6 +335,10 @@ class FileManager
      */
     private function extractFileFromContent($fileInfoString)
     {
+        if (empty($fileInfoString)) {
+            return null;
+        }
+
         $fileInfo = explode("\r\n\r\n", ltrim($fileInfoString), 2);
 
         // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
@@ -318,10 +347,11 @@ class FileManager
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
         $file = $dir . '/' . $originalName;
+        $fileContent = substr($fileInfo[1], 0, -2);
 
         // create file
         touch($file);
-        $size = file_put_contents($file, $fileInfo[1], LOCK_EX);
+        $size = file_put_contents($file, $fileContent, LOCK_EX);
 
         $files = [
             $matches[1] => new UploadedFile(
