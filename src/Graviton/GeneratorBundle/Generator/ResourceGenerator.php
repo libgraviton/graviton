@@ -169,11 +169,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
-
-        // original model
         $this->generateModel($parameters, $dir, $document);
-        // embedded model
-        $this->generateModel(array_merge($parameters, ['document' => $document.'Embedded']), $dir, $document.'Embedded');
 
         if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
             $this->generateFixtures($parameters, $dir, $document);
@@ -212,12 +208,14 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document, $withRepository)
     {
+        // doctrine mapping normal class
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
             $parameters
         );
 
+        // doctrine mapping embedded
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.xml',
@@ -229,7 +227,6 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
-
 
         $this->renderFile(
             'document/Document.php.twig',
@@ -305,6 +302,7 @@ class ResourceGenerator extends AbstractGenerator
                 )
             );
 
+            // normal repo service
             $services = $this->addParam(
                 $services,
                 $repoName . '.class',
@@ -322,6 +320,30 @@ class ResourceGenerator extends AbstractGenerator
                     array(
                         'type' => 'string',
                         'value' => $parameters['bundle'] . ':' . $document
+                    )
+                ),
+                'doctrine_mongodb.odm.default_document_manager',
+                'getRepository'
+            );
+
+            // embedded repo service
+            $services = $this->addParam(
+                $services,
+                $repoName . 'embedded.class',
+                $parameters['base'] . 'Repository\\' . $parameters['document'] . 'Embedded'
+            );
+
+            $this->addService(
+                $services,
+                $repoName . 'embedded',
+                null,
+                null,
+                array(),
+                null,
+                array(
+                    array(
+                        'type' => 'string',
+                        'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                     )
                 ),
                 'doctrine_mongodb.odm.default_document_manager',
@@ -795,6 +817,18 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
+        // embedded versions
+        $this->renderFile(
+            'model/Model.php.twig',
+            $dir . '/Model/' . $document . 'Embedded.php',
+            array_merge($parameters, ['document' => $document.'Embedded'])
+        );
+        $this->renderFile(
+            'model/schema.json.twig',
+            $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
+            array_merge($parameters, ['document' => $document.'Embedded'])
+        );
+
         $this->renderFile(
             'validator/validation.xml.twig',
             $dir . '/Resources/config/validation.xml',
@@ -811,6 +845,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
+        // normal service
         $this->addService(
             $services,
             $paramName,
@@ -820,6 +855,24 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'method' => 'setRepository',
                     'service' => $repoName
+                ],
+            ),
+            null
+        );
+
+        // embedded service
+
+        $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded', $paramName . 'embedded.class');
+
+        $this->addService(
+            $services,
+            $paramName . 'embedded',
+            'graviton.rest.model',
+            null,
+            array(
+                [
+                    'method' => 'setRepository',
+                    'service' => $repoName . 'embedded'
                 ],
             ),
             null
