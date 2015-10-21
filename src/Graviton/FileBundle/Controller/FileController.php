@@ -9,7 +9,10 @@ use Graviton\FileBundle\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -78,7 +81,8 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
-        $files = $this->fileManager->saveFiles($request, $this->getModel());
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
@@ -143,26 +147,22 @@ class FileController extends RestController
         if (substr(strtolower($contentType), 0, 16) === 'application/json') {
             return parent::putAction($id, $request);
         }
-
-        $file = $this->fileManager->saveFile($id, $request->getContent());
-
-        $record = $this->findRecord($id);
-        $record->getMetadata()
-            ->setSize((int) $file->getSize())
-            ->setMime($contentType)
-            ->setModificationdate(new \DateTime());
-
-        $this->getModel()->updateRecord($id, $record);
-
-        // store id of new record so we don't need to re-parse body later when needed
-        $request->attributes->set('id', $record->getId());
+        if (0 === strpos($contentType, 'multipart/form-data')) {
+            $request = $this->normalizeRequest($request);
+        }
 
         $response = $this->getResponse();
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
+
+        // store id of new record so we don't need to re-parse body later when needed
+        $request->attributes->set('id', $files[0]);
+
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         // TODO: this not is correct for multiple uploaded files!!
         // TODO: Probably use "Link" header to address this.
-        $locations = $this->determineRoutes($request->get('_route'), [$file->getName()], ['put', 'putNoSlash']);
+        $locations = $this->determineRoutes($request->get('_route'), $files, ['put', 'putNoSlash']);
         $response->headers->set(
             'Location',
             $locations[0]
@@ -217,5 +217,50 @@ class FileController extends RestController
         }
 
         return $locations;
+    }
+
+    /**
+     * Validates the provided request
+     *
+     * @param Request  $request  Http request to be validated
+     * @param Response $response Http response to be returned in case of an error
+     * @param string   $fileData Alternative content to be validated
+     *
+     * @throws \Exception
+     * @return File|null
+     */
+    private function validateRequest(Request $request, Response $response, $fileData = '')
+    {
+        if (!empty($fileData)) {
+            $this->formValidator->checkJsonRequest($request, $response, $fileData);
+            $model = $this->getModel();
+            return $this->formValidator->checkForm(
+                $this->formValidator->getForm($request, $model),
+                $model,
+                $this->formDataMapper,
+                $fileData
+            );
+        }
+    }
+
+    /**
+     * Gathers information into a request
+     *
+     * @param Request $request master request sent by client.
+     *
+     * @return Request
+     */
+    private function normalizeRequest(Request $request)
+    {
+        $contentData = $this->fileManager->extractDataFromRequestContent($request);
+        $normalized = $request->duplicate(
+            null,
+            null,
+            $contentData['attributes'],
+            null,
+            $contentData['files']
+        );
+
+        return $normalized;
     }
 }
