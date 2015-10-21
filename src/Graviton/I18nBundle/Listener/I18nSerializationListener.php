@@ -25,14 +25,14 @@ class I18nSerializationListener
     protected $localizedFields = array();
 
     /**
-     * @var \Graviton\I18nBundle\Service\I18nUtils
+     * @var I18nUtils
      */
     protected $utils;
 
     /**
      * set utils (i18nutils)
      *
-     * @param \Graviton\I18NBundle\Service\I18NUtils $utils utils
+     * @param I18nUtils $utils utils
      *
      * @return void
      */
@@ -51,21 +51,29 @@ class I18nSerializationListener
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
-
-        $this->localizedFields[\spl_object_hash($object)] = array();
+        if (!$object instanceof TranslatableDocumentInterface) {
+            return;
+        }
 
         try {
-            if ($object instanceof TranslatableDocumentInterface) {
-                foreach ($object->getTranslatableFields() as $field) {
-                    $setter = 'set'.ucfirst($field);
-                    $getter = 'get'.ucfirst($field);
+            $hash = \spl_object_hash($object);
+            $this->localizedFields[$hash] = [];
+            foreach ($object->getTranslatableFields() as $field) {
+                $isArray = substr($field, -2, 2) === '[]';
+                $method = $isArray ? substr($field, 0, -2) : $field;
 
-                    // only allow objects that we can update during postSerialize
-                    if (method_exists($object, $setter) && $object->$getter() != null) {
-                            $this->localizedFields[\spl_object_hash($object)][$field] = $object->$getter();
-                            // remove untranslated field to make space for translation struct
-                            $object->$setter(null);
-                    }
+                $setter = 'set'.ucfirst($method);
+                $getter = 'get'.ucfirst($method);
+                if (!method_exists($object, $setter) || !method_exists($object, $getter)) {
+                    continue;
+                }
+
+                // only allow objects that we can update during postSerialize
+                $value = $object->$getter();
+                if (($isArray && !empty($value)) || (!$isArray && $value != null)) {
+                    $this->localizedFields[$hash][$field] = $value;
+                    // remove untranslated field to make space for translation struct
+                    $object->$setter(null);
                 }
             }
         } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
@@ -83,11 +91,23 @@ class I18nSerializationListener
     public function onPostSerialize(ObjectEvent $event)
     {
         $object = $event->getObject();
+        if (!$object instanceof TranslatableDocumentInterface) {
+            return;
+        }
+
         foreach ($this->localizedFields[\spl_object_hash($object)] as $field => $value) {
-            $event->getVisitor()->addData(
-                $field,
-                $this->utils->getTranslatedField($value)
-            );
+            if (substr($field, -2, 2) === '[]') {
+                $field = substr($field, 0, -2);
+                $event->getVisitor()->addData(
+                    $field,
+                    array_map([$this->utils, 'getTranslatedField'], $value)
+                );
+            } else {
+                $event->getVisitor()->addData(
+                    $field,
+                    $this->utils->getTranslatedField($value)
+                );
+            }
         }
     }
 }
