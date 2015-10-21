@@ -169,7 +169,11 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
         $this->generateSerializer($parameters, $dir, $document);
+
+        // original model
         $this->generateModel($parameters, $dir, $document);
+        // embedded model
+        $this->generateModel(array_merge($parameters, ['document' => $document.'Embedded']), $dir, $document.'Embedded');
 
         if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
             $this->generateFixtures($parameters, $dir, $document);
