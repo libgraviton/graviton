@@ -140,11 +140,15 @@ class {{ document }} implements TranslatableDocumentInterface{% if isrecordOrigi
 {% for field in fields %}
 
     {% if field.translatable is defined and field.translatable == true %}
-        {% set translatableFields = translatableFields|merge([field.fieldName]) %}
+        {% set translatableFields = translatableFields|merge([
+            field.fieldName ~ ('[]' in field.type ? '[]' : '')
+        ]) %}
     {% endif %}
 
     {% if field.pretranslated is defined and field.pretranslated == true %}
-        {% set preTranslatedFields = preTranslatedFields|merge([field.fieldName]) %}
+        {% set preTranslatedFields = preTranslatedFields|merge([
+            field.fieldName ~ ('[]' in field.type ? '[]' : '')
+        ]) %}
     {% endif %}
 
     /**
