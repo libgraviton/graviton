@@ -155,7 +155,7 @@ class Swagger
                         'schema' => array('$ref' => '#/definitions/' . $incomingEntitySchema)
                     );
 
-                    if ($routeMethod == 'post'){
+                    if ($routeMethod == 'post') {
                         $thisPath['responses'][201] = $thisPath['responses'][200];
                         unset($thisPath['responses'][200]);
                     }
