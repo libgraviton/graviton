@@ -8,6 +8,10 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
+use Graviton\I18nBundle\Event\TranslatablePersistEvent;
+use Graviton\I18nBundle\Service\I18nCacheUtils;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -20,6 +24,22 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class PostPersistTranslatableListener implements EventSubscriber
 {
+
+    /**
+     * dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
+     * @param EventDispatcherInterface $dispatcher dispatcher
+     */
+    public function __construct(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
     /**
      * {@inheritDocs}
      *
@@ -41,30 +61,8 @@ class PostPersistTranslatableListener implements EventSubscriber
     {
         $object = $event->getObject();
         if ($object instanceof Translatable) {
-            $domain = $object->getDomain();
-            $locale = $object->getLocale();
-            $triggerFile = __DIR__.'/../Resources/translations/'.$domain.'.'.$locale.'.odm';
-            $cacheDirMask = __DIR__.'/../../../../app/cache/*/translations';
-
-            $fs = new Filesystem();
-            if (!$fs->exists($triggerFile)) {
-                $fs->touch($triggerFile);
-            }
-
-            try {
-                $finder = new Finder();
-                $finder
-                    ->files()
-                    ->in($cacheDirMask)
-                    ->name('*.' . $locale . '.*');
-
-                foreach ($finder as $file) {
-                    $fs->remove($file->getRealPath());
-                }
-            } catch (\InvalidArgumentException $e) {
-                // InvalidArgumentException gets thrown if the translation cache dir doesn't exist.
-                // we ignore it since it's normal under some circumstances (no cache warmup yet)
-            }
+            $event = new TranslatablePersistEvent($object->getLocale(), $object->getDomain());
+            $this->dispatcher->dispatch(TranslatablePersistEvent::EVENT_NAME, $event);
         }
     }
 }

@@ -98,6 +98,22 @@ class FileManagerTest extends WebTestCase
      */
     public function testSaveFiles()
     {
+        $jsonData = '{
+          "links": [
+            {
+              "$ref": "http://localhost/testcase/readonly/101",
+              "type": "owner"
+            },
+            {
+              "$ref": "http://localhost/testcase/readonly/102",
+              "type": "module"
+            }
+          ],
+          "metadata": {
+            "action":[{"command":"print"},{"command":"archive"}]
+          }
+        }';
+
         copy(__DIR__ . '/Fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
         $file = sys_get_temp_dir() . '/test.txt';
         $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
@@ -106,10 +122,10 @@ class FileManagerTest extends WebTestCase
             'POST',
             '/file',
             [
-                'metadata' => '{"action":[{"command":"print"},{"command":"archive"}]}'
+                'metadata' => $jsonData,
             ],
             [
-                'upload' => $uploadedFile
+                'upload' => $uploadedFile,
             ]
         );
         $response = $client->getResponse();
@@ -118,6 +134,7 @@ class FileManagerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $this->assertContains('/file/', $location);
 
+        // receive generated file information
         $client = $this->createClient();
         $client->request(
             'GET',
@@ -133,5 +150,25 @@ class FileManagerTest extends WebTestCase
         $contentArray = json_decode($response->getContent(), true);
 
         $this->assertEquals([["command" => "print"], ["command" => "archive"]], $contentArray['metadata']['action']);
+        $this->assertJsonStringEqualsJsonString(
+            '[
+              {
+                "$ref": "http://localhost/testcase/readonly/101",
+                "type": "owner"
+              },
+              {
+                "$ref": "http://localhost/testcase/readonly/102",
+                "type": "module"
+              }
+            ]',
+            json_encode($contentArray['links'])
+        );
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            $location
+        );
     }
 }

@@ -135,7 +135,13 @@ class SchemaUtils
     {
         // build up schema data
         $schema = new Schema;
-        $schema->setTitle(ucfirst($modelName));
+
+        if (!empty($model->getTitle())) {
+            $schema->setTitle($model->getTitle());
+        } else {
+            $schema->setTitle(ucfirst($modelName));
+        }
+        
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
