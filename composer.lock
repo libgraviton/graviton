@@ -4327,16 +4327,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.12.0",
+            "version": "dev-feature/EVO-581-translatable-array",
             "source": {
                 "type": "git",
-                "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d"
+                "url": "https://github.com/mrix/GravitonTestServicesBundle.git",
+                "reference": "8ff9d026cd0cb52b701a065ed72d9a6615b10687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/51595263b0dbb49daf7f752318d62e11b7daa27d",
-                "reference": "51595263b0dbb49daf7f752318d62e11b7daa27d",
+                "url": "https://api.github.com/repos/mrix/GravitonTestServicesBundle/zipball/8ff9d026cd0cb52b701a065ed72d9a6615b10687",
+                "reference": "8ff9d026cd0cb52b701a065ed72d9a6615b10687",
                 "shasum": ""
             },
             "type": "library",
@@ -4351,10 +4351,9 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/develop",
-                "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
+                "source": "https://github.com/mrix/GravitonTestServicesBundle/tree/feature/EVO-581-translatable-array"
             },
-            "time": "2015-10-19 08:05:16"
+            "time": "2015-10-21 05:29:50"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -5466,7 +5465,8 @@
         "doctrine/mongodb-odm-bundle": 10,
         "php-jsonpointer/php-jsonpointer": 5,
         "knplabs/knp-gaufrette-bundle": 20,
-        "lapistano/proxy-object": 20
+        "lapistano/proxy-object": 20,
+        "graviton/test-services-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
