@@ -41,11 +41,11 @@ class GravitonRabbitMqExtension extends GravitonBundleExtension
         if (!empty($services)) {
             $services = json_decode($services, true);
 
-            if (!isset($services['rabbitmq-3.0'][0]['credentials'])) {
+            if (!isset($services['rabbitmq'][0]['credentials'])) {
                 return false;
             }
 
-            $creds = $services['rabbitmq-3.0'][0]['credentials'];
+            $creds = $services['rabbitmq'][0]['credentials'];
             $container->setParameter('rabbitmq.host', $creds['host']);
             $container->setParameter('rabbitmq.port', $creds['port']);
             $container->setParameter('rabbitmq.user', $creds['username']);
