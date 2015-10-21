@@ -12,4 +12,4 @@ deploy-scripts:
     mongodb: small
     dynstrg: usage
     rabbitmq: small
-  cf_environment_vars: { "ERRBIT_API_KEY": "", "ERRBIT_HOST": "errbit.nova.scapp.io" }
+  cf_environment_vars: { "ERRBIT_API_KEY": "", "ERRBIT_HOST": "errbit.nova.scapp.io", "COMPOSER_CMD": "false" }
