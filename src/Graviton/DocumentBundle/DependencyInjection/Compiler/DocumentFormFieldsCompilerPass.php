@@ -33,7 +33,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
         'extref'  => 'extref',
         'int'     => 'integer',
         'float'   => 'number',
-        'boolean' => 'checkbox',
+        'boolean' => 'strictboolean',
         'date'    => 'datetime',
     ];
 
