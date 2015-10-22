@@ -407,7 +407,7 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-        $this->assertEquals('/file/myPersonalFile', $response->headers->get('location'));
+        $this->assertNotContains('location', $response->headers->all());
 
         // clean up
         $client = $this->createClient();
