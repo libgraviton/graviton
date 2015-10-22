@@ -84,6 +84,9 @@ class FileController extends RestController
         $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
+        // store id of new record so we don't need to re-parse body later when needed
+        $request->attributes->set('id', $files[0]);
+
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
 
