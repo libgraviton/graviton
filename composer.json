@@ -15,7 +15,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "http://gravity-platform-packages.nova.scapp.io"
+            "url": "https://gravity-platform-packages.scapp.io"
         }
     ],
     "require": {
