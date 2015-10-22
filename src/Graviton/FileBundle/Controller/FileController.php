@@ -160,13 +160,7 @@ class FileController extends RestController
 
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
-        // TODO: this not is correct for multiple uploaded files!!
-        // TODO: Probably use "Link" header to address this.
-        $locations = $this->determineRoutes($request->get('_route'), $files, ['put', 'putNoSlash']);
-        $response->headers->set(
-            'Location',
-            $locations[0]
-        );
+        // no service sends Location headers on PUT - /file shouldn't as well
 
         return $response;
     }
