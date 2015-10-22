@@ -765,9 +765,13 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
         foreach ($parameters['fields'] as $key => $field) {
-            if (substr($field['serializerType'], 0, 14) == 'array<Graviton' && strpos($field['serializerType'], '\\Entity') === false) {
+            if (substr($field['serializerType'], 0, 14) == 'array<Graviton' &&
+                strpos($field['serializerType'], '\\Entity') === false
+            ) {
                 $parameters['fields'][$key]['serializerType'] = substr($field['serializerType'], 0, -1).'Embedded>';
-            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton' && strpos($field['serializerType'], '\\Entity') === false) {
+            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton' &&
+                strpos($field['serializerType'], '\\Entity') === false
+            ) {
                 $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
             }
         }
@@ -861,8 +865,10 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         // embedded service
-
-        $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded', $paramName . 'embedded.class');
+        $this->addXmlParameter(
+            $parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded',
+            $paramName . 'embedded.class'
+        );
 
         $this->addService(
             $services,
