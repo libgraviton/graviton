@@ -219,6 +219,41 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * Test only RQL select() operator is allowed for GET one
+     *
+     * @return void
+     * @group tmp
+     */
+    public function testOnlyRqlSelectIsAllowedOnGetOne()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach ([
+                     'limit' => 'limit(1)',
+                     'sort'  => 'sort(+id)',
+                     'eq'    => 'eq(id,a)',
+                 ] as $extraRqlOperator => $extraRqlOperatorQuery) {
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/admin?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+            $this->assertEquals(
+                sprintf('RQL operator "%s" is not allowed for this request', $extraRqlOperator),
+                $client->getResults()->message
+            );
+        }
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void

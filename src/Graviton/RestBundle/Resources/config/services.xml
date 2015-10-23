@@ -16,6 +16,7 @@
         <parameter key="graviton.rest.listener.xversionresponselistener.class">Graviton\RestBundle\Listener\XVersionResponseListener</parameter>
         <parameter key="graviton.rest.listener.rqlselectresponselistener.class">Graviton\RestBundle\Listener\RqlSelectResponseListener</parameter>
         <parameter key="graviton.rest.listener.rqlqueryrequestlistener.class">Graviton\RestBundle\Listener\RqlQueryRequestListener</parameter>
+        <parameter key="graviton.rest.listener.rqlallowedoperatorrequestlistener.class">Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
@@ -116,6 +117,12 @@
         <service id="graviton.rest.listener.specialmimetypesrequestlistener"
                  class="Graviton\RestBundle\Listener\SpecialMimetypeRequestListener">
             <argument type="service" id="service_container"/>
+            <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
+        </service>
+
+        <!-- Allowed RQL operator listener -->
+        <service id="graviton.rest.listener.rqlallowedoperatorrequestlistener"
+                 class="%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%">
             <tag name="kernel.event_listener" event="graviton.rest.request" method="onKernelRequest"/>
         </service>
 
