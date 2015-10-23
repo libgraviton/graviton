@@ -1,0 +1,29 @@
+{
+  "id": "EmbedTestEntity",
+  "service": {
+    "readOnly": true,
+    "routerBase": "/testcase/embedtest-entity/",
+    "fixtures": [
+      {
+        "id": "one",
+        "data": "one"
+      },
+      {
+        "id": "two",
+        "data": "two"
+      }
+    ]
+  },
+  "target": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "data",
+        "type": "string"
+      }
+    ]
+  }
+}
