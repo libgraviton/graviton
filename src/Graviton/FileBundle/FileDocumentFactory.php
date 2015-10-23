@@ -5,9 +5,9 @@
 
 namespace Graviton\FileBundle;
 
-use GravitonDyn\FileBundle\Document\FileLinks;
-use GravitonDyn\FileBundle\Document\FileMetadata;
-use GravitonDyn\FileBundle\Document\FileMetadataAction;
+use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
+use GravitonDyn\FileBundle\Document\FileMetadataActionEmbedded;
+use GravitonDyn\FileBundle\Document\FileLinksEmbedded;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -23,7 +23,7 @@ class FileDocumentFactory
      */
     public function createFileMetadataAction()
     {
-        return new FileMetadataAction();
+        return new FileMetadataActionEmbedded();
     }
 
     /**
@@ -33,7 +33,7 @@ class FileDocumentFactory
      */
     public function createFileMataData()
     {
-        return new FileMetadata();
+        return new FileMetadataEmbedded();
     }
 
     /**
@@ -70,7 +70,7 @@ class FileDocumentFactory
      */
     public function createFileLink()
     {
-        return new FileLinks();
+        return new FileLinksEmbedded();
     }
 
     /**

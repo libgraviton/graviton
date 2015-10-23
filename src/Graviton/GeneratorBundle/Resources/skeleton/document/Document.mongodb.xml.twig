@@ -4,16 +4,28 @@
       xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
       xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    {% if json is defined and json.isSubDocument() == true %}
-        {% set docType = "embedded-document" %}
-    {% else %}
-        {% set docType = "document" %}
-    {%  endif %}
+    <mapped-superclass name="{{ base }}Document\{{ document }}Base">
+    </mapped-superclass>
 
-  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}">
+    {% if docType is defined and docType == "embedded-document" %}
+        {% set hideIdField = true %}
+    {% else %}
+        {% set hideIdField = false %}
+    {% endif %}
+
+    {% if docType is not defined %}
+        {% set docType = "document" %}
+    {% endif %}
+
+  <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}" inheritance-type="COLLECTION_PER_CLASS">
 
   {% if idField is defined %}
-      <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID"/>
+      {% if hideIdField == false %}
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID" />
+      {% else %}
+          <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
+          <field fieldName="realId" type="{{ idField.doctrineType }}" id="true" strategy="AUTO" />
+      {% endif %}
   {% else %}
       <field fieldName="id" type="string" id="true" strategy="UUID"/>
   {% endif %}
@@ -27,16 +39,20 @@
                 {% endif %}
 
                 {% if '[]' in field.type %}
-                    <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}" strategy="set">
+                    <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}{% if relType == 'embed' %}Embedded{% endif %}" strategy="set">
+                        {% if relType == "reference" %}
                         <cascade>
                             <all/>
                         </cascade>
+                        {% endif %}
                     </{{ relType }}-many>
                 {% else %}
-                    <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}">
+                    <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}{% if relType == 'embed' %}Embedded{% endif %}">
+                        {% if relType == "reference" %}
                         <cascade>
                             <all/>
                         </cascade>
+                        {% endif %}
                     </{{ relType }}-one>
                 {% endif %}
             {% else %}
