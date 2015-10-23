@@ -22,7 +22,7 @@ class FileDocumentFactoryTest extends \PHPUnit_Framework_TestCase
         $factory = new FileDocumentFactory();
 
         $this->assertInstanceOf(
-            '\GravitonDyn\FileBundle\Document\FileMetaData',
+            '\GravitonDyn\FileBundle\Document\FileMetaDataEmbedded',
             $factory->createFileMataData()
         );
     }
@@ -48,7 +48,7 @@ class FileDocumentFactoryTest extends \PHPUnit_Framework_TestCase
         $factory = new FileDocumentFactory();
 
         $this->assertInstanceOf(
-            '\GravitonDyn\FileBundle\Document\FileLinks',
+            '\GravitonDyn\FileBundle\Document\FileLinksEmbedded',
             $factory->createFileLink()
         );
     }
@@ -75,7 +75,7 @@ class FileDocumentFactoryTest extends \PHPUnit_Framework_TestCase
         $factory = new FileDocumentFactory();
 
         $this->assertInstanceOf(
-            '\GravitonDyn\FileBundle\Document\FileMetadataAction',
+            '\GravitonDyn\FileBundle\Document\FileMetadataActionEmbedded',
             $factory->createFileMetadataAction()
         );
     }
