@@ -169,11 +169,11 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * RQL is parsed only when we get all apps
+     * RQL is parsed only when we get apps
      *
      * @return void
      */
-    public function testRqlIsParsedOnlyOnAllRequest()
+    public function testRqlIsParsedOnlyOnGetRequest()
     {
         $appData = [
             'showInMenu' => false,
