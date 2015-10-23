@@ -187,6 +187,11 @@ class AppControllerTest extends RestTestCase
         $this->assertContains('syntax error in rql', $client->getResults()->message);
 
         $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
         $client->request('OPTIONS', '/core/app/?invalidrqlquery');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
@@ -197,10 +202,6 @@ class AppControllerTest extends RestTestCase
 
             $client = static::createRestClient();
             $client->request($method, '/schema/core/app/item?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-            $client = static::createRestClient();
-            $client->request($method, '/core/app/admin?invalidrqlquery');
             $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         }
 

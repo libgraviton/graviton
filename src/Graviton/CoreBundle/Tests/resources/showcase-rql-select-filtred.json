@@ -1,5 +1,6 @@
 [
   {
+    "id": "500",
     "someFloatyDouble": 11.7,
     "contact": {
       "uri": "mailto:joe@example.com"
@@ -29,6 +30,7 @@
     ]
   },
   {
+    "id": "600",
     "someFloatyDouble": 458.114,
     "contact": {
       "uri": "mailto:dave@example-company.com"

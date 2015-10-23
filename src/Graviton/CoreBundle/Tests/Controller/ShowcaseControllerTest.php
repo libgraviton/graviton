@@ -305,6 +305,7 @@ class ShowcaseControllerTest extends RestTestCase
         );
 
         $fields = [
+            'id',
             'someFloatyDouble',
             'contact.uri',
             'contactCode.text.en',
@@ -318,6 +319,13 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
+
+
+        foreach ($filtred as $item) {
+            $client = static::createRestClient();
+            $client->request('GET', '/hans/showcase/'.$item->id.'?'.$rqlSelect);
+            $this->assertEquals($item, $client->getResults());
+        }
     }
 
     /**
