@@ -42,7 +42,7 @@ class ExtReference implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return ['$ref' => $this->ref, '$id' => $this->ref];
+        return ['$ref' => $this->ref, '$id' => $this->id];
     }
 
     /**
