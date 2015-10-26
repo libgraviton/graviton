@@ -1,6 +1,6 @@
 <?php
 /**
- * document class for {{ base }}Document\{{ document }}
+ * document class for {{ base }}Document\{{ document }}Embedded
  */
 
 namespace {{ base }}Document;
@@ -10,13 +10,19 @@ namespace {{ base }}Document;
 * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
 * @link     http://swisscom.ch
 */
-class {{ document }} extends {{ document }}Base
+class {{ document }}Embedded extends {{ document }}Base
 {
 
 /**
 * @var mixed $id
 */
 protected $id;
+
+/**
+* @var MongoId $id
+*/
+protected $realId;
+
 
 /**
 * Get id
@@ -38,6 +44,16 @@ return $this->id;
 public function setId($id)
 {
 $this->id = $id;
+}
+
+/**
+* Get realId
+*
+* @return string $id
+*/
+public function getRealId()
+{
+return $this->realId;
 }
 
 }
