@@ -66,13 +66,15 @@ class XmlManipulator
         foreach ($this->nodes as $nodeXml) {
             $mergeDoc = $this->initDomDocument($nodeXml);
 
-            $importNode = $mergeDoc->getElementsByTagNameNS(
+            $importNodes = $mergeDoc->getElementsByTagNameNS(
                 'http://symfony.com/schema/dic/constraint-mapping',
                 'class'
-            )->item(0);
+            );
 
-            $importNode = $this->document->importNode($importNode, true);
-            $this->document->documentElement->appendChild($importNode);
+            foreach ($importNodes as $importNode) {
+                $importNode = $this->document->importNode($importNode, true);
+                $this->document->documentElement->appendChild($importNode);
+            }
         }
 
         return $this;

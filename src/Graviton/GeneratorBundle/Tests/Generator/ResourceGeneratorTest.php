@@ -282,7 +282,7 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->getMock();
 
         $generator
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(5))
             ->method('renderFile');
 
         $generator
