@@ -98,8 +98,8 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit_Framework_TestCase
             ],
             'sort' => [
                 (new QueryBuilder())
-                ->addNode(new SortNode(['field' => SortNode::SORT_ASC]))
-                ->getQuery(),
+                    ->addNode(new SortNode(['field' => SortNode::SORT_ASC]))
+                    ->getQuery(),
             ],
             'query' => [
                 (new QueryBuilder())
