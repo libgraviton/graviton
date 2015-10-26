@@ -84,6 +84,9 @@ class FileController extends RestController
         $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
+        // store id of new record so we don't need to re-parse body later when needed
+        $request->attributes->set('id', $files[0]);
+
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
 
@@ -160,13 +163,7 @@ class FileController extends RestController
 
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
-        // TODO: this not is correct for multiple uploaded files!!
-        // TODO: Probably use "Link" header to address this.
-        $locations = $this->determineRoutes($request->get('_route'), $files, ['put', 'putNoSlash']);
-        $response->headers->set(
-            'Location',
-            $locations[0]
-        );
+        // no service sends Location headers on PUT - /file shouldn't as well
 
         return $response;
     }

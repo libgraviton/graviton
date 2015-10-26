@@ -239,8 +239,10 @@ class FileControllerTest extends RestTestCase
         );
 
         $response = $client->getResponse();
+        $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(201, $response->getStatusCode());
+        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
     }
 
     /**
@@ -297,8 +299,11 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
-        $this->assertEquals(201, $client->getResponse()->getStatusCode());
         $response = $client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $linkHeader = $response->headers->get('Link');
+        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -323,7 +328,9 @@ class FileControllerTest extends RestTestCase
         $client->request('GET', sprintf('/file/%s', $retData->id));
 
         $retData = $client->getResults();
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
         $this->assertEquals(strlen($newData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
     }
@@ -407,7 +414,7 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-        $this->assertEquals('/file/myPersonalFile', $response->headers->get('location'));
+        $this->assertNotContains('location', $response->headers->all());
 
         // clean up
         $client = $this->createClient();
