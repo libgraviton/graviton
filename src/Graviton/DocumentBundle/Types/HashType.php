@@ -93,7 +93,7 @@ class HashType extends Type
         }
 
         $externalRefFieldName = '$ref';
-        $internalRefFieldName = '_dynExtRef';
+        $internalRefFieldName = 'ref';
 
         if (is_array($input)) {
             foreach ($input as $key => $value) {
