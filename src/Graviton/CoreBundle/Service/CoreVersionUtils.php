@@ -235,17 +235,22 @@ class CoreVersionUtils
     private function semVerMatcher($versionString)
     {
         $matches = array();
-        $regex = '/^(?<version>[v]?[0-9]+\.[0-9]+\.[0-9]+)(?<prerelease>-[0-9a-zA-Z.]+)?(?<build>\+[0-9a-zA-Z.]+)?$/';
+
+        // Regular expression for root package ('self') on a tagged version
+        $tag = '^(?<version>[v]?[0-9]+\.[0-9]+\.[0-9]+)(?<prerelease>-[0-9a-zA-Z.]+)?(?<build>\+[0-9a-zA-Z.]+)?$';
+        // Regular expression for root package on a git branch
+        $branch = '^(?<branch>(dev\-){1}[0-9a-zA-Z\.\/\-\_]+)$';
+        $regex = sprintf('/%s|%s/', $tag, $branch);
 
         $matched = preg_match($regex, $versionString, $matches);
 
         if (!$matched) {
             throw new InvalidArgumentException(
-                '"' . $versionString . '" is not a valid SemVer'
+                sprintf('"%s" is not a valid SemVer', $versionString)
             );
         }
 
-        return $matches['version'];
+        return isset($matches['version']) ? $matches['version'] : $matches['branch'];
     }
 
     /**
