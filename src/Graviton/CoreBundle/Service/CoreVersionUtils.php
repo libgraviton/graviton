@@ -5,8 +5,9 @@
 
 namespace Graviton\CoreBundle\Service;
 
-use \Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Process\Process;
+use InvalidArgumentException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -75,7 +76,9 @@ class CoreVersionUtils
             if (strpos($line, 'versions') !== false) {
                 $wrapperVersionArr = explode(':', $line);
                 $wrapper['id'] = 'self';
-                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
+                $wrapper['version'] = $this->checkVersionNumber(
+                    trim(str_replace('*', '', $wrapperVersionArr[1]))
+                );
             }
         }
 
@@ -98,7 +101,13 @@ class CoreVersionUtils
         foreach ($packages as $package) {
             $content = preg_split('/([\s]+)/', $package);
             if ($this->isDesiredVersion($content[0])) {
-                array_push($versions, array('id' => $content[0], 'version' => $content[1]));
+                array_push(
+                    $versions,
+                    array(
+                        'id' => $content[0],
+                        'version' => $this->checkVersionNumber($content[1])
+                    )
+                );
             }
         }
 
@@ -194,5 +203,67 @@ class CoreVersionUtils
         $config = $parser->parse(file_get_contents($filePath));
 
         return is_array($config) ? $config : [];
+    }
+
+    /**
+     * Checks if the version number is following semantic versioning
+     *
+     * @param string $versionString SemVer version string
+     * @return string
+     */
+    private function checkVersionNumber($versionString)
+    {
+        try {
+            $version = $this->semVerMatcher($versionString);
+        } catch (InvalidArgumentException $e) {
+            if (substr_count($versionString, '.') === 3) {
+                $version = $this->cutVersionString($versionString);
+            } else {
+                $version = $versionString;
+            }
+        }
+
+        return $version;
+    }
+
+    /**
+     * Match a SemVer string using a regex
+     *
+     * @param string $versionString SemVer version string
+     * @return string
+     */
+    private function semVerMatcher($versionString)
+    {
+        $matches = array();
+        $regex = '/^(?<version>[v]?[0-9]+\.[0-9]+\.[0-9]+)(?<prerelease>-[0-9a-zA-Z.]+)?(?<build>\+[0-9a-zA-Z.]+)?$/';
+
+        $matched = preg_match($regex, $versionString, $matches);
+
+        if (!$matched) {
+            throw new InvalidArgumentException(
+                '"' . $versionString . '" is not a valid SemVer'
+            );
+        }
+
+        return $matches['version'];
+    }
+
+    /**
+     * Changing the incorrect SemVer string to a valid one
+     *
+     * @param string $versionString SemVer version string
+     * @return string
+     */
+    private function cutVersionString($versionString)
+    {
+        $versionParts = explode('.', $versionString);
+        $versionString= sprintf(
+            'v%d.%d.%d',
+            $versionParts[0],
+            $versionParts[1],
+            $versionParts[2]
+        );
+
+        return $versionString;
     }
 }
