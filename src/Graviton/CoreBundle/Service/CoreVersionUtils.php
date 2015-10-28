@@ -105,7 +105,7 @@ class CoreVersionUtils
                     $versions,
                     array(
                         'id' => $content[0],
-                        'version' => $this->checkVersionNumber($content[1])
+                        'version' => $content[1]
                     )
                 );
             }
@@ -250,6 +250,9 @@ class CoreVersionUtils
 
     /**
      * Changing the incorrect SemVer string to a valid one
+     *
+     * At the moment, we are getting the version of the root package ('self') using the
+     * 'composer show -s'-command. Unfortunately Composer is adding an unnecessary ending.
      *
      * @param string $versionString SemVer version string
      * @return string
