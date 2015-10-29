@@ -202,7 +202,8 @@ class FileManager
         // does it really exist??
         if (!empty($fileData)) {
             $record = $model->find($fileData->getId());
-        } elseif (!empty($id)) {
+        }
+        if (empty($record) && !empty($id)) {
             $record = $model->find($id);
         }
 
@@ -222,6 +223,10 @@ class FileManager
         }
 
         if (!empty($fileData)) {
+            $fId = $fileData->getId();
+            if (empty($fId) && !empty($id)) {
+                $fileData->setId($id);
+            }
             $record = $fileData;
         } else {
             $entityClass = $model->getEntityClass();
