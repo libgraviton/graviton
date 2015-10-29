@@ -107,18 +107,14 @@ class FileManager
 
             /** @var \Gaufrette\File $file */
             $file = $this->saveFile($record->getId(), $fileInfo['content']);
-            $actions = (!empty($fileData)) ? $fileData->getMetadata()->getAction()->toArray() : [];
-            $links = (!empty($fileData)) ? $fileData->getLinks()->toArray() : [];
 
-            $meta = $this->initOrUpdateMetadata(
+            $this->initOrUpdateMetadata(
                 $record,
                 $file->getSize(),
                 $fileInfo,
-                $actions
+                $fileData
             );
 
-            $record->setMetadata($meta);
-            $record->setLinks($links);
             $model->updateRecord($record->getId(), $record);
 
             // TODO NOTICE: ONLY UPLOAD OF ONE FILE IS CURRENTLY SUPPORTED
@@ -237,24 +233,41 @@ class FileManager
     }
 
     /**
-     * Provides a set up FileMetaData instance
+     * Updates or initialzes the metadata information of the current entity.
      *
      * @param FileDocument $file     Document to be used
      * @param integer      $fileSize Size of the uploaded file
      * @param array        $fileInfo Additional info about the file
-     * @param array        $actions  List of actions to trigger workers
-     *
-     * @return FileMetadata
+     * @param FileDocument $fileData File data to be updated
      */
-    private function initOrUpdateMetadata(FileDocument $file, $fileSize, array $fileInfo, array $actions)
+    private function initOrUpdateMetadata(FileDocument $file, $fileSize, array $fileInfo, FileDocument $fileData = null)
     {
         $meta = $file->getMetadata();
+        $actions = $meta->getAction()->toArray();
+
+        if (!empty($fileData)) {
+            $actions = (!empty($fileData->getMetadata()->getAction()->toArray()))
+                ? $fileData->getMetadata()->getAction()->toArray()
+                : [];
+            $links = (!empty($fileData->getLinks()->toArray()))
+                ? $fileData->getLinks()->toArray()
+                : [];
+            $file->setLinks($links);
+        }
+
         if (!empty($meta)) {
             $meta
                 ->setAction($actions)
                 ->setSize((int) $fileSize)
-                ->setMime($fileInfo['data']['mimetype'])
                 ->setModificationdate(new \DateTime());
+
+            if (!empty($fileInfo['data']['mimetype'])) {
+                $meta->setMime($fileInfo['data']['mimetype']);
+            }
+            if (!empty($fileInfo['data']['filename'])) {
+                $meta->setFilename($fileInfo['data']['filename']);
+            }
+
         } else {
             // update record with file metadata
             $meta = $this->fileDocumentFactory->initiateFileMataData(
@@ -266,7 +279,7 @@ class FileManager
             );
         }
 
-        return $meta;
+        $file->setMetadata($meta);
     }
 
     /**
