@@ -211,16 +211,12 @@ class CoreVersionUtils
      * @param string $versionString SemVer version string
      * @return string
      */
-    private function checkVersionNumber($versionString)
+    public function checkVersionNumber($versionString)
     {
         try {
             $version = $this->semVerMatcher($versionString);
         } catch (InvalidArgumentException $e) {
-            if (substr_count($versionString, '.') === 3) {
-                $version = $this->cutVersionString($versionString);
-            } else {
-                $version = $versionString;
-            }
+            $version = $this->cutVersionString($versionString);
         }
 
         return $version;
@@ -265,12 +261,21 @@ class CoreVersionUtils
     private function cutVersionString($versionString)
     {
         $versionParts = explode('.', $versionString);
-        $versionString= sprintf(
-            'v%d.%d.%d',
-            $versionParts[0],
-            $versionParts[1],
-            $versionParts[2]
-        );
+
+        if (substr_count($versionString, '.') === 3) {
+            $versionString = sprintf(
+                'v%d.%d.%d',
+                $versionParts[0],
+                $versionParts[1],
+                $versionParts[2]
+            );
+        } elseif (substr_count($versionString, '.') === 1) {
+            $versionString = sprintf(
+                'v%d.%d.0',
+                $versionParts[0],
+                $versionParts[1]
+            );
+        }
 
         return $versionString;
     }
