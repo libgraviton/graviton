@@ -250,7 +250,7 @@ class CoreVersionUtils
             );
         }
 
-        return isset($matches['version']) ? $matches['version'] : $matches['branch'];
+        return !empty($matches['version']) ? $matches['version'] : $matches['branch'];
     }
 
     /**
