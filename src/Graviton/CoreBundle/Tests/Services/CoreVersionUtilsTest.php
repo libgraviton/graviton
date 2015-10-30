@@ -23,37 +23,35 @@ class CoreVersionUtilsTest extends RestTestCase
     private $coreVersionUtils;
 
     /**
-     * @dataProvider provideVersionNumberForCheck
+     * @dataProvider provideVersionStringForGet
      *
-     * @param string $versionToCheck  String which should be checked
+     * @param string $versionString   String which should be checked
      * @param string $expectedVersion Expected Version string
      * @return void
      */
-    public function testCheckVersionNumber($versionToCheck, $expectedVersion)
+    public function testGetVersionNumber($versionString, $expectedVersion)
     {
         $this->coreVersionUtils = $this->getMockBuilder('Graviton\CoreBundle\Service\CoreVersionUtils')
             ->disableOriginalConstructor()
             ->setMethods(null)
             ->getMock();
 
-        $returnedVersion = $this->coreVersionUtils->checkVersionNumber($versionToCheck);
+        $returnedVersion = $this->coreVersionUtils->getVersionNumber($versionString);
         $this->assertEquals($expectedVersion, $returnedVersion);
     }
 
     /**
-     * Data provider for testCheckVersionNumber
+     * Data provider for testGetVersionNumber
      *
      * @return array
      */
-    public function provideVersionNumberForCheck()
+    public function provideVersionStringForGet()
     {
         return array(
             array('1.2.3.4', 'v1.2.3'),
             array('1.2.3', '1.2.3'),
-            array('1.2','v1.2.0'),
             array('v1.2.3', 'v1.2.3'),
             array('v1.2.3-alpha1', 'v1.2.3'),
-            array('dev-master', 'dev-master'),
             array('dev-feature/test_branch', 'dev-feature/test_branch'),
             array('dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75', 'dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75')
         );

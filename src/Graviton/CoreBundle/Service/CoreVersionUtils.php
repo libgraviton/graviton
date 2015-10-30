@@ -71,14 +71,13 @@ class CoreVersionUtils
     {
         $output = $this->runComposerInContext('show -s --no-ansi');
         $lines = explode(PHP_EOL, $output);
-        $wrapper = array();
+        $wrapper = [];
         foreach ($lines as $line) {
             if (strpos($line, 'versions') !== false) {
-                $wrapperVersionArr = explode(':', $line);
+                list(, $wrapperVersion) = explode(': *', $line, 2);
                 $wrapper['id'] = 'self';
-                $wrapper['version'] = $this->checkVersionNumber(
-                    trim(str_replace('*', '', $wrapperVersionArr[1]))
-                );
+                $wrapper['version'] = $this->getVersionNumber(trim($wrapperVersion));
+                break;
             }
         }
 
@@ -101,13 +100,7 @@ class CoreVersionUtils
         foreach ($packages as $package) {
             $content = preg_split('/([\s]+)/', $package);
             if ($this->isDesiredVersion($content[0])) {
-                array_push(
-                    $versions,
-                    array(
-                        'id' => $content[0],
-                        'version' => $content[1]
-                    )
-                );
+                array_push($versions, array('id' => $content[0], 'version' => $content[1]));
             }
         }
 
@@ -206,77 +199,65 @@ class CoreVersionUtils
     }
 
     /**
-     * Checks if the version number is following semantic versioning
+     * Returns the version out of a given version string
      *
      * @param string $versionString SemVer version string
      * @return string
      */
-    public function checkVersionNumber($versionString)
+    public function getVersionNumber($versionString)
     {
         try {
-            $version = $this->semVerMatcher($versionString);
+            $version = $this->getVersionOrBranchName($versionString);
         } catch (InvalidArgumentException $e) {
-            $version = $this->cutVersionString($versionString);
+            $version = $this->normalizeVersionString($versionString);
         }
 
-        return $version;
+        return empty($version) ? $versionString : $version;
     }
 
     /**
-     * Match a SemVer string using a regex
+     * Get a version string string using a regular expression
      *
      * @param string $versionString SemVer version string
      * @return string
      */
-    private function semVerMatcher($versionString)
+    private function getVersionOrBranchName($versionString)
     {
-        $matches = array();
-
         // Regular expression for root package ('self') on a tagged version
         $tag = '^(?<version>[v]?[0-9]+\.[0-9]+\.[0-9]+)(?<prerelease>-[0-9a-zA-Z.]+)?(?<build>\+[0-9a-zA-Z.]+)?$';
         // Regular expression for root package on a git branch
         $branch = '^(?<branch>(dev\-){1}[0-9a-zA-Z\.\/\-\_]+)$';
         $regex = sprintf('/%s|%s/', $tag, $branch);
 
-        $matched = preg_match($regex, $versionString, $matches);
-
-        if (!$matched) {
+        $matches = [];
+        if (0 === preg_match($regex, $versionString, $matches)) {
             throw new InvalidArgumentException(
                 sprintf('"%s" is not a valid SemVer', $versionString)
             );
         }
 
-        return !empty($matches['version']) ? $matches['version'] : $matches['branch'];
+        return empty($matches['version']) ? $matches['branch'] : $matches['version'];
     }
 
     /**
-     * Changing the incorrect SemVer string to a valid one
+     * Normalizing the incorrect SemVer string to a valid one
      *
      * At the moment, we are getting the version of the root package ('self') using the
      * 'composer show -s'-command. Unfortunately Composer is adding an unnecessary ending.
      *
      * @param string $versionString SemVer version string
+     * @param string $prefix        Version prefix
      * @return string
      */
-    private function cutVersionString($versionString)
+    private function normalizeVersionString($versionString, $prefix = 'v')
     {
-        $versionParts = explode('.', $versionString);
+        $versionArray = explode('.', $versionString);
+        array_pop($versionArray);
 
-        if (substr_count($versionString, '.') === 3) {
-            $versionString = sprintf(
-                'v%d.%d.%d',
-                $versionParts[0],
-                $versionParts[1],
-                $versionParts[2]
-            );
-        } elseif (substr_count($versionString, '.') === 1) {
-            $versionString = sprintf(
-                'v%d.%d.0',
-                $versionParts[0],
-                $versionParts[1]
-            );
-        }
-
-        return $versionString;
+        return sprintf(
+            '%s%s',
+            $prefix,
+            implode('.', $versionArray)
+        );
     }
 }
