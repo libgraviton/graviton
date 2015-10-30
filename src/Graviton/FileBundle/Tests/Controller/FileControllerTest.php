@@ -540,9 +540,9 @@ class FileControllerTest extends RestTestCase
     /**
      * Verifies the update of a file content.
      *
-     * @param string $fileId
-     * @param string $newContent
-     * @param string $contentType
+     * @param string $fileId      identifier of the file to be updated
+     * @param string $newContent  new content to be stored in the file
+     * @param string $contentType Content-Type of the file
      *
      * @return null|Response
      */
