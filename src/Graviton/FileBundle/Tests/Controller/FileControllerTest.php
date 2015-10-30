@@ -314,25 +314,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(strlen($fixtureData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
 
-        $client = static::createRestClient();
-        $client->put(
-            sprintf('/file/%s', $retData->id),
-            $newData,
-            [],
-            [],
-            ['CONTENT_TYPE' => $contentType],
-            false
-        );
-
-        $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $retData->id));
-
-        $retData = $client->getResults();
-        $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertEquals(strlen($newData), $retData->metadata->size);
-        $this->assertEquals($contentType, $retData->metadata->mime);
+        $this->updateFileContent($retData->id, $newData, $contentType);
     }
 
     /**
@@ -415,6 +397,14 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         $this->assertNotContains('location', $response->headers->all());
+
+        $response = $this->updateFileContent('myPersonalFile', "This is a new text!!!");
+
+        $metaData = json_decode($jsonData, true);
+        $returnData = json_decode($response->getContent(), true);
+
+        $this->assertEquals($metaData['links'], $returnData['links']);
+        $this->assertEquals($metaData['metadata']['action'], $returnData['metadata']['action']);
 
         // clean up
         $client = $this->createClient();
@@ -545,5 +535,38 @@ class FileControllerTest extends RestTestCase
         );
 
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
+    }
+
+    /**
+     * Verifies the update of a file content.
+     *
+     * @param string $fileId
+     * @param string $newContent
+     * @param string $contentType
+     *
+     * @return null|Response
+     */
+    private function updateFileContent($fileId, $newContent, $contentType = 'text/plain')
+    {
+        $client = static::createRestClient();
+        $client->put(
+            sprintf('/file/%s', $fileId),
+            $newContent,
+            [],
+            [],
+            ['CONTENT_TYPE' => $contentType],
+            false
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', sprintf('/file/%s', $fileId));
+
+        $retData = $client->getResults();
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(strlen($newContent), $retData->metadata->size);
+        $this->assertEquals($contentType, $retData->metadata->mime);
+
+        return $response;
     }
 }

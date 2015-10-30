@@ -239,11 +239,13 @@ class FileManager
      * @param integer      $fileSize Size of the uploaded file
      * @param array        $fileInfo Additional info about the file
      * @param FileDocument $fileData File data to be updated
+     *
+     * @return void
      */
     private function initOrUpdateMetadata(FileDocument $file, $fileSize, array $fileInfo, FileDocument $fileData = null)
     {
         $meta = $file->getMetadata();
-        $actions = $meta->getAction()->toArray();
+        $actions = [];
 
         if (!empty($fileData)) {
             $actions = (!empty($fileData->getMetadata()->getAction()->toArray()))
@@ -256,6 +258,7 @@ class FileManager
         }
 
         if (!empty($meta)) {
+            $actions = (empty($actions)) ? $meta->getAction()->toArray() : $actions;
             $meta
                 ->setAction($actions)
                 ->setSize((int) $fileSize)
