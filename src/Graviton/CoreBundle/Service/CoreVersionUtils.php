@@ -71,7 +71,7 @@ class CoreVersionUtils
     {
         $output = $this->runComposerInContext('show -s --no-ansi');
         $lines = explode(PHP_EOL, $output);
-        $wrapper = [];
+        $wrapper = array();
         foreach ($lines as $line) {
             if (strpos($line, 'versions') !== false) {
                 list(, $wrapperVersion) = explode(': *', $line, 2);
@@ -251,13 +251,10 @@ class CoreVersionUtils
      */
     private function normalizeVersionString($versionString, $prefix = 'v')
     {
-        $versionArray = explode('.', $versionString);
-        array_pop($versionArray);
-
         return sprintf(
             '%s%s',
             $prefix,
-            implode('.', $versionArray)
+            implode('.', explode('.', $versionString, -1))
         );
     }
 }
