@@ -37,15 +37,13 @@
         <service id="graviton.document.form.datatransformer.extref" class="%graviton.document.form.datatransformer.extref.class%">
             <argument type="service" id="graviton.document.service.extrefconverter"/>
         </service>
-        <service id="graviton.document.form.datatransformer.boolean" class="%graviton.document.form.datatransformer.boolean.class%" scope="request">
-            <argument type="service" id="request" />
-        </service>
+        <service id="graviton.document.form.datatransformer.boolean" class="%graviton.document.form.datatransformer.boolean.class%"/>
 
         <service id="graviton.document.form.type.extref" class="%graviton.document.form.type.extref.class%">
             <argument type="service" id="graviton.document.form.datatransformer.extref"/>
             <tag name="form.type" alias="extref"/>
         </service>
-        <service id="graviton.document.form.type.strictboolean" class="%graviton.document.form.type.strictboolean.class%" scope="request">
+        <service id="graviton.document.form.type.strictboolean" class="%graviton.document.form.type.strictboolean.class%">
             <argument type="service" id="graviton.document.form.datatransformer.boolean"/>
             <tag name="form.type" alias="strictboolean"/>
         </service>

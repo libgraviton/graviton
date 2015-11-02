@@ -1,47 +1,60 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: samuel
- * Date: 21.10.15
- * Time: 10:29
+ * transformer for converting submitted data into booleans
  */
 
 namespace Graviton\DocumentBundle\Form\DataTransformer;
 
-
 use Gedmo\Exception\RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\PropertyAccess\PropertyPathInterface;
 
+/**
+ * transformer for converting submitted data into booleans
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class BooleanTransformer implements DataTransformerInterface
 {
     /**
-     * @var array
-     */
-    private $content;
-
-    /**
-     * @var PropertyPath
+     * @var string
      */
     private $propertyPath;
 
     /**
-     * @inheritDoc
+     * @var bool|array
      */
-    function __construct(Request $request)
+    private $submittedData;
+
+    /**
+     * set the property path of the field
+     *
+     * @param PropertyPathInterface $propertyPath property path
+     * @return void
+     */
+    public function setPropertyPath(PropertyPathInterface $propertyPath)
     {
-        $this->content = json_decode($request->getContent(), true);
+        $this->propertyPath = (string) $propertyPath;
     }
 
-
-    public function setPropertyPath($propertyPath)
+    /**
+     * set the original submitted data
+     *
+     * @param bool|array $submittedData the original submitted data
+     * @return void
+     */
+    public function setSubmittedData($submittedData)
     {
-        $this->propertyPath = $propertyPath;
+        $this->submittedData = $submittedData;
     }
 
     /**
      * @inheritDoc
+     *
+     * @param mixed $value The value in the original representation
+     * @return mixed The transformed value
      */
     public function transform($value)
     {
@@ -50,38 +63,26 @@ class BooleanTransformer implements DataTransformerInterface
 
     /**
      * @inheritDoc
+     *
+     * @param mixed $value The value in the transformed representation
+     * @return mixed The original value
      */
     public function reverseTransform($value)
     {
         if (!isset($this->propertyPath)) {
-            throw new RuntimeException("propertyPath must be set");
+            throw new RuntimeException('propertyPath must be set');
         }
-        // the submit method convert false to null and
-        // true to '1'
-        if ($value === null || $value === "1") {
-            $value = $this->readOriginData();
+
+        $originData = $this->submittedData;
+        if (is_array($this->submittedData) && preg_match('@^\[+[0-9]\]$@', $this->propertyPath)) {
+            $index = (int) trim($this->propertyPath, '[]');
+            $originData = $this->submittedData[$index];
+        }
+        // the submit method of the form convert false to null and true to '1'
+        if (is_bool($originData) && ($value === null || $value === '1')) {
+            $value = $originData;
         }
 
         return $value;
-    }
-
-    /**
-     * read the origin data from request
-     *
-     * @return boolean|string
-     */
-    private function readOriginData() {
-        $properties = explode('.', $this->propertyPath);
-        $content = $this->content;
-        foreach ($properties as $property) {
-            // property was not submitted
-            if (!isset($content[$property])) {
-                break;
-            }
-            $content = $content[$property];
-            if (is_bool($content) || $content === "1") {
-                return $content;
-            }
-        }
     }
 }

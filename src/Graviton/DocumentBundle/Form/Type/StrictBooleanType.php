@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * strict boolean type
  */
 
 namespace Graviton\DocumentBundle\Form\Type;
@@ -10,6 +10,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * strict boolean type
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class StrictBooleanType extends AbstractType
 {
     /**
@@ -18,36 +25,50 @@ class StrictBooleanType extends AbstractType
     private $transformer;
 
     /**
-     * @inheritDoc
+     * strict boolean type
+     *
+     * @param BooleanTransformer $transformer boolean transformer
      */
-    function __construct(BooleanTransformer $transformer)
+    public function __construct(BooleanTransformer $transformer)
     {
         $this->transformer = $transformer;
     }
 
     /**
      * @inheritDoc
+     *
+     * @param OptionsResolver $resolver The resolver for the options
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault("empty_data", null);
-        parent::configureOptions($resolver);
+        $resolver->setDefined('submitted_data');
+        $resolver->setDefault('submitted_data', null);
     }
 
 
     /**
      * @inheritDoc
+     *
+     * @param FormBuilderInterface $builder The form builder
+     * @param array                $options The options
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->transformer->setPropertyPath($builder->getPropertyPath());
+        $dataTransformer = clone $this->transformer;
+        $dataTransformer->setPropertyPath($builder->getPropertyPath());
+        $dataTransformer->setSubmittedData($options['submitted_data']);
+
+        // we won't use the standard view transformer, which is defined by the checkbox type
         $builder->resetViewTransformers();
-        $builder->addViewTransformer($this->transformer);
-        parent::buildForm($builder, $options);
+        $builder->addViewTransformer($dataTransformer);
     }
 
     /**
      * @inheritDoc
+     *
+     * @return string The name of the parent type
      */
     public function getParent()
     {
@@ -57,10 +78,11 @@ class StrictBooleanType extends AbstractType
 
     /**
      * @inheritDoc
+     *
+     * @return string The name of this type
      */
     public function getName()
     {
         return 'strictboolean';
     }
-
 }
