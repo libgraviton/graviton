@@ -154,10 +154,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
     private function processFieldDefinitionsRecursive(DefinitionElementInterface $field)
     {
         if ($field instanceof JsonDefinitionField) {
-            $clone = clone $field->getDef();
-            $clone->setName(preg_replace('/^'.preg_quote($this->name, '/').'\.(\d+\.)*/', '', $clone->getName()));
-
-            return [$clone];
+            return [$this->cloneFieldDefinition($field->getDef())];
         } elseif ($field instanceof JsonDefinitionArray) {
             return $this->processFieldDefinitionsRecursive($field->getElement());
         } elseif ($field instanceof JsonDefinitionHash) {
@@ -166,11 +163,24 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 function (array $subfields, DefinitionElementInterface $subfield) {
                     return array_merge($subfields, $this->processFieldDefinitionsRecursive($subfield));
                 },
-                []
+                $field->definition === null ? [] : [$this->cloneFieldDefinition($field->definition)]
             );
         }
 
         throw new \InvalidArgumentException(sprintf('Unknown field type "%s"', get_class($field)));
+    }
+
+    /**
+     * Clone field definition
+     *
+     * @param Schema\Field $field Field
+     * @return Schema\Field
+     */
+    private function cloneFieldDefinition(Schema\Field $field)
+    {
+        $clone = clone $field;
+        $clone->setName(preg_replace('/^'.preg_quote($this->name, '/').'\.(\d+\.)*/', '', $clone->getName()));
+        return $clone;
     }
 
     /**
