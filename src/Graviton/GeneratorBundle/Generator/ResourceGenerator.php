@@ -208,15 +208,39 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document, $withRepository)
     {
+        // doctrine mapping normal class
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
             $parameters
         );
 
+        // doctrine mapping embedded
+        $this->renderFile(
+            'document/Document.mongodb.xml.twig',
+            $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                    'docType' => 'embedded-document',
+                ]
+            )
+        );
+
         $this->renderFile(
             'document/Document.php.twig',
             $dir . '/Document/' . $document . '.php',
+            $parameters
+        );
+        $this->renderFile(
+            'document/DocumentEmbedded.php.twig',
+            $dir . '/Document/' . $document . 'Embedded.php',
+            $parameters
+        );
+        $this->renderFile(
+            'document/DocumentBase.php.twig',
+            $dir . '/Document/' . $document . 'Base.php',
             $parameters
         );
 
@@ -278,6 +302,7 @@ class ResourceGenerator extends AbstractGenerator
                 )
             );
 
+            // normal repo service
             $services = $this->addParam(
                 $services,
                 $repoName . '.class',
@@ -301,10 +326,44 @@ class ResourceGenerator extends AbstractGenerator
                 'getRepository'
             );
 
+            // embedded repo service
+            $services = $this->addParam(
+                $services,
+                $repoName . 'embedded.class',
+                $parameters['base'] . 'Repository\\' . $parameters['document'] . 'Embedded'
+            );
+
+            $this->addService(
+                $services,
+                $repoName . 'embedded',
+                null,
+                null,
+                array(),
+                null,
+                array(
+                    array(
+                        'type' => 'string',
+                        'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
+                    )
+                ),
+                'doctrine_mongodb.odm.default_document_manager',
+                'getRepository'
+            );
+
             $this->renderFile(
                 'document/DocumentRepository.php.twig',
                 $dir . '/Repository/' . $document . 'Repository.php',
                 $parameters
+            );
+            $this->renderFile(
+                'document/DocumentRepository.php.twig',
+                $dir . '/Repository/' . $document . 'EmbeddedRepository.php',
+                array_merge(
+                    $parameters,
+                    [
+                        'document' => $document.'Embedded',
+                    ]
+                )
             );
         }
 
@@ -692,11 +751,52 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document)
     {
+        // @TODO in Embedded and document just render the differences..
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir . '/Resources/config/serializer/Document.' . $document . 'Embedded.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                    'noIdField' => true,
+                    'realIdField' => true
+                ]
+            )
+        );
+        foreach ($parameters['fields'] as $key => $field) {
+            if (substr($field['serializerType'], 0, 14) == 'array<Graviton' &&
+                strpos($field['serializerType'], '\\Entity') === false
+            ) {
+                $parameters['fields'][$key]['serializerType'] = substr($field['serializerType'], 0, -1).'Embedded>';
+            } elseif (substr($field['serializerType'], 0, 8) == 'Graviton' &&
+                strpos($field['serializerType'], '\\Entity') === false
+            ) {
+                $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
+            }
+        }
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . '.xml',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'realIdField' => false
+                ]
+            )
         );
+        $this->renderFile(
+            'serializer/Document.xml.twig',
+            $dir . '/Resources/config/serializer/Document.' . $document . 'Base.xml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Base',
+                    'realIdField' => false
+                ]
+            )
+        );
+
     }
 
     /**
@@ -721,6 +821,18 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
+        // embedded versions
+        $this->renderFile(
+            'model/Model.php.twig',
+            $dir . '/Model/' . $document . 'Embedded.php',
+            array_merge($parameters, ['document' => $document.'Embedded'])
+        );
+        $this->renderFile(
+            'model/schema.json.twig',
+            $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
+            array_merge($parameters, ['document' => $document.'Embedded'])
+        );
+
         $this->renderFile(
             'validator/validation.xml.twig',
             $dir . '/Resources/config/validation.xml',
@@ -737,6 +849,7 @@ class ResourceGenerator extends AbstractGenerator
 
         $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
+        // normal service
         $this->addService(
             $services,
             $paramName,
@@ -746,6 +859,26 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'method' => 'setRepository',
                     'service' => $repoName
+                ],
+            ),
+            null
+        );
+
+        // embedded service
+        $this->addXmlParameter(
+            $parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded',
+            $paramName . 'embedded.class'
+        );
+
+        $this->addService(
+            $services,
+            $paramName . 'embedded',
+            'graviton.rest.model',
+            null,
+            array(
+                [
+                    'method' => 'setRepository',
+                    'service' => $repoName . 'embedded'
                 ],
             ),
             null

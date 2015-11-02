@@ -71,15 +71,15 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 
         $documentMap = new DocumentMap(
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config/doctrine')
                 ->name('*.mongodb.xml'),
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config/serializer')
                 ->name('*.xml'),
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config')
                 ->name('validation.xml')
         );
@@ -91,5 +91,17 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
+    }
+
+    /**
+     * boot bundle function
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $extRefConverter = $this->container->get('graviton.document.service.extrefconverter');
+        $customType = Type::getType('hash');
+        $customType->setExtRefConverter($extRefConverter);
     }
 }

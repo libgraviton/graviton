@@ -19,6 +19,7 @@
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
         <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
         <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
+        <parameter key="graviton.rest.validator.form.class">Graviton\RestBundle\Validator\Form</parameter>
         <parameter key="graviton.rest.model.documentmodel.class">Graviton\RestBundle\Model\DocumentModel</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
         <parameter key="graviton.rest.listener.rqlqueryrequestlistener.allowedroutes" type="collection"/>
@@ -89,6 +90,9 @@
             </call>
             <call method="setJsonPatchValidator">
                 <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
+            </call>
+            <call method="setFormValidator">
+                <argument type="service" id="graviton.rest.validator.form"/>
             </call>
         </service>
 
@@ -223,6 +227,12 @@
 
         <service id="graviton.rest.validator.extref" class="%graviton.rest.validator.extref.class%">
             <tag name="validator.constraint_validator" alias="graviton.rest.validator.extref" />
+        </service>
+
+        <service id="graviton.rest.validator.form" class="%graviton.rest.validator.form.class%">
+            <argument type="service" id="form.factory"/>
+            <argument type="service" id="graviton.document.form.type.document"/>
+            <argument type="service" id="graviton.rest.validator"/>
         </service>
     </services>
 </container>
