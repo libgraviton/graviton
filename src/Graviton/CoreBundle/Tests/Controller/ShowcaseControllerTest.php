@@ -97,9 +97,17 @@ class ShowcaseControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $expectedError = new \stdClass();
-        $expectedError->propertyPath = "children[someOtherField]";
-        $expectedError->message = "This value is not valid.";
+        $expectedError->propertyPath = 'children[someOtherField]';
+        $expectedError->message = 'This value is not valid.';
         $expectedErrors[] = $expectedError;
+        $strictBooleanError = new \stdClass();
+        $strictBooleanError->propertyPath = 'data.aBoolean';
+        $strictBooleanError->message = 'This value should not be null.';
+        $expectedErrors[] = $strictBooleanError;
+        $notNullError = new \stdClass();
+        $notNullError->propertyPath = 'data.aBoolean';
+        $notNullError->message = 'The value "" is not a valid boolean.';
+        $expectedErrors[] = $notNullError;
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -117,6 +125,7 @@ class ShowcaseControllerTest extends RestTestCase
         $document = [
             'anotherInt'  => 6555488894525,
             'testField'   => ['en' => 'a test string'],
+            'aBoolean'    => '',
             'contactCode' => [
                 'text'     => ['en' => 'Some Text'],
                 'someDate' => '1984-05-01T00:00:00+0000',
@@ -140,6 +149,10 @@ class ShowcaseControllerTest extends RestTestCase
                 (object) [
                     'propertyPath'  => 'children[someOtherField]',
                     'message'       => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.aBoolean',
+                    'message'       => 'The value "" is not a valid boolean.',
                 ],
                 (object) [
                     'propertyPath'  => 'data.contact.type',
@@ -168,6 +181,7 @@ class ShowcaseControllerTest extends RestTestCase
         $document = [
             'anotherInt'  => 6555488894525,
             'testField'   => ['en' => 'a test string'],
+            'aBoolean'    => true,
             'contactCode' => [
                 'text'     => ['en' => 'Some Text'],
                 'someDate' => '1984-05-01T00:00:00+0000',

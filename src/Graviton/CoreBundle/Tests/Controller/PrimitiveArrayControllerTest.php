@@ -236,13 +236,15 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertNotNull($client->getResults());
 
-        // boolean and string values are always converted to correct type by symfony form.
-        // we never get "This value is not valid" for such types
         $this->assertEquals(
             [
                 (object) [
                     'propertyPath' => 'children[intarray].children[1]',
-                    'message'      => 'This value is not valid.'
+                    'message'      => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath' => 'data.boolarray[1]',
+                    'message'      => 'This value should be of type boolean.',
                 ],
                 (object) [
                     'propertyPath' => 'children[datearray].children[1]',
@@ -252,10 +254,13 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'propertyPath' => 'data.hasharray[1]',
                     'message'      => 'This value should be of type object.',
                 ],
-
                 (object) [
                     'propertyPath' => 'children[hash].children[intarray].children[1]',
                     'message'      => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath' => 'data.hash.boolarray[1]',
+                    'message'      => 'This value should be of type boolean.',
                 ],
                 (object) [
                     'propertyPath' => 'children[hash].children[datearray].children[1]',
@@ -269,6 +274,10 @@ class PrimitiveArrayControllerTest extends RestTestCase
                 (object) [
                     'propertyPath' => 'children[arrayhash].children[0].children[intarray].children[1]',
                     'message'      => 'This value is not valid.',
+                ],
+                (object) [
+                    'propertyPath' => 'data.arrayhash[0].boolarray[1]',
+                    'message'      => 'This value should be of type boolean.',
                 ],
                 (object) [
                     'propertyPath' => 'children[arrayhash].children[0].children[datearray].children[1]',

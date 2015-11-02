@@ -565,6 +565,7 @@ class AppControllerTest extends RestTestCase
         $isnogudApp->id = 'isnogud';
         $isnogudApp->name = new \stdClass;
         $isnogudApp->name->en = 'I don\'t exist';
+        $isnogudApp->showInMenu = true;
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -609,7 +610,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->id = 'tablet';
         $helloApp->name = new \stdClass;
         $helloApp->name->en = 'Tablet';
-        $helloApp->showInMenu = [];
+        $helloApp->showInMenu = 'false';
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -619,7 +620,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         $this->assertContains('showInMenu', $results[0]->propertyPath);
-        $this->assertEquals('This value is not valid.', $results[0]->message);
+        $this->assertEquals('The value "false" is not a valid boolean.', $results[0]->message);
     }
 
     /**

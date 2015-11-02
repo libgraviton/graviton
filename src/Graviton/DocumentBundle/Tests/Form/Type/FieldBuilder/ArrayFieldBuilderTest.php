@@ -61,9 +61,9 @@ class ArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $name = 'name';
         $type = 'collection';
-        $options = ['required' => true];
+        $options = ['required' => true, 'type' => 'integer'];
         $data = ['data'];
-
+        $collectionOptions = ['allow_add' => true, 'allow_delete' => true, 'prototype' => false];
         $document = $this->getMockBuilder(DocumentType::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -73,7 +73,39 @@ class ArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $form->expects($this->once())
             ->method('add')
-            ->with($name, $type, array_merge($options, ['allow_add' => true, 'allow_delete' => true]));
+            ->with($name, $type, array_merge($options, $collectionOptions));
+
+        $sut = new ArrayFieldBuilder();
+        $sut->buildField($document, $form, $name, $type, $options, $data);
+    }
+
+    /**
+     * Test ArrayFieldBuilder::buildField() with booleans
+     *
+     * @return void
+     */
+    public function testBuildFieldWithBooleans()
+    {
+        $name = 'booleans';
+        $type = 'collection';
+        $options = ['required' => true, 'type' => 'strictboolean'];
+        $data = [true, false, false];
+        $collectionOptions = [
+            'allow_add' => true,
+            'allow_delete' => true,
+            'prototype' => false,
+            'options' => ['submitted_data' => $data],
+        ];
+        $document = $this->getMockBuilder(DocumentType::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $form = $this->getMockBuilder(FormInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $form->expects($this->once())
+            ->method('add')
+            ->with($name, $type, array_merge($options, $collectionOptions));
 
         $sut = new ArrayFieldBuilder();
         $sut->buildField($document, $form, $name, $type, $options, $data);
