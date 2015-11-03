@@ -31,10 +31,14 @@ class CoreVersionUtilsTest extends RestTestCase
      */
     public function testGetVersionNumber($versionString, $expectedVersion)
     {
-        $this->coreVersionUtils = $this->getMockBuilder('Graviton\CoreBundle\Service\CoreVersionUtils')
-            ->disableOriginalConstructor()
-            ->setMethods(null)
+        $yamlDumper = $this->getMockBuilder('Symfony\Component\Yaml\Dumper')
             ->getMock();
+
+        $this->coreVersionUtils = new CoreVersionUtils(
+            'composer',
+            $this->getContainer()->getParameter('kernel.root_dir'),
+            $yamlDumper
+        );
 
         $returnedVersion = $this->coreVersionUtils->getVersionNumber($versionString);
         $this->assertEquals($expectedVersion, $returnedVersion);
