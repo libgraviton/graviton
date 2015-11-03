@@ -76,7 +76,9 @@ class BooleanTransformer implements DataTransformerInterface
         $originData = $this->submittedData;
         if (is_array($this->submittedData) && preg_match('@^\[+[0-9]\]$@', $this->propertyPath)) {
             $index = (int) trim($this->propertyPath, '[]');
-            $originData = $this->submittedData[$index];
+            if (array_key_exists($index, $this->submittedData)) {
+                $originData = $this->submittedData[$index];
+            }
         }
         // the submit method of the form convert false to null and true to '1'
         if (is_bool($originData) && ($value === null || $value === '1')) {
