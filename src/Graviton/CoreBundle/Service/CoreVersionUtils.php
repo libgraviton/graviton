@@ -73,10 +73,10 @@ class CoreVersionUtils
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
         foreach ($lines as $line) {
-            if (strpos($line, 'versions') !== false) {
-                list(, $wrapperVersion) = explode(':', $line, 2);
+            if (strpos($line, 'versions : *') !== false) {
+                list(, $wrapperVersion) = explode(': *', $line, 2);
                 $wrapper['id'] = 'self';
-                $wrapper['version'] = $this->getVersionNumber(trim(str_replace('*', '', $wrapperVersion)));
+                $wrapper['version'] = $this->getVersionNumber(trim($wrapperVersion));
                 break;
             }
         }
