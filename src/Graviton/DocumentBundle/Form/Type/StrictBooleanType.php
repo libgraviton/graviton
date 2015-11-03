@@ -57,7 +57,10 @@ class StrictBooleanType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dataTransformer = clone $this->transformer;
-        $dataTransformer->setPropertyPath($builder->getPropertyPath());
+        $propertyPath = $builder->getPropertyPath();
+        if ($propertyPath !== null) {
+            $dataTransformer->setPropertyPath($propertyPath);
+        }
         $dataTransformer->setSubmittedData($options['submitted_data']);
 
         // we won't use the standard view transformer, which is defined by the checkbox type

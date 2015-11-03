@@ -71,24 +71,25 @@ class DefaultFieldBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test DefaultFieldBuilder::buildField()
+     * Test DefaultFieldBuilder::buildField() with boolean
      *
+     * @param string $name          name of the form type
+     * @param string $type          form type
+     * @param arry   $options       options
+     * @param array  $methodOptions options for the add method
+     * @param mixed  $data          submitted data
      * @return void
+     *
+     * @dataProvider dataForBuildField
      */
-    public function testBuildField()
+    public function testBuildFieldWithBoolean($name, $type, $options, $methodOptions, $data)
     {
-        $name = 'name';
-        $type = 'type';
-        $options = ['required' => true];
-        $data = ['data'];
-
-
         $this->form->expects($this->once())
             ->method('add')
             ->with(
                 $name,
                 $type,
-                $options
+                $methodOptions
             );
 
         $sut = new DefaultFieldBuilder();
@@ -96,26 +97,17 @@ class DefaultFieldBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test DefaultFieldBuilder::buildField() with boolean
+     * Data for DefaultFieldBuilder::buildField()
      *
-     * @return void
+     * @return array
      */
-    public function testBuildFieldWithBoolean()
+    public function dataForBuildField()
     {
-        $name = 'aBoolean';
-        $type = 'strictboolean';
         $options = ['required' => true];
-        $data = true;
 
-        $this->form->expects($this->once())
-            ->method('add')
-            ->with(
-                $name,
-                $type,
-                array_merge($options, ['submitted_data' => $data])
-            );
-
-        $sut = new DefaultFieldBuilder();
-        $sut->buildField($this->document, $this->form, $name, $type, $options, $data);
+        return [
+            ['name', 'type', $options, $options, ['data']],
+            ['aBoolean', 'strictboolean', $options, array_merge($options, ['submitted_data' => true]), true],
+        ];
     }
 }
