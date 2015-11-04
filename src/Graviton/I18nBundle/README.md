@@ -1,6 +1,6 @@
 # GravitonI18nBundle
 
-Translate RESTful services as described in [the docs](http://gravity-platform.github.io/doc/i18n.html)
+Translate RESTful services as described in [the docs](https://gravity-platform-docs.nova.scapp.io/api/i18n/)
 
 ## Features
 
