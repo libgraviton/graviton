@@ -22,7 +22,7 @@ class VersionControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testGetAllAction()
+    public function testVersionsAction()
     {
         $client = static::createRestClient();
         $client->request('GET', '/core/version/');
@@ -30,6 +30,15 @@ class VersionControllerTest extends RestTestCase
 
         $this->assertContains('"self":', $response->getContent());
         $this->assertInternalType('string', $response->getContent());
+
+        $tagRegExp = '^([v]?[0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z.]+)?(\+[0-9a-zA-Z.]+)?$';
+        $branchRegExp = '^((dev\-){1}[0-9a-zA-Z\.\/\-\_]+)$';
+        $regExp = sprintf('/%s|%s/', $tagRegExp, $branchRegExp);
+
+        $content = json_decode($response->getContent());
+        foreach ($content->versions as $packageId => $packageVersion) {
+            $this->assertRegExp($regExp, $packageVersion);
+        }
     }
 
     /**
