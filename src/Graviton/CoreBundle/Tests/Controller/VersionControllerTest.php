@@ -25,7 +25,7 @@ class VersionControllerTest extends RestTestCase
     public function testVersionsAction()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/version/');
+        $client->request('GET', '/core/version');
         $response = $client->getResponse();
 
         $this->assertContains('"self":', $response->getContent());

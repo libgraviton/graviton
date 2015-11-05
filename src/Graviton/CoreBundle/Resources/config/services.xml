@@ -19,7 +19,7 @@
             <parameter>graviton.core.static.version.get</parameter>
         </parameter>
         <parameter key="graviton.core.main.path.whitelist" type="collection">
-            <parameter>/core/version/</parameter>
+            <parameter>/core/version</parameter>
         </parameter>
     </parameters>
     <services>
