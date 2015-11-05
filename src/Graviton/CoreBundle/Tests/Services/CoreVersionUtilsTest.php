@@ -57,7 +57,8 @@ class CoreVersionUtilsTest extends RestTestCase
             array('v1.2.3', 'v1.2.3'),
             array('v1.2.3-alpha1', 'v1.2.3'),
             array('dev-feature/test_branch', 'dev-feature/test_branch'),
-            array('dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75', 'dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75')
+            array('dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75', 'dev-9d0b8cf7c7a607684e978a2777ebdd36e348ba75'),
+            array('No version set (parsed as 1.0.0)', 'No version set (parsed as 1.0.0)')
         );
     }
 }
