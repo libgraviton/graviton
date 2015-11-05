@@ -83,6 +83,8 @@ class BooleanTransformer implements DataTransformerInterface
         // the submit method of the form convert false to null and true to '1'
         if (is_bool($originData) && ($value === null || $value === '1')) {
             $value = $originData;
+        } elseif ($value === null) {
+            $value = '';
         }
 
         return $value;
