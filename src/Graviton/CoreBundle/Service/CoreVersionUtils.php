@@ -251,10 +251,13 @@ class CoreVersionUtils
      */
     private function normalizeVersionString($versionString, $prefix = 'v')
     {
-        return sprintf(
-            '%s%s',
-            $prefix,
-            implode('.', explode('.', $versionString, -1))
-        );
+        if (substr_count($versionString, '.') === 3) {
+            return sprintf(
+                '%s%s',
+                $prefix,
+                implode('.', explode('.', $versionString, -1))
+            );
+        }
+        return $versionString;
     }
 }
