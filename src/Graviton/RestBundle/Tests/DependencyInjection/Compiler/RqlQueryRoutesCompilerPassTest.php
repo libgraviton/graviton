@@ -27,7 +27,9 @@ class RqlQueryRoutesCompilerPassTest extends \PHPUnit_Framework_TestCase
         ];
         $routes = [
             'namespace1.bundle1.rest.service1.all',
+            'namespace1.bundle1.rest.service1.get',
             'namespace2.bundle2.rest.service2.all',
+            'namespace2.bundle2.rest.service2.get',
         ];
 
         $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
