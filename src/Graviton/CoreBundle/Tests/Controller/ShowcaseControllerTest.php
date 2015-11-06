@@ -258,6 +258,52 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * test if we can save & retrieve extrefs inside 'free form objects'
+     *
+     * @return void
+     */
+    public function testFreeFormExtRefs()
+    {
+        $minimalExample = $this->postCreationDataProvider()['minimal'][0];
+
+        $document = json_decode(
+            file_get_contents($minimalExample),
+            false
+        );
+
+        $document->id = 'dynextreftest';
+
+        // insert some refs!
+        $document->unstructuredObject = new \stdClass();
+        $document->unstructuredObject->testRef = new \stdClass();
+        $document->unstructuredObject->testRef->{'$ref'} = 'http://localhost/hans/showcase/500';
+
+        // let's go more deep..
+        $document->unstructuredObject->go = new \stdClass();
+        $document->unstructuredObject->go->more = new \stdClass();
+        $document->unstructuredObject->go->more->deep = new \stdClass();
+        $document->unstructuredObject->go->more->deep->{'$ref'} = 'http://localhost/hans/showcase/500';
+
+        // array?
+        $document->unstructuredObject->refArray = [];
+        $document->unstructuredObject->refArray[0] = new \stdClass();
+        $document->unstructuredObject->refArray[0]->{'$ref'} = 'http://localhost/core/app/dude';
+        $document->unstructuredObject->refArray[1] = new \stdClass();
+        $document->unstructuredObject->refArray[1]->{'$ref'} = 'http://localhost/core/app/dude2';
+
+        $client = static::createRestClient();
+        $client->put('/hans/showcase/'.$document->id, $document);
+
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/'.$document->id);
+
+        // all still the same?
+        $this->assertEquals($document, $client->getResults());
+    }
+
+    /**
      * are extra fields denied?
      *
      * @return void
@@ -318,6 +364,16 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
+
+
+        foreach ([
+                     '500' => $filtred[0],
+                     '600' => $filtred[1],
+                 ] as $id => $item) {
+            $client = static::createRestClient();
+            $client->request('GET', '/hans/showcase/'.$id.'?'.$rqlSelect);
+            $this->assertEquals($item, $client->getResults());
+        }
     }
 
     /**

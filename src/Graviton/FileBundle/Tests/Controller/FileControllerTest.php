@@ -6,6 +6,8 @@
 namespace Graviton\FileBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Basic functional test for /file
@@ -237,8 +239,10 @@ class FileControllerTest extends RestTestCase
         );
 
         $response = $client->getResponse();
+        $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(201, $response->getStatusCode());
+        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
     }
 
     /**
@@ -295,8 +299,11 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => $contentType],
             false
         );
-        $this->assertEquals(201, $client->getResponse()->getStatusCode());
         $response = $client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $linkHeader = $response->headers->get('Link');
+        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
 
         // re-fetch
         $client = static::createRestClient();
@@ -307,23 +314,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(strlen($fixtureData), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
 
-        $client = static::createRestClient();
-        $client->put(
-            sprintf('/file/%s', $retData->id),
-            $newData,
-            [],
-            [],
-            ['CONTENT_TYPE' => $contentType],
-            false
-        );
-
-        $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $retData->id));
-
-        $retData = $client->getResults();
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals(strlen($newData), $retData->metadata->size);
-        $this->assertEquals($contentType, $retData->metadata->mime);
+        $this->updateFileContent($retData->id, $newData, $contentType);
     }
 
     /**
@@ -357,6 +348,69 @@ class FileControllerTest extends RestTestCase
         $this->assertContains(
             '<http://localhost/schema/file/collection>; rel="self"',
             explode(',', $response->headers->get('Link'))
+        );
+    }
+
+    /**
+     * test behavior when data sent was multipart/form-data
+     *
+     * @return void
+     */
+    public function testPutNewFileViaForm()
+    {
+        copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
+        $file = sys_get_temp_dir() . '/test.txt';
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+
+        $jsonData = '{
+          "id": "myPersonalFile",
+          "links": [
+            {
+              "$ref": "http://localhost/testcase/readonly/101",
+              "type": "owner"
+            },
+            {
+              "$ref": "http://localhost/testcase/readonly/102",
+              "type": "module"
+            }
+          ],
+          "metadata": {
+            "action":[{"command":"print"},{"command":"archive"}]
+          }
+        }';
+
+        $client = static::createRestClient();
+        $client->put(
+            '/file/myPersonalFile',
+            [],
+            [
+                'metadata' => $jsonData,
+            ],
+            [
+                'upload' => $uploadedFile,
+            ],
+            [],
+            false
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertNotContains('location', $response->headers->all());
+
+        $response = $this->updateFileContent('myPersonalFile', "This is a new text!!!");
+
+        $metaData = json_decode($jsonData, true);
+        $returnData = json_decode($response->getContent(), true);
+
+        $this->assertEquals($metaData['links'], $returnData['links']);
+        $this->assertEquals($metaData['metadata']['action'], $returnData['metadata']['action']);
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            $response->headers->get('location')
         );
     }
 
@@ -481,5 +535,38 @@ class FileControllerTest extends RestTestCase
         );
 
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->{'$ref'});
+    }
+
+    /**
+     * Verifies the update of a file content.
+     *
+     * @param string $fileId      identifier of the file to be updated
+     * @param string $newContent  new content to be stored in the file
+     * @param string $contentType Content-Type of the file
+     *
+     * @return null|Response
+     */
+    private function updateFileContent($fileId, $newContent, $contentType = 'text/plain')
+    {
+        $client = static::createRestClient();
+        $client->put(
+            sprintf('/file/%s', $fileId),
+            $newContent,
+            [],
+            [],
+            ['CONTENT_TYPE' => $contentType],
+            false
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', sprintf('/file/%s', $fileId));
+
+        $retData = $client->getResults();
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(strlen($newContent), $retData->metadata->size);
+        $this->assertEquals($contentType, $retData->metadata->mime);
+
+        return $response;
     }
 }

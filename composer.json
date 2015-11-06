@@ -15,11 +15,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "http://gravity-platform-packages.nova.scapp.io"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:mrix/GravitonTestServicesBundle.git"
+            "url": "https://gravity-platform-packages.scapp.io"
         }
     ],
     "require": {
@@ -36,8 +32,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "jms/serializer-bundle": ">=0.13,<2",
         "jms/di-extra-bundle": "~1.3",
-        "doctrine/mongodb-odm": "~1.0@beta",
-        "doctrine/mongodb-odm-bundle": "~3.0@beta",
+        "doctrine/mongodb-odm": "~1.0",
+        "doctrine/mongodb-odm-bundle": "~3.0",
         "stof/doctrine-extensions-bundle": "~1.1",
         "doctrine/doctrine-fixtures-bundle": "~2.2",
         "davidbadura/faker-bundle": "~1.0",
@@ -65,7 +61,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "dev-feature/EVO-581-translatable-array"
+        "graviton/test-services-bundle": "*"
     },
     "scripts": {
         "post-root-package-install": [

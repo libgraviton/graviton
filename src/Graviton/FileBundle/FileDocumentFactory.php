@@ -5,8 +5,9 @@
 
 namespace Graviton\FileBundle;
 
-use GravitonDyn\FileBundle\Document\FileMetadata;
-use GravitonDyn\FileBundle\Document\FileMetadataAction;
+use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
+use GravitonDyn\FileBundle\Document\FileMetadataActionEmbedded;
+use GravitonDyn\FileBundle\Document\FileLinksEmbedded;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -22,7 +23,7 @@ class FileDocumentFactory
      */
     public function createFileMetadataAction()
     {
-        return new FileMetadataAction();
+        return new FileMetadataActionEmbedded();
     }
 
     /**
@@ -32,12 +33,13 @@ class FileDocumentFactory
      */
     public function createFileMataData()
     {
-        return new FileMetadata();
+        return new FileMetadataEmbedded();
     }
 
     /**
      * Provides an instance of FileMetadata
      *
+     * @param string $id       Identifier of the file.
      * @param int    $size     Size of the file.
      * @param string $filename Name of the file.
      * @param string $mimetype Mime-Type of the file.
@@ -45,10 +47,11 @@ class FileDocumentFactory
      *
      * @return FileMetadata
      */
-    public function initiateFileMataData($size, $filename, $mimetype, array $actions = [])
+    public function initiateFileMataData($id, $size, $filename, $mimetype, array $actions = [])
     {
         $now = new \DateTime();
         $meta = $this->createFileMataData();
+        $meta->setId($id);
         $meta
             ->setSize((int) $size)
             ->setFilename($filename)
@@ -58,5 +61,33 @@ class FileDocumentFactory
             ->setAction($actions);
 
         return $meta;
+    }
+
+    /**
+     * Provides an instance of FileLinks
+     *
+     * @return FileLinks
+     */
+    public function createFileLink()
+    {
+        return new FileLinksEmbedded();
+    }
+
+    /**
+     * Sets up a FileLinks instance.
+     *
+     * @param string $type      Type of the reference
+     * @param string $reference Actual reference
+     *
+     * @return FileLinks
+     */
+    public function initializeFileLinks($type, $reference)
+    {
+        $link = $this->createFileLink();
+        $link
+            ->setRef($reference)
+            ->setType($type);
+
+        return $link;
     }
 }

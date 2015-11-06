@@ -27,6 +27,7 @@ class RqlQueryRoutesCompilerPass implements CompilerPassInterface
         foreach ($container->getParameter('graviton.rest.services') as $service => $params) {
             list($app, $bundle, , $entity) = explode('.', $service);
             $routes[] = implode('.', [$app, $bundle, 'rest', $entity, 'all']);
+            $routes[] = implode('.', [$app, $bundle, 'rest', $entity, 'get']);
         }
 
         $container->setParameter('graviton.rest.listener.rqlqueryrequestlistener.allowedroutes', $routes);
