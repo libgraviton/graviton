@@ -103,7 +103,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
      * Test POST method
      *
      * @return void
-     * @group abc
      */
     public function testPostMethod()
     {

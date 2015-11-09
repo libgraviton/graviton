@@ -5,8 +5,9 @@
 
 namespace Graviton\CoreBundle\Service;
 
-use \Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Process\Process;
+use InvalidArgumentException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -72,10 +73,11 @@ class CoreVersionUtils
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
         foreach ($lines as $line) {
-            if (strpos($line, 'versions') !== false) {
-                $wrapperVersionArr = explode(':', $line);
+            if (strpos($line, 'versions : *') !== false) {
+                list(, $wrapperVersion) = explode(': *', $line, 2);
                 $wrapper['id'] = 'self';
-                $wrapper['version'] = trim(str_replace('*', '', $wrapperVersionArr[1]));
+                $wrapper['version'] = $this->getVersionNumber(trim($wrapperVersion));
+                break;
             }
         }
 
@@ -194,5 +196,68 @@ class CoreVersionUtils
         $config = $parser->parse(file_get_contents($filePath));
 
         return is_array($config) ? $config : [];
+    }
+
+    /**
+     * Returns the version out of a given version string
+     *
+     * @param string $versionString SemVer version string
+     * @return string
+     */
+    public function getVersionNumber($versionString)
+    {
+        try {
+            $version = $this->getVersionOrBranchName($versionString);
+        } catch (InvalidArgumentException $e) {
+            $version = $this->normalizeVersionString($versionString);
+        }
+
+        return empty($version) ? $versionString : $version;
+    }
+
+    /**
+     * Get a version string string using a regular expression
+     *
+     * @param string $versionString SemVer version string
+     * @return string
+     */
+    private function getVersionOrBranchName($versionString)
+    {
+        // Regular expression for root package ('self') on a tagged version
+        $tag = '^(?<version>[v]?[0-9]+\.[0-9]+\.[0-9]+)(?<prerelease>-[0-9a-zA-Z.]+)?(?<build>\+[0-9a-zA-Z.]+)?$';
+        // Regular expression for root package on a git branch
+        $branch = '^(?<branch>(dev\-){1}[0-9a-zA-Z\.\/\-\_]+)$';
+        $regex = sprintf('/%s|%s/', $tag, $branch);
+
+        $matches = [];
+        if (0 === preg_match($regex, $versionString, $matches)) {
+            throw new InvalidArgumentException(
+                sprintf('"%s" is not a valid SemVer', $versionString)
+            );
+        }
+
+        return empty($matches['version']) ? $matches['branch'] : $matches['version'];
+    }
+
+    /**
+     * Normalizing the incorrect SemVer string to a valid one
+     *
+     * At the moment, we are getting the version of the root package ('self') using the
+     * 'composer show -s'-command. Unfortunately Composer is adding an unnecessary ending.
+     *
+     * @param string $versionString SemVer version string
+     * @param string $prefix        Version prefix
+     * @return string
+     */
+    private function normalizeVersionString($versionString, $prefix = 'v')
+    {
+        if (substr_count($versionString, '.') === 3) {
+            return sprintf(
+                '%s%s',
+                $prefix,
+                implode('.', explode('.', $versionString, -1))
+            );
+        }
+        return $versionString;
     }
 }

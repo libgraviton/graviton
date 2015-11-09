@@ -364,6 +364,16 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
         $this->assertEquals($filtred, $client->getResults());
+
+
+        foreach ([
+                     '500' => $filtred[0],
+                     '600' => $filtred[1],
+                 ] as $id => $item) {
+            $client = static::createRestClient();
+            $client->request('GET', '/hans/showcase/'.$id.'?'.$rqlSelect);
+            $this->assertEquals($item, $client->getResults());
+        }
     }
 
     /**

@@ -236,18 +236,14 @@ class SchemaUtils
                     $property->setItems($this->getModelSchema($field, $propertyModel, $online));
                     $property->setType('array');
                 }
-            }
-
-            if ($meta->getTypeOfField($field) === 'one') {
+            } elseif ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
                 $property = $this->getModelSchema($field, $propertyModel, $online);
-            }
-
-            if (in_array($field, $translatableFields, true)) {
+            } elseif (in_array($field, $translatableFields, true)) {
                 $property = $this->makeTranslatable($property, $languages);
-            }
-
-            if ($meta->getTypeOfField($field) === 'extref') {
+            } elseif (in_array($field.'[]', $translatableFields, true)) {
+                $property = $this->makeArrayTranslatable($property, $languages);
+            } elseif ($meta->getTypeOfField($field) === 'extref') {
                 $urls = array();
                 $refCollections = $model->getRefCollectionOfField($field);
                 foreach ($refCollections as $collection) {
@@ -330,6 +326,21 @@ class SchemaUtils
             }
         );
         $property->setRequired(['en']);
+        return $property;
+    }
+
+    /**
+     * turn a array property into a translatable property
+     *
+     * @param Schema   $property  simple string property
+     * @param string[] $languages available languages
+     *
+     * @return Schema
+     */
+    public function makeArrayTranslatable(Schema $property, $languages)
+    {
+        $property->setType('array');
+        $property->setItems($this->makeTranslatable(new Schema(), $languages));
         return $property;
     }
 
