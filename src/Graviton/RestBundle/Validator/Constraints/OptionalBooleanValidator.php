@@ -27,7 +27,7 @@ class OptionalBooleanValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if ($value !== true && $value !== false && $value !== null) {
+        if ($value !== true && $value !== false && $value !== '') {
             $this->context->addViolation(
                 $constraint->message,
                 array('%string%' => $value)

@@ -100,10 +100,6 @@ class ShowcaseControllerTest extends RestTestCase
         $expectedError->propertyPath = 'children[someOtherField]';
         $expectedError->message = 'This value is not valid.';
         $expectedErrors[] = $expectedError;
-        $strictBooleanError = new \stdClass();
-        $strictBooleanError->propertyPath = 'data.aBoolean';
-        $strictBooleanError->message = 'This value should not be null.';
-        $expectedErrors[] = $strictBooleanError;
         $notNullError = new \stdClass();
         $notNullError->propertyPath = 'data.aBoolean';
         $notNullError->message = 'The value "" is not a valid boolean.';
