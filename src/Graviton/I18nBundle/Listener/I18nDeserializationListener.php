@@ -6,7 +6,7 @@
 namespace Graviton\I18nBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\DeserializationException;
-use Graviton\I18NBundle\Service\I18NUtils;
+use Graviton\I18NBundle\Service\I18nUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
@@ -36,7 +36,7 @@ class I18nDeserializationListener
      *
      * @return void
      */
-    public function setUtils(I18NUtils $utils)
+    public function setUtils(I18nUtils $utils)
     {
         $this->utils = $utils;
     }
@@ -59,17 +59,24 @@ class I18nDeserializationListener
         $object = new $eventClass;
 
         if ($object instanceof TranslatableDocumentInterface) {
-            $defaultLanguage = $this->utils->getDefaultLanguage();
             $data = $event->getData();
 
             foreach ($object->getTranslatableFields() as $field) {
-                if (isset($data[$field])) {
-                    $this->localizedFields[$field] = $data[$field];
-                    $defaultValue = \reset($data[$field]);
-                    if (array_key_exists($defaultLanguage, $data[$field])) {
-                        $defaultValue = $data[$field][$defaultLanguage];
-                    }
-                    $data[$field] = $defaultValue;
+                $isArray = substr($field, -2, 2) === '[]';
+                if ($isArray) {
+                    $field = substr($field, 0, -2);
+                }
+
+                if (!isset($data[$field])) {
+                    continue;
+                }
+
+                if ($isArray) {
+                    $this->localizedFields = array_merge($this->localizedFields, array_values($data[$field]));
+                    $data[$field] = array_map([$this, 'getDefaultTranslation'], array_values($data[$field]));
+                } else {
+                    $this->localizedFields[] = $data[$field];
+                    $data[$field] = $this->getDefaultTranslation($data[$field]);
                 }
             }
             $event->setData($data);
@@ -89,5 +96,17 @@ class I18nDeserializationListener
                 $this->utils->insertTranslatable($values);
             }
         );
+    }
+
+    /**
+     * Get default translation
+     *
+     * @param array $translations Translations
+     * @return string
+     */
+    private function getDefaultTranslation(array $translations)
+    {
+        $defaultLanguage = $this->utils->getDefaultLanguage();
+        return isset($translations[$defaultLanguage]) ? $translations[$defaultLanguage] : reset($translations);
     }
 }

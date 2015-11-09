@@ -145,7 +145,7 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
      */
     private function resolveFieldParams(array $translatable, $fieldName, $fieldType)
     {
-        if (in_array($fieldName, $translatable, true)) {
+        if (in_array($fieldName, $translatable, true) || in_array($fieldName.'[]', $translatable, true)) {
             $type = 'translatable';
             $options = [];
         } elseif ($fieldType === 'hash') {
