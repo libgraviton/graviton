@@ -46,6 +46,10 @@ class DefaultFieldBuilder implements FieldBuilderInterface
         array $options = [],
         $submittedData = null
     ) {
+        if ('strictboolean' === $type) {
+            $options['submitted_data'] = $submittedData;
+        }
+
         $form->add($name, $type, $options);
     }
 }

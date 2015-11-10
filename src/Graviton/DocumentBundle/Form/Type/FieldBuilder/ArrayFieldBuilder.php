@@ -48,6 +48,11 @@ class ArrayFieldBuilder implements FieldBuilderInterface
     ) {
         $options['allow_add'] = true;
         $options['allow_delete'] = true;
+        $options['prototype'] = false;
+
+        if ('strictboolean' === $options['type']) {
+            $options['options']['submitted_data'] = $submittedData;
+        }
 
         $form->add($name, $type, $options);
     }

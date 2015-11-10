@@ -29,7 +29,7 @@ class App implements TranslatableDocumentInterface
     /**
      * @var boolean show app in menu
      */
-    protected $showInMenu = false;
+    protected $showInMenu;
 
     /**
      * @var int sort order
