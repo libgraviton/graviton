@@ -81,7 +81,7 @@ class MainController
         ApiDefinitionLoader $apiLoader,
         $additionalRoutes = array(),
         $pathWhitelist = [],
-        array $proxySourceConfiguration
+        array $proxySourceConfiguration = array()
     ) {
         $this->router = $router;
         $this->response = $response;
