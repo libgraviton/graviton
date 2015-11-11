@@ -68,6 +68,7 @@ class AppKernel extends Kernel
             new \Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
@@ -76,6 +77,9 @@ class AppKernel extends Kernel
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
+            new \HadesArchitect\JsonSchemaBundle\JsonSchemaBundle(),
+            new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
+            new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {

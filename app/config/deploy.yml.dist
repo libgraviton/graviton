@@ -2,13 +2,14 @@
 deploy-scripts:
   cf_bin: cf
   cf_process_timeout: 600
-  cf_api_url: 'https://api.appcloud-nova.swisscom.com'
+  cf_api_url: 'https://api.lyra-836.appcloud.swisscom.com'
   cf_username: ~
   cf_password: ~
   cf_org: ~
-  cf_space: dev
-  cf_domain: 'nova.scapp.io'
+  cf_space: ~
+  cf_domain: 'scapp.io'
   cf_services:
-    mongodb: advanced
-    atmoss3: free
-  cf_environment_vars: { "ERRBIT_API_KEY": null, "ERRBIT_HOST": "errbit.nova.scapp.io" }
+    mongodb: small
+    dynstrg: usage
+    rabbitmq: small
+  cf_environment_vars: { "ERRBIT_API_KEY": "", "ERRBIT_HOST": "errbit.nova.scapp.io", "COMPOSER_CMD": "false" }

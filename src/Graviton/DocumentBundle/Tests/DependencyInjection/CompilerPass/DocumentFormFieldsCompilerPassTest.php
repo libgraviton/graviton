@@ -56,7 +56,7 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                         ],
                         [
                             'booleanA',
-                            'checkbox',
+                            'strictboolean',
                             ['property_path' => 'boolean'],
                         ],
                         [

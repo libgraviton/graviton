@@ -7,6 +7,7 @@
     <parameter key="graviton.schema.listener.canonicalschemaresponse.class">Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener</parameter>
     <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
     <parameter key="graviton.schema.service.schemautils.class">Graviton\SchemaBundle\SchemaUtils</parameter>
+    <parameter key="graviton.schema.service.repositoryfactory.class">Graviton\SchemaBundle\Service\RepositoryFactory</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -22,10 +23,16 @@
         <argument type="service" id="service_container"></argument>
       </call>
     </service>
+    <service id="graviton.schema.service.repositoryfactory" class="%graviton.schema.service.repositoryfactory.class%">
+      <argument type="service" id="doctrine_mongodb"/>
+    </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
+      <argument type="service" id="graviton.schema.service.repositoryfactory"/>
+      <argument type="service" id="jms_serializer.metadata_factory"/>
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="router"/>
       <argument>%graviton.document.type.extref.mapping%</argument>
+      <argument>%graviton.document.eventmap%</argument>
       <argument>%graviton.document.field.names%</argument>
       <argument>%locale%</argument>
     </service>

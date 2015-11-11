@@ -7,12 +7,11 @@ namespace Graviton\RestBundle\Controller;
 
 use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\ExceptionBundle\Exception\ValidationException;
-use Graviton\ExceptionBundle\Exception\NoInputException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Graviton\RestBundle\Validator\Form;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -24,10 +23,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Form\FormFactory;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Rs\Json\Patch;
+use Rs\Json\Patch\InvalidPatchDocumentJsonException;
+use Rs\Json\Patch\InvalidTargetDocumentJsonException;
+use Rs\Json\Patch\InvalidOperationException;
+use Rs\Json\Patch\FailedTestException;
+use Graviton\RestBundle\Service\JsonPatchValidator;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -78,7 +82,7 @@ class RestController
     /**
      * @var FormDataMapperInterface
      */
-    private $formDataMapper;
+    protected $formDataMapper;
 
     /**
      * @var Router
@@ -94,6 +98,16 @@ class RestController
      * @var EngineInterface
      */
     private $templating;
+
+    /**
+     * @var JsonPatchValidator
+     */
+    private $jsonPatchValidator;
+
+    /**
+     * @var Form
+     */
+    protected $formValidator;
 
     /**
      * @param Response           $response    Response
@@ -139,6 +153,26 @@ class RestController
         $this->formDataMapper = $formDataMapper;
     }
 
+    /**
+     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
+     * @return void
+     */
+    public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
+    {
+        $this->jsonPatchValidator = $jsonPatchValidator;
+    }
+
+    /**
+     * Defines the Form validator to be used.
+     *
+     * @param Form $validator Validator to be used
+     *
+     * @return void
+     */
+    public function setFormValidator(Form $validator)
+    {
+        $this->formValidator = $validator;
+    }
 
     /**
      * Get the container object
@@ -317,11 +351,14 @@ class RestController
     {
         // Get the response object from container
         $response = $this->getResponse();
+        $model = $this->getModel();
 
-        $this->checkJsonRequest($request, $response);
-        $record = $this->checkForm(
-            $this->getForm($request),
-            $request
+        $this->formValidator->checkJsonRequest($request, $response);
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
+            $request->getContent()
         );
 
         // Insert the new record
@@ -333,17 +370,9 @@ class RestController
         // Set status code
         $response->setStatusCode(Response::HTTP_CREATED);
 
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
         );
 
         return $response;
@@ -405,12 +434,15 @@ class RestController
     public function putAction($id, Request $request)
     {
         $response = $this->getResponse();
+        $model = $this->getModel();
 
-        $this->checkJsonRequest($request, $response);
+        $this->formValidator->checkJsonRequest($request, $response);
 
-        $record = $this->checkForm(
-            $this->getForm($request),
-            $request
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
+            $request->getContent()
         );
 
         // does it really exist??
@@ -445,6 +477,71 @@ class RestController
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
+
+        return $response;
+    }
+
+    /**
+     * Patch a record
+     *
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
+     *
+     * @throws MalformedInputException
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function patchAction($id, Request $request)
+    {
+        $response = $this->getResponse();
+        $this->formValidator->checkJsonRequest($request, $response);
+
+        // Check JSON Patch request
+        $this->formValidator->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+        // Find record && apply $ref converter
+        $record = $this->findRecord($id);
+        $jsonDocument = $this->serialize($record);
+
+        // Check/validate JSON Patch
+        if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {
+            throw new InvalidJsonPatchException($this->jsonPatchValidator->getException()->getMessage());
+        }
+
+        try {
+            // Apply JSON patches
+            $patch = new Patch($jsonDocument, $request->getContent());
+            $patchedDocument = $patch->apply();
+        } catch (InvalidPatchDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidTargetDocumentJsonException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (InvalidOperationException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        } catch (FailedTestException $e) {
+            throw new InvalidJsonPatchException($e->getMessage());
+        }
+
+        // Validate result object
+        $model = $this->getModel();
+        $record = $this->formValidator->checkForm(
+            $this->formValidator->getForm($request, $model),
+            $model,
+            $this->formDataMapper,
+            $patchedDocument
+        );
+
+        // Update object
+        $this->getModel()->updateRecord($id, $record);
+
+        // Set status code
+        $response->setStatusCode(Response::HTTP_OK);
+
+        // Set Content-Location header
+        $response->headers->set(
+            'Content-Location',
+            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
+        );
 
         return $response;
     }
@@ -569,95 +666,19 @@ class RestController
     }
 
     /**
-     * validate raw json input
-     *
-     * @param Request  $request  request
-     * @param Response $response response
-     *
-     * @return void
-     */
-    private function checkJsonRequest(Request $request, Response $response)
-    {
-        $content = $request->getContent();
-
-        if (is_resource($content)) {
-            throw new BadRequestHttpException('unexpected resource in validation');
-        }
-
-        // is request body empty
-        if ($content === '') {
-            $e = new NoInputException();
-            $e->setResponse($response);
-            throw $e;
-        }
-
-        $input = json_decode($content, true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            $e = new MalformedInputException($this->getLastJsonErrorMessage());
-            $e->setErrorType(json_last_error());
-            $e->setResponse($response);
-            throw $e;
-        }
-        if (!is_array($input)) {
-            $e = new MalformedInputException('JSON request body must be an object');
-            $e->setResponse($response);
-            throw $e;
-        }
-
-        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
-            // we need to check for id mismatches....
-            if ($request->attributes->get('id') != $input['id']) {
-                throw new BadRequestHttpException('Record ID in your payload must be the same');
-            }
-        }
-    }
-    /**
-     * Used for backwards compatibility to PHP 5.4
-     *
+     * @param Request $request request
      * @return string
      */
-    private function getLastJsonErrorMessage()
+    private function getRouteName(Request $request)
     {
-        $message = 'Unable to decode JSON string';
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
 
-        if (function_exists('json_last_error_msg')) {
-            $message = json_last_error_msg();
+        if ($routeType == 'post') {
+            $routeName = substr($routeName, 0, -4) . 'get';
         }
 
-        return $message;
-    }
-
-    /**
-     * @param Request $request request
-     *
-     * @return \Symfony\Component\Form\Form
-     */
-    private function getForm(Request $request)
-    {
-        $this->formType->initialize($this->getModel()->getEntityClass());
-        return $this->formFactory->create($this->formType, null, ['method' => $request->getMethod()]);
-    }
-
-    /**
-     * @param FormInterface $form    form to check
-     * @param Request       $request data request
-     *
-     * @return mixed
-     */
-    private function checkForm(FormInterface $form, Request $request)
-    {
-        $document = $this->formDataMapper->convertToFormData(
-            $request->getContent(),
-            $this->getModel()->getEntityClass()
-        );
-        $form->submit($document, true);
-
-        if (!$form->isValid()) {
-            throw new ValidationException($form->getErrors(true));
-        } else {
-            $record = $form->getData();
-        }
-
-        return $record;
+        return $routeName;
     }
 }

@@ -10,9 +10,13 @@
     <property name="refCollection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="eventNames" accessor-getter="getEventNames" accessor-setter="setEventNames" serialized-name="x-events" expose="true">
+      <type><![CDATA[array<string>]]></type>
+    </property>
     <property name="properties" accessor-getter="getProperties" expose="true">
       <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
     </property>
+    <property name="additionalProperties" accessor-getter="getAdditionalProperties" expose="true" type="Graviton\SchemaBundle\Document\Schema"/>
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>

@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\Service;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -98,14 +99,14 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     /**
      * verify that we get a mongodbref
      *
-     * @dataProvider getDbRefProvider
+     * @dataProvider getExtReferenceProvider
      *
-     * @param string       $url      external link to convert
-     * @param array|object $expected expected mogodb ref
+     * @param string       $url          extref url
+     * @param ExtReference $extReference extref object
      *
      * @return void
      */
-    public function testGetDbRef($url, $expected)
+    public function testGetExtReference($url, ExtReference $extReference)
     {
         $this->router
             ->expects($this->once())
@@ -125,26 +126,26 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                 'ShowCase' => 'gravitondyn.showcase.rest.showcase',
             ]
         );
-        $this->assertEquals($expected, $converter->getDbRef($url));
+        $this->assertEquals($extReference, $converter->getExtReference($url));
     }
 
     /**
      * @return array
      */
-    public function getDbRefProvider()
+    public function getExtReferenceProvider()
     {
         return [
             [
                 'http://localhost/core/app/test',
-                (object) \MongoDBRef::create('App', 'test'),
+                ExtReference::create('App', 'test'),
             ],
             [
                 '/core/app/test',
-                (object) \MongoDBRef::create('App', 'test'),
+                ExtReference::create('App', 'test'),
             ],
             [
                 'http://localhost/hans/showcase/blah',
-                (object) \MongoDBRef::create('ShowCase', 'blah'),
+                ExtReference::create('ShowCase', 'blah'),
             ],
         ];
     }
@@ -152,20 +153,20 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getUrlProvider
      *
-     * @param object $ref     reference as from mongo
-     * @param string $routeId name of route that should get loaded
-     * @param string $url     url we expect to result from the conversion
+     * @param ExtReference $extReference extref object
+     * @param string       $routeId      name of route that should get loaded
+     * @param string       $url          url we expect to result from the conversion
      *
      * @return void
      */
-    public function testGetUrl($ref, $routeId, $url)
+    public function testGetUrl(ExtReference $extReference, $routeId, $url)
     {
         $this->router
             ->expects($this->once())
             ->method('generate')
             ->with(
                 $routeId,
-                ['id' => $ref->{'$id'}]
+                ['id' => $extReference->getId()]
             )
             ->will($this->returnValue($url));
 
@@ -177,7 +178,7 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                 'ShowCase' => 'gravitondyn.showcase.rest.showcase',
             ]
         );
-        $this->assertEquals($url, $converter->getUrl($ref));
+        $this->assertEquals($url, $converter->getUrl($extReference));
     }
 
     /**
@@ -187,12 +188,12 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                (object) \MongoDBRef::create('App', 'test'),
+                ExtReference::create('App', 'test'),
                 'graviton.core.rest.app.get',
                 'http://localhost/core/app/test',
             ],
             [
-                (object) \MongoDBRef::create('Language', 'en'),
+                ExtReference::create('Language', 'en'),
                 'graviton.i18n.rest.language.get',
                 'http://localhost/i18n/language/en',
             ],

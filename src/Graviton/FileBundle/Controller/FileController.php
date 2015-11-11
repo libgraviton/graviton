@@ -5,10 +5,14 @@
 
 namespace Graviton\FileBundle\Controller;
 
+use Graviton\FileBundle\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
+use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -16,10 +20,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactory;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
-use Gaufrette\FileSystem;
-use Gaufrette\File;
-use GravitonDyn\FileBundle\Document\FileMetadata;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -29,9 +29,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class FileController extends RestController
 {
     /**
-     * @var FileSystem
+     * @var FileManager
      */
-    private $gaufrette;
+    private $fileManager;
 
     /**
      * @param Response           $response    Response
@@ -43,7 +43,7 @@ class FileController extends RestController
      * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils schema utils
-     * @param FileSystem         $gaufrette   file system abstraction layer for s3 and more
+     * @param FileManager        $fileManager Handles file specific tasks
      */
     public function __construct(
         Response $response,
@@ -55,7 +55,7 @@ class FileController extends RestController
         DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
-        Filesystem $gaufrette
+        FileManager $fileManager
     ) {
         parent::__construct(
             $response,
@@ -68,7 +68,7 @@ class FileController extends RestController
             $container,
             $schemaUtils
         );
-        $this->gaufrette = $gaufrette;
+        $this->fileManager = $fileManager;
     }
 
     /**
@@ -76,49 +76,28 @@ class FileController extends RestController
      *
      * @param Request $request Current http request
      *
-     * @return \Symfony\Component\HttpFoundation\Response $response Result of action with data (if successful)
+     * @return Response $response Result of action with data (if successful)
      */
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
-        $entityClass = $this->getModel()->getEntityClass();
-        $record = new $entityClass;
-
-        // Insert the new record
-        $record = $this->getModel()->insertRecord($record);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
-
-        $file = $this->saveFile($record->getId(), $request->getContent());
-
-        // update record with file metadata
-        $meta = new FileMetadata();
-        $meta->setSize((int) $file->getSize())
-            ->setMime($request->headers->get('Content-Type'))
-            ->setCreatedate(new \DateTime())
-            ->setModificationdate(new \DateTime());
-
-        $record->setMetadata($meta);
-
-        $record = $this->getModel()->updateRecord($record->getId(), $record);
+        // store id of new record so we don't need to re-parse body later when needed
+        $request->attributes->set('id', $files[0]);
 
         // Set status code and content
         $response->setStatusCode(Response::HTTP_CREATED);
 
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4).'get';
-        }
-
+        // TODO: this not is correct for multiple uploaded files!!
+        // TODO: Probably use "Link" header to address this.
+        $locations = $this->determineRoutes($request->get('_route'), $files, ['post', 'postNoSlash']);
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($routeName, array('id' => $record->getId()))
+            $locations[0]
         );
+
         return $response;
     }
 
@@ -138,14 +117,14 @@ class FileController extends RestController
         }
         $response = $this->getResponse();
 
-        if (!$this->gaufrette->has($id)) {
+        if (!$this->fileManager->has($id)) {
             $response->setStatusCode(Response::HTTP_NOT_FOUND);
 
             return $response;
         }
 
         $record = $this->findRecord($id);
-        $data = $this->gaufrette->read($id);
+        $data = $this->fileManager->read($id);
 
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', $record->getMetadata()->getMime());
@@ -171,32 +150,23 @@ class FileController extends RestController
         if (substr(strtolower($contentType), 0, 16) === 'application/json') {
             return parent::putAction($id, $request);
         }
-
-        $record = $this->findRecord($id);
-
-        $file = $this->saveFile($id, $request->getContent());
-
-        $record->getMetadata()
-            ->setSize((int) $file->getSize())
-            ->setMime($contentType)
-            ->setModificationdate(new \DateTime());
-
-        $this->getModel()->updateRecord($id, $record);
-
-        // store id of new record so we dont need to reparse body later when needed
-        $request->attributes->set('id', $record->getId());
+        if (0 === strpos($contentType, 'multipart/form-data')) {
+            $request = $this->normalizeRequest($request);
+        }
 
         $response = $this->getResponse();
+        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
+
+        // store id of new record so we don't need to re-parse body later when needed
+        $request->attributes->set('id', $files[0]);
+
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
-        $routeName = $request->get('_route');
-        if (substr($routeName, 0, -4) == '.put') {
-            $routeName = substr($routeName, 0, -3) . 'get';
-        }
+        // no service sends Location headers on PUT - /file shouldn't as well
 
         return $response;
     }
-
 
     /**
      * Deletes a record
@@ -207,31 +177,87 @@ class FileController extends RestController
      */
     public function deleteAction($id)
     {
-        if ($this->gaufrette->has($id)) {
-            $this->gaufrette->delete($id);
+        if ($this->fileManager->has($id)) {
+            $this->fileManager->delete($id);
         }
 
         return parent::deleteAction($id);
     }
 
     /**
-     * Save or update a file
+     * Determines the routes and replaces the http method
      *
-     * @param Number $id   ID of file
-     * @param String $data content to save
+     * @param string $routeName  Name of the route to be generated
+     * @param array  $files      Set of uploaded files
+     * @param array  $routeTypes Set of route types to be recognized
      *
-     * @return Gaufrette\File $file the saved file
-     *
-     * @throws BadRequestHttpException
+     * @return array
      */
-    private function saveFile($id, $data)
+    private function determineRoutes($routeName, array $files, array $routeTypes)
     {
-        if (is_resource($data)) {
-            throw new BadRequestHttpException('/file does not support storing resources');
-        }
-        $file = new File($id, $this->gaufrette);
-        $file->setContent($data);
+        $locations = [];
+        $newRouteName = '';
+        foreach ($routeTypes as $routeType) {
+            $routeParts = explode('.', $routeName);
 
-        return $file;
+            if ($routeType == array_pop($routeParts)) {
+                $reduce = (-1) * strlen($routeType);
+                $newRouteName = substr($routeName, 0, $reduce).'get';
+                break;
+            }
+        }
+
+        if (!empty($newRouteName)) {
+            foreach ($files as $id) {
+                $locations[] = $this->getRouter()->generate($newRouteName, array('id' => $id));
+            }
+        }
+
+        return $locations;
+    }
+
+    /**
+     * Validates the provided request
+     *
+     * @param Request  $request  Http request to be validated
+     * @param Response $response Http response to be returned in case of an error
+     * @param string   $fileData Alternative content to be validated
+     *
+     * @throws \Exception
+     * @return File|null
+     */
+    private function validateRequest(Request $request, Response $response, $fileData = '')
+    {
+        if (!empty($fileData)) {
+            $this->formValidator->checkJsonRequest($request, $response, $fileData);
+            $model = $this->getModel();
+            return $this->formValidator->checkForm(
+                $this->formValidator->getForm($request, $model),
+                $model,
+                $this->formDataMapper,
+                $fileData
+            );
+        }
+    }
+
+    /**
+     * Gathers information into a request
+     *
+     * @param Request $request master request sent by client.
+     *
+     * @return Request
+     */
+    private function normalizeRequest(Request $request)
+    {
+        $contentData = $this->fileManager->extractDataFromRequestContent($request);
+        $normalized = $request->duplicate(
+            null,
+            null,
+            $contentData['attributes'],
+            null,
+            $contentData['files']
+        );
+
+        return $normalized;
     }
 }

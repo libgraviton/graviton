@@ -5,6 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Tests\Definition;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
+use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Graviton\GeneratorBundle\Definition\Schema;
 
@@ -131,8 +133,8 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             JsonDefinitionField::TYPE_DECIMAL => 'double',
             JsonDefinitionField::TYPE_DATETIME => 'DateTime',
             JsonDefinitionField::TYPE_BOOLEAN => 'boolean',
-            JsonDefinitionField::TYPE_OBJECT => 'Graviton\DocumentBundle\Entity\Hash',
-            JsonDefinitionField::TYPE_EXTREF => 'string',
+            JsonDefinitionField::TYPE_OBJECT => Hash::class,
+            JsonDefinitionField::TYPE_EXTREF => ExtReference::class,
         ];
         return array_map(
             function ($defType, $serializerType) {
@@ -164,6 +166,42 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'serializerType'    => $field->getTypeSerializer(),
                     'relType'           => null,
                     'isClassType'       => false,
+                    'xDynamicKey'       => null,
+                ]
+            ),
+            $field->getDefAsArray()
+        );
+    }
+
+    /**
+     * Test JsonDefinitionField::getXDynamicKey()
+     *
+     * @return void
+     */
+    public function testGetXDynamicKey()
+    {
+        $key = (new Schema\XDynamicKey())
+            ->setDocumentId(__CLASS__)
+            ->setRepositoryMethod(__LINE__)
+            ->setRefMethod(__FILE__);
+
+        $definition = (new Schema\Field())
+            ->setXDynamicKey($key);
+
+        $field = new JsonDefinitionField('name', $definition);
+
+        $this->assertEquals(
+            array_replace(
+                $this->getBaseDefAsArray($definition),
+                [
+                    'name'              => $field->getName(),
+                    'type'              => $field->getType(),
+                    'exposedName'       => $field->getName(),
+                    'doctrineType'      => $field->getTypeDoctrine(),
+                    'serializerType'    => $field->getTypeSerializer(),
+                    'relType'           => null,
+                    'isClassType'       => false,
+                    'xDynamicKey'       => $key,
                 ]
             ),
             $field->getDefAsArray()

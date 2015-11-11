@@ -7,13 +7,13 @@ namespace Graviton\CoreBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
-use Graviton\ConsultationBundle\GravitonConsultationBundle;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RestBundle\GravitonRestBundle;
 use Graviton\SchemaBundle\GravitonSchemaBundle;
@@ -21,6 +21,8 @@ use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Graviton\CoreBundle\Compiler\VersionCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * GravitonCoreBundle
@@ -57,7 +59,22 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonSecurityBundle(),
             new GravitonSwaggerBundle(),
             new GravitonFileBundle(),
+            new GravitonRabbitMqBundle(),
             new GravitonProxyBundle(),
         );
+    }
+
+    /**
+     * load version compiler pass
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new VersionCompilerPass());
     }
 }

@@ -1,8 +1,6 @@
 <?php
 namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Schema\Definition;
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy;
 
 /**
@@ -14,33 +12,12 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoad()
     {
-        $json = file_get_contents(__DIR__.'/test.json');
+        $json = file_get_contents(__DIR__.'/resources/definition/test1.json');
 
-        $serializer = $this
-            ->getMockBuilder('Jms\\Serializer\\SerializerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(['serialize', 'deserialize'])
-            ->getMock();
-        $serializer
-            ->expects($this->once())
-            ->method('deserialize')
-            ->with(
-                $json,
-                'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
-                'json'
-            )
-            ->will(
-                $this->returnValue((new Definition())->setId('a'))
-            );
+        $sut = new JsonStrategy();
 
-        $strategy = new JsonStrategy($serializer);
-        $data = $strategy->load($json);
-
-        $this->assertContainsOnlyInstancesOf('Graviton\\GeneratorBundle\\Definition\\JsonDefinition', $data);
-        $this->assertEquals(
-            $data,
-            [new JsonDefinition((new Definition())->setId('a'))]
-        );
+        $this->assertTrue($sut->supports($json));
+        $this->assertEquals([$json], $sut->load($json));
     }
 
     /**
@@ -48,16 +25,11 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
      * @param bool $result
      * @return void
      *
-     * @dataProvider dataSupports()
+     * @dataProvider dataSupports
      */
     public function testSupports($input, $result)
     {
-        $serializer = $this
-            ->getMockBuilder('Jms\\Serializer\\SerializerInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $strategy = new JsonStrategy($serializer);
+        $strategy = new JsonStrategy();
         $this->assertSame($result, $strategy->supports($input));
     }
 

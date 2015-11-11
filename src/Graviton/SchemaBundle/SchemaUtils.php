@@ -10,6 +10,8 @@ use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Service\RepositoryFactory;
+use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -44,6 +46,13 @@ class SchemaUtils
     private $extrefServiceMapping;
 
     /**
+     * event map
+     *
+     * @var array event map
+     */
+    private $eventMap;
+
+    /**
      * @var array [document class => [field name -> exposed name]]
      */
     private $documentFieldNames;
@@ -54,24 +63,43 @@ class SchemaUtils
     private $defaultLocale;
 
     /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
+    /**
+     * @var SerializerMetadataFactoryInterface
+     */
+    private $serializerMetadataFactory;
+
+    /**
      * Constructor
      *
-     * @param LanguageRepository $languageRepository   repository
-     * @param RouterInterface    $router               router
-     * @param array              $extrefServiceMapping Extref service mapping
-     * @param array              $documentFieldNames   Document field names
-     * @param string             $defaultLocale        Default Language
+     * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
+     * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
+     * @param LanguageRepository                 $languageRepository        repository
+     * @param RouterInterface                    $router                    router
+     * @param array                              $extrefServiceMapping      Extref service mapping
+     * @param array                              $eventMap                  eventmap
+     * @param array                              $documentFieldNames        Document field names
+     * @param string                             $defaultLocale             Default Language
      */
     public function __construct(
+        RepositoryFactory $repositoryFactory,
+        SerializerMetadataFactoryInterface $serializerMetadataFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
         array $extrefServiceMapping,
+        array $eventMap,
         array $documentFieldNames,
         $defaultLocale
     ) {
+        $this->repositoryFactory = $repositoryFactory;
+        $this->serializerMetadataFactory = $serializerMetadataFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->extrefServiceMapping = $extrefServiceMapping;
+        $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
     }
@@ -107,7 +135,13 @@ class SchemaUtils
     {
         // build up schema data
         $schema = new Schema;
-        $schema->setTitle(ucfirst($modelName));
+
+        if (!empty($model->getTitle())) {
+            $schema->setTitle($model->getTitle());
+        } else {
+            $schema->setTitle(ucfirst($modelName));
+        }
+        
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
@@ -146,6 +180,12 @@ class SchemaUtils
             ];
         }
 
+        // exposed events..
+        $classShortName = $documentReflection->getShortName();
+        if (isset($this->eventMap[$classShortName])) {
+            $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
+        }
+
         foreach ($meta->getFieldNames() as $field) {
             // don't describe hidden fields
             if (!isset($documentFieldNames[$field])) {
@@ -161,20 +201,49 @@ class SchemaUtils
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property->setItems($this->getModelSchema($field, $propertyModel, $online));
-                $property->setType('array');
-            }
 
-            if ($meta->getTypeOfField($field) === 'one') {
+                if ($model->hasDynamicKey($field)) {
+                    $property->setType('object');
+
+                    if ($online) {
+                        // we generate a complete list of possible keys when we have access to mongodb
+                        // this makes everything work with most json-schema v3 implementations (ie. schemaform.io)
+                        $dynamicKeySpec = $model->getDynamicKeySpec($field);
+
+                        $documentId = $dynamicKeySpec->{'document-id'};
+                        $dynamicRepository = $this->repositoryFactory->get($documentId);
+
+                        $repositoryMethod = $dynamicKeySpec->{'repository-method'};
+                        $records = $dynamicRepository->$repositoryMethod();
+
+                        $dynamicProperties = array_map(
+                            function ($record) {
+                                return $record->getId();
+                            },
+                            $records
+                        );
+                        foreach ($dynamicProperties as $propertyName) {
+                            $property->addProperty(
+                                $propertyName,
+                                $this->getModelSchema($field, $propertyModel, $online)
+                            );
+                        }
+                    } else {
+                        // in the swagger case we can use additionPorerties which where introduced by json-schema v4
+                        $property->setAdditionalProperties($this->getModelSchema($field, $propertyModel, $online));
+                    }
+                } else {
+                    $property->setItems($this->getModelSchema($field, $propertyModel, $online));
+                    $property->setType('array');
+                }
+            } elseif ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
                 $property = $this->getModelSchema($field, $propertyModel, $online);
-            }
-
-            if (in_array($field, $translatableFields, true)) {
+            } elseif (in_array($field, $translatableFields, true)) {
                 $property = $this->makeTranslatable($property, $languages);
-            }
-
-            if ($meta->getTypeOfField($field) === 'extref') {
+            } elseif (in_array($field.'[]', $translatableFields, true)) {
+                $property = $this->makeArrayTranslatable($property, $languages);
+            } elseif ($meta->getTypeOfField($field) === 'extref') {
                 $urls = array();
                 $refCollections = $model->getRefCollectionOfField($field);
                 foreach ($refCollections as $collection) {
@@ -189,6 +258,28 @@ class SchemaUtils
                     }
                 }
                 $property->setRefCollection($urls);
+            } elseif ($meta->getTypeOfField($field) === 'collection') {
+                $itemSchema = new Schema();
+                $property->setType('array');
+                $itemSchema->setType($this->getCollectionItemType($meta->name, $field));
+
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'datearray') {
+                $itemSchema = new Schema();
+                $property->setType('array');
+                $itemSchema->setType('string');
+                $itemSchema->setFormat('date-time');
+
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'hasharray') {
+                $itemSchema = new Schema();
+                $itemSchema->setType('object');
+
+                $property->setType('array');
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
             }
             $schema->addProperty($documentFieldNames[$field], $property);
         }
@@ -234,7 +325,22 @@ class SchemaUtils
                 $property->addProperty($language, $schema);
             }
         );
+        $property->setRequired(['en']);
+        return $property;
+    }
 
+    /**
+     * turn a array property into a translatable property
+     *
+     * @param Schema   $property  simple string property
+     * @param string[] $languages available languages
+     *
+     * @return Schema
+     */
+    public function makeArrayTranslatable(Schema $property, $languages)
+    {
+        $property->setType('array');
+        $property->setItems($this->makeTranslatable(new Schema(), $languages));
         return $property;
     }
 
@@ -257,5 +363,28 @@ class SchemaUtils
         }
 
         return implode('.', array_merge($routeParts, array($realRouteType)));
+    }
+
+    /**
+     * Get item type of collection field
+     *
+     * @param string $className Class name
+     * @param string $fieldName Field name
+     * @return string|null
+     */
+    private function getCollectionItemType($className, $fieldName)
+    {
+        $serializerMetadata = $this->serializerMetadataFactory->getMetadataForClass($className);
+        if ($serializerMetadata === null) {
+            return null;
+        }
+        if (!isset($serializerMetadata->propertyMetadata[$fieldName])) {
+            return null;
+        }
+
+        $type = $serializerMetadata->propertyMetadata[$fieldName]->type;
+        return isset($type['name'], $type['params'][0]['name']) && $type['name'] === 'array' ?
+            $type['params'][0]['name'] :
+            null;
     }
 }

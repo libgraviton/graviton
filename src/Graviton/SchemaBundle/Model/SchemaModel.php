@@ -69,6 +69,16 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get Title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->schema->title;
+    }
+
+    /**
      * get description
      *
      * @return string Description
@@ -164,6 +174,30 @@ class SchemaModel implements ContainerAwareInterface
     public function getReadOnlyOfField($field)
     {
         return $this->getSchemaField($field, 'readOnly', false);
+    }
+
+    /**
+     * tell us if a model what to be exposed using a key as field
+     *
+     * @param string $field field that we check for dynamic-key spec
+     *
+     * @return boolean
+     */
+    public function hasDynamicKey($field)
+    {
+        return $this->getSchemaField($field, 'x-dynamic-key', false) !== false;
+    }
+
+    /**
+     * Get field used for setting stringy key value
+     *
+     * @param string $field field that we get dynamic-key spec from
+     *
+     * @return object
+     */
+    public function getDynamicKeySpec($field)
+    {
+        return $this->getSchemaField($field, 'x-dynamic-key');
     }
 
     /**

@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Service;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\I18nBundle\Model\Translatable;
 use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
 use Graviton\I18nBundle\Document\TranslatableLanguage;
@@ -233,7 +234,7 @@ class I18nUtils
                     $translatable->setTranslated($translated);
                     $translatable->setIsLocalized($isLocalized);
                     $translatableLang = new TranslatableLanguage();
-                    $translatableLang->setRef('/i18n/language/'.$locale);
+                    $translatableLang->setRef(ExtReference::create('Language', $locale));
                     $translatable->setLanguage($translatableLang);
                     $this->translatable->insertRecord($translatable);
                 }

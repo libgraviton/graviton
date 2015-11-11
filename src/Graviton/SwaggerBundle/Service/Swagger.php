@@ -5,6 +5,7 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
+use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
@@ -38,20 +39,28 @@ class Swagger
     private $schemaUtils;
 
     /**
+     * @var CoreUtils
+     */
+    private $coreUtils;
+
+    /**
      * Constructor
      *
      * @param RestUtils   $restUtils   rest utils
      * @param SchemaModel $schemaModel schema model instance
      * @param SchemaUtils $schemaUtils schema utils
+     * @param CoreUtils   $coreUtils   coreUtils
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
-        SchemaUtils $schemaUtils
+        SchemaUtils $schemaUtils,
+        CoreUtils $coreUtils
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
+        $this->coreUtils = $coreUtils;
     }
 
     /**
@@ -68,6 +77,7 @@ class Swagger
         foreach ($routingMap as $contName => $routes) {
             list(, $bundle,, $document) = explode('.', $contName);
 
+            /** @var Route  $route */
             foreach ($routes as $routeName => $route) {
                 $routeMethod = strtolower($route->getMethods()[0]);
 
@@ -82,6 +92,7 @@ class Swagger
                     continue;
                 }
 
+                /** @var \Graviton\RestBundle\Model\DocumentModel $thisModel */
                 $thisModel = $this->restUtils->getModelFromRoute($route);
                 if ($thisModel === false) {
                     throw new \LogicException(
@@ -144,6 +155,11 @@ class Swagger
                         'schema' => array('$ref' => '#/definitions/' . $incomingEntitySchema)
                     );
 
+                    if ($routeMethod == 'post') {
+                        $thisPath['responses'][201] = $thisPath['responses'][200];
+                        unset($thisPath['responses'][200]);
+                    }
+
                     // add error responses..
                     $thisPath['responses'][400] = array(
                         'description' => 'Bad request',
@@ -174,12 +190,13 @@ class Swagger
     {
         $ret = array();
         $ret['swagger'] = '2.0';
+
         $ret['info'] = array(
-            // @todo this should be a real version - but should it be the version of graviton or which one?
-            'version' => '0.1',
+            'version' => $this->coreUtils->getWrapperVersion()['version'],
             'title' => 'Graviton REST Services',
-            'description' => 'Testable API Documentation of this Graviton instance.'
+            'description' => 'Testable API Documentation of this Graviton instance.',
         );
+
         $ret['basePath'] = '/';
         $ret['schemes'] = array('http', 'https');
 

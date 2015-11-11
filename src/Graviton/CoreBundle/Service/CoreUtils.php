@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -15,30 +13,59 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CoreUtils
 {
     /**
-     * Gets the current version we're running on..
-     *
-     * @param string $composerFile Absolute path to the json file providing version information.
+     * @var array holds all version numbers of installed packages
+     */
+    private $versions;
+
+    /**
+     * @param array $versions Array containing version numbers of installed packages
+     */
+    public function __construct($versions)
+    {
+        $this->versions = $versions;
+    }
+
+    /**
+     * returns versions in response header format
      *
      * @return string version
      */
-    public function getVersion($composerFile = '')
+    public function getVersionInHeaderFormat()
     {
-        //@todo if we're in a wrapper context, use the version of the wrapper, not graviton
-        $composerFile = !empty($composerFile) ? $composerFile : __DIR__ . '/../../../../composer.json';
+        $versionHeader = '';
+        foreach ($this->versions as $name => $version) {
+            $versionHeader .= $version['id'] . ': ' . $version['version'] . '; ';
+        }
 
-        if (file_exists($composerFile)) {
-            $composer = json_decode(file_get_contents($composerFile), true);
+        return $versionHeader;
+    }
 
-            if (JSON_ERROR_NONE === json_last_error() && !empty($composer['version'])) {
-                return $composer['version'];
-            } else {
-                $message = sprintf(
-                    'Unable to extract version from composer.json file (Error code: %s)',
-                    json_last_error()
-                );
+    /**
+     * @return array versions
+     */
+    public function getVersion()
+    {
+        $ver = array();
+        foreach ($this->versions as $version) {
+            $ver[$version['id']]= $version['version'];
+        }
+        return $ver;
+    }
 
-                throw new \RuntimeException($message);
+    /**
+     * Finds the version of the current wrapper.
+     *
+     * @return array wrapper version
+     * @throws \RuntimeException in case version was not found in versions stack.
+     */
+    public function getWrapperVersion()
+    {
+        foreach ($this->versions as $version) {
+            if ($version['id'] === 'self') {
+                return $version;
             }
         }
+
+        throw new \RuntimeException('No version »self« available.');
     }
 }

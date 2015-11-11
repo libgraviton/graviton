@@ -45,6 +45,11 @@ class Schema
     protected $properties = array();
 
     /**
+     * @var Schema
+     */
+    protected $additionalProperties;
+
+    /**
      * @var string[]
      */
     protected $required = array();
@@ -58,6 +63,13 @@ class Schema
      * @var array
      */
     protected $refCollection = array();
+
+    /**
+     * possible event names this collection implements (queue events)
+     *
+     * @var array
+     */
+    protected $eventNames = array();
 
     /**
      * @var bool
@@ -272,6 +284,28 @@ class Schema
     }
 
     /**
+     * set additionalProperties on schema
+     *
+     * @param Schema $schema schema to use for additionalProperties type
+     *
+     * @return void
+     */
+    public function setAdditionalProperties(Schema $schema)
+    {
+        $this->additionalProperties = $schema;
+    }
+
+    /**
+     * get addtionalProperties for schema
+     *
+     * @return Schema
+     */
+    public function getAdditionalProperties()
+    {
+        return $this->additionalProperties;
+    }
+
+    /**
      * set required variables
      *
      * @param string[] $required arary of required fields
@@ -351,6 +385,33 @@ class Schema
     public function getRefCollection()
     {
         $collection = $this->refCollection;
+        if (empty($collection)) {
+            $collection = null;
+        }
+
+        return $collection;
+    }
+
+    /**
+     * set an array of possible event names
+     *
+     * @param array $eventNames event names
+     *
+     * @return void
+     */
+    public function setEventNames(array $eventNames)
+    {
+        $this->eventNames = array_values($eventNames);
+    }
+
+    /**
+     * get a collection of possible event names
+     *
+     * @return array
+     */
+    public function getEventNames()
+    {
+        $collection = $this->eventNames;
         if (empty($collection)) {
             $collection = null;
         }

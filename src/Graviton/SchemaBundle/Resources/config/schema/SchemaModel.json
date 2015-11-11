@@ -1,5 +1,5 @@
 {
-  "title": "SchemaModel",
+  "title": "Schema model",
   "type": "object",
   "description": "An object containing schema information about a resource",
   "properties": {
@@ -36,6 +36,11 @@
       },
       "description": "Array of properties"
     },
+    "additionalProperties": {
+      "title": "Additional Properties",
+      "type": "object",
+      "description": "Definition of additional properties"
+    },
     "required": {
       "title": "Required",
       "type": "array",
@@ -50,7 +55,15 @@
       "items": {
         "type": "string"
       },
-      "description": "Array of required field names"
+      "description": "Array of collection names this ref fields points to"
+    },
+    "x-events": {
+      "title": "Collection",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of queue events this service generates"
     }
   },
   "required": ["title", "description", "type"]

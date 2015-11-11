@@ -114,7 +114,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'relType' => null,
             'isClassType' => false,
             'constraints' => array(),
-            'collection' => array()
+            'collection' => array(),
+            'xDynamicKey' => null,
         );
 
         $this->assertEquals($def, $field->getDefAsArray());

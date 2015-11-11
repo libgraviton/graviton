@@ -1,4 +1,5 @@
 {
+  "title": "Translatables",
   "description": "A Translatable string available for i18n purposes.",
   "properties": {
     "id": {

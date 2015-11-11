@@ -46,7 +46,6 @@ class AppControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
     }
-
     /**
      * check if all fixtures are returned on GET
      *
@@ -61,7 +60,6 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
-
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
@@ -171,11 +169,11 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * RQL is parsed only when we get all apps
+     * RQL is parsed only when we get apps
      *
      * @return void
      */
-    public function testRqlIsParsedOnlyOnAllRequest()
+    public function testRqlIsParsedOnlyOnGetRequest()
     {
         $appData = [
             'showInMenu' => false,
@@ -185,6 +183,11 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?invalidrqlquery');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertContains('syntax error in rql', $client->getResults()->message);
 
@@ -200,10 +203,6 @@ class AppControllerTest extends RestTestCase
             $client = static::createRestClient();
             $client->request($method, '/schema/core/app/item?invalidrqlquery');
             $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-            $client = static::createRestClient();
-            $client->request($method, '/core/app/admin?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         }
 
         $client = static::createRestClient();
@@ -217,6 +216,41 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('DELETE', '/core/app/admin?invalidrqlquery');
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * Test only RQL select() operator is allowed for GET one
+     *
+     * @return void
+     * @group tmp
+     */
+    public function testOnlyRqlSelectIsAllowedOnGetOne()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach ([
+                     'limit' => 'limit(1)',
+                     'sort'  => 'sort(+id)',
+                     'eq'    => 'eq(id,a)',
+                 ] as $extraRqlOperator => $extraRqlOperatorQuery) {
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/admin?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+            $this->assertEquals(
+                sprintf('RQL operator "%s" is not allowed for this request', $extraRqlOperator),
+                $client->getResults()->message
+            );
+        }
     }
 
     /**
@@ -425,6 +459,84 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * Test for PATCH Request
+     *
+     * @return void
+     */
+    public function testPatchAppRequestApplyChanges()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "testapp";
+        $helloApp->name = new \stdClass();
+        $helloApp->name->en = "Test App";
+        $helloApp->showInMenu = false;
+
+        // 1. Create some App
+        $client = static::createRestClient();
+        $client->put('/core/app/' . $helloApp->id, $helloApp);
+
+        // 2. PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/name/en',
+                    'value' => 'Test App Patched'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // 3. Get changed App and check changed title
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/' . $helloApp->id);
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertEquals('Test App Patched', $results->name->en);
+    }
+
+    /**
+     * Test for Malformed PATCH Request
+     *
+     * @return void
+     */
+    public function testMalformedPatchAppRequest()
+    {
+        $helloApp = new \stdClass();
+        $helloApp->id = "testapp";
+        $helloApp->title = new \stdClass();
+        $helloApp->title->en = "Test App";
+        $helloApp->showInMenu = false;
+
+        // 1. Create some App
+        $client = static::createRestClient();
+        $client->put('/core/app/' . $helloApp->id, $helloApp);
+
+        // 2. PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            array(
+                'op' => 'unknown',
+                'path' => '/title/en'
+            )
+        );
+        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertContains(
+            'Invalid JSON patch request',
+            $response->getContent()
+        );
+    }
+
+    /**
      * Try to update an app with a non matching ID in GET and req body
      *
      * @return void
@@ -489,6 +601,7 @@ class AppControllerTest extends RestTestCase
         $isnogudApp->id = 'isnogud';
         $isnogudApp->name = new \stdClass;
         $isnogudApp->name->en = 'I don\'t exist';
+        $isnogudApp->showInMenu = true;
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -533,7 +646,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->id = 'tablet';
         $helloApp->name = new \stdClass;
         $helloApp->name->en = 'Tablet';
-        $helloApp->showInMenu = [];
+        $helloApp->showInMenu = 'false';
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -543,7 +656,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         $this->assertContains('showInMenu', $results[0]->propertyPath);
-        $this->assertEquals('This value is not valid.', $results[0]->message);
+        $this->assertEquals('The value "false" is not a valid boolean.', $results[0]->message);
     }
 
     /**
@@ -559,6 +672,27 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
+    }
+
+    /**
+     * requests on OPTIONS and HEAD shall not lead graviton to get any data from mongodb.
+     * if we page limit(1) this will lead to presence of the x-total-count header if
+     * data is generated (asserted by testGetAppPagingWithRql()). thus, if we don't
+     * have this header, we can safely assume that no data has been processed in RestController.
+     *
+     * @return void
+     */
+    public function testNoRecordsAreGeneratedOnPreRequests()
+    {
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/core/app/?limit(1)');
+        $response = $client->getResponse();
+        $this->assertArrayNotHasKey('x-total-count', $response->headers->all());
+
+        $client = static::createRestClient();
+        $client->request('HEAD', '/core/app/?limit(1)');
+        $response = $client->getResponse();
+        $this->assertArrayNotHasKey('x-total-count', $response->headers->all());
     }
 
     /**
@@ -595,6 +729,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Array of app objects', $results->title);
         $this->assertEquals('array', $results->type);
         $this->assertIsAppSchema($results->items);
+        $this->assertEquals('en', $results->items->properties->name->required[0]);
 
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));

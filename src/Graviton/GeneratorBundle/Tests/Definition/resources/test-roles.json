@@ -6,7 +6,6 @@
     "roles": ["GRAVITON_USER"]
   },
   "target": {
-    "indexes": [],
     "relations": [],
     "fields": []
   }

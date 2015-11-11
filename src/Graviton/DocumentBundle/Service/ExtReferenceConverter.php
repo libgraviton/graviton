@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Service;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Route;
 
@@ -39,13 +40,13 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
     }
 
     /**
-     * return the mongodb representation from a extref URL
+     * return the extref from URL
      *
      * @param string $url Extref URL
-     * @return object
+     * @return ExtReference
      * @throws \InvalidArgumentException
      */
-    public function getDbRef($url)
+    public function getExtReference($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
         if ($path === false) {
@@ -58,36 +59,34 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
         foreach ($this->router->getRouteCollection()->all() as $route) {
             list($collection, $id) = $this->getDataFromRoute($route, $path);
             if ($collection !== null && $id !== null) {
-                break;
+                return ExtReference::create($collection, $id);
             }
         }
 
-        if ($collection === null || $id === null) {
-            throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
-        }
-
-        return (object) \MongoDBRef::create($collection, $id);
+        throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
     }
 
     /**
-     * return the extref URL
+     * return the URL from extref
      *
-     * @param object $dbRef DB value
+     * @param ExtReference $extReference Extref
      * @return string
+     * @throws \InvalidArgumentException
      */
-    public function getUrl($dbRef)
+    public function getUrl(ExtReference $extReference)
     {
-        if (!is_object($dbRef) && !\MongoDBRef::isRef($dbRef)) {
-            throw new \InvalidArgumentException(sprintf('Value "%s" must be a valid MongoDbRef', json_encode($dbRef)));
-        }
-
-        if (!isset($this->mapping[$dbRef->{'$ref'}])) {
-            throw new \InvalidArgumentException(sprintf('Could not create URL from extref "%s"', json_encode($dbRef)));
+        if (!isset($this->mapping[$extReference->getRef()])) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Could not create URL from extref "%s"',
+                    json_encode($extReference)
+                )
+            );
         }
 
         return $this->router->generate(
-            $this->mapping[$dbRef->{'$ref'}].'.get',
-            ['id' => $dbRef->{'$id'}],
+            $this->mapping[$extReference->getRef()].'.get',
+            ['id' => $extReference->getId()],
             true
         );
     }

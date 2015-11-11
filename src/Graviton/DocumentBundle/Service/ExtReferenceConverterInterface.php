@@ -5,6 +5,8 @@
 
 namespace Graviton\DocumentBundle\Service;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
+
 /**
  * Extref converter interface
  *
@@ -15,20 +17,20 @@ namespace Graviton\DocumentBundle\Service;
 interface ExtReferenceConverterInterface
 {
     /**
-     * return the mongodb representation from a extref URL
+     * return the extref from URL
      *
      * @param string $url Extref URL
-     * @return object
+     * @return ExtReference
      * @throws \InvalidArgumentException
      */
-    public function getDbRef($url);
+    public function getExtReference($url);
 
     /**
-     * return the extref URL
+     * return the URL from extref
      *
-     * @param object $dbRef DB ref
+     * @param ExtReference $extReference Extref
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getUrl($dbRef);
+    public function getUrl(ExtReference $extReference);
 }

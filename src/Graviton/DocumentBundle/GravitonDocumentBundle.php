@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\RqlFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\TranslatableFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormFieldsCompilerPass;
@@ -35,20 +36,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function __construct()
     {
-        Type::registerType('extref', 'Graviton\DocumentBundle\Types\ExtReference');
-        Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
-    }
-
-    /**
-     * inject services into custom type
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        /** @var \Graviton\DocumentBundle\Types\ExtReference $type */
-        $type = Type::getType('extref');
-        $type->setConverter($this->container->get('graviton.document.service.extrefconverter'));
+        // TODO: implement ExtReferenceArrayType
+        Type::registerType('extref', Types\ExtReferenceType::class);
+        Type::registerType('hash', Types\HashType::class);
+        Type::registerType('hasharray', Types\HashArrayType::class);
+        Type::registerType('datearray', Types\DateArrayType::class);
     }
 
 
@@ -79,24 +71,37 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 
         $documentMap = new DocumentMap(
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config/doctrine')
                 ->name('*.mongodb.xml'),
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config/serializer')
                 ->name('*.xml'),
             (new Finder())
-                ->in(__DIR__.'/../..')
+                ->in(__DIR__ . '/../..')
                 ->path('Resources/config')
                 ->name('validation.xml')
         );
 
         $container->addCompilerPass(new ExtRefMappingCompilerPass());
         $container->addCompilerPass(new ExtRefFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new RqlFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
+    }
+
+    /**
+     * boot bundle function
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $extRefConverter = $this->container->get('graviton.document.service.extrefconverter');
+        $customType = Type::getType('hash');
+        $customType->setExtRefConverter($extRefConverter);
     }
 }

@@ -1,0 +1,59 @@
+<?php
+/**
+ * document class for {{ base }}Document\{{ document }}Embedded
+ */
+
+namespace {{ base }}Document;
+
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+* @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+* @link     http://swisscom.ch
+*/
+class {{ document }}Embedded extends {{ document }}Base
+{
+
+/**
+* @var mixed $id
+*/
+protected $id;
+
+/**
+* @var MongoId $id
+*/
+protected $realId;
+
+
+/**
+* Get id
+*
+* @return string $id
+*/
+public function getId()
+{
+return $this->id;
+}
+
+/**
+* Set id
+*
+* @param mixed $id id
+*
+* @return void
+*/
+public function setId($id)
+{
+$this->id = $id;
+}
+
+/**
+* Get realId
+*
+* @return string $id
+*/
+public function getRealId()
+{
+return $this->realId;
+}
+
+}

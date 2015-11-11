@@ -1,0 +1,5 @@
+#configure which version numbers should be read
+
+desiredVersions:
+  - self
+

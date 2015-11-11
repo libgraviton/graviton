@@ -6,12 +6,16 @@
         <parameter key="graviton.document.form.type.document.fieldbuilder.class">Graviton\DocumentBundle\Form\Type\FieldBuilder\ChainFieldBuilder</parameter>
         <parameter key="graviton.document.service.formdatamapper.class">Graviton\DocumentBundle\Service\FormDataMapper</parameter>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
-        <parameter key="graviton.document.listener.extreferencelistener.class">Graviton\DocumentBundle\Listener\ExtReferenceListener</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
+        <parameter key="graviton.document.listener.fieldnamesearchlistener.class">Graviton\DocumentBundle\Listener\FieldNameSearchListener</parameter>
+        <parameter key="graviton.document.form.datatransformer.extref.class">Graviton\DocumentBundle\Form\DataTransformer\ExtRefTransformer</parameter>
+        <parameter key="graviton.document.form.datatransformer.boolean.class">Graviton\DocumentBundle\Form\DataTransformer\BooleanTransformer</parameter>
         <parameter key="graviton.document.form.type.extref.class">Graviton\DocumentBundle\Form\Type\ExtRefType</parameter>
         <parameter key="graviton.document.form.type.document.class">Graviton\DocumentBundle\Form\Type\DocumentType</parameter>
         <parameter key="graviton.document.form.type.freeform.class">Graviton\DocumentBundle\Form\Type\FreeForm</parameter>
+        <parameter key="graviton.document.form.type.strictboolean.class">Graviton\DocumentBundle\Form\Type\StrictBooleanType</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
+        <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
     </parameters>
     <services>
         <!-- form field mapper -->
@@ -25,21 +29,29 @@
             <argument>%graviton.document.type.extref.mapping%</argument>
         </service>
 
-        <!-- $ref output in responses -->
-        <service id="graviton.document.listener.extreferencelistener" class="%graviton.document.listener.extreferencelistener.class%">
-             <argument type="service" id="graviton.document.service.extrefconverter" />
-             <argument>%graviton.document.type.extref.fields%</argument>
-             <argument type="service" id="request_stack"/>
-            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
-        </service>
         <service id="graviton.document.listener.extreferencesearchlistener" class="%graviton.document.listener.extreferencesearchlistener.class%">
              <argument type="service" id="graviton.document.service.extrefconverter" />
-             <argument>%graviton.document.type.extref.fields%</argument>
+             <argument>%graviton.document.extref.fields%</argument>
              <argument type="service" id="request_stack"/>
-             <tag name="kernel.event_listener" event="rql.visit.node" method="onVisitNode"/>
+             <tag name="kernel.event_listener" event="rql.visit.node" method="onVisitNode" priority="2"/>
         </service>
+        <service id="graviton.document.listener.fieldnamesearchlistener" class="%graviton.document.listener.fieldnamesearchlistener.class%">
+            <argument>%graviton.document.rql.fields%</argument>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_listener" event="rql.visit.node" method="onVisitNode" priority="1"/>
+        </service>
+        <service id="graviton.document.form.datatransformer.extref" class="%graviton.document.form.datatransformer.extref.class%">
+            <argument type="service" id="graviton.document.service.extrefconverter"/>
+        </service>
+        <service id="graviton.document.form.datatransformer.boolean" class="%graviton.document.form.datatransformer.boolean.class%"/>
+
         <service id="graviton.document.form.type.extref" class="%graviton.document.form.type.extref.class%">
+            <argument type="service" id="graviton.document.form.datatransformer.extref"/>
             <tag name="form.type" alias="extref"/>
+        </service>
+        <service id="graviton.document.form.type.strictboolean" class="%graviton.document.form.type.strictboolean.class%">
+            <argument type="service" id="graviton.document.form.datatransformer.boolean"/>
+            <tag name="form.type" alias="strictboolean"/>
         </service>
         <!-- dynamic form builder -->
         <service id="graviton.document.form.type.document.fieldbuilder" class="%graviton.document.form.type.document.fieldbuilder.class%">
@@ -56,6 +68,16 @@
             <call method="addFormFieldBuilder">
                 <argument type="service">
                     <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\CollectionFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\DateArrayFieldBuilder"/>
+                </argument>
+            </call>
+            <call method="addFormFieldBuilder">
+                <argument type="service">
+                    <service class="Graviton\DocumentBundle\Form\Type\FieldBuilder\ArrayFieldBuilder"/>
                 </argument>
             </call>
             <call method="addFormFieldBuilder">
@@ -77,6 +99,13 @@
         <service id="graviton.document.serializer.handler.hash" class="%graviton.document.serializer.handler.hash.class%">
             <tag name="jms_serializer.handler"
                  type="Graviton\DocumentBundle\Entity\Hash"
+                 format="json"/>
+        </service>
+        <!-- extref serializer handler -->
+        <service id="graviton.document.serializer.handler.extref" class="%graviton.document.serializer.handler.extref.class%">
+            <argument type="service" id="graviton.document.service.extrefconverter"/>
+            <tag name="jms_serializer.handler"
+                 type="Graviton\DocumentBundle\Entity\ExtReference"
                  format="json"/>
         </service>
     </services>

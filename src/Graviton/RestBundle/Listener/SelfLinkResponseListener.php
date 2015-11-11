@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -39,11 +40,13 @@ class SelfLinkResponseListener
     /**
      * add a rel=self Link header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param FilterResponseEvent      $event      response listener event
+     * @param string                   $eventName  event name
+     * @param EventDispatcherInterface $dispatcher dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         if (!$event->isMasterRequest()) {
             // don't do anything if it's not the master request
@@ -61,6 +64,10 @@ class SelfLinkResponseListener
 
         if ($routeType == 'post') {
             $routeName = substr($routeName, 0, -4).'get';
+        }
+
+        if ($routeType == 'postNoSlash') {
+            $routeName = substr($routeName, 0, -11).'get';
         }
 
         /** if the request failed in the RestController, $request will not have an record id in
@@ -94,6 +101,10 @@ class SelfLinkResponseListener
 
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);
+
+            // set in request and dispatch new event for interested parties
+            $event->getRequest()->attributes->set('selfLink', $url);
+            $dispatcher->dispatch('graviton.rest.response.selfaware', $event);
         }
     }
 
@@ -113,7 +124,7 @@ class SelfLinkResponseListener
         // this is also flawed since it does not handle search actions
         $parameters = array();
 
-        if ($routeType == 'post') {
+        if ($routeType == 'post' || $routeType == 'postNoSlash') {
             // handle post request by rewriting self link to newly created resource
             $parameters = array('id' => $request->get('id'));
         } elseif ($routeType != 'all') {
@@ -121,10 +132,14 @@ class SelfLinkResponseListener
         }
 
         if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $parameters = array('page' => $request->get('page', 1));
-            if ($request->attributes->get('perPage')) {
-                $parameters['perPage'] = $request->attributes->get('perPage');
-            }
+            // no rql given, we can do our own limit
+            $limit = sprintf(
+                'limit(%s,%s)',
+                $request->attributes->get('startAt'),
+                $request->attributes->get('perPage')
+            );
+
+            $parameters = ['q' => $limit];
         }
 
         if ($routeType == 'all' && $request->attributes->get('hasRql')) {
