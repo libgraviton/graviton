@@ -9,6 +9,8 @@ use \Doctrine\Common\Collections\ArrayCollection;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\DeserializationContext;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
+
 
 {% set translatableFields = [] %}
 {% set preTranslatedFields = [] %}
@@ -137,14 +139,7 @@ return $this->deletedDate;
     {% endif %}
     {
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-        $records = [];
-        foreach ($this->{{ field.fieldName }} as $record) {
-        $ref = $record->{{ field.xDynamicKey.refMethod }}();
-        if ($ref !== null) {
-        $records[$ref->getId()] = $record;
-        }
-        }
-        return $records;
+        return XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refMethod }}');
     {% else %}
         return $this->{{ field.fieldName }};
     {% endif %}
