@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4653b77179c220fba43420ca903c1912",
-    "content-hash": "48626f1e8d843479845f60a3fc1f1844",
+    "hash": "c1909f4635bd4131618c32631bb1e12f",
+    "content-hash": "7e7b6efa94c918e53660fd599749f0c4",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4435,6 +4435,43 @@
             "time": "2015-10-27 19:07:24"
         },
         {
+            "name": "thefrozenfire/swagger",
+            "version": "2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TheFrozenFire/PHP-Swagger-Parser.git",
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TheFrozenFire/PHP-Swagger-Parser/zipball/8007be78295f5a3f174f7e18421a9f6604067edf",
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.22",
+                "satooshi/php-coveralls": "~0.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Swagger": "src/"
+                },
+                "classmap": [
+                    "tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Justin Martin",
+                    "email": "frozenfire@thefrozenfire.com"
+                }
+            ],
+            "description": "Swagger parser for PHP",
+            "time": "2015-09-23 22:52:23"
+        },
+        {
             "name": "twig/extensions",
             "version": "v1.3.0",
             "source": {
@@ -5835,7 +5872,6 @@
     "stability-flags": {
         "php-jsonpointer/php-jsonpointer": 5,
         "knplabs/knp-gaufrette-bundle": 20,
-        "jenssegers/proxy": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
