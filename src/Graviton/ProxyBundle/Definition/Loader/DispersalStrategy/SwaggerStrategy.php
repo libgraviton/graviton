@@ -6,7 +6,12 @@
 namespace Graviton\ProxyBundle\Definition\Loader\DispersalStrategy;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
-use Graviton\ProxyBundle\Exception\SchemaException;
+use Swagger\Document;
+use Swagger\Exception\MissingDocumentPropertyException;
+use Swagger\Object\AbstractObject;
+use Swagger\Object\Parameter;
+use Swagger\Object\Reference;
+use Swagger\OperationReference;
 
 /**
  * process a swagger.json file and return an APi definition
@@ -23,6 +28,21 @@ class SwaggerStrategy implements DispersalStrategyInterface
     private $fallbackData = [];
 
     /**
+     *
+     */
+    private $document;
+
+    /**
+     * constructor
+     *
+     * @param Document $document Swagger document parser
+     */
+    public function __construct(Document $document)
+    {
+        $this->document = $document;
+    }
+
+    /**
      * process data
      *
      * @param string $input        JSON information about the swagger service.
@@ -33,30 +53,26 @@ class SwaggerStrategy implements DispersalStrategyInterface
     public function process($input, array $fallbackData = [])
     {
         $this->registerFallbackData($fallbackData);
-
         $apiDef = new ApiDefinition();
+
         /** @var \stdClass $swagger */
         $swagger = $this->decodeJson($input);
         if (is_object($swagger)) {
-            $this->setBaseValues($apiDef, $swagger);
+            $this->document->setDocument($swagger);
+            $this->setBaseValues($apiDef);
 
-            foreach ($swagger->paths as $name => $endpoint) {
-                $name = $this->normalizePath($name);
+            $operations = $this->document->getOperationsById();
+            foreach ($operations as $name => $service) {
+                $path = $this->normalizePath($service->getPath());
 
-                if ($apiDef->hasEndpoint($name)) {
+                if ($apiDef->hasEndpoint($path)) {
                     continue;
                 }
-                $apiDef->addEndpoint($name);
-
-                // Schema
-                $definitionRef = $this->getEndpointDefinition($endpoint);
-                if (!empty($definitionRef)) {
-                    list (, $defNode, $defName) = explode('/', $definitionRef);
-                    $schema = $swagger->$defNode->$defName;
-                    $apiDef->addSchema($name, $schema);
-                } else {
-                    $apiDef->addSchema($name, new \stdClass());
-                }
+                $apiDef->addEndpoint($path);
+                $apiDef->addSchema(
+                    $path,
+                    $this->getServiceSchema($service)
+                );
             }
         }
 
@@ -103,84 +119,87 @@ class SwaggerStrategy implements DispersalStrategyInterface
      * set base values
      *
      * @param ApiDefinition $apiDef  API definition
-     * @param \stdClass     $swagger swagger object
      *
      * @return void
      *
      */
-    private function setBaseValues(ApiDefinition $apiDef, \stdClass $swagger)
+    private function setBaseValues(ApiDefinition $apiDef)
     {
-        $this->registerHost($apiDef, $swagger);
-
-        if (isset($swagger->basePath)) {
-            $apiDef->setBasePath($swagger->basePath);
+        $this->registerHost($apiDef);
+        $basePath = $this->document->getBasePath();
+        if (isset($basePath)) {
+            $apiDef->setBasePath($basePath);
         }
     }
 
     /**
-     * get the name of definition field for the schema
+     * get the schema
      *
-     * @param \stdClass $endpoint endpoint
+     * @param OperationReference $service service endpoint
      *
-     * @return string
+     * @return \stdClass
      */
-    private function getEndpointDefinition($endpoint)
+    private function getServiceSchema($service)
     {
-        $refName = "\$ref";
-        $ref = '';
-        foreach ($endpoint as $actionName => $action) {
-            try {
-                switch ($actionName) {
-                    case "post":
-                    case "put":
-                        /**
-                         * there is no schema information available, if $action->parameters[0]->in != 'body'
-                         *
-                         * @link http://swagger.io/specification/#parameterObject
-                         */
-                        if ('body' === $action->parameters[0]->in) {
-                            $ref = $this->extractReferenceDefinition(
-                                (array) $action->parameters[0]->schema,
-                                $refName
-                            );
-                            break 2;
-                        }
-                        continue 2;
-                    case "get":
-                        $statusCode = 200;
-                        if (!empty($action->responses->$statusCode)) {
-                            $ref = $this->extractReferenceDefinition(
-                                (array) $action->responses->$statusCode->schema,
-                                $refName
-                            );
-                            break 2;
-                        }
-                        continue 2;
-                    default:
-                        continue;
+        $schemaResolver = $this->document->getSchemaResolver();
+        $operation = $service->getOperation();
+        $ref = new \stdClass();
+        $schema = new \stdClass();
+        switch (strtolower($service->getMethod())) {
+            case "post":
+            case "put":
+                try {
+                    $parameters = $operation->getDocumentObjectProperty('parameters', Parameter\Body::class, true);
+                } catch (MissingDocumentPropertyException $e) {
+                    // request has no params
+                    break;
                 }
-            } catch (SchemaException $e) {
-                continue;
-            }
+                foreach ($parameters as $parameter) {
+                    /**
+                     * there is no schema information available, if $action->parameters[0]->in != 'body'
+                     *
+                     * @link http://swagger.io/specification/#parameterObject
+                     */
+                    if ($parameter instanceof Parameter\Body && $parameter->getIn() === 'body') {
+                        $ref = $parameter->getDocumentObjectProperty('schema', Reference::class, true);
+                    }
+                }
+                break;
+            case "get":
+                try {
+                    $response = $operation->getResponses()->getHttpStatusCode(200);
+                } catch (MissingDocumentPropertyException $e) {
+                    // no response is defined
+                    break;
+                }
+                $ref = $response->getSchema();
+                break;
         }
 
-        return $ref;
+        if ($ref instanceof AbstractObject
+            && !empty($ref->getDocument()->type)
+            && $ref->getDocument()->type === 'array') {
+            $ref = new Reference($ref->getDocument()->items);
+        }
+        if ($ref instanceof Reference) {
+            $schema = $schemaResolver->resolveReference($ref)->getDocument();
+        }
+
+        return $schema;
     }
 
     /**
      * Sets the destination host for the api definition.
      *
      * @param ApiDefinition $apiDef  Configuration for the swagger api to be recognized.
-     * @param \stdClass     $swagger Swagger configuration to be parsed.
      *
      * @return void
      */
-    private function registerHost(ApiDefinition $apiDef, \stdClass $swagger)
+    private function registerHost(ApiDefinition $apiDef)
     {
-        $host = $this->fallbackData['host'];
-
-        if (isset($swagger->host)) {
-            $host = $swagger->host;
+        $host = $this->document->getHost();
+        if (!isset($host)) {
+            $host = $this->fallbackData['host'];
         }
 
         $apiDef->setHost($host);
@@ -200,30 +219,6 @@ class SwaggerStrategy implements DispersalStrategyInterface
         }
 
         $this->fallbackData = $fallbackData;
-    }
-
-    /**
-     * Finds the definition of referred entities in the schema definition.
-     *
-     * @param array  $schema              Api schema to be scanned.
-     * @param string $referenceIdentifier Key of the identifier used to id a reference.
-     *
-     * @throws \Exception
-     * @return string
-     */
-    private function extractReferenceDefinition(array $schema, $referenceIdentifier)
-    {
-        if (array_key_exists($referenceIdentifier, $schema)) {
-            return $schema[$referenceIdentifier];
-        } else {
-            if (array_key_exists('items', $schema) && array_key_exists($referenceIdentifier, $schema['items'])) {
-                return $schema['items']->$referenceIdentifier;
-            }
-        }
-
-        throw new SchemaException(
-            sprintf('Reference identifier (%s) was not available in provided schema!', $referenceIdentifier)
-        );
     }
 
     /**
