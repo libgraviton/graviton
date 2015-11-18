@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Tests\Generator\ResourceGenerator;
 
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
+use Graviton\ExceptionBundle\Exception;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -68,6 +69,7 @@ class XDynamicKeyTest extends \PHPUnit_Framework_TestCase
     /**
      * test if it behaves correctly if the methods don't exist
      *
+     * @expectedException Graviton\ExceptionBundle\Exception\XDynamicKeyException
      * @return void
      */
     public function testResolveRefNotExistingFields()
@@ -90,7 +92,6 @@ class XDynamicKeyTest extends \PHPUnit_Framework_TestCase
         $a->method('getB')
             ->willReturn($b);
 
-        $t = XDynamicKey::resolveRef([$a], 'some.thing.that.doesnt.exist');
-        $this->assertArrayHasKey('someRandomId', XDynamicKey::resolveRef([$a], 'some.thing.that.doesnt.exist'));
+        XDynamicKey::resolveRef([$a], 'some.thing.that.doesnt.exist');
     }
 }
