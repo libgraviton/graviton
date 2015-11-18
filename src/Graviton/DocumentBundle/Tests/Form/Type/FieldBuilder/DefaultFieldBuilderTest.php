@@ -15,6 +15,32 @@ use Graviton\DocumentBundle\Form\Type\FieldBuilder\DefaultFieldBuilder;
 class DefaultFieldBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Graviton\DocumentBundle\Form\Type\DocumentType
+     */
+    private $document;
+
+    /**
+     * @var Symfony\Component\Form\FormInterface
+     */
+    private $form;
+
+    /**
+     * @inheritDoc
+     *
+     * @return void
+     */
+    protected function setUp()
+    {
+        $this->document = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\DocumentType')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->form = $this->getMockBuilder('Symfony\Component\Form\FormInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
      * Test DefaultFieldBuilder::supportsField()
      *
      * @param bool   $result  Expected result
@@ -43,34 +69,45 @@ class DefaultFieldBuilderTest extends \PHPUnit_Framework_TestCase
             [true, uniqid(), []],
         ];
     }
+
     /**
-     * Test DefaultFieldBuilder::buildField()
+     * Test DefaultFieldBuilder::buildField() with boolean
      *
+     * @param string $name          name of the form type
+     * @param string $type          form type
+     * @param arry   $options       options
+     * @param array  $methodOptions options for the add method
+     * @param mixed  $data          submitted data
      * @return void
+     *
+     * @dataProvider dataForBuildField
      */
-    public function testBuildField()
+    public function testBuildFieldWithBoolean($name, $type, $options, $methodOptions, $data)
     {
-        $name = 'name';
-        $type = 'type';
-        $options = ['required' => true];
-        $data = ['data'];
-
-        $document = $this->getMockBuilder('Graviton\DocumentBundle\Form\Type\DocumentType')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $form = $this->getMockBuilder('Symfony\Component\Form\FormInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $form->expects($this->once())
+        $this->form->expects($this->once())
             ->method('add')
             ->with(
                 $name,
                 $type,
-                $options
+                $methodOptions
             );
 
         $sut = new DefaultFieldBuilder();
-        $sut->buildField($document, $form, $name, $type, $options, $data);
+        $sut->buildField($this->document, $this->form, $name, $type, $options, $data);
+    }
+
+    /**
+     * Data for DefaultFieldBuilder::buildField()
+     *
+     * @return array
+     */
+    public function dataForBuildField()
+    {
+        $options = ['required' => true];
+
+        return [
+            ['name', 'type', $options, $options, ['data']],
+            ['aBoolean', 'strictboolean', $options, array_merge($options, ['submitted_data' => true]), true],
+        ];
     }
 }

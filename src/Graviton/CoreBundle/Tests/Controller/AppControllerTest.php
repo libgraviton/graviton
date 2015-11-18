@@ -169,11 +169,11 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
-     * RQL is parsed only when we get all apps
+     * RQL is parsed only when we get apps
      *
      * @return void
      */
-    public function testRqlIsParsedOnlyOnAllRequest()
+    public function testRqlIsParsedOnlyOnGetRequest()
     {
         $appData = [
             'showInMenu' => false,
@@ -183,6 +183,11 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('syntax error in rql', $client->getResults()->message);
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?invalidrqlquery');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertContains('syntax error in rql', $client->getResults()->message);
 
@@ -198,10 +203,6 @@ class AppControllerTest extends RestTestCase
             $client = static::createRestClient();
             $client->request($method, '/schema/core/app/item?invalidrqlquery');
             $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-            $client = static::createRestClient();
-            $client->request($method, '/core/app/admin?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         }
 
         $client = static::createRestClient();
@@ -215,6 +216,41 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('DELETE', '/core/app/admin?invalidrqlquery');
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * Test only RQL select() operator is allowed for GET one
+     *
+     * @return void
+     * @group tmp
+     */
+    public function testOnlyRqlSelectIsAllowedOnGetOne()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/admin?select(id)');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        foreach ([
+                     'limit' => 'limit(1)',
+                     'sort'  => 'sort(+id)',
+                     'eq'    => 'eq(id,a)',
+                 ] as $extraRqlOperator => $extraRqlOperatorQuery) {
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+            $client = static::createRestClient();
+            $client->request('GET', '/core/app/admin?select(id)&'.$extraRqlOperatorQuery);
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+            $this->assertEquals(
+                sprintf('RQL operator "%s" is not allowed for this request', $extraRqlOperator),
+                $client->getResults()->message
+            );
+        }
     }
 
     /**
@@ -565,6 +601,7 @@ class AppControllerTest extends RestTestCase
         $isnogudApp->id = 'isnogud';
         $isnogudApp->name = new \stdClass;
         $isnogudApp->name->en = 'I don\'t exist';
+        $isnogudApp->showInMenu = true;
 
         $client = static::createRestClient();
         $client->put('/core/app/isnogud', $isnogudApp);
@@ -609,7 +646,7 @@ class AppControllerTest extends RestTestCase
         $helloApp->id = 'tablet';
         $helloApp->name = new \stdClass;
         $helloApp->name->en = 'Tablet';
-        $helloApp->showInMenu = [];
+        $helloApp->showInMenu = 'false';
 
         $client = static::createRestClient();
         $client->put('/core/app/tablet', $helloApp);
@@ -619,7 +656,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         $this->assertContains('showInMenu', $results[0]->propertyPath);
-        $this->assertEquals('This value is not valid.', $results[0]->message);
+        $this->assertEquals('The value "false" is not a valid boolean.', $results[0]->message);
     }
 
     /**

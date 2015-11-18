@@ -56,7 +56,7 @@ class RqlSelectResponseListener
         }
 
         $documents = json_decode($response->getContent());
-        if (!is_array($documents)) {
+        if (!is_object($documents) && !is_array($documents)) {
             return;
         }
 

@@ -6,7 +6,7 @@
   <route id="graviton.core.static.main.options" path="/" methods="OPTIONS">
     <default key="_controller">graviton.core.controller.main:optionsAction</default>
   </route>
-  <route id="graviton.core.static.version.get" path="/core/version/" methods="GET">
+  <route id="graviton.core.static.version.get" path="/core/version" methods="GET">
     <default key="_controller">graviton.core.controller.version:versionsAction</default>
   </route>
   <route id="graviton.core.static.version.canonicalSchema" path="/schema/core/version" methods="GET">

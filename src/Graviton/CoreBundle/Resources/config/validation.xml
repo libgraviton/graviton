@@ -7,9 +7,8 @@
       <constraint name="NotBlank"/>
     </property>
     <property name="showInMenu">
-      <constraint name="Type">
-        <option name="type">bool</option>
-      </constraint>
+      <constraint name="Graviton\RestBundle\Validator\Constraints\BooleanStrict"/>
+      <constraint name="NotNull" />
     </property>
   </class>
 </constraint-mapping>
