@@ -13,8 +13,8 @@ namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 class XDynamicKey
 {
     /**
-     * @param $fields
-     * @param $refMethods
+     * @param  array  $fields     array of fields
+     * @param  string $refMethods string containing "path" to the ref field
      * @return array
      */
     public static function resolveRef($fields, $refMethods)
@@ -22,9 +22,8 @@ class XDynamicKey
         $records = [];
         $functions = self::prepareFunctionNames($refMethods);
         foreach ($fields as $record) {
-
             $ref = $record->$functions[0]();
-            for($i = 1 ; $i < count($functions); $i++){
+            for ($i = 1; $i < count($functions); $i++) {
                 $ref = $ref->$functions[$i]();
             }
 
@@ -39,7 +38,7 @@ class XDynamicKey
     /**
      * prepares getter methods for every given field name
      *
-     * @param $refMethods
+     * @param  string $refMethods string containing "path" to the ref field
      * @return array
      */
     private static function prepareFunctionNames($refMethods)
