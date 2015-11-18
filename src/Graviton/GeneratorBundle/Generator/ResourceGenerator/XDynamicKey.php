@@ -25,6 +25,7 @@ class XDynamicKey
     {
         $records = [];
         $functions = self::prepareFunctionNames($refMethods);
+
         foreach ($fields as $record) {
             $orgRec = $record;
             foreach ($functions as $function) {
@@ -32,7 +33,7 @@ class XDynamicKey
                     $record = $record->$function();
                 } else {
                     throw new XDynamicKeyException(
-                        'x-dynamic-key ref-method could not be resolved: '.$function
+                        'x-dynamic-key ref-field could not be resolved: '.$function
                     );
                 }
             }

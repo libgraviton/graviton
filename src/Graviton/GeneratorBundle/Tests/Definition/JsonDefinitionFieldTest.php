@@ -183,7 +183,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
         $key = (new Schema\XDynamicKey())
             ->setDocumentId(__CLASS__)
             ->setRepositoryMethod(__LINE__)
-            ->setRefMethod(__FILE__);
+            ->setRefField(__FILE__);
 
         $definition = (new Schema\Field())
             ->setXDynamicKey($key);
