@@ -6,7 +6,6 @@
 namespace Graviton\GeneratorBundle\Tests\Generator\ResourceGenerator;
 
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
-use Graviton\ExceptionBundle\Exception;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
