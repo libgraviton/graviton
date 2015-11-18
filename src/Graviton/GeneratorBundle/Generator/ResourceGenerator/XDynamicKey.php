@@ -27,15 +27,15 @@ class XDynamicKey
         $functions = self::prepareFunctionNames($refMethods);
         foreach ($fields as $record) {
             $orgRec = $record;
-                for ($i = 0, $imax = count($functions); $i < $imax; $i++) {
-                    if (method_exists($record, $functions[$i])) {
-                        $record = $record->$functions[$i]();
-                    } else {
-                        throw new XDynamicKeyException(
-                            'x-dynamic-key ref-method could not be resolved: '.$functions[$i]
-                        );
-                    }
+            for ($i = 0, $imax = count($functions); $i < $imax; $i++) {
+                if (method_exists($record, $functions[$i])) {
+                    $record = $record->$functions[$i]();
+                } else {
+                    throw new XDynamicKeyException(
+                        'x-dynamic-key ref-method could not be resolved: '.$functions[$i]
+                    );
                 }
+            }
 
             if ($record !== null) {
                 $records[$record->getId()] = $orgRec;
