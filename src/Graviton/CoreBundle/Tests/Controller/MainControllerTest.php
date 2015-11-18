@@ -213,7 +213,16 @@ class MainControllerTest extends RestTestCase
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
-                [$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble, $apiLoaderDouble, $configuration]
+                [
+                    $routerDouble,
+                    $responseDouble,
+                    $restUtilsDouble,
+                    $templateDouble,
+                    $apiLoaderDouble,
+                    [],
+                    [],
+                    $configuration,
+                ]
             )
             ->setMethods(array('determineServices'))
             ->getProxy();
