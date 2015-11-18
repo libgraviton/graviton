@@ -9,6 +9,8 @@ use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Proxy\Proxy;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +38,17 @@ class ProxyController
     /**
      * @var ApiDefinitionLoader
      */
+    private $diactorosFactory;
+
+    /**
+     * @var DiactorosFactory
+     */
     private $apiLoader;
+
+    /**
+     * @var HttpFoundationFactory
+     */
+    private $httpFoundationFactory;
 
     /**
      * @var array
@@ -46,20 +58,26 @@ class ProxyController
     /**
      * Constructor
      *
-     * @param Proxy               $proxy                    proxy
-     * @param EngineInterface     $templating               twig templating engine
-     * @param ApiDefinitionLoader $loader                   definition loader
-     * @param array               $proxySourceConfiguration Set of sources to be recognized by the controller.
+     * @param Proxy                 $proxy                    proxy
+     * @param EngineInterface       $templating               twig templating engine
+     * @param ApiDefinitionLoader   $loader                   definition loader
+     * @param DiactorosFactory      $diactorosFactory         convert HttpFoundation objects to PSR-7
+     * @param HttpFoundationFactory $httpFoundationFactory    convert PSR-7 interfaces to HttpFoundation
+     * @param array                 $proxySourceConfiguration Set of sources to be recognized by the controller.
      */
     public function __construct(
         Proxy $proxy,
         EngineInterface $templating,
         ApiDefinitionLoader $loader,
+        DiactorosFactory $diactorosFactory,
+        HttpFoundationFactory $httpFoundationFactory,
         array $proxySourceConfiguration
     ) {
         $this->proxy = $proxy;
         $this->templating = $templating;
         $this->apiLoader = $loader;
+        $this->diactorosFactory = $diactorosFactory;
+        $this->httpFoundationFactory = $httpFoundationFactory;
         $this->proxySourceConfiguration = $proxySourceConfiguration;
     }
 
@@ -91,7 +109,11 @@ class ProxyController
                 $request->getContent(false)
             );
             $newRequest->headers->add($request->headers->all());
-            $response = $this->proxy->forward($newRequest)->to($url);
+
+            $psrRequest = $this->diactorosFactory->createRequest($newRequest);
+            $psrResponse = $this->proxy->forward($psrRequest)->to($url);
+            $response = $this->httpFoundationFactory->createRequest($psrResponse);
+
         } catch (ClientException $e) {
             $response = $e->getResponse();
         } catch (ServerException $serverException) {
