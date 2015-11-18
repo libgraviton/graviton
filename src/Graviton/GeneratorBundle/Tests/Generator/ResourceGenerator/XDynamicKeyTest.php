@@ -67,6 +67,16 @@ class XDynamicKeyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test empty vars
+     *
+     * @return void
+     */
+    public function testResolveRefMethodEmptyVars()
+    {
+        $this->assertEmpty(XDynamicKey::resolveRef([], ''));
+    }
+
+    /**
      * test if it behaves correctly if the methods don't exist
      *
      * @expectedException Graviton\ExceptionBundle\Exception\XDynamicKeyException

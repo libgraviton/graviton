@@ -22,8 +22,9 @@ final class XDynamicKeyException extends RestException
      * @param string     $message Error message
      * @param \Exception $prev    Previous Exception
      */
-    public function __construct($message = "x-dynamic-key could not be resolved", $prev = null)
+    public function __construct($message = "x-dynamic-key ref-method could not be resolved", $prev = null)
     {
+
         parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $prev);
     }
 }

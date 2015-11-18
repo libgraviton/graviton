@@ -32,11 +32,13 @@ class XDynamicKey
                     if (method_exists($ref, $functions[$i])) {
                         $ref = $ref->$functions[$i]();
                     } else {
-                        throw new XDynamicKeyException();
+                        throw new XDynamicKeyException(
+                            'x-dynamic-key ref-method could not be resolved: '.$functions[$i]
+                        );
                     }
                 }
             } else {
-                throw new XDynamicKeyException();
+                throw new XDynamicKeyException('x-dynamic-key ref-method could not be resolved: '.$functions[0]);
             }
 
             if ($ref !== null) {
