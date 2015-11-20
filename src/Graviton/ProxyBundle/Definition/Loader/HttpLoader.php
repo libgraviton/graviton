@@ -87,7 +87,7 @@ class HttpLoader implements LoaderInterface
         $retVal = null;
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
-
+            $request->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
             try {
                 $response = $request->send();
             } catch (\Guzzle\Http\Exception\CurlException $e) {
