@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * This class transforms the body of HTTP requests and responses.
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
-class BodyMapping implements ResponseTransformation, RequestTransformation
+class BodyMapping implements ResponseTransformationInterface, RequestTransformationInterface
 {
 
     /**
@@ -42,7 +42,7 @@ class BodyMapping implements ResponseTransformation, RequestTransformation
     /**
      * Transforms a response
      *
-     * @param Response $responseIn The original response object
+     * @param Response $responseIn  The original response object
      * @param Response $responseOut The response object to transform
      *
      * @return void
@@ -57,8 +57,8 @@ class BodyMapping implements ResponseTransformation, RequestTransformation
     /**
      * Transforms a request
      *
-     * @param Request $requestIn The original request object
-     * @param Request $requestOut The request object to transform
+     * @param  Request $requestIn  The original request object
+     * @param  Request $requestOut The request object to transform
      * @return Request The transformed request
      */
     public function transformRequest(Request $requestIn, Request $requestOut)
@@ -92,5 +92,4 @@ class BodyMapping implements ResponseTransformation, RequestTransformation
     {
         $this->mapping = $mapping;
     }
-
 }

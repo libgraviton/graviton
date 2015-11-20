@@ -10,9 +10,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 /**
  * This class transforms objects / arrays by applying a mapping on them.
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class MappingTransformer
 {
@@ -35,12 +35,12 @@ class MappingTransformer
     /**
      * Applies the given mapping on a given object or array.
      *
-     * @param object|array $raw The input object or array
-     * @param array $mapping The mapping
-     * @param object|array $transformed The output object or array.
+     * @param  object|array $raw         The input object or array
+     * @param  array        $mapping     The mapping
+     * @param  object|array $transformed The output object or array.
      * @return array
      */
-    public function transform($raw, array$mapping, $transformed = [])
+    public function transform($raw, array $mapping, $transformed = [])
     {
         foreach ($mapping as $destination => $source) {
             $value = $this->propertyAccessor->isReadable($raw, $source) ?
@@ -49,5 +49,4 @@ class MappingTransformer
         }
         return $transformed;
     }
-
 }

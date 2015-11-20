@@ -11,9 +11,9 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy;
 /**
  * tests for the SwaggerStrategy class
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
 {
@@ -74,7 +74,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
     /**
      * test missing fallback data
      *
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
      * @expectedExceptionMessage Missing mandatory key (host) in fallback data set.
      *
      * @return void

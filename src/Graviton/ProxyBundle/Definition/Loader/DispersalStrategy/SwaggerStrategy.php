@@ -16,9 +16,9 @@ use Swagger\OperationReference;
 /**
  * process a swagger.json file and return an APi definition
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class SwaggerStrategy implements DispersalStrategyInterface
 {
@@ -55,7 +55,9 @@ class SwaggerStrategy implements DispersalStrategyInterface
         $this->registerFallbackData($fallbackData);
         $apiDef = new ApiDefinition();
 
-        /** @var \stdClass $swagger */
+        /**
+ * @var \stdClass $swagger
+*/
         $swagger = $this->decodeJson($input);
         if (is_object($swagger)) {
             $this->document->setDocument($swagger);
@@ -88,7 +90,9 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     public function supports($input)
     {
-        /** @var array $swagger */
+        /**
+ * @var array $swagger
+*/
         $swagger = $this->decodeJson($input, true);
 
         $mandatoryFields = ['swagger', 'info', 'paths', 'version', 'title', 'definitions'];
@@ -106,7 +110,6 @@ class SwaggerStrategy implements DispersalStrategyInterface
      * @param bool   $assoc Force the encoded result to be a hash.
      *
      * @return array|\stdClass
-     *
      */
     private function decodeJson($input, $assoc = false)
     {
@@ -118,10 +121,9 @@ class SwaggerStrategy implements DispersalStrategyInterface
     /**
      * set base values
      *
-     * @param ApiDefinition $apiDef  API definition
+     * @param ApiDefinition $apiDef API definition
      *
      * @return void
-     *
      */
     private function setBaseValues(ApiDefinition $apiDef)
     {
@@ -178,7 +180,8 @@ class SwaggerStrategy implements DispersalStrategyInterface
 
         if ($ref instanceof AbstractObject
             && !empty($ref->getDocument()->type)
-            && $ref->getDocument()->type === 'array') {
+            && $ref->getDocument()->type === 'array'
+        ) {
             $ref = new Reference($ref->getDocument()->items);
         }
         if ($ref instanceof Reference) {
@@ -191,7 +194,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
     /**
      * Sets the destination host for the api definition.
      *
-     * @param ApiDefinition $apiDef  Configuration for the swagger api to be recognized.
+     * @param ApiDefinition $apiDef Configuration for the swagger api to be recognized.
      *
      * @return void
      */

@@ -10,9 +10,9 @@ use Graviton\ProxyBundle\Definition\ApiDefinition;
 /**
  * test api definition
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class ApiDefinitionTest extends \PHPUnit_Framework_TestCase
 {
