@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
+use Graviton\ProxyBundle\Definition\Loader\CacheStrategy\CacheStrategyInterface;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 
 /**
@@ -18,13 +19,31 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyIn
 interface LoaderInterface
 {
     /**
+     * set options
+     *
+     * @param array $options array of options
+     *
+     * @return void
+     */
+    public function setOptions($options);
+
+    /**
      * set a load strategy
      *
      * @param DispersalStrategyInterface $strategy strategy to add
      *
-     * @return LoaderInterface
+     * @return void
      */
     public function setDispersalStrategy($strategy);
+
+    /**
+     * set a cache strategy
+     *
+     * @param CacheStrategyInterface $strategy strategy to add
+     *
+     * @return void
+     */
+    public function setCacheStrategy($strategy);
 
     /**
      * check if the input is supported

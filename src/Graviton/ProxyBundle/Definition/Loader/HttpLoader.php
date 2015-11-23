@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
+use Graviton\ProxyBundle\Definition\Loader\CacheStrategy\CacheStrategyInterface;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Guzzle\Http\Client;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +39,18 @@ class HttpLoader implements LoaderInterface
     private $strategy;
 
     /**
+     * @var CacheStrategyInterface
+     */
+    private $cacheStrategy;
+
+    /**
+     * @var array
+     */
+    private $options = [
+        'storeKey' => 'httpLoader',
+    ];
+
+    /**
      * constructor
      *
      * @param ValidatorInterface $validator validator
@@ -59,6 +72,35 @@ class HttpLoader implements LoaderInterface
     public function setDispersalStrategy($strategy)
     {
         $this->strategy = $strategy;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param CacheStrategyInterface $strategy cache strategy
+     *
+     * @return void
+     */
+    public function setCacheStrategy($strategy)
+    {
+        $this->cacheStrategy = $strategy;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param array $options cache strategy
+     *
+     * @return void
+     */
+    public function setOptions($options)
+    {
+        if (!empty($options['prefix'])) {
+            $options['storeKey'] = $options['prefix'];
+            unset($options['prefix']);
+        }
+
+        $this->options = array_merge($this->options, $options);
     }
 
     /**
@@ -87,36 +129,47 @@ class HttpLoader implements LoaderInterface
         $retVal = null;
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
-
-            try {
-                $response = $request->send();
-            } catch (\Guzzle\Http\Exception\CurlException $e) {
-                throw new HttpException(
-                    Response::HTTP_BAD_GATEWAY,
-                    $e->getError(),
-                    $e,
-                    $e->getRequest()->getHeaders()->toArray(),
-                    $e->getCode()
-                );
+            if (isset($this->cacheStrategy) && !$this->cacheStrategy->isExpired($this->options['storeKey'])) {
+                $content = $this->cacheStrategy->get($this->options['storeKey']);
+            } else {
+                $content = $this->receiveFile($request);
             }
 
-            $content = $response->getBody(true);
+            // store current host (name or ip) serving the API. This MUST be the host only and does not include the
+            // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
+            // documentation is to be used (including the port)
+            $fallbackHost = array();
+            $fallbackHost['host'] = sprintf(
+                '%s://%s:%d',
+                $request->getScheme(),
+                $request->getHost(),
+                $request->getPort()
+            );
             if ($this->strategy->supports($content)) {
-                // store current host (name or ip) serving the API. This MUST be the host only and does not include the
-                // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
-                // documentation is to be used (including the port)
-                $fallbackHost = array();
-                $fallbackHost['host'] = sprintf(
-                    '%s://%s:%d',
-                    $request->getScheme(),
-                    $request->getHost(),
-                    $request->getPort()
-                );
-
                 $retVal = $this->strategy->process($content, $fallbackHost);
             }
         }
 
         return $retVal;
+    }
+
+    private function receiveFile($request) {
+        try {
+            $response = $request->send();
+        } catch (\Guzzle\Http\Exception\CurlException $e) {
+            throw new HttpException(
+                Response::HTTP_BAD_GATEWAY,
+                $e->getError(),
+                $e,
+                $e->getRequest()->getHeaders()->toArray(),
+                $e->getCode()
+            );
+        }
+        $content = $response->getBody(true);
+        if (isset($this->cacheStrategy)) {
+            $this->cacheStrategy->save($this->options['storeKey'], $content);
+        }
+
+        return $content;
     }
 }

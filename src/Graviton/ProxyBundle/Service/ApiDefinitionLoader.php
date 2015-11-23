@@ -60,6 +60,9 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
+        if (!empty($this->definitionLoader)) {
+            $this->definitionLoader->setOptions($options);
+        }
     }
 
     /**
