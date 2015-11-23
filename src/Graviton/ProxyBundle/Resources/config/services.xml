@@ -11,10 +11,12 @@
         <parameter key="graviton.proxy.swagger.document.parser.class">Swagger\Document</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.httpfoundationfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.diactorosfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory</parameter>
+        <parameter key="graviton.proxy.transformationhandler.class">Graviton\ProxyBundle\Service\TransformationHandler</parameter>
     </parameters>
     <services>
         <service id="graviton.proxy.psrhttpmessage.httpfoundationfactory" class="%graviton.proxy.psrhttpmessage.httpfoundationfactory.class%"></service>
         <service id="graviton.proxy.psrhttpmessage.diactorosfactory" class="%graviton.proxy.psrhttpmessage.diactorosfactory.class%"></service>
+        <service id="graviton.proxy.transformationhandler" class="%graviton.proxy.transformationhandler.class%"></service>
         <service id="graviton.proxy" class="Proxy\Proxy">
             <factory class="Proxy\Factory" method="create" />
         </service>
@@ -24,6 +26,7 @@
             <argument type="service" id="graviton.proxy.service.swaggerapiloader" />
             <argument type="service" id="graviton.proxy.psrhttpmessage.diactorosfactory" />
             <argument type="service" id="graviton.proxy.psrhttpmessage.httpfoundationfactory" />
+            <argument type="service" id="graviton.proxy.transformationhandler" />
             <argument>%graviton.proxy.sources%</argument>
         </service>
         <service id="graviton.proxy.swagger.document.dummy" class="stdClass"></service>

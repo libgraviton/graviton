@@ -13,9 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * To learn more see {@link http://scm.to/004w}
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class GravitonProxyExtension extends GravitonBundleExtension
 {

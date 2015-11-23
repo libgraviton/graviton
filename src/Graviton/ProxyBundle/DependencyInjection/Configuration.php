@@ -13,9 +13,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  *
  * To learn more see {@link http://scm.to/00Yb}
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class Configuration implements ConfigurationInterface
 {
@@ -43,18 +43,18 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('sources')
-                    ->useAttributeAsKey('name')
-                    ->prototype('array')
-                        ->useAttributeAsKey('name')
-                        ->prototype('array')
-                            ->children()
-                                ->scalarNode('prefix')->isRequired()->cannotBeEmpty()->end()
-                                ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end() // swagger_proxy
+            ->arrayNode('sources')
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+            ->children()
+            ->scalarNode('prefix')->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end() // swagger_proxy
             ->end();
 
         return $treeBuilder;

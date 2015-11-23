@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Controller;
 
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
+use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Proxy\Proxy;
@@ -18,10 +19,10 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * general controller for all proxy staff
  *
- * @package  Graviton\ProxyBundle\Controller
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @package Graviton\ProxyBundle\Controller
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class ProxyController
 {
@@ -56,6 +57,11 @@ class ProxyController
     private $proxySourceConfiguration;
 
     /**
+     * @var TransformationHandler
+     */
+    private $transformationHandler;
+
+    /**
      * Constructor
      *
      * @param Proxy                 $proxy                    proxy
@@ -63,6 +69,7 @@ class ProxyController
      * @param ApiDefinitionLoader   $loader                   definition loader
      * @param DiactorosFactory      $diactorosFactory         convert HttpFoundation objects to PSR-7
      * @param HttpFoundationFactory $httpFoundationFactory    convert PSR-7 interfaces to HttpFoundation
+     * @param TransformationHandler $transformationHandler    transformation handler
      * @param array                 $proxySourceConfiguration Set of sources to be recognized by the controller.
      */
     public function __construct(
@@ -71,6 +78,7 @@ class ProxyController
         ApiDefinitionLoader $loader,
         DiactorosFactory $diactorosFactory,
         HttpFoundationFactory $httpFoundationFactory,
+        TransformationHandler $transformationHandler,
         array $proxySourceConfiguration
     ) {
         $this->proxy = $proxy;
@@ -79,6 +87,7 @@ class ProxyController
         $this->diactorosFactory = $diactorosFactory;
         $this->httpFoundationFactory = $httpFoundationFactory;
         $this->proxySourceConfiguration = $proxySourceConfiguration;
+        $this->transformationHandler = $transformationHandler;
     }
 
     /**
@@ -110,10 +119,23 @@ class ProxyController
             );
             $newRequest->headers->add($request->headers->all());
 
+
+
+            $newRequest = $this->transformationHandler->transformRequest(
+                $api['apiName'],
+                $api['endpoint'],
+                $request,
+                $newRequest
+            );
             $psrRequest = $this->diactorosFactory->createRequest($newRequest);
             $psrResponse = $this->proxy->forward($psrRequest)->to($url);
             $response = $this->httpFoundationFactory->createRequest($psrResponse);
-
+            $this->transformationHandler->transformResponse(
+                $api['apiName'],
+                $api['endpoint'],
+                $response,
+                clone $response
+            );
         } catch (ClientException $e) {
             $response = $e->getResponse();
         } catch (ServerException $serverException) {
@@ -135,7 +157,12 @@ class ProxyController
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources();
         $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
-
+        $schema = $this->transformationHandler->transformSchema(
+            $api['apiName'],
+            $api['endpoint'],
+            $schema,
+            clone $schema
+        );
         $response = new Response(json_encode($schema), 200);
         $response->headers->set('Content-Type', 'application/json');
 
