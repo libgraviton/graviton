@@ -26,7 +26,7 @@ class TranslatableControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         $client->request('OPTIONS', '/i18n/translatable/i18n-de-German');
-        $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $client->getResponse());
+        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $client->getResponse());
 
         $this->assertEmpty($client->getResults());
     }
