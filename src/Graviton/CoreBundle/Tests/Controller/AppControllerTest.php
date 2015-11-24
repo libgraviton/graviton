@@ -671,7 +671,7 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertCorsHeaders('GET, POST, PUT, DELETE, OPTIONS', $response);
+        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
     }
 
     /**
@@ -731,8 +731,7 @@ class AppControllerTest extends RestTestCase
         $this->assertIsAppSchema($results->items);
         $this->assertEquals('en', $results->items->properties->name->required[0]);
 
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
         $this->assertContains(
             'Link',
             explode(',', $response->headers->get('Access-Control-Expose-Headers'))
