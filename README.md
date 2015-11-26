@@ -31,7 +31,7 @@ There are some general docs on interacting with the codebase as a whole.
 
 Some even broader scoped docs in a seperate repo.
 
-- [gravity-platform-docs.scapp.io/](http://gravity-platform-docs.scapp.io/)
+- [gravity-platform-docs.scapp.io](http://gravity-platform-docs.scapp.io/)
 
 The bundle readme files which show how to interact with
 the various subsystems.
