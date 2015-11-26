@@ -2,7 +2,7 @@
 
 This bundle contains an upload service for binary files.
 
-Extended documentation can be found [here](https://gravity-platform-docs.nova.scapp.io/api/file/)
+Extended documentation can be found [here](https://gravity-platform-docs.scapp.io/api/file/)
 
 ## Configuration
 
