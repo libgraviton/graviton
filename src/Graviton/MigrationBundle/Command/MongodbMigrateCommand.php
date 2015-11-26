@@ -70,7 +70,7 @@ class MongodbMigrateCommand extends Command
 
             $arguments = $input->getArguments();
             $arguments['command'] = 'mongodb:migrations:migrate';
-            $arguments['--configuration'] = $file->getRelativePathname();
+            $arguments['--configuration'] = $file->getPathname();
 
             $migrateInput = new ArrayInput($arguments);
             $returnCode = $command->run($migrateInput, $output);
