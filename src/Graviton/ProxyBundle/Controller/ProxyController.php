@@ -156,7 +156,7 @@ class ProxyController
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources();
-        $schema = $this->apiLoader->getEndpointSchema($api['endpoint']);
+        $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
         $schema = $this->transformationHandler->transformSchema(
             $api['apiName'],
             $api['endpoint'],

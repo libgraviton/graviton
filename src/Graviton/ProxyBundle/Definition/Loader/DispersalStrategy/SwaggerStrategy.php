@@ -56,8 +56,8 @@ class SwaggerStrategy implements DispersalStrategyInterface
         $apiDef = new ApiDefinition();
 
         /**
- * @var \stdClass $swagger
-*/
+         * @var \stdClass $swagger
+         */
         $swagger = $this->decodeJson($input);
         if (is_object($swagger)) {
             $this->document->setDocument($swagger);
@@ -67,7 +67,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
             foreach ($operations as $name => $service) {
                 $path = $this->normalizePath($service->getPath());
 
-                if ($apiDef->hasEndpoint($path)) {
+                if (in_array(strtolower($service->getMethod()), ['delete', 'patch']) || $apiDef->hasEndpoint($path)) {
                     continue;
                 }
                 $apiDef->addEndpoint($path);
@@ -91,8 +91,8 @@ class SwaggerStrategy implements DispersalStrategyInterface
     public function supports($input)
     {
         /**
- * @var array $swagger
-*/
+         * @var array $swagger
+         */
         $swagger = $this->decodeJson($input, true);
 
         $mandatoryFields = ['swagger', 'info', 'paths', 'version', 'title', 'definitions'];
@@ -143,9 +143,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     private function getServiceSchema($service)
     {
-        $schemaResolver = $this->document->getSchemaResolver();
         $operation = $service->getOperation();
-        $ref = new \stdClass();
         $schema = new \stdClass();
         switch (strtolower($service->getMethod())) {
             case "post":
@@ -163,7 +161,9 @@ class SwaggerStrategy implements DispersalStrategyInterface
                      * @link http://swagger.io/specification/#parameterObject
                      */
                     if ($parameter instanceof Parameter\Body && $parameter->getIn() === 'body') {
-                        $ref = $parameter->getDocumentObjectProperty('schema', Reference::class, true);
+                        $ref = $parameter->getDocumentObjectProperty('schema', Reference::class)->getDocument();
+                        $schema = $this->resolveSchema($ref);
+                        break;
                     }
                 }
                 break;
@@ -171,21 +171,47 @@ class SwaggerStrategy implements DispersalStrategyInterface
                 try {
                     $response = $operation->getResponses()->getHttpStatusCode(200);
                 } catch (MissingDocumentPropertyException $e) {
-                    // no response is defined
+                    // no response with status code 200 is defined
                     break;
                 }
-                $ref = $response->getSchema();
+                $schema = $this->resolveSchema($response->getSchema()->getDocument());
                 break;
         }
 
-        if ($ref instanceof AbstractObject
-            && !empty($ref->getDocument()->type)
-            && $ref->getDocument()->type === 'array'
-        ) {
-            $ref = new Reference($ref->getDocument()->items);
-        }
-        if ($ref instanceof Reference) {
+        return $schema;
+    }
+
+    /**
+     * resolve schema
+     *
+     * @param \stdClass $reference reference
+     *
+     * @return \stdClass
+     */
+    private function resolveSchema($reference)
+    {
+        $schema = $reference;
+        if (property_exists($reference, '$ref')) {
+            $schemaResolver = $this->document->getSchemaResolver();
+            $ref = new Reference($reference);
             $schema = $schemaResolver->resolveReference($ref)->getDocument();
+        } elseif ($reference->type === 'array' && !empty($reference->items)) {
+            $schema->items = $this->resolveSchema($reference->items);
+        }
+
+        // resolve properties
+        if (!empty($schema->properties)) {
+            $properties = (array) $schema->properties;
+            foreach ($properties as $name => $property) {
+                if (isset($property->type)
+                    && $property->type === 'array'
+                    && isset($property->items)
+                    && property_exists($property->items, '$ref')) {
+                    $schema->properties->$name->items = $this->resolveSchema($property->items);
+                } elseif (property_exists($property, '$ref')) {
+                    $schema->properties->$name = $this->resolveSchema($property);
+                }
+            }
         }
 
         return $schema;
@@ -200,11 +226,11 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     private function registerHost(ApiDefinition $apiDef)
     {
-        $host = $this->document->getHost();
-        if (!isset($host)) {
+        try {
+            $host = $this->document->getHost();
+        } catch (MissingDocumentPropertyException $e) {
             $host = $this->fallbackData['host'];
         }
-
         $apiDef->setHost($host);
     }
 

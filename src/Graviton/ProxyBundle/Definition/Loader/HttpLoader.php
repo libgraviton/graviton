@@ -9,6 +9,7 @@ use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\CacheStrategy\CacheStrategyInterface;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Guzzle\Http\Client;
+use Guzzle\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\Url;
@@ -128,11 +129,15 @@ class HttpLoader implements LoaderInterface
     {
         $retVal = null;
         if (isset($this->strategy)) {
-            $request = $this->client->get($input);
+            $request = $this->client->get($input, array(), ['verify' => false]);
             if (isset($this->cacheStrategy) && !$this->cacheStrategy->isExpired($this->options['storeKey'])) {
                 $content = $this->cacheStrategy->get($this->options['storeKey']);
+
+                if (empty($content)) {
+                    $content = $this->fetchFile($request);
+                }
             } else {
-                $content = $this->receiveFile($request);
+                $content = $this->fetchFile($request);
             }
 
             // store current host (name or ip) serving the API. This MUST be the host only and does not include the
@@ -153,7 +158,15 @@ class HttpLoader implements LoaderInterface
         return $retVal;
     }
 
-    private function receiveFile($request) {
+    /**
+     * fetch file from remote destination
+     *
+     * @param RequestInterface $request request
+     *
+     * @return string
+     */
+    private function fetchFile($request)
+    {
         try {
             $response = $request->send();
         } catch (\Guzzle\Http\Exception\CurlException $e) {
