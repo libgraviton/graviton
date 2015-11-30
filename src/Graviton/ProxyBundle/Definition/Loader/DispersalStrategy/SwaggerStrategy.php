@@ -185,7 +185,11 @@ class SwaggerStrategy implements DispersalStrategyInterface
             $ref = new Reference($ref->getDocument()->items);
         }
         if ($ref instanceof Reference) {
-            $schema = $schemaResolver->resolveReference($ref)->getDocument();
+            try {
+                $schema = $schemaResolver->resolveReference($ref)->getDocument();
+            } catch (MissingDocumentPropertyException $e) {
+                // cannot resolve ref
+            }
         }
 
         return $schema;
@@ -200,7 +204,12 @@ class SwaggerStrategy implements DispersalStrategyInterface
      */
     private function registerHost(ApiDefinition $apiDef)
     {
-        $host = $this->document->getHost();
+
+        try {
+            $host = $this->document->getHost();
+        } catch (MissingDocumentPropertyException $e) {
+            // Swagger does not define host
+        }
         if (!isset($host)) {
             $host = $this->fallbackData['host'];
         }
