@@ -41,6 +41,9 @@
             <call method="setDispersalStrategy">
                 <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
             </call>
+            <call method="setCurlOptions">
+                <argument>%graviton.proxy.httploader.curloptions%</argument>
+            </call>
         </service>
         <service id="graviton.proxy.service.swaggerapiloader" class="%graviton.proxy.service.apidefinitionloader.class%">
             <argument type="service" id="guzzle.client" />
