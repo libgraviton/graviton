@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Finder\Finder;
+use Graviton\MigrationBundle\Command\Helper\DocumentManager as DocumentManagerHelper;
+use AntiMattr\MongoDB\Migrations\OutputWriter;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -24,11 +26,25 @@ class MongodbMigrateCommand extends Command
     private $finder;
 
     /**
-     * @param Finder $finder finder that finds configs
+     * @var DocumentManagerHelper
      */
-    public function __construct(Finder $finder)
+    private $documentManager;
+
+    /**
+     * @var string
+     */
+    private $databaseName;
+
+    /**
+     * @param Finder                $finder          finder that finds configs
+     * @param DocumentManagerHelper $documentManager dm helper to get access to db in command
+     * @param string                $databaseName    name of database where data is found in
+     */
+    public function __construct(Finder $finder, DocumentManagerHelper $documentManager, $databaseName)
     {
         $this->finder = $finder;
+        $this->documentManager = $documentManager;
+        $this->databaseName = $databaseName;
 
         parent::__construct();
     }
@@ -55,9 +71,8 @@ class MongodbMigrateCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->finder->in(
-            strpos(getcwd(), 'vendor/') === false ? getcwd() :  getcwd() . '/../../../../'
-        )->path('Resources/config')->name('/migrations.(xml|yml)/')->files();
+        $base = strpos(getcwd(), 'vendor/') === false ? getcwd() :  getcwd() . '/../../../../';
+        $this->finder->in($base)->path('Resources/config')->name('/migrations.(xml|yml)/')->files();
 
         foreach ($this->finder as $file) {
             if (!$file->isFile()) {
@@ -68,9 +83,15 @@ class MongodbMigrateCommand extends Command
 
             $command = $this->getApplication()->find('mongodb:migrations:migrate');
 
+            $helperSet = $command->getHelperSet();
+            $helperSet->set($this->documentManager, 'dm');
+            $command->setHelperSet($helperSet);
+
             $arguments = $input->getArguments();
             $arguments['command'] = 'mongodb:migrations:migrate';
             $arguments['--configuration'] = $file->getPathname();
+
+            $command->setMigrationConfiguration($this->getConfiguration($file->getPathname(), $output));
 
             $migrateInput = new ArrayInput($arguments);
             $returnCode = $command->run($migrateInput, $output);
@@ -82,5 +103,36 @@ class MongodbMigrateCommand extends Command
                 return $returnCode;
             }
         }
+    }
+
+    /**
+     * get configration object for migration script
+     *
+     * This is based on antromattr/mongodb-migartion code but extends it so we can inject
+     * non local stuff centrally.
+     *
+     * @param string $filepath path to configuration file
+     * @param Output $output   ouput interface need by config parser to do stuff
+     *
+     * @return AntiMattr\MongoDB\Migrations\Configuration\Configuration
+     */
+    private function getConfiguration($filepath, $output)
+    {
+        $outputWriter = new OutputWriter(
+            function ($message) use ($output) {
+                return $output->writeln($message);
+            }
+        );
+
+        $info = pathinfo($filepath);
+        $namespace = 'AntiMattr\MongoDB\Migrations\Configuration';
+        $class = $info['extension'] === 'xml' ? 'XmlConfiguration' : 'YamlConfiguration';
+        $class = sprintf('%s\%s', $namespace, $class);
+        $configuration = new $class($this->documentManager->getDocumentManager()->getConnection(), $outputWriter);
+        $configuration->load($filepath);
+
+        $configuration->setMigrationsDatabaseName($this->databaseName);
+
+        return $configuration;
     }
 }
