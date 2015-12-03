@@ -64,7 +64,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
             $this->setBaseValues($apiDef);
 
             $operations = $this->document->getOperationsById();
-            foreach ($operations as $name => $service) {
+            foreach ($operations as $service) {
                 $path = $this->normalizePath($service->getPath());
 
                 if (in_array(strtolower($service->getMethod()), ['delete', 'patch']) || $apiDef->hasEndpoint($path)) {

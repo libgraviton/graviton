@@ -34,9 +34,13 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->sut = new SwaggerStrategy();
+        /*$swaggerParserMock = $this
+            ->getMockBuilder('Swagger\Document')
+            ->disableOriginalConstructor()
+            ->getMock();*/
 
-        $this->swagger = new \stdClass();
+
+        /*$this->swagger = new \stdClass();
         $this->swagger->swagger = "2.0";
         $this->swagger->paths = new \stdClass();
         $this->swagger->definitions = new \stdClass();
@@ -44,31 +48,34 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $this->swagger->info->title = "test swagger";
         $this->swagger->info->version = "1.0.0";
         $this->swagger->basePath = "/api/prefix";
-        $this->swagger->host = "testapi.local";
+        $this->swagger->host = "testapi.local";*/
     }
 
+    /**
+     * Provides data sets for testSupported()
+     *
+     * @return array
+     */
+    public function swaggerJsonDataProvider()
+    {
+        $basePath = dirname(__FILE__).'/../../../resources/';
+
+        return array(
+            array(false, file_get_contents($basePath.'not-supported-swagger.json')),
+            array(true, file_get_contents($basePath.'simple-swagger.json')),
+        );
+    }
 
     /**
      * test the supports method
      *
-     * @return void
-     */
-    public function testSupported()
-    {
-        $this->assertTrue($this->sut->supports(json_encode($this->swagger)));
-    }
-
-    /**
-     * test the supports method, when JSON not supported
+     * @dataProvider swaggerJsonDataProvider
      *
      * @return void
      */
-    public function testNotSupported()
+    public function testSupported($result, $swagger)
     {
-        $notValidJson = clone $this->swagger;
-        unset($notValidJson->paths);
-        unset($notValidJson->info->title);
-        $this->assertFalse($this->sut->supports(json_encode($notValidJson)));
+        $this->assertEquals($result, $this->sut->supports($swagger));
     }
 
     /**
@@ -91,7 +98,62 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessSwagger()
     {
-        $this->callProcessMethod(0);
+        $content = file_get_contents(dirname(__FILE__).'/../../../resources/simple-swagger.json');
+        $swagger = json_decode($content);
+        $orderPath = '/order/{orderId}';
+
+        $swaggerParserMock = $this->getMockBuilder('\Swagger\Document')
+            ->disableOriginalConstructor()
+            ->setMethods(['getBasePath', 'setDocument', 'getOperationsById'])
+            ->getMock();
+
+        $response = $swagger->paths->$orderPath->get->responses;
+
+        $responseMock = $this->getMockBuilder('\Swagger\Object\Responses')
+            ->disableOriginalConstructor()
+            ->setMethods(['getHttpStatusCode'])
+            ->getMock();
+        $responseMock->expects($this->once())
+            ->method('getHttpStatusCode')
+
+
+
+        $operationMock = $this->getMockBuilder('\Swagger\Object\Operation')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDocumentObjectProperty', 'getResponses'])
+            ->getMock();
+        $operationMock->expects($this->once())
+            ->method('getDocumentObjectProperty');
+        $operationMock->expects($this->once())
+            ->method('getResponses')
+            ->willReturn($responseMock);
+
+
+        $serviceMock = $this->getMockBuilder('\Swagger\OperationReference')
+            ->disableOriginalConstructor()
+            ->setMethods(['getPath', 'getMethod', 'getOperation'])
+            ->getMock();
+        $serviceMock->expects($this->exactly(3))
+            ->method('getPath')
+            ->will($this->onConsecutiveCalls('/user', '/user', '/order/{orderId}'));
+        $serviceMock->expects($this->exactly(5))
+            ->method('getMethod')
+            ->will($this->onConsecutiveCalls('POST', 'DELETE', 'GET', 'POST', 'GET'));
+        $serviceMock->expects($this->exactly(2))
+            ->method('getOperation')
+            ->willReturn($operationMock);
+
+
+        $operations = [$serviceMock, $serviceMock, $serviceMock];
+
+        $swaggerParserMock
+            ->expects($this->once())
+            ->method('getOperationsById')
+            ->willReturn($operations);
+        $this->sut = new SwaggerStrategy($swaggerParserMock);
+
+        $this->sut->process($content, array('host' => 'localhost'));
+        /*$this->callProcessMethod(0);
 
         $schema = array();
         $schema['$ref'] = '#/definitions/Person';
@@ -122,7 +184,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
         $apiDefinition = $this->callProcessMethod(2);
         foreach ($apiDefinition->getEndpoints(false) as $endpoint) {
             $this->assertEquals($person, $apiDefinition->getSchema($endpoint));
-        }
+        }*/
     }
 
     /**
