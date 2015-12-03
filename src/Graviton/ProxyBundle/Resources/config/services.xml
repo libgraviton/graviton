@@ -49,6 +49,9 @@
             <call method="setCacheStrategy">
                 <argument type="service" id="graviton.proxy.definiton.cache.time" />
             </call>
+            <call method="setCurlOptions">
+                <argument>%graviton.proxy.httploader.curloptions%</argument>
+            </call>
         </service>
         <service id="graviton.proxy.service.swaggerapiloader" class="%graviton.proxy.service.apidefinitionloader.class%">
             <argument type="service" id="guzzle.client" />

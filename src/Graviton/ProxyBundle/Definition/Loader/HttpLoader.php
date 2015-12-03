@@ -43,6 +43,11 @@ class HttpLoader implements LoaderInterface
      * @var CacheStrategyInterface
      */
     private $cacheStrategy;
+    
+    /**
+     * @var array curl options to apply on each request
+     */
+    private $curlOptions = [];
 
     /**
      * @var array
@@ -88,6 +93,16 @@ class HttpLoader implements LoaderInterface
     }
 
     /**
+     * set curl options
+     *
+     * @param array $curlOptions the curl options
+     */
+    public function setCurlOptions(array $curlOptions)
+    {
+        $this->curlOptions = $curlOptions;
+    }
+    
+    /**
      * @inheritDoc
      *
      * @param array $options cache strategy
@@ -119,6 +134,19 @@ class HttpLoader implements LoaderInterface
     }
 
     /**
+     * Applies the specified curl option on a request
+     *
+     * @param $request
+     */
+    protected function applyCurlOptions($request) {
+        $curl = $request->getCurlOptions();
+        foreach ($this->curlOptions as $option => $value) {
+            $option = 'CURLOPT_' . strtoupper($option);
+            $curl->set(constant($option), $value);
+        }
+    }
+
+    /**
      * @inheritDoc
      *
      * @param string $input url
@@ -129,7 +157,8 @@ class HttpLoader implements LoaderInterface
     {
         $retVal = null;
         if (isset($this->strategy)) {
-            $request = $this->client->get($input, array(), ['verify' => false]);
+            $request = $this->client->get($input);
+            $this->applyCurlOptions($request);
             if (isset($this->cacheStrategy) && !$this->cacheStrategy->isExpired($this->options['storeKey'])) {
                 $content = $this->cacheStrategy->get($this->options['storeKey']);
 
