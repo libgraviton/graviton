@@ -53,6 +53,8 @@
         "graviton/json-schema": "~0.4",
         "hadesarchitect/json-schema-bundle": "~0.1.0",
         "php-jsonpatch/php-jsonpatch": "1.2.2",
+        "antimattr/mongodb-migrations-bundle": ">=1.0.1",
+        "antimattr/mongodb-migrations": "^1.0"
         "jenssegers/proxy": ">=3.0.0-beta2",
         "thefrozenfire/swagger": "~2.0",
         "symfony/psr-http-message-bridge": "~0.2"

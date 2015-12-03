@@ -582,7 +582,7 @@ class RestController
         $response->setStatusCode(Response::HTTP_OK);
 
         // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
+        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
         try {
             $router = $this->getRouter();
             // if post route is available we assume everything is readable
@@ -623,7 +623,7 @@ class RestController
         }
 
         // enabled methods for CorsListener
-        $corsMethods = 'GET, POST, PUT, DELETE, OPTIONS';
+        $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
         try {
             $router = $this->getRouter();
             // if post route is available we assume everything is readable
