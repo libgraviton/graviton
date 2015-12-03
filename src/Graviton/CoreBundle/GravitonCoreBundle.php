@@ -20,6 +20,7 @@ use Graviton\SchemaBundle\GravitonSchemaBundle;
 use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Graviton\FileBundle\GravitonFileBundle;
+use Graviton\MigrationBundle\GravitonMigrationBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -60,6 +61,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonSwaggerBundle(),
             new GravitonFileBundle(),
             new GravitonRabbitMqBundle(),
+            new GravitonMigrationBundle(),
             new GravitonProxyBundle(),
         );
     }

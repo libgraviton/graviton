@@ -338,8 +338,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('array', $results->type);
         $this->assertIsFileSchema($results->items);
 
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('GET, POST, PUT, DELETE, OPTIONS', $response->headers->get('Access-Control-Allow-Methods'));
+        $this->assertCorsHeaders('GET, POST, PUT, PATCH, DELETE, OPTIONS', $response);
         $this->assertContains(
             'Link',
             explode(',', $response->headers->get('Access-Control-Expose-Headers'))
