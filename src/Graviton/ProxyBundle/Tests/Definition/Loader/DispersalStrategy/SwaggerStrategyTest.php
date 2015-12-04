@@ -69,6 +69,9 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
     /**
      * test the supports method
      *
+     * @param mixed $result  result
+     * @param mixed $swagger swagger
+     *
      * @dataProvider swaggerJsonDataProvider
      *
      * @return void
@@ -114,7 +117,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['getHttpStatusCode'])
             ->getMock();
         $responseMock->expects($this->once())
-            ->method('getHttpStatusCode')
+            ->method('getHttpStatusCode');
 
 
 

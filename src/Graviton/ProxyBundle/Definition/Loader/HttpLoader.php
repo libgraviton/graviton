@@ -109,6 +109,8 @@ class HttpLoader implements LoaderInterface
      * set curl options
      *
      * @param array $curlOptions the curl options
+     *
+     * @return void
      */
     public function setCurlOptions(array $curlOptions)
     {
@@ -149,7 +151,9 @@ class HttpLoader implements LoaderInterface
     /**
      * Applies the specified curl option on a request
      *
-     * @param $request
+     * @param RequestInterface $request request
+     *
+     * @return void
      */
     protected function applyCurlOptions($request)
     {
