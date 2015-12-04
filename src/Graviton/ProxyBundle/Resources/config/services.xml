@@ -7,7 +7,6 @@
         <parameter key="graviton.proxy.definition.httploader.class">Graviton\ProxyBundle\Definition\Loader\HttpLoader</parameter>
         <parameter key="graviton.proxy.dispersalstrategy.swagger.class">Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy</parameter>
         <parameter key="graviton.proxy.service.apidefinitionloader.class">Graviton\ProxyBundle\Service\ApiDefinitionLoader</parameter>
-        <parameter key="graviton.proxy.definition.cache.time.class">Graviton\ProxyBundle\Definition\Loader\CacheStrategy\TimeCacheStrategy</parameter>
         <parameter key="graviton.proxy.swagger.document.parser.class">Swagger\Document</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.httpfoundationfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.diactorosfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory</parameter>
@@ -36,18 +35,16 @@
         <service id="graviton.proxy.dispersalstrategy.swagger" class="%graviton.proxy.dispersalstrategy.swagger.class%">
             <argument type="service" id="graviton.proxy.swagger.document.parser" />
         </service>
-        <service id="graviton.proxy.definiton.cache.time" class="%graviton.proxy.definition.cache.time.class%">
-            <argument type="service" id="gaufrette.file_service_filesystem" />
-            <argument type="string">86400</argument>
-        </service>
         <service id="graviton.proxy.definition.httploader" class="%graviton.proxy.definition.httploader.class%">
             <argument type="service" id="validator" />
             <argument type="service" id="guzzle.client" />
             <call method="setDispersalStrategy">
                 <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
             </call>
-            <call method="setCacheStrategy">
-                <argument type="service" id="graviton.proxy.definiton.cache.time" />
+            <call method="setCache">
+                <argument type="service" id="doctrine_cache.providers.local"/>
+                <argument>ProxyBundle</argument>
+                <argument>86400</argument>
             </call>
             <call method="setCurlOptions">
                 <argument>%graviton.proxy.httploader.curloptions%</argument>
