@@ -75,6 +75,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
                     $path,
                     $this->getServiceSchema($service)
                 );
+                $apiDef->setOrigin($this->document);
             }
         }
 

@@ -25,6 +25,11 @@ class ApiDefinition
     private $host;
 
     /**
+     * @var mixed
+     */
+    private $origin;
+
+    /**
      * @var array
      */
     private $endpoints = array();
@@ -66,6 +71,28 @@ class ApiDefinition
     public function getHost()
     {
         return $this->host;
+    }
+
+    /**
+     * set the origin service definition
+     *
+     * @param mixed $origin the origin service definition (type depends on dispersal strategy)
+     *
+     * @return void
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+    }
+
+    /**
+     * get the origin service definition
+     *
+     * @return mixed the origin service definition (type depends on dispersal strategy)
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 
     /**

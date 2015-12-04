@@ -66,6 +66,17 @@ class ApiDefinitionLoader
     }
 
     /**
+     * get the origin service definition
+     *
+     * @return mixed the origin service definition (type depends on dispersal strategy)
+     */
+    public function getOriginDefinition($forceReload = false)
+    {
+        $this->loadApiDefinition($forceReload);
+        return $this->definition->getOrigin();
+    }
+
+    /**
      * get a schema for one endpoint
      *
      * @param string $endpoint    endpoint
