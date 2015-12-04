@@ -6,8 +6,8 @@
 namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
-use Graviton\ProxyBundle\Definition\Loader\CacheStrategy\CacheStrategyInterface;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
+use Doctrine\Common\Cache\CacheProvider;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,10 +40,19 @@ class HttpLoader implements LoaderInterface
     private $strategy;
 
     /**
-     * @var CacheStrategyInterface
+     * doctrine cache
+     *
+     * @var CacheProvider
      */
-    private $cacheStrategy;
-    
+    private $cache;
+
+    /**
+     * doctrine cache lifetime
+     *
+     * @var int
+     */
+    private $cacheLifetime;
+
     /**
      * @var array curl options to apply on each request
      */
@@ -83,13 +92,17 @@ class HttpLoader implements LoaderInterface
     /**
      * @inheritDoc
      *
-     * @param CacheStrategyInterface $strategy cache strategy
+     * @param CacheProvider $cache          doctrine cache provider
+     * @param string        $cacheNamespace cache namespace
+     * @param int           $cacheLifetime  cache lifetime
      *
      * @return void
      */
-    public function setCacheStrategy($strategy)
+    public function setCache(CacheProvider $cache, $cacheNamespace, $cacheLifetime)
     {
-        $this->cacheStrategy = $strategy;
+        $this->cache = $cache;
+        $this->cache->setNamespace($cacheNamespace);
+        $this->cacheLifetime = $cacheLifetime;
     }
 
     /**
@@ -101,7 +114,7 @@ class HttpLoader implements LoaderInterface
     {
         $this->curlOptions = $curlOptions;
     }
-    
+
     /**
      * @inheritDoc
      *
@@ -138,7 +151,8 @@ class HttpLoader implements LoaderInterface
      *
      * @param $request
      */
-    protected function applyCurlOptions($request) {
+    protected function applyCurlOptions($request)
+    {
         $curl = $request->getCurlOptions();
         foreach ($this->curlOptions as $option => $value) {
             $option = 'CURLOPT_' . strtoupper($option);
@@ -159,8 +173,8 @@ class HttpLoader implements LoaderInterface
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
             $this->applyCurlOptions($request);
-            if (isset($this->cacheStrategy) && !$this->cacheStrategy->isExpired($this->options['storeKey'])) {
-                $content = $this->cacheStrategy->get($this->options['storeKey']);
+            if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
+                $content = $this->cache->fetch($this->options['storeKey']);
 
                 if (empty($content)) {
                     $content = $this->fetchFile($request);
@@ -208,8 +222,8 @@ class HttpLoader implements LoaderInterface
             );
         }
         $content = $response->getBody(true);
-        if (isset($this->cacheStrategy)) {
-            $this->cacheStrategy->save($this->options['storeKey'], $content);
+        if (isset($this->cache)) {
+            $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
         }
 
         return $content;
