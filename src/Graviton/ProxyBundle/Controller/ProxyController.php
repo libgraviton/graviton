@@ -99,17 +99,18 @@ class ProxyController
      */
     public function proxyAction(Request $request)
     {
-        $scheme = $request->getScheme();
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources();
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
-        $url = $scheme."://".$url;
-
+        if (parse_url($url, PHP_URL_SCHEME) === false) {
+            $scheme = $request->getScheme();
+            $url = $scheme.'://'.$url;
+        }
         $response = null;
         try {
             $newRequest = Request::create(
-                $request->getUri(),
+                $url,
                 $request->getMethod(),
                 array (),
                 array (),
@@ -127,9 +128,11 @@ class ProxyController
                 $request,
                 $newRequest
             );
+
             $psrRequest = $this->diactorosFactory->createRequest($newRequest);
-            $psrResponse = $this->proxy->forward($psrRequest)->to($url);
-            $response = $this->httpFoundationFactory->createRequest($psrResponse);
+            $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
+
+            $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->transformationHandler->transformResponse(
                 $api['apiName'],
                 $api['endpoint'],
@@ -213,5 +216,19 @@ class ProxyController
                 $this->apiLoader->setOption($config);
             }
         }
+    }
+
+    /**
+     * get host, scheme and port
+     */
+    private function getHostWithScheme($url)
+    {
+        $components = parse_url($url);
+        $host = $components['scheme'].'://'.$components['host'];
+        if (!empty($components['port'])) {
+            $host .= ':'.$components['port'];
+        }
+
+        return $host;
     }
 }

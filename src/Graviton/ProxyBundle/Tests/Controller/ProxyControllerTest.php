@@ -20,107 +20,77 @@ class ProxyControllerTest extends RestTestCase
     /**
      * @var string
      */
-    const REQUEST_URL = "/3rdparty/petstore/v2/user";
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var \stdClass
-     */
-    private $testUser;
-
-    /**
-     * @var array
-     */
-    private $headers;
-
-    /**
-     * @inheritDoc
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        parent::setUp();
-        $this->client = static::createRestClient();
-        $this->headers = array(
-            'Content_Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'Authorization' => 'special_key',
-        );
-        $this->testUser = new \stdClass();
-        $this->testUser->id = 123456;
-        $this->testUser->username = "tester";
-        $this->testUser->firstName = "test";
-        $this->testUser->userStatus = 1;
-    }
-
+    const REQUEST_URL = "/3rdparty/graviton/core/app";
 
     /**
      * test post request with the proxy Action
      *
      * @return void
      */
-    public function testPostProxyAction()
-    {
-        $this->client->request(
-            'POST',
-            self::REQUEST_URL,
-            array(),
-            array(),
-            $this->headers,
-            json_encode($this->testUser)
-        );
-
-        $response = $this->client->getResponse();
-        $this->assertEquals('application/json', $response->headers->get("Content-Type"));
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEmpty($response->getContent());
-    }
-
-    /**
-     * test the proxy Action
-     *
-     * @depends testPostProxyAction
-     *
-     * @return void
-     */
     public function testProxyAction()
     {
-        $this->client->request(
-            'GET',
-            self::REQUEST_URL.'/'.$this->testUser->username,
-            array(),
-            array(),
-            $this->headers
+        $client = static::createRestClient();
+        $headers = array(
+            'Content_Type'  => 'application/json',
         );
-        $response = $this->client->getResponse();
+
+        $testApp = new \stdClass();
+        $testApp->id = "testapp";
+        $testApp->showInMenu = false;
+        $testApp->order = 33;
+        $testApp->name = new \stdClass();
+        $testApp->name->en = "testapp";
+
+        $client->request(
+            'PUT',
+            self::REQUEST_URL.'/'.$testApp->id,
+            array(),
+            array(),
+            $headers,
+            json_encode($testApp)
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEmpty($response->getContent());
+
+        $client->request(
+            'GET',
+            self::REQUEST_URL.'/'.$testApp->id,
+            array(),
+            array(),
+            $headers
+        );
+        $response = $client->getResponse();
         $content = json_decode($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($this->testUser, $content);
+        $this->assertEquals($testApp, $content);
+
+        $client->request(
+            'DELETE',
+            self::REQUEST_URL.'/'.$testApp->id,
+            array(),
+            array(),
+            $headers
+        );
+        $response = $client->getResponse();
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEmpty($response->getContent());
     }
 
     /**
-     * test url encoding
-     *
-     * @depends testProxyAction
+     * test the schema proxy Action
      *
      * @return void
      */
-    public function testDeleteProxyAction()
+    public function testSchemaProxyAction()
     {
-        $this->client->request(
-            'DELETE',
-            self::REQUEST_URL.'/'.$this->testUser->username,
-            array(),
-            array(),
-            $this->headers
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/schema'.self::REQUEST_URL.'/item'
         );
-        $response = $this->client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEmpty($response->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

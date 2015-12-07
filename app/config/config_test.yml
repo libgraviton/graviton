@@ -52,6 +52,6 @@ old_sound_rabbit_mq:
 graviton_proxy:
     sources:
         swagger:
-            petstore:
-                prefix: petstore
-                uri:    http://petstore.swagger.io/v2/swagger.json
+            graviton:
+                prefix: graviton
+                uri:    http://localhost:8000/swagger.json
