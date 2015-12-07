@@ -84,8 +84,9 @@ class MongodbMigrateCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $base = strpos(getcwd(), 'vendor/') === false ? getcwd() :  getcwd() . '/../../../../';
-        $this->finder->in($base)->path('Resources/config')->name('/migrations.(xml|yml)/')->files();
+        $this->finder->in(
+            strpos(getcwd(), 'vendor/') === false ? getcwd() :  getcwd() . '/../../../../'
+        )->path('Resources/config')->name('/migrations.(xml|yml)/')->files();
 
         foreach ($this->finder as $file) {
             if (!$file->isFile()) {
