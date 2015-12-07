@@ -87,11 +87,11 @@ class MongodbMigrateCommand extends Command
             $helperSet->set($this->documentManager, 'dm');
             $command->setHelperSet($helperSet);
 
+            $command->setMigrationConfiguration($this->getConfiguration($file->getPathname(), $output));
+
             $arguments = $input->getArguments();
             $arguments['command'] = 'mongodb:migrations:migrate';
             $arguments['--configuration'] = $file->getPathname();
-
-            $command->setMigrationConfiguration($this->getConfiguration($file->getPathname(), $output));
 
             $migrateInput = new ArrayInput($arguments);
             $returnCode = $command->run($migrateInput, $output);
@@ -129,9 +129,12 @@ class MongodbMigrateCommand extends Command
         $class = $info['extension'] === 'xml' ? 'XmlConfiguration' : 'YamlConfiguration';
         $class = sprintf('%s\%s', $namespace, $class);
         $configuration = new $class($this->documentManager->getDocumentManager()->getConnection(), $outputWriter);
-        $configuration->load($filepath);
 
+        // register databsae name before loading to ensure that loading does not fail
         $configuration->setMigrationsDatabaseName($this->databaseName);
+
+        // load additional config from migrations.(yml|xml)
+        $configuration->load($filepath);
 
         return $configuration;
     }
