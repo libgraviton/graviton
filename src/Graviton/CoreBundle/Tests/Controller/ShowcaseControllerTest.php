@@ -387,6 +387,33 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * Test to see if we can do like() searches on identifier fields
+     *
+     * @return void
+     */
+    public function testLikeSearchOnIdentifierField()
+    {
+        // Load fixtures
+        $this->loadFixtures(
+            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/?like(id,5*)');
+
+        // we should only get 1 ;-)
+        $this->assertEquals(1, count($client->getResults()));
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/?like(id,*0)');
+
+        // this should get both
+        $this->assertEquals(2, count($client->getResults()));
+    }
+
+    /**
      * Test PATCH for deep nested attribute
      *
      * @return void

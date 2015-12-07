@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "518a602d40fe5c59488ebea8757162b1",
-    "content-hash": "49a32934ba14b9ac665de098c6d586b3",
+    "hash": "2cf467d9ada485ec46a3b07945be6965",
+    "content-hash": "5740822c227cdf97ac65b5bf7c26112c",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -68,22 +68,6 @@
                 "mongodb"
             ],
             "time": "2014-09-26 17:18:36"
-        },
-        {
-            "name": "antimattr/mongodb-migrations-bundle",
-            "version": "v1.0.1",
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-migrations-bundle/zipball/150abde99715673908b6a81be4f8826a4d222c46",
-                "reference": null,
-                "shasum": null
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "AntiMattr\\Bundle\\MongoDBMigrationsBundle\\": ""
-                }
-            }
         },
         {
             "name": "aws/aws-sdk-php",
