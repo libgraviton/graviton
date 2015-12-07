@@ -9,6 +9,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\Finder\Finder;
 use Graviton\MigrationBundle\Command\Helper\DocumentManager as DocumentManagerHelper;
 use AntiMattr\MongoDB\Migrations\OutputWriter;
@@ -20,6 +22,11 @@ use AntiMattr\MongoDB\Migrations\OutputWriter;
  */
 class MongodbMigrateCommand extends Command
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+    
     /**
      * @var Finder
      */
@@ -36,12 +43,18 @@ class MongodbMigrateCommand extends Command
     private $databaseName;
 
     /**
+     * @param ContainerInterface    $container       container instance for injecting into aware migrations
      * @param Finder                $finder          finder that finds configs
      * @param DocumentManagerHelper $documentManager dm helper to get access to db in command
      * @param string                $databaseName    name of database where data is found in
      */
-    public function __construct(Finder $finder, DocumentManagerHelper $documentManager, $databaseName)
-    {
+    public function __construct(
+        ContainerInterface $container,
+        Finder $finder,
+        DocumentManagerHelper $documentManager,
+        $databaseName
+    ) {
+        $this->container = $container;
         $this->finder = $finder;
         $this->documentManager = $documentManager;
         $this->databaseName = $databaseName;
@@ -87,7 +100,9 @@ class MongodbMigrateCommand extends Command
             $helperSet->set($this->documentManager, 'dm');
             $command->setHelperSet($helperSet);
 
-            $command->setMigrationConfiguration($this->getConfiguration($file->getPathname(), $output));
+            $configuration = $this->getConfiguration($file->getPathname(), $output);
+            self::injectContainerToMigrations($this->container, $configuration->getMigrations());
+            $command->setMigrationConfiguration($configuration);
 
             $arguments = $input->getArguments();
             $arguments['command'] = 'mongodb:migrations:migrate';
@@ -137,5 +152,23 @@ class MongodbMigrateCommand extends Command
         $configuration->load($filepath);
 
         return $configuration;
+    }
+    
+    /**
+     * Injects the container to migrations aware of it
+     *
+     * @param ContainerInterface $container container to inject into container aware migrations
+     * @param array              $versions  versions that might need injecting a container
+     *
+     * @return void
+     */
+    private static function injectContainerToMigrations(ContainerInterface $container, array $versions)
+    {
+        foreach ($versions as $version) {
+            $migration = $version->getMigration();
+            if ($migration instanceof ContainerAwareInterface) {
+                $migration->setContainer($container);
+            }
+        }
     }
 }
