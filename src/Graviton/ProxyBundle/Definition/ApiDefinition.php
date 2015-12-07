@@ -175,7 +175,9 @@ class ApiDefinition
     public function getSchema($endpoint)
     {
         //remove base path
-        $endpoint = str_replace($this->basePath, '', $endpoint);
+        if ('/' !== $this->basePath) {
+            $endpoint = str_replace($this->basePath, '', $endpoint);
+        }
         $retVal = new \stdClass();
         if (array_key_exists($endpoint, $this->schemes)) {
             $retVal = $this->schemes[$endpoint];

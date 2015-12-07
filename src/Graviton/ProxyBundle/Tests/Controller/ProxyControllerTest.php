@@ -91,6 +91,12 @@ class ProxyControllerTest extends RestTestCase
             'GET',
             '/schema'.self::REQUEST_URL.'/item'
         );
+        $content = file_get_contents(dirname(__FILE__).'/../../../../../web/swagger.json');
+        $swagger = json_decode($content);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(
+            json_encode($swagger->definitions->GravitonCoreBundleModelApp),
+            $client->getResponse()->getContent()
+        );
     }
 }
