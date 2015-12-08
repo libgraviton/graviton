@@ -131,7 +131,6 @@ class ProxyController
 
             $psrRequest = $this->diactorosFactory->createRequest($newRequest);
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
-
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->transformationHandler->transformResponse(
                 $api['apiName'],
@@ -220,6 +219,10 @@ class ProxyController
 
     /**
      * get host, scheme and port
+     *
+     * @param string $url the url
+     *
+     * @return string
      */
     private function getHostWithScheme($url)
     {

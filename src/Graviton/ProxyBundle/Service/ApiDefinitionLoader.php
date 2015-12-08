@@ -68,11 +68,14 @@ class ApiDefinitionLoader
     /**
      * get the origin service definition
      *
+     * @param bool $forceReload Switch to force a new api definition object will be provided.
+     *
      * @return mixed the origin service definition (type depends on dispersal strategy)
      */
     public function getOriginDefinition($forceReload = false)
     {
         $this->loadApiDefinition($forceReload);
+
         return $this->definition->getOrigin();
     }
 

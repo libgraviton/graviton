@@ -23,11 +23,6 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
     private $sut;
 
     /**
-     * @var /stdClass
-     */
-    private $swagger;
-
-    /**
      * @inheritDoc
      *
      * @return void
@@ -39,17 +34,6 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['setDocument'])
             ->getMock();
         $this->sut = new SwaggerStrategy($swaggerParserMock);
-
-
-        /*$this->swagger = new \stdClass();
-        $this->swagger->swagger = "2.0";
-        $this->swagger->paths = new \stdClass();
-        $this->swagger->definitions = new \stdClass();
-        $this->swagger->info = new \stdClass();
-        $this->swagger->info->title = "test swagger";
-        $this->swagger->info->version = "1.0.0";
-        $this->swagger->basePath = "/api/prefix";
-        $this->swagger->host = "testapi.local";*/
     }
 
     /**
