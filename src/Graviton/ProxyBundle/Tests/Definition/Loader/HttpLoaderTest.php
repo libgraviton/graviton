@@ -93,6 +93,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->sut->load($url));
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
+            ->disableOriginalConstructor()
             ->setMethods(['supports'])
             ->getMock();
         $mock
@@ -116,6 +117,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
         $apiDefinition = $this->getMockBuilder('Graviton\ProxyBundle\Definition\ApiDefinition')->getMock();
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
+            ->disableOriginalConstructor()
             ->setMethods(['supports', 'process'])
             ->getMock();
         $mock

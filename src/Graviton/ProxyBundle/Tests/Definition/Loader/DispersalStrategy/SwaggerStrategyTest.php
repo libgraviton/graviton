@@ -34,10 +34,11 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        /*$swaggerParserMock = $this
-            ->getMockBuilder('Swagger\Document')
+        $swaggerParserMock = $this->getMockBuilder('\Swagger\Document')
             ->disableOriginalConstructor()
-            ->getMock();*/
+            ->setMethods(['setDocument'])
+            ->getMock();
+        $this->sut = new SwaggerStrategy($swaggerParserMock);
 
 
         /*$this->swagger = new \stdClass();
@@ -107,18 +108,38 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
 
         $swaggerParserMock = $this->getMockBuilder('\Swagger\Document')
             ->disableOriginalConstructor()
-            ->setMethods(['getBasePath', 'setDocument', 'getOperationsById'])
+            ->setMethods(['getBasePath', 'setDocument', 'getOperationsById', 'getSchemaResolver'])
             ->getMock();
 
-        $response = $swagger->paths->$orderPath->get->responses;
+        $statusCode = 200;
+        $responseSchema = $swagger->paths->$orderPath->get->responses->$statusCode->schema;
+        $orderDefinition = $swagger->definitions->Order;
+        $userDefinition = $swagger->definitions->User;
 
-        $responseMock = $this->getMockBuilder('\Swagger\Object\Responses')
+        $responseSchemaMock = $this->getMockBuilder('\Swagger\Object\AbstractObject')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDocument'])
+            ->getMockForAbstractClass();
+        $responseSchemaMock->expects($this->any())
+            ->method('getDocument')
+            ->will($this->onConsecutiveCalls($responseSchema, $orderDefinition, $userDefinition));
+
+        $responseMock = $this->getMockBuilder('\Swagger\Object\Response')
+            ->disableOriginalConstructor()
+            ->setMethods(['getSchema'])
+            ->getMock();
+        $responseMock->expects($this->once())
+            ->method('getSchema')
+            ->willReturn($responseSchemaMock);
+
+        $responsesMock = $this->getMockBuilder('\Swagger\Object\Responses')
             ->disableOriginalConstructor()
             ->setMethods(['getHttpStatusCode'])
             ->getMock();
-        $responseMock->expects($this->once())
-            ->method('getHttpStatusCode');
-
+        $responsesMock->expects($this->once())
+            ->method('getHttpStatusCode')
+            ->with($this->equalTo($statusCode))
+            ->willReturn($responseMock);
 
 
         $operationMock = $this->getMockBuilder('\Swagger\Object\Operation')
@@ -126,10 +147,8 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['getDocumentObjectProperty', 'getResponses'])
             ->getMock();
         $operationMock->expects($this->once())
-            ->method('getDocumentObjectProperty');
-        $operationMock->expects($this->once())
             ->method('getResponses')
-            ->willReturn($responseMock);
+            ->willReturn($responsesMock);
 
 
         $serviceMock = $this->getMockBuilder('\Swagger\OperationReference')
@@ -149,89 +168,28 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
 
         $operations = [$serviceMock, $serviceMock, $serviceMock];
 
+        $schemaResolverMock = $this->getMockBuilder('\Swagger\SchemaResolver')
+            ->disableOriginalConstructor()
+            ->setMethods(['resolveReference'])
+            ->getMock();
+        $schemaResolverMock->expects($this->exactly(2))
+            ->method('resolveReference')
+            ->withAnyParameters()
+            ->willReturn($responseSchemaMock);
+
         $swaggerParserMock
             ->expects($this->once())
             ->method('getOperationsById')
             ->willReturn($operations);
+        $swaggerParserMock
+            ->expects($this->exactly(2))
+            ->method('getSchemaResolver')
+            ->willReturn($schemaResolverMock);
+
         $this->sut = new SwaggerStrategy($swaggerParserMock);
 
-        $this->sut->process($content, array('host' => 'localhost'));
-        /*$this->callProcessMethod(0);
-
-        $schema = array();
-        $schema['$ref'] = '#/definitions/Person';
-
-        $customer = array();
-        $otherParam = array('in' => 'blub');
-        $customer['post']['parameters'][] = $otherParam;
-        $customer['get']['responses']['200']['schema'] = $schema;
-        $customerPath = '/person/customer';
-        $this->swagger->paths->$customerPath = (object) $customer;
-
-        $bodyParam = array('in' => 'body', 'schema' => $schema);
-        $consultant = array();
-        $consultant['get']['responses']['400'] = new \stdClass();
-        $consultant['post']['parameters'][] = $bodyParam;
-        $consultantPath = '/person/consultant';
-        $consultantPathWithId = '/person/consultant/{id}';
-        $this->swagger->paths->$consultantPath = (object) $consultant;
-        $this->swagger->paths->$consultantPathWithId = (object) $consultant;
-
-        $person = new \stdClass();
-        $person->type = "object";
-        $person->properties = new \stdClass();
-        $person->properties->id = new \stdClass();
-        $person->properties->name = new \stdClass();
-        $this->swagger->definitions->Person = $person;
-
-        $apiDefinition = $this->callProcessMethod(2);
-        foreach ($apiDefinition->getEndpoints(false) as $endpoint) {
-            $this->assertEquals($person, $apiDefinition->getSchema($endpoint));
-        }*/
-    }
-
-    /**
-     * test a delete endpoint
-     *
-     * @return void
-     */
-    public function testProcessDeleteEndpoint()
-    {
-        $deleteEndpoint = array();
-        $deleteEndpoint['delete'] = new \stdClass();
-        $path = '/delete/endpoint';
-        $this->swagger->paths->$path = (object) $deleteEndpoint;
-        $this->callProcessMethod(1);
-    }
-
-    /**
-     * test endpoint with no schema
-     *
-     * @return void
-     */
-    public function testProcessNoSchema()
-    {
-        $emptyEndpoint = array();
-        $emptyEndpoint['get']['responses']['200']['schema'] = null;
-        $path = '/no/schema/endpoint';
-        $this->swagger->paths->$path = (object) $emptyEndpoint;
-        $this->callProcessMethod(1);
-    }
-
-    /**
-     * test process method
-     *
-     * @param int $count number of endpoints
-     *
-     * @return ApiDefinition
-     */
-    private function callProcessMethod($count)
-    {
-        $fallbackData = array('host' => 'localhost');
-        $apiDefinition = $this->sut->process(json_encode($this->swagger), $fallbackData);
+        $apiDefinition = $this->sut->process($content, array('host' => 'localhost'));
         $this->assertInstanceOf('Graviton\ProxyBundle\Definition\ApiDefinition', $apiDefinition);
-        $this->assertCount($count, $apiDefinition->getEndpoints());
-
-        return $apiDefinition;
+        $this->assertCount(2, $apiDefinition->getEndpoints());
     }
 }
