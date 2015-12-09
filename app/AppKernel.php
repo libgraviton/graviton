@@ -80,7 +80,6 @@ class AppKernel extends Kernel
             new \HadesArchitect\JsonSchemaBundle\JsonSchemaBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
-            new \AntiMattr\Bundle\MongoDBMigrationsBundle\MongoDBMigrationsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {

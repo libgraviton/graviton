@@ -21,7 +21,7 @@
 
   {% if idField is defined %}
       {% if hideIdField == false %}
-          <field fieldName="id" type="{{ idField.doctrineType }}" id="true" strategy="UUID" />
+          <field fieldName="id" id="true" strategy="UUID" />
       {% else %}
           <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
           <field fieldName="realId" type="{{ idField.doctrineType }}" id="true" strategy="AUTO" />
