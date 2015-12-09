@@ -8,6 +8,7 @@ namespace Graviton\RestBundle\Validator\Constraints\ReadOnly;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 
 /**
  * Validator for read only
@@ -52,7 +53,6 @@ class ReadOnlyValidator extends ConstraintValidator
             $storedValue = $this->getStoredValueByPath($this->context->getPropertyPath(), $record);
 
             if ($storedValue instanceof \DateTime) {
-                $value = new \DateTime($value);
                 $isEqual = ($storedValue == $value);
             } else {
                 $isEqual = ($value === $storedValue);
