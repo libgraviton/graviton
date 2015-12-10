@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "46ad07ee45785eb235fc20b24f9dfe1b",
+    "hash": "6a257b4688400065b56765fce1f7f2f0",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -4424,13 +4424,19 @@
             "version": "dev-EVO-1383-fix-datetime-deserialization",
             "source": {
                 "type": "git",
-                "url": "/sync/GravitonTestServicesBundle",
-                "reference": "59b4c0aedeae491573921b5d014ebed12ab074c7"
+                "url": "https://github.com/mrix/GravitonTestServicesBundle.git",
+                "reference": "16376a98c8b60dacf8b35994492aa613b15c66cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mrix/GravitonTestServicesBundle/zipball/16376a98c8b60dacf8b35994492aa613b15c66cd",
+                "reference": "16376a98c8b60dacf8b35994492aa613b15c66cd",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Graviton\\TestServiceBundle\\": "src/"
+                    "Graviton\\TestServicesBundle\\": "src/"
                 }
             },
             "license": [
@@ -4443,7 +4449,10 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2015-12-10 05:54:42"
+            "support": {
+                "source": "https://github.com/mrix/GravitonTestServicesBundle/tree/EVO-1383-fix-datetime-deserialization"
+            },
+            "time": "2015-12-10 11:56:55"
         },
         {
             "name": "johnkary/phpunit-speedtrap",

@@ -19,7 +19,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git"
+            "url": "https://github.com/mrix/GravitonTestServicesBundle.git"
         }
     ],
     "require": {
