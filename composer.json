@@ -130,7 +130,12 @@
                     "graviton.errbit.api_key": "ERRBIT_API_KEY",
                     "graviton.errbit.host": "ERRBIT_HOST",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
-                    "graviton.composer.cmd": "COMPOSER_CMD"
+                    "graviton.composer.cmd": "COMPOSER_CMD",
+                    "graviton.rabbitmq.host": "RABBITMQ_HOST",
+                    "graviton.rabbitmq.port": "RABBITMQ_PORT",
+                    "graviton.rabbitmq.user": "RABBITMQ_USER",
+                    "graviton.rabbitmq.password": "RABBITMQ_PASSWORD",
+                    "graviton.rabbitmq.vhost": "RABBITMQ_VHOST"
                 }
             },
             {
