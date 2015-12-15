@@ -5,11 +5,18 @@
 
 namespace Graviton\ProxyBundle\Adapter\Guzzle;
 
-use Guzzle\Service\Client;
+use GuzzleHttp\Client;
 use Proxy\Adapter\AdapterInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ *
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class GuzzleAdapter implements AdapterInterface
 {
     /**
@@ -44,10 +51,13 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function send(RequestInterface $request)
     {
-        $request = array($request);
-        $this->client->setSslVerification();
+        $options = array('curl' => []);
+        foreach ($this->curlOptions as $option => $value) {
+            $options['curl'][constant('CURLOPT_'.strtoupper($option))] = $value;
+        }
+        $options['verify'] = __DIR__.'/../../Resources/cert/cacert.pem';
 
-        return $this->client->send($request);
+        return $this->client->send($request, $options);
     }
 
     /**
@@ -59,7 +69,6 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function setCurlOptions(array $curlOptions)
     {
-
         $this->curlOptions = $curlOptions;
     }
 }

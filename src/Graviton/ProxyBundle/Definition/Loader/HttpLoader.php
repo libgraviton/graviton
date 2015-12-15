@@ -162,6 +162,7 @@ class HttpLoader implements LoaderInterface
             $option = 'CURLOPT_' . strtoupper($option);
             $curl->set(constant($option), $value);
         }
+        $curl->set('CURLOPT_CAINFO', __DIR__.'/../../Resources/cert/cacert.pem');
     }
 
     /**
