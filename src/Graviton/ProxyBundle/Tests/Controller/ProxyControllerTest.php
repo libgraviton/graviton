@@ -29,8 +29,6 @@ class ProxyControllerTest extends RestTestCase
      */
     public function testProxyAction()
     {
-        var_dump($_ENV, $_SERVER);die;
-
         $client = static::createRestClient();
         $headers = array(
             'Content_Type'  => 'application/json',
