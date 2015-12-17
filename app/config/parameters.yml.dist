@@ -50,3 +50,5 @@ parameters:
     
     # how to call composer on this machine
     graviton.composer.cmd: composer
+
+    graviton.proxy.httploader.curloptions: []
