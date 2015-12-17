@@ -159,10 +159,10 @@ class HttpLoader implements LoaderInterface
     {
         $curl = $request->getCurlOptions();
         foreach ($this->curlOptions as $option => $value) {
-            $option = 'CURLOPT_' . strtoupper($option);
+            $option = 'CURLOPT_'.strtoupper($option);
             $curl->set(constant($option), $value);
         }
-        $curl->set('CURLOPT_CAINFO', __DIR__.'/../../Resources/cert/cacert.pem');
+        $curl->set(constant('CURLOPT_CAINFO'), __DIR__.'/../../Resources/cert/cacert.pem');
     }
 
     /**

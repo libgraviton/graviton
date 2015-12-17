@@ -37,12 +37,12 @@ class ProxyController
     private $templating;
 
     /**
-     * @var ApiDefinitionLoader
+     * @var DiactorosFactory
      */
     private $diactorosFactory;
 
     /**
-     * @var DiactorosFactory
+     * @var ApiDefinitionLoader
      */
     private $apiLoader;
 
@@ -128,8 +128,8 @@ class ProxyController
                 $request,
                 $newRequest
             );
-
             $psrRequest = $this->diactorosFactory->createRequest($newRequest);
+            $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->transformationHandler->transformResponse(

@@ -35,12 +35,14 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method("getBody")
             ->willReturn("{ 'test': 'bablaba' }");
+        $curlMock = $this->getMock('Guzzle\Common\Collection');
         $request = $this->getMockForAbstractClass('Guzzle\Http\Message\RequestInterface');
-        $request
-            ->expects($this->any())
+        $request->expects($this->any())
             ->method("send")
             ->withAnyParameters()
             ->willReturn($response);
+        $request->method('getCurlOptions')
+            ->willReturn($curlMock);
         $client = $this->getMockBuilder('Guzzle\Http\Client')
             ->disableOriginalConstructor()
             ->getMock();
@@ -132,5 +134,48 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
         $this->sut->setDispersalStrategy($mock);
         $loadedContent = $this->sut->load("http://localhost/test/url/blub");
         $this->assertInstanceOf('Graviton\ProxyBundle\Definition\ApiDefinition', $loadedContent);
+    }
+
+    /**
+     * test a load with cached content
+     *
+     * @return void
+     */
+    public function testLoadWithCache()
+    {
+        $storeKey = 'testSwagger';
+        $cachedContent = '{"swagger": "2.0"}';
+        $apiDefinition = $this->getMock('Graviton\ProxyBundle\Definition\ApiDefinition');
+
+        $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
+            ->disableOriginalConstructor()
+            ->setMethods(['supports', 'process'])
+            ->getMock();
+        $mock ->expects($this->once())
+            ->method("supports")
+            ->willReturn(true);
+        $mock->expects($this->once())
+            ->method("process")
+            ->with($this->equalTo($cachedContent))
+            ->willReturn($apiDefinition);
+        $this->sut->setDispersalStrategy($mock);
+
+        $cacheMock = $this->getMockBuilder('Doctrine\Common\Cache\FilesystemCache')
+            ->disableOriginalConstructor()
+            ->setMethods(['contains', 'fetch'])
+            ->getMock();
+        $cacheMock->expects($this->once())
+            ->method('contains')
+            ->with($this->equalTo($storeKey))
+            ->will($this->returnValue(true));
+        $cacheMock->expects($this->once())
+            ->method('fetch')
+            ->with($this->equalTo($storeKey))
+            ->willReturn($cachedContent);
+        $this->sut->setCache($cacheMock, 'ProxyBundle', 1234);
+        $this->sut->setOptions(['prefix' => $storeKey]);
+
+        $content = $this->sut->load("http://localhost/test/blablabla");
+        $this->assertInstanceOf('Graviton\ProxyBundle\Definition\ApiDefinition', $content);
     }
 }
