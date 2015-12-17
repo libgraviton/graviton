@@ -52,3 +52,5 @@ parameters:
     graviton.composer.cmd: composer
 
     graviton.proxy.httploader.curloptions: []
+
+    graviton.proxy.swagger.sources: {}

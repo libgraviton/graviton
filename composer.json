@@ -138,7 +138,8 @@
                     "graviton.rabbitmq.port": "RABBITMQ_PORT",
                     "graviton.rabbitmq.user": "RABBITMQ_USER",
                     "graviton.rabbitmq.password": "RABBITMQ_PASSWORD",
-                    "graviton.rabbitmq.vhost": "RABBITMQ_VHOST"
+                    "graviton.rabbitmq.vhost": "RABBITMQ_VHOST",
+                    "graviton.proxy.swagger.sources": "PROXY_SWAGGER_SOURCES"
                 }
             },
             {
