@@ -52,8 +52,11 @@
         "oldsound/rabbitmq-bundle": "~1.7",
         "graviton/json-schema": "~0.4",
         "hadesarchitect/json-schema-bundle": "~0.1.0",
-        "php-jsonpatch/php-jsonpatch": "1.2.2",
-        "antimattr/mongodb-migrations": "^1.0"
+        "php-jsonpatch/php-jsonpatch": "~1.2.2",
+        "antimattr/mongodb-migrations": "^1.0",
+        "jenssegers/proxy": ">=3.0.0-beta2",
+        "thefrozenfire/swagger": "~2.0",
+        "symfony/psr-http-message-bridge": "~0.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
@@ -130,7 +133,13 @@
                     "graviton.errbit.api_key": "ERRBIT_API_KEY",
                     "graviton.errbit.host": "ERRBIT_HOST",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
-                    "graviton.composer.cmd": "COMPOSER_CMD"
+                    "graviton.composer.cmd": "COMPOSER_CMD",
+                    "graviton.rabbitmq.host": "RABBITMQ_HOST",
+                    "graviton.rabbitmq.port": "RABBITMQ_PORT",
+                    "graviton.rabbitmq.user": "RABBITMQ_USER",
+                    "graviton.rabbitmq.password": "RABBITMQ_PASSWORD",
+                    "graviton.rabbitmq.vhost": "RABBITMQ_VHOST",
+                    "graviton.proxy.swagger.sources": "PROXY_SWAGGER_SOURCES"
                 }
             },
             {

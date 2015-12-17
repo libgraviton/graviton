@@ -28,7 +28,7 @@ class ShowcaseControllerTest extends RestTestCase
     const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/hans/showcase/collection';
 
     /**
-     * setup client and load fixtures
+     * suppress setup client and load fixtures of parent class
      *
      * @return void
      */
@@ -236,6 +236,8 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->post('/hans/showcase/', $document);
         $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
