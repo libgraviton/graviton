@@ -37,7 +37,6 @@ matrix:
     env: COMPOSER_CHECK=true PHPUNIT=false
   allow_failures:
   - php: hhvm
-  - php: 7.0
 script:
 - >
     if [ "$PHPUNIT" = "true" ]; then
