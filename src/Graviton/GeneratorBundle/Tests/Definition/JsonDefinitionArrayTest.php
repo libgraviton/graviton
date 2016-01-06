@@ -31,13 +31,15 @@ class JsonDefinitionArrayTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->element = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
-            ->setMethods([
+            ->setMethods(
+                [
                 'getName',
                 'getType',
                 'getTypeDoctrine',
                 'getTypeSerializer',
                 'getDefAsArray',
-            ])
+                ]
+            )
             ->getMock();
 
         parent::setUp();
