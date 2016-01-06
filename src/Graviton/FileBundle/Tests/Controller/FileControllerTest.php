@@ -146,6 +146,9 @@ class FileControllerTest extends RestTestCase
         $command->command = 'print';
         $data->metadata->action = [$command];
 
+        // also add additionalInformation
+        $data->metadata->additionalInformation = 'someInfo';
+
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
 
@@ -162,6 +165,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('text/plain', $data->metadata->mime);
         $this->assertEquals('test.txt', $data->metadata->filename);
         $this->assertEquals('print', $data->metadata->action[0]->command);
+        $this->assertEquals('someInfo', $data->metadata->additionalInformation);
         $this->assertNotNull($data->metadata->createDate);
         $this->assertNotNull($data->metadata->modificationDate);
 
@@ -489,6 +493,20 @@ class FileControllerTest extends RestTestCase
         $this->assertObjectNotHasAttribute(
             'readOnly',
             $schema->properties->metadata->properties->action->items->properties->command
+        );
+
+        // metadata additionalInformation
+        $this->assertEquals(
+            'string',
+            $schema->properties->metadata->properties->additionalInformation->type
+        );
+        $this->assertEquals(
+            'Additional Information',
+            $schema->properties->metadata->properties->additionalInformation->title
+        );
+        $this->assertObjectNotHasAttribute(
+            'readOnly',
+            $schema->properties->metadata->properties->additionalInformation
         );
 
         // Links
