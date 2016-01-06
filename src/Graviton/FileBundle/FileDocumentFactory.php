@@ -47,7 +47,7 @@ class FileDocumentFactory
      *
      * @return FileMetadata
      */
-    public function initiateFileMataData($id, $size, $filename, $mimetype, array $actions = [])
+    public function initiateFileMataData($id, $size, $filename, $mimetype, array $actions = [], $additionalInfo = '')
     {
         $now = new \DateTime();
         $meta = $this->createFileMataData();
@@ -58,7 +58,8 @@ class FileDocumentFactory
             ->setMime($mimetype)
             ->setCreatedate($now)
             ->setModificationdate($now)
-            ->setAction($actions);
+            ->setAction($actions)
+            ->setAdditionalInformation($additionalInfo);
 
         return $meta;
     }

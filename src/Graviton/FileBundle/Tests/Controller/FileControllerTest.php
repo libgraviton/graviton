@@ -378,7 +378,8 @@ class FileControllerTest extends RestTestCase
             }
           ],
           "metadata": {
-            "action":[{"command":"print"},{"command":"archive"}]
+            "action":[{"command":"print"},{"command":"archive"}],
+            "additionalInformation": "someInfo"
           }
         }';
 
@@ -408,6 +409,10 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($metaData['links'], $returnData['links']);
         $this->assertEquals($metaData['metadata']['action'], $returnData['metadata']['action']);
+        $this->assertEquals(
+            $metaData['metadata']['additionalInformation'],
+            $returnData['metadata']['additionalInformation']
+        );
 
         // clean up
         $client = $this->createClient();

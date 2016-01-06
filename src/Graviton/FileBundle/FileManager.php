@@ -246,21 +246,20 @@ class FileManager
     {
         $meta = $file->getMetadata();
         $actions = [];
+        $additionalInfo = '';
 
         if (!empty($fileData)) {
-            $actions = (!empty($fileData->getMetadata()->getAction()->toArray()))
-                ? $fileData->getMetadata()->getAction()->toArray()
-                : [];
-            $links = (!empty($fileData->getLinks()->toArray()))
-                ? $fileData->getLinks()->toArray()
-                : [];
-            $file->setLinks($links);
+            $actions = !empty($actions = $fileData->getMetadata()->getAction()->toArray()) ? $actions : [];
+            $additionalInfo = $fileData->getMetadata()->getAdditionalinformation();
+            $file->setLinks(!empty($links = $fileData->getLinks()->toArray()) ? $links : []);
         }
 
         if (!empty($meta)) {
             $actions = (empty($actions)) ? $meta->getAction()->toArray() : $actions;
+            $additionalInfo = empty($additionalInfo) ? $meta->getAdditionalinformation() : $additionalInfo;
             $meta
                 ->setAction($actions)
+                ->setAdditionalInformation($additionalInfo)
                 ->setSize((int) $fileSize)
                 ->setModificationdate(new \DateTime());
 
@@ -278,7 +277,8 @@ class FileManager
                 (int) $fileSize,
                 $fileInfo['data']['filename'],
                 $fileInfo['data']['mimetype'],
-                $actions
+                $actions,
+                $additionalInfo
             );
         }
 
