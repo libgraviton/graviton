@@ -68,7 +68,7 @@ class DateFieldBuilderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $form->expects($this->once())
             ->method('add')
-            ->with($name, $type, array_merge($options, ['widget' => 'single_text', 'input' => 'string']));
+            ->with($name, $type, array_merge($options, ['widget' => 'single_text', 'input' => 'datetime']));
 
         $sut = new DateFieldBuilder();
         $sut->buildField($document, $form, $name, $type, $options, $data);
