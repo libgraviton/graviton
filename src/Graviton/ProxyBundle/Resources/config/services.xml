@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="graviton.proxy.controller.proxy.class">Graviton\ProxyBundle\Controller\ProxyController</parameter>
+        <parameter key="graviton.proxy.adapter.guzzle.class">Graviton\ProxyBundle\Adapter\Guzzle\GuzzleAdapter</parameter>
+        <parameter key="graviton.proxy.definition.httploader.class">Graviton\ProxyBundle\Definition\Loader\HttpLoader</parameter>
+        <parameter key="graviton.proxy.dispersalstrategy.swagger.class">Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy</parameter>
+        <parameter key="graviton.proxy.service.apidefinitionloader.class">Graviton\ProxyBundle\Service\ApiDefinitionLoader</parameter>
+        <parameter key="graviton.proxy.swagger.document.parser.class">Swagger\Document</parameter>
+        <parameter key="graviton.proxy.psrhttpmessage.httpfoundationfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory</parameter>
+        <parameter key="graviton.proxy.psrhttpmessage.diactorosfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory</parameter>
+        <parameter key="graviton.proxy.transformationhandler.class">Graviton\ProxyBundle\Service\TransformationHandler</parameter>
+    </parameters>
+    <services>
+        <service id="graviton.proxy.psrhttpmessage.httpfoundationfactory" class="%graviton.proxy.psrhttpmessage.httpfoundationfactory.class%"></service>
+        <service id="graviton.proxy.psrhttpmessage.diactorosfactory" class="%graviton.proxy.psrhttpmessage.diactorosfactory.class%"></service>
+        <service id="graviton.proxy.transformationhandler" class="%graviton.proxy.transformationhandler.class%"></service>
+        <service id="graviton.proxy.guzzle.client" class="GuzzleHttp\Client" />
+        <service id="graviton.proxy.adapter.guzzle" class="%graviton.proxy.adapter.guzzle.class%">
+            <argument type="service" id="graviton.proxy.guzzle.client" />
+            <call method="setCurlOptions">
+                <argument>%graviton.proxy.httploader.curloptions%</argument>
+            </call>
+        </service>
+        <service id="graviton.proxy" class="Proxy\Proxy">
+            <argument type="service" id="graviton.proxy.adapter.guzzle" />
+        </service>
+        <service id="graviton.proxy.controller.proxy" class="%graviton.proxy.controller.proxy.class%">
+            <argument type="service" id="graviton.proxy" />
+            <argument type="service" id="templating" />
+            <argument type="service" id="graviton.proxy.service.swaggerapiloader" />
+            <argument type="service" id="graviton.proxy.psrhttpmessage.diactorosfactory" />
+            <argument type="service" id="graviton.proxy.psrhttpmessage.httpfoundationfactory" />
+            <argument type="service" id="graviton.proxy.transformationhandler" />
+            <argument>%graviton.proxy.sources%</argument>
+        </service>
+        <service id="graviton.proxy.swagger.document.dummy" class="stdClass"></service>
+        <service id="graviton.proxy.swagger.document.parser" class="%graviton.proxy.swagger.document.parser.class%">
+            <argument type="service" id="graviton.proxy.swagger.document.dummy" />
+        </service>
+        <service id="graviton.proxy.dispersalstrategy.swagger" class="%graviton.proxy.dispersalstrategy.swagger.class%">
+            <argument type="service" id="graviton.proxy.swagger.document.parser" />
+        </service>
+        <service id="graviton.proxy.definition.httploader" class="%graviton.proxy.definition.httploader.class%">
+            <argument type="service" id="validator" />
+            <argument type="service" id="guzzle.client" />
+            <call method="setDispersalStrategy">
+                <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
+            </call>
+            <call method="setCache">
+                <argument type="service" id="doctrine_cache.providers.local"/>
+                <argument>ProxyBundle</argument>
+                <argument>86400</argument>
+            </call>
+            <call method="setCurlOptions">
+                <argument>%graviton.proxy.httploader.curloptions%</argument>
+            </call>
+        </service>
+        <service id="graviton.proxy.service.swaggerapiloader" class="%graviton.proxy.service.apidefinitionloader.class%">
+            <argument type="service" id="guzzle.client" />
+            <call method="setDefinitionLoader">
+                <argument type="service" id="graviton.proxy.definition.httploader" />
+            </call>
+        </service>
+    </services>
+</container>

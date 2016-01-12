@@ -135,9 +135,18 @@ class MainControllerTest extends RestTestCase
         $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $apiLoaderDouble = $this->getMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
+        $configuration = [
+            'petstore' => [
+                'prefix' => 'petstore',
+                'uri' => 'http://petstore.swagger.io/v2/swagger.json'
+            ]
+        ];
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
-            ->setConstructorArgs([$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble])
+            ->setConstructorArgs(
+                [$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble, $apiLoaderDouble, $configuration]
+            )
             ->setMethods(array('prepareLinkHeader'))
             ->getProxy();
 
@@ -189,6 +198,13 @@ class MainControllerTest extends RestTestCase
         $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $apiLoaderDouble = $this->getMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
+        $configuration = [
+            'petstore' => [
+                'prefix' => 'petstore',
+                'uri' => 'http://petstore.swagger.io/v2/swagger.json'
+            ]
+        ];
 
         $optionRoutes = [
             "graviton.core.rest.app.options"     => $routerDouble,
@@ -196,7 +212,18 @@ class MainControllerTest extends RestTestCase
         ];
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
-            ->setConstructorArgs([$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble])
+            ->setConstructorArgs(
+                [
+                    $routerDouble,
+                    $responseDouble,
+                    $restUtilsDouble,
+                    $templateDouble,
+                    $apiLoaderDouble,
+                    [],
+                    [],
+                    $configuration,
+                ]
+            )
             ->setMethods(array('determineServices'))
             ->getProxy();
 
