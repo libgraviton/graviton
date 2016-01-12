@@ -47,7 +47,7 @@ class DateFieldBuilder implements FieldBuilderInterface
         $submittedData = null
     ) {
         $options['widget'] = 'single_text';
-        $options['input'] = 'string';
+        $options['input'] = 'datetime';
 
         $form->add($name, $type, $options);
     }

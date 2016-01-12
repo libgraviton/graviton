@@ -79,7 +79,7 @@ class DateArrayFieldBuilderTest extends \PHPUnit_Framework_TestCase
                         'type' => 'datetime',
                         'allow_add' => true,
                         'allow_delete' => true,
-                        'options' => ['widget' => 'single_text', 'input' => 'string'],
+                        'options' => ['widget' => 'single_text', 'input' => 'datetime'],
                     ]
                 )
             );

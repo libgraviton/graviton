@@ -72,6 +72,12 @@
         "type": "string",
         "title": "File name",
         "description": "Name of the file as it should get displayed to the user."
+      },
+      {
+        "name": "metadata.additionalInformation",
+        "type": "string",
+        "title": "Additional Information",
+        "description": "Additional information for this file."
       }
     ]
   }

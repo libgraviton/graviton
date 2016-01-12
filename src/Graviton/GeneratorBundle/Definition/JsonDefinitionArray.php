@@ -72,7 +72,7 @@ class JsonDefinitionArray implements DefinitionElementInterface
      */
     public function getTypeDoctrine()
     {
-       return $this->element->getTypeDoctrine().'[]';
+        return $this->element->getTypeDoctrine().'[]';
     }
 
     /**

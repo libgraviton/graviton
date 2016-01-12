@@ -51,7 +51,7 @@ class DateArrayFieldBuilder implements FieldBuilderInterface
 
         $options['type'] = 'datetime';
         $options['options']['widget'] = 'single_text';
-        $options['options']['input'] = 'string';
+        $options['options']['input'] = 'datetime';
 
         $form->add($name, 'collection', $options);
     }

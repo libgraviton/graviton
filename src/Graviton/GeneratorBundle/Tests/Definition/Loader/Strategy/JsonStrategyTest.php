@@ -22,7 +22,7 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $input
-     * @param bool $result
+     * @param bool   $result
      * @return void
      *
      * @dataProvider dataSupports
@@ -53,7 +53,7 @@ class JsonStrategyTest extends \PHPUnit_Framework_TestCase
                 false,
             ],
             [
-                (object)['a' => 'a'],
+                (object) ['a' => 'a'],
                 false,
             ],
             [
