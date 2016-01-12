@@ -6030,8 +6030,7 @@
     "stability-flags": {
         "php-jsonpointer/php-jsonpointer": 5,
         "knplabs/knp-gaufrette-bundle": 20,
-        "lapistano/proxy-object": 20,
-        "graviton/test-services-bundle": 20
+        "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
