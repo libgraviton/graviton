@@ -120,8 +120,6 @@ class ProxyController
             );
             $newRequest->headers->add($request->headers->all());
 
-
-
             $newRequest = $this->transformationHandler->transformRequest(
                 $api['apiName'],
                 $api['endpoint'],
