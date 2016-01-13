@@ -129,15 +129,16 @@ class ApiDefinition
      *
      * @param boolean $withHost url with hostname
      * @param string  $prefix   add a prefix to the url (blub/endpoint/url)
+     * @param string  $host
      *
      * @return array
      */
-    public function getEndpoints($withHost = true, $prefix = null)
+    public function getEndpoints($withHost = true, $prefix = null, $host = '')
     {
         $endpoints = array();
         $basePath = "";
         if ($withHost) {
-            $basePath = $this->getHost();
+            $basePath = (empty($host)) ? $this->getHost() : $host;
         }
         if (!empty($prefix)) {
             $basePath .= $prefix;
