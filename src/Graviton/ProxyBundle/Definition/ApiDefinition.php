@@ -129,7 +129,7 @@ class ApiDefinition
      *
      * @param boolean $withHost url with hostname
      * @param string  $prefix   add a prefix to the url (blub/endpoint/url)
-     * @param string  $host
+     * @param string  $host     Host to be used instead of the host defined in the swagger json
      *
      * @return array
      */
