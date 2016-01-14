@@ -249,6 +249,11 @@ class FileControllerTest extends RestTestCase
         $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
     }
 
+    /**
+     * validate that we can put a new file with a custom id
+     *
+     * @return void
+     */
     public function testPutNewFile()
     {
         $client = static::createRestClient();
