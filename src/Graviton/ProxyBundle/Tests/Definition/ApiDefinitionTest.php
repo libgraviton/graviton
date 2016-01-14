@@ -69,6 +69,24 @@ class ApiDefinitionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test endpoint definition with a configured host
+     *
+     * @return void
+     */
+    public function testGetEndPointsWithDefinedHost()
+    {
+        $endpoint = "/this/is/an/endpoint";
+        $host = "blabla.talk:8080";
+        $preferedHost = "someHost.talk:8000";
+
+        $sut = new ApiDefinition();
+        $sut->addEndpoint($endpoint);
+        $sut->setHost($host);
+
+        $this->assertEquals($preferedHost.$endpoint, $sut->getEndpoints(true, null, $preferedHost)[0]);
+    }
+
+    /**
      * test schema
      *
      * @return void

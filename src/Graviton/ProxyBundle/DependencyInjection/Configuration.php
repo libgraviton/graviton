@@ -43,18 +43,19 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->arrayNode('sources')
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-            ->children()
-            ->scalarNode('prefix')->isRequired()->cannotBeEmpty()->end()
-            ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
-            ->end()
-            ->end()
-            ->end()
-            ->end() // swagger_proxy
+                ->arrayNode('sources')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->useAttributeAsKey('name')
+                        ->prototype('array')
+                        ->children()
+                            ->scalarNode('prefix')->isRequired()->cannotBeEmpty()->end()
+                            ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
+                            ->scalarNode('host')->cannotBeEmpty()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end() // swagger_proxy
             ->end();
 
         return $treeBuilder;

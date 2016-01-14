@@ -108,21 +108,10 @@ class ApiDefinitionLoader
         $this->loadApiDefinition($forceReload);
         $url = "";
         if ($withHost) {
-            $url = $this->definition->getHost();
-        }
-        //$this->definition->hasEndpoint($endpoint);
-
-        /*$endpoints = $this->definition->getEndpoints(false);
-
-        //has url a id
-        $searchString = $endpoint;
-        if (preg_match("@\/[0-9]{1,}$@", $endpoint)) {
-            $searchString = substr($endpoint, 0, strrpos($endpoint, '/'));
+            $url = empty($this->options['host']) ? $this->definition->getHost() : $this->options['host'];
         }
 
-        if (in_array($searchString, $endpoints)) {*/
-            $url .= $endpoint;
-        //}
+        $url .= $endpoint;
 
         return $url;
     }
@@ -139,13 +128,14 @@ class ApiDefinitionLoader
     {
         $this->loadApiDefinition($forceReload);
 
+        $host = empty($this->options['host']) ? '' : $this->options['host'];
         $prefix = self::PROXY_ROUTE;
         if (isset($this->options['prefix'])) {
             $prefix .= "/".$this->options['prefix'];
         }
         $retVal = array();
         if (is_object($this->definition)) {
-            $retVal = $this->definition->getEndpoints($withHost, $prefix);
+            $retVal = $this->definition->getEndpoints($withHost, $prefix, $host);
         }
 
         return $retVal;
