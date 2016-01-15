@@ -208,7 +208,7 @@ class FileManager
             // if it is settable on the document, let's set it and move on.. if not, inform the user..
             if ($record->getId() != $id) {
                 // try to set it..
-                if (is_callable(array($fileData, 'setId'))) {
+                if (is_callable(array($record, 'setId'))) {
                     $record->setId($id);
                 } else {
                     throw new MalformedInputException('No ID was supplied in the request payload.');
@@ -218,15 +218,13 @@ class FileManager
             return $model->updateRecord($id, $record);
         }
 
-        if (!empty($fileData)) {
-            $fId = $fileData->getId();
-            if (empty($fId) && !empty($id)) {
-                $fileData->setId($id);
-            }
-            $record = $fileData;
-        } else {
+        $record = $fileData;
+        if (empty($record)) {
             $entityClass = $model->getEntityClass();
             $record = new $entityClass();
+        }
+        if (empty($record->getId()) && !empty($id)) {
+            $record->setId($id);
         }
 
         return $model->insertRecord($record);

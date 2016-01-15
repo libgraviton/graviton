@@ -250,6 +250,31 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * validate that we can put a new file with a custom id
+     *
+     * @return void
+     */
+    public function testPutNewFile()
+    {
+        $client = static::createRestClient();
+
+        $client->put(
+            '/file/testPutNewFile',
+            file_get_contents(__DIR__ . '/fixtures/test.txt'),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+
+        $response = $client->getResponse();
+        $linkHeader = $response->headers->get('Link');
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertContains('file/testPutNewFile>; rel="self"', $linkHeader);
+    }
+
+    /**
      * validate that we can delete a file
      *
      * @return void
