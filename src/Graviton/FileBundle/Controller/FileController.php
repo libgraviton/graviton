@@ -11,8 +11,6 @@ use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\FileBag;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
