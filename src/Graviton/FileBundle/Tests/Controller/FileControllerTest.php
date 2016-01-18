@@ -405,6 +405,10 @@ class FileControllerTest extends RestTestCase
           "metadata": {
             "action":[{"command":"print"},{"command":"archive"}],
             "additionalInformation": "someInfo",
+            "additionalProperties": [
+                {"name": "testName", "value": "testValue"},
+                {"name": "testName2", "value": "testValue2"}
+            ],
             "filename": "customFileName"
           }
         }';
@@ -439,6 +443,11 @@ class FileControllerTest extends RestTestCase
             $metaData['metadata']['additionalInformation'],
             $returnData['metadata']['additionalInformation']
         );
+        $this->assertEquals(
+            $metaData['metadata']['additionalProperties'],
+            $returnData['metadata']['additionalProperties']
+        );
+        $this->assertCount(2, $returnData['metadata']['additionalProperties']);
         $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
 
         // clean up
@@ -540,6 +549,15 @@ class FileControllerTest extends RestTestCase
             'readOnly',
             $schema->properties->metadata->properties->additionalInformation
         );
+
+        // metadata additionalProperties
+        $additionalPropertiesSchema = $schema->properties->metadata->properties->additionalProperties;
+        $this->assertEquals('array', $additionalPropertiesSchema->type);
+        $this->assertEquals('object', $additionalPropertiesSchema->items->type);
+        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->name->type);
+        $this->assertEquals('property name', $additionalPropertiesSchema->items->properties->name->title);
+        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->value->type);
+        $this->assertEquals('property value', $additionalPropertiesSchema->items->properties->value->title);
 
         // Links
         $this->assertEquals('array', $schema->properties->links->type);
