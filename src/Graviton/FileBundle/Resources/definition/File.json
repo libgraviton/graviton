@@ -78,6 +78,22 @@
         "type": "string",
         "title": "Additional Information",
         "description": "Additional information for this file."
+      },
+      {
+        "name": "metadata.additionalProperties.0.name",
+        "type": "string",
+        "title": "property name",
+        "description": "additional property name",
+        "required": true,
+        "translatable": false
+      },
+      {
+        "name": "metadata.additionalProperties.0.value",
+        "type": "string",
+        "title": "property value",
+        "description": "additional property value",
+        "required": true,
+        "translatable": false
       }
     ]
   }
