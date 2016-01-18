@@ -39,17 +39,25 @@ class FileDocumentFactory
     /**
      * Provides an instance of FileMetadata
      *
-     * @param string $id             Identifier of the file.
-     * @param int    $size           Size of the file.
-     * @param string $filename       Name of the file.
-     * @param string $mimetype       Mime-Type of the file.
-     * @param array  $actions        List of actions to be executed.
-     * @param string $additionalInfo Additional file information.
+     * @param string $id              Identifier of the file.
+     * @param int    $size            Size of the file.
+     * @param string $filename        Name of the file.
+     * @param string $mimetype        Mime-Type of the file.
+     * @param array  $actions         List of actions to be executed.
+     * @param string $additionalInfo  Additional file information.
+     * @param array  $additionalProps Additional file properties for example for printing
      *
      * @return FileMetadata
      */
-    public function initiateFileMataData($id, $size, $filename, $mimetype, array $actions = [], $additionalInfo = '')
-    {
+    public function initiateFileMataData(
+        $id,
+        $size,
+        $filename,
+        $mimetype,
+        array $actions = [],
+        $additionalInfo = '',
+        $additionalProps = []
+    ) {
         $now = new \DateTime();
         $meta = $this->createFileMataData();
         $meta->setId($id);
@@ -60,7 +68,8 @@ class FileDocumentFactory
             ->setCreatedate($now)
             ->setModificationdate($now)
             ->setAction($actions)
-            ->setAdditionalInformation($additionalInfo);
+            ->setAdditionalInformation($additionalInfo)
+            ->setAdditionalProperties($additionalProps);
 
         return $meta;
     }
