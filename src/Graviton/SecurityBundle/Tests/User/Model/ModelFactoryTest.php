@@ -33,7 +33,7 @@ class ModelFactoryTest extends \PHPUnit_Framework_TestCase
         $containerMock
             ->expects($this->once())
             ->method('getParameter')
-            ->with($this->equalTo('graviton.authentication.user_provider.model'))
+            ->with($this->equalTo('graviton.security.authentication.provider.model'))
             ->will($this->returnValue($serviceId));
         $containerMock
             ->expects($this->atLeastOnce())
@@ -68,7 +68,7 @@ class ModelFactoryTest extends \PHPUnit_Framework_TestCase
         return array(
             'no service id provided' => array(null, 'Graviton\SecurityBundle\User\Model\NullModel'),
             'some service id provided' => array(
-                'gravitondyn.contract.model.contract',
+                'graviton.security.authentication.provider.model.noop',
                 'Graviton\SecurityBundle\User\Model\NullModel'
             ),
         );

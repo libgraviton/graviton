@@ -1,59 +1,42 @@
 <?php
 /**
- * airlock authkey based user provider
+ * airlock authkey based consultant user provider
  */
 
-namespace Graviton\SecurityBundle\User;
+namespace Graviton\SecurityBundle\Authentication\Provider;
 
-use Graviton\SecurityBundle\Entities\SecurityContract;
-use GravitonDyn\ContractBundle\Document\Contract;
 use \Graviton\RestBundle\Model\ModelInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
- * Class AirlockAuthenticationKeyUserProvider
+ * Class AirlockAuthenticationKeyConsultantProvider
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
+class AuthenticationProvider implements UserProviderInterface
 {
     /**
-     * @var \Graviton\RestBundle\Model\ModelInterface
+     * @var ModelInterface
      */
     private $documentModel;
 
     /**
-     * @param \Graviton\RestBundle\Model\ModelInterface $contract contract to use as documentModel
+     * @var String
      */
-    public function __construct(ModelInterface $contract)
-    {
-        $this->documentModel = $contract;
-    }
+    private $queryField;
 
     /**
-     * Finds a contract based on the provided ApiKey.
-     *
-     * @param string $apiKey key from airlock
-     *
-     * @return string
+     * @param ModelInterface $model      The documentModel
+     * @param string         $queryField Field to search by
      */
-    public function getUsernameForApiKey($apiKey)
+    public function __construct(ModelInterface $model, $queryField)
     {
-        $contractId = '';
-
-        /** @var \GravitonDyn\ContractBundle\Document\Contract $contract */
-        $contract = $this->documentModel->getRepository()->findOneBy(array('number' => $apiKey));
-
-        if ($contract instanceof Contract) {
-            $contractId = $contract->getId();
-        }
-
-        return $contractId;
+        $this->documentModel = $model;
+        $this->queryField = $queryField;
     }
 
     /**
@@ -62,7 +45,7 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      * This method must throw UsernameNotFoundException if the user is not
      * found.
      *
-     * @param string $contractId contract id we need a username for
+     * @param string $username the consultants username
      *
      * @return \Symfony\Component\Security\Core\User\UserInterface
      *
@@ -70,19 +53,15 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
      *
      * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException if the user is not found
      */
-    public function loadUserByUsername($contractId)
+    public function loadUserByUsername($username)
     {
-        // TODO [lapistano] to what is the contract to be mapped against??
-
-        /** @var \GravitonDyn\ContractBundle\Document\Contract $contracts */
-        $contract = $this->documentModel->find($contractId);
-
-        if ($contract instanceof Contract) {
-            // TODO [lapistano]: map the found contract to whatever ...
-            return new SecurityContract($contract, $this->getContractRoles($contract));
+        if (!$this->queryField) {
+            return false;
         }
 
-        throw new UsernameNotFoundException();
+        $user = $this->documentModel->getRepository()->findOneBy(array($this->queryField => $username));
+
+        return $user ? $user : false;
     }
 
     /**
@@ -118,19 +97,5 @@ class AirlockAuthenticationKeyUserProvider implements UserProviderInterface
     public function supportsClass($class)
     {
         return $class instanceof \Symfony\Component\Security\Core\User\UserInterface;
-    }
-
-    /**
-     * Decides the role set the provided contract has.
-     *
-     * @param Contract $contract provided contract
-     *
-     * @return string[]
-     */
-    private function getContractRoles(Contract $contract)
-    {
-        // TODO [lapistano]: implement the ability to decide what roles the contract entity haas.
-
-        return array('ROLE_GRAVITON_USER');
     }
 }

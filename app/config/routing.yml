@@ -13,3 +13,7 @@ graviton_swagger_routing:
 graviton_proxy_routing:
     resource: "@GravitonProxyBundle/Resources/config/routing.xml"
     prefix: /
+
+graviton_security_routing:
+    resource: "@GravitonSecurityBundle/Resources/config/routing.xml"
+    prefix: /

@@ -22,3 +22,24 @@ desiredVersions:
   
   - graviton/graviton
 ```
+
+### adding additional endpoints to the main page
+
+When creating a new service which is not generated, you run into the problem that your hardcoded endpoint won't show
+on the main page.
+
+To fix this problem you have to register it in ```config.yml```. There you'll find the key graviton_core 
+where you can add the service name and the uri.
+
+#### an example: 
+
+
+```yml
+graviton_core:
+      service_name:
+        - graviton.core.static.version.get
+        - graviton.security.static.whoami.get
+      uri_whitelist:
+        - /core/version
+        - /person/whoami
+```

@@ -199,3 +199,11 @@ old_sound_rabbit_mq:
 graviton_proxy:
     sources:
         swagger: "%graviton.proxy.swagger.sources%"
+
+graviton_core:
+      service_name:
+        - graviton.core.static.version.get
+        - graviton.security.static.whoami.get
+      uri_whitelist:
+        - /core/version
+        - /person/whoami
