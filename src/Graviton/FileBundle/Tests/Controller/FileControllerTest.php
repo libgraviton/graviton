@@ -250,6 +250,31 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * validate that we can put a new file with a custom id
+     *
+     * @return void
+     */
+    public function testPutNewFile()
+    {
+        $client = static::createRestClient();
+
+        $client->put(
+            '/file/testPutNewFile',
+            file_get_contents(__DIR__ . '/fixtures/test.txt'),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'text/plain'],
+            false
+        );
+
+        $response = $client->getResponse();
+        $linkHeader = $response->headers->get('Link');
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertContains('file/testPutNewFile>; rel="self"', $linkHeader);
+    }
+
+    /**
      * validate that we can delete a file
      *
      * @return void
@@ -379,7 +404,12 @@ class FileControllerTest extends RestTestCase
           ],
           "metadata": {
             "action":[{"command":"print"},{"command":"archive"}],
-            "additionalInformation": "someInfo"
+            "additionalInformation": "someInfo",
+            "additionalProperties": [
+                {"name": "testName", "value": "testValue"},
+                {"name": "testName2", "value": "testValue2"}
+            ],
+            "filename": "customFileName"
           }
         }';
 
@@ -413,6 +443,12 @@ class FileControllerTest extends RestTestCase
             $metaData['metadata']['additionalInformation'],
             $returnData['metadata']['additionalInformation']
         );
+        $this->assertEquals(
+            $metaData['metadata']['additionalProperties'],
+            $returnData['metadata']['additionalProperties']
+        );
+        $this->assertCount(2, $returnData['metadata']['additionalProperties']);
+        $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
 
         // clean up
         $client = $this->createClient();
@@ -513,6 +549,15 @@ class FileControllerTest extends RestTestCase
             'readOnly',
             $schema->properties->metadata->properties->additionalInformation
         );
+
+        // metadata additionalProperties
+        $additionalPropertiesSchema = $schema->properties->metadata->properties->additionalProperties;
+        $this->assertEquals('array', $additionalPropertiesSchema->type);
+        $this->assertEquals('object', $additionalPropertiesSchema->items->type);
+        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->name->type);
+        $this->assertEquals('property name', $additionalPropertiesSchema->items->properties->name->title);
+        $this->assertEquals('string', $additionalPropertiesSchema->items->properties->value->type);
+        $this->assertEquals('property value', $additionalPropertiesSchema->items->properties->value->title);
 
         // Links
         $this->assertEquals('array', $schema->properties->links->type);
