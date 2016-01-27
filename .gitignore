@@ -12,8 +12,7 @@ web/explorer
 mongodata/
 src/GravitonDyn/*
 app/config/parameters.yml
-app/config/parameters_local.xml
-bin
+app/config/parameters_local.xmlgit
 app/files/
 app/config/deploy.yml
 versions.yml
