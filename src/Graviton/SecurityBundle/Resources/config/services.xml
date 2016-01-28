@@ -7,7 +7,7 @@
         <service id="graviton_security_authenticator"
                  class="Graviton\SecurityBundle\Authentication\SecurityAuthenticator"
                 >
-            <argument>%graviton.security.authentication.required%</argument>
+            <argument>%graviton.security.authentication.header_required%</argument>
             <argument>%graviton.security.authentication.test_username%</argument>
             <argument>%graviton.security.authentication.allow_anonymous%</argument>
             <argument type="service" id="graviton_security_user_provider"/>

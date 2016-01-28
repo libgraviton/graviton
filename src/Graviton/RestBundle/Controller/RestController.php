@@ -719,8 +719,9 @@ class RestController
     public function getSecurityUser()
     {
         /** @var PreAuthenticatedToken $token */
-        if ($token = $this->tokenStorage->getToken()) {
-            return $token->getUser();
+        if (($token = $this->tokenStorage->getToken())
+            && ($user = $token->getUser()) instanceof SecurityUser ) {
+            return $user;
         }
 
         throw new PreconditionRequiredHttpException('Not allowed');

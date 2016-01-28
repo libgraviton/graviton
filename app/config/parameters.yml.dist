@@ -4,7 +4,7 @@ parameters:
     graviton.mongodb.default.server.uri: ~
 
     # Dependency injection in Security Bundle
-    graviton.security.authentication.required: false
+    graviton.security.authentication.header_required: false
     graviton.security.authentication.test_username: false
     graviton.security.authentication.allow_anonymous: true
     graviton.security.authentication.strategy: graviton.security.authentication.strategy.header

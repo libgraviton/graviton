@@ -45,7 +45,7 @@ Required, controls if headers should be sent or not. If option is set true, it w
 If no key then a AuthenticationException will be thrown even before DB query. 
 ```yml
 parameters:
-    graviton.security.authentication.required: <BOOLEAN>
+    graviton.security.authentication.header_required: <BOOLEAN>
 ```
 
 If in DB there is a option to run a test user on each request without using headers, add here the identifier to find 
