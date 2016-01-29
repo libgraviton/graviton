@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\SchemaBundle\Model\SchemaModel;
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
@@ -56,6 +57,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $paginationDefaultLimit;
 
     /**
+     * @var boolean
+     */
+    protected $filterByAuthUser;
+
+    /**
+     * @var string
+     */
+    protected $filterByAuthField;
+
+    /**
      * @param Visitor $visitor                    rql query visitor
      * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer $paginationDefaultLimit     amount of data records to be returned when in pagination context.
@@ -95,11 +106,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request Request object
+     * @param Request      $request The request object
+     * @param SecurityUser $user    SecurityUser Object
      *
      * @return array
      */
-    public function findAll(Request $request)
+    public function findAll(Request $request, SecurityUser $user = null)
     {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
@@ -108,6 +120,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder();
+
+        if ($this->filterByAuthUser && $user && $user->hasRole(SecurityUser::ROLE_USER)) {
+            $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
+        }
 
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
@@ -312,5 +328,16 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return 10;
+    }
+
+    /**
+     * @param Boolean $active active
+     * @param String  $field  field
+     * @return void
+     */
+    public function setFilterByAuthUser($active, $field)
+    {
+        $this->filterByAuthUser = is_bool($active) ? $active : false;
+        $this->filterByAuthField = $field;
     }
 }

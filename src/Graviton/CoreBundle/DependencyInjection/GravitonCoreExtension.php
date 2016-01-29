@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -26,5 +27,21 @@ class GravitonCoreExtension extends GravitonBundleExtension
     public function getConfigDir()
     {
         return __DIR__.'/../Resources/config';
+    }
+
+    /**
+     * @param array            $configs   parameters configuration
+     * @param ContainerBuilder $container Symfony container
+     * @return void
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        parent::load($configs, $container);
+        $configuration = new Configuration();
+        $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter('graviton.core.links', $configs[0]['service_name']);
+        $container->setParameter('graviton.core.main.path.whitelist', $configs[0]['uri_whitelist']);
+
     }
 }

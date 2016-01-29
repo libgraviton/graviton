@@ -46,5 +46,10 @@ class GravitonSecurityExtension extends GravitonBundleExtension
             'graviton.security.authentication.strategy',
             $container->getParameter('graviton.security.authentication.strategy')
         );
+
+        $container->setAlias(
+            'graviton.security.authentication.dynamic.model',
+            $container->getParameter('graviton.security.authentication.provider.model')
+        );
     }
 }

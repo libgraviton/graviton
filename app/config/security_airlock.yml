@@ -3,8 +3,8 @@
 security:
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        graviton_airlock_authentication_key_user_provider:
-            id: graviton_airlock_authentication_key_user_provider
+        graviton_key_user_provider:
+            id: graviton_key_user_provider
 
     # the main part of the security, where you can set up firewalls
     # for specific sections of your app
@@ -14,7 +14,7 @@ security:
             #  no pattern means matches all routes
             stateless: true
             simple_preauth:
-                authenticator: graviton_airlock_authentication_key_authenticator
+                authenticator: graviton_key_authenticator
 
     access_decision_manager:
         # strategy can be: affirmative, unanimous or consensus

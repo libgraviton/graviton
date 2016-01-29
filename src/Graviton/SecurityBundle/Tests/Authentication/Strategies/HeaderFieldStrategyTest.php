@@ -42,7 +42,9 @@ class HeaderFieldStrategyTest extends WebTestCase
             $server
         );
 
-        $strategy = new HeaderFieldStrategy();
+        $strategy = new HeaderFieldStrategy(
+            $client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key')
+        );
 
         $this->assertEquals(
             $headerFieldValue,

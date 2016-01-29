@@ -17,13 +17,16 @@ use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\PreconditionRequiredHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Rs\Json\Patch;
@@ -32,6 +35,7 @@ use Rs\Json\Patch\InvalidTargetDocumentJsonException;
 use Rs\Json\Patch\InvalidOperationException;
 use Rs\Json\Patch\FailedTestException;
 use Graviton\RestBundle\Service\JsonPatchValidator;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some
@@ -110,6 +114,11 @@ class RestController
     protected $formValidator;
 
     /**
+     * @var TokenStorage
+     */
+    protected $tokenStorage;
+
+    /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
@@ -140,6 +149,17 @@ class RestController
         $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
+    }
+
+    /**
+     * Setter for the tokenStorage
+     *
+     * @param TokenStorage $tokenStorage The token storage
+     * @return void
+     */
+    public function setTokenStorage(TokenStorage $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -325,6 +345,14 @@ class RestController
     {
         $model = $this->getModel();
 
+        // Security is optional configured in Parameters
+        try {
+            /** @var SecurityUser $securityUser */
+            $securityUser = $this->getSecurityUser();
+        } catch (PreconditionRequiredHttpException $e) {
+            $securityUser = null;
+        }
+
         if ($model instanceof PaginatorAwareInterface && !$model->hasPaginator()) {
             $paginator = new Paginator();
             $model->setPaginator($paginator);
@@ -335,7 +363,7 @@ class RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($model->findAll($request))],
+            ['response' => $this->serialize($model->findAll($request, $securityUser))],
             $response
         );
     }
@@ -680,5 +708,22 @@ class RestController
         }
 
         return $routeName;
+    }
+
+    /**
+     * Security needs to be enabled to get Object.
+     *
+     * @return SecurityUser
+     * @throws PreconditionRequiredHttpException
+     */
+    public function getSecurityUser()
+    {
+        /** @var PreAuthenticatedToken $token */
+        if (($token = $this->tokenStorage->getToken())
+            && ($user = $token->getUser()) instanceof SecurityUser ) {
+            return $user;
+        }
+
+        throw new PreconditionRequiredHttpException('Not allowed');
     }
 }

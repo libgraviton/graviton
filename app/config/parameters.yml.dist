@@ -3,8 +3,19 @@ parameters:
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
-    graviton.authentication.user_provider.model: ~
+    # Dependency injection in Security Bundle
+    graviton.security.authentication.header_required: false
+    graviton.security.authentication.test_username: false
+    graviton.security.authentication.allow_anonymous: true
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
+    graviton.security.authentication.strategy_key: x-idp-username
+
+    graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
+    graviton.security.authentication.provider.model.query_field: false
+
+    graviton.security.query.filter_by_user: false
+    graviton.security.query.filter_by_field: 'consultant.$id'
+
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 

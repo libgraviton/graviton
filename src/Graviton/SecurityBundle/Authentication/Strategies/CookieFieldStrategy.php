@@ -16,10 +16,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CookieFieldStrategy extends AbstractHttpStrategy
 {
+    protected $field;
+
     /**
-     * Contains the mandatory authentication information.
+     * @param String $field field
      */
-    const COOKIE_FIELD = 'username';
+    public function __construct($field)
+    {
+        $this->field = $field;
+    }
 
     /**
      * Applies the defined strategy on the provided request.
@@ -30,6 +35,6 @@ class CookieFieldStrategy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
-        return $this->extractFieldInfo($request->cookies, self::COOKIE_FIELD);
+        return $this->extractFieldInfo($request->cookies, $this->field);
     }
 }

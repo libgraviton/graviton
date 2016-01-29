@@ -16,11 +16,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class HeaderFieldStrategy extends AbstractHttpStrategy
 {
-    /**
-     * Contains the mandatory authentication information.
-     */
-    const X_HEADER_FIELD = 'x-idp-username';
+    protected $field;
 
+    /**
+     * @param String $field field
+     */
+    public function __construct($field)
+    {
+        $this->field = $field;
+    }
     /**
      * @param Request $request request to handle
      *
@@ -28,6 +32,6 @@ class HeaderFieldStrategy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
-        return $this->extractFieldInfo($request->headers, self::X_HEADER_FIELD);
+        return $this->extractFieldInfo($request->headers, $this->field);
     }
 }

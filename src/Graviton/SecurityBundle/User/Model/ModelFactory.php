@@ -38,8 +38,8 @@ class ModelFactory
      */
     public function create()
     {
-        $serviceId = $this->container->getParameter('graviton.authentication.user_provider.model');
-        $service = $this->container->get('graviton.authentication.user_provider.model.noop');
+        $serviceId = $this->container->getParameter('graviton.security.authentication.provider.model');
+        $service = $this->container->get('graviton.security.authentication.provider.model.noop');
 
         if (!empty($serviceId) && $this->container->has($serviceId)) {
             $service = $this->container->get($serviceId);

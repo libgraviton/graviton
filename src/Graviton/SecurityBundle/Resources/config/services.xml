@@ -4,10 +4,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="graviton_airlock_authentication_key_authenticator"
-                 class="Graviton\SecurityBundle\Authentication\AirlockAuthenticationKeyAuthenticator"
+        <service id="graviton_security_authenticator"
+                 class="Graviton\SecurityBundle\Authentication\SecurityAuthenticator"
                 >
-            <argument type="service" id="graviton_airlock_authentication_key_user_provider"/>
+            <argument>%graviton.security.authentication.header_required%</argument>
+            <argument>%graviton.security.authentication.test_username%</argument>
+            <argument>%graviton.security.authentication.allow_anonymous%</argument>
+            <argument type="service" id="graviton_security_user_provider"/>
             <!-- This service id is an alias defined in the parameters.yml -->
             <argument type="service" id="graviton.security.authentication.strategy"/>
             <argument type="service" id="logger"/>
@@ -15,41 +18,46 @@
 
         <!--
             Strategies used by AuthenticationKeyAuthenticator
+            Value set in Dpc Injection
+            graviton.security.authentication.strategy
         -->
         <service id="graviton.security.authentication.strategy.header"
                  class="Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy">
+            <argument>%graviton.security.authentication.strategy_key%</argument>
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 
         <service id="graviton.security.authentication.strategy.cookie"
                  class="Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy">
+            <argument>%graviton.security.authentication.strategy_key%</argument>
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 
         <!--
             Services related to the AuthenticationUserProvider
         -->
-        <service id="graviton.authentication.user_provider.model.factory"
+        <service id="graviton_security_user_provider"
+                 class="Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider">
+            <argument type="service" id="graviton.security.authentication.dynamic.model" />
+            <argument>%graviton.security.authentication.provider.model.query_field%</argument>
+        </service>
+
+        <service id="graviton.security.authentication.provider.model.factory"
                  class="Graviton\SecurityBundle\User\Model\ModelFactory">
             <argument type="service" id="service_container" />
         </service>
 
-        <service id="graviton.authentication.user_provider.model"
+        <service id="graviton.security.authentication.provider"
                  class="Graviton\RestBundle\Model\ModelInterface"
-                 factory-service="graviton.authentication.user_provider.model.factory"
+                 factory-service="graviton.security.authentication.factory"
                  factory-method="create"
                 />
 
-        <service id="graviton.authentication.user_provider.model.noop"
+        <service id="graviton.security.authentication.provider.model.noop"
                  class="Graviton\SecurityBundle\User\Model\NullModel">
           <call method="setRepository">
             <argument type="service" id="graviton.core.repository.app"/>
           </call>
-        </service>
-
-        <service id="graviton_airlock_authentication_key_user_provider"
-                 class="Graviton\SecurityBundle\User\AirlockAuthenticationKeyUserProvider">
-            <argument type="service" id="graviton.authentication.user_provider.model"/>
         </service>
 
         <!--
@@ -82,6 +90,17 @@
             public="false">
             <argument>%graviton.security.services.whitelist%</argument>
             <tag name="security.voter" />
+        </service>
+
+        <!--
+            Whoami Services
+        -->
+        <service id="graviton.security.model.whoami" class="Graviton\SecurityBundle\Model\WhoAmI" parent="graviton.rest.model"/>
+        <service id="graviton.security.controller.whoami"
+                 class="Graviton\SecurityBundle\Controller\WhoAmIController" parent="graviton.rest.controller">
+            <call method="setModel">
+                <argument type="service" id="graviton.security.model.whoami"/>
+            </call>
         </service>
 
     </services>

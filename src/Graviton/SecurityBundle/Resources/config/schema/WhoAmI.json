@@ -1,0 +1,9 @@
+{
+  "username":
+  {
+    "title": "The username of the logged in consultant",
+    "description": "your username",
+    "type": "string"
+  },
+  "additionalProperties": true
+}
