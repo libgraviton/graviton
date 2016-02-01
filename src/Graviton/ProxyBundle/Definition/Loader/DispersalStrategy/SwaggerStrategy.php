@@ -207,9 +207,10 @@ class SwaggerStrategy implements DispersalStrategyInterface
                 if (isset($property->type)
                     && $property->type === 'array'
                     && isset($property->items)
-                    && property_exists($property->items, '$ref')) {
+                    && property_exists($property->items, '$ref')
+                    && !isset($schema->properties->$name->items)) {
                     $schema->properties->$name->items = $this->resolveSchema($property->items);
-                } elseif (property_exists($property, '$ref')) {
+                } elseif (property_exists($property, '$ref') && !isset($schema->properties->$name)) {
                     $schema->properties->$name = $this->resolveSchema($property);
                 }
             }
