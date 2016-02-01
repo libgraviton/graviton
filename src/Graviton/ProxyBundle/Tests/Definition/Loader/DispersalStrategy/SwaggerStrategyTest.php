@@ -166,7 +166,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
             ->method('getOperationsById')
             ->willReturn($operations);
         $swaggerParserMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getSchemaResolver')
             ->willReturn($schemaResolverMock);
 
