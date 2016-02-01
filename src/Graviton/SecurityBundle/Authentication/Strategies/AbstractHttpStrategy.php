@@ -19,6 +19,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 abstract class AbstractHttpStrategy implements StrategyInterface
 {
+
+    protected $strategyMatch;
     /**
      * Extracts information from the a request header field.
      *
@@ -31,7 +33,6 @@ abstract class AbstractHttpStrategy implements StrategyInterface
     {
         if ($header instanceof ParameterBag || $header instanceof HeaderBag) {
             $this->validateField($header, $fieldname);
-
             return $header->get($fieldname, '');
         }
 
@@ -51,32 +52,22 @@ abstract class AbstractHttpStrategy implements StrategyInterface
     {
         $passed = $header->has($fieldName);
 
-        // get rid of anything not a valid character
-        $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
+        // return without exception so we can return a dummy user
+        if (true === $passed) {
+            // get rid of anything not a valid character
+            $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
 
-        // get rid of whitespaces
-        $patterns = array("\r\n", "\n", "\r", "\s", "\t");
-        $authInfo = str_replace($patterns, "", trim($authInfo));
+            // get rid of whitespaces
+            $patterns = array("\r\n", "\n", "\r", "\s", "\t");
+            $authInfo = str_replace($patterns, "", trim($authInfo));
 
-        if (false !== $passed && !empty($authInfo)) {
-            $passed = true;
-        } else {
-            $passed = false;
-        }
-
-        // get rid of control characters
-        if (false !== $passed && $authInfo === preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
-            $passed = true;
-        } else {
-            $passed = false;
-        }
-
-
-        if (false === $passed) {
-            throw new HttpException(
-                Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED,
-                'Mandatory header field (' . $fieldName . ') not provided or invalid.'
-            );
+            // get rid of control characters
+            if (empty($authInfo) || $authInfo !== preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
+                throw new HttpException(
+                    Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED,
+                    'Mandatory header field (' . $fieldName . ') not provided or invalid.'
+                );
+            }
         }
     }
 }

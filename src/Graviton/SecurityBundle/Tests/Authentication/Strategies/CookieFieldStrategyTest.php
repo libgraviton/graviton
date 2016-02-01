@@ -32,7 +32,7 @@ class CookieFieldStrategyTest extends WebTestCase
     {
         $client = static::createClient();
         $cookie = new Cookie(
-            CookieFieldStrategy::COOKIE_FIELD,
+            $client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key'),
             $fieldValue,
             time() + 3600 * 24 * 7,
             '/',
@@ -49,7 +49,9 @@ class CookieFieldStrategyTest extends WebTestCase
             array() //server
         );
 
-        $strategy = new CookieFieldStrategy();
+        $strategy = new CookieFieldStrategy(
+            $client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key')
+        );
 
         $this->assertSame($fieldValue, $strategy->apply($client->getRequest()));
     }

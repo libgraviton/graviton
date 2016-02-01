@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+$path = __DIR__ . '/../app/console';
+
+if (file_exists($path)) {
+    require $path;
+} else {
+    echo "The app/console file of the graviton package file could not be found.";
+}

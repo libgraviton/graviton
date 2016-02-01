@@ -34,12 +34,11 @@ class AbstractHttpStrategyTest extends WebTestCase
     /**
      * @dataProvider fieldInfoProvider
      *
-     * @param boolean $hasField     is field in data
-     * @param string  $fieldContent test content for field
+     * @param string $fieldContent test content for field
      *
      * @return void
      */
-    public function testValidateFieldExpectingException($hasField, $fieldContent = '')
+    public function testValidateFieldExpectingException($fieldContent = '')
     {
         $fieldName = 'my special field';
 
@@ -51,12 +50,12 @@ class AbstractHttpStrategyTest extends WebTestCase
             ->expects($this->once())
             ->method('has')
             ->with($this->equalTo($fieldName))
-            ->will($this->returnValue($hasField));
+            ->willReturn(true);
         $headerMock
             ->expects($this->once())
             ->method('get')
             ->with($this->equalTo($fieldName))
-            ->will($this->returnValue($fieldContent));
+            ->willReturn($fieldContent);
 
         $strategy = new AbstractHttpStrategyProxy();
 
@@ -71,9 +70,9 @@ class AbstractHttpStrategyTest extends WebTestCase
     public function fieldInfoProvider()
     {
         return array(
-            'field not in header' => array(false),
-            'field empty' => array(true, "\n"),
-            'field has invalid content (whitespaces)' => array(true, "\n\t\r\n \s"),
+            'field not in header' => array(''),
+            'field empty' => array("\n"),
+            'field has invalid content (whitespaces)' => array("\n\t\r\n \s"),
         );
     }
 }

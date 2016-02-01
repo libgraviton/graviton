@@ -1,27 +1,27 @@
 # you can read more about security in the related section of the documentation
 # http://symfony.com/doc/current/book/security.html
-#security:
-#    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
-#    providers:
-#        default:
-#            id: graviton_airlock_authentication_key_user_provider
+security:
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        default:
+            id: graviton_security_user_provider
 
-#    # the main part of the security, where you can set up firewalls
-#    # for specific sections of your app
-#    firewalls:
-#        # disables authentication for assets and the profiler, adapt it according to your needs
-#        dev:
-#            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-#            security: false
-#        secured_area:
-#            pattern: ^/
-#            anonymous: ~
-#        # graviton access restriction
-#            #  no pattern means matches all routes
-#            stateless: true
-#            simple_preauth:
-#                authenticator: graviton_airlock_authentication_key_authenticator
-#
+    # the main part of the security, where you can set up firewalls
+    # for specific sections of your app
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        secured_area:
+            pattern: ^/
+            anonymous: ~
+        # graviton access restriction
+            #  no pattern means matches all routes
+            stateless: true
+            simple_preauth:
+                authenticator: graviton_security_authenticator
+
 #      access_decision_manager:
 #          # strategy can be: affirmative, unanimous or consensus
 #          strategy: unanimous #every voter has to grant access

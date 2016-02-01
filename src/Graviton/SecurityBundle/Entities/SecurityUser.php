@@ -1,27 +1,29 @@
 <?php
 /**
- * security contract entity
+ * security consultant entity
  */
 
 namespace Graviton\SecurityBundle\Entities;
 
-use GravitonDyn\ContractBundle\Document\Contract;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Class SecurityContract
+ * Class SecurityUser
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class SecurityContract implements UserInterface
+class SecurityUser implements UserInterface
 {
+    const ROLE_USER = 'ROLE_GRAVITON_USER';
+    const ROLE_ANONYMOUS = 'ROLE_GRAVITON_ANONYMOUS';
+
     /**
-     * @var Contract
+     * @var Object
      */
-    private $contract;
+    private $user;
 
     /**
      * @var Role[]
@@ -32,12 +34,12 @@ class SecurityContract implements UserInterface
     /**
      * Constructor of the class.
      *
-     * @param Contract $contract contract
-     * @param Role[]   $roles    roles for the contract
+     * @param object $user  the user
+     * @param Role[] $roles roles for the contract
      */
-    public function __construct(Contract $contract, array $roles = array())
+    public function __construct($user, array $roles = array())
     {
-        $this->contract = $contract;
+        $this->user = $user;
         $this->roles = $roles;
     }
 
@@ -78,11 +80,10 @@ class SecurityContract implements UserInterface
      */
     public function getUsername()
     {
-        return sprintf(
-            "%s %s",
-            $this->contract->getCustomer()->getFirstname(),
-            $this->contract->getCustomer()->getLastname()
-        );
+        if (method_exists($this->user, 'getUsername')) {
+            return $this->user->getUsername();
+        }
+        return false;
     }
 
     /**
@@ -98,22 +99,32 @@ class SecurityContract implements UserInterface
     }
 
     /**
-     * Provides the »IBVertragsnummer« of the current contract.
+     * Provides the consultant object.
      *
-     * @return string
+     * @return Object
      */
-    public function getContractNumber()
+    public function getUser()
     {
-        return $this->contract->getNumber();
+        return $this->user;
     }
 
     /**
-     * Provides the embedded contract identified by the authenticator.
-     *
-     * @return Contract
+     * Check if user has role
+     * @param string $role User Role
+     * @return bool
      */
-    public function getContract()
+    public function hasRole($role)
     {
-        return $this->contract;
+        return in_array($role, $this->roles);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $roles = $this->$this->getRoles();
+        $username = $this->getUsername() ? $this->getUsername() : 'anonymous';
+        return reser($roles).':'.$username;
     }
 }
