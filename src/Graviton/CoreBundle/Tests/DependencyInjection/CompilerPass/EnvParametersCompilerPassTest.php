@@ -45,10 +45,12 @@ class EnvParametersCompilerPassTest extends \PHPUnit_Framework_TestCase
             $this->setExpectedException($exception);
         }
 
-        $compilerPass = new EnvParametersCompilerPass();
-        $compilerPass->process($containerDouble);
-
-        unset($_SERVER[$envName]);
+        try {
+            $compilerPass = new EnvParametersCompilerPass();
+            $compilerPass->process($containerDouble);
+        } finally {
+            unset($_SERVER[$envName]);
+        }
     }
 
     /**
