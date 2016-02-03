@@ -156,7 +156,7 @@ class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->setMethods(['resolveReference'])
             ->getMock();
-        $schemaResolverMock->expects($this->exactly(2))
+        $schemaResolverMock->expects($this->exactly(1))
             ->method('resolveReference')
             ->withAnyParameters()
             ->willReturn($responseSchemaMock);

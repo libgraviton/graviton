@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ddf5c643a06e8893de7a8aa357b991d5",
-    "content-hash": "018e3254777ea41931160ba705244321",
+    "hash": "01ad0b9dd992f516cda15bef5f170952",
+    "content-hash": "391717ced6c13ebc0320576baca87e9d",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -225,7 +225,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/69fd4782219ba22fcfe4c278de1eebbbe38f0950",
+                "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/999763ca1580d1fa7bffc0b6dfe1cf0152078e86",
                 "reference": "69fd4782219ba22fcfe4c278de1eebbbe38f0950",
                 "shasum": ""
             },
