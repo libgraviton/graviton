@@ -27,9 +27,6 @@ class EnvParametersCompilerPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testParameterSetting($envName, $envValue, $paramName, $paramValue, $exception = null)
     {
-        // put $_SERVER on the side
-        $origServer = $_SERVER;
-
         $_SERVER[$envName] = $envValue;
 
         $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
@@ -51,8 +48,7 @@ class EnvParametersCompilerPassTest extends \PHPUnit_Framework_TestCase
         $compilerPass = new EnvParametersCompilerPass();
         $compilerPass->process($containerDouble);
 
-        // put $_SERVER back in place side
-        $_SERVER = $origServer;
+        unset($_SERVER[$envName]);
     }
 
     /**
