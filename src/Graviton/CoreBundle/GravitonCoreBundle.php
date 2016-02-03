@@ -7,6 +7,7 @@ namespace Graviton\CoreBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
+use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
 use Graviton\DocumentBundle\GravitonDocumentBundle;
 use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
@@ -78,5 +79,6 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
         parent::build($container);
 
         $container->addCompilerPass(new VersionCompilerPass());
+        $container->addCompilerPass(new EnvParametersCompilerPass());
     }
 }
