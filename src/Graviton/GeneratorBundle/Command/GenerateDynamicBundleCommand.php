@@ -98,18 +98,10 @@ class GenerateDynamicBundleCommand extends Command
         $this->serializer = $serializer;
 
         if ($bundleAdditions !== null && $bundleAdditions !== '') {
-            $this->bundleAdditions = $serializer->deserialize(
-                $bundleAdditions,
-                'array<string>',
-                'json'
-            );
+            $this->bundleAdditions = $bundleAdditions;
         }
         if ($serviceWhitelist !== null && $serviceWhitelist !== '') {
-            $this->serviceWhitelist = $serializer->deserialize(
-                $serviceWhitelist,
-                'array<string>',
-                'json'
-            );
+            $this->serviceWhitelist = $serviceWhitelist;
         }
     }
 
