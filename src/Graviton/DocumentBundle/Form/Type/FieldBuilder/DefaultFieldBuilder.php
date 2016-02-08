@@ -50,6 +50,11 @@ class DefaultFieldBuilder implements FieldBuilderInterface
             $options['submitted_data'] = $submittedData;
         }
 
+        // don't add translatables that are not submitted and not required
+        if ('translatable' === $type && is_null($submittedData) && $options['required'] !== true) {
+            return;
+        }
+
         $form->add($name, $type, $options);
     }
 }
