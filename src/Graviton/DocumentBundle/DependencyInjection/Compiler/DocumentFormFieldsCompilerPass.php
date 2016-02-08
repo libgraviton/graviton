@@ -92,7 +92,13 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                 $result[] = [
                     $field->getFormName(),
                     $type,
-                    array_replace(['property_path' => $field->getFieldName()], $options),
+                    array_replace(
+                        [
+                            'property_path' => $field->getFieldName(),
+                            'required' => $field->isRequired()
+                        ],
+                        $options
+                    ),
                 ];
             } elseif ($field instanceof ArrayField) {
                 list($type, $options) = $this->resolveFieldParams(
