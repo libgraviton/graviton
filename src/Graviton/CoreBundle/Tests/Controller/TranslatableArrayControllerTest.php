@@ -156,6 +156,23 @@ class TranslatableArrayControllerTest extends RestTestCase
     }
 
     /**
+     * Test PUT method with an empty translatable that is NOT required
+     *
+     * @return void
+     */
+    public function testPutMethodEmptyTranslatable()
+    {
+        $data = $this->getPostData();
+        unset($data->field);
+
+        $client = static::createRestClient();
+        $client->put('/testcase/translatable-array/testdata', $data);
+
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertEmpty($client->getResults());
+    }
+
+    /**
      * Test validation
      *
      * @return void
