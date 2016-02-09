@@ -47,7 +47,7 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                         [
                             'titleA',
                             'translatable',
-                            ['property_path' => 'title'],
+                            ['property_path' => 'title', 'required' => false],
                         ],
                         [
                             'extrefA',
