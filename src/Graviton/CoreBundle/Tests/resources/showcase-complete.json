@@ -92,11 +92,13 @@
   "nestedCustomers": [
     {
       "id": "1234",
+      "customerNumber": "1234",
       "name": "Hans",
       "$ref": "http://localhost/core/app/admin"
     },
     {
       "id": "1235",
+      "customerNumber": "1234",
       "name": "Franz",
       "$ref": "http://localhost/core/app/tablet"
     }
