@@ -1,6 +1,6 @@
 <?php
 /**
- * DefaultFieldBuilder class file
+ * TranslatableFieldBuilder class file
  */
 
 namespace Graviton\DocumentBundle\Form\Type\FieldBuilder;
@@ -13,7 +13,7 @@ use Symfony\Component\Form\FormInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DefaultFieldBuilder implements FieldBuilderInterface
+class TranslatableFieldBuilder implements FieldBuilderInterface
 {
     /**
      * Is field type supported by this builder
@@ -24,7 +24,7 @@ class DefaultFieldBuilder implements FieldBuilderInterface
      */
     public function supportsField($type, array $options = [])
     {
-        return true;
+        return $type === 'translatable';
     }
 
     /**
@@ -46,9 +46,13 @@ class DefaultFieldBuilder implements FieldBuilderInterface
         array $options = [],
         $submittedData = null
     ) {
-        if ('strictboolean' === $type) {
-            $options['submitted_data'] = $submittedData;
+
+        // don't add translatables that are not submitted and not required
+        if ('translatable' === $type && is_null($submittedData) && $options['required'] !== true) {
+            return;
         }
+
+        unset($options['required']);
 
         $form->add($name, $type, $options);
     }

@@ -86,17 +86,15 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
                 list($type, $options) = $this->resolveFieldParams(
                     $translatableFields,
                     $field->getFieldName(),
-                    $field->getType()
+                    $field->getType(),
+                    $field
                 );
 
                 $result[] = [
                     $field->getFormName(),
                     $type,
                     array_replace(
-                        [
-                            'property_path' => $field->getFieldName(),
-                            'required' => $field->isRequired()
-                        ],
+                        ['property_path' => $field->getFieldName()],
                         $options
                     ),
                 ];
@@ -147,28 +145,30 @@ class DocumentFormFieldsCompilerPass implements CompilerPassInterface
      * @param array  $translatable Translatable fields
      * @param string $fieldName    Field name
      * @param string $fieldType    Field type
+     * @param mixed  $field        optional field to pass
+     *
      * @return array Form type and options
      */
-    private function resolveFieldParams(array $translatable, $fieldName, $fieldType)
+    private function resolveFieldParams(array $translatable, $fieldName, $fieldType, $field = null)
     {
+        $options = [];
+
         if (in_array($fieldName, $translatable, true) || in_array($fieldName.'[]', $translatable, true)) {
             $type = 'translatable';
-            $options = [];
+            if ($field instanceof Field) {
+                $options['required'] = $field->isRequired();
+            }
         } elseif ($fieldType === 'hash') {
             $type = 'freeform';
-            $options = [];
         } elseif ($fieldType === 'hasharray') {
             $type = 'collection';
-            $options = ['type' => 'freeform'];
+            $options['type'] = 'freeform';
         } elseif ($fieldType === 'datearray') {
             $type = 'datearray';
-            $options = [];
         } elseif (isset($this->typeMap[$fieldType])) {
             $type = $this->typeMap[$fieldType];
-            $options = [];
         } else {
             $type = 'text';
-            $options = [];
         }
 
         return [$type, $options];
