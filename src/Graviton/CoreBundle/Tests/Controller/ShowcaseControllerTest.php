@@ -96,10 +96,6 @@ class ShowcaseControllerTest extends RestTestCase
         $client->post('/hans/showcase', $document);
 
         $expectedErrors = [];
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = 'children[someOtherField]';
-        $expectedError->message = 'This value is not valid.';
-        $expectedErrors[] = $expectedError;
         $notNullError = new \stdClass();
         $notNullError->propertyPath = 'data.aBoolean';
         $notNullError->message = 'The value "" is not a valid boolean.';
@@ -140,12 +136,9 @@ class ShowcaseControllerTest extends RestTestCase
             Response::HTTP_BAD_REQUEST,
             $client->getResponse()->getStatusCode()
         );
+
         $this->assertEquals(
             [
-                (object) [
-                    'propertyPath'  => 'children[someOtherField]',
-                    'message'       => 'This value is not valid.',
-                ],
                 (object) [
                     'propertyPath'  => 'data.aBoolean',
                     'message'       => 'The value "" is not a valid boolean.',
@@ -198,10 +191,6 @@ class ShowcaseControllerTest extends RestTestCase
         );
         $this->assertEquals(
             [
-                (object) [
-                    'propertyPath'  => 'children[someOtherField]',
-                    'message'       => 'This value is not valid.',
-                ],
                 (object) [
                     'propertyPath'  => 'data.contact.protocol',
                     'message'       => 'This value should not be blank.',
