@@ -265,7 +265,7 @@ class EventStatusLinkResponseListener
     private function getSubscribedWorkerIds(QueueEvent $queueEvent)
     {
         // compose our regex to match stars ;-)
-        // results in = /([\*|document]+)\.([\*|dude]+)\.([\*|config]+)\.([\*|update]+)/
+        // results in = /((\*|document)+)\.((\*|dude)+)\.((\*|config)+)\.((\*|update)+)/
         $routingArgs = explode('.', $queueEvent->getEvent());
         $regex =
             '/'.
@@ -273,7 +273,7 @@ class EventStatusLinkResponseListener
                 '\.',
                 array_map(
                     function ($arg) {
-                        return '([\*|'.$arg.']+)';
+                        return '((\*|'.$arg.')+)';
                     },
                     $routingArgs
                 )
