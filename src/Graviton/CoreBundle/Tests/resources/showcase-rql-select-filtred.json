@@ -26,7 +26,8 @@
       {
         "$ref": "http:\/\/localhost\/core\/app\/admin"
       }
-    ]
+    ],
+    "choices": ">="
   },
   {
     "someFloatyDouble": 458.114,
@@ -41,6 +42,7 @@
     "unstructuredObject": {
       "booleanField": true
     },
-    "nestedCustomers": []
+    "nestedCustomers": [],
+    "choices": "<>"
   }
 ]

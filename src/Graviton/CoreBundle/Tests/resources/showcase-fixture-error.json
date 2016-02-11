@@ -41,5 +41,5 @@
   },
   "nestedArray": [],
   "nestedApps": [],
-  "choices": "<="
+  "choices": "equals"
 }
