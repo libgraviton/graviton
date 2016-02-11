@@ -18,9 +18,8 @@ before_script:
         wget https://scrutinizer-ci.com/ocular.phar
     fi
 php:
-- 5.6
-- 5.5
 - 7.0
+- 5.6
 env:
   matrix:
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
@@ -28,9 +27,7 @@ env:
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 matrix:
   exclude:
-  - php: 5.5
-    env: COMPOSER_CHECK=true PHPUNIT=false
-  - php: 7
+  - php: 5.6
     env: COMPOSER_CHECK=true PHPUNIT=false
 script:
 - >
