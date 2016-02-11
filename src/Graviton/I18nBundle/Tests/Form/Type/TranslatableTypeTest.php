@@ -29,7 +29,7 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock()
         );
-        $this->assertEquals('form', $sut->getParent());
+        $this->assertEquals('Symfony\Component\Form\Extension\Core\Type\FormType', $sut->getParent());
     }
 
     /**
