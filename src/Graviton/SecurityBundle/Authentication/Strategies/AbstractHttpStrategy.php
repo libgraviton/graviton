@@ -19,8 +19,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 abstract class AbstractHttpStrategy implements StrategyInterface
 {
-
-    protected $strategyMatch;
     /**
      * Extracts information from the a request header field.
      *

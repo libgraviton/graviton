@@ -17,7 +17,7 @@ use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SecurityBundle\Entities\SecurityUser;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -720,7 +720,7 @@ class RestController
     {
         /** @var PreAuthenticatedToken $token */
         if (($token = $this->tokenStorage->getToken())
-            && ($user = $token->getUser()) instanceof SecurityUser ) {
+            && ($user = $token->getUser()) instanceof UserInterface ) {
             return $user;
         }
 
