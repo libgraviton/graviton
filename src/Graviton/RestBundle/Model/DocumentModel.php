@@ -150,6 +150,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $numberPerPage = (int) $queryBuilder->getQuery()->getQuery()['limit'];
         }
 
+        // Limit can not be negative nor null.
+        if ($numberPerPage < 1) {
+            throw new InvalidArgumentException('Negative or Null Limit Exception');
+        }
+
         /**
          * add a default sort on id if none was specified earlier
          *
