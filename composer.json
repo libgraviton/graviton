@@ -65,7 +65,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "*"
+        "graviton/test-services-bundle": "~0.18.1"
     },
     "scripts": {
         "post-root-package-install": [

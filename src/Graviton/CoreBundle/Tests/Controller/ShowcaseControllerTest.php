@@ -61,6 +61,7 @@ class ShowcaseControllerTest extends RestTestCase
 
             'nestedApps'            => [],
             'unstructuredObject'    => (object) [],
+            'choices'               => "<>"
         ];
 
         $client = static::createRestClient();
@@ -100,6 +101,11 @@ class ShowcaseControllerTest extends RestTestCase
         $notNullError->propertyPath = 'data.aBoolean';
         $notNullError->message = 'The value "" is not a valid boolean.';
         $expectedErrors[] = $notNullError;
+        // test choices field (string should not be blank)
+        $notNullErrorChoices = new \stdClass();
+        $notNullErrorChoices->propertyPath = 'data.choices';
+        $notNullErrorChoices->message = 'This value should not be blank.';
+        $expectedErrors[] = $notNullErrorChoices;
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -142,6 +148,10 @@ class ShowcaseControllerTest extends RestTestCase
                 (object) [
                     'propertyPath'  => 'data.aBoolean',
                     'message'       => 'The value "" is not a valid boolean.',
+                ],
+                (object) [
+                    'propertyPath'  => 'data.choices',
+                    'message'       => 'This value should not be blank.',
                 ],
                 (object) [
                     'propertyPath'  => 'data.contact.type',
@@ -189,8 +199,13 @@ class ShowcaseControllerTest extends RestTestCase
             Response::HTTP_BAD_REQUEST,
             $client->getResponse()->getStatusCode()
         );
+
         $this->assertEquals(
             [
+                (object) [
+                    'propertyPath'  => 'data.choices',
+                    'message'       => 'This value should not be blank.',
+                ],
                 (object) [
                     'propertyPath'  => 'data.contact.protocol',
                     'message'       => 'This value should not be blank.',
@@ -358,12 +373,14 @@ class ShowcaseControllerTest extends RestTestCase
             'unstructuredObject.booleanField',
             'unstructuredObject.hashField.someField',
             'unstructuredObject.nestedArrayField.anotherField',
-            'nestedCustomers.$ref'
+            'nestedCustomers.$ref',
+            'choices'
         ];
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
 
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
+
         $this->assertEquals($filtred, $client->getResults());
 
 
