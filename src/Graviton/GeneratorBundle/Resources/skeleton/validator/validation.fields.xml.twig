@@ -105,7 +105,16 @@
 
             {% if addedConstraint.options is defined and addedConstraint.options is not empty %}
                 {% for addedConstraintOption in addedConstraint.options %}
-                    {% set addedCon = addedCon ~ '<option name="' ~ addedConstraintOption.name ~ '">' ~ addedConstraintOption.value ~ '</option>' %}
+                    {% set addedCon = addedCon ~ '<option name="' ~ addedConstraintOption.name ~ '">' %}
+                    {% if addedConstraintOption.name == 'choices' %}
+                        {% set values = addedConstraintOption.value | split('|') %}
+                        {% for value in values %}
+                            {% set addedCon = addedCon ~ '<value><![CDATA[' ~ value ~ ']]></value>' %}
+                        {% endfor %}
+                    {% else %}
+                        {% set addedCon = addedCon ~ '<![CDATA[' ~ addedConstraintOption.value ~ ']]>' %}
+                    {% endif %}
+                    {% set addedCon = addedCon ~ '</option>' %}
                 {% endfor %}
             {% endif %}
 
