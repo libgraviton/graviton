@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
+use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 
 /**
  * Use doctrine odm as backend
@@ -152,7 +153,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         // Limit can not be negative nor null.
         if ($numberPerPage < 1) {
-            throw new InvalidArgumentException('Negative or Null Limit Exception');
+            throw new RqlSyntaxErrorException('negative or null limit in rql');
         }
 
         /**
