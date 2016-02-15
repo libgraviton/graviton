@@ -169,6 +169,36 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * check for a client error if invalid limit value is provided
+     *
+     * @dataProvider invalidPagingPageSizeProvider
+     *
+     * @param integer $limit limit value that should fail
+     * @return void
+     */
+    public function testInvalidPagingPageSize($limit)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', sprintf('/core/app/?limit(%s)', $limit));
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertContains('negative or null limit in rql', $client->getResults()->message);
+    }
+
+    /**
+     * page size test provides
+     *
+     * @return array[]
+     */
+    public function invalidPagingPageSizeProvider()
+    {
+        return [
+            [0],
+            [-1],
+        ];
+    }
+
+    /**
      * RQL is parsed only when we get apps
      *
      * @return void
