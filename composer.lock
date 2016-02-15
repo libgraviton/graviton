@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "01ad0b9dd992f516cda15bef5f170952",
-    "content-hash": "391717ced6c13ebc0320576baca87e9d",
+    "hash": "895997e8707b9a6e46239874fecfaf0b",
+    "content-hash": "928be90259b8a60f3750da98405ac749",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -221,12 +221,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dbtlr/php-airbrake.git",
-                "reference": "69fd4782219ba22fcfe4c278de1eebbbe38f0950"
+                "reference": "999763ca1580d1fa7bffc0b6dfe1cf0152078e86"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/999763ca1580d1fa7bffc0b6dfe1cf0152078e86",
-                "reference": "69fd4782219ba22fcfe4c278de1eebbbe38f0950",
+                "reference": "999763ca1580d1fa7bffc0b6dfe1cf0152078e86",
                 "shasum": ""
             },
             "require-dev": {
@@ -234,6 +234,9 @@
                 "php": ">=5.3.3",
                 "phpunit/phpunit": "*",
                 "squizlabs/php_codesniffer": "*"
+            },
+            "suggest": {
+                "airbrake/phpbrake": "This package is no longer supported, please consider using the official package."
             },
             "type": "library",
             "autoload": {
@@ -260,7 +263,7 @@
                 "exceptions",
                 "logging"
             ],
-            "time": "2015-08-25 15:01:23"
+            "time": "2016-01-13 20:45:03"
         },
         {
             "name": "doctrine/annotations",
@@ -3564,6 +3567,7 @@
                 "queue",
                 "rabbitmq"
             ],
+            "abandoned": true,
             "time": "2015-05-11 15:33:28"
         },
         {
@@ -4738,12 +4742,12 @@
             "version": "v2.5.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/videlalvaro/php-amqplib.git",
+                "url": "https://github.com/php-amqplib/php-amqplib.git",
                 "reference": "eb8f94d97c8e79900accf77343dbd7eca7f58506"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/videlalvaro/php-amqplib/zipball/eb8f94d97c8e79900accf77343dbd7eca7f58506",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/eb8f94d97c8e79900accf77343dbd7eca7f58506",
                 "reference": "eb8f94d97c8e79900accf77343dbd7eca7f58506",
                 "shasum": ""
             },
@@ -4785,6 +4789,7 @@
                 "queue",
                 "rabbitmq"
             ],
+            "abandoned": "php-amqplib/php-amqplib",
             "time": "2015-08-11 12:30:09"
         },
         {
@@ -4884,16 +4889,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.17.0",
+            "version": "v0.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "61973769cc46789505d0c2611ae0b73ff074cddb"
+                "reference": "486b30358da5072363b9d45b3ea9b2887c850b66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/61973769cc46789505d0c2611ae0b73ff074cddb",
-                "reference": "61973769cc46789505d0c2611ae0b73ff074cddb",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/486b30358da5072363b9d45b3ea9b2887c850b66",
+                "reference": "486b30358da5072363b9d45b3ea9b2887c850b66",
                 "shasum": ""
             },
             "type": "library",
@@ -4913,10 +4918,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.17.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.18.1",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-02-09 09:02:54"
+            "time": "2016-02-12 14:40:21"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
