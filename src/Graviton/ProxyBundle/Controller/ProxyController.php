@@ -14,6 +14,7 @@ use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -131,8 +132,7 @@ class ProxyController
             $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
-            // Since Graviton does not always use the same encoding as the thirdparty API, this header must be removed
-            $response->headers->remove('transfer-encoding');
+            $this->cleanResponseHeaders($response->headers);
             $this->transformationHandler->transformResponse(
                 $api['apiName'],
                 $api['endpoint'],
@@ -146,6 +146,17 @@ class ProxyController
         }
 
         return $response;
+    }
+
+    /**
+     * Removes some headers from the thirdparty API's response. These headers get always invalid by graviton's
+     * forwarding and should therefore not be delivered to the client.
+     *
+     * @param HeaderBag $headers The headerbag holding the thirdparty API's response headers
+     */
+    protected function cleanResponseHeaders(HeaderBag $headers) {
+        $headers->remove('transfer-encoding'); // Chunked responses get not automatically re-chunked by graviton
+        $headers->remove('trailer'); // Only for chunked responses, graviton should re-set this when chunking
     }
 
     /**
