@@ -7,6 +7,7 @@
 namespace Graviton\RabbitMqBundle\Listener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
@@ -51,6 +52,11 @@ class EventStatusLinkResponseListener
     private $eventMap;
 
     /**
+     * @var ExtReferenceConverter ExtReferenceConverter
+     */
+    private $extRefConverter;
+
+    /**
      * @var string classname of the EventWorker document
      */
     private $eventWorkerClassname;
@@ -66,6 +72,11 @@ class EventStatusLinkResponseListener
     private $eventStatusStatusClassname;
 
     /**
+     * @var string classname of the EventStatusEventResource document
+     */
+    private $eventStatusEventResourceClassname;
+
+    /**
      * @var string route name of the /event/status route
      */
     private $eventStatusRouteName;
@@ -76,38 +87,44 @@ class EventStatusLinkResponseListener
     private $documentManager;
 
     /**
-     * @param ProducerInterface $rabbitMqProducer           RabbitMQ dependency
-     * @param RouterInterface   $router                     Router dependency
-     * @param RequestStack      $requestStack               Request stack
-     * @param DocumentManager   $documentManager            Doctrine document manager
-     * @param QueueEvent        $queueEventDocument         queueevent document
-     * @param array             $eventMap                   eventmap
-     * @param string            $eventWorkerClassname       classname of the EventWorker document
-     * @param string            $eventStatusClassname       classname of the EventStatus document
-     * @param string            $eventStatusStatusClassname classname of the EventStatusStatus document
-     * @param string            $eventStatusRouteName       name of the route to EventStatus
+     * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
+     * @param RouterInterface       $router                            Router dependency
+     * @param RequestStack          $requestStack                      Request stack
+     * @param DocumentManager       $documentManager                   Doctrine document manager
+     * @param ExtReferenceConverter $extRefConverter                   instance of the ExtReferenceConverter service
+     * @param QueueEvent            $queueEventDocument                queueevent document
+     * @param array                 $eventMap                          eventmap
+     * @param string                $eventWorkerClassname              classname of the EventWorker document
+     * @param string                $eventStatusClassname              classname of the EventStatus document
+     * @param string                $eventStatusStatusClassname        classname of the EventStatusStatus document
+     * @param string                $eventStatusEventResourceClassname classname of the E*S*E*Resource document
+     * @param string                $eventStatusRouteName              name of the route to EventStatus
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
         RouterInterface $router,
         RequestStack $requestStack,
         DocumentManager $documentManager,
+        ExtReferenceConverter $extRefConverter,
         QueueEvent $queueEventDocument,
         array $eventMap,
         $eventWorkerClassname,
         $eventStatusClassname,
         $eventStatusStatusClassname,
+        $eventStatusEventResourceClassname,
         $eventStatusRouteName
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
         $this->request = $requestStack->getCurrentRequest();
         $this->documentManager = $documentManager;
+        $this->extRefConverter = $extRefConverter;
         $this->queueEventDocument = $queueEventDocument;
         $this->eventMap = $eventMap;
         $this->eventWorkerClassname = $eventWorkerClassname;
         $this->eventStatusClassname = $eventStatusClassname;
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
+        $this->eventStatusEventResourceClassname = $eventStatusEventResourceClassname;
         $this->eventStatusRouteName = $eventStatusRouteName;
     }
 
@@ -230,6 +247,13 @@ class EventStatusLinkResponseListener
         $eventStatus = new $this->eventStatusClassname();
         $eventStatus->setCreatedate(new \DateTime());
         $eventStatus->setEventname($queueEvent->getEvent());
+
+        // if available, transport the ref document to the eventStatus instance
+        if (!empty($queueEvent->getDocumenturl())) {
+            $eventStatusResource = new $this->eventStatusEventResourceClassname();
+            $eventStatusResource->setRef($this->extRefConverter->getExtReference($queueEvent->getDocumenturl()));
+            $eventStatus->setEventresource($eventStatusResource);
+        }
 
         foreach ($workerIds as $workerId) {
             /** @var \GravitonDyn\EventStatusBundle\Document\EventStatusStatus $eventStatusStatus **/
