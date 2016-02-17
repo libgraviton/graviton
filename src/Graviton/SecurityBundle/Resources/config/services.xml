@@ -30,12 +30,6 @@
         <service id="graviton.security.authentication.strategy.cookie"
                  class="Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy">
             <argument>%graviton.security.authentication.strategy_key%</argument>
-            <call method="setDynamicParameters">
-                <argument type="service" id="request_stack"/>
-                <argument>username</argument>
-                <argument>finnova_id</argument>
-                <argument>graviton.security.core_id</argument>
-            </call>
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 

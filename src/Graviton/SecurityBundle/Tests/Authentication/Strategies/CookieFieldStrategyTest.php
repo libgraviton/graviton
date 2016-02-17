@@ -1,13 +1,12 @@
 <?php
 /**
- * check if reading from cookie works
+ * Fetching authentication information from Cookie header.
  */
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class CookieFieldStrategyTest
@@ -30,9 +29,9 @@ class CookieFieldStrategyTest extends WebTestCase
     {
         parent::setUp();
 
+        /** @var \Symfony\Bundle\FrameworkBundle\Client client */
         $this->client = static::createClient();
-        $this->propertyKey = $this->client->getKernel()
-            ->getContainer()->getParameter('graviton.security.authentication.strategy_key');
+        $this->propertyKey = $this->client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key');
         $this->strategy = new CookieFieldStrategy(
             $this->propertyKey
         );
@@ -40,9 +39,9 @@ class CookieFieldStrategyTest extends WebTestCase
     }
 
     /**
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
      *
      * @dataProvider stringProvider
      *
@@ -89,10 +88,10 @@ class CookieFieldStrategyTest extends WebTestCase
     /**
      * Todo, find a way to have also to client id set in request stack.
      *
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::setDynamicParameters
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::setDynamicParameters
      *
      * @dataProvider stringExtractProvider
      *
@@ -120,9 +119,7 @@ class CookieFieldStrategyTest extends WebTestCase
             array() //server
         );
 
-        $this->strategy->setDynamicParameters(new RequestStack(), 'username', false, false);
-        $username = $this->strategy->apply($this->client->getRequest());
-        $this->assertSame('testUser', $username);
+        $this->assertSame('testUser', $this->strategy->apply($this->client->getRequest()));
     }
 
     /**
@@ -131,8 +128,8 @@ class CookieFieldStrategyTest extends WebTestCase
     public function stringExtractProvider()
     {
         return array(
-            'testing extract username'       => array("username=testUser,core_client_id=someId123"),
-            'testing extract rev username'   => array("core_client_id=someId123,username=testUser"),
+            'testing extract username' => array("username=testUser,finnova_id=someId123"),
+            'testing extract rev username' => array("finnova_id=someId123,username=testUser"),
         );
     }
 }

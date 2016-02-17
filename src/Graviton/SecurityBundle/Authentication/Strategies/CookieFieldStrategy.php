@@ -17,23 +17,20 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class CookieFieldStrategy extends AbstractHttpStrategy
 {
-    /** @var RequestStack */
-    protected $requestStack;
+    /** @var string  */
+    const COOKIE_FIELD_NAME = 'username';
 
     /** @var string  */
-    protected $extractUsername;
+    const COOKIE_VALUE_CORE_ID = 'finnova_id';
 
     /** @var string  */
-    protected $extractCoreId;
+    const CONFIGURATION_PARAMETER_ID = 'graviton.security.core_id';
 
-    /** @var string  */
-    protected $clientIdName;
-
-    /** @var String */
+    /** @var string */
     protected $field;
 
     /**
-     * @param String $field field
+     * @param string $field cookie field to be examined
      */
     public function __construct($field)
     {
@@ -52,42 +49,41 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     {
         $bagValue = $this->extractFieldInfo($request->cookies, $this->field);
 
-        $pattern = "/((?m)(?<=\b{$this->extractUsername}=)[^,]*)/i";
-        preg_match($pattern, $bagValue, $matches);
-        if (!$matches) {
-            return $bagValue;
-        }
-        $fieldValue = $matches[0];
+        // this needs to be available in a later state of the application
+        $this->extractCoreId($request, $bagValue);
 
-        if ($this->requestStack && $this->extractCoreId && $this->clientIdName) {
-            $pattern = "/((?m)(?<=\b{$this->extractCoreId}=)[^,]*)/i";
-            preg_match($pattern, $bagValue, $matches);
-            if ($matches) {
-                /** @var Request $request */
-                $request = $this->requestStack->getCurrentRequest();
-                $request->attributes->set($this->clientIdName, $matches[0]);
-            }
-        }
-
-        return $fieldValue;
+        return $this->extractAdUsername($bagValue);
     }
 
+    /**
+     * Finds and extracts the ad username from the cookie.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function extractAdUsername($value)
+    {
+        $pattern = "/((?m)(?<=\b".self::COOKIE_FIELD_NAME."=)[^,]*)/i";
+        preg_match($pattern, $value, $matches);
 
+        return (!$matches)? $value : $matches[0];
+    }
 
     /**
-     * Symfony Container
+     * Finds and extracts the core system id from tha cookie.
      *
-     * @param RequestStack $requestStack    request object
-     * @param string       $extractUsername identifier in posted params
-     * @param string       $extractCoreId   client specific identifier
-     * @param string       $idName          save to request attrivute name
-     * @return void
+     *
+     * @param Request $request Request stack that controls the lifecycle of requests
+     * @param string  $text    String to be examined for the core id.
      */
-    public function setDynamicParameters(RequestStack $requestStack, $extractUsername, $extractCoreId, $idName)
+    protected function extractCoreId(Request $request, $text)
     {
-        $this->requestStack = $requestStack;
-        $this->extractUsername = $extractUsername;
-        $this->extractCoreId = $extractCoreId;
-        $this->clientIdName = $idName;
+        $pattern = "/((?m)(?<=\b".self::COOKIE_VALUE_CORE_ID."=)[^,]*)/i";
+        preg_match($pattern, $text, $matches);
+
+        if ($matches) {
+            $request->attributes->set(self::CONFIGURATION_PARAMETER_ID, $matches[0]);
+        }
     }
 }
