@@ -58,7 +58,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     /**
      * Finds and extracts the ad username from the cookie.
      *
-     * @param string $value
+     * @param string $value The string the value of self::COOKIE_FIELD_NAME shall be extracted from.
      *
      * @return string
      */
@@ -76,6 +76,8 @@ class CookieFieldStrategy extends AbstractHttpStrategy
      *
      * @param Request $request Request stack that controls the lifecycle of requests
      * @param string  $text    String to be examined for the core id.
+     *
+     * @return null
      */
     protected function extractCoreId(Request $request, $text)
     {

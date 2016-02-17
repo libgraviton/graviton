@@ -31,7 +31,8 @@ class CookieFieldStrategyTest extends WebTestCase
 
         /** @var \Symfony\Bundle\FrameworkBundle\Client client */
         $this->client = static::createClient();
-        $this->propertyKey = $this->client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key');
+        $this->propertyKey =
+            $this->client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key');
         $this->strategy = new CookieFieldStrategy(
             $this->propertyKey
         );
