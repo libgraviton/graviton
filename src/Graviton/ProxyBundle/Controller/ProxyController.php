@@ -153,8 +153,11 @@ class ProxyController
      * forwarding and should therefore not be delivered to the client.
      *
      * @param HeaderBag $headers The headerbag holding the thirdparty API's response headers
+     *
+     * @return void
      */
-    protected function cleanResponseHeaders(HeaderBag $headers) {
+    protected function cleanResponseHeaders(HeaderBag $headers)
+    {
         $headers->remove('transfer-encoding'); // Chunked responses get not automatically re-chunked by graviton
         $headers->remove('trailer'); // Only for chunked responses, graviton should re-set this when chunking
     }
