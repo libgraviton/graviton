@@ -92,7 +92,7 @@ class CookieFieldStrategyTest extends WebTestCase
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::setDynamicParameters
+     * @covers       \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::setDynamicParameters
      *
      * @dataProvider stringExtractProvider
      *
