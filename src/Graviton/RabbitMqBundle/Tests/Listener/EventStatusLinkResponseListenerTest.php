@@ -5,9 +5,8 @@
 
 namespace Graviton\RabbitMqBundle\Tests\Listener;
 
+use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -94,14 +93,35 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         )->disableOriginalConstructor()->setMethods(['createQueryBuilder', 'persist', 'flush'])->getMock();
         $documentManagerMock->expects($this->once())->method('createQueryBuilder')->willReturn($queryBuilderMock);
         $documentManagerMock->expects($this->once())->method('persist')->with(
-            $this->isInstanceOf('\GravitonDyn\EventStatusBundle\Document\EventStatus')
+            $this->callback(
+                function ($obj) {
+                    return
+                        get_class($obj) == 'GravitonDyn\EventStatusBundle\Document\EventStatus' &&
+                        $obj->getCreatedate() instanceof \DateTime &&
+                        get_class($obj->getEventresource()) == 'GravitonDyn\EventStatusBundle\Document\\'.
+                        'EventStatusEventResourceEmbedded' &&
+                        get_class($obj->getEventresource()->getRef()) == 'Graviton\DocumentBundle\Entity\\'.
+                        'ExtReference' &&
+                        $obj->getEventresource()->getRef()->jsonSerialize() == ['$ref' => 'App', '$id' => 7] &&
+                        $obj->getEventname() == 'document.dude.config.create' &&
+                        count($obj->getStatus()) === 1 &&
+                        count($obj->getInformation()) === 0;
+                }
+            )
         );
         $documentManagerMock->expects($this->once())->method('flush');
 
+        $extrefConverterMock = $this->getMockBuilder(
+            '\Graviton\DocumentBundle\Service\ExtReferenceConverter'
+        )->disableOriginalConstructor()->setMethods(['getExtReference'])->getMock();
+        $extrefConverterMock->expects($this->exactly(1))->method('getExtReference')
+            ->willReturn(ExtReference::create('App', 7));
+
         $queueEventMock = $this->getMockBuilder(
             '\Graviton\RabbitMqBundle\Document\QueueEvent'
-        )->setMethods(['getEvent'])->getMock();
+        )->setMethods(['getEvent', 'getDocumenturl'])->getMock();
         $queueEventMock->expects($this->exactly(5))->method('getEvent')->willReturn('document.dude.config.create');
+        $queueEventMock->expects($this->exactly(3))->method('getDocumenturl')->willReturn('http://localhost/dude/4');
 
         $filterResponseEventMock = $this->getMockBuilder(
             '\Symfony\Component\HttpKernel\Event\FilterResponseEvent'
@@ -116,6 +136,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             $routerMock,
             $requestStackMock,
             $documentManagerMock,
+            $extrefConverterMock,
             $queueEventMock,
             [
               'Testing' => [
@@ -130,6 +151,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\GravitonDyn\EventWorkerBundle\Document\EventWorker',
             '\GravitonDyn\EventStatusBundle\Document\EventStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
+            '\GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded',
             'gravitondyn.eventstatus.rest.eventstatus.get'
         );
 
