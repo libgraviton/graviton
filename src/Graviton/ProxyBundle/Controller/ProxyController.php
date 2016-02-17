@@ -131,6 +131,8 @@ class ProxyController
             $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
+            // Since Graviton does not always use the same encoding as the thirdparty API, this header must be removed
+            $response->headers->remove('transfer-encoding');
             $this->transformationHandler->transformResponse(
                 $api['apiName'],
                 $api['endpoint'],
@@ -142,8 +144,7 @@ class ProxyController
         } catch (ServerException $serverException) {
             $response = $serverException->getResponse();
         }
-        // Since Graviton does not always use the same encoding as the thirdparty API, this header must be removed
-        $response->headers->remove('transfer-encoding');
+
         return $response;
     }
 
