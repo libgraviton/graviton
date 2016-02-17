@@ -90,9 +90,10 @@ class CookieFieldStrategyTest extends WebTestCase
      * Todo, find a way to have also to client id set in request stack.
      *
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::extractAdUsername
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::extractCoreId
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy::setDynamicParameters
      *
      * @dataProvider stringExtractProvider
      *
