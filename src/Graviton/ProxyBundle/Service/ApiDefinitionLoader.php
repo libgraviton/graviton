@@ -111,7 +111,7 @@ class ApiDefinitionLoader
             $url = empty($this->options['host']) ? $this->definition->getHost() : $this->options['host'];
         }
 
-        $url .= $endpoint;
+        $url .= ($this->options['removeBasePath'] ? $this->definition->getBasePath() : '') . $endpoint;
 
         return $url;
     }
@@ -135,7 +135,7 @@ class ApiDefinitionLoader
         }
         $retVal = array();
         if (is_object($this->definition)) {
-            $retVal = $this->definition->getEndpoints($withHost, $prefix, $host);
+            $retVal = $this->definition->getEndpoints($withHost, $prefix, $host, !$this->options['removeBasePath']);
         }
 
         return $retVal;

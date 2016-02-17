@@ -5,6 +5,7 @@
 
 namespace Graviton\ProxyBundle\Controller;
 
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
@@ -100,7 +101,7 @@ class ProxyController
     public function proxyAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources();
+        $this->registerProxySources($api['apiName']);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
         if (parse_url($url, PHP_URL_SCHEME) === false) {
@@ -141,7 +142,8 @@ class ProxyController
         } catch (ServerException $serverException) {
             $response = $serverException->getResponse();
         }
-
+        // Since Graviton does not always use the same encoding as the thirdparty API, this header must be removed
+        $response->headers->remove('transfer-encoding');
         return $response;
     }
 
@@ -155,7 +157,7 @@ class ProxyController
     public function schemaAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources();
+        $this->registerProxySources($api['apiName']);
         $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
         $schema = $this->transformationHandler->transformSchema(
             $api['apiName'],
@@ -204,15 +206,23 @@ class ProxyController
     /**
      * Registers configured external services to be proxied.
      *
-     * @return Void
+     * @param string $apiPrefix The prefix of the API
+     *
+     * @return void
      */
-    private function registerProxySources()
+    private function registerProxySources($apiPrefix = '')
     {
         if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
             foreach ($this->proxySourceConfiguration['swagger'] as $config) {
-                $this->apiLoader->setOption($config);
+                if ($apiPrefix == $config['prefix']) {
+                    $this->apiLoader->setOption($config);
+                    return;
+                }
             }
         }
+        $e = new NotFoundException('No such thirdparty API.');
+        $e->setResponse(Response::create());
+        throw $e;
     }
 
     /**

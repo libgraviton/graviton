@@ -25,15 +25,14 @@ class JsonPatchValidator
     {
         $operations = json_decode($jsonPatch, true);
         $pointer = new Pointer($targetDocument);
-        foreach($operations as $op)
-        {
+        foreach ($operations as $op) {
             try {
                 $pointer->get($op['path']);
-            } catch(InvalidPointerException $e) {
+            } catch (InvalidPointerException $e) {
                 // Basic validation failed
                 $this->setException($e);
                 return false;
-            } catch(NonexistentValueReferencedException $e) {
+            } catch (NonexistentValueReferencedException $e) {
                 $pathParts = explode('/', $op['path']);
                 $lastPart = end($pathParts);
 
@@ -52,7 +51,7 @@ class JsonPatchValidator
 
                     try {
                         $pointer->get(implode('/', $pathParts));
-                    } catch(NonexistentValueReferencedException $e) {
+                    } catch (NonexistentValueReferencedException $e) {
                         $this->setException($e);
                         return false;
                     }
@@ -78,5 +77,4 @@ class JsonPatchValidator
     {
         return $this->exception;
     }
-
 }

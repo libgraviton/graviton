@@ -52,6 +52,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('prefix')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('host')->cannotBeEmpty()->end()
+                            ->booleanNode('removeBasePath')->defaultValue(true)->end()
                             ->end()
                         ->end()
                     ->end()
