@@ -30,6 +30,15 @@
         "readOnly": true
       },
       {
+        "name": "eventResource.ref",
+        "type": "extref",
+        "exposeAs": "$ref",
+        "title": "Ref to event resource",
+        "collection": ["*"],
+        "description": "A $ref pointing to the resource that triggered this event. If the resource was deleted, it may not exist anymore.",
+        "required": false
+      },
+      {
         "name": "status.0.workerId",
         "type": "string",
         "title": "Worker ID",
