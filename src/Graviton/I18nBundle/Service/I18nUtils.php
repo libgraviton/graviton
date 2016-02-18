@@ -222,14 +222,15 @@ class I18nUtils
                 function ($locale) use ($original, $values) {
                     $isLocalized = false;
                     $translated = '';
+                    $domain = $this->getTranslatableDomain();
                     if (array_key_exists($locale, $values)) {
                         $translated = $values[$locale];
                         $isLocalized = true;
                     }
                     $translatable = new TranslatableDocument();
-                    $translatable->setId('i18n-' . $locale . '-' . $original);
+                    $translatable->setId($domain . '-' . $locale . '-' . $original);
                     $translatable->setLocale($locale);
-                    $translatable->setDomain($this->getTranslatableDomain());
+                    $translatable->setDomain($domain);
                     $translatable->setOriginal($original);
                     $translatable->setTranslated($translated);
                     $translatable->setIsLocalized($isLocalized);
