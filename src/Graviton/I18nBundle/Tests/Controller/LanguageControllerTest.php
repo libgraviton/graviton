@@ -121,17 +121,19 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('Englisch', $results->name->de);
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/translatable/i18n-en-German');
-        $this->assertEquals('i18n', $client->getResults()->domain);
-        $this->assertEquals('en', $client->getResults()->locale);
-        $this->assertEquals('German', $client->getResults()->original);
+        $client->request('GET', '/i18n/translatable/?locale=en&domain=i18n&original=German');
+
+        $this->assertCount(1, $client->getResults());
+        $this->assertEquals('i18n', $client->getResults()[0]->domain);
+        $this->assertEquals('en', $client->getResults()[0]->locale);
+        $this->assertEquals('German', $client->getResults()[0]->original);
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/translatable/i18n-de-German');
-
-        $this->assertEquals('i18n', $client->getResults()->domain);
-        $this->assertEquals('de', $client->getResults()->locale);
-        $this->assertEquals('German', $client->getResults()->original);
+        $client->request('GET', '/i18n/translatable/?locale=de&domain=i18n&original=German');
+        $this->assertCount(1, $client->getResults());
+        $this->assertEquals('i18n', $client->getResults()[0]->domain);
+        $this->assertEquals('de', $client->getResults()[0]->locale);
+        $this->assertEquals('German', $client->getResults()[0]->original);
     }
 
     /**
