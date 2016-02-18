@@ -112,7 +112,7 @@ class ApiDefinitionLoader
         }
 
         // If the base path is not already included, we need to add it.
-        $url .= ($this->options['includeBasePath'] ? '' : $this->definition->getBasePath()) . $endpoint;
+        $url .= (empty($this->options['includeBasePath']) ? $this->definition->getBasePath() : '') . $endpoint;
 
         return $url;
     }
@@ -134,12 +134,13 @@ class ApiDefinitionLoader
         if (isset($this->options['prefix'])) {
             $prefix .= "/".$this->options['prefix'];
         }
-        $retVal = array();
-        if (is_object($this->definition)) {
-            $retVal = $this->definition->getEndpoints($withHost, $prefix, $host, $this->options['includeBasePath']);
-        }
 
-        return $retVal;
+        return !is_object($this->definition) ? [] : $this->definition->getEndpoints(
+            $withHost,
+            $prefix,
+            $host,
+            !empty($this->options['includeBasePath'])
+        );
     }
 
     /**
