@@ -121,7 +121,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\Graviton\RabbitMqBundle\Document\QueueEvent'
         )->setMethods(['getEvent', 'getDocumenturl'])->getMock();
         $queueEventMock->expects($this->exactly(5))->method('getEvent')->willReturn('document.dude.config.create');
-        $queueEventMock->expects($this->exactly(3))->method('getDocumenturl')->willReturn('http://localhost/dude/4');
+        $queueEventMock->expects($this->exactly(2))->method('getDocumenturl')->willReturn('http://localhost/dude/4');
 
         $filterResponseEventMock = $this->getMockBuilder(
             '\Symfony\Component\HttpKernel\Event\FilterResponseEvent'
