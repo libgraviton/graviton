@@ -65,7 +65,7 @@ class SwaggerStrategy implements DispersalStrategyInterface
 
             $operations = $this->document->getOperationsById();
             foreach ($operations as $service) {
-                $path = $this->normalizePath($service->getPath());
+                $path = $service->getPath();
 
                 if (in_array(strtolower($service->getMethod()), ['delete', 'patch']) || $apiDef->hasEndpoint($path)) {
                     continue;
@@ -250,26 +250,5 @@ class SwaggerStrategy implements DispersalStrategyInterface
         }
 
         $this->fallbackData = $fallbackData;
-    }
-
-    /**
-     * Normalizes the provided path.
-     *
-     * The idea is to consolidate endpoints for GET requests.
-     *
-     * <code>
-     *   /my/path/      » /my/path
-     *   /my/path/{id}  » /my/path
-     * </code>
-     *
-     * @param string $path path to be normalized
-     *
-     * @return string
-     *
-     * @todo: determine how to treat endpoints with a variable within the path: /my/path/{id}/special
-     */
-    private function normalizePath($path)
-    {
-        return preg_replace('@\/(\{[a-zA-Z]*\})?$@', '', $path);
     }
 }

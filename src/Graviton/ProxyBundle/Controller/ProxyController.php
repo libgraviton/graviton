@@ -5,6 +5,7 @@
 
 namespace Graviton\ProxyBundle\Controller;
 
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
@@ -13,6 +14,7 @@ use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -100,7 +102,7 @@ class ProxyController
     public function proxyAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources();
+        $this->registerProxySources($api['apiName']);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
         if (parse_url($url, PHP_URL_SCHEME) === false) {
@@ -130,6 +132,7 @@ class ProxyController
             $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
+            $this->cleanResponseHeaders($response->headers);
             $this->transformationHandler->transformResponse(
                 $api['apiName'],
                 $api['endpoint'],
@@ -146,6 +149,20 @@ class ProxyController
     }
 
     /**
+     * Removes some headers from the thirdparty API's response. These headers get always invalid by graviton's
+     * forwarding and should therefore not be delivered to the client.
+     *
+     * @param HeaderBag $headers The headerbag holding the thirdparty API's response headers
+     *
+     * @return void
+     */
+    protected function cleanResponseHeaders(HeaderBag $headers)
+    {
+        $headers->remove('transfer-encoding'); // Chunked responses get not automatically re-chunked by graviton
+        $headers->remove('trailer'); // Only for chunked responses, graviton should re-set this when chunking
+    }
+
+    /**
      * get schema info
      *
      * @param Request $request request
@@ -155,7 +172,7 @@ class ProxyController
     public function schemaAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources();
+        $this->registerProxySources($api['apiName']);
         $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
         $schema = $this->transformationHandler->transformSchema(
             $api['apiName'],
@@ -204,15 +221,23 @@ class ProxyController
     /**
      * Registers configured external services to be proxied.
      *
-     * @return Void
+     * @param string $apiPrefix The prefix of the API
+     *
+     * @return void
      */
-    private function registerProxySources()
+    private function registerProxySources($apiPrefix = '')
     {
         if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
             foreach ($this->proxySourceConfiguration['swagger'] as $config) {
-                $this->apiLoader->setOption($config);
+                if ($apiPrefix == $config['prefix']) {
+                    $this->apiLoader->setOption($config);
+                    return;
+                }
             }
         }
+        $e = new NotFoundException('No such thirdparty API.');
+        $e->setResponse(Response::create());
+        throw $e;
     }
 
     /**
