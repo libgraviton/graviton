@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class HeaderFieldStrategy extends AbstractHttpStrategy
 {
+    /** @var String */
     protected $field;
 
     /**
@@ -25,7 +26,11 @@ class HeaderFieldStrategy extends AbstractHttpStrategy
     {
         $this->field = $field;
     }
+
     /**
+     * Applies the defined strategy on the provided request.
+     * Value may contain a coma separated string values, we use first as identifier.
+     *
      * @param Request $request request to handle
      *
      * @return string
