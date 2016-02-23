@@ -7,8 +7,8 @@ parameters:
     graviton.security.authentication.header_required: false
     graviton.security.authentication.test_username: false
     graviton.security.authentication.allow_anonymous: true
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
-    graviton.security.authentication.strategy_key: x-idp-username
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
+    graviton.security.authentication.strategy_key: graviton_user
 
     graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
     graviton.security.authentication.provider.model.query_field: false

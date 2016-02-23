@@ -6,6 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class HeaderFieldStrategyTest
@@ -29,11 +30,14 @@ class HeaderFieldStrategyTest extends WebTestCase
      */
     public function testApply($headerFieldValue)
     {
+        $client = static::createClient();
+        $headerFieldName = $client->getKernel()
+            ->getContainer()->getParameter('graviton.security.authentication.strategy_key');
+
         $server = array(
-            'HTTP_X_IDP_USERNAME' => $headerFieldValue, //"example-authentication-header",
+            'HTTP_'.strtoupper($headerFieldName) => $headerFieldValue,
         );
 
-        $client = static::createClient();
         $client->request(
             'GET', //method
             '/', //uri

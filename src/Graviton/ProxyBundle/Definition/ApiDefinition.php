@@ -52,6 +52,16 @@ class ApiDefinition
     }
 
     /**
+     * Gets the API's base path
+     *
+     * @return string The base path
+     */
+    public function getBasePath()
+    {
+        return $this->basePath;
+    }
+
+    /**
      * sets the FQDN of the API
      *
      * @param string $host FQDN
@@ -127,13 +137,14 @@ class ApiDefinition
     /**
      * get all defined API endpoints
      *
-     * @param boolean $withHost url with hostname
-     * @param string  $prefix   add a prefix to the url (blub/endpoint/url)
-     * @param string  $host     Host to be used instead of the host defined in the swagger json
+     * @param boolean $withHost     url with hostname
+     * @param string  $prefix       add a prefix to the url (blub/endpoint/url)
+     * @param string  $host         Host to be used instead of the host defined in the swagger json
+     * @param bool    $withBasePath Defines whether the API's base path should be included or not
      *
      * @return array
      */
-    public function getEndpoints($withHost = true, $prefix = null, $host = '')
+    public function getEndpoints($withHost = true, $prefix = null, $host = '', $withBasePath = true)
     {
         $endpoints = array();
         $basePath = "";
@@ -143,7 +154,7 @@ class ApiDefinition
         if (!empty($prefix)) {
             $basePath .= $prefix;
         }
-        if (isset($this->basePath)) {
+        if ($withBasePath && isset($this->basePath)) {
             $basePath .= $this->basePath;
         }
         foreach ($this->endpoints as $endpoint) {

@@ -8,7 +8,6 @@ namespace Graviton\GeneratorBundle\Tests\Definition;
 use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 
-
 /**
  * JsonDefinitionArray test
  *

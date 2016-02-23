@@ -35,12 +35,14 @@ class ApiDefinitionTest extends \PHPUnit_Framework_TestCase
         }
 
         $apiEndpoints = $sut->getEndpoints(false, null);
+        $apiEndpointsWithoutBase = $sut->getEndpoints(false, null, '', false);
 
         $this->assertEquals($host, $sut->getHost());
         $this->assertCount(3, $apiEndpoints);
         foreach ($endpoints as $id => $endpoint) {
             $this->assertTrue($sut->hasEndpoint($endpoint));
             $this->assertEquals($basePath.$endpoint, $apiEndpoints[$id]);
+            $this->assertEquals($endpoint, $apiEndpointsWithoutBase[$id]);
         }
     }
 

@@ -9,6 +9,7 @@
         <parameter key="graviton.rabbitmq.document.eventworker.class">GravitonDyn\EventWorkerBundle\Document\EventWorker</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatus</parameter>
         <parameter key="graviton.rabbitmq.document.eventstatusstatus.class">GravitonDyn\EventStatusBundle\Document\EventStatusStatus</parameter>
+        <parameter key="graviton.rabbitmq.document.eventstatuseventresource.class">GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded</parameter>
         <parameter key="graviton.rabbitmq.validator.validinformationtype.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidInformationTypeValidator</parameter>
         <parameter key="graviton.rabbitmq.validator.validstatus.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidStatusValidator</parameter>
 
@@ -28,11 +29,13 @@
             <argument type="service" id="router" />
             <argument type="service" id="request_stack" />
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
+            <argument type="service" id="graviton.document.service.extrefconverter" />
             <argument type="service" id="graviton.rabbitmq.document.queueevent" />
             <argument>%graviton.document.eventmap%</argument>
             <argument>%graviton.rabbitmq.document.eventworker.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatus.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
+            <argument>%graviton.rabbitmq.document.eventstatuseventresource.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
             <!-- the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
             <tag name="kernel.event_listener" event="graviton.rest.response.selfaware" method="onKernelResponse"/>
