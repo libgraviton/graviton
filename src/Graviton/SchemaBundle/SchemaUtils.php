@@ -191,6 +191,10 @@ class SchemaUtils
             if (!isset($documentFieldNames[$field])) {
                 continue;
             }
+            // hide realId field (I was aiming at a cleaner solution than the macig realId string initially)
+            if ($meta->getTypeOfField($field) == 'id' && $field == 'realId') {
+                continue;
+            }
 
             $property = new Schema();
             $property->setTitle($model->getTitleOfField($field));
