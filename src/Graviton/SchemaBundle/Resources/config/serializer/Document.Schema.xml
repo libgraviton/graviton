@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <serializer>
-  <class name="Graviton\SchemaBundle\Document\Schema" exclusion-policy="ALL" accessor-order="custom" custom-accessor-order="title,description,type,items,collection,properties,required">
+  <class name="Graviton\SchemaBundle\Document\Schema" exclusion-policy="none" accessor-order="custom" custom-accessor-order="title,description,type,items,collection,properties,required">
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle" expose="true"/>
     <property name="description" type="string" accessor-getter="getDescription" accessor-setter="setDescription" expose="true"/>
     <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
@@ -20,5 +20,9 @@
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="primitiveTypes" type="array" expose="false" exclude="true" />
+    <property name="specialTypeMapping" type="array" expose="false" exclude="true" />
+    <property name="realId" type="string" expose="false" exclude="true" />
+    <property name="propertiesArray" type="string" expose="false" exclude="true" />
   </class>
 </serializer>
