@@ -251,9 +251,6 @@ class Schema
      */
     public function addProperty($name, $property)
     {
-        if ($name == 'realId') {
-            return;
-        }
         $this->properties->set($name, $property);
     }
 

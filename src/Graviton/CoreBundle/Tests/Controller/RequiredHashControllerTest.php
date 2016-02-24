@@ -297,4 +297,20 @@ class RequiredHashControllerTest extends RestTestCase
             $client->getResults()
         );
     }
+
+    /**
+     * check that schema does not contain realId artefacts
+     *
+     * @return void
+     */
+    public function testCollectionHasNoRealId()
+    {
+        $client = static::createRestclient();
+        $client->request('GET', '/schema/testcase/requiredhash/collection');
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertNotContains('realId', $response->getContent());
+    }
 }
