@@ -5,6 +5,8 @@
 
 namespace Graviton\SchemaBundle\Document;
 
+use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * Graviton\SchemaBundle\Document\Schema
  *
@@ -40,9 +42,9 @@ class Schema
     protected $items;
 
     /**
-     * @var Schema[]
+     * @var ArrayCollection
      */
-    protected $properties = array();
+    protected $properties;
 
     /**
      * @var Schema
@@ -103,6 +105,14 @@ class Schema
         'extref' => 'string',
         'translatable' => 'object'
     );
+
+    /**
+     * Build properties
+     */
+    public function __construct()
+    {
+        $this->properties = new ArrayCollection();
+    }
 
     /**
      * set title
@@ -241,7 +251,7 @@ class Schema
      */
     public function addProperty($name, $property)
     {
-        $this->properties[$name] = $property;
+        $this->properties->set($name, $property);
     }
 
     /**
@@ -253,7 +263,9 @@ class Schema
      */
     public function removeProperty($name)
     {
-        unset($this->properties[$name]);
+        if (!$this->properties->containsKey($name)) {
+            $this->properties->remove($this->properties->get($name));
+        }
     }
 
     /**
@@ -261,26 +273,25 @@ class Schema
      *
      * @param string $name property name
      *
-     * @return Schema property
+     * @return void|Schema property
      */
     public function getProperty($name)
     {
-        return $this->properties[$name];
+        return $this->properties->get($name);
     }
 
     /**
      * get properties
      *
-     * @return Schema[]|null
+     * @return ArrayCollection|null
      */
     public function getProperties()
     {
-        $properties = $this->properties;
-        if (empty($properties)) {
-            $properties = null;
+        if ($this->properties->isEmpty()) {
+            return null;
+        } else {
+            return $this->properties;
         }
-
-        return $properties;
     }
 
     /**
