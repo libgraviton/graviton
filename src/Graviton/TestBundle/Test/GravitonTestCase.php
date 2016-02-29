@@ -40,10 +40,7 @@ class GravitonTestCase extends WebTestCase
     {
         include_once __DIR__ . '/../../../../app/AppKernel.php';
 
-        $env = 'test';
-        $debug = true;
-
-        $kernel = new AppKernel($env, $debug);
+        $kernel = new AppKernel('test', false);
         $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
 
         //set error reporting for phpunit
