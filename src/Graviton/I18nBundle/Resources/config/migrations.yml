@@ -1,0 +1,7 @@
+---
+name: graviton-i18n-bundle migrations
+collection_name: graviton-i18n-bundle-migrations
+migrations_namespace: Graviton\I18nBundle\Migrations\MongoDB
+migrations_directory: vendor/graviton/graviton/src/Graviton/I18nBundle/Migrations/MongoDB
+# use the next line if you need to migrate a bare graviton (rarely the case)
+#migrations_directory: src/Graviton/I18nBundle/Migrations/MongoDB
