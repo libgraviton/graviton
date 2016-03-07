@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\Form as sfForm;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -98,6 +101,56 @@ class Form
         }
 
         return $record;
+    }
+
+    /**
+     * Transform Sf error messages to a simple key value array.
+     *
+     * @param sfForm $form SF Form object
+     *
+     * @return array
+     */
+    public function getErrorMessages(sfForm $form)
+    {
+        $errors = array();
+        /** @var FormError $error */
+        foreach ($form->getErrors() as $key => $error) {
+            $template = $error->getMessageTemplate();
+            $parameters = $error->getMessageParameters();
+
+            foreach ($parameters as $var => $value) {
+                $template = str_replace($var, $value, $template);
+            }
+
+            /** @var ConstraintViolation $cause */
+            $cause = $error->getCause();
+            if ($cause) {
+                preg_match("/\[(.*?)\]/", $cause->getPropertyPath(), $matches);
+                if (array_key_exists(1, $matches)) {
+                    $key = $matches[1];
+                } elseif (strpos($cause->getPropertyPath(), 'data.')!==false) {
+                    $key = str_replace('data.', '', $cause->getPropertyPath());
+                } else {
+                    $key = implode('|', array_values($cause->getParameters()));
+                }
+            }
+            $errors[$key] = $template;
+        }
+
+        if ($form->count()) {
+            /** @var sfForm $child */
+            foreach ($form as $child) {
+                if (!$child->isValid()) {
+                    foreach ($this->getErrorMessages($child) as $nKey => $err) {
+                        if (!array_key_exists($nKey, $errors)) {
+                            $errors[$nKey] = $err;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $errors;
     }
 
     /**
