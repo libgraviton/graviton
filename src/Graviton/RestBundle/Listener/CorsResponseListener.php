@@ -20,12 +20,12 @@ class CorsResponseListener
     /**
      * @var string[]
      */
-    private $headers = array();
+    private $headers = [];
 
     /**
      * @var string[]
      */
-    private $allowHeaders = array('Content-Type', 'Content-Language', 'If-None-Match');
+    private $allowHeaders = [];
 
     /**
      * add an allowed header
@@ -37,6 +37,18 @@ class CorsResponseListener
     public function addHeader($header)
     {
         $this->headers[] = $header;
+    }
+
+    /**
+     * add an allowed header
+     *
+     * @param string $header header to expose
+     *
+     * @return void
+     */
+    public function addAllowHeader($header)
+    {
+        $this->allowHeaders[] = $header;
     }
 
     /**

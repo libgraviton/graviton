@@ -205,6 +205,15 @@
             <call method="addHeader">
                 <argument>X-Total-Count</argument>
             </call>
+            <call method="addAllowHeader">
+                <argument>Content-Type</argument>
+            </call>
+            <call method="addAllowHeader">
+                <argument>Content-Language</argument>
+            </call>
+            <call method="addAllowHeader">
+                <argument>If-None-Match</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
