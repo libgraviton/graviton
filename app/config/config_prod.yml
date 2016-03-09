@@ -20,7 +20,7 @@ monolog:
             handler:      nested
         nested:
             type:  stream
-            path:  "%kernel.logs_dir%/%kernel.environment%.log"
+            path:  "%graviton.log.path%"
             level: debug
         console:
             type:  console

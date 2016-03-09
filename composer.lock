@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "110d8543053f99ec79b298be65130dd9",
-    "content-hash": "f49ecf1aecb7cadb270d76e7de1e78fd",
+    "hash": "d65b1aad005a8635de059f4e1e22dbea",
+    "content-hash": "dab14af59055d37426430b4f3d3b826d",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
