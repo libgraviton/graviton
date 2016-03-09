@@ -584,11 +584,6 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
-            'Record ID in your payload must be the same',
-            $response->getContent()
-        );
-
         $this->assertEquals(400, $response->getStatusCode());
     }
 
