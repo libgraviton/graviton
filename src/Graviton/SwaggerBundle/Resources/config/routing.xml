@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns="http://symfony.com/schema/routing">
+  <route id="graviton.swagger" path="/swagger.json" methods="GET">
+    <default key="_controller">graviton.swagger.controller.swagger:swaggerAction</default>
+  </route>
 </routes>

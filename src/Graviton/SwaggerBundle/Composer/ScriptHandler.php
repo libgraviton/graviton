@@ -17,23 +17,6 @@ use Composer\Script\CommandEvent;
  */
 class ScriptHandler extends ScriptHandlerBase
 {
-
-    /**
-     * Copies swagger-ui to web/explorer
-     *
-     * @param CommandEvent $event Event
-     *
-     * @return void
-     */
-    public static function copySwagger(CommandEvent $event)
-    {
-        $options = self::getOptions($event);
-        $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:swagger:copy');
-
-        self::executeCommand($event, $consolePath, $cmd);
-    }
-
     /**
      * Generates swagger.json
      *
