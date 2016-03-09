@@ -3,6 +3,8 @@ parameters:
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
+    graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
+
     # Dependency injection in Security Bundle
     graviton.security.authentication.header_required: false
     graviton.security.authentication.test_username: false
@@ -62,7 +64,7 @@ parameters:
         - 'document.#'
     # pagination defaults
     graviton.rest.pagination.limit: 10
-    
+
     # how to call composer on this machine
     graviton.composer.cmd: composer
 
