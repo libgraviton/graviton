@@ -4,7 +4,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="graviton.swagger.controller.main.class">Graviton\SwaggerBundle\Controller\MainController</parameter>
+        <parameter key="graviton.swagger.controller.swagger.class">Graviton\SwaggerBundle\Controller\SwaggerController</parameter>
     </parameters>
 
     <services>
@@ -17,21 +17,9 @@
             <argument type="service" id="graviton.core.utils"></argument>
         </service>
 
-        <service id="graviton.swagger.command.swaggercopy.filesystem"
+        <service id="graviton.swagger.filesystem.command"
                  class="Symfony\Component\Filesystem\Filesystem">
         </service>
-
-        <service id="graviton.swagger.command.swaggercopy"
-                 class="Graviton\SwaggerBundle\Command\SwaggerCopyCommand">
-            <call method="setRootDir">
-                <argument>%kernel.root_dir%</argument>
-            </call>
-            <call method="setFilesystem">
-                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
-            </call>
-            <tag name="console.command" />
-        </service>
-
         <service id="graviton.swagger.command.swaggergenerate"
                  class="Graviton\SwaggerBundle\Command\SwaggerGenerateCommand">
             <call method="setContainer">
@@ -41,12 +29,20 @@
                 <argument>%kernel.root_dir%</argument>
             </call>
             <call method="setFilesystem">
-                <argument type="service" id="graviton.swagger.command.swaggercopy.filesystem"/>
+                <argument type="service" id="graviton.swagger.filesystem.command"/>
             </call>
             <call method="setApidoc">
                 <argument type="service" id="graviton.rest.apidoc"/>
             </call>
             <tag name="console.command" />
+        </service>
+
+        <service id="graviton.swagger.filesystem.finder" class="Symfony\Component\Finder\Finder"/>
+
+        <service id="graviton.swagger.controller.swagger"
+            class="Graviton\SwaggerBundle\Controller\SwaggerController">
+            <argument type="service" id="graviton.swagger.filesystem.finder"/>
+            <argument>%kernel.root_dir%</argument>
         </service>
 
     </services>

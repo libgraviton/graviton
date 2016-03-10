@@ -113,4 +113,40 @@ class AppKernel extends Kernel
     {
         $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
     }
+
+    /**
+     * dont rebuild container with debug over and over again during tests
+     *
+     * This is very much what is described in http://kriswallsmith.net/post/27979797907
+     *
+     * @return void
+     */
+    protected function initializeContainer()
+    {
+        static $first = true;
+
+        if ('test' !== $this->getEnvironment()) {
+            parent::initializeContainer();
+            return;
+        }
+
+        $debug = $this->debug;
+
+        if (!$first) {
+            // disable debug mode on all but the first initialization
+            $this->debug = false;
+        }
+
+        // will not work with --process-isolation
+        $first = false;
+
+        try {
+            parent::initializeContainer();
+        } catch (\Exception $e) {
+            $this->debug = $debug;
+            throw $e;
+        }
+
+        $this->debug = $debug;
+    }
 }
