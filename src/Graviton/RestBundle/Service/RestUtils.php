@@ -171,7 +171,7 @@ final class RestUtils implements RestUtilsInterface
                 if (strpos($route->getPath(), '/schema') === 0) {
                     return false;
                 }
-                if ($route->getPath() == '/') {
+                if ($route->getPath() == '/' || $route->getPath() == '/core/version') {
                     return false;
                 }
 
