@@ -75,6 +75,9 @@
         <!-- Service for validating JSON Patches -->
         <service id="graviton.rest.service.jsonpatchvalidator" class="Graviton\RestBundle\Service\JsonPatchValidator"/>
 
+        <!-- Service for translating RQL queries into simplified structures (ie SearchNode to LikeNodes) -->
+        <service id="graviton.rest.service.rqlTranslator" class="Graviton\RestBundle\Service\RqlTranslator"/>
+
         <!-- Controller -->
         <service id="graviton.rest.controller" abstract="true">
             <argument type="service" id="graviton.rest.response" strict="false"/>
@@ -103,6 +106,7 @@
         <!-- Model -->
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
             <argument type="service" id="graviton.rql.visitor.mongodb" />
+            <argument type="service" id="graviton.rest.service.rqlTranslator" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
             <argument>%graviton.rest.pagination.limit%</argument>
             <call method="setFilterByAuthUser">

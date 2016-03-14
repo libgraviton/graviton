@@ -6,11 +6,16 @@
 namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\Service\RqlTranslator;
+use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
+use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
+use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
@@ -18,9 +23,9 @@ use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 /**
  * Use doctrine odm as backend
  *
- * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
- * @link     http://swisscom.ch
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class DocumentModel extends SchemaModel implements ModelInterface
 {
@@ -40,6 +45,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var string[]
      */
     protected $requiredFields = array();
+    /**
+     * @var string[]
+     */
+    protected $searchableFields = array();
     /**
      * @var DocumentRepository
      */
@@ -68,14 +77,25 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $filterByAuthField;
 
     /**
-     * @param Visitor $visitor                    rql query visitor
-     * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
-     * @param integer $paginationDefaultLimit     amount of data records to be returned when in pagination context.
+     * @var RqlTranslator
      */
-    public function __construct(Visitor $visitor, $notModifiableOriginRecords, $paginationDefaultLimit)
-    {
+    protected $translator;
+
+    /**
+     * @param Visitor       $visitor                    rql query visitor
+     * @param RqlTranslator $translator                 Translator for query modification
+     * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param integer       $paginationDefaultLimit     amount of data records to be returned when in pagination context
+     */
+    public function __construct(
+        Visitor $visitor,
+        RqlTranslator $translator,
+        $notModifiableOriginRecords,
+        $paginationDefaultLimit
+    ) {
         parent::__construct();
         $this->visitor = $visitor;
+        $this->translator = $translator;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
@@ -126,11 +146,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
         }
 
+
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $request->attributes->get('rqlQuery')
+                $this->translateSearchRql($request->attributes->get('rqlQuery'))
             );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
@@ -345,5 +366,44 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $this->filterByAuthUser = is_bool($active) ? $active : false;
         $this->filterByAuthField = $field;
+    }
+
+    /**
+     * Kick the transformation of RQL Query
+     *
+     * @param Query $query Query to translate
+     * @return Query
+     */
+    protected function translateSearchRql(Query $query)
+    {
+        $innerQuery = $query->getQuery();
+
+        if ($innerQuery instanceof SearchNode) {
+            $newNode = $this->translator->translateSearchNode($innerQuery, $this->getSearchableFields());
+
+            if ($newNode instanceof OrNode) {
+                $query->setQuery($newNode);
+            }
+        } elseif ($innerQuery instanceof AndNode) {
+            $andNodeReplacement = new AndNode();
+            foreach ($innerQuery->getQueries() as $innerNodeFromAnd) {
+
+                if ($innerNodeFromAnd instanceof SearchNode) {
+                    // Transform to OrNode with inner like queries and add to new query list
+                    $andNodeReplacement->addQuery(
+                        $this->translator->translateSearchNode($innerNodeFromAnd, $this->getSearchableFields())
+                    );
+                } else {
+                    // Just recollect the node
+                    $andNodeReplacement->addQuery($innerNodeFromAnd);
+                }
+
+            }
+
+            $query->setQuery($andNodeReplacement);
+        }
+
+
+        return $query;
     }
 }

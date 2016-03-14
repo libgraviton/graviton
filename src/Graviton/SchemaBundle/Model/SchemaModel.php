@@ -217,4 +217,14 @@ class SchemaModel implements ContainerAwareInterface
 
         return $fallbackValue;
     }
+
+    /**
+     * get searchable fields for this object
+     *
+     * @return string[]
+     */
+    public function getSearchableFields()
+    {
+        return $this->schema->searchable;
+    }
 }

@@ -50,6 +50,10 @@ class Field
     /**
      * @var bool
      */
+    private $searchable = false;
+    /**
+     * @var bool
+     */
     private $translatable = false;
     /**
      * @var Constraint[]
@@ -280,5 +284,23 @@ class Field
     {
         $this->xDynamicKey = $xDynamicKey;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSearchable()
+    {
+        return $this->searchable;
+    }
+
+    /**
+     * @param mixed $searchable searchable flag
+     *
+     * @return void
+     */
+    public function setSearchable($searchable)
+    {
+        $this->searchable = $searchable;
     }
 }
