@@ -151,7 +151,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if ($request->attributes->get('hasRql', false)) {
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translateSearchRql($request->attributes->get('rqlQuery'))
+                $this->translator->translateSearchQuery($request->attributes->get('rqlQuery'))
             );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
@@ -366,44 +366,5 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $this->filterByAuthUser = is_bool($active) ? $active : false;
         $this->filterByAuthField = $field;
-    }
-
-    /**
-     * Kick the transformation of RQL Query
-     *
-     * @param Query $query Query to translate
-     * @return Query
-     */
-    protected function translateSearchRql(Query $query)
-    {
-        $innerQuery = $query->getQuery();
-
-        if ($innerQuery instanceof SearchNode) {
-            $newNode = $this->translator->translateSearchNode($innerQuery, $this->getSearchableFields());
-
-            if ($newNode instanceof OrNode) {
-                $query->setQuery($newNode);
-            }
-        } elseif ($innerQuery instanceof AndNode) {
-            $andNodeReplacement = new AndNode();
-            foreach ($innerQuery->getQueries() as $innerNodeFromAnd) {
-
-                if ($innerNodeFromAnd instanceof SearchNode) {
-                    // Transform to OrNode with inner like queries and add to new query list
-                    $andNodeReplacement->addQuery(
-                        $this->translator->translateSearchNode($innerNodeFromAnd, $this->getSearchableFields())
-                    );
-                } else {
-                    // Just recollect the node
-                    $andNodeReplacement->addQuery($innerNodeFromAnd);
-                }
-
-            }
-
-            $query->setQuery($andNodeReplacement);
-        }
-
-
-        return $query;
     }
 }

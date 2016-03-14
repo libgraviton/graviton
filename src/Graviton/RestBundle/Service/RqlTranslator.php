@@ -6,9 +6,13 @@
 namespace Graviton\RestBundle\Service;
 
 use Graviton\Rql\Node\SearchNode;
+use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\DataType\Glob;
+use Xiag\Rql\Parser\Node\AbstractQueryNode;
+use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
+use Xiag\Rql\Parser\Query;
 
 /**
  * Class RqlTranslator
@@ -47,5 +51,48 @@ class RqlTranslator
         } else {
             return $searchNode;
         }
+    }
+
+    /**
+     * Check Query for search nodes and translate them into corresponding like nodes
+     *
+     * @param AbstractNode $query        Query to translate
+     * @param array        $searchFields Which fields should be searched for all terms in SearchNode
+     * @return Query
+     */
+    public function translateSearchQuery(AbstractNode $query, $searchFields = array())
+    {
+        if (!($query instanceof Query)) {
+            return $query;
+        }
+
+        $innerQuery = $query->getQuery();
+
+        if ($innerQuery instanceof SearchNode) {
+            $newNode = $this->translateSearchNode($innerQuery, $searchFields);
+
+            if ($newNode instanceof OrNode) {
+                $query->setQuery($newNode);
+            }
+        } elseif ($innerQuery instanceof AndNode) {
+            $andNodeReplacement = new AndNode();
+            foreach ($innerQuery->getQueries() as $innerNodeFromAnd) {
+
+                if ($innerNodeFromAnd instanceof SearchNode) {
+                    // Transform to OrNode with inner like queries and add to new query list
+                    $andNodeReplacement->addQuery(
+                        $this->translateSearchNode($innerNodeFromAnd, $searchFields)
+                    );
+                } else {
+                    // Just recollect the node
+                    $andNodeReplacement->addQuery($innerNodeFromAnd);
+                }
+
+            }
+
+            $query->setQuery($andNodeReplacement);
+        }
+
+        return $query;
     }
 }
