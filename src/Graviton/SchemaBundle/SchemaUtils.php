@@ -117,6 +117,7 @@ class SchemaUtils
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
+
         $collectionSchema->setItems($this->getModelSchema($modelName, $model));
 
         return $collectionSchema;
@@ -141,7 +142,7 @@ class SchemaUtils
         } else {
             $schema->setTitle(ucfirst($modelName));
         }
-        
+
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
@@ -302,6 +303,8 @@ class SchemaUtils
             $requiredFields[] = $documentFieldNames[$field];
         }
         $schema->setRequired($requiredFields);
+
+        $schema->setSearchable($model->getSearchableFields());
 
         return $schema;
     }

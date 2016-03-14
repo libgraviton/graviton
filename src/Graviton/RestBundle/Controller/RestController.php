@@ -662,6 +662,7 @@ class RestController
         }
         $request->attributes->set('corsMethods', $corsMethods);
 
+
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
             ['response' => $this->serialize($schema)],

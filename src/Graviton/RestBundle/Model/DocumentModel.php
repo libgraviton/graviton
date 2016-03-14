@@ -151,7 +151,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if ($request->attributes->get('hasRql', false)) {
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translator->translateSearchQuery($request->attributes->get('rqlQuery'))
+                $this->translator->translateSearchQuery(
+                    $request->attributes->get('rqlQuery'),
+                    $this->getSearchableFields()
+                )
             );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.

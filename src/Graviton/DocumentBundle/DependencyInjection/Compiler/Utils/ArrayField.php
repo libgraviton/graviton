@@ -31,7 +31,7 @@ class ArrayField extends AbstractField
     public function __construct($serializerType, $fieldName, $exposedName, $readOnly, $required)
     {
         $this->serializerType = $serializerType;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required, false);
     }
 
     /**

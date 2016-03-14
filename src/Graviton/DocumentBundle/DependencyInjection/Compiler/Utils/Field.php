@@ -27,11 +27,12 @@ class Field extends AbstractField
      * @param string $exposedName Exposed name
      * @param bool   $readOnly    Read only
      * @param bool   $required    Is required
+     * @param bool   $searchable  Is searchable
      */
-    public function __construct($type, $fieldName, $exposedName, $readOnly, $required)
+    public function __construct($type, $fieldName, $exposedName, $readOnly, $required, $searchable)
     {
         $this->type = $type;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required, $searchable);
     }
 
     /**
