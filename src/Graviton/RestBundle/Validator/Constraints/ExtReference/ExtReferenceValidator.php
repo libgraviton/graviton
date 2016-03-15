@@ -69,7 +69,7 @@ class ExtReferenceValidator extends ConstraintValidator
         }
 
         // Does ID exists in DB.
-        if ($this->validateId && !in_array($value->getRef(),['App', 'TestCaseReadOnly'])) {
+        if ($this->validateId && !in_array($value->getRef(), ['App', 'TestCaseReadOnly'])) {
             $db = $this->documentManager->getConnection()->selectDatabase('db');
             $collection = $db->selectCollection($value->getRef());
             $document = $collection->findOne(['_id' => $value->getId()]);
