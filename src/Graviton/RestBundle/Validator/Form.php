@@ -20,7 +20,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\Form as sfForm;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -106,11 +105,11 @@ class Form
     /**
      * Transform Sf error messages to a simple key value array.
      *
-     * @param sfForm $form SF Form object
+     * @param FormInterface $form SF Form object
      *
      * @return array
      */
-    public function getErrorMessages(sfForm $form)
+    public function getErrorMessages(FormInterface $form)
     {
         $errors = array();
         /** @var FormError $error */
@@ -138,7 +137,7 @@ class Form
         }
 
         if ($form->count()) {
-            /** @var sfForm $child */
+            /** @var FormInterface $child */
             foreach ($form as $child) {
                 if (!$child->isValid()) {
                     foreach ($this->getErrorMessages($child) as $nKey => $err) {
