@@ -222,6 +222,10 @@
             <call method="addAllowHeader">
                 <argument>X-REST-Token</argument>
             </call>
+            <!-- we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
+            <call method="addAllowHeader">
+                <argument>X-AUTH-Token</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
