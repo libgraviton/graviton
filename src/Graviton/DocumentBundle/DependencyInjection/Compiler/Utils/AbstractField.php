@@ -106,7 +106,7 @@ class AbstractField
     }
 
     /**
-     * @param boolean $searchable
+     * @param boolean $searchable Is searchable
      *
      * @return void
      */
