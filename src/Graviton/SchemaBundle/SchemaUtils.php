@@ -150,6 +150,9 @@ class SchemaUtils
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
 
+        // Init sub searchable fields
+        $subSearchableFields = array();
+
         // look for translatables in document class
         $documentReflection = new \ReflectionClass($repo->getClassName());
         if ($documentReflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
@@ -244,6 +247,12 @@ class SchemaUtils
             } elseif ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
                 $property = $this->getModelSchema($field, $propertyModel, $online);
+
+                if ($property->getSearchable()) {
+                    foreach ($property->getSearchable() as $searchableSubField) {
+                        $subSearchableFields[] = $field . '.' . $searchableSubField;
+                    }
+                }
             } elseif (in_array($field, $translatableFields, true)) {
                 $property = $this->makeTranslatable($property, $languages);
             } elseif (in_array($field.'[]', $translatableFields, true)) {
