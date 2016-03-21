@@ -3,7 +3,7 @@ imports:
     - { resource: "@FrameworkBundle/Resources/config/test.xml" }
 
 parameters:
-    kernel.debug: true
+    kernel.debug: false
     graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
 
 framework:
