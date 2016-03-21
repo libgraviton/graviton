@@ -10,8 +10,8 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyIn
 use Doctrine\Common\Cache\CacheProvider;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -33,6 +33,11 @@ class HttpLoader implements LoaderInterface
      * @var Client
      */
     private $client;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var DispersalStrategyInterface
@@ -70,11 +75,13 @@ class HttpLoader implements LoaderInterface
      *
      * @param ValidatorInterface $validator validator
      * @param Client             $client    http client
+     * @param LoggerInterface    $logger    Logger
      */
-    public function __construct(ValidatorInterface $validator, Client $client)
+    public function __construct(ValidatorInterface $validator, Client $client, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->client = $client;
+        $this->logger = $logger;
     }
 
     /**
@@ -215,20 +222,24 @@ class HttpLoader implements LoaderInterface
      */
     private function fetchFile($request)
     {
+        $content = "{}";
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\CurlException $e) {
-            throw new HttpException(
-                Response::HTTP_BAD_GATEWAY,
-                $e->getError(),
-                $e,
-                $e->getRequest()->getHeaders()->toArray(),
-                $e->getCode()
+            $content = $response->getBody(true);
+            if (isset($this->cache)) {
+                $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
+            }
+        } catch (\Guzzle\Http\Exception\RequestException $e) {
+
+            $this->logger->info(
+                "Unable to fetch File!",
+                [
+                    "message" => $e->getMessage(),
+                    "url" => $request->getUrl(),
+                    "code" => $e->getResponse()->getStatusCode()
+                ]
             );
-        }
-        $content = $response->getBody(true);
-        if (isset($this->cache)) {
-            $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
+
         }
 
         return $content;

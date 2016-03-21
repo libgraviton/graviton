@@ -46,6 +46,7 @@
         <service id="graviton.proxy.definition.httploader" class="%graviton.proxy.definition.httploader.class%">
             <argument type="service" id="validator" />
             <argument type="service" id="guzzle.client" />
+            <argument type="service" id="logger" />
             <call method="setDispersalStrategy">
                 <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
             </call>
