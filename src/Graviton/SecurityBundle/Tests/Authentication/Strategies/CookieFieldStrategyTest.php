@@ -50,7 +50,7 @@ class CookieFieldStrategyTest extends WebTestCase
      *
      * @return void
      */
-    public function dtestApply($fieldValue)
+    public function testApply($fieldValue)
     {
         $cookie = new Cookie(
             $this->propertyKey,
