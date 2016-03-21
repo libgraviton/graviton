@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Tests\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\Loader\HttpLoader;
+use Psr\Log\LoggerInterface;
 
 /**
  * tests for the HttpLoader class
@@ -20,6 +21,11 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      * @var HttpLoader
      */
     private $sut;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * setup
@@ -52,7 +58,9 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($request);
         $validator = $this->getMockForAbstractClass('Symfony\Component\Validator\Validator\ValidatorInterface');
 
-        $this->sut = new HttpLoader($validator, $client);
+        $this->logger = $this->getMock('Psr\Log\Loggerinterface');
+
+        $this->sut = new HttpLoader($validator, $client, $this->logger);
     }
 
     /**
@@ -70,7 +78,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->method('validate')
             ->willReturn(array());
 
-        $sut = new HttpLoader($validator, $client);
+        $sut = new HttpLoader($validator, $client, $this->logger);
         $this->assertTrue($sut->supports("test/test.json"));
 
         $validatorFail = $this->getMockBuilder('Symfony\Component\Validator\Validator\ValidatorInterface')
@@ -80,7 +88,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->method('validate')
             ->willReturn(array("error text"));
 
-        $sut = new HttpLoader($validatorFail, $client);
+        $sut = new HttpLoader($validatorFail, $client, $this->logger);
         $this->assertFalse($sut->supports("test/again.json"));
     }
 
