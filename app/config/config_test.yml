@@ -53,6 +53,3 @@ old_sound_rabbit_mq:
 graviton_proxy:
     sources:
         swagger:
-            graviton:
-                prefix: graviton
-                uri:    http://localhost:8000/swagger.json
