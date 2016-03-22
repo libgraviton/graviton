@@ -236,7 +236,7 @@ class HttpLoader implements LoaderInterface
                 [
                     "message" => $e->getMessage(),
                     "url" => $request->getUrl(),
-                    "code" => $e->getResponse()->getStatusCode()
+                    "code" => (!empty($request->getResponse())? $request->getResponse()->getStatusCode() : 500)
                 ]
             );
 
