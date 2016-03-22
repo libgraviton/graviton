@@ -14,9 +14,6 @@
 namespace Graviton\CoreBundle\Command;
 
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -85,7 +82,7 @@ class DirectImportCommand extends ContainerAwareCommand
          * @return bool
          */
         $filter = function (SplFileInfo $file) {
-            if ($file->getExtension() !== 'yml' || $file->isDir()) {
+            if (!in_array($file->getExtension(), ['yml','json']) || $file->isDir()) {
                 return false;
             }
             return true;
@@ -114,38 +111,52 @@ class DirectImportCommand extends ContainerAwareCommand
                 continue;
             }
 
-            $target = trim(str_replace('target:', '', $contents[1]));
-            $yaml = $contents[2];
+            if ('yml' == $file->getExtension()) {
+                $target = trim(str_replace('target:', '', $contents[1]));
+                $yaml = $contents[2];
 
-            // Make Service Name:
-            $targets = explode('/', $target);
-            if (!$targets || count($targets)<3) {
-                $errors[$fileName] = 'Target is not correctly defined: '.json_encode($targets);
-                continue;
-            }
-            $domain = $targets[1];
+                // Make Service Name:
+                $targets = explode('/', $target);
+                if (!$targets || count($targets) < 3) {
+                    $errors[$fileName] = 'Target is not correctly defined: ' . json_encode($targets);
+                    continue;
+                }
+                $domain = $targets[1];
 
-            try {
-                $data = Yaml::parse($yaml);
-            } catch (ParseException $e) {
-                $errors[$fileName] = 'Could not parse yml file';
-                continue;
+                try {
+                    $data = Yaml::parse($yaml);
+                } catch (ParseException $e) {
+                    $errors[$fileName] = 'Could not parse yml file';
+                    continue;
+                }
+            } else {
+                $target = trim(str_replace('collection:', '', $contents[1]));
+                $json = $contents[2];
+                $domain = $target;
+                $targets = [$target,$target,$target];
+
+                try {
+                    $data = json_decode($json, true);
+                } catch (ParseException $e) {
+                    $errors[$fileName] = 'Could not parse json file';
+                    continue;
+                }
             }
 
             if (!$data) {
-                $errors[$fileName] = 'Yml file is empty or parsed as empty.';
+                $errors[$fileName] = $file->getExtension().' file is empty or parsed failed.';
                 continue;
             }
 
             $objectId = array_key_exists('id', $data) ? $data['id'] : end($targets);
 
-            // Locate class name graviton.i18n.document.language
-            $service = $this->findServiceObject($targets, $fileName);
+            // Locate class name like graviton.i18n.document.language
+            $service = $this->findServiceObject($targets);
             $objectClass = $service['class'];
             $serviceName = $service['service'];
 
-            if (!$objectClass) {
-                $errors[$fileName] = 'Has no Service related';
+            if ($service['error'] || !$objectClass) {
+                $errors[$fileName] = $service['error'] ? $service['error'] : 'Could not fin service';
                 continue;
             }
 
@@ -156,11 +167,17 @@ class DirectImportCommand extends ContainerAwareCommand
                 if ($object instanceof TranslatableDocumentInterface) {
                     $translated = $object->getTranslatableFields();
                 }
+                if ("_id" == $key) {
+                    $key = 'id';
+                }
                 $method = 'set' . ucfirst($key);
 
                 if (method_exists($object, $method)) {
                     if (is_array($value) && in_array($key, $translated)) {
-                        $this->generateLanguages($domain, $value, $objectId);
+                        $langErrors = $this->generateLanguages($domain, $value, $objectId);
+                        if ($langErrors) {
+                            $errors[$fileName] = 'Errors generating language: '.json_encode($langErrors);
+                        }
                         $object->$method(reset($value));
                     } elseif (is_array($value)) {
                         try {
@@ -184,11 +201,13 @@ class DirectImportCommand extends ContainerAwareCommand
                     $errors[$fileName] = 'Method: '.$method.' does not exists';
                 }
             }
-            if ($method) {
-                $documentManager->persist($object);
-            }
 
             try {
+
+                if ($method) {
+                    $documentManager->persist($object);
+                }
+
                 $documentManager->flush();
                 $documentManager->clear();
             } catch (\Exception $e) {
@@ -212,13 +231,12 @@ class DirectImportCommand extends ContainerAwareCommand
         }
 
         // Output's
-
         if (!$errors && !$errorsRefs) {
             $output->writeln('<comment>Done without errors</comment>');
         } else {
 
             if ($errors) {
-                $output->writeln("\n".'<error>== Errors: '.count($errors).' ==/error>');
+                $output->writeln("\n".'<error>== Errors: '.count($errors).' ==</error>');
                 foreach ($errors as $fileName => $error) {
                     $errString = is_array($error) ? json_encode($error) : $error;
                     $output->writeln("<comment>$fileName : $errString</comment>");
@@ -255,10 +273,11 @@ class DirectImportCommand extends ContainerAwareCommand
      * @param array       $languages  Translated language values
      * @param string|bool $idLanguage Id to reference name
      *
-     * @return void
+     * @return array
      */
     private function generateLanguages($domain, $languages, $idLanguage = false)
     {
+        $errors = [];
         foreach ($languages as $language => $translation) {
             if ($idLanguage) {
                 $id = implode('-', array($domain, $idLanguage, $translation));
@@ -266,13 +285,19 @@ class DirectImportCommand extends ContainerAwareCommand
                 $id = implode('-', array($domain, $language, $translation));
             }
 
-            $record = new Translatable;
-            $record->setId($id);
-            $record->setDomain($domain);
-            $record->setLocale($language);
-            $record->setOriginal($translation);
-            $this->modelTranslatable->insertRecord($record);
+            try {
+                $record = new Translatable;
+                $record->setId($id);
+                $record->setDomain($domain);
+                $record->setLocale($language);
+                $record->setOriginal($translation);
+                $this->modelTranslatable->insertRecord($record);
+            } catch (\Exception $e) {
+                $errors[$language] = $e->getMessage();
+            }
         }
+
+        return $errors;
     }
 
 
@@ -306,6 +331,11 @@ class DirectImportCommand extends ContainerAwareCommand
                 $formValidator->getForm($request, $modelClass);
                 $form = $formValidator->getForm($request, $modelClass);
 
+                if (array_key_exists('_id', $data)) {
+                    $data['id'] = $data['_id'];
+                    unset($data['_id']);
+                }
+
                 try {
                     $record = $formValidator->checkForm(
                         $form,
@@ -317,9 +347,17 @@ class DirectImportCommand extends ContainerAwareCommand
                     $err = $formValidator->getErrorMessages($form);
                     $errors[] = $fileName.': '.$id . ': '.json_encode($err);
                     continue;
+                } catch (\Exception $e) {
+                    $errors[] = $fileName.': '.$id . ': '.$e->getMessage();
+                    continue;
                 }
 
-                $modelClass->updateRecord($id, $record);
+                try {
+                    $modelClass->updateRecord($id, $record);
+                } catch (\Exception $e) {
+                    $errors[] = $fileName.': '.$id . ' Updating: '.$e->getMessage();
+                    continue;
+                }
             } else {
                 $errors[] = $fileName . ': Model not found to make relation';
             }
@@ -330,11 +368,10 @@ class DirectImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param array  $targets  Path parts to service
-     * @param string $fileName File name for easier find error.
+     * @param array $targets Path parts to service
      * @return array
      */
-    private function findServiceObject($targets, $fileName)
+    private function findServiceObject($targets)
     {
         // Locate class name graviton.i18n.document.language
         $cleanedName = $targets[1].str_replace('refi-', '', $targets[2]);
@@ -346,21 +383,22 @@ class DirectImportCommand extends ContainerAwareCommand
         ];
         $objectClass = false;
         $serviceName = false;
+        $error = false;
         foreach ($serviceNames as $serviceName) {
             $serviceName = strtolower(str_replace('-', '', $serviceName));
             if ($this->container->has($serviceName)) {
                 try {
                     $objectClass = $this->container->get($serviceName);
                 } catch (\Exception $e) {
-                    $errors[$fileName] = 'Service name not found: '.$serviceName;
+                    $error = 'Service name not found: '.$serviceName;
                 }
                 break;
             }
         }
-
         return [
-            'class' => $objectClass,
-            'service' => $serviceName
+            'class'   => $objectClass,
+            'service' => $serviceName,
+            'error'   => $error
         ];
     }
 }
