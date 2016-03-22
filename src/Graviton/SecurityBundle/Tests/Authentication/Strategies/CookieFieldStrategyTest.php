@@ -132,7 +132,7 @@ class CookieFieldStrategyTest extends WebTestCase
         return array(
             'testing extract username' => array("username=testUser;finnova_id=someId123"),
             'testing extract rev username' => array("finnova_id=someId123;username=testUser"),
-            'airlock life test' => array('finnova_id=testUser;username=test-mdm;'),
+            'airlock life test' => array('finnova_id=someId123;username=testUser;'),
         );
     }
 }
