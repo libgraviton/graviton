@@ -97,11 +97,12 @@ class CookieFieldStrategyTest extends WebTestCase
      *
      * @dataProvider stringExtractProvider
      *
+     * @param string $username   Username to be found
      * @param string $fieldValue value to check
      *
      * @return void
      */
-    public function testApplyExtract($fieldValue)
+    public function testApplyExtract($username, $fieldValue)
     {
         $cookie = new Cookie(
             $this->propertyKey,
@@ -121,7 +122,7 @@ class CookieFieldStrategyTest extends WebTestCase
             array() //server
         );
 
-        $this->assertSame('testUser', $this->strategy->apply($this->client->getRequest()));
+        $this->assertSame($username, $this->strategy->apply($this->client->getRequest()));
     }
 
     /**
@@ -130,8 +131,9 @@ class CookieFieldStrategyTest extends WebTestCase
     public function stringExtractProvider()
     {
         return array(
-            'testing extract username' => array("username=testUser,finnova_id=someId123"),
-            'testing extract rev username' => array("finnova_id=someId123,username=testUser"),
+            'testing extract username' => array("testUser", "username=testUser;finnova_id=someId123"),
+            'testing extract rev username' => array("someOtherUser", "finnova_id=someId123;username=someOtherUser"),
+            'trailing simicolon test' => array("test-mdm", "finnova_id=someId123;username=test-mdm;"),
         );
     }
 }
