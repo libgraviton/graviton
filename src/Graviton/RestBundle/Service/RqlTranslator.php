@@ -6,11 +6,15 @@
 namespace Graviton\RestBundle\Service;
 
 use Graviton\Rql\Node\SearchNode;
+use MongoDate;
 use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\DataType\Glob;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
+use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
+use Xiag\Rql\Parser\Node\Query\ScalarOperator\GeNode;
+use Xiag\Rql\Parser\Node\Query\ScalarOperator\LeNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
 use Xiag\Rql\Parser\Query;
 
@@ -43,6 +47,29 @@ class RqlTranslator
                 $searchGlob = new Glob('*' . $searchTerm . '*');
                 $likeNode = new LikeNode($searchField, $searchGlob);
                 $orNode->addQuery($likeNode);
+
+                if (is_numeric($searchTerm)) {
+                    # handle numbers
+                    $searchNumber = (int)$searchTerm;
+                    $numberNode = new EqNode($searchField, $searchNumber);
+                    $orNode->addQuery($numberNode);
+                }
+
+                if ($this->isParsableDate($searchTerm)) {
+                    # handle dates
+                    $parsedDate = new \DateTime($searchTerm);
+                    $searchDate = $parsedDate->format('yyyy-MM-dd');
+
+                    $dateNode = new AndNode();
+                    $searchFrom = new MongoDate(strtotime($searchDate."T00:00:00.000Z"));
+                    $searchTo = new MongoDate(strtotime($searchDate."T23:59:59.999Z"));
+                    $dateFrom = new GeNode($searchField, $searchFrom);
+                    $dateTo = new LeNode($searchField, $searchTo);
+
+                    $dateNode->addQuery($dateFrom);
+                    $dateNode->addQuery($dateTo);
+                    $orNode->addQuery($dateNode);
+                }
             }
         }
 
@@ -94,5 +121,22 @@ class RqlTranslator
         }
 
         return $query;
+    }
+
+    /**
+     * Check if string can be parsed to date
+     *
+     * @param $dateString
+     * @return bool
+     */
+    protected function isParsableDate($dateString)
+    {
+        try {
+            $date = new \DateTime($dateString);
+        } catch (\Exception $e) {
+            // Expected here, go on
+            return false;
+        }
+        return true;
     }
 }
