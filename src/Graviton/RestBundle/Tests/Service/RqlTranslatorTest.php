@@ -46,7 +46,7 @@ class RqlTranslatorTest extends \PHPUnit_Framework_TestCase
         $searchNode = new SearchNode(array('searchTerm1', 'searchTerm2'));
 
         $resultingOrNode = $this->sut->translateSearchNode($searchNode, array('testField'));
-        
+
         $this->assertTrue($resultingOrNode instanceof OrNode);
         $this->assertEquals(2, sizeof($resultingOrNode->getQueries()));
     }

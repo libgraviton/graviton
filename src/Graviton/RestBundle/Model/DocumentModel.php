@@ -19,6 +19,7 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
+use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
 
 /**
  * Use doctrine odm as backend
@@ -127,12 +128,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param Request      $request The request object
-     * @param SecurityUser $user    SecurityUser Object
+     * @param Request        $request The request object
+     * @param SecurityUser   $user    SecurityUser Object
+     * @param SchemaDocument $schema  Schema model used for search fields extraction
      *
      * @return array
      */
-    public function findAll(Request $request, SecurityUser $user = null)
+    public function findAll(Request $request, SecurityUser $user = null, SchemaDocument $schema = null)
     {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
@@ -147,13 +149,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
 
+        $searchableFields = $this->getSearchableFields();
+        if (!is_null($schema)) {
+            $searchableFields = $schema->getSearchable();
+        }
+
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
                 $this->translator->translateSearchQuery(
                     $request->attributes->get('rqlQuery'),
-                    $this->getSearchableFields()
+                    $searchableFields
                 )
             );
         } else {

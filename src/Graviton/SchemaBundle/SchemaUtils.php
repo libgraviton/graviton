@@ -313,7 +313,9 @@ class SchemaUtils
         }
         $schema->setRequired($requiredFields);
 
-        $schema->setSearchable($model->getSearchableFields());
+        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
+
+        $schema->setSearchable($searchableFields);
 
         return $schema;
     }
