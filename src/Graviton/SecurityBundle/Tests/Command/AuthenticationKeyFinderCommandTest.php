@@ -70,6 +70,12 @@ class AuthenticationKeyFinderCommandTest extends \PHPUnit_Framework_TestCase
         $kernel = $this->getMockBuilder('\Symfony\Component\HttpKernel\KernelInterface')
             ->getMockForAbstractClass();
 
+        $container = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerInterface')
+            ->getMockForAbstractClass();
+
+        $kernel->method('getBundles')->willReturn([]);
+        $kernel->method('getContainer')->willReturn($container);
+
         // mock the Kernel or create one depending on your needs
         $application = new Application($kernel);
         $application->add(new AuthenticationKeyFinderCommand());
