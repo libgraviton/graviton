@@ -64,7 +64,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
      */
     protected function extractAdUsername($value)
     {
-        $pattern = "/((?m)(?<=\b".self::COOKIE_FIELD_NAME."=)[^,]*)/i";
+        $pattern = "/((?m)(?<=\b".self::COOKIE_FIELD_NAME."=)[^;]*)/i";
         preg_match($pattern, $value, $matches);
 
         return (!$matches)? $value : $matches[0];
@@ -81,7 +81,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
      */
     protected function extractCoreId(Request $request, $text)
     {
-        $pattern = "/((?m)(?<=\b".self::COOKIE_VALUE_CORE_ID."=)[^,]*)/i";
+        $pattern = "/((?m)(?<=\b".self::COOKIE_VALUE_CORE_ID."=)[^;]*)/i";
         preg_match($pattern, $text, $matches);
 
         if ($matches) {

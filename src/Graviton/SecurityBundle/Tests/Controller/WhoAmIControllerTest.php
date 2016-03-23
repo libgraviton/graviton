@@ -25,7 +25,7 @@ class WhoAmIControllerTest extends RestTestCase
     public function testWhoAmIAction()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/person/whoami/');
+        $client->request('GET', '/person/whoami');
         $response = $client->getResponse();
 
         $this->assertContains('"username":', $response->getContent());
