@@ -58,11 +58,11 @@ class RqlTranslator
                 if ($this->isParsableDate($searchTerm)) {
                     # handle dates
                     $parsedDate = new \DateTime($searchTerm);
-                    $searchDate = $parsedDate->format('yyyy-MM-dd');
+                    $searchDate = $parsedDate->format('Y-m-d');
 
                     $dateNode = new AndNode();
-                    $searchFrom = new MongoDate(strtotime($searchDate."T00:00:00.000Z"));
-                    $searchTo = new MongoDate(strtotime($searchDate."T23:59:59.999Z"));
+                    $searchFrom = new MongoDate(strtotime($searchDate." 00:00:00"));
+                    $searchTo = new MongoDate(strtotime($searchDate." 23:59:59"));
                     $dateFrom = new GeNode($searchField, $searchFrom);
                     $dateTo = new LeNode($searchField, $searchTo);
 
