@@ -50,7 +50,7 @@ class RqlTranslator
 
                 if (is_numeric($searchTerm)) {
                     # handle numbers
-                    $searchNumber = (int)$searchTerm;
+                    $searchNumber = (int) $searchTerm;
                     $numberNode = new EqNode($searchField, $searchNumber);
                     $orNode->addQuery($numberNode);
                 }
@@ -126,7 +126,7 @@ class RqlTranslator
     /**
      * Check if string can be parsed to date
      *
-     * @param $dateString
+     * @param string $dateString The date string to be parsed
      * @return bool
      */
     protected function isParsableDate($dateString)
