@@ -35,10 +35,14 @@ class RqlTranslator
      *
      * @param  SearchNode $searchNode   The given search node to transform
      * @param  array      $searchFields Which fields should be searched for all terms in SearchNode
-     * @return SearchNode|OrNode
+     * @return SearchNode|OrNode|EqNode
      */
     public function translateSearchNode(SearchNode $searchNode, $searchFields = array())
     {
+        if (sizeof($searchFields) === 0) {
+            return new EqNode('id', "");
+        }
+
         $orNode = new OrNode();
 
         foreach ($searchFields as $searchField) {
