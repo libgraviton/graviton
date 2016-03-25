@@ -181,7 +181,14 @@ class DirectImportCommand extends ContainerAwareCommand
                         $object->$method(reset($value));
                     } elseif (is_array($value)) {
                         try {
-                            $object->$method((object) $value);
+                            // Check if MongoData
+                            $obj = (object) $value;
+                            $type = '@type';
+                            if ( $obj->$type == 'MongoDate' && $obj->sec ) {
+                                $ts = $obj->sec;
+                                $obj = new \DateTime("@$ts");
+                            }
+                            $object->$method($obj);
                         } catch (\Exception $e) {
                             $referenceObjects[$objectId] = [
                                 'data' => $data,
