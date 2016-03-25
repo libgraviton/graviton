@@ -156,7 +156,7 @@ class DirectImportCommand extends ContainerAwareCommand
             $serviceName = $service['service'];
 
             if ($service['error'] || !$objectClass) {
-                $errors[$fileName] = $service['error'] ? $service['error'] : 'Could not fin service';
+                $errors[$fileName] = $service['error'] ? $service['error'] : 'Could not find service';
                 continue;
             }
 
