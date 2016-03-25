@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns="http://symfony.com/schema/routing">
-  <route id="graviton.security.static.whoami.get" path="/person/whoami" methods="GET">
+  <route id="graviton.security.static.whoami.get" path="/person/whoami" methods="GET|OPTIONS">
     <default key="_controller">graviton.security.controller.whoami:whoAmIAction</default>
   </route>
   <route id="graviton.security.static.whoami.canonicalSchema" path="/schema/person/whoami" methods="GET">
