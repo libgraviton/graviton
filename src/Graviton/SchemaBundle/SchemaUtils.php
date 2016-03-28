@@ -303,13 +303,16 @@ class SchemaUtils
         }
 
         $requiredFields = [];
-        foreach ($model->getRequiredFields() as $field) {
-            // don't describe hidden fields
-            if (!isset($documentFieldNames[$field])) {
-                continue;
-            }
+        $modelRequiredFields = $model->getRequiredFields();
+        if (is_array($modelRequiredFields)) {
+            foreach ($modelRequiredFields as $field) {
+                // don't describe hidden fields
+                if (!isset($documentFieldNames[$field])) {
+                    continue;
+                }
 
-            $requiredFields[] = $documentFieldNames[$field];
+                $requiredFields[] = $documentFieldNames[$field];
+            }
         }
         $schema->setRequired($requiredFields);
 

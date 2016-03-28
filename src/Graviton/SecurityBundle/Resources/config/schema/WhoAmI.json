@@ -1,4 +1,7 @@
 {
+  "title": "Who am I service",
+  "description": "Authenticated user verification service",
+  "required": true,
   "username":
   {
     "title": "The username of the logged in consultant",
