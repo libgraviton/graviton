@@ -71,6 +71,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'isClassType'       => true,
                 'constraints'       => [],
                 'required'          => true,
+                'searchable'        => false,
             ],
             $this->definition === null ? [] : [
                 'exposedName'       => $this->definition->getExposeAs() ?: $this->getName(),
@@ -79,6 +80,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'description'       => $this->definition->getDescription(),
                 'readOnly'          => $this->definition->getReadOnly(),
                 'required'          => $this->definition->getRequired(),
+                'searchable'        => $this->definition->getSearchable(),
             ]
         );
     }

@@ -79,6 +79,11 @@ class Schema
     protected $readOnly = false;
 
     /**
+     * @var string[]
+     */
+    protected $searchable = array();
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -451,5 +456,32 @@ class Schema
     public function getReadOnly()
     {
         return $this->readOnly ? true : null;
+    }
+
+    /**
+     * set searchable variables
+     *
+     * @param string[] $searchable arary of searchable fields
+     *
+     * @return void
+     */
+    public function setSearchable($searchable)
+    {
+        $this->searchable = $searchable;
+    }
+
+    /**
+     * get searchable fields
+     *
+     * @return string[]|null
+     */
+    public function getSearchable()
+    {
+        $searchable = $this->searchable;
+        if (empty($searchable)) {
+            $searchable = null;
+        }
+
+        return $searchable;
     }
 }

@@ -27,7 +27,8 @@
         "type": "varchar",
         "title": "Event Name",
         "description": "Name of the created event",
-        "readOnly": true
+        "readOnly": true,
+        "searchable": true
       },
       {
         "name": "eventResource.ref",

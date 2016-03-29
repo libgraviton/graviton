@@ -64,6 +64,11 @@
         "type": "string"
       },
       "description": "Array of queue events this service generates"
+    },
+    "searchable": {
+      "title": "Searchable",
+      "type": "boolean",
+      "description": "Defines whether the property is searchable"
     }
   },
   "required": ["title", "description", "type"]

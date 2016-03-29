@@ -25,6 +25,9 @@
         <property name="required"
                   type="boolean"
                   serialized-name="required"/>
+        <property name="searchable"
+                  type="boolean"
+                  serialized-name="searchable"/>
         <property name="translatable"
                   type="boolean"
                   serialized-name="translatable"/>

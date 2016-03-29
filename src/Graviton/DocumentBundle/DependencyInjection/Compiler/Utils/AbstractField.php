@@ -32,6 +32,10 @@ class AbstractField
      * @var bool
      */
     private $required;
+    /**
+     * @var bool
+     */
+    private $searchable;
 
     /**
      * Constructor
@@ -40,13 +44,15 @@ class AbstractField
      * @param string $exposedName Exposed name
      * @param bool   $readOnly    Read only
      * @param bool   $required    Is required
+     * @param bool   $searchable  Is searchable
      */
-    public function __construct($fieldName, $exposedName, $readOnly, $required)
+    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable)
     {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;
         $this->required = $required;
+        $this->searchable = $searchable;
     }
 
     /**
@@ -87,6 +93,26 @@ class AbstractField
     public function isRequired()
     {
         return $this->required;
+    }
+
+    /**
+     * Is searchable
+     *
+     * @return boolean
+     */
+    public function isSearchable()
+    {
+        return $this->searchable;
+    }
+
+    /**
+     * @param boolean $searchable Is searchable
+     *
+     * @return void
+     */
+    public function setSearchable($searchable)
+    {
+        $this->searchable = $searchable;
     }
 
     /**
