@@ -8,5 +8,6 @@
       "collection": ["Language"]
     }
   },
-  "required": []
+  "required": [],
+  "searchable": []
 }

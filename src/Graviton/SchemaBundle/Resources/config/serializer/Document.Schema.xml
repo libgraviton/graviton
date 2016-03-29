@@ -20,5 +20,8 @@
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="searchable" accessor-getter="getSearchable" accessor-setter="setSearchable" expose="true">
+      <type><![CDATA[array<string>]]></type>
+    </property>
   </class>
 </serializer>

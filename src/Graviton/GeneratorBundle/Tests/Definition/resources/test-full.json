@@ -145,7 +145,8 @@
         "title": "A testing title",
         "description": "A lengthy and detailed description.",
         "required": true,
-        "translatable": true
+        "translatable": true,
+        "searchable": true
       },
       {
         "name": "emailField",

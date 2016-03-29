@@ -177,6 +177,18 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get searchable flag for a given field
+     *
+     * @param string $field field name
+     *
+     * @return boolean the searchable flag
+     */
+    public function getSearchableOfField($field)
+    {
+        return $this->getSchemaField($field, 'searchable', false);
+    }
+
+    /**
      * tell us if a model what to be exposed using a key as field
      *
      * @param string $field field that we check for dynamic-key spec
@@ -216,5 +228,15 @@ class SchemaModel implements ContainerAwareInterface
         }
 
         return $fallbackValue;
+    }
+
+    /**
+     * get searchable fields for this object
+     *
+     * @return string[]
+     */
+    public function getSearchableFields()
+    {
+        return $this->schema->searchable;
     }
 }

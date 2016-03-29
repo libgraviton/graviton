@@ -100,6 +100,7 @@ class Loader implements LoaderInterface
             'Graviton\\GeneratorBundle\\Definition\\Schema\\Definition',
             'json'
         );
+
         return new JsonDefinition($definition);
     }
 }

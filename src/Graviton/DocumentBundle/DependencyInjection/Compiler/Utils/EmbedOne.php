@@ -31,7 +31,7 @@ class EmbedOne extends AbstractField
     public function __construct(Document $document, $fieldName, $exposedName, $readOnly, $required)
     {
         $this->document = $document;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required, false);
     }
 
     /**

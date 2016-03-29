@@ -12,6 +12,7 @@
 
   "properties": {
 {% set requiredFields = [] %}
+{% set searchableFields = [] %}
 {% for field in fields %}
     "{{ field.fieldName }}": {
 
@@ -47,6 +48,10 @@
     {% set requiredFields = requiredFields|merge([field.fieldName]) %}
 {% endif %}
 
+{% if field.searchable is defined and field.searchable == true %}
+    {% set searchableFields = searchableFields|merge([field.fieldName]) %}
+{% endif %}
+
     },
 {% endfor %}
     "id": {
@@ -60,5 +65,6 @@
 {% endif %}
     }
   },
-  "required": {{ requiredFields|json_encode() }}
+  "required": {{ requiredFields|json_encode() }},
+  "searchable": {{ searchableFields|json_encode() }}
 }

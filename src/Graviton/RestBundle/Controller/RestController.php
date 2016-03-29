@@ -345,6 +345,10 @@ class RestController
     {
         $model = $this->getModel();
 
+        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
+
+        $schema = $this->schemaUtils->getModelSchema($modelName, $model);
+
         // Security is optional configured in Parameters
         try {
             /** @var SecurityUser $securityUser */
@@ -363,7 +367,7 @@ class RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($model->findAll($request, $securityUser))],
+            ['response' => $this->serialize($model->findAll($request, $securityUser, $schema))],
             $response
         );
     }
@@ -661,6 +665,7 @@ class RestController
             $corsMethods = 'GET, OPTIONS';
         }
         $request->attributes->set('corsMethods', $corsMethods);
+
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',

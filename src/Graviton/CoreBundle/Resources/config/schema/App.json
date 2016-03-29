@@ -24,5 +24,8 @@
     "name",
     "showInMenu",
     "order"
+  ],
+  "searchable": [
+    "name"
   ]
 }
