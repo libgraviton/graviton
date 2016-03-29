@@ -111,18 +111,24 @@ class DirectImportCommand extends ContainerAwareCommand
                 continue;
             }
 
-            if ('yml' == $file->getExtension()) {
+            // Target or collection can be defined in first lines of file.
+            if (strpos($contents[1],'target') !== false) {
                 $target = trim(str_replace('target:', '', $contents[1]));
-                $yaml = $contents[2];
-
-                // Make Service Name:
                 $targets = explode('/', $target);
                 if (!$targets || count($targets) < 3) {
                     $errors[$fileName] = 'Target is not correctly defined: ' . json_encode($targets);
                     continue;
                 }
                 $domain = $targets[1];
+            } else {
+                $target = trim(str_replace('collection:', '', $contents[1]));
+                $domain = $target;
+                $targets = [$target,$target,$target];
+            }
 
+            // Data parsing of file
+            if ('yml' == $file->getExtension()) {
+                $yaml = $contents[2];
                 try {
                     $data = Yaml::parse($yaml);
                 } catch (ParseException $e) {
@@ -130,11 +136,7 @@ class DirectImportCommand extends ContainerAwareCommand
                     continue;
                 }
             } else {
-                $target = trim(str_replace('collection:', '', $contents[1]));
                 $json = $contents[2];
-                $domain = $target;
-                $targets = [$target,$target,$target];
-
                 try {
                     $data = json_decode($json, true);
                 } catch (ParseException $e) {
@@ -184,7 +186,7 @@ class DirectImportCommand extends ContainerAwareCommand
                             // Check if MongoData
                             $obj = (object) $value;
                             $type = '@type';
-                            if ( $obj->$type == 'MongoDate' && $obj->sec ) {
+                            if ($obj->$type == 'MongoDate' && $obj->sec) {
                                 $ts = $obj->sec;
                                 $obj = new \DateTime("@$ts");
                             }
