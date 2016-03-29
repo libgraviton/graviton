@@ -112,7 +112,7 @@ class DirectImportCommand extends ContainerAwareCommand
             }
 
             // Target or collection can be defined in first lines of file.
-            if (strpos($contents[1],'target') !== false) {
+            if (strpos($contents[1], 'target') !== false) {
                 $target = trim(str_replace('target:', '', $contents[1]));
                 $targets = explode('/', $target);
                 if (!$targets || count($targets) < 3) {
