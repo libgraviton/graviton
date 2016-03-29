@@ -9,4 +9,7 @@
   <route id="graviton.security.static.whoami.canonicalSchema" path="/schema/person/whoami" methods="GET">
     <default key="_controller">graviton.security.controller.whoami:whoAmISchemaAction</default>
   </route>
+  <route id="graviton.security.static.whoami.canonicalSchema.options" path="/schema/person/whoami" methods="OPTIONS">
+    <default key="_controller">graviton.security.controller.whoami:optionsAction</default>
+  </route>
 </routes>
