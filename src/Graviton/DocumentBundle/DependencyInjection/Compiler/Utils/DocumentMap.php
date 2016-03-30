@@ -136,7 +136,8 @@ class DocumentMap
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     $serializerField === null ? false : $serializerField['readOnly'],
-                    $validationField === null ? false : $validationField['required']
+                    $validationField === null ? false : $validationField['required'],
+                    $serializerField === null ? false : $serializerField['searchable']
                 );
             } else {
                 $fields[] = new Field(
@@ -144,7 +145,8 @@ class DocumentMap
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     $serializerField === null ? false : $serializerField['readOnly'],
-                    $validationField === null ? false : $validationField['required']
+                    $validationField === null ? false : $validationField['required'],
+                    $serializerField === null ? false : $serializerField['searchable']
                 );
             }
         }
@@ -161,7 +163,8 @@ class DocumentMap
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 $serializerField === null ? false : $serializerField['readOnly'],
-                $validationField === null ? false : $validationField['required']
+                $validationField === null ? false : $validationField['required'],
+                $serializerField === null ? false : $serializerField['searchable']
             );
         }
         foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
@@ -287,6 +290,7 @@ class DocumentMap
                     'fieldType'   => $this->getSerializerFieldType($element),
                     'exposedName' => $element->getAttribute('serialized-name') ?: $element->getAttribute('name'),
                     'readOnly'    => $element->getAttribute('read-only') === 'true',
+                    'searchable'  => $element->getAttribute('searchable') === 'true',
                 ];
             },
             iterator_to_array($xpath->query('property', $mapping))

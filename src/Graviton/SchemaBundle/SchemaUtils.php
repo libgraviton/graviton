@@ -117,6 +117,7 @@ class SchemaUtils
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
+
         $collectionSchema->setItems($this->getModelSchema($modelName, $model));
 
         return $collectionSchema;
@@ -141,13 +142,16 @@ class SchemaUtils
         } else {
             $schema->setTitle(ucfirst($modelName));
         }
-        
+
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
         // grab schema info from model
         $repo = $model->getRepository();
         $meta = $repo->getClassMetadata();
+
+        // Init sub searchable fields
+        $subSearchableFields = array();
 
         // look for translatables in document class
         $documentReflection = new \ReflectionClass($repo->getClassName());
@@ -243,6 +247,12 @@ class SchemaUtils
             } elseif ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
                 $property = $this->getModelSchema($field, $propertyModel, $online);
+
+                if ($property->getSearchable()) {
+                    foreach ($property->getSearchable() as $searchableSubField) {
+                        $subSearchableFields[] = $field . '.' . $searchableSubField;
+                    }
+                }
             } elseif (in_array($field, $translatableFields, true)) {
                 $property = $this->makeTranslatable($property, $languages);
             } elseif (in_array($field.'[]', $translatableFields, true)) {
@@ -293,15 +303,22 @@ class SchemaUtils
         }
 
         $requiredFields = [];
-        foreach ($model->getRequiredFields() as $field) {
-            // don't describe hidden fields
-            if (!isset($documentFieldNames[$field])) {
-                continue;
-            }
+        $modelRequiredFields = $model->getRequiredFields();
+        if (is_array($modelRequiredFields)) {
+            foreach ($modelRequiredFields as $field) {
+                // don't describe hidden fields
+                if (!isset($documentFieldNames[$field])) {
+                    continue;
+                }
 
-            $requiredFields[] = $documentFieldNames[$field];
+                $requiredFields[] = $documentFieldNames[$field];
+            }
         }
         $schema->setRequired($requiredFields);
+
+        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
+
+        $schema->setSearchable($searchableFields);
 
         return $schema;
     }

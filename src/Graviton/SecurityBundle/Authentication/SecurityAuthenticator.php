@@ -12,7 +12,7 @@ use Graviton\SecurityBundle\Entities\SecurityUser;
 use Psr\Log\LoggerInterface as Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface as SimplePreAuthInterface;
+use Symfony\Component\Security\Http\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -25,7 +25,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerI
  * @link     http://swisscom.ch
  */
 final class SecurityAuthenticator implements
-    SimplePreAuthInterface,
+    SimplePreAuthenticatorInterface,
     AuthenticationFailureHandlerInterface
 {
 

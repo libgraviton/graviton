@@ -95,7 +95,14 @@
         <!--
             Whoami Services
         -->
-        <service id="graviton.security.model.whoami" class="Graviton\SecurityBundle\Model\WhoAmI" parent="graviton.rest.model"/>
+        <service id="graviton.security.model.whoami"
+                 class="Graviton\SecurityBundle\Model\WhoAmI"
+                 parent="graviton.rest.model">
+            <argument type="service" id="graviton.rql.visitor.mongodb"/>
+            <call method="setRepository">
+                <argument type="service" id="graviton.core.repository.app"/>
+            </call>
+        </service>
         <service id="graviton.security.controller.whoami"
                  class="Graviton\SecurityBundle\Controller\WhoAmIController" parent="graviton.rest.controller">
             <call method="setModel">

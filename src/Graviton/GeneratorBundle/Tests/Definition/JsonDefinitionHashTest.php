@@ -113,6 +113,7 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                 'isClassType'       => true,
                 'constraints'       => [],
                 'required'          => true,
+                'searchable'        => false,
             ],
             $field->getDefAsArray()
         );
@@ -155,6 +156,7 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                 'description'       => $definition->getDescription(),
                 'readOnly'          => $definition->getReadOnly(),
                 'required'          => $definition->getRequired(),
+                'searchable'        => $definition->getSearchable(),
             ],
             $field->getDefAsArray()
         );

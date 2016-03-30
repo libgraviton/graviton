@@ -14,5 +14,8 @@
   "required": [
     "id",
     "name"
+  ],
+  "searchable": [
+    "name"
   ]
 }

@@ -167,6 +167,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'relType'           => null,
                     'isClassType'       => false,
                     'xDynamicKey'       => null,
+                    'searchable'        => false,
                 ]
             ),
             $field->getDefAsArray()
@@ -202,6 +203,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'relType'           => null,
                     'isClassType'       => false,
                     'xDynamicKey'       => $key,
+                    'searchable'        => false,
                 ]
             ),
             $field->getDefAsArray()
