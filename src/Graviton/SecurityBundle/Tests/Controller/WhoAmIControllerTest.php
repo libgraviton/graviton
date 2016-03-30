@@ -45,8 +45,8 @@ class WhoAmIControllerTest extends RestTestCase
 
         $this->assertEquals(
             '{"title":"Who am I service","description":"Authenticated user verification service","required":true,'.
-            '"searchable":[],"username":{"title":"The username of the logged in consultant","description":"your username",'.
-            '"type":"string"},"additionalProperties":true}',
+            '"searchable":[],"username":{"title":"The username of the logged in consultant",'.
+            '"description":"your username","type":"string"},"additionalProperties":true}',
             $response->getContent()
         );
         $this->assertInternalType('string', $response->getContent());
