@@ -15,12 +15,20 @@
     <testsuite name="integration">
       <directory>src/*/*Bundle/Tests/Controller</directory>
       <directory>src/*/Bundle/*Bundle/Tests/Controller</directory>
+      <directory>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</directory>
+      <file>src/Graviton/FileBundle/Tests/FileManagerTest.php</file>
+      <file>src/Graviton/CoreBundle/Tests/Services/CoreVersionUtilsTest.php</file>
+      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
     </testsuite>
     <testsuite name="unit">
       <directory>src/*/*Bundle/Tests</directory>
       <directory>src/*/Bundle/*Bundle/Tests</directory>
       <exclude>src/*/*Bundle/Tests/Controller</exclude>>
       <exclude>src/*/Bundle/*Bundle/Tests/Controller</exclude>
+      <exclude>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</exclude>
+      <exclude>src/Graviton/FileBundle/Tests/FileManagerTest.php</exclude>
+      <exclude>src/Graviton/CoreBundle/Tests/Services/CoreVersionUtilsTest.php</exclude>
+      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
     </testsuite>
   </testsuites>
   <filter>
