@@ -12,14 +12,12 @@ use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
-use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -197,7 +195,7 @@ class EventStatusLinkResponseListener
         $obj->setEvent($this->generateRoutingKey());
         $obj->setDocumenturl($this->request->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
-        $obj->setCoreId($this->getCoreId());
+        $obj->setCoreUserId($this->getCoreUserId());
 
         return $obj;
     }
@@ -326,7 +324,7 @@ class EventStatusLinkResponseListener
      *
      * @return string
      */
-    public function getCoreId()
+    public function getCoreUserId()
     {
         $attributes = $this->request->attributes;
         if (!$attributes) {
