@@ -220,7 +220,7 @@ class HttpLoader implements LoaderInterface
      *
      * @return string
      */
-    protected function fetchFile(RequestInterface $request)
+    private function fetchFile(RequestInterface $request)
     {
         $content = "{}";
         try {
