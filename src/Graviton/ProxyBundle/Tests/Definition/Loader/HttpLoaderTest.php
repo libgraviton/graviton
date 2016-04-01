@@ -97,10 +97,10 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      *
      * @return HttpLoader
      */
-    public function testLoadReturnNull()
+    public function testLoadShallNotReturnNull()
     {
         $url = "http://localhost/test.json";
-        $this->assertNull($this->sut->load($url));
+        $this->assertNotNull($this->sut->load($url));
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
@@ -112,13 +112,13 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn(false);
 
         $this->sut->setDispersalStrategy($mock);
-        $this->assertNull($this->sut->load($url));
+        $this->assertNotNull($this->sut->load($url));
     }
 
     /**
      * test the load method
      *
-     * @depends testLoadReturnNull
+     * @depends testLoadShallNotReturnNull
      *
      * @return void
      */
