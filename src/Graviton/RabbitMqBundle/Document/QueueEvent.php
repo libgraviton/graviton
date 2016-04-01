@@ -23,9 +23,9 @@ class QueueEvent implements TranslatableDocumentInterface
     public $event;
 
     /**
-     * @var string $coreId
+     * @var string $coreUserId
      */
-    public $coreId;
+    public $coreUserId;
 
     /**
      * @var \stdClass $document
@@ -75,21 +75,21 @@ class QueueEvent implements TranslatableDocumentInterface
      *
      * @return string
      */
-    public function getCoreId()
+    public function getCoreUserId()
     {
-        return $this->coreId;
+        return $this->coreUserId;
     }
 
     /**
      * Set user Core Id
      *
-     * @param string $coreId User Core Id
+     * @param string $coreUserId User Core Id
      *
      * @return self
      */
-    public function setCoreId($coreId)
+    public function setCoreUserId($coreUserId)
     {
-        $this->coreId = $coreId;
+        $this->coreUserId = $coreUserId;
 
         return $this;
     }
