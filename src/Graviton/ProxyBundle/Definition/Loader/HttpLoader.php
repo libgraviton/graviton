@@ -181,7 +181,7 @@ class HttpLoader implements LoaderInterface
      */
     public function load($input)
     {
-        $retVal = null;
+        $retVal = new ApiDefinition();
         if (isset($this->strategy)) {
             $request = $this->client->get($input);
             $this->applyCurlOptions($request);
@@ -220,7 +220,7 @@ class HttpLoader implements LoaderInterface
      *
      * @return string
      */
-    private function fetchFile($request)
+    private function fetchFile(RequestInterface $request)
     {
         $content = "{}";
         try {
@@ -229,8 +229,7 @@ class HttpLoader implements LoaderInterface
             if (isset($this->cache)) {
                 $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
             }
-        } catch (\Guzzle\Http\Exception\RequestException $e) {
-
+        } catch (\Guzzle\Http\Exception\HttpException $e) {
             $this->logger->info(
                 "Unable to fetch File!",
                 [
