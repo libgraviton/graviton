@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Service;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
@@ -42,22 +43,28 @@ final class RestUtils implements RestUtilsInterface
      */
     private $router;
 
+    /** @var LoggerInterface  */
+    private $logger;
+
     /**
      * @param ContainerInterface   $container         container
      * @param Router               $router            router
      * @param Serializer           $serializer        serializer
+     * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
      * @param SerializationContext $serializerContext context for serializer
      */
     public function __construct(
         ContainerInterface $container,
         Router $router,
         Serializer $serializer,
+        LoggerInterface $logger,
         SerializationContext $serializerContext = null
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
         $this->serializerContext = $serializerContext;
         $this->router = $router;
+        $this->logger = $logger;
     }
 
     /**
@@ -101,11 +108,24 @@ final class RestUtils implements RestUtilsInterface
      */
     public function serializeContent($content, $format = 'json')
     {
-        $result = $this->getSerializer()->serialize(
-            $content,
-            $format,
-            $this->getSerializerContext()
-        );
+        $result = '';
+        try {
+            $result = $this->getSerializer()->serialize(
+                $content,
+                $format,
+                $this->getSerializerContext()
+            );
+        } catch (\Exception $e) {
+            $this->logger->alert(
+                sprintf(
+                    'Cannot serialize content (%s); Content: class: %s, id: %s)',
+                    $e->getMessage(),
+                    get_class($content),
+                    $content->getId()
+                )
+            );
+        }
+
         return $result;
     }
 
