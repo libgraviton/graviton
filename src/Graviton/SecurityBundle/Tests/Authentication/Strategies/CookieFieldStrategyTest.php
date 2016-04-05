@@ -131,9 +131,9 @@ class CookieFieldStrategyTest extends WebTestCase
     public function stringExtractProvider()
     {
         return array(
-            'testing extract username' => array("someId123", "username=testUser;finnova_id=someId123"),
-            'testing extract rev username' => array("someId123", "finnova_id=someId123;username=someOtherUser"),
-            'trailing simicolon test' => array("someId123", "finnova_id=someId123;username=test-mdm;"),
+            'testing extract username' => array("someId123_test", "username=testUser;finnova_id=someId123_test"),
+            'testing extract rev username' => array("someId123_foo", "finnova_id=someId123_foo;username=someOtherUser"),
+            'trailing simicolon test' => array("someId123_bar", "finnova_id=someId123_bar;username=test-mdm;"),
         );
     }
 }
