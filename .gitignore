@@ -16,3 +16,4 @@ app/config/parameters_local.xml
 app/files/
 app/config/deploy.yml
 versions.yml
+.idea/
