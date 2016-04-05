@@ -70,7 +70,7 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
         $this->logger
             ->expects($this->once())
             ->method('info')
-            ->with($this->equalTo('Entity (Jon Doe (1234567)) was successfully recognized.'));
+            ->with($this->equalTo('Entity (Jon Doe) was successfully recognized.'));
 
         $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
             ->disableOriginalConstructor()
@@ -106,7 +106,7 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('info')
             ->with(
-                $this->equalTo('Entity (Jon Doe (1234567)) was successfully recognized.')
+                $this->equalTo('Entity (Jon Doe) was successfully recognized.')
             );
 
         $logger = new AuthenticationLogger($this->logger);
@@ -140,7 +140,7 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('info')
             ->with(
-                $this->equalTo('Entity (johnny (?)) was successfully recognized.')
+                $this->equalTo('Entity (johnny) was successfully recognized.')
             );
 
         $logger = new AuthenticationLogger($this->logger);
