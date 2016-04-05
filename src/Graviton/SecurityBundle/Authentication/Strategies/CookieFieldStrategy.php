@@ -6,7 +6,6 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class CookieFieldStrategy
@@ -24,7 +23,10 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     const COOKIE_VALUE_CORE_ID = 'finnova_id';
 
     /** @var string  */
-    const CONFIGURATION_PARAMETER_ID = 'graviton.security.core_id';
+    const CONFIGURATION_PARAMETER_CORE_ID = 'graviton.security.core_id';
+
+    /** @var string  */
+    const CONFIGURATION_PARAMETER_USER_ID = 'graviton.security.user_id';
 
     /** @var string */
     protected $field;
@@ -50,34 +52,40 @@ class CookieFieldStrategy extends AbstractHttpStrategy
         $bagValue = $this->extractFieldInfo($request->cookies, $this->field);
 
         // this needs to be available in a later state of the application
-        $this->extractCoreId($request, $bagValue);
+        $this->extractAdUsername($request, $bagValue);
 
-        return $this->extractAdUsername($bagValue);
+        return $this->extractCoreId($request, $bagValue);
     }
 
     /**
      * Finds and extracts the ad username from the cookie.
      *
-     * @param string $value The string the value of self::COOKIE_FIELD_NAME shall be extracted from.
+     * @param Request $request Request stack that controls the lifecycle of requests
+     * @param string  $value   The string the value of self::COOKIE_FIELD_NAME shall be extracted from.
      *
      * @return string
      */
-    protected function extractAdUsername($value)
+    protected function extractAdUsername(Request $request, $value)
     {
         $pattern = "/((?m)(?<=\b".self::COOKIE_FIELD_NAME."=)[^;]*)/i";
         preg_match($pattern, $value, $matches);
 
-        return (!$matches)? $value : $matches[0];
+        if ($matches) {
+            $request->attributes->set(self::CONFIGURATION_PARAMETER_USER_ID, $matches[0]);
+
+            return $matches[0];
+        }
+
+        return $value;
     }
 
     /**
      * Finds and extracts the core system id from tha cookie.
      *
-     *
      * @param Request $request Request stack that controls the lifecycle of requests
      * @param string  $text    String to be examined for the core id.
      *
-     * @return null
+     * @return string
      */
     protected function extractCoreId(Request $request, $text)
     {
@@ -85,7 +93,11 @@ class CookieFieldStrategy extends AbstractHttpStrategy
         preg_match($pattern, $text, $matches);
 
         if ($matches) {
-            $request->attributes->set(self::CONFIGURATION_PARAMETER_ID, $matches[0]);
+            $request->attributes->set(self::CONFIGURATION_PARAMETER_CORE_ID, $matches[0]);
+
+            return $matches[0];
         }
+
+        return $text;
     }
 }
