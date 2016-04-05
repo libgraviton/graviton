@@ -11,6 +11,7 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -194,6 +195,7 @@ class EventStatusLinkResponseListener
         $obj->setEvent($this->generateRoutingKey());
         $obj->setDocumenturl($this->request->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
+        $obj->setCoreUserId($this->getCoreUserId());
 
         return $obj;
     }
@@ -315,5 +317,23 @@ class EventStatusLinkResponseListener
             ->toArray();
 
         return array_keys($data);
+    }
+
+    /**
+     * Find current request attribute to User Core Id
+     *
+     * @return string
+     */
+    public function getCoreUserId()
+    {
+        $attributes = $this->request->attributes;
+        if (!$attributes) {
+            return '';
+        }
+        $value = $attributes->get(CookieFieldStrategy::CONFIGURATION_PARAMETER_ID);
+        if ($value) {
+            return (string) $value;
+        }
+        return '';
     }
 }
