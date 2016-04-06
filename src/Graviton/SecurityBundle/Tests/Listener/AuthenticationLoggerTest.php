@@ -70,28 +70,15 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
         $this->logger
             ->expects($this->once())
             ->method('info')
-            ->with($this->equalTo('Entity (Jon Doe (1234567)) was successfully recognized.'));
-
-        $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getContractNumber'))
-            ->getMock();
-        $userDouble
-            ->expects($this->once())
-            ->method('getContractNumber')
-            ->will($this->returnValue('1234567'));
+            ->with($this->equalTo('Entity (Jon Doe) was successfully recognized.'));
 
         $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
-            ->setMethods(array('getUsername', 'getUser'))
+            ->setMethods(array('getUsername'))
             ->getMockForAbstractClass();
         $tokenDouble
             ->expects($this->once())
             ->method('getUsername')
             ->will($this->returnValue('Jon Doe'));
-        $tokenDouble
-            ->expects($this->once())
-            ->method('getUser')
-            ->will($this->returnValue($userDouble));
 
         $eventDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Event\AuthenticationEvent')
             ->disableOriginalConstructor()
@@ -106,7 +93,7 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('info')
             ->with(
-                $this->equalTo('Entity (Jon Doe (1234567)) was successfully recognized.')
+                $this->equalTo('Entity (Jon Doe) was successfully recognized.')
             );
 
         $logger = new AuthenticationLogger($this->logger);
@@ -140,7 +127,7 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('info')
             ->with(
-                $this->equalTo('Entity (johnny (?)) was successfully recognized.')
+                $this->equalTo('Entity (johnny) was successfully recognized.')
             );
 
         $logger = new AuthenticationLogger($this->logger);
