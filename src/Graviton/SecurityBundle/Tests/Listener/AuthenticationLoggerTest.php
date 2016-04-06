@@ -72,26 +72,13 @@ class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
             ->method('info')
             ->with($this->equalTo('Entity (Jon Doe) was successfully recognized.'));
 
-        $userDouble = $this->getMockBuilder('\Graviton\SecurityBundle\Entities\SecurityContract')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getContractNumber'))
-            ->getMock();
-        $userDouble
-            ->expects($this->once())
-            ->method('getContractNumber')
-            ->will($this->returnValue('1234567'));
-
         $tokenDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
-            ->setMethods(array('getUsername', 'getUser'))
+            ->setMethods(array('getUsername'))
             ->getMockForAbstractClass();
         $tokenDouble
             ->expects($this->once())
             ->method('getUsername')
             ->will($this->returnValue('Jon Doe'));
-        $tokenDouble
-            ->expects($this->once())
-            ->method('getUser')
-            ->will($this->returnValue($userDouble));
 
         $eventDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Event\AuthenticationEvent')
             ->disableOriginalConstructor()
