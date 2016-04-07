@@ -330,7 +330,7 @@ class EventStatusLinkResponseListener
         if (!$attributes) {
             return '';
         }
-        $value = $attributes->get(CookieFieldStrategy::CONFIGURATION_PARAMETER_ID);
+        $value = $attributes->get(CookieFieldStrategy::CONFIGURATION_PARAMETER_CORE_ID);
         if ($value) {
             return (string) $value;
         }
