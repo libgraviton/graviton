@@ -313,6 +313,14 @@ class RestController
                     },
                     $result
                 );
+
+                /*
+                 * clean up:
+                 *
+                 * - remove empty entries
+                 */
+                $result = array_filter($result);
+
                 return '['.implode(',', $result).']';
             }
 
