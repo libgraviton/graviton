@@ -108,25 +108,22 @@ final class RestUtils implements RestUtilsInterface
      */
     public function serializeContent($content, $format = 'json')
     {
-        $result = '';
         try {
-            $result = $this->getSerializer()->serialize(
+            return $this->getSerializer()->serialize(
                 $content,
                 $format,
                 $this->getSerializerContext()
             );
         } catch (\Exception $e) {
-            $this->logger->alert(
-                sprintf(
-                    'Cannot serialize content (%s); Content: class: %s, id: %s)',
-                    $e->getMessage(),
-                    get_class($content),
-                    $content->getId()
-                )
+            $msg = sprintf(
+                'Cannot serialize content class: %s; with id: %s; Message: %s',
+                get_class($content),
+                method_exists($content, 'getId') ? $content->getId() : '-no id-',
+                str_replace('MongoDBODMProxies\__CG__\GravitonDyn', '', $e->getMessage())
             );
+            $this->logger->alert($msg);
+            throw new \Exception($msg, $e->getCode());
         }
-
-        return $result;
     }
 
     /**
