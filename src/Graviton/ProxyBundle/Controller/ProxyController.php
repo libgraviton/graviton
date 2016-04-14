@@ -121,6 +121,9 @@ class ProxyController
                 $request->getContent(false)
             );
             $newRequest->headers->add($request->headers->all());
+            $newRequest->query->add($request->query->all());
+            $queryString = $request->server->get('QUERY_STRING');
+            $newRequest->server->set('QUERY_STRING', $queryString);
 
             $newRequest = $this->transformationHandler->transformRequest(
                 $api['apiName'],
