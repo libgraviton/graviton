@@ -59,15 +59,11 @@ class JsonExceptionListerTest extends RestTestCase
      */
     public function testStatus500()
     {
-        // PHP7 fails here fix.
-        return;
-        /** @var \PHPUnit_Framework_MockObject_MockBuilder $mockBuilder */
-        $mockBuilder = $this->getMockBuilder(DocumentManager::class);
-        /** @var DocumentManager $mockDocument */
-        $mockDocument = $mockBuilder->disableOriginalConstructor()->getMock();
+        /** @var DocumentManager $documentManager */
+        $documentManager = $this->getContainer()->get('doctrine_mongodb.odm.faulty_document_manager');
 
         $client = static::createRestClient();
-        $client->getContainer()->set('doctrine_mongodb.odm.default_document_manager', $mockDocument);
+        $client->getContainer()->set('doctrine_mongodb.odm.default_document_manager', $documentManager);
         $client->request('GET', "/testcase/readonly/");
 
         $response = $client->getResponse();
