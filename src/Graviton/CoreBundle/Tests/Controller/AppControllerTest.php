@@ -223,17 +223,24 @@ class AppControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->request('OPTIONS', '/core/app/?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/schema/core/app/collection?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/schema/core/app/item?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/core/app/collection?invalidrqlquery');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
-        foreach (['GET', 'OPTIONS'] as $method) {
-            $client = static::createRestClient();
-            $client->request($method, '/schema/core/app/collection?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/core/app/item?invalidrqlquery');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
-            $client = static::createRestClient();
-            $client->request($method, '/schema/core/app/item?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        }
 
         $client = static::createRestClient();
         $client->post('/core/app/?invalidrqlquery', $appData);
