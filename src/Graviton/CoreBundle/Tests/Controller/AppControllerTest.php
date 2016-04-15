@@ -228,7 +228,7 @@ class AppControllerTest extends RestTestCase
         foreach (['GET', 'OPTIONS'] as $method) {
             $client = static::createRestClient();
             $client->request($method, '/schema/core/app/collection?invalidrqlquery');
-            $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+            $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
             $client = static::createRestClient();
             $client->request($method, '/schema/core/app/item?invalidrqlquery');
