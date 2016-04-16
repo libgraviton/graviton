@@ -9,6 +9,7 @@ use Graviton\I18nBundle\Service\I18nUtils;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 
 /**
  * translate fields during serialization
@@ -42,42 +43,61 @@ class I18nSerializationListener
     }
 
     /**
-     * remove translateable strings from object
+     * remove translatable strings from object
      *
      * @param PreSerializeEvent $event event
      *
      * @return void
+     * @throws \Exception
      */
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
+
+        // Doctrine try to map value fields that may not exists.
+        try {
+            $methods = get_class_methods($object);
+            foreach ($methods as $method) {
+                if (substr($method, 0, 3) == 'get') {
+                    $object->$method();
+                }
+            }
+        } catch (DocumentNotFoundException $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        } catch (\Exception $e) {
+            // Errors like missing identifier $id mapped by doctrine error, ignore.
+            return;
+        }
+
         if (!$object instanceof TranslatableDocumentInterface) {
             return;
         }
 
-        try {
-            $hash = \spl_object_hash($object);
-            $this->localizedFields[$hash] = [];
-            foreach ($object->getTranslatableFields() as $field) {
-                $isArray = substr($field, -2, 2) === '[]';
-                $method = $isArray ? substr($field, 0, -2) : $field;
+        $hash = \spl_object_hash($object);
+        $this->localizedFields[$hash] = [];
 
-                $setter = 'set'.ucfirst($method);
-                $getter = 'get'.ucfirst($method);
-                if (!method_exists($object, $setter) || !method_exists($object, $getter)) {
-                    continue;
-                }
+        $translatable = $object->getTranslatableFields();
+        if (!is_array($translatable)) {
+            return;
+        }
 
-                // only allow objects that we can update during postSerialize
-                $value = $object->$getter();
-                if (($isArray && !empty($value)) || (!$isArray && $value != null)) {
-                    $this->localizedFields[$hash][$field] = $value;
-                    // remove untranslated field to make space for translation struct
-                    $object->$setter(null);
-                }
+        foreach ($translatable as $field) {
+            $isArray = substr($field, -2, 2) === '[]';
+            $method = $isArray ? substr($field, 0, -2) : $field;
+
+            $setter = 'set'.ucfirst($method);
+            $getter = 'get'.ucfirst($method);
+            if (!method_exists($object, $setter) || !method_exists($object, $getter)) {
+                continue;
             }
-        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
-            // @todo if a document references a non-existing document - handle it so it renders to null!
+
+            // only allow objects that we can update during postSerialize
+            $value = $object->$getter();
+            if (($isArray && !empty($value)) || (!$isArray && $value != null)) {
+                $this->localizedFields[$hash][$field] = $value;
+                // remove untranslated field to make space for translation struct
+                $object->$setter(null);
+            }
         }
     }
 
@@ -95,7 +115,13 @@ class I18nSerializationListener
             return;
         }
 
-        foreach ($this->localizedFields[\spl_object_hash($object)] as $field => $value) {
+        $hash = \spl_object_hash($object);
+
+        if (!array_key_exists($hash, $this->localizedFields)) {
+            return;
+        }
+
+        foreach ($this->localizedFields[$hash] as $field => $value) {
             if (substr($field, -2, 2) === '[]') {
                 $field = substr($field, 0, -2);
                 $event->getVisitor()->addData(
