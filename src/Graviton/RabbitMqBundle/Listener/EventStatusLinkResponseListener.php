@@ -167,11 +167,47 @@ class EventStatusLinkResponseListener
 
         // let's send it to the queue if appropriate
         if (!empty($queueEvent->getEvent())) {
-            $this->rabbitMqProducer->publish(
-                json_encode($queueEvent),
-                $queueEvent->getEvent()
-            );
+            $sQueueForEvent = $this->getRBMQueueNameForEvent($queueEvent->getEvent());
+            if( strlen($sQueueForEvent) )
+            {
+                // declare the Queue for the Event if its not there already declared
+                $this->rabbitMqProducer->getChannel()->queue_declare($sQueueForEvent, false, true, false, false);
+                $this->rabbitMqProducer->publish( json_encode($queueEvent), $sQueueForEvent );
+            }
         }
+    }
+
+    /**
+     * @param String $sEventname the Eventname
+     *
+     * @return String Queuename for the RabbitMQ
+     * @Todo $aEventQueues must be fetched from the MongoDB!!!, Collection EventWorker.
+     * This Collection contains the registered Worker-Ids and the events to them
+     * Find out what's up with the generated Model of it (GravitonDyn/EventWorkerBundle) and get it!
+     * This current code is not the solution!!!
+     */
+    private function getRBMQueueNameForEvent( $sInputEventname ) {
+        $sQueueName = '';
+        $aEventQueues = array(
+            'nios-printing' => array(
+                'document.file.file.create',
+                'document.printdocument.printdocument.create',
+                'document.file.file.update',
+                'document.printdocument.printdocument.update'
+            ),
+            'investment-worker' => array(
+                'document.printinvestmentdocument.printinvestmentdocument.create',
+                'document.printinvestmentdocument.printinvestmentdocument.update'
+            ),
+        );
+        foreach($aEventQueues as $sEventQueueName => $aEventQueueDef) {
+            foreach( $aEventQueueDef as $sEventName ) {
+                if( strstr($sEventName, $sInputEventname) ) {
+                    return $sEventQueueName;
+                }
+            }
+        }
+        return $sQueueName;
     }
 
     /**
