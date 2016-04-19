@@ -147,7 +147,9 @@ class EventStatusLinkResponseListener
         // only if we have subscribers, it will create more load as it persists an EventStatus
         $queueEvent = $this->createQueueEventObject();
 
-        /** @var Response $response */
+        /**
+         * @var Response $response
+         */
         $response = $event->getResponse();
 
         if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
@@ -167,12 +169,11 @@ class EventStatusLinkResponseListener
 
         // let's send it to the queue(s) if appropriate
         if (!empty($queueEvent->getEvent())) {
-            $aQueuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
-            foreach( $aQueuesForEvent as $sQueueForEvent )
-            {
+            $queuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
+            foreach ($queuesForEvent as $queueForEvent) {
                 // declare the Queue for the Event if its not there already declared
-                $this->rabbitMqProducer->getChannel()->queue_declare($sQueueForEvent, false, true, false, false);
-                $this->rabbitMqProducer->publish( json_encode($queueEvent), $sQueueForEvent );
+                $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
+                $this->rabbitMqProducer->publish(json_encode($queueEvent), $queueForEvent);
             }
         }
     }
