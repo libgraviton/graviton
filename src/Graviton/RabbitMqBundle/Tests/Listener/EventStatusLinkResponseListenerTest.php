@@ -50,12 +50,12 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             )
         );
 
+        $channelMock = $this->getMockBuilder(
+            '\PhpAmqpLib\Channel\AMQPChannel'
+        )->disableOriginalConstructor()->getMock();
+        
         $producerMock->expects($this->once())->method('getChannel')
-            ->willReturn(
-                $this->getMockBuilder(
-                '\PhpAmqpLib\Channel\AMQPChannel'
-                )->disableOriginalConstructor()->getMock()
-            );
+            ->willReturn($channelMock);
 
         $routerMock = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor(
         )->setMethods(['generate'])->getMockForAbstractClass();
