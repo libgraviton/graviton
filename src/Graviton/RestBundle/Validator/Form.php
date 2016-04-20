@@ -16,7 +16,6 @@ use Symfony\Component\Form\FormInterface;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -142,7 +141,9 @@ class Form
         if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
             // we need to check for id mismatches....
             if ($request->attributes->get('id') != $input['id']) {
-                throw new BadRequestHttpException('Record ID in your payload must be the same');
+                $e = new MalformedInputException('Record ID in your payload must be the same');
+                $e->setResponse($response);
+                throw $e;
             }
         }
     }

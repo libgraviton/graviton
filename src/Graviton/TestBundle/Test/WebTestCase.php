@@ -37,7 +37,7 @@ abstract class WebTestCase extends SymWebTestCase
 
         WebTestCase::$kernel = new WebTestCase::$class(
             isset($options['environment']) ? $options['environment'] : 'test',
-            isset($options['debug']) ? $options['debug'] : true
+            isset($options['debug']) ? $options['debug'] : false
         );
 
         WebTestCase::$kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));

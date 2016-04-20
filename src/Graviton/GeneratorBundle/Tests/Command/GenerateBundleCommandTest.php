@@ -107,7 +107,7 @@ class GenerateBundleCommandTest extends BaseTest
      */
     protected function getBundle()
     {
-        $bundle = $this->getMock('Graviton\BundleBundle\GravitonBundleInterface');
+        $bundle = $this->getMock('Graviton\BundleBundle\GravitonBundleBundle');
         $bundle
             ->expects($this->any())
             ->method('getPath')
