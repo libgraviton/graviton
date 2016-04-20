@@ -19,6 +19,7 @@
       <file>src/Graviton/FileBundle/Tests/FileManagerTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/CoreVersionUtilsTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
+      <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</file>
     </testsuite>
     <testsuite name="unit">
       <directory>src/*/*Bundle/Tests</directory>
@@ -29,6 +30,7 @@
       <exclude>src/Graviton/FileBundle/Tests/FileManagerTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/CoreVersionUtilsTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
+      <exclude>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</exclude>
     </testsuite>
   </testsuites>
   <filter>
