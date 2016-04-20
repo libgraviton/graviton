@@ -86,11 +86,6 @@ class MainControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->assertEquals(
-            'Please look at the Link headers of this response for further information.',
-            $results->message
-        );
-
         $this->assertInternalType('array', $results->services);
 
         $refName = '$ref';
