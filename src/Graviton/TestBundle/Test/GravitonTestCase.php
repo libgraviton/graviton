@@ -41,7 +41,7 @@ class GravitonTestCase extends WebTestCase
         include_once __DIR__ . '/../../../../app/AppKernel.php';
 
         $env = 'test';
-        $debug = true;
+        $debug = false;
 
         $kernel = new AppKernel($env, $debug);
         $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));

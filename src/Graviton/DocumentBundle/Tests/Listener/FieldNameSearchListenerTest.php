@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
-use Xiag\Rql\Parser\Node\Query\AbstractComparisonOperatorNode;
+use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -117,7 +117,7 @@ class FieldNameSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with('_route')
             ->willReturn('route.id');
 
-        $node = $this->getMockBuilder(AbstractComparisonOperatorNode::class)
+        $node = $this->getMockBuilder(AbstractScalarOperatorNode::class)
             ->disableOriginalConstructor()
             ->getMock();
         $node->expects($this->once())
@@ -149,7 +149,7 @@ class FieldNameSearchListenerTest extends \PHPUnit_Framework_TestCase
             ->with('_route')
             ->willReturn('route.id');
 
-        $node = $this->getMockBuilder(AbstractComparisonOperatorNode::class)
+        $node = $this->getMockBuilder(AbstractScalarOperatorNode::class)
             ->disableOriginalConstructor()
             ->getMock();
         $node->expects($this->once())
