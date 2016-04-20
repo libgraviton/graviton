@@ -16,6 +16,7 @@
         <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
         <parameter key="graviton.core.service.coreversionutils.class">Graviton\CoreBundle\Service\CoreVersionUtils</parameter>
+        <parameter key="graviton.core.listener.jsonexceptionlistener.class">Graviton\CoreBundle\Listener\JsonExceptionListener</parameter>
     </parameters>
     <services>
         <service id="graviton.core.controller.main"
@@ -105,6 +106,10 @@
             <argument>%graviton.composer.cmd%</argument>
             <argument>%kernel.root_dir%</argument>
             <argument type="service" id="graviton.yaml.dumper"/>
+        </service>
+        <service id="graviton.core.listener.json_exception"
+                 class="%graviton.core.listener.jsonexceptionlistener.class%">
+            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
         </service>
     </services>
 </container>

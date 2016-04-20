@@ -313,6 +313,14 @@ class RestController
                     },
                     $result
                 );
+
+                /*
+                 * clean up:
+                 *
+                 * - remove empty entries
+                 */
+                $result = array_filter($result);
+
                 return '['.implode(',', $result).']';
             }
 
@@ -611,7 +619,7 @@ class RestController
         list($app, $module, , $modelName) = explode('.', $request->attributes->get('_route'));
 
         $response = $this->response;
-        $response->setStatusCode(Response::HTTP_OK);
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         // enabled methods for CorsListener
         $corsMethods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';

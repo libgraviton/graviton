@@ -1804,16 +1804,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.0-alpha16",
+            "version": "v2.0.0-alpha17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "aef24fe1d46071ee92f3cfb1b055677791fc02f2"
+                "reference": "b5ee850cf5aee91d14508464871dc9365155b0de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/aef24fe1d46071ee92f3cfb1b055677791fc02f2",
-                "reference": "aef24fe1d46071ee92f3cfb1b055677791fc02f2",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/b5ee850cf5aee91d14508464871dc9365155b0de",
+                "reference": "b5ee850cf5aee91d14508464871dc9365155b0de",
                 "shasum": ""
             },
             "require": {
@@ -1857,20 +1857,20 @@
                 "rest",
                 "rql"
             ],
-            "time": "2016-03-14 10:49:12"
+            "time": "2016-04-15 09:09:24"
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v0.10.0",
+            "version": "v0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a"
+                "reference": "b492988e72a20785a1df2a767c41867ca7999691"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/295f85880f0b54a632afc4a45ce21cd8dc482a2a",
-                "reference": "295f85880f0b54a632afc4a45ce21cd8dc482a2a",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/b492988e72a20785a1df2a767c41867ca7999691",
+                "reference": "b492988e72a20785a1df2a767c41867ca7999691",
                 "shasum": ""
             },
             "require": {
@@ -1902,7 +1902,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony 2.",
-            "time": "2015-10-20 11:27:51"
+            "time": "2016-04-15 12:56:32"
         },
         {
             "name": "guzzle/guzzle",

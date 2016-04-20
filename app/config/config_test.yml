@@ -53,3 +53,37 @@ old_sound_rabbit_mq:
 graviton_proxy:
     sources:
         swagger:
+
+# DoctrineMongoDB Configuration
+# see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
+doctrine_mongodb:
+    default_database: "%mongodb.default.server.db%"
+    connections:
+        default:
+            server: "%mongodb.default.server.uri%"
+            options: { connect: true }
+        faulty:
+            server: failServer
+            options: { connect: true }
+    document_managers:
+        default:
+            retry_connect: 3
+            retry_query: 1
+            mappings:
+                GravitonCoreBundle: ~
+                GravitonRabbitMqBundle: ~
+            filters:
+                softdeleteable:
+                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
+                    enabled: true
+        faulty:
+            connection: faulty
+            retry_connect: 3
+            retry_query: 1
+            mappings:
+                GravitonCoreBundle: ~
+                GravitonRabbitMqBundle: ~
+            filters:
+                softdeleteable:
+                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
+                    enabled: true
