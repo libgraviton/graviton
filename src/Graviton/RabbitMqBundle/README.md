@@ -14,7 +14,7 @@ It implements the logic as described in the [publicly available documentation](h
 
 The "onKernelResponse"-Method of EventStatusLinkResponseListener defines permanent Queue(s) on the RabbitMQ-Server, 
 named after the workerId(s) corresponding to the given Event. These are defined in the MongoDB according to the Registration of the Worker in Graviton
-Check enpoint /event/worker
+Check endpoint /event/worker
 Whoever starts first - Graviton-Event (Producer) or Worker (Consumer) - defines the Queue. The Queue-Definitions must be compatible on both sides. 
 Changing the Queue-Settings only on one Side will lead to an Error.
 
