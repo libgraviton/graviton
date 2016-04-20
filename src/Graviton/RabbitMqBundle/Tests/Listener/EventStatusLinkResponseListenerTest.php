@@ -7,6 +7,8 @@ namespace Graviton\RabbitMqBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener;
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPConnection;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -27,7 +29,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
     {
         $producerMock = $this->getMockBuilder(
             '\OldSound\RabbitMqBundle\RabbitMq\ProducerInterface'
-        )->disableOriginalConstructor()->setMethods(['publish'])->getMockForAbstractClass();
+        )->disableOriginalConstructor()->setMethods(['publish', 'getChannel'])->getMockForAbstractClass();
+        
         $producerMock->expects($this->once())->method('publish')
         ->will(
             $this->returnCallback(
@@ -40,12 +43,19 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
                     );
 
                     \PHPUnit_Framework_Assert::assertSame(
-                        'document.dude.config.create',
+                        'someWorkerId',
                         $routingKey
                     );
                 }
             )
         );
+
+        $channelMock = $this->getMockBuilder(
+            '\PhpAmqpLib\Channel\AMQPChannel'
+        )->disableOriginalConstructor()->getMock();
+        
+        $producerMock->expects($this->once())->method('getChannel')
+            ->willReturn($channelMock);
 
         $routerMock = $this->getMockBuilder('\Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor(
         )->setMethods(['generate'])->getMockForAbstractClass();
@@ -77,23 +87,23 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
 
         $cursorMock = $this->getMockBuilder('\Doctrine\MongoDB\CursorInterface')->disableOriginalConstructor(
         )->getMockForAbstractClass();
-        $cursorMock->expects($this->once())->method('toArray')->willReturn(['someWorkerId' => 'some content']);
+        $cursorMock->expects($this->any())->method('toArray')->willReturn(['someWorkerId' => 'some content']);
 
         $queryMock = $this->getMockBuilder('\Doctrine\MongoDB\Query\Query')->disableOriginalConstructor()->getMock();
-        $queryMock->expects($this->once())->method('execute')->willReturn($cursorMock);
+        $queryMock->expects($this->any())->method('execute')->willReturn($cursorMock);
 
         $queryBuilderMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\Query\Builder')->disableOriginalConstructor(
         )->getMock();
-        $queryBuilderMock->expects($this->once())->method('select')->willReturnSelf();
-        $queryBuilderMock->expects($this->once())->method('field')->willReturnSelf();
-        $queryBuilderMock->expects($this->once())->method('equals')->willReturnSelf();
-        $queryBuilderMock->expects($this->once())->method('getQuery')->willReturn($queryMock);
+        $queryBuilderMock->expects($this->any())->method('select')->willReturnSelf();
+        $queryBuilderMock->expects($this->any())->method('field')->willReturnSelf();
+        $queryBuilderMock->expects($this->any())->method('equals')->willReturnSelf();
+        $queryBuilderMock->expects($this->any())->method('getQuery')->willReturn($queryMock);
 
         $documentManagerMock = $this->getMockBuilder(
             '\Doctrine\ODM\MongoDB\DocumentManager'
         )->disableOriginalConstructor()->setMethods(['createQueryBuilder', 'persist', 'flush'])->getMock();
-        $documentManagerMock->expects($this->once())->method('createQueryBuilder')->willReturn($queryBuilderMock);
-        $documentManagerMock->expects($this->once())->method('persist')->with(
+        $documentManagerMock->expects($this->any())->method('createQueryBuilder')->willReturn($queryBuilderMock);
+        $documentManagerMock->expects($this->any())->method('persist')->with(
             $this->callback(
                 function ($obj) {
                     return
@@ -110,7 +120,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
                 }
             )
         );
-        $documentManagerMock->expects($this->once())->method('flush');
+        $documentManagerMock->expects($this->any())->method('flush');
 
         $extrefConverterMock = $this->getMockBuilder(
             '\Graviton\DocumentBundle\Service\ExtReferenceConverter'
