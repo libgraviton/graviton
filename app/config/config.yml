@@ -185,7 +185,6 @@ old_sound_rabbit_mq:
             auto_setup_fabric: false
             class: OldSound\RabbitMqBundle\RabbitMq\Producer
             connection: default
-            auto_setup_fabric: true
 
 graviton_proxy:
     sources:
