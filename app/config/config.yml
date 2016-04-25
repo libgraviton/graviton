@@ -179,22 +179,12 @@ old_sound_rabbit_mq:
 
             # requires php-amqplib v2.4.1+
             heartbeat: 0
+
     producers:
         document_event:
+            auto_setup_fabric: false
             class: OldSound\RabbitMqBundle\RabbitMq\Producer
             connection: default
-            exchange_options:
-                name: graviton
-                type: topic
-    consumers:
-        dump:
-            connection: default
-            exchange_options:
-                name: graviton
-                type: topic
-            queue_options:
-                routing_keys: %graviton.rabbitmq.consumer.dump.routingkeys%
-            callback: graviton.rabbitmq.consumer.dump
 
 graviton_proxy:
     sources:

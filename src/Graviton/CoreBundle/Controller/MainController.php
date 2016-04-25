@@ -103,7 +103,6 @@ class MainController
         $response = $this->response;
 
         $mainPage = new \stdClass();
-        $mainPage->message = 'Please look at the Link headers of this response for further information.';
         $mainPage->services = $this->determineServices(
             $this->restUtils->getOptionRoutes()
         );

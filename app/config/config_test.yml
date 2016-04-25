@@ -3,7 +3,7 @@ imports:
     - { resource: "@FrameworkBundle/Resources/config/test.xml" }
 
 parameters:
-    kernel.debug: true
+    kernel.debug: false
     graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
 
 framework:
@@ -53,9 +53,6 @@ old_sound_rabbit_mq:
 graviton_proxy:
     sources:
         swagger:
-            graviton:
-                prefix: graviton
-                uri:    http://localhost:8000/swagger.json
 
 # DoctrineMongoDB Configuration
 # see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
