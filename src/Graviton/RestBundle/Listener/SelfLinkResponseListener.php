@@ -90,7 +90,6 @@ class SelfLinkResponseListener
                 $request,
                 $this->router->generate($routeName, $params, true) . $query
             );
-
         } catch (\Exception $e) {
             $addHeader = false;
         }
