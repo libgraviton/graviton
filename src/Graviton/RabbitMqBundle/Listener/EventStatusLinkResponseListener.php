@@ -129,6 +129,7 @@ class EventStatusLinkResponseListener
         $this->extRefConverter = $extRefConverter;
         $this->queueEventDocument = $queueEventDocument;
         $this->eventMap = $eventMap;
+        $this->gravitonSelfUrl = $gravitonSelfUrl;
         $this->eventWorkerClassname = $eventWorkerClassname;
         $this->eventStatusClassname = $eventStatusClassname;
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
