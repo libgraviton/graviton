@@ -71,3 +71,6 @@ parameters:
     graviton.proxy.httploader.curloptions: []
 
     graviton.proxy.swagger.sources: {}
+
+    # Graviton SelfUrl FQDN or http://apialias just for usage in communication with Worker(s) via RabbitMQ
+    graviton.selfurl: http://127.0.0.1:8000

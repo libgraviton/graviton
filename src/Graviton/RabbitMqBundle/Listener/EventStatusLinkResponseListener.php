@@ -53,6 +53,11 @@ class EventStatusLinkResponseListener
     private $eventMap;
 
     /**
+     * @var String gravitonSelfUrl FQDN or apialias to Graviton
+     */
+    private $gravitonSelfUrl;
+
+    /**
      * @var ExtReferenceConverter ExtReferenceConverter
      */
     private $extRefConverter;
@@ -95,6 +100,7 @@ class EventStatusLinkResponseListener
      * @param ExtReferenceConverter $extRefConverter                   instance of the ExtReferenceConverter service
      * @param QueueEvent            $queueEventDocument                queueevent document
      * @param array                 $eventMap                          eventmap
+     * @param String                $gravitonSelfUrl                   gravitonSelfUrl FQDN or apialias to Graviton
      * @param string                $eventWorkerClassname              classname of the EventWorker document
      * @param string                $eventStatusClassname              classname of the EventStatus document
      * @param string                $eventStatusStatusClassname        classname of the EventStatusStatus document
@@ -109,6 +115,7 @@ class EventStatusLinkResponseListener
         ExtReferenceConverter $extRefConverter,
         QueueEvent $queueEventDocument,
         array $eventMap,
+        $gravitonSelfUrl,
         $eventWorkerClassname,
         $eventStatusClassname,
         $eventStatusStatusClassname,
@@ -147,7 +154,9 @@ class EventStatusLinkResponseListener
         // only if we have subscribers, it will create more load as it persists an EventStatus
         $queueEvent = $this->createQueueEventObject();
 
-        /** @var Response $response */
+        /**
+         * @var Response $response
+         */
         $response = $event->getResponse();
 
         if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
@@ -165,12 +174,19 @@ class EventStatusLinkResponseListener
             );
         }
 
-        // let's send it to the queue if appropriate
+        // let's send it to the queue(s) if appropriate
         if (!empty($queueEvent->getEvent())) {
-            $this->rabbitMqProducer->publish(
-                json_encode($queueEvent),
-                $queueEvent->getEvent()
-            );
+            $queuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
+            foreach ($queuesForEvent as $queueForEvent) {
+                // overwrite $queueEvent documentUrl & statusUrl with the FQDN or apialias injected from the settings.
+                // Do it here, so just the $queueEvent sent to the WorkerBase is affected
+                $queueEvent->setDocumenturl($this->gravitonSelfUrl.parse_url($queueEvent->getDocumenturl(), PHP_URL_PATH));
+                $queueEvent->setStatusurl($this->gravitonSelfUrl.parse_url($queueEvent->getStatusurl(), PHP_URL_PATH));
+
+                // declare the Queue for the Event if its not there already declared
+                $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
+                $this->rabbitMqProducer->publish(json_encode($queueEvent), $queueForEvent);
+            }
         }
     }
 
