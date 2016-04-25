@@ -171,6 +171,11 @@ class EventStatusLinkResponseListener
         if (!empty($queueEvent->getEvent())) {
             $queuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
             foreach ($queuesForEvent as $queueForEvent) {
+                // overwrite $queueEvent documentUrl & statusUrl with relative path.
+                // Do it here, so just the $queueEvent sent to the WorkerBase is affected
+                $queueEvent->setDocumenturl(parse_url($queueEvent->getDocumenturl(), PHP_URL_PATH));
+                $queueEvent->setStatusurl(parse_url($queueEvent->getStatusurl(), PHP_URL_PATH));
+
                 // declare the Queue for the Event if its not there already declared
                 $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
                 $this->rabbitMqProducer->publish(json_encode($queueEvent), $queueForEvent);
