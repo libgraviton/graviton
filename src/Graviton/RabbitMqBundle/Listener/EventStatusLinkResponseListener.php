@@ -181,8 +181,14 @@ class EventStatusLinkResponseListener
             foreach ($queuesForEvent as $queueForEvent) {
                 // overwrite $queueEvent documentUrl & statusUrl with the FQDN or apialias injected from the settings.
                 // Do it here, so just the $queueEvent sent to the WorkerBase is affected
-                $queueEvent->setDocumenturl($this->gravitonSelfUrl.parse_url($queueEvent->getDocumenturl(), PHP_URL_PATH));
-                $queueEvent->setStatusurl($this->gravitonSelfUrl.parse_url($queueEvent->getStatusurl(), PHP_URL_PATH));
+                $queueEvent->setDocumenturl(
+                    $this->gravitonSelfUrl.
+                    parse_url($queueEvent->getDocumenturl(), PHP_URL_PATH)
+                );
+                $queueEvent->setStatusurl(
+                    $this->gravitonSelfUrl.
+                    parse_url($queueEvent->getStatusurl(), PHP_URL_PATH)
+                );
 
                 // declare the Queue for the Event if its not there already declared
                 $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
