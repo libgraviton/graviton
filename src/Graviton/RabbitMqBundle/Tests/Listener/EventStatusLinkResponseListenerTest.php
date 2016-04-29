@@ -30,30 +30,30 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         $producerMock = $this->getMockBuilder(
             '\OldSound\RabbitMqBundle\RabbitMq\ProducerInterface'
         )->disableOriginalConstructor()->setMethods(['publish', 'getChannel'])->getMockForAbstractClass();
-        
-        $producerMock->expects($this->once())->method('publish')
-        ->will(
-            $this->returnCallback(
-                function ($message, $routingKey) {
-                    \PHPUnit_Framework_Assert::assertSame(
-                        '{"event":"document.core.product.create","coreUserId":"",'.
-                        '"document":{"$ref":"http:\/\/apialias\/dude\/4'.
-                        '"},"status":{"$ref":"http:\/\/apialias\/worker\/123jkl890yui567mkl"}}',
-                        $message
-                    );
 
-                    \PHPUnit_Framework_Assert::assertSame(
-                        'someWorkerId',
-                        $routingKey
-                    );
-                }
-            )
-        );
+        $producerMock->expects($this->once())->method('publish')
+            ->will(
+                $this->returnCallback(
+                    function ($message, $routingKey) {
+                        \PHPUnit_Framework_Assert::assertSame(
+                            '{"event":"document.core.product.create","coreUserId":"",'.
+                            '"document":{"$ref":"graviton-api-test\/core\/product'.
+                            '"},"status":{"$ref":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}}',
+                            $message
+                        );
+
+                        \PHPUnit_Framework_Assert::assertSame(
+                            'someWorkerId',
+                            $routingKey
+                        );
+                    }
+                )
+            );
 
         $channelMock = $this->getMockBuilder(
             '\PhpAmqpLib\Channel\AMQPChannel'
         )->disableOriginalConstructor()->getMock();
-        
+
         $producerMock->expects($this->once())->method('getChannel')
             ->willReturn($channelMock);
 
@@ -132,7 +132,7 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\Graviton\RabbitMqBundle\Document\QueueEvent'
         )->setMethods(['getEvent', 'getDocumenturl'])->getMock();
         $queueEventMock->expects($this->exactly(5))->method('getEvent')->willReturn('document.dude.config.create');
-        $queueEventMock->expects($this->exactly(3))->method('getDocumenturl')->willReturn('http://localhost/dude/4');
+        $queueEventMock->expects($this->exactly(2))->method('getDocumenturl')->willReturn('http://localhost/dude/4');
 
         $filterResponseEventMock = $this->getMockBuilder(
             '\Symfony\Component\HttpKernel\Event\FilterResponseEvent'
@@ -150,16 +150,15 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             $extrefConverterMock,
             $queueEventMock,
             [
-              'Testing' => [
-                  'baseRoute' => 'graviton.core.rest.product',
-                  'events' => [
-                      'post' => 'document.core.product.create',
-                      'put' => 'document.core.product.update',
-                      'delete' => 'document.core.product.delete'
-                  ]
-              ]
+                'Testing' => [
+                    'baseRoute' => 'graviton.core.rest.product',
+                    'events' => [
+                        'post' => 'document.core.product.create',
+                        'put' => 'document.core.product.update',
+                        'delete' => 'document.core.product.delete'
+                    ]
+                ]
             ],
-            'http://apialias',
             '\GravitonDyn\EventWorkerBundle\Document\EventWorker',
             '\GravitonDyn\EventStatusBundle\Document\EventStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
