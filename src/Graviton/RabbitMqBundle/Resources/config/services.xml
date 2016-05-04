@@ -67,6 +67,9 @@
                 <argument>working</argument>
             </call>
             <call method="addStatus">
+                <argument>ignored</argument>
+            </call>
+            <call method="addStatus">
                 <argument>done</argument>
             </call>
             <call method="addStatus">
