@@ -31,7 +31,15 @@ protected $realId;
 */
 public function getId()
 {
-return $this->id;
+{% if document == 'Code' %}
+    if (!$this->id && isset($this->group, $this->number)) {
+    return $this->group.'-'.$this->number;
+    } else {
+    return $this->id;
+    }
+{% else %}
+    return $this->id;
+{% endif %}
 }
 
 /**
