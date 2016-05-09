@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f34785b93e243efe711adb6ae85b660f",
-    "content-hash": "904abb0c8590fc2bffd253f6a79c15b7",
+    "hash": "f482dfd020b7a09a39396011e0415d84",
+    "content-hash": "f3fef0b87beb8bc8903b5998bb22699f",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -6888,7 +6888,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "php-jsonpointer/php-jsonpointer": 5,
         "knplabs/knp-gaufrette-bundle": 20,
         "lapistano/proxy-object": 20
     },
