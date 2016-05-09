@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * Listener for validation exceptions
@@ -20,6 +21,24 @@ use Symfony\Component\Form\FormError;
  */
 class ValidationExceptionListener extends RestExceptionListener
 {
+
+    /**
+     * @var array
+     */
+    private $printParameters = [];
+
+    /**
+     * Add a violation parameter that shall be appended to each error message if present
+     *
+     * @param string $parameterName param name
+     *
+     * @return void
+     */
+    public function addPrintParameter($parameterName)
+    {
+        $this->printParameters[] = $parameterName;
+    }
+
     /**
      * Handle the exception and send the right response
      *
@@ -61,12 +80,37 @@ class ValidationExceptionListener extends RestExceptionListener
                 } else {
                     $path = $cause->getPropertyPath();
                 }
+
+                $errorMessage = $error->getMessage();
+
+                if ($cause instanceof ConstraintViolation && !empty($cause->getParameters())) {
+                    $extraInformation = [];
+                    foreach ($cause->getParameters() as $paramName => $paramValue) {
+                        $paramName = substr($paramName, 3, -3);
+                        if (in_array($paramName, $this->printParameters)) {
+                            $extraInformation[] = sprintf(
+                                '%s: "%s"',
+                                $paramName,
+                                $paramValue
+                            );
+                        }
+                    }
+
+                    if (!empty($extraInformation)) {
+                        $errorMessage .= sprintf(
+                            ' (%s)',
+                            implode(', ', $extraInformation)
+                        );
+                    }
+                }
+
                 $content[] = [
                     'propertyPath' => $path,
-                    'message' => $error->getMessage(),
+                    'message' => $errorMessage,
                 ];
             }
         }
+
         return $content;
     }
 }
