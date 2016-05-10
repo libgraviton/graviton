@@ -29,7 +29,6 @@ use Xiag\Rql\Parser\Query;
  */
 class RqlTranslator
 {
-
     /**
      * Translate a search node into LikeNodes connected with an OrNode
      *
@@ -46,7 +45,6 @@ class RqlTranslator
         $orNode = new OrNode();
 
         foreach ($searchFields as $searchField) {
-
             foreach ($searchNode->getSearchTerms() as $searchTerm) {
                 $searchGlob = new Glob('*' . $searchTerm . '*');
                 $likeNode = new LikeNode($searchField, $searchGlob);
@@ -108,7 +106,6 @@ class RqlTranslator
         } elseif ($innerQuery instanceof AndNode) {
             $andNodeReplacement = new AndNode();
             foreach ($innerQuery->getQueries() as $innerNodeFromAnd) {
-
                 if ($innerNodeFromAnd instanceof SearchNode) {
                     // Transform to OrNode with inner like queries and add to new query list
                     $andNodeReplacement->addQuery(
@@ -118,7 +115,6 @@ class RqlTranslator
                     // Just recollect the node
                     $andNodeReplacement->addQuery($innerNodeFromAnd);
                 }
-
             }
 
             $query->setQuery($andNodeReplacement);

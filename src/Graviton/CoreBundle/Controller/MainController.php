@@ -170,7 +170,6 @@ class MainController
         foreach ($services as $key => $val) {
             if ($this->isRelevantForMainPage($val)) {
                 $sortArr[$key] = $val['$ref'];
-
             } else {
                 unset($services[$key]);
             }
