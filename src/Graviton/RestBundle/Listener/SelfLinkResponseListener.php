@@ -9,6 +9,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Event\RestEvent;
@@ -88,7 +89,7 @@ class SelfLinkResponseListener
             }
             $url = $this->getRqlUrl(
                 $request,
-                $this->router->generate($routeName, $params, true) . $query
+                $this->router->generate($routeName, $params, UrlGeneratorInterface::ABSOLUTE_URL) . $query
             );
         } catch (\Exception $e) {
             $addHeader = false;

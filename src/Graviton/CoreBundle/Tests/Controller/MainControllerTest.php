@@ -123,7 +123,7 @@ class MainControllerTest extends RestTestCase
             ->with(
                 $this->equalTo('graviton.core.rest.app.all'),
                 $this->isType('array'),
-                $this->isType('boolean')
+                $this->isType('int')
             )
             ->will($this->returnValue("http://localhost/core/app"));
 
@@ -179,7 +179,7 @@ class MainControllerTest extends RestTestCase
             ->with(
                 $this->isType('string'),
                 $this->isType('array'),
-                $this->isType('boolean')
+                $this->isType('int')
             )
             ->will(
                 $this->onConsecutiveCalls(
