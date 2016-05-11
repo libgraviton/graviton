@@ -238,7 +238,6 @@ class HttpLoader implements LoaderInterface
                     "code" => (!empty($request->getResponse())? $request->getResponse()->getStatusCode() : 500)
                 ]
             );
-
         }
 
         return $content;

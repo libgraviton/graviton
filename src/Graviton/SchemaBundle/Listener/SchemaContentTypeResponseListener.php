@@ -61,7 +61,6 @@ class SchemaContentTypeResponseListener
             } catch (\Exception $e) {
                 return true;
             }
-
         }
 
         // replace content-type if a schema was requested
