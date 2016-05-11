@@ -332,6 +332,7 @@ class ShowcaseControllerTest extends RestTestCase
             false
         );
         $document->extraFields = "nice field";
+        $document->anotherExtraField = "one more";
 
         $client = static::createRestClient();
         $client->post('/hans/showcase', $document);
@@ -340,7 +341,8 @@ class ShowcaseControllerTest extends RestTestCase
         $expectedErrors = [];
         $expectedErrors[0] = new \stdClass();
         $expectedErrors[0]->propertyPath = "";
-        $expectedErrors[0]->message = "This form should not contain extra fields.";
+        $expectedErrors[0]->message = "This form should not contain extra fields. (extra_fields: \"extraFields\",".
+            " \"anotherExtraField\")";
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
