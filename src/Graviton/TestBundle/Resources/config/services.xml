@@ -25,6 +25,8 @@
     </service>
     <service id="test.client.history" class="%test.client.history.class%" scope="prototype" />
     <service id="test.client.cookiejar" class="%test.client.cookiejar.class%" scope="prototype" />
-    <service id="test.faker" class="%test.faker.faker.class%" factory-class="%test.faker.factory.class%" factory-method="create"/>
+    <service id="test.faker" class="%test.faker.faker.class%">
+      <factory class="%test.faker.factory.class%" method="create"/>
+    </service>
    </services>
 </container>

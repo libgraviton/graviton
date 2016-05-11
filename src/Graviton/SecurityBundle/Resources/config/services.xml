@@ -48,10 +48,9 @@
         </service>
 
         <service id="graviton.security.authentication.provider"
-                 class="Graviton\RestBundle\Model\ModelInterface"
-                 factory-service="graviton.security.authentication.factory"
-                 factory-method="create"
-                />
+                 class="Graviton\RestBundle\Model\ModelInterface">
+            <factory service="graviton.security.authentication.factory" method="create"/>
+        </service>
 
         <service id="graviton.security.authentication.provider.model.noop"
                  class="Graviton\SecurityBundle\User\Model\NullModel">

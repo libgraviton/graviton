@@ -17,7 +17,8 @@
         <parameter key="graviton.file.file_manager.class">Graviton\FileBundle\FileManager</parameter>
     </parameters>
     <services>
-        <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%" factory-class="%graviton.aws_s3.client.class%" factory-method="factory">
+        <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%">
+            <factory class="%graviton.aws_s3.client.class%" method="factory"/>
             <argument>%graviton.aws_s3.client.args%</argument>
         </service>
 

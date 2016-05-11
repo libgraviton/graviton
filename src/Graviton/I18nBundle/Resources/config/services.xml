@@ -35,9 +35,8 @@
   <services>
     <service id="graviton.i18n.document.language" class="%graviton.i18n.document.language.class%"/>
     <service id="graviton.i18n.repository.language"
-             class="%graviton.i18n.repository.language.class%"
-             factory-service="doctrine_mongodb.odm.default_document_manager"
-         factory-method="getRepository">
+        class="%graviton.i18n.repository.language.class%">
+      <factory service="doctrine_mongodb.odm.default_document_manager" method="getRepository"/>
       <argument type="string">GravitonI18nBundle:Language</argument>
     </service>
     <service id="graviton.i18n.model.language"
@@ -57,15 +56,13 @@
       <tag name="graviton.rest"/>
     </service>
     <service id="graviton.i18n.repository.translatable"
-      class="%graviton.i18n.repository.translatable.class%"
-      factory-service="doctrine_mongodb.odm.default_document_manager"
-      factory-method="getRepository">
+        class="%graviton.i18n.repository.translatable.class%">
+      <factory service="doctrine_mongodb.odm.default_document_manager" method="getRepository"/>
       <argument type="string">GravitonI18nBundle:Translatable</argument>
     </service>
     <service id="graviton.i18n.repository.translatablelanguage"
-      class="%graviton.i18n.repository.translatablelanguage.class%"
-      factory-service="doctrine_mongodb.odm.default_document_manager"
-      factory-method="getRepository">
+        class="%graviton.i18n.repository.translatablelanguage.class%">
+      <factory service="doctrine_mongodb.odm.default_document_manager" method="getRepository"/>
       <argument type="string">GravitonI18nBundle:TranslatableLanguage</argument>
     </service>
     <service id="graviton.i18n.model.translatable"
@@ -114,7 +111,9 @@
       <tag name="translation.loader" alias="odm"/>
     </service>
     <service id="graviton.i18n.translator" alias="translator"/>
-    <service id="graviton.i18n.request" class="%graviton.i18n.request.class%" factory-service="request_stack" factory-method="getCurrentRequest"/>
+    <service id="graviton.i18n.request" class="%graviton.i18n.request.class%">
+      <factory service="request_stack" method="getCurrentRequest"/>
+    </service>
     <service id="graviton.i18n.listener.i18nserializer" class="%graviton.i18n.listener.i18nserializer.class%">
       <call method="setUtils">
         <argument type="service" id="graviton.18n.utils"/>
