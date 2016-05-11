@@ -95,7 +95,12 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $resolverDouble
             ->expects($this->once())
             ->method('setDefaults')
-            ->with(['data_class' => $class]);
+            ->with(
+                [
+                    'data_class' => $class,
+                    'extra_fields_message' => 'This form should not contain extra fields like "{{ extra_fields }}".'
+                ]
+            );
         $sut->configureOptions($resolverDouble);
     }
 

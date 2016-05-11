@@ -99,7 +99,12 @@ class DocumentType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => $this->dataClass]);
+        $resolver->setDefaults(
+            [
+                'data_class' => $this->dataClass,
+                'extra_fields_message' => 'This form should not contain extra fields like "{{ extra_fields }}".'
+            ]
+        );
     }
 
     /**
