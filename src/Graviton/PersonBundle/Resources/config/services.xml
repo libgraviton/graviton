@@ -14,9 +14,8 @@
     <service id="graviton.person.controller.abstractcustomer" abstract="true" parent="graviton.rest.controller" class="%graviton.person.controller.abstractcustomer.class%">
     </service>
     <service id="graviton.person.repository.personcontact"
-             class="%graviton.person.repository.personcontact.class%"
-             factory-service="doctrine_mongodb.odm.default_document_manager"
-             factory-method="getRepository">
+        class="%graviton.person.repository.personcontact.class%">
+      <factory service="doctrine_mongodb.odm.default_document_manager" method="getRepository"/>
       <argument type="string">GravitonPersonBundle:PersonContact</argument>
     </service>
     <service id="graviton.person.model.personcontact"

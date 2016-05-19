@@ -7,6 +7,7 @@ namespace Graviton\SchemaBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -48,7 +49,7 @@ class CanonicalSchemaLinkResponseListener
             $linkHeader = LinkHeader::fromResponse($response);
 
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $url = $this->router->generate($routeName, array(), true);
+            $url = $this->router->generate($routeName, array(), UrlGeneratorInterface::ABSOLUTE_URL);
 
             // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));

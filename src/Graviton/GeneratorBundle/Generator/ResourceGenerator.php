@@ -609,8 +609,12 @@ class ResourceGenerator extends AbstractGenerator
             $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
             $this->addAttributeToNode('scope', $scope, $dom, $attrNode);
-            $this->addAttributeToNode('factory-service', $factoryService, $dom, $attrNode);
-            $this->addAttributeToNode('factory-method', $factoryMethod, $dom, $attrNode);
+            if ($factoryService && $factoryMethod) {
+                $factoryNode = $dom->createElement('factory');
+                $this->addAttributeToNode('service', $factoryService, $dom, $factoryNode);
+                $this->addAttributeToNode('method', $factoryMethod, $dom, $factoryNode);
+                $attrNode->appendChild($factoryNode);
+            }
             $this->addCallsToService($calls, $dom, $attrNode);
 
             if ($tag) {

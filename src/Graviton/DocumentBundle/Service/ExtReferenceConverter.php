@@ -8,6 +8,7 @@ namespace Graviton\DocumentBundle\Service;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Extref converter
@@ -87,7 +88,7 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
         return $this->router->generate(
             $this->mapping[$extReference->getRef()].'.get',
             ['id' => $extReference->getId()],
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
     }
 
