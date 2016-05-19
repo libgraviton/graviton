@@ -669,6 +669,11 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('intarray', $field->getName());
     }
 
+    /**
+     * test if indexes are exposed in def
+     *
+     * @return void
+     */
     public function testIndexes()
     {
         $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
