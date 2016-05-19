@@ -38,7 +38,11 @@
         ]
     },
     "target": {
-        "indexes": [],
+        "indexes": [
+          "key",
+          "default",
+          "value"    
+        ],
         "relations": [],
         "fields": [
             {

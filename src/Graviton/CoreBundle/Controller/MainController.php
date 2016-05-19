@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * MainController
@@ -160,8 +161,8 @@ class MainController
                 $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
 
                 return array(
-                    '$ref' => $router->generate($routeName, array(), true),
-                    'profile' => $router->generate($schemaRoute, array(), true),
+                    '$ref' => $router->generate($routeName, array(), UrlGeneratorInterface::ABSOLUTE_URL),
+                    'profile' => $router->generate($schemaRoute, array(), UrlGeneratorInterface::ABSOLUTE_URL),
                 );
             },
             array_keys($optionRoutes)
@@ -170,7 +171,6 @@ class MainController
         foreach ($services as $key => $val) {
             if ($this->isRelevantForMainPage($val)) {
                 $sortArr[$key] = $val['$ref'];
-
             } else {
                 unset($services[$key]);
             }
@@ -190,7 +190,7 @@ class MainController
         $links = new LinkHeader(array());
         $links->add(
             new LinkHeaderItem(
-                $this->router->generate('graviton.core.rest.app.all', array (), true),
+                $this->router->generate('graviton.core.rest.app.all', array (), UrlGeneratorInterface::ABSOLUTE_URL),
                 array ('rel' => 'apps', 'type' => 'application/json')
             )
         );
@@ -224,7 +224,7 @@ class MainController
         $mainRoute = $this->router->generate(
             'graviton.core.static.main.all',
             array(),
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
         $services = array_map(
             function ($apiRoute) use ($mainRoute, $definition) {

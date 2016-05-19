@@ -670,6 +670,17 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test if indexes are exposed in def
+     *
+     * @return void
+     */
+    public function testIndexes()
+    {
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
+        $this->assertInternalType('array', $jsonDef->getIndexes());
+    }
+
+    /**
      * Get field by path
      *
      * @param JsonDefinition $definition JSON definition

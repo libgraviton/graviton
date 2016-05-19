@@ -7,6 +7,7 @@ namespace Graviton\SchemaBundle\Listener;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\SchemaBundle\SchemaUtils;
 
@@ -57,11 +58,13 @@ class SchemaContentTypeResponseListener
         if ($request->get('_route') != 'graviton.core.static.main.all') {
             try {
                 $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
-                $contentType .= sprintf('; profile=%s', $this->router->generate($schemaRoute, array(), true));
+                $contentType .= sprintf(
+                    '; profile=%s',
+                    $this->router->generate($schemaRoute, array(), UrlGeneratorInterface::ABSOLUTE_URL)
+                );
             } catch (\Exception $e) {
                 return true;
             }
-
         }
 
         // replace content-type if a schema was requested

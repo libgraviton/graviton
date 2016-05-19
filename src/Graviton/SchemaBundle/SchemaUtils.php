@@ -13,6 +13,7 @@ use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Utils for generating schemas.
@@ -265,7 +266,7 @@ class SchemaUtils
                         $urls[] = $this->router->generate(
                             $this->extrefServiceMapping[$collection].'.all',
                             [],
-                            true
+                            UrlGeneratorInterface::ABSOLUTE_URL
                         );
                     } elseif ($collection === '*') {
                         $urls[] = '*';

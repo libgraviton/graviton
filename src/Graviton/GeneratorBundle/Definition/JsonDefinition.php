@@ -453,4 +453,16 @@ class JsonDefinition
 
         return $collectionName;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getIndexes()
+    {
+        $indexes = [];
+        if ($this->def->getTarget()->getIndexes()) {
+            $indexes = $this->def->getTarget()->getIndexes();
+        }
+        return $indexes;
+    }
 }
