@@ -669,6 +669,12 @@ class DefinitionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('intarray', $field->getName());
     }
 
+    public function testIndexes()
+    {
+        $jsonDef = $this->loadJsonDefinition($this->fullDefPath);
+        $this->assertInternalType('array', $jsonDef->getIndexes());
+    }
+
     /**
      * Get field by path
      *

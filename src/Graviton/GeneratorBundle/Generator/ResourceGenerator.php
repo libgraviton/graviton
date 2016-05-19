@@ -165,6 +165,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('collection', $this->json->getServiceCollection())
+            ->setParameter('indexes', $this->json->getIndexes())
             ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document, $withRepository);
@@ -223,7 +224,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    'docType' => 'embedded-document',
+                    'docType' => 'embedded-document'
                 ]
             )
         );

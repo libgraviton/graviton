@@ -23,6 +23,11 @@ class Target
     private $fields = [];
 
     /**
+     * @var string[]
+     */
+    private $indexes = [];
+
+    /**
      * @return Relation[]
      */
     public function getRelations()
@@ -76,5 +81,23 @@ class Target
     {
         $this->fields[] = $field;
         return $this;
+    }
+
+    /**
+     * @param string[] $indexes indexes from json def
+     * @return $this
+     */
+    public function setIndexes($indexes)
+    {
+        $this->indexes = $indexes;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 }
