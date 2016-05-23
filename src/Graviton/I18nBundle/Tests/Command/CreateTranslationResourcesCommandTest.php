@@ -9,13 +9,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
 
 /**
- * functional tests for graviton:generate:bundle
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
- *
- * @todo fix that updateKernel is not getting tested
  */
 class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +20,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testLoadCreateCommand()
+    public function testCreateResourcesCommand()
     {
         $languageMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\LanguageRepository')
             ->disableOriginalConstructor()
