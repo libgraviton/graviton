@@ -6,7 +6,7 @@
 namespace Graviton\I18nBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
+use Graviton\I18nBundle\Command\CreateTranslationResourcesCommand;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -40,7 +40,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $builderMock = $this->getMockbuilder('\Doctrine\ODM\MongoDB\Query\Builder')
+        $builderMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\Query\Builder')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -85,7 +85,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('touch');
 
         $command = new CommandTester(
-            new \Graviton\I18nBundle\Command\CreateTranslationResourcesCommand(
+            new CreateTranslationResourcesCommand(
                 $languageMock,
                 $translatableMock,
                 $fsMock
