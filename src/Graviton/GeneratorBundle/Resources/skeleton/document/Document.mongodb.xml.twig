@@ -57,14 +57,7 @@
                 {% endif %}
             {% else %}
                 {% set fieldTypes = {'hash':'hash','hash[]':'hasharray','date[]':'datearray','array':'collection'} %}
-                {% set indexKey = '' %}
                 {% set strategyType = '' %}
-
-                {% if indexes is defined %}
-                    {% if field.fieldName in indexes %}
-                        {% set indexKey = 'index="true"' %}
-                    {% endif %}
-                {% endif %}
 
                 {% if field.type in fieldTypes %}
                     {% set fieldType = fieldTypes[field.type] %}
@@ -74,13 +67,23 @@
                     {% set fieldType = field.type %}
                     {% set strategyType = 'strategy="pushAll"' %}
                 {% endif %}
-                <field fieldName="{{ field.fieldName }}" type="{{ fieldType }}" {{ strategyType }} {{ indexKey }}/>
+                <field fieldName="{{ field.fieldName }}" type="{{ fieldType }}" {{ strategyType }}/>
             {% endif %}
         {% endfor %}
 
         {% if isrecordOriginFlagSet %}
             <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
         {% endif %}
+
+    {% if indexes is defined and indexes is not empty %}
+        <indexes>
+            {% for index in indexes %}
+            <index background="true">
+                <key name="{{ index }}"/>
+            </index>
+            {% endfor %}
+        </indexes>
+    {% endif %}
 
     </{{ docType }}>
 </doctrine-mongo-mapping>
