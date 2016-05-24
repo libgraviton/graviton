@@ -27,6 +27,7 @@
     <parameter key="graviton.i18n.cacheutils.class">Graviton\I18nBundle\Service\I18nCacheUtils</parameter>
     <parameter key="graviton.i18n.form.transformer.translatabletodefaultstring.class">Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer</parameter>
     <parameter key="graviton.i18n.form.type.translatable.class">Graviton\I18nBundle\Form\Type\TranslatableType</parameter>
+    <parameter key="graviton.i18n.command.createtranslationresources.class">Graviton\I18nBundle\Command\CreateTranslationResourcesCommand</parameter>
 
     <!-- should we move this to somewhere else? -->
     <parameter key="translator.class">Graviton\I18nBundle\Translator\Translator</parameter>
@@ -165,5 +166,13 @@
       <argument type="service" id="graviton.i18n.form.transformer.translatabletodefaultstring"/>
       <tag name="form.type" alias="translatable"/>
     </service>
+
+    <service id="graviton.i18n.command.createtranslationresources" class="%graviton.i18n.command.createtranslationresources.class%">
+      <argument type="service" id="graviton.i18n.repository.language"/>
+      <argument type="service" id="graviton.i18n.repository.translatable"/>
+      <argument type="service" id="filesystem"/>
+      <tag name="console.command"/>
+    </service>
+
   </services>
 </container>
