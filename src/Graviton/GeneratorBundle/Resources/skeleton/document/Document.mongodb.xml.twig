@@ -56,18 +56,17 @@
                     </{{ relType }}-one>
                 {% endif %}
             {% else %}
-                {% set fieldTypes = {'hash':'hash','hash[]':'hasharray','date[]':'datearray','array':'collection'} %}
-                {% set strategyType = '' %}
-
-                {% if field.type in fieldTypes %}
-                    {% set fieldType = fieldTypes[field.type] %}
-                {% elseif '[]' in field.type %}
-                    {% set fieldType = 'collection' %}
+                {% if field.type == 'hash' %}
+                    <field fieldName="{{ field.fieldName }}" type="hash"/>
+                {% elseif field.type == 'hash[]' %}
+                    <field fieldName="{{ field.fieldName }}" type="hasharray"/>
+                {% elseif field.type == 'date[]' %}
+                    <field fieldName="{{ field.fieldName }}" type="datearray"/>
+                {% elseif '[]' in field.type or field.type == 'array' %}
+                    <field fieldName="{{ field.fieldName }}" type="collection"/>
                 {% else %}
-                    {% set fieldType = field.type %}
-                    {% set strategyType = 'strategy="pushAll"' %}
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
                 {% endif %}
-                <field fieldName="{{ field.fieldName }}" type="{{ fieldType }}" {{ strategyType }}/>
             {% endif %}
         {% endfor %}
 
