@@ -74,15 +74,15 @@
             <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
         {% endif %}
 
-        {% if indexes is defined and indexes is not empty %}
-            <indexes>
-                <index background="true">
+    {% if indexes is defined and indexes is not empty %}
+        <indexes>
             {% for index in indexes %}
-                    <key name="{{ index }}"/>
+            <index background="true">
+                <key name="{{ index }}"/>
+            </index>
             {% endfor %}
-                </index>
-            </indexes>
-        {% endif %}
+        </indexes>
+    {% endif %}
 
     </{{ docType }}>
 </doctrine-mongo-mapping>
