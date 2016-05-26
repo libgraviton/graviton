@@ -1,0 +1,47 @@
+{
+  "id": "ExternalLinks",
+  "description": "A service containing external links",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/core/external-link/",
+    "fixtures": []
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "ID",
+        "description": "Unique identifier of an external link"
+      },
+      {
+        "name": "name",
+        "type": "varchar",
+        "title": "Name",
+        "description": "Name of the external link",
+        "translatable": true
+      },
+
+      {
+        "name": "url",
+        "type": "varchar",
+        "title": "URL",
+        "description": "The URL",
+        "constraints": [
+          {
+            "name": "Url",
+            "options": [{"name": "message", "value":"The url '{{ value }}' is not a valid url"}]
+          }
+        ]
+      },
+      {
+        "name": "order",
+        "type": "int",
+        "title": "Order",
+        "description": "The order index"
+      }
+    ]
+  }
+}
