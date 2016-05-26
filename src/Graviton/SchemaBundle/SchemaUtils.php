@@ -144,6 +144,8 @@ class SchemaUtils
             $schema->setTitle(ucfirst($modelName));
         }
 
+        $schema->setAdditionalProperties(new Schema);
+
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 

@@ -11,12 +11,16 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\JsonSchemaBundle\Schema\RefResolver;
+use Graviton\JsonSchemaBundle\Schema\SchemaFactory;
+use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Validator\Form;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
+use HadesArchitect\JsonSchemaBundle\Validator\ValidatorService;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -478,12 +482,36 @@ class RestController
 
         $this->formValidator->checkJsonRequest($request, $response);
 
+        list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
+        $schema = $this->getRestUtils()->serializeContent($this->schemaUtils->getModelSchema($modelName, $this->getModel()));
+
+
+        $validator = new ValidatorService('JsonSchema\Validator');
+
+        try {
+            $validator->check(json_decode($request->getContent()), json_decode($schema));
+        } catch (\Exception $e) {
+            var_dump($validator->getErrors());
+            die;
+        }
+
+        $record = $this->getRestUtils()->deserializeContent($request->getContent(), $model->getEntityClass());
+
+        /*
+        $validator = new Validator(
+            ,
+            json_decode($schema)
+        );
+        */
+
+        /*
         $record = $this->formValidator->checkForm(
             $this->formValidator->getForm($request, $model),
             $model,
             $this->formDataMapper,
             $request->getContent()
         );
+        */
 
         // does it really exist??
         $upsert = false;
