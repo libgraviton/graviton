@@ -14,8 +14,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\I18nBundle\Repository\TranslatableRepository;
 use Graviton\I18nBundle\Document\Language;
-use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\MessageCatalogue;
+use Graviton\I18nBundle\Translator\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -40,7 +41,7 @@ class CreateTranslationResourcesCommand extends Command
     private $filesystem;
 
     /**
-     * @var DataCollectorTranslator
+     * @var Translator
      */
     private $translator;
 
@@ -50,16 +51,16 @@ class CreateTranslationResourcesCommand extends Command
     private $resourceDir;
 
     /**
-     * @param LanguageRepository      $languageRepo     Language Repository
-     * @param TranslatableRepository  $translatableRepo Translatable Repository
-     * @param Filesystem              $filesystem       symfony/filesystem tooling
-     * @param DataCollectorTranslator $translator       Resource translator
+     * @param LanguageRepository     $languageRepo     Language Repository
+     * @param TranslatableRepository $translatableRepo Translatable Repository
+     * @param Filesystem             $filesystem       symfony/filesystem tooling
+     * @param TranslatorInterface    $translator       Resource translator
      */
     public function __construct(
         LanguageRepository $languageRepo,
         TranslatableRepository $translatableRepo,
         Filesystem $filesystem,
-        DataCollectorTranslator $translator
+        TranslatorInterface $translator
     ) {
         $this->languageRepo = $languageRepo;
         $this->translatableRepo = $translatableRepo;

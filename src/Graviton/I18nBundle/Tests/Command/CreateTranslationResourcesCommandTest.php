@@ -44,7 +44,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $translatorMock = $this->getMockBuilder('\Symfony\Component\Translation\DataCollectorTranslator')
+        $translatorMock = $this->getMockBuilder('\Graviton\I18nBundle\Translator\Translator')
             ->disableOriginalConstructor()
             ->getMock();
 
