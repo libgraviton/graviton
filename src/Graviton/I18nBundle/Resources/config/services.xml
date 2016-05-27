@@ -171,6 +171,7 @@
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="graviton.i18n.repository.translatable"/>
       <argument type="service" id="filesystem"/>
+      <argument type="service" id="graviton.i18n.translator"/>
       <tag name="console.command"/>
     </service>
 

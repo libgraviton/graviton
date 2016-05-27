@@ -5,12 +5,17 @@
 
 namespace Graviton\I18nBundle\Command;
 
+use Doctrine\MongoDB\Collection;
+use Graviton\I18nBundle\Document\Translatable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\I18nBundle\Repository\TranslatableRepository;
+use Graviton\I18nBundle\Document\Language;
+use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -35,23 +40,31 @@ class CreateTranslationResourcesCommand extends Command
     private $filesystem;
 
     /**
+     * @var DataCollectorTranslator
+     */
+    private $translator;
+
+    /**
      * @var string
      */
     private $resourceDir;
 
     /**
-     * @param LanguageRepository     $languageRepo     Language Repository
-     * @param TranslatableRepository $translatableRepo Translatable Repository
-     * @param Filesystem             $filesystem       symfony/filesystem tooling
+     * @param LanguageRepository      $languageRepo     Language Repository
+     * @param TranslatableRepository  $translatableRepo Translatable Repository
+     * @param Filesystem              $filesystem       symfony/filesystem tooling
+     * @param DataCollectorTranslator $translator       Resource translator
      */
     public function __construct(
         LanguageRepository $languageRepo,
         TranslatableRepository $translatableRepo,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        DataCollectorTranslator $translator
     ) {
         $this->languageRepo = $languageRepo;
         $this->translatableRepo = $translatableRepo;
         $this->filesystem = $filesystem;
+        $this->translator = $translator;
         $this->resourceDir = __DIR__.'/../Resources/translations/';
 
         parent::__construct();
@@ -97,12 +110,46 @@ class CreateTranslationResourcesCommand extends Command
                 array_walk(
                     $domains,
                     function ($domain) use ($output, $language) {
+                        /** @var Language $language */
                         $file = implode('.', [$domain, $language->getId(), 'odm']);
                         $this->filesystem->touch(implode(DIRECTORY_SEPARATOR, [$this->resourceDir, $file]));
                         $output->writeln("<info>Generated file $file</info>");
+
+                        $locale = $language->getId();
+                        $count = $this->generateResourceTranslations($domain, $locale);
+                        $output->writeln("<info>Generated {$count} translations for {$domain}:{$locale}</info>");
                     }
                 );
             }
         );
+    }
+
+    /**
+     * Generate resource translations, return count of translations generated
+     *
+     * @param string $domain Translation domain name
+     * @param string $locale Iso language locale string
+     *
+     * @return integer
+     */
+    private function generateResourceTranslations($domain, $locale)
+    {
+        /** @var Collection $translations */
+        $translations = $this->translatableRepo->findBy(['domain' => $domain, 'locale' => $locale]);
+        if (!$translations) {
+            return 0;
+        }
+
+        /** @var MessageCatalogue $catalog */
+        $catalog = $this->translator->getCatalogue($locale);
+
+        $count = 0;
+        /** @var Translatable $translation */
+        foreach ($translations as $translation) {
+            $catalog->set($translation->getOriginal(), $translation->getTranslated(), $domain);
+            $count++;
+        }
+
+        return $count;
     }
 }
