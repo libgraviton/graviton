@@ -106,10 +106,15 @@ class Schema
      *
      * @var string[]
      */
-    protected $specialTypeMapping = array(
+    protected $specialTypeMapping = [
         'extref' => 'string',
-        'translatable' => 'object'
-    );
+        'translatable' => 'object',
+        'date' => 'string'
+    ];
+
+    protected $formatOverrides = [
+        'date' => 'date-time'
+    ];
 
     /**
      * Build properties
@@ -186,6 +191,11 @@ class Schema
                 $setType = $this->specialTypeMapping[$type];
             }
             $this->type = $setType;
+
+            if (isset($this->formatOverrides[$type])) {
+                $type = $this->formatOverrides[$type];
+            }
+
             $this->setFormat($type);
         } else {
             $this->type = $type;
