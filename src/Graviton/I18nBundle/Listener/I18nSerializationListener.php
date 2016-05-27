@@ -74,6 +74,10 @@ class I18nSerializationListener
         }
 
         $hash = \spl_object_hash($object);
+        // If main object already build return.
+        if (array_key_exists($hash, $this->localizedFields)) {
+            return;
+        }
         $this->localizedFields[$hash] = [];
 
         $translatable = $object->getTranslatableFields();
