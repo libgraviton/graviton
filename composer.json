@@ -16,6 +16,10 @@
         {
             "type": "composer",
             "url": "https://gravity-platform-packages.scapp.io"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/narcoticfresh/JsonSchemaBundle"
         }
     ],
     "require": {
@@ -48,8 +52,8 @@
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.4",
         "graviton/deploy-scripts": "~0.4",
-        "graviton/json-schema": "~0.8",
-        "hadesarchitect/json-schema-bundle": "~0.1.0",
+        "graviton/json-schema": "dev-feature/update-json-schema-dep",
+        "hadesarchitect/json-schema-bundle": "dev-feature/update-deps as 0.1.0-dev",
         "php-jsonpatch/php-jsonpatch": "~1.2.2",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",

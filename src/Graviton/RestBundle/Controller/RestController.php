@@ -488,7 +488,6 @@ class RestController
 
         if (!file_exists($file)) {
             $schema = $this->getRestUtils()->serializeContent($this->schemaUtils->getModelSchema($modelName, $this->getModel()));
-            $schema = json_decode($schema);
             file_put_contents($file, $schema);
         } else {
             $schema = file_get_contents($file);
@@ -497,7 +496,7 @@ class RestController
         $validator = new ValidatorService('JsonSchema\Validator');
 
         try {
-            $validator->check(json_decode($request->getContent()), $schema);
+            $validator->check(json_decode($request->getContent()), json_decode($schema));
         } catch (\Exception $e) {
             var_dump($validator->getErrors());
             die;
