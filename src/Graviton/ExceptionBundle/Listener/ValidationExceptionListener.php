@@ -5,7 +5,8 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormErrorIterator;
@@ -44,28 +45,18 @@ class ValidationExceptionListener extends RestExceptionListener
     }
 
     /**
-     * @param FormErrorIterator $errors errors
+     * @param ValidationExceptionError[] $errors errors
      *
      * @return array
      */
-    private function getErrorMessages(FormErrorIterator $errors)
+    private function getErrorMessages(array $errors)
     {
         $content = [];
         foreach ($errors as $error) {
-            if ($error instanceof FormErrorIterator) {
-                $content = array_merge($content, $this->getErrorMessages($error));
-            } elseif ($error instanceof FormError) {
-                $cause = $error->getCause();
-                if (!$cause) {
-                    $path = 'unknkown';
-                } else {
-                    $path = $cause->getPropertyPath();
-                }
-                $content[] = [
-                    'propertyPath' => $path,
-                    'message' => $error->getMessage(),
-                ];
-            }
+            $content[] = [
+                'propertyPath' => $error->getProperty(),
+                'message' => $error->getMessage(),
+            ];
         }
         return $content;
     }

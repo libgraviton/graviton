@@ -11,6 +11,7 @@ use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Schema\RefResolver;
 use Graviton\JsonSchemaBundle\Schema\SchemaFactory;
 use Graviton\JsonSchemaBundle\Validator\Validator;
@@ -493,32 +494,15 @@ class RestController
             $schema = file_get_contents($file);
         }
 
-        $validator = new ValidatorService('JsonSchema\Validator');
+        // put on DIC dep asap
+        $validator = $this->container->get('graviton.jsonschema.validator');
+        $errors = $validator->validate(json_decode($request->getContent()), json_decode($schema));
 
-        try {
-            $validator->check(json_decode($request->getContent()), json_decode($schema));
-        } catch (\Exception $e) {
-            var_dump($validator->getErrors());
-            die;
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
         }
 
         $record = $this->getRestUtils()->deserializeContent($request->getContent(), $model->getEntityClass());
-
-        /*
-        $validator = new Validator(
-            ,
-            json_decode($schema)
-        );
-        */
-
-        /*
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $request->getContent()
-        );
-        */
 
         // does it really exist??
         $upsert = false;
