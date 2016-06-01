@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "77081d3adbfaf17848cc72b6bf80b7f1",
-    "content-hash": "67b5b83a271cd68476a0b0c3f57b32fe",
+    "hash": "0f2ad59db1779037810f836c14de7bc8",
+    "content-hash": "d8967c79aa34081c0fe4a064d458e631",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1674,16 +1674,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "d31a8885be59c9c8ff0cb58208f0935ef8e6f847"
+                "reference": "21a471b9d844056d25716fd9de62f67634bf5237"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/d31a8885be59c9c8ff0cb58208f0935ef8e6f847",
-                "reference": "d31a8885be59c9c8ff0cb58208f0935ef8e6f847",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/21a471b9d844056d25716fd9de62f67634bf5237",
+                "reference": "21a471b9d844056d25716fd9de62f67634bf5237",
                 "shasum": ""
             },
             "require": {
-                "hadesarchitect/json-schema-bundle": "~0.1.0",
                 "justinrainbow/json-schema": "~2.0",
                 "symfony/symfony": "^2.8.6"
             },
@@ -1714,7 +1713,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-05-31 08:55:09"
+            "time": "2016-05-31 15:26:50"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -2083,49 +2082,6 @@
                 "uri"
             ],
             "time": "2016-04-13 19:56:01"
-        },
-        {
-            "name": "hadesarchitect/json-schema-bundle",
-            "version": "dev-feature/update-deps",
-            "target-dir": "HadesArchitect/JsonSchemaBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/narcoticfresh/JsonSchemaBundle.git",
-                "reference": "dfdc76c3ec50809345689957a7cc94e05d856746"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/narcoticfresh/JsonSchemaBundle/zipball/dfdc76c3ec50809345689957a7cc94e05d856746",
-                "reference": "dfdc76c3ec50809345689957a7cc94e05d856746",
-                "shasum": ""
-            },
-            "require": {
-                "justinrainbow/json-schema": "~2.0",
-                "symfony/framework-bundle": "~2.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~3.7"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "HadesArchitect\\JsonSchemaBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Aleksander Volochnev",
-                    "email": "a.volochnev@gmail.com"
-                }
-            ],
-            "description": "Symfony2 bundle for Justin Rainbow's json-schema library.",
-            "support": {
-                "source": "https://github.com/narcoticfresh/JsonSchemaBundle/tree/feature/update-deps"
-            },
-            "time": "2016-05-31 08:39:23"
         },
         {
             "name": "hwi/oauth-bundle",
@@ -3591,21 +3547,22 @@
         },
         {
             "name": "php-amqplib/rabbitmq-bundle",
-            "version": "v1.9.0",
+            "version": "v1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/RabbitMqBundle.git",
-                "reference": "09be4bea8f84613946f79d01b95c2828320eb670"
+                "reference": "8c6f74b545b8162b24ef951b567e9c7d581ee512"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/09be4bea8f84613946f79d01b95c2828320eb670",
-                "reference": "09be4bea8f84613946f79d01b95c2828320eb670",
+                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/8c6f74b545b8162b24ef951b567e9c7d581ee512",
+                "reference": "8c6f74b545b8162b24ef951b567e9c7d581ee512",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0",
                 "php-amqplib/php-amqplib": "~2.6",
+                "psr/log": "~1.0",
                 "symfony/config": "~2.3 || ~3.0",
                 "symfony/console": "~2.3 || ~3.0",
                 "symfony/dependency-injection": "~2.3 || ~3.0",
@@ -3626,7 +3583,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9.x-dev"
+                    "dev-master": "1.10.x-dev"
                 }
             },
             "autoload": {
@@ -3643,7 +3600,7 @@
                     "name": "Alvaro Videla"
                 }
             ],
-            "description": "Integrates php-amqplib with Symfony2 and RabbitMq. Formerly oldsound/rabbitmq-bundle.",
+            "description": "Integrates php-amqplib with Symfony2|3 and RabbitMq. Formerly oldsound/rabbitmq-bundle.",
             "keywords": [
                 "AMQP",
                 "Symfony2",
@@ -3651,7 +3608,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2016-03-03 09:00:12"
+            "time": "2016-05-31 11:36:12"
         },
         {
             "name": "php-jsonpatch/php-jsonpatch",
@@ -6857,19 +6814,11 @@
             "time": "2016-04-12 18:27:47"
         }
     ],
-    "aliases": [
-        {
-            "alias": "0.1.0-dev",
-            "alias_normalized": "0.1.0.0-dev",
-            "version": "dev-feature/update-deps",
-            "package": "hadesarchitect/json-schema-bundle"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "knplabs/knp-gaufrette-bundle": 20,
         "graviton/json-schema": 20,
-        "hadesarchitect/json-schema-bundle": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,

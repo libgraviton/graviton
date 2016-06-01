@@ -53,13 +53,13 @@
         "hwi/oauth-bundle": "~0.4",
         "graviton/deploy-scripts": "~0.4",
         "graviton/json-schema": "dev-feature/update-json-schema-dep",
-        "hadesarchitect/json-schema-bundle": "dev-feature/update-deps as 0.1.0-dev",
         "php-jsonpatch/php-jsonpatch": "~1.2.2",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
         "thefrozenfire/swagger": "~2.0",
         "symfony/psr-http-message-bridge": "~0.2",
-        "php-amqplib/rabbitmq-bundle": "^1.9"
+        "php-amqplib/rabbitmq-bundle": "^1.9",
+        "justinrainbow/json-schema": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.3",
