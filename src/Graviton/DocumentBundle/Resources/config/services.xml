@@ -16,6 +16,7 @@
         <parameter key="graviton.document.form.type.strictboolean.class">Graviton\DocumentBundle\Form\Type\StrictBooleanType</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
         <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
+        <parameter key="graviton.document.serializer.handler.date.class">Graviton\DocumentBundle\Serializer\Handler\DateHandler</parameter>
     </parameters>
     <services>
         <!-- form field mapper -->
@@ -111,6 +112,12 @@
             <argument type="service" id="graviton.document.service.extrefconverter"/>
             <tag name="jms_serializer.handler"
                  type="Graviton\DocumentBundle\Entity\ExtReference"
+                 format="json"/>
+        </service>
+        <!-- extref serializer handler -->
+        <service id="graviton.document.serializer.handler.date" class="%graviton.document.serializer.handler.date.class%">
+            <tag name="jms_serializer.subscribing_handler"
+                 type="DateTime"
                  format="json"/>
         </service>
     </services>
