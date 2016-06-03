@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Model;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Service\RqlTranslator;
 use Graviton\Rql\Node\SearchNode;
@@ -83,6 +84,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $translator;
 
     /**
+     * @var DocumentManager
+     */
+    protected $manager;
+
+    /**
      * @param Visitor       $visitor                    rql query visitor
      * @param RqlTranslator $translator                 Translator for query modification
      * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
@@ -121,6 +127,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
+        $this->manager = $repository->getDocumentManager();
 
         return $this;
     }
@@ -216,18 +223,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity       entity to insert
-     * @param bool                                       $returnEntity true to return entity
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
      * @return Object|null
      */
-    public function insertRecord($entity, $returnEntity = true)
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
         $this->checkIfOriginRecord($entity);
-        $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
-        $manager->flush($entity);
+        $this->manager->persist($entity);
 
+        if ($doFlush) $this->manager->flush($entity);
         if ($returnEntity) return $this->find($entity->getId());
     }
 
@@ -267,9 +274,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         */
 
         $this->deleteById($documentId);
-        $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
-        $manager->flush($entity);
+        $this->manager->persist($entity);
+        $this->manager->flush($entity);
 
         if ($returnEntity) return $entity;
     }
@@ -283,8 +289,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function deleteRecord($id)
     {
-        $manager = $this->repository->getDocumentManager();
-
         if (is_object($id)) {
             $entity = $id;
         } else {
@@ -294,12 +298,24 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $return = $entity;
         if ($entity) {
             $this->checkIfOriginRecord($entity);
-            $manager->remove($entity);
-            $manager->flush();
+            $this->manager->remove($entity);
+            $this->manager->flush();
             $return = null;
         }
 
         return $return;
+    }
+
+    /**
+     * Triggers a flush on the DocumentManager
+     *
+     * @param null $document optional document
+     *
+     * @return void
+     */
+    public function flush($document = null)
+    {
+        $this->manager->flush($document);
     }
 
     /**

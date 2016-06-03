@@ -127,9 +127,9 @@
         <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" method="onPreDeserialize" direction="deserialization"/>
-      <tag name="jms_serializer.event_listener" event="serializer.post_deserialize" method="onPostDeserialize" direction="deserialization"/>
+      <!-- done on the kernel.finish_request so we are sure it's done as client leaves - and to be before 'graviton.i18n.listener.i18ncaching' -->
+      <tag name="kernel.event_listener" event="kernel.finish_request" method="onKernelFinishRequest" />
     </service>
-
     <service id="graviton.i18n.listener.i18nrqlparsinglistener" class="%graviton.i18n.listener.i18nrqlparsinglistener.class%">
       <argument type="service" id="graviton.18n.utils"/>
       <argument>%graviton.document.type.translatable.fields%</argument>
