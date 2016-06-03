@@ -216,18 +216,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity entity to insert
+     * @param \Graviton\I18nBundle\Document\Translatable $entity       entity to insert
+     * @param bool                                       $returnEntity true to return entity
      *
-     * @return Object
+     * @return Object|null
      */
-    public function insertRecord($entity)
+    public function insertRecord($entity, $returnEntity = true)
     {
         $this->checkIfOriginRecord($entity);
         $manager = $this->repository->getDocumentManager();
         $manager->persist($entity);
         $manager->flush($entity);
 
-        return $this->find($entity->getId());
+        if ($returnEntity) return $this->find($entity->getId());
     }
 
     /**
@@ -243,34 +244,52 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to update
-     * @param Object $entity     new entity
+     * @param string $documentId   id of entity to update
+     * @param Object $entity       new entity
+     * @param bool   $returnEntity true to return entity
      *
      * @return Object
      */
-    public function updateRecord($documentId, $entity)
+    public function updateRecord($documentId, $entity, $returnEntity = true)
     {
-        $manager = $this->repository->getDocumentManager();
         // In both cases the document attribute named originRecord must not be 'core'
         $this->checkIfOriginRecord($entity);
-        $this->checkIfOriginRecord($this->find($documentId));
+        $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
+        /*
+         * @TODO @hairmare i remember this fixed something important - why do we do it? can't we just delete the old
+         * document and insert the new one? we always have the entire object(?) i guess would be faster
+         * and we surely wouldn't have any array update problems as in the past..
+         */
+        /*
+        $manager = $this->repository->getDocumentManager();
         $entity = $manager->merge($entity);
         $manager->flush();
+        */
 
-        return $entity;
+        $this->deleteById($documentId);
+        $manager = $this->repository->getDocumentManager();
+        $manager->persist($entity);
+        $manager->flush($entity);
+
+        if ($returnEntity) return $entity;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to delete
+     * @param string|object $id id of entity to delete or entity instance
      *
      * @return null|Object
      */
-    public function deleteRecord($documentId)
+    public function deleteRecord($id)
     {
         $manager = $this->repository->getDocumentManager();
-        $entity = $this->find($documentId);
+
+        if (is_object($id)) {
+            $entity = $id;
+        } else {
+            $entity = $this->find($id);
+        }
 
         $return = $entity;
         if ($entity) {
@@ -281,6 +300,63 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return $return;
+    }
+
+    /**
+     * A low level delete without any checks
+     *
+     * @param mixed $id record id
+     *
+     * @return void
+     */
+    private function deleteById($id)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $builder
+            ->remove()
+            ->field('id')->equals($id)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Checks in a performant way if a certain record id exists in the database
+     *
+     * @param mixed $id record id
+     *
+     * @return bool true if it exists, false otherwise
+     */
+    public function recordExists($id)
+    {
+        return is_array($this->selectSingleFields($id, ['id'], false));
+    }
+
+    /**
+     * Returns a set of fields from an existing resource in a performant manner.
+     * If you need to check certain fields on an object (and don't need everything), this
+     * is a better way to get what you need.
+     * If the record is not present, you will receive null. If you don't need an hydrated
+     * instance, make sure to pass false there.
+     *
+     * @param mixed $id      record id
+     * @param array $fields  list of fields you need.
+     * @param bool  $hydrate whether to hydrate object or not
+     *
+     * @return array|null|object
+     */
+    public function selectSingleFields($id, array $fields, $hydrate = true)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $idField = $this->repository->getClassMetadata()->getIdentifier()[0];
+
+        $record = $builder
+            ->field($idField)->equals($id)
+            ->select($fields)
+            ->hydrate($hydrate)
+            ->getQuery()
+            ->getSingleResult();
+
+        return $record;
     }
 
     /**

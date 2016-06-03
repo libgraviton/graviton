@@ -256,13 +256,13 @@ class RestController
     {
         $response = $this->getResponse();
 
-        if (!($record = $this->getModel()->find($id))) {
+        if (!($this->getModel()->recordExists($id))) {
             $e = new NotFoundException("Entry with id " . $id . " not found!");
             $e->setResponse($response);
             throw $e;
         }
 
-        return $record;
+        return $this->getModel()->find($id);
     }
 
     /**
@@ -485,6 +485,7 @@ class RestController
 
         list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
 
+        // @todo use injected doctrine cache for caching..
         $file = '/tmp/hans-'.$modelName;
 
         if (!file_exists($file)) {
@@ -499,19 +500,11 @@ class RestController
         $errors = $validator->validate(json_decode($request->getContent()), json_decode($schema));
 
         if (!empty($errors)) {
-            throw new ValidationException($errors);
+            // @todo fix validation so it's the same as before ;-)
+            //throw new ValidationException($errors);
         }
 
         $record = $this->getRestUtils()->deserializeContent($request->getContent(), $model->getEntityClass());
-
-        // does it really exist??
-        $upsert = false;
-        try {
-            $this->findRecord($id);
-        } catch (NotFoundException $e) {
-            // who cares, we'll upsert it
-            $upsert = true;
-        }
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -525,10 +518,10 @@ class RestController
         }
 
         // And update the record, if everything is ok
-        if ($upsert) {
-            $this->getModel()->insertRecord($record);
+        if (!$this->getModel()->recordExists($id)) {
+            $this->getModel()->insertRecord($record, false);
         } else {
-            $this->getModel()->updateRecord($id, $record);
+            $this->getModel()->updateRecord($id, $record, false);
         }
 
         // Set status code
