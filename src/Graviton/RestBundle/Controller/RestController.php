@@ -12,16 +12,12 @@ use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Graviton\JsonSchemaBundle\Schema\RefResolver;
-use Graviton\JsonSchemaBundle\Schema\SchemaFactory;
-use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Validator\Form;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use HadesArchitect\JsonSchemaBundle\Validator\ValidatorService;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -486,6 +482,7 @@ class RestController
         list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
 
         // @todo use injected doctrine cache for caching..
+        // @todo wrap all this validation stuff in a function for other methods
         $file = '/tmp/hans-'.$modelName;
 
         if (!file_exists($file)) {
@@ -495,7 +492,7 @@ class RestController
             $schema = file_get_contents($file);
         }
 
-        // put on DIC dep asap
+        // @todo get via DIC asap.. didn't do that is at would change constructor signature and that breaks stuff ;-/
         $validator = $this->container->get('graviton.jsonschema.validator');
         $errors = $validator->validate(json_decode($request->getContent()), json_decode($schema));
 
@@ -504,7 +501,7 @@ class RestController
             //throw new ValidationException($errors);
         }
 
-        $record = $this->getRestUtils()->deserializeContent($request->getContent(), $model->getEntityClass());
+        $record = $this->deserialize($request->getContent(), $model->getEntityClass());
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
