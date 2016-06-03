@@ -16,6 +16,8 @@
         <parameter key="graviton.document.form.type.strictboolean.class">Graviton\DocumentBundle\Form\Type\StrictBooleanType</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
         <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
+        <parameter key="graviton.document.serializer.handler.empty.class">Graviton\DocumentBundle\Serializer\Handler\EmptyHandler</parameter>
+        <parameter key="graviton.document.serializer.listener.emptyextref.class">Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener</parameter>
     </parameters>
     <services>
         <!-- form field mapper -->
@@ -91,6 +93,12 @@
                 </argument>
             </call>
         </service>
+
+        <!-- empty extref serializing listener -->
+        <service id="graviton.document.serializer.listener.emptyextref" class="%graviton.document.serializer.listener.emptyextref.class%">
+            <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onPreSerialize" direction="serialization"/>
+        </service>
+
         <service id="graviton.document.form.type.document" class="%graviton.document.form.type.document.class%">
             <argument type="service" id="graviton.document.form.type.document.fieldbuilder"/>
             <argument>%graviton.document.form.type.document.field_map%</argument>
@@ -111,6 +119,12 @@
             <argument type="service" id="graviton.document.service.extrefconverter"/>
             <tag name="jms_serializer.handler"
                  type="Graviton\DocumentBundle\Entity\ExtReference"
+                 format="json"/>
+        </service>
+        <!-- empty serializer handler -->
+        <service id="graviton.document.serializer.handler.empty" class="%graviton.document.serializer.handler.empty.class%">
+            <tag name="jms_serializer.handler"
+                 type="Empty"
                  format="json"/>
         </service>
     </services>
