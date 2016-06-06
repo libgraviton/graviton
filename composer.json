@@ -16,10 +16,6 @@
         {
             "type": "composer",
             "url": "https://gravity-platform-packages.scapp.io"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/narcoticfresh/JsonSchemaBundle"
         }
     ],
     "require": {
