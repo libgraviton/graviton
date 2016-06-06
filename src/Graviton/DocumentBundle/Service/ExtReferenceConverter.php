@@ -27,6 +27,10 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
      * @var array
      */
     private $mapping;
+    /**
+     * @var Route[]
+     */
+    private $resolvingCache;
 
     /**
      * Constructor
@@ -57,11 +61,17 @@ class ExtReferenceConverter implements ExtReferenceConverterInterface
         $id = null;
         $collection = null;
 
-        foreach ($this->router->getRouteCollection()->all() as $route) {
-            list($collection, $id) = $this->getDataFromRoute($route, $path);
-            if ($collection !== null && $id !== null) {
-                return ExtReference::create($collection, $id);
+        if (!isset($this->resolvingCache[$path])) {
+            foreach ($this->router->getRouteCollection()->all() as $route) {
+                list($collection, $id) = $this->getDataFromRoute($route, $path);
+                if ($collection !== null && $id !== null) {
+                    $this->resolvingCache[$path] = $route;
+                    return ExtReference::create($collection, $id);
+                }
             }
+        } else {
+            list($collection, $id) = $this->getDataFromRoute($this->resolvingCache[$path], $path);
+            return ExtReference::create($collection, $id);
         }
 
         throw new \InvalidArgumentException(sprintf('Could not read URL %s', $url));
