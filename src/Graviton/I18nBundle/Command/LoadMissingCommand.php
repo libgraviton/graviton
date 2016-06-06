@@ -34,7 +34,7 @@ class LoadMissingCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('graviton:i118n:load:missing')
+            ->setName('graviton:i18n:load:missing')
             ->setDescription('Generate translatables for strings in en.');
     }
 
