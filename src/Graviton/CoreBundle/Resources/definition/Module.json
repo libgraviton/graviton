@@ -186,42 +186,7 @@
         "description": "Link to service referenced by this module.",
         "exposeAs": "$ref",
         "required": true
-      },
-      {
-        "name": "subField",
-        "type": "hash",
-        "title": "subfield",
-        "description": "dsf",
-        "required": false
-      },
-      {
-        "name": "subField.anotherField",
-        "type": "string",
-        "title": "subfield",
-        "description": "dsf",
-        "required": true
-      },
-      {
-        "name": "arrayField",
-        "type": "hash",
-        "title": "subfield",
-        "description": "dsf",
-        "required": false
-      },
-      {
-        "name": "arrayField.0.dude",
-        "type": "string",
-        "title": "subfield",
-        "description": "dsf",
-        "required": true
-      },
-      {
-        "name": "dateField",
-        "type": "datetime",
-        "title": "subfield",
-        "description": "dsf"
       }
-
     ]
   }
 }
