@@ -44,6 +44,10 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $translatorMock = $this->getMockBuilder('\Graviton\I18nBundle\Translator\Translator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $builderMock
             ->expects($this->once())
             ->method('distinct')
@@ -88,7 +92,8 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             new CreateTranslationResourcesCommand(
                 $languageMock,
                 $translatableMock,
-                $fsMock
+                $fsMock,
+                $translatorMock
             )
         );
         $command->execute(array());
@@ -96,7 +101,11 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('Creating translation resource stubs', $command->getDisplay());
         $this->assertContains('Generated file core.en.odm', $command->getDisplay());
         $this->assertContains('Generated file core.de.odm', $command->getDisplay());
+        $this->assertContains('Generated 0 translations for core:en', $command->getDisplay());
+        $this->assertContains('Generated 0 translations for core:de', $command->getDisplay());
         $this->assertContains('Generated file i18n.en.odm', $command->getDisplay());
         $this->assertContains('Generated file i18n.de.odm', $command->getDisplay());
+        $this->assertContains('Generated 0 translations for i18n:en', $command->getDisplay());
+        $this->assertContains('Generated 0 translations for i18n:de', $command->getDisplay());
     }
 }
