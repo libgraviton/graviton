@@ -107,12 +107,13 @@
                  type="Graviton\DocumentBundle\Entity\Hash"
                  format="json"/>
         </service>
-        <!-- extref serializer handler -->
+        <!-- extref serializer & json schema validation handler -->
         <service id="graviton.document.serializer.handler.extref" class="%graviton.document.serializer.handler.extref.class%">
             <argument type="service" id="graviton.document.service.extrefconverter"/>
             <tag name="jms_serializer.handler"
                  type="Graviton\DocumentBundle\Entity\ExtReference"
                  format="json"/>
+            <tag name="kernel.event_listener" event="graviton.json_schema.constraint.format" method="validateExtRef"/>
         </service>
         <!-- extref serializer handler -->
         <service id="graviton.document.serializer.handler.date" class="%graviton.document.serializer.handler.date.class%">

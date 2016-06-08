@@ -70,7 +70,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'relType'           => self::REL_TYPE_EMBED,
                 'isClassType'       => true,
                 'constraints'       => [],
-                'required'          => true,
+                'required'          => false,
                 'searchable'        => false,
             ],
             $this->definition === null ? [] : [

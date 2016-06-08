@@ -51,7 +51,7 @@ class DateHandler extends BaseDateHandler
      * serialize datetime from json
      *
      * @param JsonDeserializationVisitor $visitor visitor
-     * @param                            $data    data
+     * @param string                     $data    data
      * @param array                      $type    type
      *
      * @return \DateTime|null DateTime instance

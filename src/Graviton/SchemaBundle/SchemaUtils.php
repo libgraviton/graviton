@@ -216,6 +216,10 @@ class SchemaUtils
                 if ($model->hasDynamicKey($field)) {
                     $property->setType('object');
 
+                    // @TODO flexible render of additionalProperties
+                    // maybe help https://github.com/ThisIsAreku/virtual-murmur-admin/blob/e1d04ef66e786c4d1856fd36c4
+                    // b35846375ebaa5/src/Vma/Domain/Murmur/Serializer/Handler/UserHandler.php
+
                     if ($online) {
                         // we generate a complete list of possible keys when we have access to mongodb
                         // this makes everything work with most json-schema v3 implementations (ie. schemaform.io)

@@ -234,8 +234,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->checkIfOriginRecord($entity);
         $this->manager->persist($entity);
 
-        if ($doFlush) $this->manager->flush($entity);
-        if ($returnEntity) return $this->find($entity->getId());
+        if ($doFlush) {
+            $this->manager->flush($entity);
+        }
+        if ($returnEntity) {
+            return $this->find($entity->getId());
+        }
     }
 
     /**
@@ -277,7 +281,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->manager->persist($entity);
         $this->manager->flush($entity);
 
-        if ($returnEntity) return $entity;
+        if ($returnEntity) {
+            return $entity;
+        }
     }
 
     /**

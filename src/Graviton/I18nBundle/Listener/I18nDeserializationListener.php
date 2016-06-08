@@ -30,6 +30,9 @@ class I18nDeserializationListener
      */
     protected $utils;
 
+    /**
+     * @var string
+     */
     protected $defaultLanguage = null;
 
     /**
@@ -87,7 +90,14 @@ class I18nDeserializationListener
         }
     }
 
-    public function onKernelFinishRequest(KernelEvent $event)
+    /**
+     * Function will be executed on kernel finish_request event; persists all translatables at once (uniquefied)
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function onKernelFinishRequest()
     {
         foreach ($this->translatableStore as $translatable) {
             $this->utils->insertTranslatable($translatable, false);
@@ -95,6 +105,14 @@ class I18nDeserializationListener
         $this->utils->flushTranslatables();
     }
 
+    /**
+     * Queues a translatable to be inserted at a later time
+     *
+     * @param array $translatable the translatable
+     * @param bool  $isArray      if is many or not
+     *
+     * @return void
+     */
     private function queueTranslatable(array $translatable, $isArray = false)
     {
         if (!$isArray) {

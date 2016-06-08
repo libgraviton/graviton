@@ -486,7 +486,9 @@ class RestController
         $file = '/tmp/hans-'.$modelName;
 
         if (!file_exists($file)) {
-            $schema = $this->getRestUtils()->serializeContent($this->schemaUtils->getModelSchema($modelName, $this->getModel()));
+            $schema = $this->getRestUtils()->serializeContent(
+                $this->schemaUtils->getModelSchema($modelName, $this->getModel())
+            );
             file_put_contents($file, $schema);
         } else {
             $schema = file_get_contents($file);
@@ -498,7 +500,7 @@ class RestController
 
         if (!empty($errors)) {
             // @todo fix validation so it's the same as before ;-)
-            //throw new ValidationException($errors);
+            throw new ValidationException($errors);
         }
 
         $record = $this->deserialize($request->getContent(), $model->getEntityClass());
