@@ -320,6 +320,16 @@ class SchemaUtils
             $schema->removeProperty('id');
         }
 
+        /**
+         * id is a special field - as it's presence (in PUT) or not-presence (in POST) is checked before
+         * the actual validation. so in schema, we mark it as not required, as it's required state is dependant
+         * on the method used (POST/PUT/PATCH) and it's checked there already beforehand and we need to be able
+         * to use the same schema for all cases.
+         *
+         * as all services behave the same in sense of id requirements, clients can build on that and good
+         * manners are enforced.
+         */
+
         $requiredFields = [];
         $modelRequiredFields = $model->getRequiredFields();
         if (is_array($modelRequiredFields)) {
@@ -332,6 +342,13 @@ class SchemaUtils
                 $requiredFields[] = $documentFieldNames[$field];
             }
         }
+
+        // as described above, remove id from required fields..
+        $idPosition = array_search('id', $requiredFields);
+        if ($idPosition !== false) {
+            unset($requiredFields[$idPosition]);
+        }
+
         $schema->setRequired($requiredFields);
 
         // set additionalProperties to false (as this is our default policy) if not already set
