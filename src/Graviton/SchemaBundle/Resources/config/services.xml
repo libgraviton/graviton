@@ -8,6 +8,7 @@
     <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
     <parameter key="graviton.schema.service.schemautils.class">Graviton\SchemaBundle\SchemaUtils</parameter>
     <parameter key="graviton.schema.service.repositoryfactory.class">Graviton\SchemaBundle\Service\RepositoryFactory</parameter>
+    <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -25,6 +26,11 @@
     </service>
     <service id="graviton.schema.service.repositoryfactory" class="%graviton.schema.service.repositoryfactory.class%">
       <argument type="service" id="doctrine_mongodb"/>
+    </service>
+    <service id="graviton.schema.serializer.handler.additionalproperties" class="%graviton.schema.serializer.handler.additionalproperties.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"
+           format="json"/>
     </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
       <argument type="service" id="graviton.schema.service.repositoryfactory"/>

@@ -47,7 +47,7 @@ class Schema
     protected $properties;
 
     /**
-     * @var Schema
+     * @var SchemaAdditionalProperties
      */
     protected $additionalProperties;
 
@@ -315,19 +315,19 @@ class Schema
     /**
      * set additionalProperties on schema
      *
-     * @param Schema $schema schema to use for additionalProperties type
+     * @param SchemaAdditionalProperties $additionalProperties additional properties
      *
      * @return void
      */
-    public function setAdditionalProperties(Schema $schema)
+    public function setAdditionalProperties(SchemaAdditionalProperties $additionalProperties)
     {
-        $this->additionalProperties = $schema;
+        $this->additionalProperties = $additionalProperties;
     }
 
     /**
      * get addtionalProperties for schema
      *
-     * @return Schema
+     * @return SchemaAdditionalProperties
      */
     public function getAdditionalProperties()
     {

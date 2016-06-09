@@ -10,6 +10,7 @@ use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -144,8 +145,6 @@ class SchemaUtils
             $schema->setTitle(ucfirst($modelName));
         }
 
-        $schema->setAdditionalProperties(new Schema);
-
         $schema->setDescription($model->getDescription());
         $schema->setType('object');
 
@@ -216,10 +215,6 @@ class SchemaUtils
                 if ($model->hasDynamicKey($field)) {
                     $property->setType('object');
 
-                    // @TODO flexible render of additionalProperties
-                    // maybe help https://github.com/ThisIsAreku/virtual-murmur-admin/blob/e1d04ef66e786c4d1856fd36c4
-                    // b35846375ebaa5/src/Vma/Domain/Murmur/Serializer/Handler/UserHandler.php
-
                     if ($online) {
                         // we generate a complete list of possible keys when we have access to mongodb
                         // this makes everything work with most json-schema v3 implementations (ie. schemaform.io)
@@ -244,8 +239,10 @@ class SchemaUtils
                             );
                         }
                     } else {
-                        // in the swagger case we can use additionPorerties which where introduced by json-schema v4
-                        $property->setAdditionalProperties($this->getModelSchema($field, $propertyModel, $online));
+                        // swagger case
+                        $property->setAdditionalProperties(
+                            new SchemaAdditionalProperties($this->getModelSchema($field, $propertyModel, $online))
+                        );
                     }
                 } else {
                     $property->setItems($this->getModelSchema($field, $propertyModel, $online));
@@ -323,8 +320,12 @@ class SchemaUtils
         }
         $schema->setRequired($requiredFields);
 
-        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
+        // set additionalProperties to false (as this is our default policy) if not already set
+        if (is_null($schema->getAdditionalProperties()) && $online) {
+            $schema->setAdditionalProperties(new SchemaAdditionalProperties(false));
+        }
 
+        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
         $schema->setSearchable($searchableFields);
 
         return $schema;
