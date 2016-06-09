@@ -5,6 +5,9 @@
 
 namespace Graviton\RestBundle\Service;
 
+use Graviton\JsonSchemaBundle\Validator\Validator;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\SchemaBundle\SchemaUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
@@ -43,8 +46,20 @@ final class RestUtils implements RestUtilsInterface
      */
     private $router;
 
-    /** @var LoggerInterface  */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var SchemaUtils
+     */
+    private $schemaUtils;
+
+    /**
+     * @var Validator
+     */
+    private $schemaValidator;
 
     /**
      * @param ContainerInterface   $container         container
@@ -58,13 +73,17 @@ final class RestUtils implements RestUtilsInterface
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext = null
+        SerializationContext $serializerContext = null,
+        SchemaUtils $schemaUtils,
+        Validator $schemaValidator
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
         $this->serializerContext = $serializerContext;
         $this->router = $router;
         $this->logger = $logger;
+        $this->schemaUtils = $schemaUtils;
+        $this->schemaValidator = $schemaValidator;
     }
 
     /**
@@ -146,6 +165,21 @@ final class RestUtils implements RestUtilsInterface
         );
 
         return $record;
+    }
+
+    public function validateContent($content, DocumentModel $model)
+    {
+        $file = '/tmp/hans-'.$model->getEntityClass();
+        if (!file_exists($file)) {
+            $schema = $this->serializeContent(
+                $this->schemaUtils->getModelSchema(null, $model)
+            );
+            file_put_contents($file, $schema);
+        } else {
+            $schema = file_get_contents($file);
+        }
+
+        return $this->schemaValidator->validate(json_decode($content), json_decode($schema));
     }
 
     /**

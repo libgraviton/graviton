@@ -146,6 +146,14 @@ class Form
                 throw $e;
             }
         }
+
+        if ($request->getMethod() == 'POST' && array_key_exists('id', $input)) {
+            $e = new MalformedInputException(
+                '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
+            );
+            $e->setResponse($response);
+            throw $e;
+        }
     }
 
     /**

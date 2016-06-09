@@ -134,7 +134,7 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public function getModelSchema($modelName, DocumentModel $model, $online = true)
+    public function getModelSchema($modelName = null, DocumentModel $model, $online = true)
     {
         // build up schema data
         $schema = new Schema;
@@ -142,7 +142,12 @@ class SchemaUtils
         if (!empty($model->getTitle())) {
             $schema->setTitle($model->getTitle());
         } else {
-            $schema->setTitle(ucfirst($modelName));
+            if (!is_null($modelName)) {
+                $schema->setTitle(ucfirst($modelName));
+            } else {
+                $reflection = new \ReflectionClass($model);
+                $schema->setTitle(ucfirst($reflection->getShortName()));
+            }
         }
 
         $schema->setDescription($model->getDescription());

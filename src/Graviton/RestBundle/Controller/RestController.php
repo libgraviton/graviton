@@ -395,12 +395,13 @@ class RestController
         $model = $this->getModel();
 
         $this->formValidator->checkJsonRequest($request, $response);
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $request->getContent()
-        );
+
+        $errors = $this->restUtils->validateContent($request->getContent(), $model);
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
+
+        $record = $this->deserialize($request->getContent(), $model->getEntityClass());
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -479,25 +480,7 @@ class RestController
 
         $this->formValidator->checkJsonRequest($request, $response);
 
-        list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
-
-        // @todo use injected doctrine cache for caching..
-        // @todo wrap all this validation stuff in a function for other methods
-        $file = '/tmp/hans-'.$modelName;
-
-        if (!file_exists($file)) {
-            $schema = $this->getRestUtils()->serializeContent(
-                $this->schemaUtils->getModelSchema($modelName, $this->getModel())
-            );
-            file_put_contents($file, $schema);
-        } else {
-            $schema = file_get_contents($file);
-        }
-
-        // @todo get via DIC asap.. didn't do that is at would change constructor signature and that breaks stuff ;-/
-        $validator = $this->container->get('graviton.jsonschema.validator');
-        $errors = $validator->validate(json_decode($request->getContent()), json_decode($schema));
-
+        $errors = $this->restUtils->validateContent($request->getContent(), $model);
         if (!empty($errors)) {
             // @todo fix validation so it's the same as before ;-)
             throw new ValidationException($errors);
