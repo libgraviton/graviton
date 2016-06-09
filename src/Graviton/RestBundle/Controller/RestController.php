@@ -354,7 +354,7 @@ class RestController
     {
         $model = $this->getModel();
 
-        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
+        list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
 
         $schema = $this->schemaUtils->getModelSchema($modelName, $model);
 
@@ -558,12 +558,13 @@ class RestController
 
         // Validate result object
         $model = $this->getModel();
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $patchedDocument
-        );
+
+        $errors = $this->restUtils->validateContent($patchedDocument, $model);
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
+
+        $record = $this->deserialize($patchedDocument, $model->getEntityClass());
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
