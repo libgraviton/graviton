@@ -28,6 +28,11 @@ class ExtReferenceHandler
     private $converter;
 
     /**
+     * @var array
+     */
+    private $extRefPatternCache = [];
+
+    /**
      * Constructor
      *
      * @param ExtReferenceConverterInterface $converter Converter
@@ -113,20 +118,23 @@ class ExtReferenceHandler
         // 2nd) if yes, correct collection(s)?
         $collections = $schema->{'x-collection'};
 
-        if (!in_array('*', $collections)) {
-            $paths = [];
+        if (in_array('*', $collections)) {
+            return;
+        }
 
+        $allValues = implode('-', $collections);
+        if (!isset($this->extRefPatternCache[$allValues])) {
+            $paths = [];
             foreach ($collections as $url) {
                 $urlParts = parse_url($url);
                 $paths[] = str_replace('/', '\\/', $urlParts['path']);
             }
+            $this->extRefPatternCache[$allValues] = '(' . implode('|', $paths) . ')(' . ActionUtils::ID_PATTERN . ')$';
         }
-
-        $pattern = '('.implode('|', $paths).')('.ActionUtils::ID_PATTERN.')$';
 
         $stringConstraint = $event->getFactory()->createInstanceFor('string');
         $schema->format = null;
-        $schema->pattern = $pattern;
+        $schema->pattern = $this->extRefPatternCache[$allValues];
         $stringConstraint->check($value, $schema, $event->getPath());
 
         if (!empty($stringConstraint->getErrors())) {

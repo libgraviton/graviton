@@ -109,7 +109,10 @@ class Schema
     protected $specialTypeMapping = [
         'extref' => 'string',
         'translatable' => 'object',
-        'date' => 'string'
+        'date' => 'string',
+        'float' => 'number',
+        'double' => 'number',
+        'decimal' => 'number'
     ];
 
     protected $formatOverrides = [
