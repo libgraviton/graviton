@@ -5,6 +5,7 @@
 
 namespace Graviton\SchemaBundle;
 
+use Doctrine\Common\Cache\CacheProvider;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
@@ -94,7 +95,8 @@ class SchemaUtils
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
-        $defaultLocale
+        $defaultLocale,
+        CacheProvider $cache
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
@@ -104,6 +106,7 @@ class SchemaUtils
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
+        $this->cache = $cache;
     }
 
     /**
@@ -136,6 +139,12 @@ class SchemaUtils
      */
     public function getModelSchema($modelName = null, DocumentModel $model, $online = true)
     {
+        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string)$online;
+
+        if ($this->cache->contains($cacheKey)) {
+            return $this->cache->fetch($cacheKey);
+        }
+
         // build up schema data
         $schema = new Schema;
 
@@ -332,6 +341,8 @@ class SchemaUtils
 
         $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
         $schema->setSearchable($searchableFields);
+
+        $this->cache->save($cacheKey, $schema);
 
         return $schema;
     }

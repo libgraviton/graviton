@@ -167,17 +167,21 @@ final class RestUtils implements RestUtilsInterface
         return $record;
     }
 
+    /**
+     * Validates content with the given schema, returning an array of errors.
+     * If all is good, you will receive an empty array.
+     *
+     * @param object        $content \stdClass of the request content
+     * @param DocumentModel $model   the model to check the schema for
+     *
+     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
+     * @throws \Exception
+     */
     public function validateContent($content, DocumentModel $model)
     {
-        $file = '/tmp/hans-'.$model->getEntityClass();
-        if (!file_exists($file)) {
-            $schema = $this->serializeContent(
-                $this->schemaUtils->getModelSchema(null, $model)
-            );
-            file_put_contents($file, $schema);
-        } else {
-            $schema = file_get_contents($file);
-        }
+        $schema = $this->serializeContent(
+            $this->schemaUtils->getModelSchema(null, $model)
+        );
 
         return $this->schemaValidator->validate(json_decode($content), json_decode($schema));
     }

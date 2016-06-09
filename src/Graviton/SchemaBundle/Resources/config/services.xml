@@ -41,6 +41,7 @@
       <argument>%graviton.document.eventmap%</argument>
       <argument>%graviton.document.field.names%</argument>
       <argument>%locale%</argument>
+      <argument type="service" id="doctrine_cache.providers.local"/>
     </service>
   </services>
 </container>
