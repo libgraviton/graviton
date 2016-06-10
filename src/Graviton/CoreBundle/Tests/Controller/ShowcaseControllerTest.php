@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,6 +35,13 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function setUp()
     {
+        $this->loadFixtures(
+            [
+                LoadLanguageData::class
+            ],
+            null,
+            'doctrine_mongodb'
+        );
     }
 
     /**
@@ -146,25 +154,29 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.aBoolean',
-                    'message'       => 'The value "" is not a valid boolean.',
+                    'propertyPath'  => 'choices',
+                    'message'       => 'The property choices is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.choices',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'aBoolean',
+                    'message'       => 'String value found, but a boolean is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.contact.type',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'contact.uri',
+                    'message'       => 'The property uri is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.contact.protocol',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'contact.type',
+                    'message'       => 'Must be at least 1 characters long',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.contact.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'contact.protocol',
+                    'message'       => 'Must be at least 1 characters long',
                 ],
+                (object) [
+                    'propertyPath'  => 'contact.value',
+                    'message'       => 'Must be at least 1 characters long',
+                ]
             ],
             $client->getResults()
         );
@@ -203,16 +215,20 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.choices',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'choices',
+                    'message'       => 'The property choices is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.contact.protocol',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'contact.uri',
+                    'message'       => 'The property uri is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.contact.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'contact.protocol',
+                    'message'       => 'Must be at least 1 characters long',
+                ],
+                (object) [
+                    'propertyPath'  => 'contact.value',
+                    'message'       => 'Must be at least 1 characters long',
                 ],
             ],
             $client->getResults()
@@ -341,8 +357,12 @@ class ShowcaseControllerTest extends RestTestCase
         $expectedErrors = [];
         $expectedErrors[0] = new \stdClass();
         $expectedErrors[0]->propertyPath = "";
-        $expectedErrors[0]->message = 'This form should not contain extra fields like '.
-            '"extraFields", "anotherExtraField".';
+        $expectedErrors[0]->message = 'The property extraFields is not defined and the definition '.
+            'does not allow additional properties';
+        $expectedErrors[1] = new \stdClass();
+        $expectedErrors[1]->propertyPath = "";
+        $expectedErrors[1]->message = 'The property anotherExtraField is not defined and the definition '.
+            'does not allow additional properties';
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expectedErrors),
@@ -734,7 +754,7 @@ class ShowcaseControllerTest extends RestTestCase
 
         // Apply PATCH request, add new element
         $client = static::createRestClient();
-        $newApp = ['ref' => 'http://localhost/core/app/admin'];
+        $newApp = ['$ref' => 'http://localhost/core/app/admin'];
         $patchJson = json_encode(
             [
                 [
@@ -776,7 +796,7 @@ class ShowcaseControllerTest extends RestTestCase
 
         // Apply PATCH request, add new element
         $client = static::createRestClient();
-        $newApp = ['ref' => 'http://localhost/core/app/test'];
+        $newApp = ['$ref' => 'http://localhost/core/app/test'];
         $patchJson = json_encode(
             [
                 [
