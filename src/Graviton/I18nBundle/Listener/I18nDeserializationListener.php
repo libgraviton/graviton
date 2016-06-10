@@ -107,6 +107,7 @@ class I18nDeserializationListener
             $this->utils->insertTranslatable($translatable, false);
         }
         $this->utils->flushTranslatables();
+        $this->translatableStore = [];
     }
 
     /**

@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\I18nBundle\Service\I18nUtils;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -31,6 +32,11 @@ class I18nSerializationListener
     protected $utils;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * set utils (i18nutils)
      *
      * @param I18nUtils $utils utils
@@ -40,6 +46,18 @@ class I18nSerializationListener
     public function setUtils(I18nUtils $utils)
     {
         $this->utils = $utils;
+    }
+
+    /**
+     * set doctrine odm documentmanager
+     *
+     * @param DocumentManager $dm dm
+     *
+     * @return void
+     */
+    public function setDocumentManager(DocumentManager $dm)
+    {
+        $this->dm = $dm;
     }
 
     /**
@@ -55,6 +73,7 @@ class I18nSerializationListener
         $object = $event->getObject();
 
         // Doctrine try to map value fields that may not exists.
+        // @TODO why is this done here? clearify and maybe remove(?)
         try {
             $methods = get_class_methods($object);
             foreach ($methods as $method) {
@@ -80,6 +99,9 @@ class I18nSerializationListener
         if (!is_array($translatable)) {
             return;
         }
+
+        // make sure any changes (like the set()s below) don't get persisted
+        $this->dm->detach($object);
 
         foreach ($translatable as $field) {
             $isArray = substr($field, -2, 2) === '[]';
