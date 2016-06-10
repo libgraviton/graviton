@@ -134,12 +134,13 @@ class SchemaUtils
      * @param string        $modelName name of mode to generate schema for
      * @param DocumentModel $model     model to generate schema for
      * @param boolean       $online    if we are online and have access to mongodb during this build
+     * @param boolean       $internal  if true, we generate the schema for internal validation use
      *
      * @return Schema
      */
-    public function getModelSchema($modelName = null, DocumentModel $model, $online = true)
+    public function getModelSchema($modelName = null, DocumentModel $model, $online = true, $internal = false)
     {
-        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string)$online;
+        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string)$online.'.'.(string)$internal;
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
@@ -320,16 +321,6 @@ class SchemaUtils
             $schema->removeProperty('id');
         }
 
-        /**
-         * id is a special field - as it's presence (in PUT) or not-presence (in POST) is checked before
-         * the actual validation. so in schema, we mark it as not required, as it's required state is dependant
-         * on the method used (POST/PUT/PATCH) and it's checked there already beforehand and we need to be able
-         * to use the same schema for all cases.
-         *
-         * as all services behave the same in sense of id requirements, clients can build on that and good
-         * manners are enforced.
-         */
-
         $requiredFields = [];
         $modelRequiredFields = $model->getRequiredFields();
         if (is_array($modelRequiredFields)) {
@@ -343,9 +334,13 @@ class SchemaUtils
             }
         }
 
-        // as described above, remove id from required fields..
+        /**
+         * if we generate schema for internal use; don't have id in required array as
+         * it's 'requiredness' depends on the method used (POST/PUT/PATCH) and is checked in checks
+         * before validation.
+         */
         $idPosition = array_search('id', $requiredFields);
-        if ($idPosition !== false) {
+        if ($internal === true && $idPosition !== false) {
             unset($requiredFields[$idPosition]);
         }
 
