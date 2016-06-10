@@ -37,7 +37,7 @@ class I18nUtils
     /**
      * @var array
      */
-    protected $languages;
+    protected $languages = [];
 
     /**
      * @var \Graviton\I18nBundle\Model\Translatable
