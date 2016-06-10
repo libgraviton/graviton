@@ -99,6 +99,10 @@ class I18nDeserializationListener
      */
     public function onKernelFinishRequest()
     {
+        if (empty($this->translatableStore)) {
+            return;
+        }
+
         foreach ($this->translatableStore as $translatable) {
             $this->utils->insertTranslatable($translatable, false);
         }
