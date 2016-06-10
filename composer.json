@@ -52,7 +52,7 @@
         "php-jsonpatch/php-jsonpatch": "~1.2.2",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
-        "thefrozenfire/swagger": "~2.0",
+        "thefrozenfire/swagger": "=2.0.7",
         "symfony/psr-http-message-bridge": "~0.2",
         "php-amqplib/rabbitmq-bundle": "^1.9",
         "justinrainbow/json-schema": "~2.0"
