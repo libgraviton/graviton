@@ -207,6 +207,19 @@ class SchemaUtils
             $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
         }
 
+        $requiredFields = [];
+        $modelRequiredFields = $model->getRequiredFields();
+        if (is_array($modelRequiredFields)) {
+            foreach ($modelRequiredFields as $field) {
+                // don't describe hidden fields
+                if (!isset($documentFieldNames[$field])) {
+                    continue;
+                }
+
+                $requiredFields[] = $documentFieldNames[$field];
+            }
+        }
+
         foreach ($meta->getFieldNames() as $field) {
             // don't describe hidden fields
             if (!isset($documentFieldNames[$field])) {
@@ -313,25 +326,18 @@ class SchemaUtils
                 $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
+            } elseif (in_array($meta->getTypeOfField($field), ['string', 'number'])) {
+                // make sure a required field cannot be blank
+                if (in_array($documentFieldNames[$field], $requiredFields)) {
+                    $property->setMinLength(1);
+                }
             }
+
             $schema->addProperty($documentFieldNames[$field], $property);
         }
 
         if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
             $schema->removeProperty('id');
-        }
-
-        $requiredFields = [];
-        $modelRequiredFields = $model->getRequiredFields();
-        if (is_array($modelRequiredFields)) {
-            foreach ($modelRequiredFields as $field) {
-                // don't describe hidden fields
-                if (!isset($documentFieldNames[$field])) {
-                    continue;
-                }
-
-                $requiredFields[] = $documentFieldNames[$field];
-            }
         }
 
         /**

@@ -84,6 +84,16 @@ class Schema
     protected $searchable = array();
 
     /**
+     * @var int
+     */
+    protected $minLength;
+
+    /**
+     * @var int
+     */
+    protected $maxLength;
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -235,6 +245,50 @@ class Schema
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * set min length
+     *
+     * @return int length
+     */
+    public function getMinLength()
+    {
+        return $this->minLength;
+    }
+
+    /**
+     * get min length
+     *
+     * @param int $minLength length
+     *
+     * @return void
+     */
+    public function setMinLength($minLength)
+    {
+        $this->minLength = $minLength;
+    }
+
+    /**
+     * gets maxlength
+     *
+     * @return int length
+     */
+    public function getMaxLength()
+    {
+        return $this->maxLength;
+    }
+
+    /**
+     * set maxlength
+     *
+     * @param int $maxLength length
+     *
+     * @return void
+     */
+    public function setMaxLength($maxLength)
+    {
+        $this->maxLength = $maxLength;
     }
 
     /**
