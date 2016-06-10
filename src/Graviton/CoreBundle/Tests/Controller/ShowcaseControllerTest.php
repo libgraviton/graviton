@@ -98,13 +98,13 @@ class ShowcaseControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $notNullError = new \stdClass();
-        $notNullError->propertyPath = 'data.aBoolean';
-        $notNullError->message = 'The value "" is not a valid boolean.';
+        $notNullError->propertyPath = 'aBoolean';
+        $notNullError->message = 'The property aBoolean is required';
         $expectedErrors[] = $notNullError;
         // test choices field (string should not be blank)
         $notNullErrorChoices = new \stdClass();
-        $notNullErrorChoices->propertyPath = 'data.choices';
-        $notNullErrorChoices->message = 'This value should not be blank.';
+        $notNullErrorChoices->propertyPath = 'choices';
+        $notNullErrorChoices->message = 'The property choices is required';
         $expectedErrors[] = $notNullErrorChoices;
 
         $this->assertJsonStringEqualsJsonString(

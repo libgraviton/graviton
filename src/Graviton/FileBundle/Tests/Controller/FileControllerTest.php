@@ -495,7 +495,7 @@ class FileControllerTest extends RestTestCase
 
         // Metadata createDate
         $this->assertEquals('string', $schema->properties->metadata->properties->createDate->type);
-        $this->assertEquals('date', $schema->properties->metadata->properties->createDate->format);
+        $this->assertEquals('date-time', $schema->properties->metadata->properties->createDate->format);
         $this->assertEquals('Creation date', $schema->properties->metadata->properties->createDate->title);
         $this->assertEquals(
             'Timestamp of file upload.',
@@ -505,7 +505,7 @@ class FileControllerTest extends RestTestCase
 
         // Metadata modificationDate
         $this->assertEquals('string', $schema->properties->metadata->properties->modificationDate->type);
-        $this->assertEquals('date', $schema->properties->metadata->properties->modificationDate->format);
+        $this->assertEquals('date-time', $schema->properties->metadata->properties->modificationDate->format);
         $this->assertEquals('Modification date', $schema->properties->metadata->properties->modificationDate->title);
         $this->assertEquals(
             'Timestamp of the last file change.',
