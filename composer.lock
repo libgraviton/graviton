@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d96e70ae090540a1de6d92ca0ad84f6d",
-    "content-hash": "05e15a8f603e295a2e55b690aaac12db",
+    "hash": "5d91135c5bf80180915233a8739dbd22",
+    "content-hash": "c29db8bdf6e23d238a866c772f1f34bb",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -5407,16 +5407,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.18.1",
+            "version": "dev-feature/other-validation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "486b30358da5072363b9d45b3ea9b2887c850b66"
+                "reference": "643a43e87e03a5f43b5d1b94987510e1ea935e38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/486b30358da5072363b9d45b3ea9b2887c850b66",
-                "reference": "486b30358da5072363b9d45b3ea9b2887c850b66",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/643a43e87e03a5f43b5d1b94987510e1ea935e38",
+                "reference": "643a43e87e03a5f43b5d1b94987510e1ea935e38",
                 "shasum": ""
             },
             "type": "library",
@@ -5436,10 +5436,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.18.1",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/feature/other-validation",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-02-12 14:40:21"
+            "time": "2016-06-13 11:11:42"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -6967,7 +6967,8 @@
     "stability-flags": {
         "knplabs/knp-gaufrette-bundle": 20,
         "graviton/json-schema": 20,
-        "lapistano/proxy-object": 20
+        "lapistano/proxy-object": 20,
+        "graviton/test-services-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

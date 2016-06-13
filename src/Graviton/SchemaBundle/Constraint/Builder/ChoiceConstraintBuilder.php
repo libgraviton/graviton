@@ -17,6 +17,7 @@ use Graviton\SchemaBundle\Document\Schema;
  */
 class ChoiceConstraintBuilder implements ConstraintBuilderInterface
 {
+    
     /**
      * if this builder supports a given constraint
      *
@@ -50,6 +51,11 @@ class ChoiceConstraintBuilder implements ConstraintBuilderInterface
                 }
             }
         );
+
+        // is this a numeric field? convert values
+        if ($property->getType() == 'integer') {
+            $enumValue = array_map('intval', $enumValue);
+        }
 
         if (is_array($enumValue)) {
             $property->setEnum($enumValue);

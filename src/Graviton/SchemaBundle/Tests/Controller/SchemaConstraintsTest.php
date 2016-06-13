@@ -66,6 +66,12 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 'no puedo',
                 'errorMessage' => 'Does not have a value in the enumeration ["si","no","a lo mejor","mas"]'
             ],
+            'choice-integer' => [
+                'field' => 'choiceInteger',
+                'acceptedValue' => 0,
+                'rejectedValue' => 5,
+                'errorMessage' => 'Does not have a value in the enumeration [0,1,2]'
+            ],
             'email' => [
                 'field' => 'email',
                 'acceptedValue' => 'hans.hofer@swisscom.com',
