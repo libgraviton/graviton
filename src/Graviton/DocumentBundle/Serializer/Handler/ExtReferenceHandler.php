@@ -116,6 +116,10 @@ class ExtReferenceHandler
         }
 
         // 2nd) if yes, correct collection(s)?
+        if (!isset($schema->{'x-collection'})) {
+            return;
+        }
+
         $collections = $schema->{'x-collection'};
 
         if (in_array('*', $collections)) {
