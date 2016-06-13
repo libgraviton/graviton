@@ -26,10 +26,10 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $enMock = $this->getMock('\Graviton\I18nBundle\Document\Language');
+        $enMock = $this->createMock('\Graviton\I18nBundle\Document\Language');
         $enMock->expects($this->any())->method('getId')->willReturn('en');
 
-        $deMock = $this->getMock('\Graviton\I18nBundle\Document\Language');
+        $deMock = $this->createMock('\Graviton\I18nBundle\Document\Language');
         $deMock->expects($this->any())->method('getId')->willReturn('de');
 
         $languageMock->expects($this->once())
@@ -79,7 +79,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('createQueryBuilder')
             ->willReturn($builderMock);
 
-        $fsMock = $this->getMock('\Symfony\Component\Filesystem\Filesystem');
+        $fsMock = $this->createMock('\Symfony\Component\Filesystem\Filesystem');
 
         $fsMock->expects($this->exactly(4))
             ->method('touch');

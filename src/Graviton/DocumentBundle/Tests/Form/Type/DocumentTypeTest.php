@@ -91,7 +91,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
         $sut->initialize($class);
 
-        $resolverDouble = $this->getMock('Symfony\Component\OptionsResolver\OptionsResolver');
+        $resolverDouble = $this->createMock('Symfony\Component\OptionsResolver\OptionsResolver');
         $resolverDouble
             ->expects($this->once())
             ->method('setDefaults')
@@ -116,7 +116,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $sut = new DocumentType($this->fieldBuilderDouble, [$class => []]);
         $sut->initialize($class);
 
-        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $builderDouble = $this->createMock('Symfony\Component\Form\FormBuilderInterface');
         $builderDouble
             ->expects($this->once())
             ->method('addEventListener')

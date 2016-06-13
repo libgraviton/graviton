@@ -80,7 +80,7 @@ class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false));
 
         $loggerDouble = $this->getMockForAbstractClass('\Psr\Log\LoggerInterface');
-        $serviceDouble = $this->getMock(
+        $serviceDouble = $this->createMock(
             '\Graviton\CoreBundle\Service\CoreUtils',
             array(),
             array(__DIR__ . '/../../../../../app/cache/test')
