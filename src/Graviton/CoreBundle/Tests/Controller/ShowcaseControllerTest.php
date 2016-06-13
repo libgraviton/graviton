@@ -236,6 +236,31 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * make sure an invalid choice value is detected
+     *
+     * @return void
+     */
+    public function testWrongChoiceValue()
+    {
+        $payload = json_decode(file_get_contents($this->postCreationDataProvider()['minimal'][0]));
+        $payload->choices = 'invalidChoice';
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $payload);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        $expectedErrors = [];
+        $expectedErrors[0] = new \stdClass();
+        $expectedErrors[0]->propertyPath = "choices";
+        $expectedErrors[0]->message = 'Does not have a value in the enumeration ["<",">","=",">=","<=","<>"]';
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expectedErrors),
+            json_encode($client->getResults())
+        );
+    }
+
+    /**
      * insert various formats to see if all works as expected
      *
      * @dataProvider postCreationDataProvider

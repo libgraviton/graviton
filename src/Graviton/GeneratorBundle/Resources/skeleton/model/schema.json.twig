@@ -38,6 +38,10 @@
       },
 {% endif %}
 
+{% if field.constraints is defined and field.constraints != null %}
+      "x-constraints": {{ field.constraints|json_encode() }},
+{% endif %}
+
 {% if field.description is defined and field.description != '' %}
       "description": {{ field.description|json_encode() }}
 {% else %}

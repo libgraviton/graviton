@@ -41,6 +41,7 @@ class TranslatableRequiredTest extends RestTestCase
      *
      * @param array  $data          data to post
      * @param string $complainField field to complain about
+     * @param string $errorMessage  error message
      *
      * @return void
      */

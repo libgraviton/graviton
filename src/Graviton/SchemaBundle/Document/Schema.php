@@ -94,6 +94,11 @@ class Schema
     protected $maxLength;
 
     /**
+     * @var SchemaEnum
+     */
+    protected $enum;
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -289,6 +294,28 @@ class Schema
     public function setMaxLength($maxLength)
     {
         $this->maxLength = $maxLength;
+    }
+
+    /**
+     * get Enum
+     *
+     * @return array Enum
+     */
+    public function getEnum()
+    {
+        return $this->enum;
+    }
+
+    /**
+     * set Enum
+     *
+     * @param array $enum enum
+     *
+     * @return void
+     */
+    public function setEnum(array $enum)
+    {
+        $this->enum = new SchemaEnum($enum);
     }
 
     /**

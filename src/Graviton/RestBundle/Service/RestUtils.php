@@ -67,13 +67,15 @@ final class RestUtils implements RestUtilsInterface
      * @param Serializer           $serializer        serializer
      * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
      * @param SerializationContext $serializerContext context for serializer
+     * @param SchemaUtils          $schemaUtils       schema utils
+     * @param Validator            $schemaValidator   schema validator
      */
     public function __construct(
         ContainerInterface $container,
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext = null,
+        SerializationContext $serializerContext,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator
     ) {

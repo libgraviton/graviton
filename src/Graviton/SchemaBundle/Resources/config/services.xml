@@ -8,7 +8,9 @@
     <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
     <parameter key="graviton.schema.service.schemautils.class">Graviton\SchemaBundle\SchemaUtils</parameter>
     <parameter key="graviton.schema.service.repositoryfactory.class">Graviton\SchemaBundle\Service\RepositoryFactory</parameter>
+    <parameter key="graviton.schema.constraint.builder.class">Graviton\SchemaBundle\Constraint\ConstraintBuilder</parameter>
     <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
+    <parameter key="graviton.schema.serializer.handler.enum.class">Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -32,6 +34,19 @@
            type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"
            format="json"/>
     </service>
+    <service id="graviton.schema.serializer.handler.enum" class="%graviton.schema.serializer.handler.enum.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaEnum"
+           format="json"/>
+    </service>
+    <!-- constraint builder -->
+    <service id="graviton.schema.constraint.builder" class="%graviton.schema.constraint.builder.class%">
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder"/>
+        </argument>
+      </call>
+    </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
       <argument type="service" id="graviton.schema.service.repositoryfactory"/>
       <argument type="service" id="jms_serializer.metadata_factory"/>
@@ -42,6 +57,7 @@
       <argument>%graviton.document.field.names%</argument>
       <argument>%locale%</argument>
       <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument type="service" id="graviton.schema.constraint.builder"/>
     </service>
   </services>
 </container>

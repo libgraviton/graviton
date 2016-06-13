@@ -213,6 +213,18 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Get defined constraints on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getConstraints($field)
+    {
+        return $this->getSchemaField($field, 'x-constraints', false);
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name

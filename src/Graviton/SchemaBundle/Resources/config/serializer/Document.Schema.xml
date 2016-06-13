@@ -15,6 +15,7 @@
     <property name="eventNames" accessor-getter="getEventNames" accessor-setter="setEventNames" serialized-name="x-events" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="enum" type="Graviton\SchemaBundle\Document\SchemaEnum" accessor-getter="getEnum" accessor-setter="setEnum" expose="true"/>
     <property name="properties" accessor-getter="getProperties" expose="true">
       <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
     </property>

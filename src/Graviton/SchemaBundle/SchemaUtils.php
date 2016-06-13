@@ -10,6 +10,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
@@ -76,6 +77,16 @@ class SchemaUtils
     private $serializerMetadataFactory;
 
     /**
+     * @var CacheProvider
+     */
+    private $cache;
+
+    /**
+     * @var ConstraintBuilder
+     */
+    private $constraintBuilder;
+
+    /**
      * Constructor
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
@@ -86,6 +97,8 @@ class SchemaUtils
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
      * @param string                             $defaultLocale             Default Language
+     * @param CacheProvider                      $cache                     Doctrine cache provider
+     * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -96,7 +109,8 @@ class SchemaUtils
         array $eventMap,
         array $documentFieldNames,
         $defaultLocale,
-        CacheProvider $cache
+        CacheProvider $cache,
+        ConstraintBuilder $constraintBuilder
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
@@ -107,6 +121,7 @@ class SchemaUtils
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
         $this->cache = $cache;
+        $this->constraintBuilder = $constraintBuilder;
     }
 
     /**
@@ -138,9 +153,9 @@ class SchemaUtils
      *
      * @return Schema
      */
-    public function getModelSchema($modelName = null, DocumentModel $model, $online = true, $internal = false)
+    public function getModelSchema($modelName, DocumentModel $model, $online = true, $internal = false)
     {
-        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string)$online.'.'.(string)$internal;
+        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string) $online.'.'.(string) $internal;
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
@@ -332,6 +347,8 @@ class SchemaUtils
                     $property->setMinLength(1);
                 }
             }
+
+            $property = $this->constraintBuilder->addConstraints($field, $property, $model);
 
             $schema->addProperty($documentFieldNames[$field], $property);
         }
