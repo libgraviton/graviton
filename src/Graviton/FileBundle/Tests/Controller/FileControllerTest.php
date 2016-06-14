@@ -108,6 +108,8 @@ class FileControllerTest extends RestTestCase
         // check for valid format
         $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->createDate));
         $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->modificationDate));
+        // Check valid hash encoding
+        $this->assertEquals(hash('sha256', $fixtureData), $data->metadata->hash);
 
         $data->links = [];
         $link = new \stdClass;
