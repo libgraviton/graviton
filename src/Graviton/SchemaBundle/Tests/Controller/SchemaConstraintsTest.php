@@ -84,6 +84,9 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 'jjj--no-url',
                 'errorMessage' => 'Invalid URL format'
             ],
+            
+            // Range
+            
             'range-integer-lower-bound' => [
                 'field' => 'rangeInteger',
                 'acceptedValue' => 5,
@@ -99,15 +102,46 @@ class SchemaConstraintsTest extends RestTestCase
             'range-double-lower-bound' => [
                 'field' => 'rangeDouble',
                 'acceptedValue' => 0.0,
-                'rejectedValue' => -0.1,
+                'rejectedValue' => -0.0001,
                 'errorMessage' => 'Must have a minimum value of 0'
             ],
             'range-double-upper-bound' => [
                 'field' => 'rangeDouble',
-                'acceptedValue' => 0.99,
-                'rejectedValue' => 1.11,
+                'acceptedValue' => 1.0,
+                'rejectedValue' => 1.0000001,
                 'errorMessage' => 'Must have a maximum value of 1'
+            ],
+            
+            // GreatherThanOrEqual
+
+            'greaterthan-integer' => [
+                'field' => 'greaterThanOrEqualInt',
+                'acceptedValue' => 0,
+                'rejectedValue' => -1,
+                'errorMessage' => 'Must have a minimum value of 0'
+            ],
+            'greaterthan-double' => [
+                'field' => 'greaterThanOrEqualDouble',
+                'acceptedValue' => 0.1,
+                'rejectedValue' => 0,
+                'errorMessage' => 'Must have a minimum value of 0.1'
+            ],
+
+            // LessThanOrEqual
+
+            'lessthan-integer' => [
+                'field' => 'lessThanOrEqualInt',
+                'acceptedValue' => 0,
+                'rejectedValue' => 1,
+                'errorMessage' => 'Must have a maximum value of 0'
+            ],
+            'lessthan-double' => [
+                'field' => 'lessThanOrEqualDouble',
+                'acceptedValue' => 0.1,
+                'rejectedValue' => 0.1000001,
+                'errorMessage' => 'Must have a maximum value of 0.1'
             ]
+            
         ];
     }
 }

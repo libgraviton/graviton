@@ -15,6 +15,20 @@ use Graviton\SchemaBundle\Document\Schema;
  */
 class RangeConstraintBuilder implements ConstraintBuilderInterface
 {
+
+    /**
+     * @var array
+     */
+    private $types = [
+        'Range',
+        'GreaterThanOrEqual',
+        'LessThanOrEqual'
+    ];
+
+    /**
+     * @var string
+     */
+    private $type;
     
     /**
      * if this builder supports a given constraint
@@ -26,7 +40,12 @@ class RangeConstraintBuilder implements ConstraintBuilderInterface
      */
     public function supportsConstraint($type, array $options = [])
     {
-        return ($type === 'Range');
+        if (in_array($type, $this->types)) {
+            $this->type = $type;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -42,10 +61,16 @@ class RangeConstraintBuilder implements ConstraintBuilderInterface
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
         foreach ($options as $option) {
-            if ($option->name == 'min') {
+            if ($option->name == 'min' && $this->type == 'Range') {
                 $property->setNumericMinimum(floatval($option->value));
             }
-            if ($option->name == 'max') {
+            if ($option->name == 'max' && $this->type == 'Range') {
+                $property->setNumericMaximum(floatval($option->value));
+            }
+            if ($option->name == 'value' && $this->type == 'GreaterThanOrEqual') {
+                $property->setNumericMinimum(floatval($option->value));
+            }
+            if ($option->name == 'value' && $this->type == 'LessThanOrEqual') {
                 $property->setNumericMaximum(floatval($option->value));
             }
         }
