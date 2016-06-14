@@ -60,6 +60,9 @@ class SchemaConstraintsTest extends RestTestCase
     public function schemaConstraintDataProvider()
     {
         return [
+
+            // Choice
+
             'choice-string' => [
                 'field' => 'choiceString',
                 'acceptedValue' => 'a lo mejor',
@@ -72,12 +75,18 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 5,
                 'errorMessage' => 'Does not have a value in the enumeration [0,1,2]'
             ],
+
+            // Email
+
             'email' => [
                 'field' => 'email',
                 'acceptedValue' => 'hans.hofer@swisscom.com',
                 'rejectedValue' => 'invalidemail@sss.',
                 'errorMessage' => 'Invalid email'
             ],
+
+            // Url
+
             'url' => [
                 'field' => 'url',
                 'acceptedValue' => 'https://github.com/libgraviton/graviton',
@@ -111,6 +120,18 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 1.0000001,
                 'errorMessage' => 'Must have a maximum value of 1'
             ],
+            'range-integer-only-min' => [
+                'field' => 'rangeIntegerOnlyMin',
+                'acceptedValue' => 5,
+                'rejectedValue' => 4,
+                'errorMessage' => 'Must have a minimum value of 5'
+            ],
+            'range-integer-only-max' => [
+                'field' => 'rangeIntegerOnlyMax',
+                'acceptedValue' => 5,
+                'rejectedValue' => 6,
+                'errorMessage' => 'Must have a maximum value of 5'
+            ],
             
             // GreatherThanOrEqual
 
@@ -140,8 +161,45 @@ class SchemaConstraintsTest extends RestTestCase
                 'acceptedValue' => 0.1,
                 'rejectedValue' => 0.1000001,
                 'errorMessage' => 'Must have a maximum value of 0.1'
+            ],
+
+            // Decimal (a decimal formatted string field)
+
+            'decimal-string' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '1000000000.5555',
+                'rejectedValue' => '1.55555', // too much precision
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+            ],
+            'decimal-string-notation' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '1000000000',
+                'rejectedValue' => '1,0', // wrong separator
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+            ],
+            'decimal-string-string' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '0',
+                'rejectedValue' => 'somestring', // string
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+            ],
+
+            // Count (number of array elements)
+
+            'count-array-lower' => [
+                'field' => 'arrayCount',
+                'acceptedValue' => ['a'],
+                'rejectedValue' => [],
+                'errorMessage' => 'There must be a minimum of 1 items in the array'
+            ],
+            'count-array-lower' => [
+                'field' => 'arrayCount',
+                'acceptedValue' => ['a', 'b', 'c'],
+                'rejectedValue' => ['a', 'b', 'c', 'd'],
+                'errorMessage' => 'There must be a maximum of 3 items in the array'
             ]
-            
+
+
         ];
     }
 }

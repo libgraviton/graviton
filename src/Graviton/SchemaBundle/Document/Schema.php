@@ -89,6 +89,21 @@ class Schema
     protected $minLength;
 
     /**
+     * @var int
+     */
+    protected $maxLength;
+
+    /**
+     * @var int
+     */
+    protected $minItems;
+
+    /**
+     * @var int
+     */
+    protected $maxItems;
+
+    /**
      * @var float
      */
     protected $numericMinimum;
@@ -99,14 +114,14 @@ class Schema
     protected $numericMaximum;
 
     /**
-     * @var int
-     */
-    protected $maxLength;
-
-    /**
      * @var SchemaEnum
      */
     protected $enum;
+
+    /**
+     * @var string
+     */
+    protected $regexPattern;
 
     /**
      * these are the BSON primitive types.
@@ -263,16 +278,6 @@ class Schema
     }
 
     /**
-     * set min length
-     *
-     * @return int length
-     */
-    public function getMinLength()
-    {
-        return $this->minLength;
-    }
-
-    /**
      * get numeric minimum
      *
      * @return float numeric minimum
@@ -317,6 +322,16 @@ class Schema
     }
 
     /**
+     * set min length
+     *
+     * @return int length
+     */
+    public function getMinLength()
+    {
+        return $this->minLength;
+    }
+
+    /**
      * get min length
      *
      * @param int $minLength length
@@ -351,6 +366,50 @@ class Schema
     }
 
     /**
+     * set min Items
+     *
+     * @return int Items
+     */
+    public function getMinItems()
+    {
+        return $this->minItems;
+    }
+
+    /**
+     * get min Items
+     *
+     * @param int $minItems length
+     *
+     * @return void
+     */
+    public function setMinItems($minItems)
+    {
+        $this->minItems = $minItems;
+    }
+
+    /**
+     * gets maxItems
+     *
+     * @return int Items
+     */
+    public function getMaxItems()
+    {
+        return $this->maxItems;
+    }
+
+    /**
+     * set maxItems
+     *
+     * @param int $maxItems Items
+     *
+     * @return void
+     */
+    public function setMaxItems($maxItems)
+    {
+        $this->maxItems = $maxItems;
+    }
+
+    /**
      * get Enum
      *
      * @return array Enum
@@ -370,6 +429,28 @@ class Schema
     public function setEnum(array $enum)
     {
         $this->enum = new SchemaEnum($enum);
+    }
+
+    /**
+     * get regex pattern
+     *
+     * @return string pattern
+     */
+    public function getRegexPattern()
+    {
+        return $this->regexPattern;
+    }
+
+    /**
+     * set regex pattern
+     *
+     * @param string $regexPattern regex pattern
+     *
+     * @return void
+     */
+    public function setRegexPattern($regexPattern)
+    {
+        $this->regexPattern = $regexPattern;
     }
 
     /**
