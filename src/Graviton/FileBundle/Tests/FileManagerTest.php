@@ -164,6 +164,23 @@ class FileManagerTest extends WebTestCase
             json_encode($contentArray['links'])
         );
 
+        // Test Metadata, and Remove date.
+        unset($contentArray['metadata']['modificationDate']);
+        $this->assertJsonStringEqualsJsonString(
+            '{
+                "size":16,
+                "action":[
+                    {"command":"print"},
+                    {"command":"archive"}
+                ],
+                "mime":"text\/plain",
+                "filename":"test.txt",
+                "hash":"4f3cbec0e58903d8bdcbd03d283cf43ed49a95d8d8b341ee38c0ba085204e2d5",
+                "additionalProperties":[]
+             }',
+            json_encode($contentArray['metadata'])
+        );
+
         // clean up
         $client = $this->createClient();
         $client->request(
