@@ -8,6 +8,8 @@
     <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
     <property name="minLength" type="integer" accessor-getter="getMinLength" accessor-setter="setMinLength" expose="true"/>
     <property name="maxLength" type="integer" accessor-getter="getMaxLength" accessor-setter="setMaxLength" expose="true"/>
+    <property name="numericMinimum" serialized-name="minimum" type="double" accessor-getter="getNumericMinimum" accessor-setter="setNumericMinimum" expose="true"/>
+    <property name="numericMaximum" serialized-name="maximum" type="double" accessor-getter="getNumericMaximum" accessor-setter="setNumericMaximum" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
     <property name="refCollection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
       <type><![CDATA[array<string>]]></type>

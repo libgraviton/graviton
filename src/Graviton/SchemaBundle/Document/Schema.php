@@ -89,6 +89,16 @@ class Schema
     protected $minLength;
 
     /**
+     * @var float
+     */
+    protected $numericMinimum;
+
+    /**
+     * @var float
+     */
+    protected $numericMaximum;
+
+    /**
      * @var int
      */
     protected $maxLength;
@@ -260,6 +270,50 @@ class Schema
     public function getMinLength()
     {
         return $this->minLength;
+    }
+
+    /**
+     * get numeric minimum
+     *
+     * @return float numeric minimum
+     */
+    public function getNumericMinimum()
+    {
+        return $this->numericMinimum;
+    }
+
+    /**
+     * set numeric minimum
+     *
+     * @param float $numericMinimum numeric mimimum
+     *
+     * @return void
+     */
+    public function setNumericMinimum($numericMinimum)
+    {
+        $this->numericMinimum = $numericMinimum;
+    }
+
+    /**
+     * get numeric maximum
+     *
+     * @return float numeric maximum
+     */
+    public function getNumericMaximum()
+    {
+        return $this->numericMaximum;
+    }
+
+    /**
+     * set numeric maximum
+     *
+     * @param float $numericMaximum maximum
+     *
+     * @return void
+     */
+    public function setNumericMaximum($numericMaximum)
+    {
+        $this->numericMaximum = $numericMaximum;
     }
 
     /**

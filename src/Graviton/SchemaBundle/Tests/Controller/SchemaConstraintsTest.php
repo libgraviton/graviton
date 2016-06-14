@@ -83,6 +83,30 @@ class SchemaConstraintsTest extends RestTestCase
                 'acceptedValue' => 'https://github.com/libgraviton/graviton',
                 'rejectedValue' => 'jjj--no-url',
                 'errorMessage' => 'Invalid URL format'
+            ],
+            'range-integer-lower-bound' => [
+                'field' => 'rangeInteger',
+                'acceptedValue' => 5,
+                'rejectedValue' => 4,
+                'errorMessage' => 'Must have a minimum value of 5'
+            ],
+            'range-integer-upper-bound' => [
+                'field' => 'rangeInteger',
+                'acceptedValue' => 9,
+                'rejectedValue' => 10,
+                'errorMessage' => 'Must have a maximum value of 9'
+            ],
+            'range-double-lower-bound' => [
+                'field' => 'rangeDouble',
+                'acceptedValue' => 0.0,
+                'rejectedValue' => -0.1,
+                'errorMessage' => 'Must have a minimum value of 0'
+            ],
+            'range-double-upper-bound' => [
+                'field' => 'rangeDouble',
+                'acceptedValue' => 0.99,
+                'rejectedValue' => 1.11,
+                'errorMessage' => 'Must have a maximum value of 1'
             ]
         ];
     }
