@@ -9,6 +9,7 @@ use Graviton\DocumentBundle\Entity\ExtReference as ExtRef;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Validator for the extref type
@@ -19,6 +20,24 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class ExtReferenceValidator extends ConstraintValidator
 {
+
+    /** @var DocumentManager $documentManager */
+    private $documentManager;
+
+    /** @var Boolean */
+    private $validateId;
+
+    /**
+     * ExtReferenceValidator constructor.
+     * @param DocumentManager $documentManager DB manager
+     * @param boolean         $validateId      Validate ID against DB or not.
+     */
+    public function __construct(DocumentManager $documentManager = null, $validateId = null)
+    {
+        $this->documentManager = $documentManager;
+        $this->validateId = $validateId;
+    }
+
     /**
      * Checks if the passed value is valid.
      *
@@ -46,6 +65,19 @@ class ExtReferenceValidator extends ConstraintValidator
             !in_array($value->getRef(), $constraint->collections, true)
         ) {
             $this->context->addViolation($constraint->message, ['%collection%' => $value->getRef()]);
+            return;
         }
+
+        // Does ID exists in DB.
+        if ($this->validateId && !in_array($value->getRef(), ['App', 'TestCaseReadOnly'])) {
+            $db = $this->documentManager->getConnection()->selectDatabase('db');
+            $collection = $db->selectCollection($value->getRef());
+            $document = $collection->findOne(['_id' => $value->getId()]);
+            if (!$document) {
+                $msgArg = ['%collection%' => $value->getRef().':invalid:'.$value->getId()];
+                $this->context->addViolation($constraint->message, $msgArg);
+            }
+        }
+
     }
 }

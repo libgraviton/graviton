@@ -71,3 +71,5 @@ parameters:
     graviton.proxy.httploader.curloptions: []
 
     graviton.proxy.swagger.sources: {}
+
+    graviton.extref.validate_ref_id: true

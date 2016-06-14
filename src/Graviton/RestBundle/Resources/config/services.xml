@@ -263,6 +263,8 @@
 
         <service id="graviton.rest.validator.extref" class="%graviton.rest.validator.extref.class%">
             <tag name="validator.constraint_validator" alias="graviton.rest.validator.extref" />
+            <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
+            <argument>%graviton.extref.validate_ref_id%</argument>
         </service>
 
         <service id="graviton.rest.validator.form" class="%graviton.rest.validator.form.class%">
