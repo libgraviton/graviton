@@ -77,6 +77,12 @@ class SchemaConstraintsTest extends RestTestCase
                 'acceptedValue' => 'hans.hofer@swisscom.com',
                 'rejectedValue' => 'invalidemail@sss.',
                 'errorMessage' => 'Invalid email'
+            ],
+            'url' => [
+                'field' => 'url',
+                'acceptedValue' => 'https://github.com/libgraviton/graviton',
+                'rejectedValue' => 'jjj--no-url',
+                'errorMessage' => 'Invalid URL format'
             ]
         ];
     }

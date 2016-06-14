@@ -51,6 +51,11 @@
           <service class="Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder"/>
         </argument>
       </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder"/>
+        </argument>
+      </call>
     </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
       <argument type="service" id="graviton.schema.service.repositoryfactory"/>
