@@ -394,7 +394,7 @@ class RestController
         $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->formValidator->checkJsonRequest($request, $response);
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
         $errors = $this->restUtils->validateContent($request->getContent(), $model);
         if (!empty($errors)) {
@@ -478,7 +478,7 @@ class RestController
         $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->formValidator->checkJsonRequest($request, $response);
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
         $errors = $this->restUtils->validateContent($request->getContent(), $model);
         if (!empty($errors)) {
@@ -528,10 +528,10 @@ class RestController
     public function patchAction($id, Request $request)
     {
         $response = $this->getResponse();
-        $this->formValidator->checkJsonRequest($request, $response);
 
         // Check JSON Patch request
-        $this->formValidator->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
         // Find record && apply $ref converter
         $record = $this->findRecord($id);

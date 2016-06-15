@@ -227,8 +227,8 @@ class FileController extends RestController
     private function validateRequest(Request $request, Response $response, $fileData = '')
     {
         if (!empty($fileData)) {
-            $this->formValidator->checkJsonRequest($request, $response, $fileData);
             $model = $this->getModel();
+            $this->getRestUtils()->checkJsonRequest($request, $response, $model, $fileData);
             return $this->formValidator->checkForm(
                 $this->formValidator->getForm($request, $model),
                 $model,
