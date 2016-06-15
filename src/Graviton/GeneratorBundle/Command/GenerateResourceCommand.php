@@ -88,10 +88,6 @@ class GenerateResourceCommand extends GenerateDoctrineEntityCommand
             $input,
             $output
         );
-
-        $output->writeln(
-            'For the time being you need to fix titles and add descriptions in Resource/config/schema manually'
-        );
     }
 
     /**

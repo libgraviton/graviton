@@ -17,8 +17,8 @@ you will need to fix this by removing the doctrine and serializer config in ``Re
 ### Generate a new Resource
 
 ```bash
-php app/console graviton:generate:resource --entity=GravitonFooBundle:Bar --format=xml --fields="name:string" --with-repository
-php app/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant" --with-repository
+php app/console graviton:generate:resource --entity=GravitonFooBundle:Bar --format=xml --fields="name:string"
+php app/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant"
 ```
 You will need to clean up the models Resource/schema/<name>.json file after generation. You may replace titles and you must
 add descriptions in the fields marked @todo.

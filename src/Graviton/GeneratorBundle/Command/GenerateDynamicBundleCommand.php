@@ -241,7 +241,6 @@ class GenerateDynamicBundleCommand extends Command
                 '--format' => 'xml',
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
                 '--fields' => $this->getFieldString($subRecource),
-                '--with-repository' => null,
                 '--no-controller' => 'true',
             ];
             $this->generateResource($arguments, $output, $jsonDef);
@@ -273,8 +272,7 @@ class GenerateDynamicBundleCommand extends Command
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
                 '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
                 '--format' => 'xml',
-                '--fields' => $this->getFieldString($jsonDef),
-                '--with-repository' => null
+                '--fields' => $this->getFieldString($jsonDef)
             );
 
             $this->generateResource($arguments, $output, $jsonDef);
@@ -355,7 +353,6 @@ class GenerateDynamicBundleCommand extends Command
             '--format' => $input->getOption('bundleFormat'),
             '--doUpdateKernel' => 'false',
             '--loaderBundleName' => $input->getOption('bundleBundleName'),
-            '--structure' => null
         );
 
         $this->runner->executeCommand(

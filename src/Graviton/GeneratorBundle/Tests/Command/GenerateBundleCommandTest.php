@@ -36,32 +36,6 @@ class GenerateBundleCommandTest extends BaseTest
     }
 
     /**
-     * add xml test to upstreams test data
-     *
-     * @return array[]
-     *
-     * @codeCoverageIgnore
-     */
-    public function getInteractiveCommandData()
-    {
-        $tmp = sys_get_temp_dir();
-
-        return array_merge(
-            parent::getInteractiveCommandData(),
-            array(
-                array(
-                    array(
-                        '--dir' => $tmp,
-                        '--format' => 'xml'
-                    ),
-                    "Foo/BarBundle\n",
-                    array('Foo\BarBundle', 'FooBarBundle', $tmp.'/', 'xml', false)
-                )
-            )
-        );
-    }
-
-    /**
      * get command
      *
      * @param \Graviton\GeneratorBundle\Generator\BundleGenerator $generator generator
@@ -94,7 +68,7 @@ class GenerateBundleCommandTest extends BaseTest
         return $this
             ->getMockBuilder('Graviton\GeneratorBundle\Generator\BundleGenerator')
             ->disableOriginalConstructor()
-            ->setMethods(array('generate'))
+            ->setMethods(['generate', 'generateBundle'])
             ->getMock();
     }
 
