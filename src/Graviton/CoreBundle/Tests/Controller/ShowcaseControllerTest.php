@@ -162,10 +162,6 @@ class ShowcaseControllerTest extends RestTestCase
                     'message'       => 'String value found, but a boolean is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'contact.uri',
-                    'message'       => 'The property uri is required',
-                ],
-                (object) [
                     'propertyPath'  => 'contact.type',
                     'message'       => 'Must be at least 1 characters long',
                 ],
@@ -217,10 +213,6 @@ class ShowcaseControllerTest extends RestTestCase
                 (object) [
                     'propertyPath'  => 'choices',
                     'message'       => 'The property choices is required',
-                ],
-                (object) [
-                    'propertyPath'  => 'contact.uri',
-                    'message'       => 'The property uri is required',
                 ],
                 (object) [
                     'propertyPath'  => 'contact.protocol',
