@@ -266,16 +266,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // In both cases the document attribute named originRecord must not be 'core'
         $this->checkIfOriginRecord($entity);
         $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
-        /*
-         * @TODO @hairmare i remember this fixed something important - why do we do it? can't we just delete the old
-         * document and insert the new one? we always have the entire object(?) i guess would be faster
-         * and we surely wouldn't have any array update problems as in the past..
-         */
-        /*
-        $manager = $this->repository->getDocumentManager();
-        $entity = $manager->merge($entity);
-        $manager->flush();
-        */
 
         $this->deleteById($documentId);
         $this->manager->persist($entity);

@@ -130,7 +130,7 @@ class Schema
      *
      * @var string[]
      */
-    protected $primitiveTypes = array(
+    protected $primitiveTypes = [
         'array',
         'boolean',
         'integer',
@@ -138,7 +138,19 @@ class Schema
         'null',
         'object',
         'string'
-    );
+    ];
+
+    /**
+     * those are types that when they are required, a minimal length
+     * shall be specified in schema
+     *
+     * @var array
+     */
+    protected $minLengthTypes = [
+        'integer',
+        'number',
+        'string'
+    ];
 
     /**
      * known non-primitive types we map to primitives here.
@@ -253,6 +265,16 @@ class Schema
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * get MinLengthTypes
+     *
+     * @return array MinLengthTypes
+     */
+    public function getMinLengthTypes()
+    {
+        return $this->minLengthTypes;
     }
 
     /**
