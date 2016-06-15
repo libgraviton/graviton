@@ -6,6 +6,12 @@
   "description": "@todo replace me",
 {% endif %}
 
+{% if noIdField is not defined %}
+  "x-id-in-post-allowed": false,
+{% else %}
+  "x-id-in-post-allowed": true,
+{% endif %}
+
 {% if json is defined %}
     "title": "{{ json.getTitle() }}",
 {% endif %}

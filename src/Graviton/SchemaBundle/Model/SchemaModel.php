@@ -225,6 +225,21 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Tells us if in this model, the ID can be given on a POST request or not (in the payload).
+     * This basically depends on if the "id" property is given in the JSON definition or not.
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function isIdInPostAllowed()
+    {
+        $isAllowed = true;
+        if (isset($this->schema->{'x-id-in-post-allowed'})) {
+            $isAllowed = $this->schema->{'x-id-in-post-allowed'};
+        }
+        return $isAllowed;
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name
