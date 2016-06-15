@@ -40,7 +40,6 @@
         "knplabs/knp-paginator-bundle": "~2.5",
         "php-jsonpointer/php-jsonpointer": "~1.1",
         "exercise/htmlpurifier-bundle": "~0.2",
-        "egulias/email-validator": "~1.2",
         "graviton/php-rql-parser": ">=2.0.2",
         "graviton/rql-parser-bundle": "~0.11.0",
         "knplabs/knp-gaufrette-bundle": "^0.2@dev",
