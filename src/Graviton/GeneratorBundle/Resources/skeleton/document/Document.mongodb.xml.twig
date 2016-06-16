@@ -65,13 +65,13 @@
                 {% elseif '[]' in field.type or field.type == 'array' %}
                     <field fieldName="{{ field.fieldName }}" type="collection"/>
                 {% else %}
-                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}" strategy="pushAll"/>
+                    <field fieldName="{{ field.fieldName }}" type="{{ field.type }}"/>
                 {% endif %}
             {% endif %}
         {% endfor %}
 
         {% if isrecordOriginFlagSet %}
-            <field fieldName="recordOrigin" type="string" strategy="pushAll"/>
+            <field fieldName="recordOrigin" type="string"/>
         {% endif %}
 
     {% if indexes is defined and indexes is not empty %}
