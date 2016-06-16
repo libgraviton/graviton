@@ -116,22 +116,9 @@ class JsonDefinitionField implements DefinitionElementInterface
             'relType'           => null,
             'isClassType'       => false,
             'constraints'       => array_map(
-                function (Schema\Constraint $constraint) {
-                    return [
-                        'name'  => $constraint->getName(),
-                        'options'   => array_map(
-                            function (Schema\ConstraintOption $option) {
-                                return [
-                                    'name'  => $option->getName(),
-                                    'value' => $option->getValue(),
-                                ];
-                            },
-                            $constraint->getOptions()
-                        )
-                    ];
-                },
+                [Utils\ConstraintNormalizer::class, 'normalize'],
                 $this->definition->getConstraints()
-            )
+            ),
         ];
     }
 
