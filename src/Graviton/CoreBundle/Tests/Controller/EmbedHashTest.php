@@ -1,6 +1,6 @@
 <?php
 /**
- * NewEmbedHashTest class file
+ * EmbedHashTest class file
  */
 
 namespace Graviton\CoreBundle\Tests\Controller;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class NewEmbedHashTest extends RestTestCase
+class EmbedHashTest extends RestTestCase
 {
     /**
      * @param object $data JSON data
@@ -28,7 +28,7 @@ class NewEmbedHashTest extends RestTestCase
     public function testValid($data)
     {
         $client = static::createRestClient();
-        $client->post('/testcase/new-embed-hash-test/', $data);
+        $client->post('/testcase/embed-hash/', $data);
 
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
     }
@@ -116,7 +116,7 @@ class NewEmbedHashTest extends RestTestCase
     public function testInvalid($data, array $errors)
     {
         $client = static::createRestClient();
-        $client->post('/testcase/new-embed-hash-test/', $data);
+        $client->post('/testcase/embed-hash/', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(count($client->getResults()), count($errors));

@@ -1,6 +1,6 @@
 <?php
 /**
- * NewEmbedArrayTest class file
+ * EmbedArrayTest class file
  */
 
 namespace Graviton\CoreBundle\Tests\Controller;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class NewEmbedArrayTest extends RestTestCase
+class EmbedArrayTest extends RestTestCase
 {
     /**
      * @param object $data JSON data
@@ -28,7 +28,7 @@ class NewEmbedArrayTest extends RestTestCase
     public function testValid($data)
     {
         $client = static::createRestClient();
-        $client->post('/testcase/new-embed-array-test/', $data);
+        $client->post('/testcase/embed-array/', $data);
 
         $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
     }
@@ -166,7 +166,7 @@ class NewEmbedArrayTest extends RestTestCase
     public function testInvalid($data, array $errors)
     {
         $client = static::createRestClient();
-        $client->post('/testcase/new-embed-array-test/', $data);
+        $client->post('/testcase/embed-array/', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals(count($client->getResults()), count($errors));
