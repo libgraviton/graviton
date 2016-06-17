@@ -575,13 +575,14 @@ class Schema
     /**
      * set required variables
      *
-     * @param string[] $required arary of required fields
+     * @param string[] $required array of required fields
      *
      * @return void
      */
-    public function setRequired($required)
+    public function setRequired(array $required)
     {
-        $this->required = $required;
+        // needed as indexes could we off and we want to enforce an array after json_encode
+        $this->required = array_values($required);
     }
 
     /**
