@@ -49,7 +49,7 @@
         "hwi/oauth-bundle": "~0.4",
         "graviton/deploy-scripts": "~0.4",
         "graviton/json-schema": "~0.8",
-        "hadesarchitect/json-schema-bundle": "~0.1.0",
+        "hadesarchitect/json-schema-bundle": "=0.1.0",
         "php-jsonpatch/php-jsonpatch": "~1.2.2",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
