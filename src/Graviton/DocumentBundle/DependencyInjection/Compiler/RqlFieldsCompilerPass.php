@@ -60,7 +60,7 @@ class RqlFieldsCompilerPass implements CompilerPassInterface
                 $bundle,
                 $doc
             );
-            $rqlFields = $this->processDocument($this->documentMap->getDocument($className));
+            $rqlFields = $this->documentMap->getFieldNamesFlat($this->documentMap->getDocument($className));
             $routePrefix = strtolower($ns.'.'.$bundle.'.'.'rest'.'.'.$doc);
 
             $map[$routePrefix.'.get'] = $rqlFields;
@@ -97,46 +97,5 @@ class RqlFieldsCompilerPass implements CompilerPassInterface
             ucfirst($bundle).'Bundle',
             ucfirst($doc)
         );
-    }
-
-    /**
-     * Recursive doctrine document processing
-     *
-     * @param Document $document       Document
-     * @param string   $documentPrefix Document field prefix
-     * @param string   $exposedPrefix  Exposed field prefix
-     * @return array
-     */
-    private function processDocument(Document $document, $documentPrefix = '', $exposedPrefix = '')
-    {
-        $result = [];
-        foreach ($document->getFields() as $field) {
-            $result[$documentPrefix.$field->getFieldName()] = $exposedPrefix.$field->getExposedName();
-
-            if ($field instanceof ArrayField) {
-                $result[$documentPrefix.$field->getFieldName().'.0'] = $exposedPrefix.$field->getExposedName().'.0';
-            } elseif ($field instanceof EmbedOne) {
-                $result = array_merge(
-                    $result,
-                    $this->processDocument(
-                        $field->getDocument(),
-                        $documentPrefix.$field->getFieldName().'.',
-                        $exposedPrefix.$field->getExposedName().'.'
-                    )
-                );
-            } elseif ($field instanceof EmbedMany) {
-                $result[$documentPrefix.$field->getFieldName().'.0'] = $exposedPrefix.$field->getExposedName().'.0';
-                $result = array_merge(
-                    $result,
-                    $this->processDocument(
-                        $field->getDocument(),
-                        $documentPrefix.$field->getFieldName().'.0.',
-                        $exposedPrefix.$field->getExposedName().'.0.'
-                    )
-                );
-            }
-        }
-
-        return $result;
     }
 }
