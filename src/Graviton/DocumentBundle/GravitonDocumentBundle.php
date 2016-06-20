@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFormDataMapCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -81,7 +82,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
             (new Finder())
                 ->in(__DIR__ . '/../..')
                 ->path('Resources/config')
-                ->name('validation.xml')
+                ->name('validation.xml'),
+            (new Finder())
+                ->in(__DIR__ . '/../..')
+                ->path('Resources/config/schema')
+                ->name('*.json')
         );
 
         $container->addCompilerPass(new ExtRefMappingCompilerPass());
@@ -91,6 +96,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new DocumentFormFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFormDataMapCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
+        $container->addCompilerPass(new ReadOnlyFieldsCompilerPass($documentMap));
     }
 
     /**
