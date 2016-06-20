@@ -40,7 +40,7 @@ class CountConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        if ($property->getType() == 'array') {
+        if (in_array('array', $property->getType()->getTypes())) {
             foreach ($options as $option) {
                 if ($option->name == 'min') {
                     $property->setMinItems(intval($option->value));
@@ -50,7 +50,7 @@ class CountConstraintBuilder implements ConstraintBuilderInterface
                 }
             }
         }
-        
+
         return $property;
     }
 }

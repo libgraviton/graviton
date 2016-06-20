@@ -48,7 +48,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      */
     public function buildConstraint($fieldName, Schema $property, DocumentModel $model, array $options)
     {
-        if ($property->getType() == 'string') {
+        if (in_array('string', $property->getType()->getTypes())) {
             $property->setRegexPattern($this->pattern);
         }
 

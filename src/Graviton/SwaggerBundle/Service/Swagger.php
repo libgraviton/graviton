@@ -124,7 +124,7 @@ class Swagger
                     $isCollectionRequest,
                     $entityName,
                     $entityClassName,
-                    $schema->getProperty('id')->getType()
+                    (string) $schema->getProperty('id')->getType()
                 );
 
                 $thisPath['tags'] = $this->getPathTags($route);

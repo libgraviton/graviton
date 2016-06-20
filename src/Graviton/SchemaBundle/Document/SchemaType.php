@@ -48,4 +48,27 @@ class SchemaType
     {
         $this->types = $types;
     }
+
+    /**
+     * make this string castable. will obviously not work for multiple types,
+     * but it will only be the *real* type and null anyway.. so we try to accomodate for that.
+     *
+     * @return string the type
+     */
+    public function __toString()
+    {
+        $types = $this->types;
+
+        if (count($this->types) === 1) {
+            return array_pop($types);
+        } else {
+            $nullIndex = array_search('null', $types);
+            if ($nullIndex !== false) {
+                unset($types[$nullIndex]);
+                return array_pop($types);
+            }
+        }
+
+        return '';
+    }
 }
