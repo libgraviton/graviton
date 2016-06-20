@@ -1623,12 +1623,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "f753ff5623093d7a8c9c9567e602ecd99243a000"
+                "reference": "b944988d8c9021cb895847a02e74b7e4c5de65b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/f753ff5623093d7a8c9c9567e602ecd99243a000",
-                "reference": "f753ff5623093d7a8c9c9567e602ecd99243a000",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/b944988d8c9021cb895847a02e74b7e4c5de65b8",
+                "reference": "b944988d8c9021cb895847a02e74b7e4c5de65b8",
                 "shasum": ""
             },
             "require": {
@@ -1662,7 +1662,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-06-09 06:59:50"
+            "time": "2016-06-17 14:11:41"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -5359,12 +5359,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "f0613315dc5bfc855ac1bbc57def3be610537f7f"
+                "reference": "236ecb8d6e866f068b8e3848f2108db0019ed1e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/f0613315dc5bfc855ac1bbc57def3be610537f7f",
-                "reference": "f0613315dc5bfc855ac1bbc57def3be610537f7f",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/236ecb8d6e866f068b8e3848f2108db0019ed1e7",
+                "reference": "236ecb8d6e866f068b8e3848f2108db0019ed1e7",
                 "shasum": ""
             },
             "type": "library",
@@ -5387,7 +5387,7 @@
                 "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/feature/other-validation",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-06-17 08:06:23"
+            "time": "2016-06-20 07:59:28"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
