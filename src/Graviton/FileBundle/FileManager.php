@@ -159,11 +159,12 @@ class FileManager
         foreach ($request->files->all() as $field => $uploadedFile) {
             if (0 === $uploadedFile->getError()) {
                 $content = file_get_contents($uploadedFile->getPathname());
+                $hash = $request->get('hash', hash('sha256', $content));
                 $uploadedFiles[$field] = [
                     'data' => [
                         'mimetype' => $uploadedFile->getMimeType(),
                         'filename' => $uploadedFile->getClientOriginalName(),
-                        'hash'     => hash('sha256', $content)
+                        'hash'     => $hash
                     ],
                     'content' => $content
                 ];
@@ -174,11 +175,12 @@ class FileManager
 
         if (empty($uploadedFiles)) {
             $content = $request->getContent();
+            $hash = $request->get('hash', hash('sha256', $content));
             $uploadedFiles['upload'] = [
                 'data' => [
                     'mimetype' => $request->headers->get('Content-Type'),
                     'filename' => '',
-                    'hash'     => hash('sha256', $content)
+                    'hash'     => $hash
                 ],
                 'content' => $request->getContent()
             ];
