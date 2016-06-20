@@ -231,41 +231,50 @@ class Schema
     /**
      * set type
      *
-     * @param string $type type
+     * @param string|array $types types
      *
      * @return void
      */
-    public function setType($type)
+    public function setType($types)
     {
-        if ($type === 'int') {
-            $type = 'integer';
-        }
-        if ($type === 'hash') {
-            $type = 'object';
+        if (!is_array($types)) {
+            $types = [$types];
         }
 
-        // handle non-primitive types
-        if (!in_array($type, $this->primitiveTypes)) {
-            $setType = 'string';
-            if (isset($this->specialTypeMapping[$type])) {
-                $setType = $this->specialTypeMapping[$type];
+        $typesToSet = [];
+        foreach ($types as $type) {
+            if ($type === 'int') {
+                $type = 'integer';
             }
-            $this->type = $setType;
-
-            if (isset($this->formatOverrides[$type])) {
-                $type = $this->formatOverrides[$type];
+            if ($type === 'hash') {
+                $type = 'object';
             }
 
-            $this->setFormat($type);
-        } else {
-            $this->type = $type;
+            // handle non-primitive types
+            if (!in_array($type, $this->primitiveTypes)) {
+                $setType = 'string';
+                if (isset($this->specialTypeMapping[$type])) {
+                    $setType = $this->specialTypeMapping[$type];
+                }
+                $typesToSet[] = $setType;
+
+                if (isset($this->formatOverrides[$type])) {
+                    $type = $this->formatOverrides[$type];
+                }
+
+                $this->setFormat($type);
+            } else {
+                $typesToSet[] = $type;
+            }
         }
+
+        $this->type = new SchemaType($typesToSet);
     }
 
     /**
      * get type
      *
-     * @return string type
+     * @return SchemaType type
      */
     public function getType()
     {

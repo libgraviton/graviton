@@ -11,6 +11,7 @@
     <parameter key="graviton.schema.constraint.builder.class">Graviton\SchemaBundle\Constraint\ConstraintBuilder</parameter>
     <parameter key="graviton.schema.constraint.readonlyfield.class">Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint</parameter>
     <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
+    <parameter key="graviton.schema.serializer.handler.type.class">Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler</parameter>
     <parameter key="graviton.schema.serializer.handler.enum.class">Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler</parameter>
   </parameters>
   <services>
@@ -33,6 +34,11 @@
     <service id="graviton.schema.serializer.handler.additionalproperties" class="%graviton.schema.serializer.handler.additionalproperties.class%">
       <tag name="jms_serializer.handler"
            type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"
+           format="json"/>
+    </service>
+    <service id="graviton.schema.serializer.handler.type" class="%graviton.schema.serializer.handler.type.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaType"
            format="json"/>
     </service>
     <service id="graviton.schema.serializer.handler.enum" class="%graviton.schema.serializer.handler.enum.class%">

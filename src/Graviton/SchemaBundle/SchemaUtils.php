@@ -13,6 +13,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
+use Graviton\SchemaBundle\Document\SchemaType;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -346,6 +347,14 @@ class SchemaUtils
                 // make sure a required field cannot be blank
                 if (in_array($documentFieldNames[$field], $requiredFields)) {
                     $property->setMinLength(1);
+                } else {
+                    // in the other case, make sure also null can be sent..
+                    $currentType = $property->getType();
+                    if ($currentType instanceof SchemaType) {
+                        $property->setType(array_merge($currentType->getTypes(), ['null']));
+                    } else {
+                        $property->setType('null');
+                    }
                 }
             }
 
