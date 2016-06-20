@@ -267,7 +267,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->checkIfOriginRecord($entity);
         $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
 
-        $this->deleteById($documentId);
+        if (!is_null($documentId)) {
+            $this->deleteById($documentId);
+            // detach so odm knows it's gone
+            $this->manager->detach($entity);
+        }
+
         $this->manager->persist($entity);
         $this->manager->flush($entity);
 
