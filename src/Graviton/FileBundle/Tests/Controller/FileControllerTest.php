@@ -79,7 +79,7 @@ class FileControllerTest extends RestTestCase
         $client->post(
             '/file/',
             $fixtureData,
-            ['hash' => $fileHashCustom],
+            [],
             [],
             ['CONTENT_TYPE' => 'text/plain'],
             false
@@ -90,12 +90,6 @@ class FileControllerTest extends RestTestCase
 
         $fileLocation = $response->headers->get('Location');
         
-        //Check custom hashing
-        $client = static::createRestClient();
-        $client->request('GET', $fileLocation);
-        $data = $client->getResults();
-        $this->assertEquals($fileHashCustom, $data->metadata->hash);
-
         // update file contents to update mod date
         $client = static::createRestClient();
         $client->put(
@@ -127,6 +121,7 @@ class FileControllerTest extends RestTestCase
 
         $filename = "test.txt";
         $data->metadata->filename = $filename;
+        $data->metadata->hash = $fileHashCustom;
 
         $client = static::createRestClient();
         $client->put(sprintf('/file/%s', $data->id), $data);
@@ -138,6 +133,7 @@ class FileControllerTest extends RestTestCase
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
         $this->assertEquals($filename, $results->metadata->filename);
+        $this->assertEquals($fileHashCustom, $data->metadata->hash);
 
         $client = static::createClient();
         $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'text/plain']);

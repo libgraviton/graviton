@@ -159,12 +159,11 @@ class FileManager
         foreach ($request->files->all() as $field => $uploadedFile) {
             if (0 === $uploadedFile->getError()) {
                 $content = file_get_contents($uploadedFile->getPathname());
-                $hash = $request->get('hash', hash('sha256', $content));
                 $uploadedFiles[$field] = [
                     'data' => [
                         'mimetype' => $uploadedFile->getMimeType(),
                         'filename' => $uploadedFile->getClientOriginalName(),
-                        'hash'     => $hash
+                        'hash'     => hash('sha256', $content)
                     ],
                     'content' => $content
                 ];
@@ -175,12 +174,11 @@ class FileManager
 
         if (empty($uploadedFiles)) {
             $content = $request->getContent();
-            $hash = $request->get('hash', hash('sha256', $content));
             $uploadedFiles['upload'] = [
                 'data' => [
                     'mimetype' => $request->headers->get('Content-Type'),
                     'filename' => '',
-                    'hash'     => $hash
+                    'hash'     => hash('sha256', $content)
                 ],
                 'content' => $request->getContent()
             ];
@@ -234,6 +232,10 @@ class FileManager
             $meta->setCreatedate(new \DateTime());
         }
 
+        // Sent Metadata
+        $requestMetadata = array_key_exists('content', $fileInfo) ?
+            json_decode($fileInfo['content']) : false;
+
         $meta->setModificationdate(new \DateTime());
         if (empty($meta->getFilename()) && !empty($fileInfo['data']['filename'])) {
             $meta->setFilename($fileInfo['data']['filename']);
@@ -241,9 +243,12 @@ class FileManager
         if (!empty($fileInfo['data']['mimetype'])) {
             $meta->setMime($fileInfo['data']['mimetype']);
         }
-        if (!empty($fileInfo['data']['hash'])) {
+        if ($requestMetadata && isset($requestMetadata->metadata, $requestMetadata->metadata->hash)) {
+            $meta->setHash(trim($requestMetadata->metadata->hash));
+        } elseif (!empty($fileInfo['data']['hash'])) {
             $meta->setHash($fileInfo['data']['hash']);
         }
+        
         $meta->setSize($fileSize);
         $file->setMetadata($meta);
     }

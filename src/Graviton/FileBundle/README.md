@@ -99,7 +99,6 @@ The value can either be calculated on client side by sending the information via
 
 ```bash
 curl -X POST \
-    -F 'metadata={"links":[],"metadata":{"action":[{"command":"print"}]}}' \
-    -F 'hash=your-own-hash' \
+    -F 'metadata={"links":[],"metadata":{"hash":"your-custom-hash", "action":[{"command":"print"}]}}' \
     -F upload=@example.jpg \
     http://example.org/file/ -v
