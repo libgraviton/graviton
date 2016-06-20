@@ -213,6 +213,20 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Gets the defined document class in shortform from schema
+     *
+     * @return string|false either the document class or false it not given
+     */
+    public function getDocumentClass()
+    {
+        $documentClass = false;
+        if (isset($this->schema->{'x-documentClass'})) {
+            $documentClass = $this->schema->{'x-documentClass'};
+        }
+        return $documentClass;
+    }
+
+    /**
      * Get defined constraints on this field (if any)
      *
      * @param string $field field that we get constraints spec from

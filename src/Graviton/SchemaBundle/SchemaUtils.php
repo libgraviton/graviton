@@ -176,6 +176,7 @@ class SchemaUtils
         }
 
         $schema->setDescription($model->getDescription());
+        $schema->setDocumentClass($model->getDocumentClass());
         $schema->setType('object');
 
         // grab schema info from model

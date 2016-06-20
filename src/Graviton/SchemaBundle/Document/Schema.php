@@ -124,6 +124,11 @@ class Schema
     protected $regexPattern;
 
     /**
+     * @var
+     */
+    protected $documentClass;
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -473,6 +478,28 @@ class Schema
     public function setRegexPattern($regexPattern)
     {
         $this->regexPattern = $regexPattern;
+    }
+
+    /**
+     * get DocumentClass
+     *
+     * @return string DocumentClass
+     */
+    public function getDocumentClass()
+    {
+        return $this->documentClass;
+    }
+
+    /**
+     * set DocumentClass
+     *
+     * @param string $documentClass documentClass
+     *
+     * @return void
+     */
+    public function setDocumentClass($documentClass)
+    {
+        $this->documentClass = $documentClass;
     }
 
     /**
