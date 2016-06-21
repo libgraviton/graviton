@@ -3296,6 +3296,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": true,
             "time": "2014-12-01 08:29:51"
         },
         {
@@ -5362,12 +5363,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "236ecb8d6e866f068b8e3848f2108db0019ed1e7"
+                "reference": "e6965694684602acbb8129636bf6213284d9c2f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/236ecb8d6e866f068b8e3848f2108db0019ed1e7",
-                "reference": "236ecb8d6e866f068b8e3848f2108db0019ed1e7",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/e6965694684602acbb8129636bf6213284d9c2f1",
+                "reference": "e6965694684602acbb8129636bf6213284d9c2f1",
                 "shasum": ""
             },
             "type": "library",
@@ -5390,7 +5391,7 @@
                 "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/feature/other-validation",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-06-20 07:59:28"
+            "time": "2016-06-21 13:21:53"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
