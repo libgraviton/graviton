@@ -6,13 +6,14 @@
 namespace Graviton\FileBundle;
 
 use Gaufrette\File;
-use Gaufrette\FileSystem;
+use Gaufrette\Filesystem;
 use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File as FileDocument;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use GravitonDyn\FileBundle\Document\FileMetadata;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -22,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class FileManager
 {
     /**
-     * @var FileSystem
+     * @var Filesystem
      */
     private $fileSystem;
 
@@ -34,10 +35,10 @@ class FileManager
     /**
      * FileManager constructor.
      *
-     * @param FileSystem          $fileSystem          file system abstraction layer for s3 and more
+     * @param Filesystem          $fileSystem          file system abstraction layer for s3 and more
      * @param FileDocumentFactory $fileDocumentFactory Instance to be used to create action entries.
      */
-    public function __construct(FileSystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
+    public function __construct(Filesystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
     {
         $this->fileSystem = $fileSystem;
         $this->fileDocumentFactory = $fileDocumentFactory;
@@ -106,7 +107,7 @@ class FileManager
             /** @var \Gaufrette\File $file */
             $file = $this->saveFile($record->getId(), $fileInfo['content']);
 
-            $this->initOrUpdateMetadata(
+            $this->initOrUpdateMetaData(
                 $record,
                 $file->getSize(),
                 $fileInfo,
@@ -157,12 +158,15 @@ class FileManager
         /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
         foreach ($request->files->all() as $field => $uploadedFile) {
             if (0 === $uploadedFile->getError()) {
+                $content = file_get_contents($uploadedFile->getPathname());
+                $hash = $request->get('hash', hash('sha256', $content));
                 $uploadedFiles[$field] = [
                     'data' => [
                         'mimetype' => $uploadedFile->getMimeType(),
-                        'filename' => $uploadedFile->getClientOriginalName()
+                        'filename' => $uploadedFile->getClientOriginalName(),
+                        'hash'     => $hash
                     ],
-                    'content' => file_get_contents($uploadedFile->getPathName())
+                    'content' => $content
                 ];
             } else {
                 throw new UploadException($uploadedFile->getErrorMessage());
@@ -170,10 +174,13 @@ class FileManager
         }
 
         if (empty($uploadedFiles)) {
+            $content = $request->getContent();
+            $hash = $request->get('hash', hash('sha256', $content));
             $uploadedFiles['upload'] = [
                 'data' => [
                     'mimetype' => $request->headers->get('Content-Type'),
-                    'filename' => ''
+                    'filename' => '',
+                    'hash'     => $hash
                 ],
                 'content' => $request->getContent()
             ];
@@ -220,6 +227,7 @@ class FileManager
      */
     private function initOrUpdateMetaData(FileDocument $file, $fileSize, array $fileInfo, FileDocument $fileData = null)
     {
+        /** @var FileMetadata $meta */
         if (empty($meta = $file->getMetadata()) && (empty($fileData) || empty($meta = $fileData->getMetadata()))) {
             $meta = $this->fileDocumentFactory->createFileMataData();
             $meta->setId($file->getId());
@@ -232,6 +240,9 @@ class FileManager
         }
         if (!empty($fileInfo['data']['mimetype'])) {
             $meta->setMime($fileInfo['data']['mimetype']);
+        }
+        if (!empty($fileInfo['data']['hash'])) {
+            $meta->setHash($fileInfo['data']['hash']);
         }
         $meta->setSize($fileSize);
         $file->setMetadata($meta);

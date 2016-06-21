@@ -72,11 +72,14 @@ class FileControllerTest extends RestTestCase
     public function testPostAndUpdateFile()
     {
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
+        $fileHash = hash('sha256', $fixtureData);
+        $fileHashCustom = 'some-custom-hash-for-testing';
+
         $client = static::createRestClient();
         $client->post(
             '/file/',
             $fixtureData,
-            [],
+            ['hash' => $fileHashCustom],
             [],
             ['CONTENT_TYPE' => 'text/plain'],
             false
@@ -86,6 +89,12 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $fileLocation = $response->headers->get('Location');
+        
+        //Check custom hashing
+        $client = static::createRestClient();
+        $client->request('GET', $fileLocation);
+        $data = $client->getResults();
+        $this->assertEquals($fileHashCustom, $data->metadata->hash);
 
         // update file contents to update mod date
         $client = static::createRestClient();
@@ -108,6 +117,8 @@ class FileControllerTest extends RestTestCase
         // check for valid format
         $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->createDate));
         $this->assertNotFalse(\DateTime::createFromFormat(\DateTime::RFC3339, $data->metadata->modificationDate));
+        // Check valid hash encoding if no hash sent
+        $this->assertEquals($fileHash, $data->metadata->hash);
 
         $data->links = [];
         $link = new \stdClass;
