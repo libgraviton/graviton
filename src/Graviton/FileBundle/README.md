@@ -98,7 +98,13 @@ The value can either be calculated on client side by sending the information via
 - *hash* » Optional, It's by default a sha256 based encoding of file content.
 
 ```bash
-curl -X POST \
-    -F 'metadata={"links":[],"metadata":{"hash":"your-custom-hash", "action":[{"command":"print"}]}}' \
-    -F upload=@example.jpg \
-    http://example.org/file/ -v
+curl -X POST -F \
+    'metadata={"links":[],"metadata": {"action":[], "hash":"custom-hash","additionalInformation":"some-extra"}}' \
+     -F upload=@Karta-2013_PSD_web.jpg 'http://localhost:8000/file' -v
+```
+Updating some data.
+```bash
+curl -X PUT -F \
+    'metadata={"links":[],"metadata": {"action":[],"additionalInformation":"update-extra"}}'
+    'http://localhost:8000/file/{fileId}' -v
+```

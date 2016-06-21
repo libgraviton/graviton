@@ -180,7 +180,7 @@ class FileManager
                     'filename' => '',
                     'hash'     => hash('sha256', $content)
                 ],
-                'content' => $request->getContent()
+                'content' => $content
             ];
         }
 
@@ -225,31 +225,44 @@ class FileManager
      */
     private function initOrUpdateMetaData(FileDocument $file, $fileSize, array $fileInfo, FileDocument $fileData = null)
     {
-        /** @var FileMetadata $meta */
-        if (empty($meta = $file->getMetadata()) && (empty($fileData) || empty($meta = $fileData->getMetadata()))) {
+        $now = new \DateTime();
+        /** Original Metadata
+         * @var FileMetadata $meta */
+        $meta = $file->getMetadata();
+        if (!$meta || !$meta->getCreatedate()) {
             $meta = $this->fileDocumentFactory->createFileMataData();
             $meta->setId($file->getId());
-            $meta->setCreatedate(new \DateTime());
+            $meta->setCreatedate($now);
         }
 
-        // Sent Metadata
-        $requestMetadata = array_key_exists('content', $fileInfo) ?
-            json_decode($fileInfo['content']) : false;
+        /** Posted Metadata
+         * @var FileMetadata $postedMeta */
+        if (!empty($fileData) && !empty($postedMeta = $fileData->getMetadata())) {
+            $postedMeta->setId($meta->getId());
+            $postedMeta->setCreatedate($meta->getCreatedate());
+            // If no file sent and no hash change sent, keep original.
+            if (empty($fileInfo['data']['filename'])) {
+                $postedMeta->setHash($meta->getHash());
+                $postedMeta->setMime($meta->getMime());
+                $postedMeta->setSize($meta->getSize());
+                $postedMeta->setFilename($meta->getFilename());
+            }
+            $meta = $postedMeta;
+        }
+        // If no hash defined use the content if there was so.
+        if (empty($meta->getHash()) && !empty($fileInfo['data']['hash'])){
+            $meta->setHash($fileInfo['data']['hash']);
+        }
 
-        $meta->setModificationdate(new \DateTime());
         if (empty($meta->getFilename()) && !empty($fileInfo['data']['filename'])) {
             $meta->setFilename($fileInfo['data']['filename']);
         }
-        if (!empty($fileInfo['data']['mimetype'])) {
+        if (empty($meta->getMime()) && !empty($fileInfo['data']['mimetype'])) {
             $meta->setMime($fileInfo['data']['mimetype']);
         }
-        if ($requestMetadata && isset($requestMetadata->metadata, $requestMetadata->metadata->hash)) {
-            $meta->setHash(trim($requestMetadata->metadata->hash));
-        } elseif (!empty($fileInfo['data']['hash'])) {
-            $meta->setHash($fileInfo['data']['hash']);
-        }
-        
+
         $meta->setSize($fileSize);
+        $meta->setModificationdate($now);
         $file->setMetadata($meta);
     }
 
