@@ -250,7 +250,7 @@ class FileManager
             $meta = $postedMeta;
         }
         // If no hash defined use the content if there was so.
-        if (empty($meta->getHash()) && !empty($fileInfo['data']['hash'])){
+        if (empty($meta->getHash()) && !empty($fileInfo['data']['hash'])) {
             $meta->setHash($fileInfo['data']['hash']);
         }
 

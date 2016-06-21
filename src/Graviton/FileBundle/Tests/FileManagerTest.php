@@ -164,8 +164,14 @@ class FileManagerTest extends WebTestCase
             json_encode($contentArray['links'])
         );
 
+        // Check contain data
+        $this->assertArrayHasKey('modificationDate', $contentArray['metadata']);
+        $this->assertArrayHasKey('createDate', $contentArray['metadata']);
+
         // Test Metadata, and Remove date.
         unset($contentArray['metadata']['modificationDate']);
+        unset($contentArray['metadata']['createDate']);
+
         $this->assertJsonStringEqualsJsonString(
             '{
                 "size":16,
