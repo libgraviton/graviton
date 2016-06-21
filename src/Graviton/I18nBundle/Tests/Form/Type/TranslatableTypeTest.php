@@ -69,7 +69,7 @@ class TranslatableTypeTest extends \PHPUnit_Framework_TestCase
             ->method('getDefaultLanguage')
             ->willReturn('en');
 
-        $builderDouble = $this->getMock('Symfony\Component\Form\FormBuilderInterface');
+        $builderDouble = $this->createMock('Symfony\Component\Form\FormBuilderInterface');
 
         $builderDouble
             ->expects($this->exactly(2))

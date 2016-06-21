@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\Container;
+use Sensio\Bundle\GeneratorBundle\Model\Bundle;
 
 /**
  * bundle containing various code generators
@@ -20,6 +21,23 @@ use Symfony\Component\DependencyInjection\Container;
  */
 class BundleGenerator extends AbstractGenerator
 {
+    /**
+     * generate a bundle from a Bundle model
+     *
+     * @param Bundle $bundle bundle model
+     *
+     * @return void
+     */
+    public function generateBundle(Bundle $bundle)
+    {
+        return $this->generate(
+            $bundle->getNamespace(),
+            $bundle->getName(),
+            $bundle->getTargetDirectory().'/../../',
+            $bundle->getConfigurationFormat()
+        );
+    }
+
     /**
      * generate bundle code
      *

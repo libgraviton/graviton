@@ -41,7 +41,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method("getBody")
             ->willReturn("{ 'test': 'bablaba' }");
-        $curlMock = $this->getMock('Guzzle\Common\Collection');
+        $curlMock = $this->createMock('Guzzle\Common\Collection');
         $request = $this->getMockForAbstractClass('Guzzle\Http\Message\RequestInterface');
         $request->expects($this->any())
             ->method("send")
@@ -58,7 +58,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($request);
         $validator = $this->getMockForAbstractClass('Symfony\Component\Validator\Validator\ValidatorInterface');
 
-        $this->logger = $this->getMock('Psr\Log\Loggerinterface');
+        $this->logger = $this->createMock('Psr\Log\Loggerinterface');
 
         $this->sut = new HttpLoader($validator, $client, $this->logger);
     }
@@ -153,7 +153,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $storeKey = 'testSwagger';
         $cachedContent = '{"swagger": "2.0"}';
-        $apiDefinition = $this->getMock('Graviton\ProxyBundle\Definition\ApiDefinition');
+        $apiDefinition = $this->createMock('Graviton\ProxyBundle\Definition\ApiDefinition');
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
