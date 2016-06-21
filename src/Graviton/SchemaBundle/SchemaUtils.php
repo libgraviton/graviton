@@ -83,6 +83,11 @@ class SchemaUtils
     private $cache;
 
     /**
+     * @var string
+     */
+    private $cacheInvalidationMapKey;
+
+    /**
      * @var ConstraintBuilder
      */
     private $constraintBuilder;
@@ -98,8 +103,10 @@ class SchemaUtils
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
      * @param string                             $defaultLocale             Default Language
-     * @param CacheProvider                      $cache                     Doctrine cache provider
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
+     * @param CacheProvider                      $cache                     Doctrine cache provider
+     * @param string                             $cacheNamespace            Cache namespace
+     * @param string                             $cacheInvalidationMapKey   Cache invalidation map cache key
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -110,8 +117,10 @@ class SchemaUtils
         array $eventMap,
         array $documentFieldNames,
         $defaultLocale,
+        ConstraintBuilder $constraintBuilder,
         CacheProvider $cache,
-        ConstraintBuilder $constraintBuilder
+        $cacheNamespace,
+        $cacheInvalidationMapKey
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
@@ -121,8 +130,11 @@ class SchemaUtils
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
-        $this->cache = $cache;
         $this->constraintBuilder = $constraintBuilder;
+
+        $cache->setNamespace($cacheNamespace);
+        $this->cache = $cache;
+        $this->cacheInvalidationMapKey = $cacheInvalidationMapKey;
     }
 
     /**
@@ -156,10 +168,15 @@ class SchemaUtils
      */
     public function getModelSchema($modelName, DocumentModel $model, $online = true, $internal = false)
     {
-        $cacheKey = 'schema.'.$model->getEntityClass().'.'.(string) $online.'.'.(string) $internal;
+        $cacheKey = $model->getEntityClass().'.'.(string) $online.'.'.(string) $internal.uniqid();
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
+        }
+
+        $invalidateCacheMap = [];
+        if ($this->cache->contains($this->cacheInvalidationMapKey)) {
+            $invalidateCacheMap = $this->cache->fetch($this->cacheInvalidationMapKey);
         }
 
         // build up schema data
@@ -198,6 +215,10 @@ class SchemaUtils
             );
         } else {
             $translatableFields = [];
+        }
+
+        if (!empty($translatableFields)) {
+            $invalidateCacheMap[$this->languageRepository->getClassName()][] = $cacheKey;
         }
 
         // exposed fields
@@ -267,6 +288,9 @@ class SchemaUtils
 
                         $documentId = $dynamicKeySpec->{'document-id'};
                         $dynamicRepository = $this->repositoryFactory->get($documentId);
+
+                        // put this in invalidate map so when know we have to invalidate when this document is used
+                        $invalidateCacheMap[$dynamicRepository->getDocumentName()][] = $cacheKey;
 
                         $repositoryMethod = $dynamicKeySpec->{'repository-method'};
                         $records = $dynamicRepository->$repositoryMethod();
@@ -388,6 +412,7 @@ class SchemaUtils
         $schema->setSearchable($searchableFields);
 
         $this->cache->save($cacheKey, $schema);
+        $this->cache->save($this->cacheInvalidationMapKey, $invalidateCacheMap);
 
         return $schema;
     }
