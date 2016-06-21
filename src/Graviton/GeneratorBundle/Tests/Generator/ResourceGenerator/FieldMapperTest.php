@@ -23,7 +23,7 @@ class FieldMapperTest extends \PHPUnit_Framework_TestCase
 
         $context = new \StdClass;
 
-        $mapperDouble = $this->getMock('\Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapperInterface');
+        $mapperDouble = $this->createMock('\Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapperInterface');
         $mapperDouble->expects($this->exactly(2))
             ->method('map')
             ->with([], $context)

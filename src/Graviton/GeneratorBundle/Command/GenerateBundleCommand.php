@@ -9,6 +9,7 @@ use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateBundleCommand as SymfonyGenerateBundleCommand;
 use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
+use Sensio\Bundle\GeneratorBundle\Model\Bundle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,6 +24,15 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class GenerateBundleCommand extends SymfonyGenerateBundleCommand
 {
+    /**
+     * @var string
+     */
+    private $loaderBundleName;
+
+    /**
+     * @var boolean
+     */
+    private $doUpdate;
 
     /**
      * {@inheritDoc}
@@ -61,13 +71,12 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->loaderBundleName = $input->getOption('loaderBundleName');
+        $this->doUpdate = $input->getOption('doUpdateKernel');
+
         parent::execute(
             $input,
             $output
-        );
-
-        $output->writeln(
-            'Please review Resource/config/config.xml before commiting'
         );
     }
 
@@ -75,44 +84,21 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * {@inheritDoc}
      * Add the new bundle to the BundleBundle loader infrastructure instead of main kernel
      *
-     * @param QuestionHelper  $questionHelper dialog
-     * @param InputInterface  $input          input
-     * @param OutputInterface $output         output
-     * @param KernelInterface $kernel         kernel
-     * @param string          $namespace      namespace
-     * @param string          $bundle         bundle
+     * @param OutputInterface $output output
+     * @param KernelInterface $kernel kernel
+     * @param Bundle          $bundle bundle
      *
      * @return string[]
      */
-    protected function updateKernel(
-        QuestionHelper $questionHelper,
-        InputInterface $input,
-        OutputInterface $output,
-        KernelInterface $kernel,
-        $namespace,
-        $bundle
-    ) {
-
+    protected function updateKernel(OutputInterface $output, KernelInterface $kernel, Bundle $bundle)
+    {
         // skip if kernel manipulation disabled by options (defaults to true)
-        $doUpdate = $input->getOption('doUpdateKernel');
-        if ($doUpdate == 'false') {
+        if ($this->doUpdate == 'false') {
             return;
         }
 
-        $auto = true;
-        if ($input->isInteractive()) {
-            $auto = $questionHelper->doAsk(
-                $output,
-                $questionHelper->getQuestion(
-                    'Confirm automatic update of your core bundle',
-                    'yes',
-                    '?'
-                )
-            );
-        }
-
         $output->write('Enabling the bundle inside the core bundle: ');
-        $coreBundle = $kernel->getBundle($input->getOption('loaderBundleName'));
+        $coreBundle = $kernel->getBundle($this->loaderBundleName);
         if (!is_a(
             $coreBundle,
             '\Graviton\BundleBundle\GravitonBundleInterface'
@@ -159,22 +145,28 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      * {@inheritDoc}
      * Don't check routing since graviton bundles usually get routed explicitly based on their naming.
      *
-     * @param QuestionHelper  $questionHelper dialog
-     * @param InputInterface  $input          input
-     * @param OutputInterface $output         output
-     * @param object          $bundle         bundle
-     * @param object          $format         format
+     * @param OutputInterface $output output
+     * @param Bundle          $bundle bundle
      *
      * @return string[]
      */
-    protected function updateRouting(
-        QuestionHelper $questionHelper,
-        InputInterface $input,
-        OutputInterface $output,
-        $bundle,
-        $format
-    ) {
+    protected function updateRouting(OutputInterface $output, Bundle $bundle)
+    {
         return array();
+    }
+
+    /**
+     * {@inheritDoc}
+     * Don't do anything with the configuration since we load our bundles dynamically using the bundle-bundle-bundle
+     *
+     * @param OutputInterface $output output
+     * @param Bundle          $bundle bundle
+     *
+     * @return void
+     */
+    protected function updateConfiguration(OutputInterface $output, Bundle $bundle)
+    {
+        return;
     }
 
     /**
