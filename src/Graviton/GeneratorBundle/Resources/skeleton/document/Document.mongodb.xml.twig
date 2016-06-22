@@ -40,19 +40,9 @@
 
                 {% if '[]' in field.type %}
                     <{{ relType }}-many field="{{ field.fieldName }}" target-document="{{ field.type[0:-2] }}{% if relType == 'embed' %}Embedded{% endif %}" strategy="set">
-                        {% if relType == "reference" %}
-                        <cascade>
-                            <all/>
-                        </cascade>
-                        {% endif %}
                     </{{ relType }}-many>
                 {% else %}
                     <{{ relType }}-one field="{{ field.fieldName }}" target-document="{{ field.type }}{% if relType == 'embed' %}Embedded{% endif %}">
-                        {% if relType == "reference" %}
-                        <cascade>
-                            <all/>
-                        </cascade>
-                        {% endif %}
                     </{{ relType }}-one>
                 {% endif %}
             {% else %}
