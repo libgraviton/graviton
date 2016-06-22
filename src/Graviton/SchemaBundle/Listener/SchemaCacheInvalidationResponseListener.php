@@ -31,12 +31,10 @@ class SchemaCacheInvalidationResponseListener
      * Constructor
      *
      * @param CacheProvider $cache                   cache
-     * @param string        $cacheNamespace          cache namespace
      * @param string        $cacheInvalidationMapKey cache key of invalidation map
      */
-    public function __construct(CacheProvider $cache, $cacheNamespace, $cacheInvalidationMapKey)
+    public function __construct(CacheProvider $cache, $cacheInvalidationMapKey)
     {
-        $cache->setNamespace($cacheNamespace);
         $this->cache = $cache;
         $this->cacheInvalidationMapKey = $cacheInvalidationMapKey;
     }

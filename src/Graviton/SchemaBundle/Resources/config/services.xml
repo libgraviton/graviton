@@ -16,7 +16,6 @@
     <parameter key="graviton.schema.serializer.handler.enum.class">Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler</parameter>
 
     <!-- non-class parameters -->
-    <parameter key="graviton.schema.cache.namespace">schema</parameter>
     <parameter key="graviton.schema.cache.invalidateMapKey">_invMap</parameter>
   </parameters>
   <services>
@@ -30,7 +29,6 @@
     </service>
     <service id="graviton.schema.listener.schemacacheinvalidation" class="%graviton.schema.listener.schemacacheinvalidation.class%">
       <argument type="service" id="doctrine_cache.providers.local"/>
-      <argument>%graviton.schema.cache.namespace%</argument>
       <argument>%graviton.schema.cache.invalidateMapKey%</argument>
       <tag name="kernel.event_listener" event="graviton.rest.request" method="onRestRequest"/>
     </service>
@@ -101,7 +99,6 @@
       <argument>%locale%</argument>
       <argument type="service" id="graviton.schema.constraint.builder"/>
       <argument type="service" id="doctrine_cache.providers.local"/>
-      <argument>%graviton.schema.cache.namespace%</argument>
       <argument>%graviton.schema.cache.invalidateMapKey%</argument>
     </service>
     <service id="graviton.schema.constraint.readonlyfield" class="%graviton.schema.constraint.readonlyfield.class%">

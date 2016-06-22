@@ -105,7 +105,6 @@ class SchemaUtils
      * @param string                             $defaultLocale             Default Language
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      * @param CacheProvider                      $cache                     Doctrine cache provider
-     * @param string                             $cacheNamespace            Cache namespace
      * @param string                             $cacheInvalidationMapKey   Cache invalidation map cache key
      */
     public function __construct(
@@ -119,7 +118,6 @@ class SchemaUtils
         $defaultLocale,
         ConstraintBuilder $constraintBuilder,
         CacheProvider $cache,
-        $cacheNamespace,
         $cacheInvalidationMapKey
     ) {
         $this->repositoryFactory = $repositoryFactory;
@@ -131,8 +129,6 @@ class SchemaUtils
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
         $this->constraintBuilder = $constraintBuilder;
-
-        $cache->setNamespace($cacheNamespace);
         $this->cache = $cache;
         $this->cacheInvalidationMapKey = $cacheInvalidationMapKey;
     }
@@ -168,7 +164,7 @@ class SchemaUtils
      */
     public function getModelSchema($modelName, DocumentModel $model, $online = true, $internal = false)
     {
-        $cacheKey = $model->getEntityClass().'.'.(string) $online.'.'.(string) $internal.uniqid();
+        $cacheKey = 'schema'.$model->getEntityClass().'.'.(string) $online.'.'.(string) $internal;
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
