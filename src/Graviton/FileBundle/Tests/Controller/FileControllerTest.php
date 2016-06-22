@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class FileControllerTest extends RestTestCase
 {
     /**
-     * @const complete content type string expected on a resouce
+     * @const complete content type string expected on a resource
      */
     const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/file/item';
 
@@ -205,20 +205,20 @@ class FileControllerTest extends RestTestCase
 
         $expectedErrors = [];
         $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.metadata.size";
-        $expectedError->message = "The value \"data.metadata.size\" is read only.";
+        $expectedError->propertyPath = "metadata.size";
+        $expectedError->message = "The value 18 is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.metadata.mime";
-        $expectedError->message = "The value \"data.metadata.mime\" is read only.";
+        $expectedError->propertyPath = "metadata.mime";
+        $expectedError->message = "The value \"text\\/plain\" is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.metadata.createDate";
-        $expectedError->message = "The value \"data.metadata.createDate\" is read only.";
+        $expectedError->propertyPath = "metadata.createDate";
+        $expectedError->message = "The value ".json_encode($results->metadata->createDate)." is read only.";
         $expectedErrors[] = $expectedError;
         $expectedError = new \stdClass();
-        $expectedError->propertyPath = "data.metadata.modificationDate";
-        $expectedError->message = "The value \"data.metadata.modificationDate\" is read only.";
+        $expectedError->propertyPath = "metadata.modificationDate";
+        $expectedError->message = "The value ".json_encode($results->metadata->modificationDate)." is read only.";
         $expectedErrors[] = $expectedError;
 
         $this->assertEquals($expectedErrors, $client->getResults());
@@ -454,7 +454,7 @@ class FileControllerTest extends RestTestCase
         $client = $this->createClient();
         $client->request(
             'DELETE',
-            $response->headers->get('location')
+            '/file/myPersonalFile'
         );
     }
 
@@ -485,13 +485,13 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
         $this->assertEquals('File size', $schema->properties->metadata->properties->size->title);
         $this->assertEquals('Size of file.', $schema->properties->metadata->properties->size->description);
-        $this->assertEquals(true, $schema->properties->metadata->properties->size->readOnly);
+        $this->assertEquals(true, $schema->properties->metadata->properties->size->{'x-readOnly'});
 
         // Metadata mime
-        $this->assertEquals('string', $schema->properties->metadata->properties->mime->type);
+        $this->assertContains('string', $schema->properties->metadata->properties->mime->type);
         $this->assertEquals('MIME Type', $schema->properties->metadata->properties->mime->title);
         $this->assertEquals('MIME-Type of file.', $schema->properties->metadata->properties->mime->description);
-        $this->assertEquals(true, $schema->properties->metadata->properties->mime->readOnly);
+        $this->assertEquals(true, $schema->properties->metadata->properties->mime->{'x-readOnly'});
 
         // Metadata createDate
         $this->assertEquals('string', $schema->properties->metadata->properties->createDate->type);
@@ -501,7 +501,7 @@ class FileControllerTest extends RestTestCase
             'Timestamp of file upload.',
             $schema->properties->metadata->properties->createDate->description
         );
-        $this->assertEquals(true, $schema->properties->metadata->properties->createDate->readOnly);
+        $this->assertEquals(true, $schema->properties->metadata->properties->createDate->{'x-readOnly'});
 
         // Metadata modificationDate
         $this->assertEquals('string', $schema->properties->metadata->properties->modificationDate->type);
@@ -511,10 +511,10 @@ class FileControllerTest extends RestTestCase
             'Timestamp of the last file change.',
             $schema->properties->metadata->properties->modificationDate->description
         );
-        $this->assertEquals(true, $schema->properties->metadata->properties->modificationDate->readOnly);
+        $this->assertEquals(true, $schema->properties->metadata->properties->modificationDate->{'x-readOnly'});
 
         // Metadata filename
-        $this->assertEquals('string', $schema->properties->metadata->properties->filename->type);
+        $this->assertContains('string', $schema->properties->metadata->properties->filename->type);
         $this->assertEquals('File name', $schema->properties->metadata->properties->filename->title);
         $this->assertEquals(
             'Name of the file as it should get displayed to the user.',
@@ -523,7 +523,7 @@ class FileControllerTest extends RestTestCase
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->metadata->properties->filename);
 
         // metadata action.command array
-        $this->assertEquals(
+        $this->assertContains(
             'string',
             $schema->properties->metadata->properties->action->items->properties->command->type
         );
@@ -537,7 +537,7 @@ class FileControllerTest extends RestTestCase
         );
 
         // metadata additionalInformation
-        $this->assertEquals(
+        $this->assertContains(
             'string',
             $schema->properties->metadata->properties->additionalInformation->type
         );
@@ -574,7 +574,7 @@ class FileControllerTest extends RestTestCase
 
 
         // Links item type
-        $this->assertEquals('string', $schema->properties->links->items->properties->type->type);
+        $this->assertContains('string', $schema->properties->links->items->properties->type->type);
         $this->assertEquals('Type', $schema->properties->links->items->properties->type->title);
         $this->assertEquals('Type of the link.', $schema->properties->links->items->properties->type->description);
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->type);

@@ -271,7 +271,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->deleteById($documentId);
             // detach so odm knows it's gone
             $this->manager->detach($entity);
+            $this->manager->clear();
         }
+
+        $entity = $this->manager->merge($entity);
 
         $this->manager->persist($entity);
         $this->manager->flush($entity);
