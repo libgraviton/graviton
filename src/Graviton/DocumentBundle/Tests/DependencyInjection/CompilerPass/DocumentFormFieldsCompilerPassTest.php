@@ -147,7 +147,10 @@ class DocumentFormFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/validation/form')
-                ->name('*.xml')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/schema')
+                ->name('*.json')
         );
 
         $compilerPass = new DocumentFormFieldsCompilerPass($documentMap);
