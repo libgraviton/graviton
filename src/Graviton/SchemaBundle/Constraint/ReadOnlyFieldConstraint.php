@@ -82,14 +82,22 @@ class ReadOnlyFieldConstraint
         // compare fields in both objects
         $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($readOnlyFields as $fieldName) {
-            $storedValue = $accessor->getValue($currentRecord, $fieldName);
+            $storedValue = null;
+            if ($accessor->isReadable($currentRecord, $fieldName)) {
+                $storedValue = $accessor->getValue($currentRecord, $fieldName);
+            }
 
             if (is_object($storedValue)) {
                 // skip objects as a whole, we will test their readOnly properties instead
                 continue;
             }
 
-            if ($storedValue != $accessor->getValue($data, $fieldName)) {
+            $setValue = null;
+            if ($accessor->isReadable($data, $fieldName)) {
+                $setValue = $accessor->getValue($data, $fieldName);
+            }
+
+            if ($storedValue != $setValue) {
                 $event->addError(
                     sprintf('The value %s is read only.', json_encode($accessor->getValue($currentRecord, $fieldName))),
                     $fieldName

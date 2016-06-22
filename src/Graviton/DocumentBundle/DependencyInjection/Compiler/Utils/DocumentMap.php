@@ -177,6 +177,9 @@ class DocumentMap
             $validationField = isset($validationFields[$doctrineField['name']]) ?
                 $validationFields[$doctrineField['name']] :
                 null;
+            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
+                $schemaFields[$doctrineField['name']] :
+                null;
 
             $fields[] = new EmbedOne(
                 $this->getDocument($doctrineField['type']),
