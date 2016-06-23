@@ -222,6 +222,7 @@ class SchemaUtils
             $this->documentFieldNames[$repo->getClassName()] :
             [];
 
+        $languages = [];
         if ($online) {
             $languages = array_map(
                 function (Language $language) {
@@ -229,7 +230,8 @@ class SchemaUtils
                 },
                 $this->languageRepository->findAll()
             );
-        } else {
+        }
+        if (empty($languages)) {
             $languages = [
                 $this->defaultLocale
             ];
