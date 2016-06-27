@@ -210,19 +210,6 @@ class EmbedArrayTest extends RestTestCase
                     ],
                 ],
             ],
-            'no defaultArray' => [
-                (object) [
-                    'value'         => 'value',
-                    'optionalArray' => [],
-                    'requiredArray' => [],
-                ],
-                [
-                    (object) [
-                        'message'       => 'The property defaultArray is required',
-                        'propertyPath'  => 'defaultArray',
-                    ],
-                ],
-            ],
             'no value' => [
                 (object) [
                     'defaultArray'  => [

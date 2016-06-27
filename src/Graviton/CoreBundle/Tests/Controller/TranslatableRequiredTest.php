@@ -112,7 +112,7 @@ class TranslatableRequiredTest extends RestTestCase
                     ]
                 ],
                 'complainField' => 'optional',
-                'errorMessage' => 'Array value found, but an object is required'
+                'errorMessage' => 'Array value found, but a null is required'
             ],
             'empty-no-default' => [
                 'data' => [

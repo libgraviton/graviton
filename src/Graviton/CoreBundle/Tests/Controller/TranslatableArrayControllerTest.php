@@ -212,7 +212,7 @@ class TranslatableArrayControllerTest extends RestTestCase
 
                 (object) [
                     'propertyPath' => 'deep.deep[0].field',
-                    'message'      => 'String value found, but an object is required',
+                    'message'      => 'String value found, but a null is required',
                 ],
                 (object) [
                     'propertyPath' => 'deep.deep[0].array',
@@ -296,7 +296,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                      $schema->properties,
                      $schema->properties->deep->properties->deep->items->properties,
                  ] as $schema) {
-            $this->assertEquals('object', $schema->field->type);
+            $this->assertEquals(['object', 'null'], $schema->field->type);
             $this->assertEquals('string', $schema->field->properties->de->type);
             $this->assertEquals('string', $schema->field->properties->en->type);
             $this->assertEquals('string', $schema->field->properties->fr->type);

@@ -89,7 +89,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(201, $response->getStatusCode());
 
         $fileLocation = $response->headers->get('Location');
-        
+
         // update file contents to update mod date
         $client = static::createRestClient();
         $client->put(
@@ -501,7 +501,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(true, $schema->properties->metadata->properties->mime->readOnly);
 
         // Metadata createDate
-        $this->assertEquals('string', $schema->properties->metadata->properties->createDate->type);
+        $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->createDate->type);
         $this->assertEquals('date-time', $schema->properties->metadata->properties->createDate->format);
         $this->assertEquals('Creation date', $schema->properties->metadata->properties->createDate->title);
         $this->assertEquals(
@@ -511,7 +511,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(true, $schema->properties->metadata->properties->createDate->readOnly);
 
         // Metadata modificationDate
-        $this->assertEquals('string', $schema->properties->metadata->properties->modificationDate->type);
+        $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->modificationDate->type);
         $this->assertEquals('date-time', $schema->properties->metadata->properties->modificationDate->format);
         $this->assertEquals('Modification date', $schema->properties->metadata->properties->modificationDate->title);
         $this->assertEquals(
@@ -587,7 +587,7 @@ class FileControllerTest extends RestTestCase
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links->items->properties->type);
 
         // Links item $ref
-        $this->assertEquals('string', $schema->properties->links->items->properties->{'$ref'}->type);
+        $this->assertEquals(['string', 'null'], $schema->properties->links->items->properties->{'$ref'}->type);
         $this->assertEquals('extref', $schema->properties->links->items->properties->{'$ref'}->format);
         $this->assertEquals('Link', $schema->properties->links->items->properties->{'$ref'}->title);
         $this->assertEquals(
