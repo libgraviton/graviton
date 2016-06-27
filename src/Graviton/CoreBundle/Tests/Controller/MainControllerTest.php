@@ -127,10 +127,10 @@ class MainControllerTest extends RestTestCase
             )
             ->will($this->returnValue("http://localhost/core/app"));
 
-        $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
-        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
-        $apiLoaderDouble = $this->getMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
+        $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
+        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
+        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
         $configuration = [
             'petstore' => [
                 'prefix' => 'petstore',
@@ -190,10 +190,10 @@ class MainControllerTest extends RestTestCase
                 )
             );
 
-        $responseDouble = $this->getMock('Symfony\Component\HttpFoundation\Response');
-        $restUtilsDouble = $this->getMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->getMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
-        $apiLoaderDouble = $this->getMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
+        $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
+        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
+        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
         $configuration = [
             'petstore' => [
                 'prefix' => 'petstore',

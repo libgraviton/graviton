@@ -33,7 +33,7 @@ class CommandRunnerTest extends \PHPUnit_Framework_TestCase
             ->method('isSuccessful')
             ->willReturn(false);
 
-        $kernelDouble = $this->getMock('\Symfony\Component\HttpKernel\KernelInterface');
+        $kernelDouble = $this->createMock('\Symfony\Component\HttpKernel\KernelInterface');
         $kernelDouble
             ->expects($this->once())
             ->method('getRootDir')
