@@ -102,6 +102,17 @@ class JsonDefinitionHash implements DefinitionElementInterface
     }
 
     /**
+     * Whether this hash is anonymous, so has no own field definition (properly only defined
+     * by definitions such as "object.field", not an own definition)
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function isAnonymous()
+    {
+        return ($this->definition === null);
+    }
+
+    /**
      * in an 'anonymous' hash situation, we will check if any children are required
      *
      * @return bool if required or not
