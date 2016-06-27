@@ -155,7 +155,8 @@ class Schema
         'integer',
         'number',
         'string',
-        'date'
+        'date',
+        'extref'
     ];
 
     /**

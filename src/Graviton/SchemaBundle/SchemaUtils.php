@@ -365,7 +365,9 @@ class SchemaUtils
                 $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
-            } elseif (in_array($meta->getTypeOfField($field), $property->getMinLengthTypes())) {
+            }
+
+            if (in_array($meta->getTypeOfField($field), $property->getMinLengthTypes())) {
                 // make sure a required field cannot be blank
                 if (in_array($documentFieldNames[$field], $requiredFields)) {
                     $property->setMinLength(1);
