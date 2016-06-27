@@ -144,21 +144,44 @@ class RequiredHashControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.value',
+                    'message'       => 'The property value is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.requiredSubHash.name',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.requiredSubHash',
+                    'message'       => 'The property requiredSubHash is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.requiredSubHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'requiredHash.optionalSubHash.value',
+                    'message'       => 'The property value is required',
+                ],
+            ],
+            $client->getResults()
+        );
+
+        // add requiredSubHash and check deeper properties
+        $data['optionalHash']['requiredSubHash'] = (object) [];
+        $client = static::createRestClient();
+        $client->post('/testcase/requiredhash/', $data);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(
+            [
+                (object) [
+                    'propertyPath'  => 'optionalHash.value',
+                    'message'       => 'The property value is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.optionalSubHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.requiredSubHash.name',
+                    'message'       => 'The property name is required',
                 ],
+                (object) [
+                    'propertyPath'  => 'optionalHash.requiredSubHash.value',
+                    'message'       => 'The property value is required',
+                ],
+                (object) [
+                    'propertyPath'  => 'requiredHash.optionalSubHash.value',
+                    'message'       => 'The property value is required',
+                ]
             ],
             $client->getResults()
         );
@@ -173,6 +196,7 @@ class RequiredHashControllerTest extends RestTestCase
     {
         $data = [
             'name' => __METHOD__,
+            'requiredHash' => (object) []
         ];
 
         $client = static::createRestClient();
@@ -181,21 +205,17 @@ class RequiredHashControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.name',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'requiredHash.name',
+                    'message'       => 'The property name is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'requiredHash.value',
+                    'message'       => 'The property value is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
-                    'message'       => 'This value should not be blank.',
-                ],
-                (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
-                    'message'       => 'This value should not be blank.',
-                ],
+                    'propertyPath'  => 'requiredHash.requiredSubHash',
+                    'message'       => 'The property requiredSubHash is required',
+                ]
             ],
             $client->getResults()
         );
@@ -228,29 +248,21 @@ class RequiredHashControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.name',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.requiredSubHash',
+                    'message'       => 'The property requiredSubHash is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.name',
+                    'message'       => 'NULL value found, but a string is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.requiredSubHash.name',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'optionalHash.value',
+                    'message'       => 'NULL value found, but an integer is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.optionalHash.requiredSubHash.value',
-                    'message'       => 'This value should not be blank.',
-                ],
-                (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
-                    'message'       => 'This value should not be blank.',
-                ],
-                (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
-                    'message'       => 'This value should not be blank.',
-                ],
+                    'propertyPath'  => 'requiredHash.requiredSubHash',
+                    'message'       => 'The property requiredSubHash is required',
+                ]
             ],
             $client->getResults()
         );
@@ -278,21 +290,17 @@ class RequiredHashControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.name',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'requiredHash.requiredSubHash',
+                    'message'       => 'The property requiredSubHash is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.value',
-                    'message'       => 'This value should not be blank.',
+                    'propertyPath'  => 'requiredHash.name',
+                    'message'       => 'NULL value found, but a string is required',
                 ],
                 (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.name',
-                    'message'       => 'This value should not be blank.',
-                ],
-                (object) [
-                    'propertyPath'  => 'data.requiredHash.requiredSubHash.value',
-                    'message'       => 'This value should not be blank.',
-                ],
+                    'propertyPath'  => 'requiredHash.value',
+                    'message'       => 'NULL value found, but an integer is required',
+                ]
             ],
             $client->getResults()
         );

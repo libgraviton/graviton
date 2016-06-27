@@ -482,7 +482,6 @@ class RestController
 
         $errors = $this->restUtils->validateContent($request->getContent(), $model);
         if (!empty($errors)) {
-            // @todo fix validation so it's the same as before ;-)
             throw new ValidationException($errors);
         }
 
