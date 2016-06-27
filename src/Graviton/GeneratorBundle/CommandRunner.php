@@ -8,6 +8,7 @@ namespace Graviton\GeneratorBundle;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -99,7 +100,19 @@ class CommandRunner
         // get path to console from kernel..
         $consolePath = $this->kernel->getRootDir() . '/console';
 
-        $cmd = 'php ' . $consolePath . ' -n ';
+        // this code was copied from Symfony\Component\Process\PhpProcess and deserves a cleanup
+        $executableFinder = new PhpExecutableFinder();
+        if (false === $php = $executableFinder->find()) {
+            $php = null;
+        }
+        if ('\\' !== DIRECTORY_SEPARATOR && null !== $php) {
+            // exec is mandatory to deal with sending a signal to the process
+            // see https://github.com/symfony/symfony/issues/5030 about prepending
+            // command with exec
+            $php = 'exec '.$php;
+        }
+
+        $cmd = $php.' '.$consolePath.' -n ';
 
         foreach ($args as $key => $val) {
             if (strlen($key) > 1) {
