@@ -154,7 +154,8 @@ class Schema
     protected $minLengthTypes = [
         'integer',
         'number',
-        'string'
+        'string',
+        'date'
     ];
 
     /**
