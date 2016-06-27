@@ -1,5 +1,6 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
+use Graviton\GeneratorBundle\Definition\Schema\Field;
 
 /**
  * Represents a hash of fields as defined in the JSON format
@@ -73,9 +74,10 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'required'          => false,
                 'searchable'        => false,
             ],
-            $this->definition === null ? [] : [
+            $this->definition === null ? [
+                'required'          => $this->getRequired()
+            ] : [
                 'exposedName'       => $this->definition->getExposeAs() ?: $this->getName(),
-
                 'title'             => $this->definition->getTitle(),
                 'description'       => $this->definition->getDescription(),
                 'readOnly'          => $this->definition->getReadOnly(),
@@ -97,6 +99,28 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getType()
     {
         return self::TYPE_HASH;
+    }
+
+    /**
+     * in an 'anonymous' hash situation, we will check if any children are required
+     *
+     * @return bool if required or not
+     */
+    public function getRequired()
+    {
+        $isRequired = false;
+
+        // see if on the first level of fields we have a required=true in the definition
+        foreach ($this->fields as $field) {
+            if ($field instanceof JsonDefinitionField &&
+                $field->getDef() instanceof Field &&
+                $field->getDef()->getRequired() === true
+            ) {
+                $isRequired = true;
+            }
+        }
+
+        return $isRequired;
     }
 
     /**
