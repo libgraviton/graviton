@@ -396,12 +396,7 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $errors = $this->restUtils->validateContent($request->getContent(), $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-
-        $record = $this->deserialize($request->getContent(), $model->getEntityClass());
+        $record = $this->validateRequest($request->getContent(), $model);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -418,6 +413,25 @@ class RestController
         );
 
         return $response;
+    }
+
+    /**
+     * Validates the current request on schema violations. If there are errors,
+     * the exception is thrown. If not, the deserialized record is returned.
+     *
+     * @param object        $content \stdClass of the request content
+     * @param DocumentModel $model   the model to check the schema for
+     *
+     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
+     * @throws \Exception
+     */
+    protected function validateRequest($content, DocumentModel $model)
+    {
+        $errors = $this->restUtils->validateContent($content, $model);
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
+        return $this->deserialize($content, $model->getEntityClass());
     }
 
     /**
@@ -480,12 +494,7 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $errors = $this->restUtils->validateContent($request->getContent(), $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-
-        $record = $this->deserialize($request->getContent(), $model->getEntityClass());
+        $record = $this->validateRequest($request->getContent(), $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -557,13 +566,7 @@ class RestController
 
         // Validate result object
         $model = $this->getModel();
-
-        $errors = $this->restUtils->validateContent($patchedDocument, $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-
-        $record = $this->deserialize($patchedDocument, $model->getEntityClass());
+        $record = $this->validateRequest($patchedDocument, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
