@@ -79,7 +79,7 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
-        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $fileData = $this->validateFileRequest($request, $response, $request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // store id of new record so we don't need to re-parse body later when needed
@@ -153,7 +153,7 @@ class FileController extends RestController
         }
 
         $response = $this->getResponse();
-        $fileData = $this->validateRequest($request, $response, $request->get('metadata'));
+        $fileData = $this->validateFileRequest($request, $response, $request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // store id of new record so we don't need to re-parse body later when needed
@@ -224,17 +224,11 @@ class FileController extends RestController
      * @throws \Exception
      * @return File|null
      */
-    private function validateRequest(Request $request, Response $response, $fileData = '')
+    protected function validateFileRequest(Request $request, Response $response, $fileData = '')
     {
         if (!empty($fileData)) {
             $model = $this->getModel();
-            $this->getRestUtils()->checkJsonRequest($request, $response, $model, $fileData);
-            return $this->formValidator->checkForm(
-                $this->formValidator->getForm($request, $model),
-                $model,
-                $this->formDataMapper,
-                $fileData
-            );
+            return $this->validateRequest($request->getContent(), $model);
         }
     }
 

@@ -191,7 +191,14 @@ final class RestUtils implements RestUtilsInterface
             $this->schemaUtils->getModelSchema(null, $model, true, true)
         );
 
-        return $this->schemaValidator->validate(json_decode($content), json_decode($schema));
+        if (is_string($content)) {
+            $content = json_decode($content);
+        }
+
+        return $this->schemaValidator->validate(
+            $content,
+            json_decode($schema)
+        );
     }
 
     /**
