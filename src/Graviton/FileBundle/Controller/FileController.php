@@ -79,7 +79,7 @@ class FileController extends RestController
     public function postAction(Request $request)
     {
         $response = $this->getResponse();
-        $fileData = $this->validateFileRequest($request, $response, $request->get('metadata'));
+        $fileData = $this->validateFileRequest($request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // store id of new record so we don't need to re-parse body later when needed
@@ -153,7 +153,7 @@ class FileController extends RestController
         }
 
         $response = $this->getResponse();
-        $fileData = $this->validateFileRequest($request, $response, $request->get('metadata'));
+        $fileData = $this->validateFileRequest($request->get('metadata'));
         $files = $this->fileManager->saveFiles($request, $this->getModel(), $fileData);
 
         // store id of new record so we don't need to re-parse body later when needed
@@ -217,18 +217,15 @@ class FileController extends RestController
     /**
      * Validates the provided request
      *
-     * @param Request  $request  Http request to be validated
-     * @param Response $response Http response to be returned in case of an error
-     * @param string   $fileData Alternative content to be validated
+     * @param string $fileData Alternative content to be validated
      *
      * @throws \Exception
      * @return File|null
      */
-    protected function validateFileRequest(Request $request, Response $response, $fileData = '')
+    protected function validateFileRequest($fileData)
     {
         if (!empty($fileData)) {
-            $model = $this->getModel();
-            return $this->validateRequest($request->getContent(), $model);
+            return $this->validateRequest($fileData, $this->getModel());
         }
     }
 
