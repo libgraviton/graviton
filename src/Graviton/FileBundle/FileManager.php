@@ -292,11 +292,14 @@ class FileManager
             if (empty($contentBlock)) {
                 continue;
             }
-            if (40 === strpos($contentBlock, 'upload')) {
+            preg_match('/name=\"(.*?)\"[^"]/i', $contentBlock, $matches);
+            $name = isset($matches[1]) ? $matches[1] : '';
+
+            if ($name === 'upload') {
                 $fileInfo = $contentBlock;
                 continue;
             }
-            if (40 === strpos($contentBlock, 'metadata')) {
+            if ($name === 'metadata') {
                 $metadataInfo = $contentBlock;
                 continue;
             }
@@ -324,8 +327,15 @@ class FileManager
             return ['metadata' => '{}'];
         }
 
+        // When using curl or Guzzle the position of data can change.
+        // Here we grab the first valid json start.
         $metadataInfo = explode("\r\n", ltrim($metadataInfoString));
-        return ['metadata' => $metadataInfo[2]];
+        foreach ($metadataInfo as $data) {
+            if (substr($data, 0, 1) === '{') {
+                return ['metadata' => $data];
+            }
+        }
+        return ['metadata' => '{}'];
     }
 
     /**
@@ -343,12 +353,19 @@ class FileManager
 
         $fileInfo = explode("\r\n\r\n", ltrim($fileInfoString), 2);
 
-        // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
-        preg_match('@name=\"([^"]*)\";\sfilename=\"([^"]*)\"\s*Content-Type:\s([^"]*)@', $fileInfo[0], $matches);
-        $originalName = $matches[2];
+        preg_match('/name=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $name = isset($matches[1]) ? $matches[1] : '';
+
+        preg_match('/filename=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $fileName = isset($matches[1]) ? $matches[1] : '';
+
+        preg_match('/Content-Type=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $contentType = isset($matches[1]) ? $matches[1] : '';
+
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
-        $file = $dir . '/' . $originalName;
+        $file = $dir . '/' . $fileName;
+
         $fileContent = substr($fileInfo[1], 0, -2);
 
         // create file
@@ -356,10 +373,10 @@ class FileManager
         $size = file_put_contents($file, $fileContent, LOCK_EX);
 
         $files = [
-            $matches[1] => new UploadedFile(
+            $name => new UploadedFile(
                 $file,
-                $originalName,
-                $matches[3],
+                $fileName,
+                $contentType,
                 $size
             )
         ];
