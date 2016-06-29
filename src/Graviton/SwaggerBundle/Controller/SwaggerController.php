@@ -39,7 +39,9 @@ class SwaggerController
     }
 
     /**
-     * @return JsonResponse Response with result or error
+     * @throws FatalErrorException
+     *
+     * @return Response Response with result or error
      */
     public function swaggerAction()
     {

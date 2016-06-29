@@ -21,7 +21,7 @@ class ObjectSlicerTest extends \PHPUnit_Framework_TestCase
      */
     public function testError()
     {
-        $this->setExpectedException('InvalidArgumentException', 'Value must be an array or an object');
+        $this->expectException('InvalidArgumentException', 'Value must be an array or an object');
         (new ObjectSlicer())->slice('123', 'a');
     }
 

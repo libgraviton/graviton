@@ -5,18 +5,13 @@
 
 namespace Graviton\SecurityBundle\Controller;
 
-use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

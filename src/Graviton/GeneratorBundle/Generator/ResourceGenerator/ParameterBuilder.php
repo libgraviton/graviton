@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Symfony\Component\DependencyInjection\Container;
 
 /**

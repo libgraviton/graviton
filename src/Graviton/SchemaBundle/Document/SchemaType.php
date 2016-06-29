@@ -30,7 +30,7 @@ class SchemaType
     /**
      * gets properties
      *
-     * @return Schema|boolean properties
+     * @return array types
      */
     public function getTypes()
     {

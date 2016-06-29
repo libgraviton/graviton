@@ -5,7 +5,6 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;

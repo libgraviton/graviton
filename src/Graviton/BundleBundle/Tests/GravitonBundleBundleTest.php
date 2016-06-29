@@ -6,7 +6,6 @@
 namespace Graviton\BundleBundle\Tests;
 
 use Graviton\BundleBundle\GravitonBundleBundle;
-use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

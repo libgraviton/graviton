@@ -5,12 +5,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Document;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\ArrayField;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedMany;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\EmbedOne;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Field;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

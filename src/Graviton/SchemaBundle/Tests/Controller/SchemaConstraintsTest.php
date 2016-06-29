@@ -91,9 +91,9 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 'jjj--no-url',
                 'errorMessage' => 'Invalid URL format'
             ],
-            
+
             // Range
-            
+
             'range-integer-lower-bound' => [
                 'field' => 'rangeInteger',
                 'acceptedValue' => 5,
@@ -130,7 +130,7 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => 6,
                 'errorMessage' => 'Must have a maximum value of 5'
             ],
-            
+
             // GreatherThanOrEqual
 
             'greaterthan-integer' => [
@@ -190,7 +190,7 @@ class SchemaConstraintsTest extends RestTestCase
                 'rejectedValue' => [],
                 'errorMessage' => 'There must be a minimum of 1 items in the array'
             ],
-            'count-array-lower' => [
+            'count-array-upper' => [
                 'field' => 'arrayCount',
                 'acceptedValue' => ['a', 'b', 'c'],
                 'rejectedValue' => ['a', 'b', 'c', 'd'],

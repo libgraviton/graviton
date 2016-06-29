@@ -70,7 +70,7 @@ class RqlAllowedOperatorRequestListenerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnKernelRequestWithException(Query $query)
     {
-        $this->setExpectedException(RqlOperatorNotAllowedException::class);
+        $this->expectException(RqlOperatorNotAllowedException::class);
 
         $request = new Request();
         $request->attributes->set('rqlQuery', $query);

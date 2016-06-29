@@ -271,8 +271,6 @@ class ResourceGeneratorTest extends GravitonTestCase
             'json' => $jsonDefinitionMock
         );
 
-        $docName = 'graviton.bundlename.document.documenttest';
-
         $dir = self::GRAVITON_TMP_DIR;
         $document = 'DocumentTest';
 
