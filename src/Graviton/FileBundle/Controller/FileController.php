@@ -14,10 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\Form\FormFactory;
-use Graviton\DocumentBundle\Form\Type\DocumentType;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -35,10 +32,7 @@ class FileController extends RestController
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
-     * @param FormFactory        $formFactory form factory
-     * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils schema utils
      * @param FileManager        $fileManager Handles file specific tasks
@@ -47,10 +41,7 @@ class FileController extends RestController
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        ValidatorInterface $validator,
         EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
         FileManager $fileManager
@@ -59,10 +50,7 @@ class FileController extends RestController
             $response,
             $restUtils,
             $router,
-            $validator,
             $templating,
-            $formFactory,
-            $formType,
             $container,
             $schemaUtils
         );

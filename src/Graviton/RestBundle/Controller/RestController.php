@@ -5,18 +5,15 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Graviton\RestBundle\Validator\Form;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
-use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Knp\Component\Pager\Paginator;
@@ -65,16 +62,6 @@ class RestController
     private $response;
 
     /**
-     * @var FormFactory
-     */
-    private $formFactory;
-
-    /**
-     * @var DocumentType
-     */
-    private $formType;
-
-    /**
      * @var RestUtilsInterface
      */
     private $restUtils;
@@ -85,19 +72,9 @@ class RestController
     private $schemaUtils;
 
     /**
-     * @var FormDataMapperInterface
-     */
-    protected $formDataMapper;
-
-    /**
      * @var Router
      */
     private $router;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
 
     /**
      * @var EngineInterface
@@ -110,11 +87,6 @@ class RestController
     private $jsonPatchValidator;
 
     /**
-     * @var Form
-     */
-    protected $formValidator;
-
-    /**
      * @var TokenStorage
      */
     protected $tokenStorage;
@@ -123,10 +95,7 @@ class RestController
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
-     * @param FormFactory        $formFactory form factory
-     * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
      */
@@ -134,20 +103,14 @@ class RestController
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        ValidatorInterface $validator,
         EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->validator = $validator;
         $this->templating = $templating;
-        $this->formFactory = $formFactory;
-        $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
     }
@@ -164,35 +127,12 @@ class RestController
     }
 
     /**
-     * Set form data mapper
-     *
-     * @param FormDataMapperInterface $formDataMapper Form data mapper
-     * @return void
-     */
-    public function setFormDataMapper(FormDataMapperInterface $formDataMapper)
-    {
-        $this->formDataMapper = $formDataMapper;
-    }
-
-    /**
      * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
      * @return void
      */
     public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
     {
         $this->jsonPatchValidator = $jsonPatchValidator;
-    }
-
-    /**
-     * Defines the Form validator to be used.
-     *
-     * @param Form $validator Validator to be used
-     *
-     * @return void
-     */
-    public function setFormValidator(Form $validator)
-    {
-        $this->formValidator = $validator;
     }
 
     /**
@@ -419,7 +359,7 @@ class RestController
      * Validates the current request on schema violations. If there are errors,
      * the exception is thrown. If not, the deserialized record is returned.
      *
-     * @param object        $content \stdClass of the request content
+     * @param object|string $content \stdClass of the request content
      * @param DocumentModel $model   the model to check the schema for
      *
      * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
@@ -677,16 +617,6 @@ class RestController
             ['response' => $this->serialize($schema)],
             $response
         );
-    }
-
-    /**
-     * Get the validator
-     *
-     * @return ValidatorInterface
-     */
-    public function getValidator()
-    {
-        return $this->validator;
     }
 
     /**

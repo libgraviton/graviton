@@ -25,40 +25,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class WhoAmIController extends RestController
 {
-    /**
-     * @param Response           $response    Response
-     * @param RestUtilsInterface $restUtils   Rest utils
-     * @param Router             $router      Router
-     * @param ValidatorInterface $validator   Validator
-     * @param EngineInterface    $templating  Templating
-     * @param FormFactory        $formFactory form factory
-     * @param DocumentType       $formType    generic form
-     * @param ContainerInterface $container   Container
-     * @param SchemaUtils        $schemaUtils schema utils
-     */
-    public function __construct(
-        Response $response,
-        RestUtilsInterface $restUtils,
-        Router $router,
-        ValidatorInterface $validator,
-        EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
-        ContainerInterface $container,
-        SchemaUtils $schemaUtils
-    ) {
-        parent::__construct(
-            $response,
-            $restUtils,
-            $router,
-            $validator,
-            $templating,
-            $formFactory,
-            $formType,
-            $container,
-            $schemaUtils
-        );
-    }
 
     /**
      * Currently authenticated user information.

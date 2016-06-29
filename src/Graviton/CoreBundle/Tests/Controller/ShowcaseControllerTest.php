@@ -253,6 +253,42 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * make sure an invalid extref value is detected
+     *
+     * @return void
+     */
+    public function testWrongExtRef()
+    {
+        $payload = json_decode(file_get_contents($this->postCreationDataProvider()['minimal'][0]));
+        $payload->nestedApps = [
+            (object) ['$ref' => 'http://localhost/core/module/name'],
+            (object) ['$ref' => 'unknown']
+        ];
+
+        $client = static::createRestClient();
+        $client->post('/hans/showcase', $payload);
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        $expectedErrors = [
+            (object) [
+                'propertyPath' => "nestedApps[0].\$ref",
+                'message' =>
+                    'Value "http://localhost/core/module/name" does not refer to a correct collection for this extref.'
+            ],
+            (object) [
+                'propertyPath' => "nestedApps[1].\$ref",
+                'message' =>
+                    'Does not match the regex pattern (\/core\/app\/)([a-zA-Z0-9\-_\/\+\040\'\.]+)$'
+            ]
+        ];
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expectedErrors),
+            json_encode($client->getResults())
+        );
+    }
+
+    /**
      * insert various formats to see if all works as expected
      *
      * @dataProvider postCreationDataProvider
