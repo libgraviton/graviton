@@ -42,12 +42,12 @@
         "exercise/htmlpurifier-bundle": "~0.2",
         "graviton/php-rql-parser": ">=2.0.2",
         "graviton/rql-parser-bundle": "~0.11.0",
-        "knplabs/knp-gaufrette-bundle": "^0.2@dev",
+        "knplabs/knp-gaufrette-bundle": "~0.3",
         "aws/aws-sdk-php": "~2.8",
         "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.4",
         "graviton/deploy-scripts": "~0.4",
-        "graviton/json-schema": "dev-feature/update-json-schema-dep",
+        "graviton/json-schema": "~1.0",
         "php-jsonpatch/php-jsonpatch": "~1.2.2",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
@@ -63,7 +63,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "dev-feature/other-validation",
+        "graviton/test-services-bundle": "~0.9",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "22b99f678ed8ed9cb7e0ab720fa6851a",
-    "content-hash": "002a41d1bf6875545a2cfcac022d5f0a",
+    "hash": "902cc9f9ddc38f2c10e6f96bebbfa8a9",
+    "content-hash": "9f85f50fc8ac9a4d4bbfed0a330b184c",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1619,16 +1619,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "dev-feature/update-json-schema-dep",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "b944988d8c9021cb895847a02e74b7e4c5de65b8"
+                "reference": "ebd16758a57c90dc011936bd285ef41325176ce8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/b944988d8c9021cb895847a02e74b7e4c5de65b8",
-                "reference": "b944988d8c9021cb895847a02e74b7e4c5de65b8",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/ebd16758a57c90dc011936bd285ef41325176ce8",
+                "reference": "ebd16758a57c90dc011936bd285ef41325176ce8",
                 "shasum": ""
             },
             "require": {
@@ -1662,7 +1662,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-06-17 14:11:41"
+            "time": "2016-06-29 07:39:36"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -2984,31 +2984,31 @@
         },
         {
             "name": "knplabs/knp-gaufrette-bundle",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpGaufretteBundle.git",
-                "reference": "7edea6cfcc4718573f9cbd7bd1adcaf3c2319e8b"
+                "reference": "44cf552e14031517516458b0e394f16dd36a131b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/7edea6cfcc4718573f9cbd7bd1adcaf3c2319e8b",
-                "reference": "7edea6cfcc4718573f9cbd7bd1adcaf3c2319e8b",
+                "url": "https://api.github.com/repos/KnpLabs/KnpGaufretteBundle/zipball/44cf552e14031517516458b0e394f16dd36a131b",
+                "reference": "44cf552e14031517516458b0e394f16dd36a131b",
                 "shasum": ""
             },
             "require": {
-                "knplabs/gaufrette": "~0.1.7|0.2.*@dev",
-                "symfony/framework-bundle": "2.*"
+                "knplabs/gaufrette": "~0.1.7|~0.2",
+                "symfony/framework-bundle": "~2.0|~3.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.2",
-                "symfony/console": "2.*",
-                "symfony/yaml": "2.*"
+                "symfony/console": "~2.0|~3.0",
+                "symfony/yaml": "~2.0|~3.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2.x-dev"
+                    "dev-master": "0.4.x-dev"
                 }
             },
             "autoload": {
@@ -3038,7 +3038,7 @@
                 "filesystem",
                 "media"
             ],
-            "time": "2015-09-18 12:09:25"
+            "time": "2016-01-16 00:12:11"
         },
         {
             "name": "knplabs/knp-paginator-bundle",
@@ -5359,16 +5359,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "dev-feature/other-validation",
+            "version": "v0.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "e6965694684602acbb8129636bf6213284d9c2f1"
+                "reference": "a7ddaea54a0b9e89c11d498c330fea262df41ae1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/e6965694684602acbb8129636bf6213284d9c2f1",
-                "reference": "e6965694684602acbb8129636bf6213284d9c2f1",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/a7ddaea54a0b9e89c11d498c330fea262df41ae1",
+                "reference": "a7ddaea54a0b9e89c11d498c330fea262df41ae1",
                 "shasum": ""
             },
             "type": "library",
@@ -5388,10 +5388,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/feature/other-validation",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.19.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-06-21 13:21:53"
+            "time": "2016-06-29 07:41:01"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -6920,10 +6920,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "knplabs/knp-gaufrette-bundle": 20,
-        "graviton/json-schema": 20,
-        "lapistano/proxy-object": 20,
-        "graviton/test-services-bundle": 20
+        "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
