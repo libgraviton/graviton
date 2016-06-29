@@ -147,13 +147,17 @@ class Schema
 
     /**
      * those are types that when they are required, a minimal length
-     * shall be specified in schema
+     * shall be specified in schema (or allow null if not required; that will lead
+     * to the inclusion of "null" in the "type" property array)
      *
      * @var array
      */
     protected $minLengthTypes = [
         'integer',
         'number',
+        'float',
+        'double',
+        'decimal',
         'string',
         'date',
         'extref'
