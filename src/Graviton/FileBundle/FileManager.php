@@ -362,7 +362,7 @@ class FileManager
 
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
-        $file = $dir . '/' . $fileName;
+        $file = $dir . DIRECTORY_SEPARATOR . $fileName;
 
         $fileContent = substr($fileInfo[1], 0, -2);
 
