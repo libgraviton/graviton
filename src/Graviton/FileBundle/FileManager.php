@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -359,9 +360,6 @@ class FileManager
         preg_match('/filename=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
         $fileName = isset($matches[1]) ? $matches[1] : '';
 
-        preg_match('/Content-Type=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
-        $contentType = isset($matches[1]) ? $matches[1] : '';
-
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
         $file = $dir . '/' . $fileName;
@@ -371,6 +369,18 @@ class FileManager
         // create file
         touch($file);
         $size = file_put_contents($file, $fileContent, LOCK_EX);
+
+        // FileType Content-Type
+        preg_match('/Content-Type=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        if (isset($matches[1])) {
+            $contentType = $matches[1];
+        } else {
+            $fInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $contentType = finfo_file($fInfo, $file);
+            if (!$contentType) {
+                throw new HttpException(400, "Could not determine Content type of file: ".$fileName);
+            }
+        }
 
         $files = [
             $name => new UploadedFile(
