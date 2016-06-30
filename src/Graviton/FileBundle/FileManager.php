@@ -380,7 +380,7 @@ class FileManager
             $contentType = finfo_file($fInfo, $file);
             if (!$contentType) {
                 throw new HttpException(
-                    Response::HTTP_NOT_ACCEPTABLE, 
+                    Response::HTTP_NOT_ACCEPTABLE,
                     'Could not determine Content type of file: '.$fileName
                 );
             }
