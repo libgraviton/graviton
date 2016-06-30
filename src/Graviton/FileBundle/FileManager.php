@@ -12,6 +12,7 @@ use GravitonDyn\FileBundle\Document\File as FileDocument;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use GravitonDyn\FileBundle\Document\FileMetadata;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -378,7 +379,10 @@ class FileManager
             $fInfo = finfo_open(FILEINFO_MIME_TYPE);
             $contentType = finfo_file($fInfo, $file);
             if (!$contentType) {
-                throw new HttpException(400, "Could not determine Content type of file: ".$fileName);
+                throw new HttpException(
+                    Response::HTTP_NOT_ACCEPTABLE, 
+                    'Could not determine Content type of file: '.$fileName
+                );
             }
         }
 
