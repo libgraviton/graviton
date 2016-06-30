@@ -187,17 +187,13 @@ final class RestUtils implements RestUtilsInterface
      */
     public function validateContent($content, DocumentModel $model)
     {
-        $schema = $this->serializeContent(
-            $this->schemaUtils->getModelSchema(null, $model, true, true)
-        );
-
         if (is_string($content)) {
             $content = json_decode($content);
         }
 
         return $this->schemaValidator->validate(
             $content,
-            json_decode($schema)
+            $this->schemaUtils->getModelSchema(null, $model, true, true, true)
         );
     }
 

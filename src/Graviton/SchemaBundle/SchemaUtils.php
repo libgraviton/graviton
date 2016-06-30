@@ -15,6 +15,7 @@ use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
 use Graviton\SchemaBundle\Document\SchemaType;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
+use JMS\Serializer\Serializer;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -42,6 +43,13 @@ class SchemaUtils
      * @var RouterInterface router
      */
     private $router;
+
+    /**
+     * serializer
+     *
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * mapping service names => route names
@@ -99,6 +107,7 @@ class SchemaUtils
      * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
      * @param LanguageRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
+     * @param Serializer                         $serializer                serializer
      * @param array                              $extrefServiceMapping      Extref service mapping
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
@@ -112,6 +121,7 @@ class SchemaUtils
         SerializerMetadataFactoryInterface $serializerMetadataFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
+        Serializer $serializer,
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
@@ -124,6 +134,7 @@ class SchemaUtils
         $this->serializerMetadataFactory = $serializerMetadataFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
+        $this->serializer = $serializer;
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
@@ -155,16 +166,29 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string        $modelName name of mode to generate schema for
-     * @param DocumentModel $model     model to generate schema for
-     * @param boolean       $online    if we are online and have access to mongodb during this build
-     * @param boolean       $internal  if true, we generate the schema for internal validation use
+     * @param string        $modelName  name of mode to generate schema for
+     * @param DocumentModel $model      model to generate schema for
+     * @param boolean       $online     if we are online and have access to mongodb during this build
+     * @param boolean       $internal   if true, we generate the schema for internal validation use
+     * @param boolean       $serialized if true, it will serialize the Schema object and return a \stdClass instead
      *
-     * @return Schema
+     * @return Schema|\stdClass Either a Schema instance or serialized as \stdClass if $serialized is true
      */
-    public function getModelSchema($modelName, DocumentModel $model, $online = true, $internal = false)
-    {
-        $cacheKey = 'schema'.$model->getEntityClass().'.'.(string) $online.'.'.(string) $internal;
+    public function getModelSchema(
+        $modelName,
+        DocumentModel $model,
+        $online = true,
+        $internal = false,
+        $serialized = false
+    ) {
+
+        $cacheKey = sprintf(
+            'schema.%s.%s.%s.%s',
+            $model->getEntityClass(),
+            (string) $online,
+            (string) $internal,
+            (string) $serialized
+        );
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
@@ -410,6 +434,10 @@ class SchemaUtils
 
         $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
         $schema->setSearchable($searchableFields);
+
+        if ($serialized === true) {
+            $schema = json_decode($this->serializer->serialize($schema, 'json'));
+        }
 
         $this->cache->save($cacheKey, $schema);
         $this->cache->save($this->cacheInvalidationMapKey, $invalidateCacheMap);

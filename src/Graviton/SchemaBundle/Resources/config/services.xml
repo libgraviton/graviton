@@ -93,6 +93,7 @@
       <argument type="service" id="jms_serializer.metadata_factory"/>
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="router"/>
+      <argument type="service" id="graviton.rest.serializer"/>
       <argument>%graviton.document.type.extref.mapping%</argument>
       <argument>%graviton.document.eventmap%</argument>
       <argument>%graviton.document.field.names%</argument>
