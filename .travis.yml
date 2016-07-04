@@ -1,12 +1,16 @@
 language: php
-services: 
+services:
 - mongodb
 - rabbitmq
 sudo: false
 before_script:
 - >
+    if [ "$PHPUNIT_SUITE" != "unit" ]; then
+        phpenv config-rm xdebug.ini
+    fi
+- >
     if [ $(phpenv version-name) != "7.0" ]; then
-        echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; 
+        echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
     fi
 - >
     if [ $(phpenv version-name) = "7.0" ]; then
