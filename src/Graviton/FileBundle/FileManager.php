@@ -12,8 +12,10 @@ use GravitonDyn\FileBundle\Document\File as FileDocument;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -292,11 +294,14 @@ class FileManager
             if (empty($contentBlock)) {
                 continue;
             }
-            if (40 === strpos($contentBlock, 'upload')) {
+            preg_match('/name=\"(.*?)\"[^"]/i', $contentBlock, $matches);
+            $name = isset($matches[1]) ? $matches[1] : '';
+
+            if ($name === 'upload') {
                 $fileInfo = $contentBlock;
                 continue;
             }
-            if (40 === strpos($contentBlock, 'metadata')) {
+            if ($name === 'metadata') {
                 $metadataInfo = $contentBlock;
                 continue;
             }
@@ -324,8 +329,15 @@ class FileManager
             return ['metadata' => '{}'];
         }
 
+        // When using curl or Guzzle the position of data can change.
+        // Here we grab the first valid json start.
         $metadataInfo = explode("\r\n", ltrim($metadataInfoString));
-        return ['metadata' => $metadataInfo[2]];
+        foreach ($metadataInfo as $data) {
+            if (substr($data, 0, 1) === '{') {
+                return ['metadata' => $data];
+            }
+        }
+        return ['metadata' => '{}'];
     }
 
     /**
@@ -343,23 +355,42 @@ class FileManager
 
         $fileInfo = explode("\r\n\r\n", ltrim($fileInfoString), 2);
 
-        // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
-        preg_match('@name=\"([^"]*)\";\sfilename=\"([^"]*)\"\s*Content-Type:\s([^"]*)@', $fileInfo[0], $matches);
-        $originalName = $matches[2];
+        preg_match('/name=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $name = isset($matches[1]) ? $matches[1] : '';
+
+        preg_match('/filename=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $fileName = isset($matches[1]) ? $matches[1] : '';
+
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
-        $file = $dir . '/' . $originalName;
+        $file = $dir . DIRECTORY_SEPARATOR . $fileName;
+
         $fileContent = substr($fileInfo[1], 0, -2);
 
         // create file
         touch($file);
         $size = file_put_contents($file, $fileContent, LOCK_EX);
 
+        // FileType Content-Type
+        preg_match('/Content-Type=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        if (isset($matches[1])) {
+            $contentType = $matches[1];
+        } else {
+            $fInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $contentType = finfo_file($fInfo, $file);
+            if (!$contentType) {
+                throw new HttpException(
+                    Response::HTTP_NOT_ACCEPTABLE,
+                    'Could not determine Content type of file: '.$fileName
+                );
+            }
+        }
+
         $files = [
-            $matches[1] => new UploadedFile(
+            $name => new UploadedFile(
                 $file,
-                $originalName,
-                $matches[3],
+                $fileName,
+                $contentType,
                 $size
             )
         ];
