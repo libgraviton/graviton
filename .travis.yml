@@ -1,12 +1,12 @@
 language: php
-services: 
+services:
 - mongodb
 - rabbitmq
 sudo: false
 before_script:
 - >
     if [ $(phpenv version-name) != "7.0" ]; then
-        echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; 
+        echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
     fi
 - >
     if [ $(phpenv version-name) = "7.0" ]; then
@@ -37,6 +37,8 @@ script:
         touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm && \
         if [ "$PHPUNIT_SUITE" == "unit" ]; then
           COVERAGE=" --coverage-clover=coverage.clover "
+        else
+          phpenv config-rm xdebug.ini
         fi && \
         vendor/bin/phpunit $COVERAGE --testsuite=$PHPUNIT_SUITE && \
         if [ $COVERAGE ]; then
