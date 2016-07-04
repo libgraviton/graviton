@@ -27,7 +27,7 @@ class Schema
     protected $description;
 
     /**
-     * @var string
+     * @var SchemaType
      */
     protected $type;
 
@@ -124,7 +124,7 @@ class Schema
     protected $regexPattern;
 
     /**
-     * @var
+     * @var string
      */
     protected $documentClass;
 
