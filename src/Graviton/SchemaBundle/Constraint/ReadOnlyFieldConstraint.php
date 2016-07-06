@@ -56,10 +56,9 @@ class ReadOnlyFieldConstraint
         }
 
         $readOnlyFields = $this->fieldMap[$documentClass];
-        $recordId = $data->id;
 
         // get the current record
-        $currentRecord = $this->utils->getSerializedEntity($documentClass, $recordId);
+        $currentRecord = $this->utils->getCurrentEntity();
 
         if (is_null($currentRecord)) {
             return;
