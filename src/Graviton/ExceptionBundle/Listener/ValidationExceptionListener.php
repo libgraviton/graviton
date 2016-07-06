@@ -9,8 +9,6 @@ use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormError;
 
 /**
  * Listener for validation exceptions
