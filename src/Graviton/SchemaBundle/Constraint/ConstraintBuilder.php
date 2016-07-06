@@ -51,10 +51,20 @@ class ConstraintBuilder
         }
 
         foreach ($constraints as $constraint) {
+            $isSupported = false;
             foreach ($this->builders as $builder) {
                 if ($builder->supportsConstraint($constraint->name, $constraint->options)) {
                     $property = $builder->buildConstraint($fieldName, $property, $model, $constraint->options);
+                    $isSupported = true;
                 }
+            }
+
+            if (!$isSupported) {
+                /**
+                 * unknown/not supported constraints will be added to the 'x-constraints' schema property.
+                 * this allows others (possibly schema constraints) to pick it up and implement more advanced logic.
+                 */
+                 $property->addConstraint($constraint->name);
             }
         }
 

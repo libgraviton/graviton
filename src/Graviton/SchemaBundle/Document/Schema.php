@@ -54,7 +54,7 @@ class Schema
     /**
      * @var string[]
      */
-    protected $required = array();
+    protected $required = [];
 
     /**
      * @var boolean
@@ -64,14 +64,14 @@ class Schema
     /**
      * @var array
      */
-    protected $refCollection = array();
+    protected $refCollection = [];
 
     /**
      * possible event names this collection implements (queue events)
      *
      * @var array
      */
-    protected $eventNames = array();
+    protected $eventNames = [];
 
     /**
      * @var bool
@@ -81,7 +81,7 @@ class Schema
     /**
      * @var string[]
      */
-    protected $searchable = array();
+    protected $searchable = [];
 
     /**
      * @var int
@@ -127,6 +127,11 @@ class Schema
      * @var string
      */
     protected $documentClass;
+
+    /**
+     * @var array<string>
+     */
+    protected $constraints;
 
     /**
      * these are the BSON primitive types.
@@ -515,6 +520,40 @@ class Schema
     public function setDocumentClass($documentClass)
     {
         $this->documentClass = $documentClass;
+    }
+
+    /**
+     * get Constraints
+     *
+     * @return mixed Constraints
+     */
+    public function getConstraints()
+    {
+        return $this->constraints;
+    }
+
+    /**
+     * set Constraints
+     *
+     * @param mixed $constraints constraints
+     *
+     * @return void
+     */
+    public function setConstraints($constraints)
+    {
+        $this->constraints = $constraints;
+    }
+
+    /**
+     * add a constraint
+     *
+     * @param string $name constraint name
+     *
+     * @return void
+     */
+    public function addConstraint($name)
+    {
+        $this->constraints[] = $name;
     }
 
     /**
