@@ -5,9 +5,7 @@
 
 namespace Graviton\SchemaBundle\Constraint;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
-use Graviton\RestBundle\Service\RestUtils;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -19,16 +17,6 @@ class ReadOnlyFieldConstraint
 {
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
-     * @var RestUtils
-     */
-    private $restUtils;
-
-    /**
      * @var array
      */
     private $fieldMap;
@@ -36,14 +24,12 @@ class ReadOnlyFieldConstraint
     /**
      * ReadOnlyFieldConstraint constructor.
      *
-     * @param DocumentManager $dm                DocumentManager
-     * @param RestUtils       $restUtils         RestUtils
+     * @param ConstraintUtils $utils             Utils
      * @param array           $readOnlyFieldsMap field map from compiler pass
      */
-    public function __construct(DocumentManager $dm, RestUtils $restUtils, array $readOnlyFieldsMap)
+    public function __construct(ConstraintUtils $utils, array $readOnlyFieldsMap)
     {
-        $this->dm = $dm;
-        $this->restUtils = $restUtils;
+        $this->utils = $utils;
         $this->fieldMap = $readOnlyFieldsMap;
     }
 
@@ -73,7 +59,7 @@ class ReadOnlyFieldConstraint
         $recordId = $data->id;
 
         // get the current record
-        $currentRecord = $this->getCurrentRecordSerializedAndBack($documentClass, $recordId);
+        $currentRecord = $this->utils->getSerializedEntity($documentClass, $recordId);
 
         if (is_null($currentRecord)) {
             return;
@@ -104,26 +90,5 @@ class ReadOnlyFieldConstraint
                 );
             }
         }
-    }
-
-    /**
-     * to make sure we don't compare apple and oranges, we let the serializer
-     * do what he does and bring it back as object. only then all friends like extref
-     * (exposeAs) and so on are resolved and we can truly compare structures..
-     *
-     * @param string $documentClass document class
-     * @param string $recordId      record id
-     *
-     * @return object stored object in presentation form
-     */
-    private function getCurrentRecordSerializedAndBack($documentClass, $recordId)
-    {
-        $current = $this->dm->getRepository($documentClass)->find($recordId);
-
-        if (is_null($current)) {
-            return null;
-        }
-
-        return json_decode($this->restUtils->serializeContent($current));
     }
 }
