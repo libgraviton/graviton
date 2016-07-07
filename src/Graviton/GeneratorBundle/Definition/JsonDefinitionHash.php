@@ -75,7 +75,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'searchable'        => false,
             ],
             $this->definition === null ? [
-                'required'          => $this->getRequired()
+                'required'          => $this->isRequired()
             ] : [
                 'exposedName'       => $this->definition->getExposeAs() ?: $this->getName(),
                 'title'             => $this->definition->getTitle(),
@@ -117,7 +117,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
      *
      * @return bool if required or not
      */
-    public function getRequired()
+    public function isRequired()
     {
         $isRequired = false;
 
