@@ -109,6 +109,7 @@
             <argument type="service" id="graviton.rest.service.rqlTranslator" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
             <argument>%graviton.rest.pagination.limit%</argument>
+            <argument type="service" id="logger" />
             <call method="setFilterByAuthUser">
                 <argument>%graviton.security.query.filter_by_user%</argument>
                 <argument>%graviton.security.query.filter_by_field%</argument>

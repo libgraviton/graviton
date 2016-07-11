@@ -10,5 +10,8 @@
         <property name="indexes"
                   type="array&lt;string&gt;"
                   serialized-name="indexes"/>
+        <property name="textSearchIndex"
+                  type="array"
+                  serialized-name="textSearchIndex"/>
     </class>
 </serializer>

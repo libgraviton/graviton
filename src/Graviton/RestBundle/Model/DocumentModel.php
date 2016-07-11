@@ -7,15 +7,12 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Service\RqlTranslator;
-use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
@@ -68,6 +65,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $paginationDefaultLimit;
 
     /**
+     * @var  Logger
+     */
+    private $logger;
+
+    /**
      * @var boolean
      */
     protected $filterByAuthUser;
@@ -87,18 +89,21 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param RqlTranslator $translator                 Translator for query modification
      * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer       $paginationDefaultLimit     amount of data records to be returned when in pagination context
+     * @param Logger        $logger                     The defined system logger
      */
     public function __construct(
         Visitor $visitor,
         RqlTranslator $translator,
         $notModifiableOriginRecords,
-        $paginationDefaultLimit
+        $paginationDefaultLimit,
+        $logger
     ) {
         parent::__construct();
         $this->visitor = $visitor;
         $this->translator = $translator;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
+        $this->logger = $logger;
     }
 
     /**
@@ -196,6 +201,33 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->sort('_id');
         }
 
+        // on search: check if there is a fulltextsearch Index defined, apply it and search in there
+        if (strstr($request->attributes->get('rawRql'), 'search')) {
+            preg_match('/search\((.*?)\)/', $request->attributes->get('rawRql'), $match);
+            if (!empty($match) && strlen($match[1])) {
+                // this is performing a fulltextsearch in the text-Index of the collection (mongodb Version>=2.6)
+                if ((float) $this->getMongoDBVersion()>=2.6) {
+                    // check if there is an index definition for fulltext-search in schema index and apply it.
+                    if ($this->getSchema()->textSearchIndex && is_array($this->getSchema()->textSearchIndex)
+                        && count($this->getSchema()->textSearchIndex)==2 ) {
+                        if ($this->repository->getDocumentManager()->getDocumentCollection(
+                            $this->repository->getClassName()
+                        )->ensureIndex(
+                            (array) $this->getSchema()->textSearchIndex[0],
+                            (array) $this->getSchema()->textSearchIndex[1]
+                        )) {
+                            $queryBuilder->text($match[1]);
+                        }
+                    }
+                } else {
+                    $this->logger->addNotice(
+                        "Couldn't create text Index for Collection ".$this->repository->getClassName()
+                        .". MongoDB Version < 2.6 (".$this->getMongoDBVersion().")"
+                    );
+                }
+            }
+        }
+
         // run query
         $query = $queryBuilder->getQuery();
         $records = array_values($query->execute()->toArray());
@@ -213,6 +245,21 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return $records;
+    }
+
+    /**
+     * @return string the version of the MongoDB as a string
+     */
+    public function getMongoDBVersion()
+    {
+        $buildInfo = $this->repository->getDocumentManager()->getDocumentDatabase(
+            $this->repository->getClassName()
+        )->command(['buildinfo'=>1]);
+        if (isset($buildInfo['version'])) {
+            return $buildInfo['version'];
+        } else {
+            return "unkown";
+        }
     }
 
     /**
