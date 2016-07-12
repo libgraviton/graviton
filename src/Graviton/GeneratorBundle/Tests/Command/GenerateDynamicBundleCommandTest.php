@@ -65,7 +65,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
 
         $tester = new CommandTester($command);
 
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $tester->execute(
             array_merge(

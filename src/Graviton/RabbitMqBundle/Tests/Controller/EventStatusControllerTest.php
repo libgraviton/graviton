@@ -57,8 +57,11 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals("data.status[0].status", $results[0]->propertyPath);
-        $this->assertContains("\"thinking\" is not a valid status string", $results[0]->message);
+        $this->assertEquals("status[0].status", $results[0]->propertyPath);
+        $this->assertContains(
+            "Does not have a value in the enumeration [\"opened\",\"working\",\"ignored\",\"done\",\"failed\"]",
+            $results[0]->message
+        );
     }
 
     /**
@@ -106,7 +109,10 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals("data.information[0].type", $results[0]->propertyPath);
-        $this->assertContains("\"bogus\" is not a valid information type", $results[0]->message);
+        $this->assertEquals("information[0].type", $results[0]->propertyPath);
+        $this->assertContains(
+            "Does not have a value in the enumeration [\"debug\",\"info\",\"warning\",\"error\"]",
+            $results[0]->message
+        );
     }
 }

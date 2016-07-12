@@ -5,13 +5,10 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormError;
 
 /**
  * Listener for validation exceptions

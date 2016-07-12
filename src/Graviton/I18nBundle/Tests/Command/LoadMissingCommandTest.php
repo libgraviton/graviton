@@ -6,7 +6,6 @@
 namespace Graviton\I18nBundle\Tests\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
-use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
 
 /**
  * functional tests for graviton:generate:bundle

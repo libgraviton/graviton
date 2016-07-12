@@ -166,7 +166,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             $this->logger
         );
 
-        $this->setExpectedException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
+        $this->expectException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
 
         $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
     }

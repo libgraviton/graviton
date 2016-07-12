@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializationContext;
-use Graviton\RestBundle\Controller\RestController;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

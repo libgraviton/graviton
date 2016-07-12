@@ -213,6 +213,47 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Gets the defined document class in shortform from schema
+     *
+     * @return string|false either the document class or false it not given
+     */
+    public function getDocumentClass()
+    {
+        $documentClass = false;
+        if (isset($this->schema->{'x-documentClass'})) {
+            $documentClass = $this->schema->{'x-documentClass'};
+        }
+        return $documentClass;
+    }
+
+    /**
+     * Get defined constraints on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getConstraints($field)
+    {
+        return $this->getSchemaField($field, 'x-constraints', false);
+    }
+
+    /**
+     * Tells us if in this model, the ID can be given on a POST request or not (in the payload).
+     * This basically depends on if the "id" property is given in the JSON definition or not.
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function isIdInPostAllowed()
+    {
+        $isAllowed = true;
+        if (isset($this->schema->{'x-id-in-post-allowed'})) {
+            $isAllowed = $this->schema->{'x-id-in-post-allowed'};
+        }
+        return $isAllowed;
+    }
+
+    /**
      * get schema field value
      *
      * @param string $field         field name

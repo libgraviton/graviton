@@ -22,8 +22,7 @@
   "required": [
     "id",
     "name",
-    "showInMenu",
-    "order"
+    "showInMenu"
   ],
   "searchable": [
     "name"

@@ -6,9 +6,7 @@
 namespace Graviton\I18nBundle\Listener;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Service\I18nUtils;
-use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;

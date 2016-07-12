@@ -1,5 +1,6 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
+use Graviton\GeneratorBundle\Definition\Schema\Field;
 
 /**
  * Represents a hash of fields as defined in the JSON format
@@ -70,17 +71,22 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'relType'           => self::REL_TYPE_EMBED,
                 'isClassType'       => true,
                 'constraints'       => [],
-                'required'          => true,
+                'required'          => false,
                 'searchable'        => false,
             ],
-            $this->definition === null ? [] : [
+            $this->definition === null ? [
+                'required'          => $this->isRequired()
+            ] : [
                 'exposedName'       => $this->definition->getExposeAs() ?: $this->getName(),
-
                 'title'             => $this->definition->getTitle(),
                 'description'       => $this->definition->getDescription(),
                 'readOnly'          => $this->definition->getReadOnly(),
                 'required'          => $this->definition->getRequired(),
                 'searchable'        => $this->definition->getSearchable(),
+                'constraints'       => array_map(
+                    [Utils\ConstraintNormalizer::class, 'normalize'],
+                    $this->definition->getConstraints()
+                ),
             ]
         );
     }
@@ -93,6 +99,39 @@ class JsonDefinitionHash implements DefinitionElementInterface
     public function getType()
     {
         return self::TYPE_HASH;
+    }
+
+    /**
+     * Whether this hash is anonymous, so has no own field definition (properly only defined
+     * by definitions such as "object.field", not an own definition)
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function isAnonymous()
+    {
+        return ($this->definition === null);
+    }
+
+    /**
+     * in an 'anonymous' hash situation, we will check if any children are required
+     *
+     * @return bool if required or not
+     */
+    public function isRequired()
+    {
+        $isRequired = false;
+
+        // see if on the first level of fields we have a required=true in the definition
+        foreach ($this->fields as $field) {
+            if ($field instanceof JsonDefinitionField &&
+                $field->getDef() instanceof Field &&
+                $field->getDef()->getRequired() === true
+            ) {
+                $isRequired = true;
+            }
+        }
+
+        return $isRequired;
     }
 
     /**

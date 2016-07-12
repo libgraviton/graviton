@@ -42,7 +42,7 @@ class EnvParametersCompilerPassTest extends \PHPUnit_Framework_TestCase
                     $paramValue
                 );
         } else {
-            $this->setExpectedException($exception);
+            $this->expectException($exception);
         }
 
         try {

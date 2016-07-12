@@ -61,7 +61,10 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/validation/translatable')
-                ->name('*.xml')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/schema')
+                ->name('*.json')
         );
 
         $compilerPass = new TranslatableFieldsCompilerPass($documentMap);
