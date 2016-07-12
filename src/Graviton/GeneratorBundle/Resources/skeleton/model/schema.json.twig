@@ -1,9 +1,17 @@
 {
 
+  "x-documentClass": {{ (base ~ 'Document\\' ~ document) | json_encode() }},
+
 {% if json is defined %}
   "description": {{ json.getDescription()|json_encode() }},
 {% else %}
   "description": "@todo replace me",
+{% endif %}
+
+{% if noIdField is not defined %}
+  "x-id-in-post-allowed": false,
+{% else %}
+  "x-id-in-post-allowed": true,
 {% endif %}
 
 {% if json is defined %}
@@ -13,6 +21,8 @@
   "properties": {
 {% set requiredFields = [] %}
 {% set searchableFields = [] %}
+{% set readOnlyFields = [] %}
+
 {% for field in fields %}
     "{{ field.fieldName }}": {
 
@@ -38,6 +48,10 @@
       },
 {% endif %}
 
+{% if field.constraints is defined and field.constraints != null %}
+      "x-constraints": {{ field.constraints|json_encode() }},
+{% endif %}
+
 {% if field.description is defined and field.description != '' %}
       "description": {{ field.description|json_encode() }}
 {% else %}
@@ -50,6 +64,10 @@
 
 {% if field.searchable is defined and field.searchable == true %}
     {% set searchableFields = searchableFields|merge([field.fieldName]) %}
+{% endif %}
+
+{% if field.readOnly is defined and field.readOnly == true %}
+    {% set readOnlyFields = readOnlyFields|merge([field.fieldName]) %}
 {% endif %}
 
     },
@@ -66,5 +84,6 @@
     }
   },
   "required": {{ requiredFields|json_encode() }},
-  "searchable": {{ searchableFields|json_encode() }}
+  "searchable": {{ searchableFields|json_encode() }},
+  "readOnlyFields": {{ readOnlyFields|json_encode() }}
 }

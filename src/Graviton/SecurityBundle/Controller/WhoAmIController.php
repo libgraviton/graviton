@@ -5,18 +5,13 @@
 
 namespace Graviton\SecurityBundle\Controller;
 
-use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -25,40 +20,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class WhoAmIController extends RestController
 {
-    /**
-     * @param Response           $response    Response
-     * @param RestUtilsInterface $restUtils   Rest utils
-     * @param Router             $router      Router
-     * @param ValidatorInterface $validator   Validator
-     * @param EngineInterface    $templating  Templating
-     * @param FormFactory        $formFactory form factory
-     * @param DocumentType       $formType    generic form
-     * @param ContainerInterface $container   Container
-     * @param SchemaUtils        $schemaUtils schema utils
-     */
-    public function __construct(
-        Response $response,
-        RestUtilsInterface $restUtils,
-        Router $router,
-        ValidatorInterface $validator,
-        EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
-        ContainerInterface $container,
-        SchemaUtils $schemaUtils
-    ) {
-        parent::__construct(
-            $response,
-            $restUtils,
-            $router,
-            $validator,
-            $templating,
-            $formFactory,
-            $formType,
-            $container,
-            $schemaUtils
-        );
-    }
 
     /**
      * Currently authenticated user information.

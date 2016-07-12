@@ -6,8 +6,6 @@
 namespace Graviton\ExceptionBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormError;
 
 /**
  * Validation exception class

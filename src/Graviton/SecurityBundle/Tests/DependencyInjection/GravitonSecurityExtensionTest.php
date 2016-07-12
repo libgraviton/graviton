@@ -5,7 +5,6 @@
 namespace Graviton\SecurityBundle\Tests\DepedencyInjection;
 
 use Graviton\SecurityBundle\DependencyInjection\GravitonSecurityExtension;
-use Graviton\SecurityBundle\GravitonSecurityBundle;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

@@ -5,9 +5,19 @@
   <parameters>
     <parameter key="graviton.schema.listener.schematyperesponse.class">Graviton\SchemaBundle\Listener\SchemaContentTypeResponseListener</parameter>
     <parameter key="graviton.schema.listener.canonicalschemaresponse.class">Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener</parameter>
+    <parameter key="graviton.schema.listener.schemacacheinvalidation.class">Graviton\SchemaBundle\Listener\SchemaCacheInvalidationResponseListener</parameter>
     <parameter key="graviton.schema.model.schemamodel.class">Graviton\SchemaBundle\Model\SchemaModel</parameter>
     <parameter key="graviton.schema.service.schemautils.class">Graviton\SchemaBundle\SchemaUtils</parameter>
     <parameter key="graviton.schema.service.repositoryfactory.class">Graviton\SchemaBundle\Service\RepositoryFactory</parameter>
+    <parameter key="graviton.schema.constraint.builder.class">Graviton\SchemaBundle\Constraint\ConstraintBuilder</parameter>
+    <parameter key="graviton.schema.constraint.utils.class">Graviton\SchemaBundle\Constraint\ConstraintUtils</parameter>
+    <parameter key="graviton.schema.constraint.readonlyfield.class">Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint</parameter>
+    <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
+    <parameter key="graviton.schema.serializer.handler.type.class">Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler</parameter>
+    <parameter key="graviton.schema.serializer.handler.enum.class">Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler</parameter>
+
+    <!-- non-class parameters -->
+    <parameter key="graviton.schema.cache.invalidateMapKey">_invMap</parameter>
   </parameters>
   <services>
     <service id="graviton.schema.listener.schematyperesponse" class="%graviton.schema.listener.schematyperesponse.class%">
@@ -18,6 +28,11 @@
       <argument type="service" id="router"></argument>
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
+    <service id="graviton.schema.listener.schemacacheinvalidation" class="%graviton.schema.listener.schemacacheinvalidation.class%">
+      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument>%graviton.schema.cache.invalidateMapKey%</argument>
+      <tag name="kernel.event_listener" event="graviton.rest.request" method="onRestRequest"/>
+    </service>
     <service id="graviton.schema.model.schemamodel" class="%graviton.schema.model.schemamodel.class%">
       <call method="setContainer">
         <argument type="service" id="service_container"></argument>
@@ -26,15 +41,77 @@
     <service id="graviton.schema.service.repositoryfactory" class="%graviton.schema.service.repositoryfactory.class%">
       <argument type="service" id="doctrine_mongodb"/>
     </service>
+    <service id="graviton.schema.serializer.handler.additionalproperties" class="%graviton.schema.serializer.handler.additionalproperties.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"
+           format="json"/>
+    </service>
+    <service id="graviton.schema.serializer.handler.type" class="%graviton.schema.serializer.handler.type.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaType"
+           format="json"/>
+    </service>
+    <service id="graviton.schema.serializer.handler.enum" class="%graviton.schema.serializer.handler.enum.class%">
+      <tag name="jms_serializer.handler"
+           type="Graviton\SchemaBundle\Document\SchemaEnum"
+           format="json"/>
+    </service>
+    <!-- constraint builder -->
+    <service id="graviton.schema.constraint.builder" class="%graviton.schema.constraint.builder.class%">
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder"/>
+        </argument>
+      </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder"/>
+        </argument>
+      </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder"/>
+        </argument>
+      </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\RangeConstraintBuilder"/>
+        </argument>
+      </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder"/>
+        </argument>
+      </call>
+      <call method="addConstraintBuilder">
+        <argument type="service">
+          <service class="Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder"/>
+        </argument>
+      </call>
+    </service>
+    <service id="graviton.schema.constraint.utils" class="%graviton.schema.constraint.utils.class%">
+      <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
+      <argument type="service" id="graviton.rest.restutils"/>
+      <tag name="kernel.event_listener" event="graviton.json_schema.constraint.schema" method="onSchemaValidation" priority="999"/>
+    </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
       <argument type="service" id="graviton.schema.service.repositoryfactory"/>
       <argument type="service" id="jms_serializer.metadata_factory"/>
       <argument type="service" id="graviton.i18n.repository.language"/>
       <argument type="service" id="router"/>
+      <argument type="service" id="graviton.rest.serializer"/>
       <argument>%graviton.document.type.extref.mapping%</argument>
       <argument>%graviton.document.eventmap%</argument>
       <argument>%graviton.document.field.names%</argument>
       <argument>%locale%</argument>
+      <argument type="service" id="graviton.schema.constraint.builder"/>
+      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument>%graviton.schema.cache.invalidateMapKey%</argument>
+    </service>
+    <service id="graviton.schema.constraint.readonlyfield" class="%graviton.schema.constraint.readonlyfield.class%">
+      <argument type="service" id="graviton.schema.constraint.utils"/>
+      <argument>%graviton.document.readonly.fields%</argument>
+      <tag name="kernel.event_listener" event="graviton.json_schema.constraint.schema" method="checkReadOnlyFields"/>
     </service>
   </services>
 </container>

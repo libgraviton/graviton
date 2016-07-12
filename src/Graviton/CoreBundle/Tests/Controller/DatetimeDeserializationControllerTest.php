@@ -33,7 +33,7 @@ class DatetimeDeserializationControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function testDateDesrialization()
+    public function testDateDeserialization()
     {
         $data = (object) [
             'datetime'  => '2015-12-10T12:02:16+0000',
@@ -46,7 +46,11 @@ class DatetimeDeserializationControllerTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->post('/testcase/datetime-deserialization/', $data);
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+        $location = $client->getResponse()->headers->get('Location');
+
+        $client = static::createRestClient();
+        $client->request('GET', $location);
         $this->assertEquals($data, $client->getResults());
     }
 }

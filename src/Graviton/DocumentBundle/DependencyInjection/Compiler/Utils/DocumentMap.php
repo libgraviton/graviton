@@ -31,18 +31,25 @@ class DocumentMap
      * @param Finder $doctrineFinder   Doctrine mapping finder
      * @param Finder $serializerFinder Serializer mapping finder
      * @param Finder $validationFinder Validation mapping finder
+     * @param Finder $schemaFinder     Schema finder
      */
-    public function __construct(Finder $doctrineFinder, Finder $serializerFinder, Finder $validationFinder)
-    {
+    public function __construct(
+        Finder $doctrineFinder,
+        Finder $serializerFinder,
+        Finder $validationFinder,
+        Finder $schemaFinder
+    ) {
         $doctrineMap = $this->loadDoctrineClassMap($doctrineFinder);
         $serializerMap = $this->loadSerializerClassMap($serializerFinder);
         $validationMap = $this->loadValidationClassMap($validationFinder);
+        $schemaMap = $this->loadSchemaClassMap($schemaFinder);
 
         foreach ($doctrineMap as $className => $doctrineMapping) {
             $this->mappings[$className] = [
                 'doctrine'   => $doctrineMap[$className],
                 'serializer' => isset($serializerMap[$className]) ? $serializerMap[$className] : null,
                 'validation' => isset($validationMap[$className]) ? $validationMap[$className] : null,
+                'schema' => isset($schemaMap[$className]) ? $schemaMap[$className] : null,
             ];
         }
     }
@@ -66,7 +73,8 @@ class DocumentMap
             $className,
             $this->mappings[$className]['doctrine'],
             $this->mappings[$className]['serializer'],
-            $this->mappings[$className]['validation']
+            $this->mappings[$className]['validation'],
+            $this->mappings[$className]['schema']
         );
     }
 
@@ -87,13 +95,16 @@ class DocumentMap
      * @param \DOMElement $doctrineMapping   Doctrine XML mapping
      * @param \DOMElement $serializerMapping Serializer XML mapping
      * @param \DOMElement $validationMapping Validation XML mapping
+     * @param array       $schemaMapping     Schema mapping
+     *
      * @return Document
      */
     private function processDocument(
         $className,
         \DOMElement $doctrineMapping,
         \DOMElement $serializerMapping = null,
-        \DOMElement $validationMapping = null
+        \DOMElement $validationMapping = null,
+        array $schemaMapping = null
     ) {
         if ($serializerMapping === null) {
             $serializerFields = [];
@@ -121,6 +132,12 @@ class DocumentMap
             );
         }
 
+        if ($schemaMapping === null) {
+            $schemaFields = [];
+        } else {
+            $schemaFields = $schemaMapping;
+        }
+
         $fields = [];
         foreach ($this->getDoctrineFields($doctrineMapping) as $doctrineField) {
             $serializerField = isset($serializerFields[$doctrineField['name']]) ?
@@ -129,13 +146,16 @@ class DocumentMap
             $validationField = isset($validationFields[$doctrineField['name']]) ?
                 $validationFields[$doctrineField['name']] :
                 null;
+            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
+                $schemaFields[$doctrineField['name']] :
+                null;
 
             if ($doctrineField['type'] === 'collection') {
                 $fields[] = new ArrayField(
                     $serializerField === null ? 'array<string>' : $serializerField['fieldType'],
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
-                    $serializerField === null ? false : $serializerField['readOnly'],
+                    !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     $validationField === null ? false : $validationField['required'],
                     $serializerField === null ? false : $serializerField['searchable']
                 );
@@ -144,7 +164,7 @@ class DocumentMap
                     $doctrineField['type'],
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
-                    $serializerField === null ? false : $serializerField['readOnly'],
+                    !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     $validationField === null ? false : $validationField['required'],
                     $serializerField === null ? false : $serializerField['searchable']
                 );
@@ -157,12 +177,15 @@ class DocumentMap
             $validationField = isset($validationFields[$doctrineField['name']]) ?
                 $validationFields[$doctrineField['name']] :
                 null;
+            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
+                $schemaFields[$doctrineField['name']] :
+                null;
 
             $fields[] = new EmbedOne(
                 $this->getDocument($doctrineField['type']),
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
-                $serializerField === null ? false : $serializerField['readOnly'],
+                !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 $validationField === null ? false : $validationField['required'],
                 $serializerField === null ? false : $serializerField['searchable']
             );
@@ -179,7 +202,7 @@ class DocumentMap
                 $this->getDocument($doctrineField['type']),
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
-                $serializerField === null ? false : $serializerField['readOnly'],
+                !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 $validationField === null ? false : $validationField['required']
             );
         }
@@ -239,6 +262,36 @@ class DocumentMap
                 },
                 $classMap
             );
+        }
+
+        return $classMap;
+    }
+
+    /**
+     * Load schema class map
+     *
+     * @param Finder $finder Mapping finder
+     * @return array
+     */
+    private function loadSchemaClassMap(Finder $finder)
+    {
+        $classMap = [];
+        foreach ($finder as $file) {
+            $schema = json_decode(file_get_contents($file), true);
+
+            if (!isset($schema['x-documentClass'])) {
+                continue;
+            }
+
+            foreach ($schema['required'] as $field) {
+                $classMap[$schema['x-documentClass']][$field]['required'] = true;
+            }
+            foreach ($schema['searchable'] as $field) {
+                $classMap[$schema['x-documentClass']][$field]['searchable'] = true;
+            }
+            foreach ($schema['readOnlyFields'] as $field) {
+                $classMap[$schema['x-documentClass']][$field]['readOnly'] = true;
+            }
         }
 
         return $classMap;
@@ -402,5 +455,83 @@ class DocumentMap
             },
             iterator_to_array($xpath->query('*[self::doctrine:embed-many or self::doctrine:reference-many]', $mapping))
         );
+    }
+
+    /**
+     * Gets an array of all fields, flat with full internal name in dot notation as key and
+     * the exposed field name as value. You can pass a callable to limit the fields return a subset of fields.
+     * If the callback returns true, the field will be included in the output. You will get the field definition
+     * passed to your callback.
+     *
+     * @param Document $document       The document
+     * @param string   $documentPrefix Document field prefix
+     * @param string   $exposedPrefix  Exposed field prefix
+     * @param callable $callback       An optional callback where you can influence the number of fields returned
+     *
+     * @return array
+     */
+    public function getFieldNamesFlat(
+        Document $document,
+        $documentPrefix = '',
+        $exposedPrefix = '',
+        callable $callback = null
+    ) {
+        $result = [];
+        foreach ($document->getFields() as $field) {
+            if ($this->getFlatFieldCheckCallback($field, $callback)) {
+                $result[$documentPrefix . $field->getFieldName()] = $exposedPrefix . $field->getExposedName();
+            }
+
+            if ($field instanceof ArrayField) {
+                if ($this->getFlatFieldCheckCallback($field, $callback)) {
+                    $result[$documentPrefix . $field->getFieldName() . '.0'] =
+                        $exposedPrefix . $field->getExposedName() . '.0';
+                }
+            } elseif ($field instanceof EmbedOne) {
+                $result = array_merge(
+                    $result,
+                    $this->getFieldNamesFlat(
+                        $field->getDocument(),
+                        $documentPrefix.$field->getFieldName().'.',
+                        $exposedPrefix.$field->getExposedName().'.',
+                        $callback
+                    )
+                );
+            } elseif ($field instanceof EmbedMany) {
+                if ($this->getFlatFieldCheckCallback($field, $callback)) {
+                    $result[$documentPrefix . $field->getFieldName() . '.0'] =
+                        $exposedPrefix . $field->getExposedName() . '.0';
+                }
+                $result = array_merge(
+                    $result,
+                    $this->getFieldNamesFlat(
+                        $field->getDocument(),
+                        $documentPrefix.$field->getFieldName().'.0.',
+                        $exposedPrefix.$field->getExposedName().'.0.',
+                        $callback
+                    )
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Simple function to check whether a given shall be returned in the output of getFieldNamesFlat
+     * and the optional given callback there.
+     *
+     * @param AbstractField $field    field
+     * @param callable|null $callback optional callback
+     *
+     * @return bool|mixed true if field should be returned, false otherwise
+     */
+    private function getFlatFieldCheckCallback($field, callable $callback = null)
+    {
+        if (!is_callable($callback)) {
+            return true;
+        }
+
+        return call_user_func($callback, $field);
     }
 }

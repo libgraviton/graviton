@@ -54,7 +54,10 @@
         "required": true,
         "constraints": [
           {
-            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidStatus"
+            "name": "Choice",
+            "options": [
+              {"name": "choices", "value": "opened|working|ignored|done|failed"}
+            ]
           }
         ]
       },
@@ -80,7 +83,10 @@
         "required": true,
         "constraints": [
           {
-            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidInformationType"
+            "name": "Choice",
+            "options": [
+              {"name": "choices", "value": "debug|info|warning|error"}
+            ]
           }
         ]
       },

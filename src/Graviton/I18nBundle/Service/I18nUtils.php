@@ -35,6 +35,11 @@ class I18nUtils
     protected $translator;
 
     /**
+     * @var array
+     */
+    protected $languages = [];
+
+    /**
      * @var \Graviton\I18nBundle\Model\Translatable
      */
     protected $translatable;
@@ -117,11 +122,12 @@ class I18nUtils
      */
     public function getLanguages()
     {
-        $languages = array();
-        foreach ($this->languageRepository->findAll() as $lang) {
-            $languages[] = $lang->getId();
+        if (empty($this->languages)) {
+            foreach ($this->languageRepository->findAll() as $lang) {
+                $this->languages[] = $lang->getId();
+            }
         }
-        return $languages;
+        return $this->languages;
     }
 
     /**
@@ -195,14 +201,25 @@ class I18nUtils
     }
 
     /**
+     * Flush the translatables if it hasn't been done yet
+     *
+     * @return void
+     */
+    public function flushTranslatables()
+    {
+        $this->translatable->flush();
+    }
+
+    /**
      * [In|Up]serts a Translatable object using an array with language strings.
      *
-     * @param array $values array with language strings; key should be language id
+     * @param array $values  array with language strings; key should be language id
+     * @param bool  $doFlush if we should flush after the insert or not
      * @throws \Exception
      *
      * @return void
      */
-    public function insertTranslatable(array $values)
+    public function insertTranslatable(array $values, $doFlush = true)
     {
         if (!isset($values[$this->getDefaultLanguage()])) {
             throw new \Exception(
@@ -219,7 +236,7 @@ class I18nUtils
             $languages = $this->getLanguages();
             \array_walk(
                 $languages,
-                function ($locale) use ($original, $values) {
+                function ($locale) use ($original, $values, $doFlush) {
                     $isLocalized = false;
                     $translated = '';
                     $domain = $this->getTranslatableDomain();
@@ -237,7 +254,7 @@ class I18nUtils
                     $translatableLang = new TranslatableLanguage();
                     $translatableLang->setRef(ExtReference::create('Language', $locale));
                     $translatable->setLanguage($translatableLang);
-                    $this->translatable->insertRecord($translatable);
+                    $this->translatable->insertRecord($translatable, false, $doFlush);
                 }
             );
         }
