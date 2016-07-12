@@ -11,6 +11,7 @@
     <parameter key="graviton.schema.service.repositoryfactory.class">Graviton\SchemaBundle\Service\RepositoryFactory</parameter>
     <parameter key="graviton.schema.constraint.builder.class">Graviton\SchemaBundle\Constraint\ConstraintBuilder</parameter>
     <parameter key="graviton.schema.constraint.utils.class">Graviton\SchemaBundle\Constraint\ConstraintUtils</parameter>
+    <parameter key="graviton.schema.constraint.incrementaldate.class">Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint</parameter>
     <parameter key="graviton.schema.constraint.readonlyfield.class">Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint</parameter>
     <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
     <parameter key="graviton.schema.serializer.handler.type.class">Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler</parameter>
@@ -107,6 +108,10 @@
       <argument type="service" id="graviton.schema.constraint.builder"/>
       <argument type="service" id="doctrine_cache.providers.local"/>
       <argument>%graviton.schema.cache.invalidateMapKey%</argument>
+    </service>
+    <service id="graviton.schema.constraint.incrementaldate" class="%graviton.schema.constraint.incrementaldate.class%">
+      <argument type="service" id="graviton.schema.constraint.utils"/>
+      <tag name="kernel.event_listener" event="graviton.json_schema.constraint.format" method="checkIncrementalDate"/>
     </service>
     <service id="graviton.schema.constraint.readonlyfield" class="%graviton.schema.constraint.readonlyfield.class%">
       <argument type="service" id="graviton.schema.constraint.utils"/>
