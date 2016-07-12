@@ -259,7 +259,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param Object $entity       new entity
      * @param bool   $returnEntity true to return entity
      *
-     * @return Object
+     * @return Object|null
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
