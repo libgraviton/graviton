@@ -28,7 +28,7 @@
         "title": "Event Name",
         "description": "Name of the created event",
         "readOnly": true,
-        "searchable": true
+        "searchable": 1
       },
       {
         "name": "eventResource.ref",

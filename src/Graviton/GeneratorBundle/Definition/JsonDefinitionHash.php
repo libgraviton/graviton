@@ -72,7 +72,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'isClassType'       => true,
                 'constraints'       => [],
                 'required'          => false,
-                'searchable'        => false,
+                'searchable'        => 0,
             ],
             $this->definition === null ? [
                 'required'          => $this->isRequired()

@@ -62,7 +62,7 @@
     {% set requiredFields = requiredFields|merge([field.fieldName]) %}
 {% endif %}
 
-{% if field.searchable is defined and field.searchable == true %}
+{% if field.searchable is defined and field.searchable > 0 %}
     {% set searchableFields = searchableFields|merge([field.fieldName]) %}
 {% endif %}
 

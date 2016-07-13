@@ -96,7 +96,7 @@ class JsonDefinitionRelTest extends BaseJsonDefinitionFieldTest
                     'serializerType'    => $field->getTypeSerializer(),
                     'relType'           => $relation->getType(),
                     'isClassType'       => true,
-                    'searchable'        => false,
+                    'searchable'        => 0,
                 ]
             ),
             $field->getDefAsArray()

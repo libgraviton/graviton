@@ -48,9 +48,9 @@ class Field
      */
     private $required = false;
     /**
-     * @var bool
+     * @var integer
      */
-    private $searchable = false;
+    private $searchable = 0;
     /**
      * @var bool
      */
@@ -287,11 +287,11 @@ class Field
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getSearchable()
     {
-        return $this->searchable;
+        return (int) $this->searchable;
     }
 
     /**
@@ -301,6 +301,6 @@ class Field
      */
     public function setSearchable($searchable)
     {
-        $this->searchable = $searchable;
+        $this->searchable = (int) $searchable;
     }
 }
