@@ -113,7 +113,7 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                 'isClassType'       => true,
                 'constraints'       => [],
                 'required'          => false, // default required state for anonymous hash is false
-                'searchable'        => false,
+                'searchable'        => 0,
             ],
             $field->getDefAsArray()
         );

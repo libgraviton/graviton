@@ -177,15 +177,15 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
-     * get searchable flag for a given field
+     * get searchable flag for a given field, weight based.
      *
      * @param string $field field name
      *
-     * @return boolean the searchable flag
+     * @return integer the searchable flag
      */
     public function getSearchableOfField($field)
     {
-        return $this->getSchemaField($field, 'searchable', false);
+        return (int) $this->getSchemaField($field, 'searchable', 0);
     }
 
     /**

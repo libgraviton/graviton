@@ -67,8 +67,8 @@
     },
     "searchable": {
       "title": "Searchable",
-      "type": "boolean",
-      "description": "Defines whether the property is searchable"
+      "type": "integer",
+      "description": "Defines whether the property is searchable, and the weight of importance"
     }
   },
   "required": ["title", "description", "type"]
