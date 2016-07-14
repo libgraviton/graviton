@@ -28,11 +28,6 @@ class Target
     private $indexes = [];
 
     /**
-     * @var array
-     */
-    private $textSearchIndex = [];
-
-    /**
      * @return Relation[]
      */
     public function getRelations()
