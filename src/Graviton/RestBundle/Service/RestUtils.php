@@ -5,8 +5,17 @@
 
 namespace Graviton\RestBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
+use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\JsonSchemaBundle\Validator\Validator;
+use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\SchemaBundle\SchemaUtils;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
@@ -43,8 +52,20 @@ final class RestUtils implements RestUtilsInterface
      */
     private $router;
 
-    /** @var LoggerInterface  */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var SchemaUtils
+     */
+    private $schemaUtils;
+
+    /**
+     * @var Validator
+     */
+    private $schemaValidator;
 
     /**
      * @param ContainerInterface   $container         container
@@ -52,19 +73,25 @@ final class RestUtils implements RestUtilsInterface
      * @param Serializer           $serializer        serializer
      * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
      * @param SerializationContext $serializerContext context for serializer
+     * @param SchemaUtils          $schemaUtils       schema utils
+     * @param Validator            $schemaValidator   schema validator
      */
     public function __construct(
         ContainerInterface $container,
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext = null
+        SerializationContext $serializerContext,
+        SchemaUtils $schemaUtils,
+        Validator $schemaValidator
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
         $this->serializerContext = $serializerContext;
         $this->router = $router;
         $this->logger = $logger;
+        $this->schemaUtils = $schemaUtils;
+        $this->schemaValidator = $schemaValidator;
     }
 
     /**
@@ -146,6 +173,125 @@ final class RestUtils implements RestUtilsInterface
         );
 
         return $record;
+    }
+
+    /**
+     * Validates content with the given schema, returning an array of errors.
+     * If all is good, you will receive an empty array.
+     *
+     * @param object        $content \stdClass of the request content
+     * @param DocumentModel $model   the model to check the schema for
+     *
+     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
+     * @throws \Exception
+     */
+    public function validateContent($content, DocumentModel $model)
+    {
+        if (is_string($content)) {
+            $content = json_decode($content);
+        }
+
+        return $this->schemaValidator->validate(
+            $content,
+            $this->schemaUtils->getModelSchema(null, $model, true, true, true)
+        );
+    }
+
+    /**
+     * validate raw json input
+     *
+     * @param Request       $request  request
+     * @param Response      $response response
+     * @param DocumentModel $model    model
+     * @param string        $content  Alternative request content.
+     *
+     * @return void
+     */
+    public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '')
+    {
+        if (empty($content)) {
+            $content = $request->getContent();
+        }
+
+        if (is_resource($content)) {
+            throw new BadRequestHttpException('unexpected resource in validation');
+        }
+
+        // is request body empty
+        if ($content === '') {
+            $e = new NoInputException();
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        $input = json_decode($content, true);
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            $e = new MalformedInputException($this->getLastJsonErrorMessage());
+            $e->setErrorType(json_last_error());
+            $e->setResponse($response);
+            throw $e;
+        }
+        if (!is_array($input)) {
+            $e = new MalformedInputException('JSON request body must be an object');
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        if ($request->getMethod() == 'PUT' && array_key_exists('id', $input)) {
+            // we need to check for id mismatches....
+            if ($request->attributes->get('id') != $input['id']) {
+                $e = new MalformedInputException('Record ID in your payload must be the same');
+                $e->setResponse($response);
+                throw $e;
+            }
+        }
+
+        if ($request->getMethod() == 'POST' &&
+            array_key_exists('id', $input) &&
+            !$model->isIdInPostAllowed()
+        ) {
+            $e = new MalformedInputException(
+                '"id" can not be given on a POST request. Do a PUT request instead to update an existing record.'
+            );
+            $e->setResponse($response);
+            throw $e;
+        }
+    }
+
+    /**
+     * Validate JSON patch for any object
+     *
+     * @param array $jsonPatch json patch as array
+     *
+     * @throws InvalidJsonPatchException
+     * @return void
+     */
+    public function checkJsonPatchRequest(array $jsonPatch)
+    {
+        foreach ($jsonPatch as $operation) {
+            if (!is_array($operation)) {
+                throw new InvalidJsonPatchException('Patch request should be an array of operations.');
+            }
+            if (array_key_exists('path', $operation) && trim($operation['path']) == '/id') {
+                throw new InvalidJsonPatchException('Change/remove of ID not allowed');
+            }
+        }
+    }
+
+    /**
+     * Used for backwards compatibility to PHP 5.4
+     *
+     * @return string
+     */
+    private function getLastJsonErrorMessage()
+    {
+        $message = 'Unable to decode JSON string';
+
+        if (function_exists('json_last_error_msg')) {
+            $message = json_last_error_msg();
+        }
+
+        return $message;
     }
 
     /**

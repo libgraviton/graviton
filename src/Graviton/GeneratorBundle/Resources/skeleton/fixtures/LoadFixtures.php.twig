@@ -48,24 +48,15 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
         $refName = '$ref';
         $idName = '$id';
 
-        $formDataMapper = $this->container->get('graviton.document.service.formdatamapper');
-        $formType = $this->container->get('graviton.document.form.type.document');
-        $formFactory = $this->container->get('form.factory');
-
-        $formType->initialize('{{ base }}Document\{{ document }}');
+        $restUtils = $this->container->get('graviton.rest.restutils');
 
         if (count($fixtures) > 0) {
             foreach ($fixtures as $record) {
 
-                $document = $formDataMapper->convertToFormData(
+                $thisRecord = $restUtils->deserializeContent(
                     json_encode($record),
                     '{{ base }}Document\{{ document }}'
                 );
-
-                $form = $formFactory->create($formType, null, ['method' => 'put']);
-                $form->submit($document, true);
-
-                $thisRecord = $form->getData();
 
                 // obvious refs..
                 foreach ($record as $key => $val) {

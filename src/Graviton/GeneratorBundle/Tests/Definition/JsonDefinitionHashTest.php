@@ -112,11 +112,12 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
                 'relType'           => JsonDefinitionHash::REL_TYPE_EMBED,
                 'isClassType'       => true,
                 'constraints'       => [],
-                'required'          => true,
-                'searchable'        => false,
+                'required'          => false, // default required state for anonymous hash is false
+                'searchable'        => 0,
             ],
             $field->getDefAsArray()
         );
+        $this->assertTrue($field->isAnonymous());
     }
 
     /**
@@ -160,6 +161,7 @@ class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
             ],
             $field->getDefAsArray()
         );
+        $this->assertFalse($field->isAnonymous());
     }
 
     /**

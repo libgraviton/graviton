@@ -198,30 +198,30 @@ class TranslatableArrayControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath' => 'children[field]',
-                    'message'      => 'This value is not valid.'
+                    'propertyPath' => 'field.en',
+                    'message'      => 'The property en is required'
                 ],
                 (object) [
-                    'propertyPath' => 'children[array].children[0]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'array[0]',
+                    'message'      => 'String value found, but an object is required',
                 ],
                 (object) [
-                    'propertyPath' => 'children[array].children[1]',
-                    'message'      => 'This value is not valid.',
-                ],
-
-                (object) [
-                    'propertyPath' => 'children[deep].children[deep].children[0].children[field]',
-                    'message'      => 'This value is not valid.',
-                ],
-                (object) [
-                    'propertyPath' => 'children[deep].children[deep].children[0].children[array]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'array[1].en',
+                    'message'      => 'The property en is required',
                 ],
 
                 (object) [
-                    'propertyPath' => 'children[deep].children[deep].children[1].children[array].children[0]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'deep.deep[0].field',
+                    'message'      => 'String value found, but a null is required',
+                ],
+                (object) [
+                    'propertyPath' => 'deep.deep[0].array',
+                    'message'      => 'String value found, but an array is required',
+                ],
+
+                (object) [
+                    'propertyPath' => 'deep.deep[1].array[0].en',
+                    'message'      => 'The property en is required',
                 ],
             ],
             $client->getResults()
@@ -296,7 +296,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                      $schema->properties,
                      $schema->properties->deep->properties->deep->items->properties,
                  ] as $schema) {
-            $this->assertEquals('object', $schema->field->type);
+            $this->assertEquals(['object', 'null'], $schema->field->type);
             $this->assertEquals('string', $schema->field->properties->de->type);
             $this->assertEquals('string', $schema->field->properties->en->type);
             $this->assertEquals('string', $schema->field->properties->fr->type);

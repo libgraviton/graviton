@@ -457,8 +457,9 @@ class AppControllerTest extends RestTestCase
         $client->post('/person/customer', $helloApp);
 
         $this->assertEquals(
-            'Can not be given on a POST request. Do a PUT request instead to update an existing record.',
-            $client->getResults()[0]->message
+            'Bad Request - "id" can not be given on a POST request. '.
+            'Do a PUT request instead to update an existing record.',
+            $client->getResults()->message
         );
     }
     /**
@@ -531,6 +532,7 @@ class AppControllerTest extends RestTestCase
         // 3. Get changed App and check changed title
         $client = static::createRestClient();
         $client->request('GET', '/core/app/' . $helloApp->id);
+
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -693,7 +695,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         $this->assertContains('showInMenu', $results[0]->propertyPath);
-        $this->assertEquals('The value "false" is not a valid boolean.', $results[0]->message);
+        $this->assertEquals('String value found, but a boolean is required', $results[0]->message);
     }
 
     /**

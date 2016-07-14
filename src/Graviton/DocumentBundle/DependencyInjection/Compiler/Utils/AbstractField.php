@@ -5,8 +5,6 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
-use Symfony\Component\Form\FormConfigBuilder;
-
 /**
  * Base document field
  *
@@ -113,23 +111,5 @@ class AbstractField
     public function setSearchable($searchable)
     {
         $this->searchable = $searchable;
-    }
-
-    /**
-     * Get form name
-     *
-     * @return string
-     */
-    public function getFormName()
-    {
-        if (FormConfigBuilder::isValidName($this->exposedName)) {
-            return $this->exposedName;
-        }
-
-        $name = $this->exposedName;
-        $name = preg_replace('/[^a-zA-Z0-9_]/', '', $name);
-        $name = preg_replace('/[^a-zA-Z0-9_\-:]/', '', $name);
-
-        return $name === '' ? $this->fieldName : $name;
     }
 }

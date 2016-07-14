@@ -492,7 +492,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals(400, $response->getStatusCode());
 
         $this->assertContains('order', $results[0]->propertyPath);
-        $this->assertEquals('This value is not valid.', $results[0]->message);
+        $this->assertEquals('String value found, but an integer is required', $results[0]->message);
     }
 
     /**
@@ -635,8 +635,8 @@ class ModuleControllerTest extends RestTestCase
             $this->assertEquals(
                 [
                     (object) [
-                        'propertyPath' => 'children[app].children[ref]',
-                        'message' => sprintf('URL "%s" is not a valid ext reference.', $url),
+                        'propertyPath' => 'app.$ref',
+                        'message' => sprintf('Value "%s" is not a valid extref.', $url)
                     ],
                 ],
                 $client->getResults()
@@ -666,7 +666,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('array', $service->type);
         $this->assertEquals('object', $service->items->properties->name->type);
         $this->assertEquals('string', $service->items->properties->name->properties->en->type);
-        $this->assertEquals('object', $service->items->properties->description->type);
+        $this->assertEquals(['object', 'null'], $service->items->properties->description->type);
         $this->assertEquals('string', $service->items->properties->description->properties->en->type);
         $this->assertEquals('object', $service->items->properties->service->type);
         $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);

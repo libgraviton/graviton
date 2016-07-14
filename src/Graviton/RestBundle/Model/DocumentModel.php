@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Model;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Service\RqlTranslator;
 use Graviton\SchemaBundle\Model\SchemaModel;
@@ -85,6 +86,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $translator;
 
     /**
+     * @var DocumentManager
+     */
+    protected $manager;
+
+    /**
      * @param Visitor       $visitor                    rql query visitor
      * @param RqlTranslator $translator                 Translator for query modification
      * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
@@ -126,6 +132,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
+        $this->manager = $repository->getDocumentManager();
 
         return $this;
     }
@@ -255,18 +262,23 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity entity to insert
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
-     * @return Object
+     * @return Object|null
      */
-    public function insertRecord($entity)
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
         $this->checkIfOriginRecord($entity);
-        $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
-        $manager->flush($entity);
+        $this->manager->persist($entity);
 
-        return $this->find($entity->getId());
+        if ($doFlush) {
+            $this->manager->flush($entity);
+        }
+        if ($returnEntity) {
+            return $this->find($entity->getId());
+        }
     }
 
     /**
@@ -282,44 +294,128 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to update
-     * @param Object $entity     new entity
+     * @param string $documentId   id of entity to update
+     * @param Object $entity       new entity
+     * @param bool   $returnEntity true to return entity
      *
-     * @return Object
+     * @return Object|null
      */
-    public function updateRecord($documentId, $entity)
+    public function updateRecord($documentId, $entity, $returnEntity = true)
     {
-        $manager = $this->repository->getDocumentManager();
         // In both cases the document attribute named originRecord must not be 'core'
         $this->checkIfOriginRecord($entity);
-        $this->checkIfOriginRecord($this->find($documentId));
-        $entity = $manager->merge($entity);
-        $manager->flush();
+        $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
 
-        return $entity;
+        if (!is_null($documentId)) {
+            $this->deleteById($documentId);
+            // detach so odm knows it's gone
+            $this->manager->detach($entity);
+            $this->manager->clear();
+        }
+
+        $entity = $this->manager->merge($entity);
+
+        $this->manager->persist($entity);
+        $this->manager->flush($entity);
+
+        if ($returnEntity) {
+            return $entity;
+        }
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to delete
+     * @param string|object $id id of entity to delete or entity instance
      *
      * @return null|Object
      */
-    public function deleteRecord($documentId)
+    public function deleteRecord($id)
     {
-        $manager = $this->repository->getDocumentManager();
-        $entity = $this->find($documentId);
+        if (is_object($id)) {
+            $entity = $id;
+        } else {
+            $entity = $this->find($id);
+        }
 
         $return = $entity;
         if ($entity) {
             $this->checkIfOriginRecord($entity);
-            $manager->remove($entity);
-            $manager->flush();
+            $this->manager->remove($entity);
+            $this->manager->flush();
             $return = null;
         }
 
         return $return;
+    }
+
+    /**
+     * Triggers a flush on the DocumentManager
+     *
+     * @param null $document optional document
+     *
+     * @return void
+     */
+    public function flush($document = null)
+    {
+        $this->manager->flush($document);
+    }
+
+    /**
+     * A low level delete without any checks
+     *
+     * @param mixed $id record id
+     *
+     * @return void
+     */
+    private function deleteById($id)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $builder
+            ->remove()
+            ->field('id')->equals($id)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Checks in a performant way if a certain record id exists in the database
+     *
+     * @param mixed $id record id
+     *
+     * @return bool true if it exists, false otherwise
+     */
+    public function recordExists($id)
+    {
+        return is_array($this->selectSingleFields($id, ['id'], false));
+    }
+
+    /**
+     * Returns a set of fields from an existing resource in a performant manner.
+     * If you need to check certain fields on an object (and don't need everything), this
+     * is a better way to get what you need.
+     * If the record is not present, you will receive null. If you don't need an hydrated
+     * instance, make sure to pass false there.
+     *
+     * @param mixed $id      record id
+     * @param array $fields  list of fields you need.
+     * @param bool  $hydrate whether to hydrate object or not
+     *
+     * @return array|null|object
+     */
+    public function selectSingleFields($id, array $fields, $hydrate = true)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $idField = $this->repository->getClassMetadata()->getIdentifier()[0];
+
+        $record = $builder
+            ->field($idField)->equals($id)
+            ->select($fields)
+            ->hydrate($hydrate)
+            ->getQuery()
+            ->getSingleResult();
+
+        return $record;
     }
 
     /**

@@ -9,8 +9,8 @@
 namespace Graviton\CoreBundle\Listener;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Graviton\ExceptionBundle\Exception\ValidationException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
 
 /**

@@ -26,7 +26,7 @@ class AbstractHttpStrategyTest extends WebTestCase
     {
         $strategy = new AbstractHttpStrategyProxy();
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
 
         $strategy->extractFieldInfo('invalid argument', 'Tux');
     }
@@ -59,7 +59,7 @@ class AbstractHttpStrategyTest extends WebTestCase
 
         $strategy = new AbstractHttpStrategyProxy();
 
-        $this->setExpectedException('\Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException('\Symfony\Component\HttpKernel\Exception\HttpException');
 
         $strategy->validateField($headerMock, $fieldName);
     }

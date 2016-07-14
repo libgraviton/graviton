@@ -7,8 +7,6 @@ namespace Graviton\RabbitMqBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\RabbitMqBundle\Listener\EventStatusLinkResponseListener;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

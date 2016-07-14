@@ -86,7 +86,10 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->name('*.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/validation/extref')
-                ->name('*.xml')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/schema')
+                ->name('*.json')
         );
 
         $compilerPass = new ExtRefFieldsCompilerPass($documentMap);

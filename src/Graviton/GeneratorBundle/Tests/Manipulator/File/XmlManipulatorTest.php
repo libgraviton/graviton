@@ -59,7 +59,7 @@ class XmlManipulatorTest extends \PHPUnit_Framework_TestCase
         $manip->addNodes($xml);
         $manip->renderDocument($xml);
 
-        $this->setExpectedException('\Graviton\GeneratorBundle\Manipulator\ManipulatorException');
+        $this->expectException('\Graviton\GeneratorBundle\Manipulator\ManipulatorException');
         $manip->saveDocument("");
     }
 

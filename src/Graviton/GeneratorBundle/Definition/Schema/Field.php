@@ -291,7 +291,7 @@ class Field
      */
     public function getSearchable()
     {
-        return $this->searchable;
+        return (int) $this->searchable;
     }
 
     /**
@@ -301,6 +301,6 @@ class Field
      */
     public function setSearchable($searchable)
     {
-        $this->searchable = $searchable;
+        $this->searchable = (int) $searchable;
     }
 }

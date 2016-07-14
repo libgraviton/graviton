@@ -5,8 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
-use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapperInterface;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License

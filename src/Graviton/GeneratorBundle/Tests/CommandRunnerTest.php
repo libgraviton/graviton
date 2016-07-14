@@ -41,7 +41,7 @@ class CommandRunnerTest extends \PHPUnit_Framework_TestCase
 
         $runner = new CommandRunner($kernelDouble, $processDouble);
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $runner->executeCommand(array('graviton:test:command'), $outputDouble, 'test mesage');
     }
 }
