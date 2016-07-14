@@ -65,11 +65,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $paginationDefaultLimit;
 
     /**
-     * @var  Logger
-     */
-    private $logger;
-
-    /**
      * @var boolean
      */
     protected $filterByAuthUser;
@@ -103,7 +98,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->translator = $translator;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
-        $this->logger = $logger;
     }
 
     /**
@@ -207,13 +201,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
             if (strlen($match[1])) {
                 // this is performing a fulltextsearch in the text-Index of the collection (mongodb Version>=2.6)
                 if ((float) $this->getMongoDBVersion()>=2.6) {
-                    // check if there is an index definition for fulltext-search in schema index and apply it.
-                    $queryBuilder->text($match[1]);
-                } else {
-                    $this->logger->addNotice(
-                        "Couldn't create text Index for Collection ".$this->repository->getClassName()
-                        .". MongoDB Version < 2.6 (".$this->getMongoDBVersion().")"
-                    );
+                    if ($this->hasCustomSearchIndex()) {
+                        $queryBuilder->text($match[1]);
+                    }
                 }
             }
         }
@@ -237,12 +227,27 @@ class DocumentModel extends SchemaModel implements ModelInterface
         return $records;
     }
 
-    
+    /**
+     * @param string $prefix the prefix for custom text search indexes
+     * @return bool
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function hasCustomSearchIndex($prefix = 'search')
+    {
+        $collection = $this->repository->getDocumentManager()->getDocumentCollection($this->repository->getClassName());
+        $indexesInfo = $collection->getIndexInfo();
+        foreach ($indexesInfo as $indexInfo) {
+            if ($indexInfo['name']==$prefix.$collection->getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * @return string the version of the MongoDB as a string
      */
-    public function getMongoDBVersion()
+    private function getMongoDBVersion()
     {
         $buildInfo = $this->repository->getDocumentManager()->getDocumentDatabase(
             $this->repository->getClassName()
