@@ -105,22 +105,4 @@ class Target
     {
         return $this->indexes;
     }
-
-    /**
-     * @param array $textSearchIndex textSearchIndex definition from json def
-     * @return $this
-     */
-    public function setTextSearchIndex($textSearchIndex)
-    {
-        $this->textSearchIndex = $textSearchIndex;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTextSearchIndex()
-    {
-        return $this->textSearchIndex;
-    }
 }

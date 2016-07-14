@@ -204,21 +204,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // on search: check if there is a fulltextsearch Index defined, apply it and search in there
         if (strstr($request->attributes->get('rawRql'), 'search')) {
             preg_match('/search\((.*?)\)/', $request->attributes->get('rawRql'), $match);
-            if (!empty($match) && strlen($match[1])) {
+            if (strlen($match[1])) {
                 // this is performing a fulltextsearch in the text-Index of the collection (mongodb Version>=2.6)
                 if ((float) $this->getMongoDBVersion()>=2.6) {
                     // check if there is an index definition for fulltext-search in schema index and apply it.
-                    if ($this->getSchema()->textSearchIndex && is_array($this->getSchema()->textSearchIndex)
-                        && count($this->getSchema()->textSearchIndex)==2 ) {
-                        if ($this->repository->getDocumentManager()->getDocumentCollection(
-                            $this->repository->getClassName()
-                        )->ensureIndex(
-                            (array) $this->getSchema()->textSearchIndex[0],
-                            (array) $this->getSchema()->textSearchIndex[1]
-                        )) {
-                            $queryBuilder->text($match[1]);
-                        }
-                    }
+                    $queryBuilder->text($match[1]);
                 } else {
                     $this->logger->addNotice(
                         "Couldn't create text Index for Collection ".$this->repository->getClassName()
@@ -246,6 +236,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         return $records;
     }
+
+    
 
     /**
      * @return string the version of the MongoDB as a string

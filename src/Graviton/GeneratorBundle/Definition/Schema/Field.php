@@ -295,7 +295,7 @@ class Field
     }
 
     /**
-     * @param mixed $searchable searchable flag
+     * @param integer $searchable searchable flag
      *
      * @return void
      */

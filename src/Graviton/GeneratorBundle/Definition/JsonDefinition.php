@@ -465,15 +465,4 @@ class JsonDefinition
         }
         return $indexes;
     }
-
-    /**
-     * @return array
-     */
-    public function getTextSearchIndex() {
-        $textSeachIndex = [];
-        if ($this->def->getTarget()->getTextSearchIndex()) {
-            $textSeachIndex = $this->def->getTarget()->getTextSearchIndex();
-        }
-        return $textSeachIndex;
-    }
 }
