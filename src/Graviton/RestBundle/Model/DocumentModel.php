@@ -90,14 +90,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param RqlTranslator $translator                 Translator for query modification
      * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer       $paginationDefaultLimit     amount of data records to be returned when in pagination context
-     * @param Logger        $logger                     The defined system logger
      */
     public function __construct(
         Visitor $visitor,
         RqlTranslator $translator,
         $notModifiableOriginRecords,
-        $paginationDefaultLimit,
-        $logger
+        $paginationDefaultLimit
     ) {
         parent::__construct();
         $this->visitor = $visitor;
