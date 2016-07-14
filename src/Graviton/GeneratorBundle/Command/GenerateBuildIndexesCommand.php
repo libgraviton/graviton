@@ -98,7 +98,19 @@ class GenerateBuildIndexesCommand extends Command
                 if ((float) $mongoVersion >= 2.6) {
                     $indexName = $textSearchIndexDefinitionFromJson[1]['name'];
                     $collection = $this->documentManager->getDocumentCollection($className);
-                    $collection->deleteIndex();
+                    // deleting only the eventual formerly built textindex with given Name
+                    foreach ($collection->getIndexInfo() as $indexInfo) {
+                        if ($indexInfo['name']=='search'.$collection->getName()) {
+                            echo "Deleting Custom Text index ".'search'.$collection->getName()."\n";
+                            $this->documentManager->getDocumentDatabase($className)->command(
+                                array(
+                                    "deleteIndexes" => $collection->getName(),
+                                    "index" =>'search'.$collection->getName()
+                                )
+                            );
+                            break;
+                        }
+                    }
                     $collection->ensureIndex(
                         $textSearchIndexDefinitionFromJson[0],
                         $textSearchIndexDefinitionFromJson[1]
