@@ -65,9 +65,6 @@
 {% endif %}
     }
   },
- {% if isTextSearchIndexSet %}
-  "textSearchIndex": {{ textSearchIndex|json_encode() }},
- {% endif %}
   "required": {{ requiredFields|json_encode() }},
   "searchable": {{ searchableFields|json_encode() }}
 }

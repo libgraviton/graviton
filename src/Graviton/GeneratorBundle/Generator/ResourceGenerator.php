@@ -165,8 +165,6 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
-            ->setParameter('textSearchIndex', $this->json->getTextSearchIndex())
-            ->setParameter('isTextSearchIndexSet', !empty($this->json->getTextSearchIndex()))
             ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document);
