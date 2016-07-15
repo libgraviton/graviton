@@ -8,6 +8,7 @@ namespace Graviton\RestBundle\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Service\RqlTranslator;
+use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Bridge\Monolog\Logger;
@@ -152,21 +153,28 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
         }
 
-
-        $searchableFields = $this->getSearchableFields();
-        if (!is_null($schema)) {
-            $searchableFields = $schema->getSearchable();
-        }
-
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
-            $queryBuilder = $this->doRqlQuery(
-                $queryBuilder,
-                $this->translator->translateSearchQuery(
-                    $request->attributes->get('rqlQuery'),
-                    $searchableFields
-                )
-            );
+            $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+            // can we perform a search in an index instead of filtering?
+            if ($innerQuery instanceof SearchNode &&
+                (float) $this->getMongoDBVersion()>=2.6
+                && $this->hasCustomSearchIndex()) {
+                $queryBuilder->text(implode(" ", $innerQuery->getSearchTerms()));
+            } else {
+                // do rql filtering
+                $searchableFields = $this->getSearchableFields();
+                if (!is_null($schema)) {
+                    $searchableFields = $schema->getSearchable();
+                }
+                $queryBuilder = $this->doRqlQuery(
+                    $queryBuilder,
+                    $this->translator->translateSearchQuery(
+                        $request->attributes->get('rqlQuery'),
+                        $searchableFields
+                    )
+                );
+            }
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
@@ -198,19 +206,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
          */
         if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->sort('_id');
-        }
-
-        // on search: check if there is a fulltextsearch Index defined, apply it and search in there
-        if (strstr($request->attributes->get('rawRql'), 'search')) {
-            preg_match('/search\((.*?)\)/', $request->attributes->get('rawRql'), $match);
-            if (strlen($match[1])) {
-                // this is performing a fulltextsearch in the text-Index of the collection (mongodb Version>=2.6)
-                if ((float) $this->getMongoDBVersion()>=2.6) {
-                    if ($this->hasCustomSearchIndex()) {
-                        $queryBuilder->text($match[1]);
-                    }
-                }
-            }
         }
 
         // run query

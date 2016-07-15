@@ -101,7 +101,7 @@ class GenerateBuildIndexesCommand extends Command
                     // deleting only the eventual formerly built textindex with given Name
                     foreach ($collection->getIndexInfo() as $indexInfo) {
                         if ($indexInfo['name']=='search'.$collection->getName()) {
-                            echo "Deleting Custom Text index ".'search'.$collection->getName()."\n";
+                            $output->writeln("Deleting Custom Text index ".'search'.$collection->getName());
                             $this->documentManager->getDocumentDatabase($className)->command(
                                 array(
                                     "deleteIndexes" => $collection->getName(),
@@ -115,10 +115,12 @@ class GenerateBuildIndexesCommand extends Command
                         $textSearchIndexDefinitionFromJson[0],
                         $textSearchIndexDefinitionFromJson[1]
                     );
-                    echo "Created index '" . $indexName . "' for Collection '" . $collection->getName() . "'\n";
+                    $output->writeln("Created index '" . $indexName . "' for Collection '" . $collection->getName());
                 } else {
-                    echo "Couldn't create text Index for Collection " . $className
-                        . ". MongoDB Version =< 2.6 installed: " . $mongoVersion . "\n";
+                    $output->writeln(
+                        "Couldn't create text Index for Collection " . $className
+                        . ". MongoDB Version =< 2.6 installed: " . $mongoVersion
+                    );
                 }
             }
         }
@@ -140,7 +142,7 @@ class GenerateBuildIndexesCommand extends Command
         if (isset($index[1])) {
             $index[1]['name'] = 'search' . $jsonDef->getId();
             $index[1]['default_language'] = 'de';
-            $index[1]['language_override'] = 'language';
+            $index[1]['language_override'] = 'dummy';
         }
         return $index;
     }
