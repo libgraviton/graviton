@@ -5,18 +5,23 @@
 
 namespace Graviton\RestBundle\Model;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Service\RqlTranslator;
+use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
+use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
+use Xiag\Rql\Parser\Query as XiagQuery;
 
 /**
  * Use doctrine odm as backend
@@ -80,6 +85,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $translator;
 
     /**
+     * @var DocumentManager
+     */
+    protected $manager;
+
+    /**
      * @param Visitor       $visitor                    rql query visitor
      * @param RqlTranslator $translator                 Translator for query modification
      * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
@@ -118,6 +128,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
     public function setRepository(DocumentRepository $repository)
     {
         $this->repository = $repository;
+        $this->manager = $repository->getDocumentManager();
 
         return $this;
     }
@@ -136,6 +147,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
         $startAt = ($pageNumber - 1) * $numberPerPage;
+        // Only 1 search text node allowed.
+        $hasSearch = false;
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
@@ -145,20 +158,45 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
         }
 
-
-        $searchableFields = $this->getSearchableFields();
-        if (!is_null($schema)) {
-            $searchableFields = $schema->getSearchable();
-        }
-
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
+            $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+            $xiagQuery = new XiagQuery();
+            // can we perform a search in an index instead of filtering?
+            if ($innerQuery instanceof AbstractLogicOperatorNode) {
+                foreach ($innerQuery->getQueries() as $innerRql) {
+                    if (!$hasSearch && $innerRql instanceof SearchNode) {
+                        $searchString = implode('&', $innerRql->getSearchTerms());
+                        $queryBuilder->addAnd(
+                            $queryBuilder->expr()->text($searchString)
+                        );
+                        $hasSearch = true;
+                    } else {
+                        $xiagQuery->setQuery($innerRql);
+                    }
+                }
+            } elseif ($this->hasCustomSearchIndex() && ($innerQuery instanceof SearchNode)) {
+                $searchString = implode('&', $innerQuery->getSearchTerms());
+                $queryBuilder->addAnd(
+                    $queryBuilder->expr()->text($searchString)
+                );
+                $hasSearch = true;
+            } else {
+                if ($innerQuery instanceof AbstractScalarOperatorNode) {
+                    $xiagQuery->setQuery($innerQuery);
+                } else {
+                    /** @var AbstractLogicOperatorNode $innerQuery */
+                    foreach ($innerQuery->getQueries() as $innerRql) {
+                        if (!$innerRql instanceof SearchNode) {
+                            $xiagQuery->setQuery($innerRql);
+                        }
+                    }
+                }
+            }
+
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translator->translateSearchQuery(
-                    $request->attributes->get('rqlQuery'),
-                    $searchableFields
-                )
+                $xiagQuery
             );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
@@ -188,22 +226,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
          * add a default sort on id if none was specified earlier
          *
          * not specifying something to sort on leads to very weird cases when fetching references
+         * If search node, sort by Score
+         * TODO Review this sorting, not 100% sure
          */
-        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+        if ($hasSearch && !array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->sortMeta('score', 'textScore');
+        } elseif (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->sort('_id');
-        }
-
-        // on search: check if there is a fulltextsearch Index defined, apply it and search in there
-        if (strstr($request->attributes->get('rawRql'), 'search')) {
-            preg_match('/search\((.*?)\)/', $request->attributes->get('rawRql'), $match);
-            if (strlen($match[1])) {
-                // this is performing a fulltextsearch in the text-Index of the collection (mongodb Version>=2.6)
-                if ((float) $this->getMongoDBVersion()>=2.6) {
-                    if ($this->hasCustomSearchIndex()) {
-                        $queryBuilder->text($match[1]);
-                    }
-                }
-            }
         }
 
         // run query
@@ -235,7 +264,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $collection = $this->repository->getDocumentManager()->getDocumentCollection($this->repository->getClassName());
         $indexesInfo = $collection->getIndexInfo();
         foreach ($indexesInfo as $indexInfo) {
-            if ($indexInfo['name']==$prefix.$collection->getName()) {
+            if ($indexInfo['name']==$prefix.$collection->getName().'Index') {
                 return true;
             }
         }
@@ -258,18 +287,23 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param \Graviton\I18nBundle\Document\Translatable $entity entity to insert
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
-     * @return Object
+     * @return Object|null
      */
-    public function insertRecord($entity)
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
         $this->checkIfOriginRecord($entity);
-        $manager = $this->repository->getDocumentManager();
-        $manager->persist($entity);
-        $manager->flush($entity);
+        $this->manager->persist($entity);
 
-        return $this->find($entity->getId());
+        if ($doFlush) {
+            $this->manager->flush($entity);
+        }
+        if ($returnEntity) {
+            return $this->find($entity->getId());
+        }
     }
 
     /**
@@ -285,40 +319,55 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to update
-     * @param Object $entity     new entity
+     * @param string $documentId   id of entity to update
+     * @param Object $entity       new entity
+     * @param bool   $returnEntity true to return entity
      *
-     * @return Object
+     * @return Object|null
      */
-    public function updateRecord($documentId, $entity)
+    public function updateRecord($documentId, $entity, $returnEntity = true)
     {
-        $manager = $this->repository->getDocumentManager();
         // In both cases the document attribute named originRecord must not be 'core'
         $this->checkIfOriginRecord($entity);
-        $this->checkIfOriginRecord($this->find($documentId));
-        $entity = $manager->merge($entity);
-        $manager->flush();
+        $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
 
-        return $entity;
+        if (!is_null($documentId)) {
+            $this->deleteById($documentId);
+            // detach so odm knows it's gone
+            $this->manager->detach($entity);
+            $this->manager->clear();
+        }
+
+        $entity = $this->manager->merge($entity);
+
+        $this->manager->persist($entity);
+        $this->manager->flush($entity);
+
+        if ($returnEntity) {
+            return $entity;
+        }
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId id of entity to delete
+     * @param string|object $id id of entity to delete or entity instance
      *
      * @return null|Object
      */
-    public function deleteRecord($documentId)
+    public function deleteRecord($id)
     {
-        $manager = $this->repository->getDocumentManager();
-        $entity = $this->find($documentId);
+        if (is_object($id)) {
+            $entity = $id;
+        } else {
+            $entity = $this->find($id);
+        }
 
         $return = $entity;
         if ($entity) {
             $this->checkIfOriginRecord($entity);
-            $manager->remove($entity);
-            $manager->flush();
+            $this->manager->remove($entity);
+            $this->manager->flush();
             $return = null;
         }
 
@@ -326,13 +375,86 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
+     * Triggers a flush on the DocumentManager
+     *
+     * @param null $document optional document
+     *
+     * @return void
+     */
+    public function flush($document = null)
+    {
+        $this->manager->flush($document);
+    }
+
+    /**
+     * A low level delete without any checks
+     *
+     * @param mixed $id record id
+     *
+     * @return void
+     */
+    private function deleteById($id)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $builder
+            ->remove()
+            ->field('id')->equals($id)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Checks in a performant way if a certain record id exists in the database
+     *
+     * @param mixed $id record id
+     *
+     * @return bool true if it exists, false otherwise
+     */
+    public function recordExists($id)
+    {
+        return is_array($this->selectSingleFields($id, ['id'], false));
+    }
+
+    /**
+     * Returns a set of fields from an existing resource in a performant manner.
+     * If you need to check certain fields on an object (and don't need everything), this
+     * is a better way to get what you need.
+     * If the record is not present, you will receive null. If you don't need an hydrated
+     * instance, make sure to pass false there.
+     *
+     * @param mixed $id      record id
+     * @param array $fields  list of fields you need.
+     * @param bool  $hydrate whether to hydrate object or not
+     *
+     * @return array|null|object
+     */
+    public function selectSingleFields($id, array $fields, $hydrate = true)
+    {
+        $builder = $this->repository->createQueryBuilder();
+        $idField = $this->repository->getClassMetadata()->getIdentifier()[0];
+
+        $record = $builder
+            ->field($idField)->equals($id)
+            ->select($fields)
+            ->hydrate($hydrate)
+            ->getQuery()
+            ->getSingleResult();
+
+        return $record;
+    }
+
+    /**
      * get classname of entity
      *
-     * @return string
+     * @return string|null
      */
     public function getEntityClass()
     {
-        return $this->repository->getDocumentName();
+        if ($this->repository instanceof DocumentRepository) {
+            return $this->repository->getDocumentName();
+        }
+
+        return null;
     }
 
     /**
