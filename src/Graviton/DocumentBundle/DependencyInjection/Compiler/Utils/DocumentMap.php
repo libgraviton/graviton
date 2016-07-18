@@ -287,7 +287,7 @@ class DocumentMap
                 $classMap[$schema['x-documentClass']][$field]['required'] = true;
             }
             foreach ($schema['searchable'] as $field) {
-                $classMap[$schema['x-documentClass']][$field]['searchable'] = true;
+                $classMap[$schema['x-documentClass']][$field]['searchable'] = 1;
             }
             foreach ($schema['readOnlyFields'] as $field) {
                 $classMap[$schema['x-documentClass']][$field]['readOnly'] = true;
@@ -343,7 +343,7 @@ class DocumentMap
                     'fieldType'   => $this->getSerializerFieldType($element),
                     'exposedName' => $element->getAttribute('serialized-name') ?: $element->getAttribute('name'),
                     'readOnly'    => $element->getAttribute('read-only') === 'true',
-                    'searchable'  => $element->getAttribute('searchable') === 'true',
+                    'searchable'  => (int) $element->getAttribute('searchable')
                 ];
             },
             iterator_to_array($xpath->query('property', $mapping))

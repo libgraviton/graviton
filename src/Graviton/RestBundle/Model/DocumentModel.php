@@ -14,9 +14,6 @@ use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
@@ -155,21 +152,28 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
         }
 
-
-        $searchableFields = $this->getSearchableFields();
-        if (!is_null($schema)) {
-            $searchableFields = $schema->getSearchable();
-        }
-
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
-            $queryBuilder = $this->doRqlQuery(
-                $queryBuilder,
-                $this->translator->translateSearchQuery(
-                    $request->attributes->get('rqlQuery'),
-                    $searchableFields
-                )
-            );
+            $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+            // can we perform a search in an index instead of filtering?
+            if ($innerQuery instanceof SearchNode &&
+                (float) $this->getMongoDBVersion()>=2.6
+                && $this->hasCustomSearchIndex()) {
+                $queryBuilder->text(implode(" ", $innerQuery->getSearchTerms()));
+            } else {
+                // do rql filtering
+                $searchableFields = $this->getSearchableFields();
+                if (!is_null($schema)) {
+                    $searchableFields = $schema->getSearchable();
+                }
+                $queryBuilder = $this->doRqlQuery(
+                    $queryBuilder,
+                    $this->translator->translateSearchQuery(
+                        $request->attributes->get('rqlQuery'),
+                        $searchableFields
+                    )
+                );
+            }
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
@@ -220,6 +224,38 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return $records;
+    }
+
+    /**
+     * @param string $prefix the prefix for custom text search indexes
+     * @return bool
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function hasCustomSearchIndex($prefix = 'search')
+    {
+        $collection = $this->repository->getDocumentManager()->getDocumentCollection($this->repository->getClassName());
+        $indexesInfo = $collection->getIndexInfo();
+        foreach ($indexesInfo as $indexInfo) {
+            if ($indexInfo['name']==$prefix.$collection->getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string the version of the MongoDB as a string
+     */
+    private function getMongoDBVersion()
+    {
+        $buildInfo = $this->repository->getDocumentManager()->getDocumentDatabase(
+            $this->repository->getClassName()
+        )->command(['buildinfo'=>1]);
+        if (isset($buildInfo['version'])) {
+            return $buildInfo['version'];
+        } else {
+            return "unkown";
+        }
     }
 
     /**

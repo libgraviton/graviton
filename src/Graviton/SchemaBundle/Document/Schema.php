@@ -794,7 +794,7 @@ class Schema
     /**
      * set searchable variables
      *
-     * @param string[] $searchable arary of searchable fields
+     * @param string[] $searchable array of searchable fields
      *
      * @return void
      */
@@ -810,11 +810,9 @@ class Schema
      */
     public function getSearchable()
     {
-        $searchable = $this->searchable;
-        if (empty($searchable)) {
-            $searchable = null;
+        if (empty($this->searchable)) {
+            return null;
         }
-
-        return $searchable;
+        return $this->searchable;
     }
 }
