@@ -218,7 +218,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->skip($startAt);
         }
 
-        if (!$rqlLimit || !$rqlLimit->getLimit()) {
+        if (!$rqlLimit || is_null($rqlLimit->getLimit())) {
             $queryBuilder->limit($numberPerPage);
         } else {
             $numberPerPage = (int) $queryParams->getLimit()->getLimit();

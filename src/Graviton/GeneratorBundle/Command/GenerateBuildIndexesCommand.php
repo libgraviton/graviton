@@ -30,9 +30,8 @@ class GenerateBuildIndexesCommand extends Command
     /**
      * GenerateBuildIndexesCommand constructor.
      *
-     * @param LoaderInterface $definitionLoader The definition Loader - loads Definitions from JSON-Files
-     * @param DocumentManager $documentManager  The Doctrine Document Manager
-     * @param String          $name             The Name of this Command
+     * @param DocumentManager $documentManager The Doctrine Document Manager
+     * @param String          $name            The Name of this Command
      */
     public function __construct(
         DocumentManager $documentManager,
