@@ -144,7 +144,6 @@
 
         <service id="graviton_generator.command.generatebuildindexes"
                  class="Graviton\GeneratorBundle\Command\GenerateBuildIndexesCommand">
-            <argument type="service" id="graviton_generator.definition.loader"/>
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
             <tag name="console.command" />
         </service>

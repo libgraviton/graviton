@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
 use Xiag\Rql\Parser\AbstractNode;
+use Xiag\Rql\Parser\Node\LimitNode;
 use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
@@ -149,6 +150,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $startAt = ($pageNumber - 1) * $numberPerPage;
         // Only 1 search text node allowed.
         $hasSearch = false;
+        $queryParams = new XiagQuery();
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
@@ -161,6 +163,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+            /** @var XiagQuery $queryParams */
+            $queryParams = $request->attributes->get('rqlQuery');
+
             $xiagQuery = new XiagQuery();
             // can we perform a search in an index instead of filtering?
             if ($innerQuery instanceof AbstractLogicOperatorNode) {
@@ -202,17 +207,22 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->find($this->repository->getDocumentName());
         }
 
+        /** @var LimitNode $rqlLimit */
+        $rqlLimit = $queryParams->getLimit();
+        
         // define offset and limit
-        if (!array_key_exists('skip', $queryBuilder->getQuery()->getQuery())) {
+        if (!$rqlLimit || !$rqlLimit->getOffset()) {
             $queryBuilder->skip($startAt);
         } else {
-            $startAt = (int) $queryBuilder->getQuery()->getQuery()['skip'];
+            $startAt = (int) $queryParams->getLimit()->getOffset();
+            $queryBuilder->skip($startAt);
         }
 
-        if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
+        if (!$rqlLimit || !$rqlLimit->getLimit()) {
             $queryBuilder->limit($numberPerPage);
         } else {
-            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery()['limit'];
+            $numberPerPage = (int) $queryParams->getLimit()->getLimit();
+            $queryBuilder->limit($numberPerPage);
         }
 
         // Limit can not be negative nor null.

@@ -21,10 +21,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class GenerateBuildIndexesCommand extends Command
 {
-    /**
-     * @var LoaderInterface
-     */
-    private $definitionLoader;
 
     /**
      * @var documentManager
@@ -39,13 +35,11 @@ class GenerateBuildIndexesCommand extends Command
      * @param String          $name             The Name of this Command
      */
     public function __construct(
-        LoaderInterface $definitionLoader,
         DocumentManager $documentManager,
         $name = null
     ) {
         parent::__construct($name);
 
-        $this->definitionLoader = $definitionLoader;
         $this->documentManager = $documentManager;
     }
 
@@ -78,7 +72,7 @@ class GenerateBuildIndexesCommand extends Command
         // Check mongo db version
         $mongoVersion = $this->getMongoDBVersion('Graviton\\CoreBundle\\Document\\App');
         if ((float) $mongoVersion < 2.6) {
-            $output->writeln("MongoDB Version =< 2.6 installed: " . $mongoVersion);
+            $output->writeln("MongoDB Version < 2.6 installed: " . $mongoVersion);
             exit();
         }
 
