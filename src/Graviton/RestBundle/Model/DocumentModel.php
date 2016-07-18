@@ -382,11 +382,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * get classname of entity
      *
-     * @return string
+     * @return string|null
      */
     public function getEntityClass()
     {
-        return $this->repository->getDocumentName();
+        if ($this->repository instanceof DocumentRepository) {
+            return $this->repository->getDocumentName();
+        }
+
+        return null;
     }
 
     /**
