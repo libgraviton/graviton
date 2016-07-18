@@ -181,17 +181,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
                     $queryBuilder->expr()->text($searchString)
                 );
                 $hasSearch = true;
-            } else {
-                if ($innerQuery instanceof AbstractNode) {
-                    $xiagQuery->setQuery($innerQuery);
-                } else {
-                    /** @var AbstractLogicOperatorNode $innerQuery */
-                    foreach ($innerQuery->getQueries() as $innerRql) {
-                        if (!$innerRql instanceof SearchNode) {
-                            $xiagQuery->setQuery($innerRql);
-                        }
+            } elseif ($innerQuery instanceof AbstractLogicOperatorNode) {
+                /** @var AbstractLogicOperatorNode $innerQuery */
+                foreach ($innerQuery->getQueries() as $innerRql) {
+                    if (!$innerRql instanceof SearchNode) {
+                        $xiagQuery->setQuery($innerRql);
                     }
                 }
+            } elseif ($innerQuery instanceof AbstractNode) {
+                $xiagQuery->setQuery($innerQuery);
             }
 
             $queryBuilder = $this->doRqlQuery(
