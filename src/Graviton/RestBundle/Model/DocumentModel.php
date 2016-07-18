@@ -15,8 +15,8 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
@@ -182,7 +182,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 );
                 $hasSearch = true;
             } else {
-                if ($innerQuery instanceof AbstractScalarOperatorNode) {
+                if ($innerQuery instanceof AbstractNode) {
                     $xiagQuery->setQuery($innerQuery);
                 } else {
                     /** @var AbstractLogicOperatorNode $innerQuery */
