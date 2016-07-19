@@ -163,7 +163,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 $queryBuilder,
                 $this->translator->translateSearchQuery($xiagQuery, ['_id'])
             );
-            if ($this->hasCustomSearchIndex()) {
+            if ($this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
                 if ($innerQuery instanceof AbstractLogicOperatorNode) {
                     foreach ($innerQuery->getQueries() as $innerRql) {
                         if (!$hasSearch && $innerRql instanceof SearchNode) {
