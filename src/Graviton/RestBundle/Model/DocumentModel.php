@@ -15,7 +15,6 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
-use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\LimitNode;
 use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
 use Xiag\Rql\Parser\Query;
@@ -190,7 +189,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         /** @var LimitNode $rqlLimit */
-        $rqlLimit = $xiagQuery->getLimit();
+        $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
         
         // define offset and limit
         if (!$rqlLimit || !$rqlLimit->getOffset()) {
