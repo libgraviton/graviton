@@ -11,16 +11,17 @@ use Graviton\RestBundle\Service\RqlTranslator;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode;
+use Xiag\Rql\Parser\Node\LimitNode;
+use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
+use Xiag\Rql\Parser\Query as XiagQuery;
 
 /**
  * Use doctrine odm as backend
@@ -146,47 +147,63 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
         $startAt = ($pageNumber - 1) * $numberPerPage;
+        // Only 1 search text node allowed.
+        $hasSearch = false;
+        /** @var XiagQuery $queryParams */
+        $xiagQuery = $request->attributes->get('rqlQuery');
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder();
 
-        if ($this->filterByAuthUser && $user && $user->hasRole(SecurityUser::ROLE_USER)) {
-            $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
-        }
-
-
-        $searchableFields = $this->getSearchableFields();
-        if (!is_null($schema)) {
-            $searchableFields = $schema->getSearchable();
-        }
-
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
+            $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translator->translateSearchQuery(
-                    $request->attributes->get('rqlQuery'),
-                    $searchableFields
-                )
+                $this->translator->translateSearchQuery($xiagQuery, ['_id'])
             );
+            if ($this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
+                if ($innerQuery instanceof AbstractLogicOperatorNode) {
+                    foreach ($innerQuery->getQueries() as $innerRql) {
+                        if (!$hasSearch && $innerRql instanceof SearchNode) {
+                            $searchString = implode(' ', $innerRql->getSearchTerms());
+                            $queryBuilder->addAnd(
+                                $queryBuilder->expr()->text($searchString)
+                            );
+                            $hasSearch = true;
+                        }
+                    }
+                } elseif ($innerQuery instanceof SearchNode) {
+                    $searchString = implode(' ', $innerQuery->getSearchTerms());
+                    $queryBuilder->addAnd(
+                        $queryBuilder->expr()->text($searchString)
+                    );
+                    $hasSearch = true;
+                }
+            }
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
 
+        /** @var LimitNode $rqlLimit */
+        $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
+        
         // define offset and limit
-        if (!array_key_exists('skip', $queryBuilder->getQuery()->getQuery())) {
+        if (!$rqlLimit || !$rqlLimit->getOffset()) {
             $queryBuilder->skip($startAt);
         } else {
-            $startAt = (int) $queryBuilder->getQuery()->getQuery()['skip'];
+            $startAt = (int) $rqlLimit->getOffset();
+            $queryBuilder->skip($startAt);
         }
 
-        if (!array_key_exists('limit', $queryBuilder->getQuery()->getQuery())) {
+        if (!$rqlLimit || is_null($rqlLimit->getLimit())) {
             $queryBuilder->limit($numberPerPage);
         } else {
-            $numberPerPage = (int) $queryBuilder->getQuery()->getQuery()['limit'];
+            $numberPerPage = (int) $rqlLimit->getLimit();
+            $queryBuilder->limit($numberPerPage);
         }
 
         // Limit can not be negative nor null.
@@ -198,8 +215,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
          * add a default sort on id if none was specified earlier
          *
          * not specifying something to sort on leads to very weird cases when fetching references
+         * If search node, sort by Score
+         * TODO Review this sorting, not 100% sure
          */
-        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+        if ($hasSearch && !array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+            $queryBuilder->sortMeta('score', 'textScore');
+        } elseif (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->sort('_id');
         }
 
@@ -220,6 +241,38 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return $records;
+    }
+
+    /**
+     * @param string $prefix the prefix for custom text search indexes
+     * @return bool
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function hasCustomSearchIndex($prefix = 'search')
+    {
+        $collection = $this->repository->getDocumentManager()->getDocumentCollection($this->repository->getClassName());
+        $indexesInfo = $collection->getIndexInfo();
+        foreach ($indexesInfo as $indexInfo) {
+            if ($indexInfo['name']==$prefix.$collection->getName().'Index') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string the version of the MongoDB as a string
+     */
+    private function getMongoDBVersion()
+    {
+        $buildInfo = $this->repository->getDocumentManager()->getDocumentDatabase(
+            $this->repository->getClassName()
+        )->command(['buildinfo'=>1]);
+        if (isset($buildInfo['version'])) {
+            return $buildInfo['version'];
+        } else {
+            return "unkown";
+        }
     }
 
     /**
