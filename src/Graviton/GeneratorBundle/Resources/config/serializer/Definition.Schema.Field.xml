@@ -26,7 +26,7 @@
                   type="boolean"
                   serialized-name="required"/>
         <property name="searchable"
-                  type="boolean"
+                  type="integer"
                   serialized-name="searchable"/>
         <property name="translatable"
                   type="boolean"

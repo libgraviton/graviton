@@ -153,6 +153,7 @@ class ResourceGenerator extends AbstractGenerator
             },
             $fields
         );
+        
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
@@ -165,6 +166,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
+            ->setParameter('searchables', $this->json->getSearchables())
             ->getParameters();
 
         $this->generateDocument($parameters, $dir, $document);

@@ -465,4 +465,20 @@ class JsonDefinition
         }
         return $indexes;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getSearchables()
+    {
+        $indexes = [];
+        if ($fields = $this->def->getTarget()->getFields()) {
+            foreach ($fields as $field) {
+                if ($value = (int) $field->getSearchable()) {
+                    $indexes[$field->getName()] = $value;
+                }
+            }
+        }
+        return $indexes;
+    }
 }
