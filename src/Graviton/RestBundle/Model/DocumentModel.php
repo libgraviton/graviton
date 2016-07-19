@@ -162,7 +162,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translator->translateSearchQuery($xiagQuery, ['_grv_id'])
+                $this->translator->translateSearchQuery($xiagQuery, ['_id'])
             );
             if ($this->hasCustomSearchIndex()) {
                 if ($innerQuery instanceof AbstractLogicOperatorNode) {
