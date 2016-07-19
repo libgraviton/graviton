@@ -150,57 +150,31 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $startAt = ($pageNumber - 1) * $numberPerPage;
         // Only 1 search text node allowed.
         $hasSearch = false;
-        $queryParams = new XiagQuery();
+        /** @var XiagQuery $queryParams */
+        $xiagQuery = $request->attributes->get('rqlQuery');
 
         /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder();
 
-        if ($this->filterByAuthUser && $user && $user->hasRole(SecurityUser::ROLE_USER)) {
-            $queryBuilder->field($this->filterByAuthField)->equals($user->getUser()->getId());
-        }
-
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
-            /** @var XiagQuery $queryParams */
-            $queryParams = $request->attributes->get('rqlQuery');
-
-            $xiagQuery = new XiagQuery();
-            // can we perform a search in an index instead of filtering?
-            if ($innerQuery instanceof AbstractLogicOperatorNode) {
+            $queryBuilder = $this->doRqlQuery(
+                $queryBuilder,
+                $this->translator->translateSearchQuery($xiagQuery, [])
+            );
+            if ($innerQuery instanceof AbstractLogicOperatorNode && $this->hasCustomSearchIndex()) {
                 foreach ($innerQuery->getQueries() as $innerRql) {
                     if (!$hasSearch && $innerRql instanceof SearchNode) {
-                        $searchString = implode('&', $innerRql->getSearchTerms());
+                        $searchString = implode(' ', $innerRql->getSearchTerms());
                         $queryBuilder->addAnd(
                             $queryBuilder->expr()->text($searchString)
                         );
                         $hasSearch = true;
-                    } else {
-                        $xiagQuery->setQuery($innerRql);
                     }
                 }
-            } elseif ($this->hasCustomSearchIndex() && ($innerQuery instanceof SearchNode)) {
-                $searchString = implode('&', $innerQuery->getSearchTerms());
-                $queryBuilder->addAnd(
-                    $queryBuilder->expr()->text($searchString)
-                );
-                $hasSearch = true;
-            } elseif ($innerQuery instanceof AbstractLogicOperatorNode) {
-                /** @var AbstractLogicOperatorNode $innerQuery */
-                foreach ($innerQuery->getQueries() as $innerRql) {
-                    if (!$innerRql instanceof SearchNode) {
-                        $xiagQuery->setQuery($innerRql);
-                    }
-                }
-            } elseif ($innerQuery instanceof AbstractNode) {
-                $xiagQuery->setQuery($innerQuery);
             }
-
-            $queryBuilder = $this->doRqlQuery(
-                $queryBuilder,
-                $xiagQuery
-            );
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
@@ -208,7 +182,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         /** @var LimitNode $rqlLimit */
-        $rqlLimit = $queryParams->getLimit();
+        $rqlLimit = $xiagQuery->getLimit();
         
         // define offset and limit
         if (!$rqlLimit || !$rqlLimit->getOffset()) {
