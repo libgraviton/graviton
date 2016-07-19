@@ -159,26 +159,22 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
-            $queryBuilder = $this->doRqlQuery(
-                $queryBuilder,
-                $this->translator->translateSearchQuery($xiagQuery, ['_id'])
-            );
             if ($this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
                 if ($innerQuery instanceof AbstractLogicOperatorNode) {
+                    $queryBuilder = $this->doRqlQuery(
+                        $queryBuilder,
+                        $this->translator->translateSearchQuery($xiagQuery, ['_id'])
+                    );
                     foreach ($innerQuery->getQueries() as $innerRql) {
                         if (!$hasSearch && $innerRql instanceof SearchNode) {
-                            $searchString = implode(' ', $innerRql->getSearchTerms());
                             $queryBuilder->addAnd(
-                                $queryBuilder->expr()->text($searchString)
+                                $queryBuilder->expr()->text(implode(' ', $innerRql->getSearchTerms()))
                             );
                             $hasSearch = true;
                         }
                     }
                 } elseif ($innerQuery instanceof SearchNode) {
-                    $searchString = implode(' ', $innerQuery->getSearchTerms());
-                    $queryBuilder->addAnd(
-                        $queryBuilder->expr()->text($searchString)
-                    );
+                    $queryBuilder->text(implode(' ', $innerQuery->getSearchTerms()));
                     $hasSearch = true;
                 }
             }
@@ -188,9 +184,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->find($this->repository->getDocumentName());
         }
 
+        //die(print_r($queryBuilder->getQuery()->getQuery()));
+
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
-        
+
         // define offset and limit
         if (!$rqlLimit || !$rqlLimit->getOffset()) {
             $queryBuilder->skip($startAt);
