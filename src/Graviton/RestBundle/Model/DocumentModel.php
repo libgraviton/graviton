@@ -183,9 +183,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
-
-        //die(print_r($queryBuilder->getQuery()->getQuery()));
-
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
 
