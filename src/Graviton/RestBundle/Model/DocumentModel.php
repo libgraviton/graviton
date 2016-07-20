@@ -217,6 +217,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
         return $records;
     }
 
+    /**
+     * @param XiagQuery    $xiagQuery    Xiag Builder
+     * @param MongoBuilder $queryBuilder Mongo Doctrine query builder
+     * @return array
+     */
     private function buildSearchQuery(XiagQuery $xiagQuery, MongoBuilder $queryBuilder)
     {
         $innerQuery = $xiagQuery->getQuery();
@@ -235,8 +240,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 }
             }
         } elseif ($innerQuery instanceof SearchNode) {
-            $searchString = implode(' ', $innerQuery->getSearchTerms());
-            $queryBuilder->addAnd($queryBuilder->expr()->text($searchString));
+            $queryBuilder = $this->repository->createQueryBuilder();
+            $queryBuilder->text(implode(' ', $innerQuery->getSearchTerms()));
             $hasSearch = true;
         }
         // Remove the Search from RQL xiag
@@ -258,6 +263,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $newXiagQuery->setQuery($newBinder);
             // Reset original query, so that there is no Search param
             $xiagQuery = $newXiagQuery;
+        }
+        if ($hasSearch) {
             $queryBuilder->sortMeta('score', 'textScore');
         }
         return [
