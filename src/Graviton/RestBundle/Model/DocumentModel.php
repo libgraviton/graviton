@@ -7,7 +7,6 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\RestBundle\Service\RqlTranslator;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
@@ -22,6 +21,7 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
 use Xiag\Rql\Parser\Query as XiagQuery;
+use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
 
 /**
  * Use doctrine odm as backend
@@ -80,30 +80,22 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $filterByAuthField;
 
     /**
-     * @var RqlTranslator
-     */
-    protected $translator;
-
-    /**
      * @var DocumentManager
      */
     protected $manager;
 
     /**
-     * @param Visitor       $visitor                    rql query visitor
-     * @param RqlTranslator $translator                 Translator for query modification
-     * @param array         $notModifiableOriginRecords strings with not modifiable recordOrigin values
-     * @param integer       $paginationDefaultLimit     amount of data records to be returned when in pagination context
+     * @param Visitor $visitor                    rql query visitor
+     * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param integer $paginationDefaultLimit     amount of data records to be returned when in pagination context
      */
     public function __construct(
         Visitor $visitor,
-        RqlTranslator $translator,
         $notModifiableOriginRecords,
         $paginationDefaultLimit
     ) {
         parent::__construct();
         $this->visitor = $visitor;
-        $this->translator = $translator;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
@@ -147,50 +139,36 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
         $startAt = ($pageNumber - 1) * $numberPerPage;
-        // Only 1 search text node allowed.
-        $hasSearch = false;
-        /** @var XiagQuery $queryParams */
+
+        /** @var XiagQuery $xiagQuery */
         $xiagQuery = $request->attributes->get('rqlQuery');
 
-        /** @var \Doctrine\ODM\MongoDB\Query\Builder $queryBuilder */
+        /** @var MongoBuilder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder();
 
-        // *** do we have an RQL expression, do we need to filter data?
-        if ($request->attributes->get('hasRql', false)) {
-            $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+        // Setting RQL Query
+        if ($xiagQuery) {
+            // Clean up Search rql param and set it as Doctrine query
+            if ($xiagQuery->getQuery() && $this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
+                $searchQueries = $this->buildSearchQuery($xiagQuery, $queryBuilder);
+                $xiagQuery = $searchQueries['xiagQuery'];
+                $queryBuilder = $searchQueries['queryBuilder'];
+            }
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
-                $this->translator->translateSearchQuery($xiagQuery, ['_id'])
+                $xiagQuery
             );
-            if ($this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
-                if ($innerQuery instanceof AbstractLogicOperatorNode) {
-                    foreach ($innerQuery->getQueries() as $innerRql) {
-                        if (!$hasSearch && $innerRql instanceof SearchNode) {
-                            $searchString = implode(' ', $innerRql->getSearchTerms());
-                            $queryBuilder->addAnd(
-                                $queryBuilder->expr()->text($searchString)
-                            );
-                            $hasSearch = true;
-                        }
-                    }
-                } elseif ($innerQuery instanceof SearchNode) {
-                    $searchString = implode(' ', $innerQuery->getSearchTerms());
-                    $queryBuilder->addAnd(
-                        $queryBuilder->expr()->text($searchString)
-                    );
-                    $hasSearch = true;
-                }
-            }
         } else {
             // @todo [lapistano]: seems the offset is missing for this query.
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
 
+
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
-        
+
         // define offset and limit
         if (!$rqlLimit || !$rqlLimit->getOffset()) {
             $queryBuilder->skip($startAt);
@@ -214,13 +192,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         /**
          * add a default sort on id if none was specified earlier
          *
-         * not specifying something to sort on leads to very weird cases when fetching references
-         * If search node, sort by Score
-         * TODO Review this sorting, not 100% sure
+         * not specifying something to sort on leads to very weird cases when fetching references.
          */
-        if ($hasSearch && !array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
-            $queryBuilder->sortMeta('score', 'textScore');
-        } elseif (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
+        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
             $queryBuilder->sort('_id');
         }
 
@@ -241,6 +215,62 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return $records;
+    }
+
+    /**
+     * @param XiagQuery    $xiagQuery    Xiag Builder
+     * @param MongoBuilder $queryBuilder Mongo Doctrine query builder
+     * @return array
+     */
+    private function buildSearchQuery(XiagQuery $xiagQuery, MongoBuilder $queryBuilder)
+    {
+        $innerQuery = $xiagQuery->getQuery();
+        $hasSearch = false;
+        $nodes = [];
+        if ($innerQuery instanceof AbstractLogicOperatorNode) {
+            foreach ($innerQuery->getQueries() as $key => $innerRql) {
+                if ($innerRql instanceof SearchNode) {
+                    if (!$hasSearch) {
+                        $searchString = implode(' ', $innerRql->getSearchTerms());
+                        $queryBuilder->addAnd($queryBuilder->expr()->text($searchString));
+                        $hasSearch = true;
+                    }
+                } else {
+                    $nodes[] = $innerRql;
+                }
+            }
+        } elseif ($innerQuery instanceof SearchNode) {
+            $queryBuilder = $this->repository->createQueryBuilder();
+            $queryBuilder->text(implode(' ', $innerQuery->getSearchTerms()));
+            $hasSearch = true;
+        }
+        // Remove the Search from RQL xiag
+        if ($hasSearch && $nodes) {
+            $newXiagQuery = new XiagQuery();
+            $newXiagQuery->setLimit($xiagQuery->getLimit());
+            if ($xiagQuery->getSelect()) {
+                $newXiagQuery->setSelect($xiagQuery->getSelect());
+            }
+            if ($xiagQuery->getSort()) {
+                $newXiagQuery->setSort($xiagQuery->getSort());
+            }
+            $binderClass = get_class($innerQuery);
+            /** @var AbstractLogicOperatorNode $newBinder */
+            $newBinder = new $binderClass();
+            foreach ($nodes as $node) {
+                $newBinder->addQuery($node);
+            }
+            $newXiagQuery->setQuery($newBinder);
+            // Reset original query, so that there is no Search param
+            $xiagQuery = $newXiagQuery;
+        }
+        if ($hasSearch) {
+            $queryBuilder->sortMeta('score', 'textScore');
+        }
+        return [
+            'xiagQuery'     => $xiagQuery,
+            'queryBuilder'  => $queryBuilder
+        ];
     }
 
     /**
