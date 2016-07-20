@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "902cc9f9ddc38f2c10e6f96bebbfa8a9",
-    "content-hash": "9f85f50fc8ac9a4d4bbfed0a330b184c",
+    "hash": "e1cd5feca37263c5892b5a171e2948f8",
+    "content-hash": "c30cd9aa04477251d21ebc0f36f8b864",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -3563,30 +3563,31 @@
         },
         {
             "name": "php-jsonpatch/php-jsonpatch",
-            "version": "v1.2.6",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/raphaelstolt/php-jsonpatch.git",
-                "reference": "03b07d29980bfec04e3e9eb398e1b4ce8691b524"
+                "reference": "7d5082fed640410511df035abfc886d710dfa741"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/03b07d29980bfec04e3e9eb398e1b4ce8691b524",
-                "reference": "03b07d29980bfec04e3e9eb398e1b4ce8691b524",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/7d5082fed640410511df035abfc886d710dfa741",
+                "reference": "7d5082fed640410511df035abfc886d710dfa741",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "php-jsonpointer/php-jsonpointer": "1.1.*",
+                "php": ">=5.4",
+                "php-jsonpointer/php-jsonpointer": "^2.0",
                 "symfony/polyfill-mbstring": "^1.1"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.11",
                 "phpunit/phpunit": "4.6.*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -3612,29 +3613,32 @@
                 "json modification",
                 "json patch"
             ],
-            "time": "2016-04-08 00:37:11"
+            "time": "2016-07-20 10:17:57"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",
-            "version": "v1.1.0",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/raphaelstolt/php-jsonpointer.git",
-                "reference": "e79ac0e91752b74d1535aa95becc33c6f7e01a82"
+                "reference": "6c54ccb3f6d8c843ef45fc4feeba70303aa0c7e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpointer/zipball/e79ac0e91752b74d1535aa95becc33c6f7e01a82",
-                "reference": "e79ac0e91752b74d1535aa95becc33c6f7e01a82",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpointer/zipball/6c54ccb3f6d8c843ef45fc4feeba70303aa0c7e1",
+                "reference": "6c54ccb3f6d8c843ef45fc4feeba70303aa0c7e1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.6.*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -3660,7 +3664,7 @@
                 "json pointer",
                 "json traversal"
             ],
-            "time": "2015-05-20 23:07:34"
+            "time": "2016-06-20 19:42:02"
         },
         {
             "name": "phpcollection/phpcollection",
