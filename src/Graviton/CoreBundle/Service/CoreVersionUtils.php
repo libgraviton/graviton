@@ -70,18 +70,43 @@ class CoreVersionUtils
     private function getContextVersion()
     {
         $output = $this->runComposerInContext('show -s --no-ansi');
+        $gitVersion = $this->getGitVersion();
+
         $lines = explode(PHP_EOL, $output);
         $wrapper = array();
+
         foreach ($lines as $line) {
             if (strpos($line, 'versions : *') !== false) {
                 list(, $wrapperVersion) = explode(': *', $line, 2);
                 $wrapper['id'] = 'self';
-                $wrapper['version'] = $this->getVersionNumber(trim($wrapperVersion));
+                $wrapper['version'] = $gitVersion !== 'dev' ?
+                    $gitVersion : $this->getVersionNumber(trim($wrapperVersion));
                 break;
             }
         }
 
         return $wrapper;
+    }
+
+    /**
+     * Retrieve Tag git Version if possible.
+     *
+     * @return string
+     */
+    private function getGitVersion()
+    {
+        $path =  ($this->isWrapperContext())
+            ? $this->rootDir.'/../../../../'
+            : $this->rootDir.'/../';
+        $contextDir = escapeshellarg($path);
+        $process = new Process('cd '.$contextDir.' && git describe --tags');
+        $process->mustRun();
+
+        try {
+            return $this->getVersionOrBranchName($process->getOutput());
+        } catch (InvalidArgumentException $e) {
+            return 'dev';
+        }
     }
 
     /**
