@@ -247,7 +247,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // Remove the Search from RQL xiag
         if ($hasSearch && $nodes) {
             $newXiagQuery = new XiagQuery();
-            $newXiagQuery->setLimit($xiagQuery->getLimit());
+            if ($xiagQuery->getLimit()) {
+                $newXiagQuery->setLimit($xiagQuery->getLimit());
+            }
             if ($xiagQuery->getSelect()) {
                 $newXiagQuery->setSelect($xiagQuery->getSelect());
             }
