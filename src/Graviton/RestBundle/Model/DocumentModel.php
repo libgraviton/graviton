@@ -159,12 +159,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
         // *** do we have an RQL expression, do we need to filter data?
         if ($request->attributes->get('hasRql', false)) {
             $innerQuery = $request->attributes->get('rqlQuery')->getQuery();
+            $queryBuilder = $this->doRqlQuery(
+                $queryBuilder,
+                $this->translator->translateSearchQuery($xiagQuery, ['_id'])
+            );
             if ($this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
                 if ($innerQuery instanceof AbstractLogicOperatorNode) {
-                    $queryBuilder = $this->doRqlQuery(
-                        $queryBuilder,
-                        $this->translator->translateSearchQuery($xiagQuery, ['_id'])
-                    );
                     foreach ($innerQuery->getQueries() as $innerRql) {
                         if (!$hasSearch && $innerRql instanceof SearchNode) {
                             $queryBuilder->addAnd(
@@ -174,6 +174,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
                         }
                     }
                 } elseif ($innerQuery instanceof SearchNode) {
+                    // start from scratch with text-search in custom index
+                    $queryBuilder = $this->repository->createQueryBuilder();
                     $queryBuilder->text(implode(' ', $innerQuery->getSearchTerms()));
                     $hasSearch = true;
                 }
@@ -183,6 +185,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
+
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
 
