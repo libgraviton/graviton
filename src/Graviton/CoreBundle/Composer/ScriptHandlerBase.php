@@ -7,7 +7,7 @@ namespace Graviton\CoreBundle\Composer;
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 
 /**
  * Base class for Composer ScriptHandlers
@@ -34,7 +34,7 @@ abstract class ScriptHandlerBase
      *
      * @return array Options
      */
-    protected static function getOptions(CommandEvent $event)
+    protected static function getOptions(Event $event)
     {
         $options = array_merge(self::$options, $event->getComposer()->getPackage()->getExtra());
         $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
@@ -51,7 +51,7 @@ abstract class ScriptHandlerBase
      *
      * @return void
      */
-    protected static function executeCommand(CommandEvent $event, $consoleDir, $cmd, $timeout = 300)
+    protected static function executeCommand(Event $event, $consoleDir, $cmd, $timeout = 300)
     {
         $php = escapeshellarg(self::getPhp(false));
         $console = escapeshellarg($consoleDir.'/console');

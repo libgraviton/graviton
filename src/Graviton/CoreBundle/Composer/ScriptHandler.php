@@ -5,11 +5,10 @@
 
 namespace Graviton\CoreBundle\Composer;
 
-use Graviton\CoreBundle\Composer\ScriptHandlerBase;
 use Graviton\CoreBundle\Service\CoreVersionUtils;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Filesystem\Filesystem;
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 
 /**
  * ScriptHandler for Composer, wrapping our symfony console commands..
@@ -27,7 +26,7 @@ class ScriptHandler extends ScriptHandlerBase
      *
      * @return void
      */
-    public static function generateVersionYml(CommandEvent $event)
+    public static function generateVersionYml(Event $event)
     {
         $baseDir = __DIR__.'/../../../..';
         $rootDir = $baseDir.'/app';
