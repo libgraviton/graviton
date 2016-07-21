@@ -61,9 +61,28 @@ class RecordOriginConstraint
     public function checkRecordOrigin(ConstraintEventSchema $event)
     {
         $currentRecord = $this->utils->getCurrentEntity();
+        $data = $event->getElement();
 
         // if no recordorigin set on saved record; we let it through
         if (is_null($currentRecord) || !isset($currentRecord->{$this->recordOriginField})) {
+
+            // we have no current record.. but make sure user doesn't want to send the banned recordOrigin
+            if (
+                isset($data->{$this->recordOriginField}) &&
+                !is_null($data->{$this->recordOriginField}) &&
+                in_array($data->{$this->recordOriginField}, $this->recordOriginBlacklist)
+            ) {
+                $event->addError(
+                    sprintf(
+                        'Creating documents with the %s field having a value of %s is not permitted.',
+                        $this->recordOriginField,
+                        implode(', ', $this->recordOriginBlacklist)
+                    ),
+                    $this->recordOriginField
+                );
+                return;
+            }
+
             return;
         }
 
@@ -76,7 +95,6 @@ class RecordOriginConstraint
 
         // ok, user is trying to modify an object with blacklist recordorigin.. let's check fields
         $schema = $event->getSchema();
-        $data = $event->getElement();
         $isAllowed = true;
 
         if (!isset($schema->{'x-documentClass'})) {
