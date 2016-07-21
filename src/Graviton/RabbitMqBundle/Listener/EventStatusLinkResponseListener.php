@@ -352,5 +352,4 @@ class EventStatusLinkResponseListener
 
         return '';
     }
-
 }
