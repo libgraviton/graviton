@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle;
 
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -93,6 +94,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
         $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
         $container->addCompilerPass(new ReadOnlyFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(new RecordOriginExceptionFieldsCompilerPass($documentMap));
     }
 
     /**
