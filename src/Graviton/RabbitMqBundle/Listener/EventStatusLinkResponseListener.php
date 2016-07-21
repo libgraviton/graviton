@@ -11,13 +11,16 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
-use Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\User\UserInterface;
+use GravitonDyn\EventStatusBundle\Document\EventStatus;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -88,6 +91,11 @@ class EventStatusLinkResponseListener
     private $documentManager;
 
     /**
+     * @var TokenStorage
+     */
+    protected $tokenStorage;
+
+    /**
      * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface       $router                            Router dependency
      * @param RequestStack          $requestStack                      Request stack
@@ -100,6 +108,7 @@ class EventStatusLinkResponseListener
      * @param string                $eventStatusStatusClassname        classname of the EventStatusStatus document
      * @param string                $eventStatusEventResourceClassname classname of the E*S*E*Resource document
      * @param string                $eventStatusRouteName              name of the route to EventStatus
+     * @param TokenStorage          $tokenStorage                      Security service
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -113,7 +122,8 @@ class EventStatusLinkResponseListener
         $eventStatusClassname,
         $eventStatusStatusClassname,
         $eventStatusEventResourceClassname,
-        $eventStatusRouteName
+        $eventStatusRouteName,
+        TokenStorage $tokenStorage
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
@@ -127,6 +137,7 @@ class EventStatusLinkResponseListener
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
         $this->eventStatusEventResourceClassname = $eventStatusEventResourceClassname;
         $this->eventStatusRouteName = $eventStatusRouteName;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -199,7 +210,7 @@ class EventStatusLinkResponseListener
         $obj->setEvent($this->generateRoutingKey());
         $obj->setDocumenturl($this->request->get('selfLink'));
         $obj->setStatusurl($this->getStatusUrl($obj));
-        $obj->setCoreUserId($this->getCoreUserId());
+        $obj->setCoreUserId($this->getSecurityUsername());
 
         return $obj;
     }
@@ -249,7 +260,7 @@ class EventStatusLinkResponseListener
         }
 
         // we have subscribers; create the EventStatus entry
-        /** @var \GravitonDyn\EventStatusBundle\Document\EventStatus $eventStatus **/
+        /** @var EventStatus $eventStatus **/
         $eventStatus = new $this->eventStatusClassname();
         $eventStatus->setCreatedate(new \DateTime());
         $eventStatus->setEventname($queueEvent->getEvent());
@@ -268,6 +279,9 @@ class EventStatusLinkResponseListener
             $eventStatusStatus->setStatus('opened');
             $eventStatus->addStatus($eventStatusStatus);
         }
+
+        // Set username to Event
+        $eventStatus->setUserid($this->getSecurityUsername());
 
         $this->documentManager->persist($eventStatus);
         $this->documentManager->flush();
@@ -324,20 +338,19 @@ class EventStatusLinkResponseListener
     }
 
     /**
-     * Find current request attribute to User Core Id
+     * Security needs to be enabled to get
      *
-     * @return string
+     * @return String
      */
-    public function getCoreUserId()
+    private function getSecurityUsername()
     {
-        $attributes = $this->request->attributes;
-        if (!$attributes) {
-            return '';
+        /** @var PreAuthenticatedToken $token */
+        if (($token = $this->tokenStorage->getToken())
+            && ($user = $token->getUser()) instanceof UserInterface ) {
+            return $user->getUsername();
         }
-        $value = $attributes->get(CookieFieldStrategy::CONFIGURATION_PARAMETER_CORE_ID);
-        if ($value) {
-            return (string) $value;
-        }
+
         return '';
     }
+
 }

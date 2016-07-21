@@ -31,6 +31,13 @@
         "searchable": 1
       },
       {
+        "name": "userId",
+        "type": "varchar",
+        "title": "User Identifier",
+        "description": "User who created the event entry",
+        "readOnly": true
+      },
+      {
         "name": "eventResource.ref",
         "type": "extref",
         "exposeAs": "$ref",

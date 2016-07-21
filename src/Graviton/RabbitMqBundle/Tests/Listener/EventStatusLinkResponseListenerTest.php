@@ -61,6 +61,9 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             'http://graviton-test.lo/worker/123jkl890yui567mkl'
         );
 
+        $securityMock = $this->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage')->disableOriginalConstructor(
+        )->setMethods(['getToken'])->getMockForAbstractClass();
+
         $requestMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')->disableOriginalConstructor(
         )->setMethods(['get'])->getMock();
         $requestMock->expects($this->atLeastOnce())->method('get')->will(
@@ -161,7 +164,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\GravitonDyn\EventStatusBundle\Document\EventStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded',
-            'gravitondyn.eventstatus.rest.eventstatus.get'
+            'gravitondyn.eventstatus.rest.eventstatus.get',
+            $securityMock
         );
 
         $listener->onKernelResponse($filterResponseEventMock);
