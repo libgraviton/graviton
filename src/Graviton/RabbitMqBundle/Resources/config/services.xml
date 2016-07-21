@@ -37,6 +37,7 @@
             <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatuseventresource.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
+            <argument type="service" id="security.token_storage" />
             <!-- the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
             <tag name="kernel.event_listener" event="graviton.rest.response.selfaware" method="onKernelResponse"/>
         </service>

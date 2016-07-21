@@ -6,7 +6,7 @@
 namespace Graviton\SwaggerBundle\Composer;
 
 use Graviton\CoreBundle\Composer\ScriptHandlerBase;
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 
 /**
  * ScriptHandler for Composer, wrapping our symfony console commands..
@@ -24,7 +24,7 @@ class ScriptHandler extends ScriptHandlerBase
      *
      * @return void
      */
-    public static function generateSwaggerJson(CommandEvent $event)
+    public static function generateSwaggerJson(Event $event)
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
