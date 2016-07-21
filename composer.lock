@@ -3563,16 +3563,16 @@
         },
         {
             "name": "php-jsonpatch/php-jsonpatch",
-            "version": "v2.1.2",
+            "version": "v2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/raphaelstolt/php-jsonpatch.git",
-                "reference": "7d5082fed640410511df035abfc886d710dfa741"
+                "reference": "6f90113dcf19c151a1106f9917782f60b786a62c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/7d5082fed640410511df035abfc886d710dfa741",
-                "reference": "7d5082fed640410511df035abfc886d710dfa741",
+                "url": "https://api.github.com/repos/raphaelstolt/php-jsonpatch/zipball/6f90113dcf19c151a1106f9917782f60b786a62c",
+                "reference": "6f90113dcf19c151a1106f9917782f60b786a62c",
                 "shasum": ""
             },
             "require": {
@@ -3613,7 +3613,7 @@
                 "json modification",
                 "json patch"
             ],
-            "time": "2016-07-20 10:17:57"
+            "time": "2016-07-21 10:41:55"
         },
         {
             "name": "php-jsonpointer/php-jsonpointer",

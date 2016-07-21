@@ -6,7 +6,7 @@
 namespace Graviton\GeneratorBundle\Composer;
 
 use Graviton\CoreBundle\Composer\ScriptHandlerBase;
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 
 /**
  * ScriptHandler for Composer, wrapping our symfony console commands..
@@ -24,7 +24,7 @@ class ScriptHandler extends ScriptHandlerBase
      *
      * @return void
      */
-    public static function generateDynamicBundles(CommandEvent $event)
+    public static function generateDynamicBundles(Event $event)
     {
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
@@ -40,7 +40,7 @@ class ScriptHandler extends ScriptHandlerBase
      *
      * @return void
      */
-    public static function cleanDynamicBundles(CommandEvent $event)
+    public static function cleanDynamicBundles(Event $event)
     {
         $options = self::getOptions($event);
 
