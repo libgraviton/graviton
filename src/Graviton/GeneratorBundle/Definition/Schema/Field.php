@@ -46,6 +46,10 @@ class Field
     /**
      * @var bool
      */
+    private $recordOriginException = false;
+    /**
+     * @var bool
+     */
     private $required = false;
     /**
      * @var integer
@@ -194,6 +198,28 @@ class Field
     {
         $this->readOnly = $readOnly;
         return $this;
+    }
+
+    /**
+     * get RecordOriginException
+     *
+     * @return boolean RecordOriginException
+     */
+    public function isRecordOriginException()
+    {
+        return $this->recordOriginException;
+    }
+
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
     }
 
     /**

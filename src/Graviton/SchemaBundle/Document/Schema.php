@@ -79,6 +79,16 @@ class Schema
     protected $readOnly = false;
 
     /**
+     * @var bool
+     */
+    protected $recordOriginModifiable;
+
+    /**
+     * @var bool
+     */
+    protected $recordOriginException;
+
+    /**
      * @var string[]
      */
     protected $searchable = [];
@@ -789,6 +799,50 @@ class Schema
     public function getReadOnly()
     {
         return $this->readOnly ? true : null;
+    }
+
+    /**
+     * get RecordOriginModifiable
+     *
+     * @return boolean RecordOriginModifiable
+     */
+    public function isRecordOriginModifiable()
+    {
+        return $this->recordOriginModifiable;
+    }
+
+    /**
+     * set RecordOriginModifiable
+     *
+     * @param boolean $recordOriginModifiable recordOriginModifiable
+     *
+     * @return void
+     */
+    public function setRecordOriginModifiable($recordOriginModifiable)
+    {
+        $this->recordOriginModifiable = $recordOriginModifiable;
+    }
+
+    /**
+     * get RecordOriginException
+     *
+     * @return boolean RecordOriginException
+     */
+    public function isRecordOriginException()
+    {
+        return $this->recordOriginException;
+    }
+
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
     }
 
     /**

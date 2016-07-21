@@ -215,6 +215,7 @@ class SchemaUtils
 
         $schema->setDescription($model->getDescription());
         $schema->setDocumentClass($model->getDocumentClass());
+        $schema->setRecordOriginModifiable($model->getRecordOriginModifiable());
         $schema->setType('object');
 
         // grab schema info from model
@@ -296,6 +297,11 @@ class SchemaUtils
 
             $property->setType($meta->getTypeOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
+
+            // we only want to render if it's true
+            if ($model->getRecordOriginExceptionOfField($field) === true) {
+                $property->setRecordOriginException(true);
+            }
 
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
