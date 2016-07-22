@@ -65,10 +65,8 @@ class RecordOriginConstraint
 
         // if no recordorigin set on saved record; we let it through
         if (is_null($currentRecord) || !isset($currentRecord->{$this->recordOriginField})) {
-
             // we have no current record.. but make sure user doesn't want to send the banned recordOrigin
-            if (
-                isset($data->{$this->recordOriginField}) &&
+            if (isset($data->{$this->recordOriginField}) &&
                 !is_null($data->{$this->recordOriginField}) &&
                 in_array($data->{$this->recordOriginField}, $this->recordOriginBlacklist)
             ) {

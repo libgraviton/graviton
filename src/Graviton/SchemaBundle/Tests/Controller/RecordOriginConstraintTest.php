@@ -41,6 +41,10 @@ class RecordOriginConstraintTest extends RestTestCase
      *
      * @dataProvider createDataProvider
      *
+     * @param string  $entity           To be found
+     * @param integer $expectedStatus   Header status code
+     * @param string  $expectedResponse Post data result of post
+     *
      * @return void
      */
     public function testRecordOriginHandlingOnCreate($entity, $expectedStatus, $expectedResponse)
@@ -54,14 +58,23 @@ class RecordOriginConstraintTest extends RestTestCase
     }
 
     /**
-     * test the validation of the RecordOriginConstraint
+     * Test the validation of the RecordOriginConstraint
+     *
+     * @param string  $fieldsToSet      Field used in query params
+     * @param integer $expectedStatus   Header status code
+     * @param string  $expectedResponse Result to be returned
+     * @param boolean $checkSavedEntry  To check db for correct result
      *
      * @dataProvider updateDataProvider
      *
      * @return void
      */
-    public function testRecordOriginHandlingOnUpdate($fieldsToSet, $expectedStatus, $expectedResponse, $checkSavedEntry = true)
-    {
+    public function testRecordOriginHandlingOnUpdate(
+        $fieldsToSet,
+        $expectedStatus,
+        $expectedResponse,
+        $checkSavedEntry = true
+    ) {
         $client = static::createRestClient();
         $client->request('GET', '/person/customer/100');
         $result = $client->getResults();
@@ -88,7 +101,11 @@ class RecordOriginConstraintTest extends RestTestCase
         }
     }
 
-
+    /**
+     * Create the data provider used for test
+     *
+     * @return array
+     */
     public function createDataProvider()
     {
         $baseObj = [
@@ -132,6 +149,11 @@ class RecordOriginConstraintTest extends RestTestCase
         ];
     }
 
+    /**
+     * During work data will be updated and uses this function
+     *
+     * @return array
+     */
     public function updateDataProvider()
     {
         $expectedErrorOutput = [
