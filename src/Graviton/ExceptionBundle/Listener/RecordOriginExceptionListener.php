@@ -30,7 +30,7 @@ class RecordOriginExceptionListener extends RestExceptionListener
     {
         if (($exception = $event->getException()) instanceof RecordOriginModifiedException) {
             $content = array(
-                "propertyPath" => "data.recordOrigin",
+                "propertyPath" => "recordOrigin",
                 "message"      => $exception->getMessage(),
             );
 
