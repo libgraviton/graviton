@@ -17,10 +17,6 @@ class RecordOriginConstraintTest extends RestTestCase
 {
 
     /**
-     * @TODO Upsert via POST, stuff via PATCH
-     */
-
-    /**
      * load fixtures
      *
      * @return void
@@ -41,7 +37,7 @@ class RecordOriginConstraintTest extends RestTestCase
      *
      * @dataProvider createDataProvider
      *
-     * @param string  $entity           To be found
+     * @param object  $entity           The object to create
      * @param integer $expectedStatus   Header status code
      * @param string  $expectedResponse Post data result of post
      *
@@ -60,7 +56,7 @@ class RecordOriginConstraintTest extends RestTestCase
     /**
      * Test the validation of the RecordOriginConstraint
      *
-     * @param string  $fieldsToSet      Field used in query params
+     * @param array   $fieldsToSet      Fields to be modified
      * @param integer $expectedStatus   Header status code
      * @param string  $expectedResponse Result to be returned
      * @param boolean $checkSavedEntry  To check db for correct result
@@ -102,7 +98,53 @@ class RecordOriginConstraintTest extends RestTestCase
     }
 
     /**
-     * Create the data provider used for test
+     * Test the validation of the RecordOriginConstraint
+     *
+     * @param array   $ops              PATCH operations
+     * @param integer $expectedStatus   Header status code
+     * @param string  $expectedResponse Result to be returned
+     *
+     * @dataProvider patchDataProvider
+     *
+     * @return void
+     */
+    public function testRecordOriginHandlingOnPatch(
+        $ops,
+        $expectedStatus,
+        $expectedResponse
+    ) {
+        $client = static::createRestClient();
+
+        $client->request('PATCH', '/person/customer/100', [], [], [], json_encode($ops));
+
+        $response = $client->getResponse();
+        $this->assertEquals($expectedStatus, $response->getStatusCode());
+        $this->assertEquals($expectedResponse, $client->getResults());
+    }
+
+    /**
+     * test to see if DELETE on a recordorigin: core is denied
+     *
+     * @return void
+     */
+    public function testDeleteHandling()
+    {
+        $client = static::createRestClient();
+        $client->request('DELETE', '/person/customer/100');
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(
+            (object) [
+                'propertyPath' => 'recordOrigin',
+                'message' => 'Must not be one of the following keywords: core'
+            ],
+            $client->getResults()
+        );
+    }
+
+    /**
+     * Data provider for POST related stuff
      *
      * @return array
      */
@@ -150,7 +192,7 @@ class RecordOriginConstraintTest extends RestTestCase
     }
 
     /**
-     * During work data will be updated and uses this function
+     * Data provider for PUT related stuff
      *
      * @return array
      */
@@ -206,6 +248,77 @@ class RecordOriginConstraintTest extends RestTestCase
                 'expectedResponse' => $expectedErrorOutput,
                 'checkSavedEntry' => false
             ],
+        ];
+    }
+
+    /**
+     * Data provider for PATCH related stuff
+     *
+     * @return array
+     */
+    public function patchDataProvider()
+    {
+        $expectedErrorOutput = [
+            (object) [
+                'propertyPath' => 'recordOrigin',
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
+            ]
+        ];
+
+        return [
+
+            /*** STUFF THAT SHOULD BE ALLOWED ***/
+
+            'patch-allowed-attribute' => [
+                'ops' => [
+                    [
+                        'op' => 'add',
+                        'path' => '/someObject/twoField',
+                        'value' => 'myValue'
+                    ]
+                ],
+                'httpStatusExpected' => Response::HTTP_OK,
+                'expectedResponse' => null
+            ],
+            'patch-add-object-data' => [
+                'ops' => [
+                    [
+                        'op' => 'add',
+                        'path' => '/addedField',
+                        'value' => [
+                            'someProperty' => 'someValue',
+                            'anotherOne' => 'oneMore'
+                        ]
+                    ]
+                ],
+                'httpStatusExpected' => Response::HTTP_OK,
+                'expectedResponse' => null
+            ],
+
+            /*** STUFF THAT NEEDS TO BE DENIED ***/
+            'patch-denied-subproperty' => [
+                'ops' => [
+                    [
+                        'op' => 'add',
+                        'path' => '/someObject/oneField',
+                        'value' => 'myValue'
+                    ]
+                ],
+                'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
+                'expectedResponse' => $expectedErrorOutput
+            ],
+            'patch-denied-recordorigin-change' => [
+                'ops' => [
+                    [
+                        'op' => 'replace',
+                        'path' => '/recordOrigin',
+                        'value' => 'hans'
+                    ]
+                ],
+                'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
+                'expectedResponse' => $expectedErrorOutput
+            ],
+
         ];
     }
 }
