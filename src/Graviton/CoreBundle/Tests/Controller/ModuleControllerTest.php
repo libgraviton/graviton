@@ -69,6 +69,23 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
+     * testing the search index using second param, non sensitive, combined with a select (RQL)
+     *
+     * @return void
+     */
+    public function testSearchWeightedIndex()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?search(module%20adminref)&select(key,path)');
+        $results = $client->getResults();
+
+        $this->assertEquals('AdminRef', $results[0]->key);
+        $this->assertEquals('retirement', $results[1]->key);
+        $this->assertEquals('realEstate', $results[2]->key);
+    }
+
+    /**
      * test if we can get list of modules paged
      *
      * @return void

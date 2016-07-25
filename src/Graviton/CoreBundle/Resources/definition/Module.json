@@ -125,8 +125,7 @@
         "name": "id",
         "type": "varchar",
         "title": "ID",
-        "description": "Unique identifier of a module.",
-        "searchable": 30
+        "description": "Unique identifier of a module."
       },
       {
         "name": "key",
@@ -158,7 +157,7 @@
         "type": "varchar",
         "title": "Path",
         "description": "A path this module points to.",
-        "searchable": 40
+        "searchable": 10
       },
       {
         "name": "order",
