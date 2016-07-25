@@ -116,5 +116,4 @@ interface RestUtilsInterface
      * @return void
      */
     public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '');
-    
 }
