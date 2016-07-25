@@ -1,8 +1,14 @@
 language: php
+sudo: false
 services:
 - mongodb
 - rabbitmq
-sudo: false
+addons:
+  apt:
+    sources:
+    - mongodb-3.0-precise
+    packages:
+    - mongodb-org-server
 before_script:
 - >
     if [ "$PHPUNIT_SUITE" != "unit" ]; then
