@@ -125,14 +125,16 @@
         "name": "id",
         "type": "varchar",
         "title": "ID",
-        "description": "Unique identifier of a module."
+        "description": "Unique identifier of a module.",
+        "searchable": 30
       },
       {
         "name": "key",
         "type": "varchar",
         "title": "Key",
         "description": "A short string identifying this module.",
-        "required": true
+        "required": true,
+        "searchable": 30
       },
       {
         "name": "app.ref",
@@ -155,7 +157,8 @@
         "name": "path",
         "type": "varchar",
         "title": "Path",
-        "description": "A path this module points to."
+        "description": "A path this module points to.",
+        "searchable": 40
       },
       {
         "name": "order",
