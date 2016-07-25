@@ -22,16 +22,23 @@ class EmbedMany extends AbstractField
     /**
      * Constructor
      *
-     * @param Document $document    Document type
-     * @param string   $fieldName   Field name
-     * @param string   $exposedName Exposed name
-     * @param bool     $readOnly    Read only
-     * @param bool     $required    Is required
+     * @param Document $document              Document type
+     * @param string   $fieldName             Field name
+     * @param string   $exposedName           Exposed name
+     * @param bool     $readOnly              Read only
+     * @param bool     $required              Is required
+     * @param bool     $recordOriginException Is an exception to record origin
      */
-    public function __construct(Document $document, $fieldName, $exposedName, $readOnly, $required)
-    {
+    public function __construct(
+        Document $document,
+        $fieldName,
+        $exposedName,
+        $readOnly,
+        $required,
+        $recordOriginException
+    ) {
         $this->document = $document;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required, false);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required, false, $recordOriginException);
     }
 
     /**

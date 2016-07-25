@@ -34,23 +34,29 @@ class AbstractField
      * @var bool
      */
     private $searchable;
+    /**
+     * @var bool
+     */
+    private $recordOriginException;
 
     /**
      * Constructor
      *
-     * @param string $fieldName   Field name
-     * @param string $exposedName Exposed name
-     * @param bool   $readOnly    Read only
-     * @param bool   $required    Is required
-     * @param bool   $searchable  Is searchable
+     * @param string $fieldName             Field name
+     * @param string $exposedName           Exposed name
+     * @param bool   $readOnly              Read only
+     * @param bool   $required              Is required
+     * @param bool   $searchable            Is searchable
+     * @param bool   $recordOriginException Is an exception to record origin
      */
-    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable)
+    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable, $recordOriginException)
     {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;
         $this->required = $required;
         $this->searchable = $searchable;
+        $this->recordOriginException = $recordOriginException;
     }
 
     /**
@@ -111,5 +117,27 @@ class AbstractField
     public function setSearchable($searchable)
     {
         $this->searchable = $searchable;
+    }
+
+    /**
+     * get RecordOriginException
+     *
+     * @return boolean RecordOriginException
+     */
+    public function isRecordOriginException()
+    {
+        return $this->recordOriginException;
+    }
+
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
     }
 }

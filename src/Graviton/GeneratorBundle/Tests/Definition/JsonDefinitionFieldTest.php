@@ -159,15 +159,16 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             array_replace(
                 $this->getBaseDefAsArray($definition),
                 [
-                    'name'              => $field->getName(),
-                    'type'              => $field->getType(),
-                    'exposedName'       => $definition->getExposeAs(),
-                    'doctrineType'      => $field->getTypeDoctrine(),
-                    'serializerType'    => $field->getTypeSerializer(),
-                    'relType'           => null,
-                    'isClassType'       => false,
-                    'xDynamicKey'       => null,
-                    'searchable'        => 0,
+                    'name'                 => $field->getName(),
+                    'type'                 => $field->getType(),
+                    'exposedName'          => $definition->getExposeAs(),
+                    'doctrineType'         => $field->getTypeDoctrine(),
+                    'serializerType'       => $field->getTypeSerializer(),
+                    'relType'              => null,
+                    'isClassType'          => false,
+                    'xDynamicKey'          => null,
+                    'searchable'           => 0,
+                    'recordOriginException' => false
                 ]
             ),
             $field->getDefAsArray()
@@ -195,15 +196,16 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             array_replace(
                 $this->getBaseDefAsArray($definition),
                 [
-                    'name'              => $field->getName(),
-                    'type'              => $field->getType(),
-                    'exposedName'       => $field->getName(),
-                    'doctrineType'      => $field->getTypeDoctrine(),
-                    'serializerType'    => $field->getTypeSerializer(),
-                    'relType'           => null,
-                    'isClassType'       => false,
-                    'xDynamicKey'       => $key,
-                    'searchable'        => 0,
+                    'name'                  => $field->getName(),
+                    'type'                  => $field->getType(),
+                    'exposedName'           => $field->getName(),
+                    'doctrineType'          => $field->getTypeDoctrine(),
+                    'serializerType'        => $field->getTypeSerializer(),
+                    'relType'               => null,
+                    'isClassType'           => false,
+                    'xDynamicKey'           => $key,
+                    'searchable'            => 0,
+                    'recordOriginException' => false
                 ]
             ),
             $field->getDefAsArray()

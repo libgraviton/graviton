@@ -79,7 +79,10 @@ class ConstraintUtils
      */
     public function getCurrentEntity()
     {
-        if (isset($this->currentSchema->{'x-documentClass'}) && isset($this->currentData->id)) {
+        if (isset($this->currentSchema->{'x-documentClass'}) &&
+            !empty($this->currentSchema->{'x-documentClass'}) &&
+            isset($this->currentData->id)
+        ) {
             return $this->getSerializedEntity($this->currentSchema->{'x-documentClass'}, $this->currentData->id);
         }
 
