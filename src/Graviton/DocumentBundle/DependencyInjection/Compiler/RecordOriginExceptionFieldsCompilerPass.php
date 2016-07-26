@@ -1,6 +1,6 @@
 <?php
 /**
- * a CompilerPass to assist the new JSON schema based validation for readOnly fields
+ * a CompilerPass to assist the new JSON schema based validation for recordOriginException fields
  */
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ReadOnlyFieldsCompilerPass implements CompilerPassInterface
+class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
 {
     /**
      * @var DocumentMap
@@ -47,7 +47,7 @@ class ReadOnlyFieldsCompilerPass implements CompilerPassInterface
                 '',
                 '',
                 function ($field) {
-                    return $field->isReadOnly();
+                    return $field->isRecordOriginException();
                 }
             );
 
@@ -62,6 +62,6 @@ class ReadOnlyFieldsCompilerPass implements CompilerPassInterface
             }
         }
 
-        $container->setParameter('graviton.document.readonly.fields', $map);
+        $container->setParameter('graviton.document.recordoriginexception.fields', $map);
     }
 }

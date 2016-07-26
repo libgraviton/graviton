@@ -98,24 +98,25 @@ class JsonDefinitionField implements DefinitionElementInterface
     public function getDefAsArray()
     {
         return [
-            'length'            => $this->definition->getLength(),
-            'title'             => $this->definition->getTitle(),
-            'description'       => $this->definition->getDescription(),
-            'readOnly'          => $this->definition->getReadOnly(),
-            'required'          => $this->definition->getRequired(),
-            'searchable'        => $this->definition->getSearchable(),
-            'translatable'      => $this->definition->getTranslatable(),
-            'collection'        => $this->definition->getCollection(),
+            'length'                => $this->definition->getLength(),
+            'title'                 => $this->definition->getTitle(),
+            'description'           => $this->definition->getDescription(),
+            'readOnly'              => $this->definition->getReadOnly(),
+            'recordOriginException' => $this->definition->isRecordOriginException(),
+            'required'              => $this->definition->getRequired(),
+            'searchable'            => $this->definition->getSearchable(),
+            'translatable'          => $this->definition->getTranslatable(),
+            'collection'            => $this->definition->getCollection(),
 
-            'name'              => $this->getName(),
-            'type'              => $this->getType(),
-            'exposedName'       => $this->getExposedName(),
-            'doctrineType'      => $this->getTypeDoctrine(),
-            'serializerType'    => $this->getTypeSerializer(),
-            'xDynamicKey'       => $this->getXDynamicKey(),
-            'relType'           => null,
-            'isClassType'       => false,
-            'constraints'       => array_map(
+            'name'                  => $this->getName(),
+            'type'                  => $this->getType(),
+            'exposedName'           => $this->getExposedName(),
+            'doctrineType'          => $this->getTypeDoctrine(),
+            'serializerType'        => $this->getTypeSerializer(),
+            'xDynamicKey'           => $this->getXDynamicKey(),
+            'relType'               => null,
+            'isClassType'           => false,
+            'constraints'           => array_map(
                 [Utils\ConstraintNormalizer::class, 'normalize'],
                 $this->definition->getConstraints()
             ),
