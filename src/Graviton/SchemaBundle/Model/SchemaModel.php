@@ -89,6 +89,19 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get recordOriginModifiable
+     *
+     * @return bool
+     */
+    public function getRecordOriginModifiable()
+    {
+        if (isset($this->schema->recordOriginModifiable)) {
+            return $this->schema->recordOriginModifiable;
+        }
+        return true;
+    }
+
+    /**
      * Returns the bare schema
      *
      * @return \stdClass Schema
@@ -174,6 +187,18 @@ class SchemaModel implements ContainerAwareInterface
     public function getReadOnlyOfField($field)
     {
         return $this->getSchemaField($field, 'readOnly', false);
+    }
+
+    /**
+     * get readOnly flag for a given field
+     *
+     * @param string $field field name
+     *
+     * @return boolean the readOnly flag
+     */
+    public function getRecordOriginExceptionOfField($field)
+    {
+        return $this->getSchemaField($field, 'recordOriginException', false);
     }
 
     /**

@@ -157,7 +157,8 @@ class DocumentMap
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     $validationField === null ? false : $validationField['required'],
-                    $serializerField === null ? false : $serializerField['searchable']
+                    $serializerField === null ? false : $serializerField['searchable'],
+                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
                 );
             } else {
                 $fields[] = new Field(
@@ -166,7 +167,8 @@ class DocumentMap
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     $validationField === null ? false : $validationField['required'],
-                    $serializerField === null ? false : $serializerField['searchable']
+                    $serializerField === null ? false : $serializerField['searchable'],
+                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
                 );
             }
         }
@@ -187,7 +189,8 @@ class DocumentMap
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 $validationField === null ? false : $validationField['required'],
-                $serializerField === null ? false : $serializerField['searchable']
+                $serializerField === null ? false : $serializerField['searchable'],
+                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
             );
         }
         foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
@@ -203,7 +206,8 @@ class DocumentMap
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
-                $validationField === null ? false : $validationField['required']
+                $validationField === null ? false : $validationField['required'],
+                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
             );
         }
 
@@ -291,6 +295,15 @@ class DocumentMap
             }
             foreach ($schema['readOnlyFields'] as $field) {
                 $classMap[$schema['x-documentClass']][$field]['readOnly'] = true;
+            }
+
+            // flags from fields
+            if (is_array($schema['properties'])) {
+                foreach ($schema['properties'] as $fieldName => $field) {
+                    if (isset($field['recordOriginException']) && $field['recordOriginException'] == true) {
+                        $classMap[$schema['x-documentClass']][$fieldName]['recordOriginException'] = true;
+                    }
+                }
             }
         }
 

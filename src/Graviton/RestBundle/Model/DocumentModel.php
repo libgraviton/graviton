@@ -316,7 +316,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
-        $this->checkIfOriginRecord($entity);
         $this->manager->persist($entity);
 
         if ($doFlush) {
@@ -348,10 +347,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
-        // In both cases the document attribute named originRecord must not be 'core'
-        $this->checkIfOriginRecord($entity);
-        $this->checkIfOriginRecord($this->selectSingleFields($documentId, ['recordOrigin']));
-
         if (!is_null($documentId)) {
             $this->deleteById($documentId);
             // detach so odm knows it's gone
