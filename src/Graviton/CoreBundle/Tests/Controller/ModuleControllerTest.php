@@ -28,7 +28,7 @@ class ModuleControllerTest extends RestTestCase
     const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/module/collection';
 
     /**
-     * setup client and load fixtures
+     * setup client and load fixtures, generate search indexes separately
      *
      * @return void
      */
@@ -42,6 +42,47 @@ class ModuleControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+
+        $this->setVerbosityLevel(1);
+        $this->isDecorated(true);
+        $this->runCommand('graviton:generate:build-indexes', [], true);
+    }
+
+    /**
+     * testing the search in search index, combined with a select (RQL)
+     *
+     * @return void
+     */
+    public function testSearchIndex()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(module)&select(key)');
+        $this->assertEquals('retirement', $client->getResults()[0]->key);
+        $this->assertEquals('realEstate', $client->getResults()[1]->key);
+        $this->assertEquals('investment', $client->getResults()[2]->key);
+        $this->assertEquals('requisition', $client->getResults()[3]->key);
+        $this->assertEquals('payAndSave', $client->getResults()[4]->key);
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(AdminRef)&select(key)');
+        $this->assertEquals('AdminRef', $client->getResults()[0]->key);
+    }
+
+    /**
+     * testing the search index using second param, non sensitive, combined with a select (RQL)
+     *
+     * @return void
+     */
+    public function testSearchWeightedIndex()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?search(module%20adminref)&select(key,path)');
+        $results = $client->getResults();
+
+        $this->assertEquals('AdminRef', $results[0]->key);
+        $this->assertEquals('retirement', $results[1]->key);
+        $this->assertEquals('realEstate', $results[2]->key);
     }
 
     /**
