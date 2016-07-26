@@ -481,4 +481,33 @@ class JsonDefinition
         }
         return $indexes;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getTextIndexes()
+    {
+        $indexes = [];
+        if ($keys = $this->def->getTarget()->getTextIndexes()) {
+            foreach ($keys as $key) {
+                if ($value = (int) $key['weight']) {
+                    $indexes[$key['field']] = $value;
+                }
+            }
+        }
+        return $indexes;
+    }
+
+    /**
+     * Combine in one array the Search text indexes
+     * 
+     * @return array
+     */
+    public function getAllTextIndexes()
+    {
+        return array_merge(
+            $this->getSearchables(),
+            $this->getTextIndexes()
+        );
+    }
 }

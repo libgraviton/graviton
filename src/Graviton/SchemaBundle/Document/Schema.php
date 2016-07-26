@@ -144,6 +144,11 @@ class Schema
     protected $constraints;
 
     /**
+     * @var array<string>
+     */
+    protected $textIndexes;
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -868,5 +873,21 @@ class Schema
             return null;
         }
         return $this->searchable;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTextIndexes()
+    {
+        return $this->textIndexes;
+    }
+
+    /**
+     * @param array $textIndexes
+     */
+    public function setTextIndexes($textIndexes)
+    {
+        $this->textIndexes = $textIndexes;
     }
 }
