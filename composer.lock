@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e1cd5feca37263c5892b5a171e2948f8",
-    "content-hash": "c30cd9aa04477251d21ebc0f36f8b864",
+    "hash": "64b446a58090ce072163df5ce97d55e7",
+    "content-hash": "79247d07cb51644490dd32cb9410716f",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1619,7 +1619,7 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.2.0",
+            "version": "dev-feature/EVO-5751-add-textIndexes",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
@@ -1662,7 +1662,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-07-14 09:10:17"
+            "time": "2016-07-26 14:58:08"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -6925,6 +6925,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "graviton/json-schema": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,

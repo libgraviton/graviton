@@ -884,7 +884,11 @@ class Schema
     }
 
     /**
-     * @param array $textIndexes
+     * get textIndexes fields
+     *
+     * @param array $textIndexes Data array of special text search values
+     *
+     * @return void
      */
     public function setTextIndexes($textIndexes)
     {
