@@ -69,6 +69,14 @@
         ]
       },
       {
+        "name": "status.0.description",
+        "type": "string",
+        "title": "Description",
+        "description": "Description of the status",
+        "translatable" : true,
+        "required": false
+      },
+      {
         "name": "information",
         "type": "hash",
         "title": "Information",
