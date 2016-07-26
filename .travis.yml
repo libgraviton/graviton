@@ -1,5 +1,5 @@
 language: php
-sudo: false
+sudo: required
 services:
 - mongodb
 - rabbitmq
@@ -10,6 +10,10 @@ addons:
     packages:
     - mongodb-org-server
 before_script:
+- >
+    if [ "$PHPUNIT_SUITE" != "integration" ]; then
+        sudo service mongodb stop
+    fi
 - >
     if [ "$PHPUNIT_SUITE" != "unit" ]; then
         phpenv config-rm xdebug.ini
@@ -45,7 +49,9 @@ script:
         composer run-script post-install-cmd && \
         touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm && \
         touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm && \
-        php app/console graviton:generate:build-indexes && \
+        if [ "$PHPUNIT_SUITE" == "integration" ]; then
+            php app/console graviton:generate:build-indexes
+        fi && \
         if [ "$PHPUNIT_SUITE" == "unit" ]; then
           COVERAGE=" --coverage-clover=coverage.clover "
         fi && \
