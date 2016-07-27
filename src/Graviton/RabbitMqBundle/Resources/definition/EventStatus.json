@@ -69,6 +69,14 @@
         ]
       },
       {
+        "name": "status.0.description",
+        "type": "string",
+        "title": "Description",
+        "description": "Description of what the worker does",
+        "translatable" : true,
+        "required": false
+      },
+      {
         "name": "information",
         "type": "hash",
         "title": "Information",
