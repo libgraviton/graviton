@@ -72,7 +72,7 @@
         "name": "status.0.description",
         "type": "string",
         "title": "Description",
-        "description": "Description of the status",
+        "description": "Description of what the worker does",
         "translatable" : true,
         "required": false
       },
