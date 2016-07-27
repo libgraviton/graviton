@@ -85,10 +85,10 @@
 
     {# TODO This is a fix for a missing feature in XMLDriver that can not build wieght indexes, redo this when so. #}
     {# TODO The command that build the indexes is : GenerateBuildIndexes: graviton:generate:build-indexes. #}
-    {% if searchables is defined and searchables is not empty %}
+    {% if textIndexes is defined and textIndexes is not empty %}
             <index>
                 <key name="search{{ document }}Index"/>
-                {% for index, value in searchables %}
+                {% for index, value in textIndexes %}
                     <option name="search_{{ index }}" value="{{ value }}"/>
                 {% endfor %}
             </index>
