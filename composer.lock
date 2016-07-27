@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "64b446a58090ce072163df5ce97d55e7",
-    "content-hash": "79247d07cb51644490dd32cb9410716f",
+    "hash": "e1cd5feca37263c5892b5a171e2948f8",
+    "content-hash": "c30cd9aa04477251d21ebc0f36f8b864",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1619,16 +1619,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "dev-feature/EVO-5751-add-textIndexes",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "d0d8fa3b563465ff1d6dc90129997fcef31548fb"
+                "reference": "13ce19927a7eb7228fa331bf53bc65d4bc38bb8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/d0d8fa3b563465ff1d6dc90129997fcef31548fb",
-                "reference": "d0d8fa3b563465ff1d6dc90129997fcef31548fb",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/13ce19927a7eb7228fa331bf53bc65d4bc38bb8d",
+                "reference": "13ce19927a7eb7228fa331bf53bc65d4bc38bb8d",
                 "shasum": ""
             },
             "require": {
@@ -1662,7 +1662,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-07-26 14:58:08"
+            "time": "2016-07-27 06:15:11"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -6925,7 +6925,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "graviton/json-schema": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
