@@ -32,6 +32,7 @@ class EventStatusControllerTest extends RestTestCase
         $statusEntry = new \stdClass();
         $statusEntry->workerId = 'testworker';
         $statusEntry->status = 'opened';
+        $statusEntry->description['en']  = 'status Description';
 
         $status->status = [$statusEntry];
 
@@ -48,6 +49,7 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals('opened', $results->status[0]->status);
+        $this->assertEquals('status Description', $results->status[0]->description->en);
 
         // set invalid status
         $results->status[0]->status = 'thinking';
