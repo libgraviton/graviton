@@ -5364,16 +5364,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.20.0",
+            "version": "v0.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "13801b596d97f1bfa6f9f5f2db716414345faf5c"
+                "reference": "001fc2d0e27e94d999e99d9c35d5e96f88791760"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/13801b596d97f1bfa6f9f5f2db716414345faf5c",
-                "reference": "13801b596d97f1bfa6f9f5f2db716414345faf5c",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/001fc2d0e27e94d999e99d9c35d5e96f88791760",
+                "reference": "001fc2d0e27e94d999e99d9c35d5e96f88791760",
                 "shasum": ""
             },
             "type": "library",
@@ -5393,10 +5393,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.20.0",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.21.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-07-06 11:43:17"
+            "time": "2016-07-23 08:03:13"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
