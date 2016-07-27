@@ -119,7 +119,7 @@ class GenerateBuildIndexesCommand extends Command
                                 'weights' => $weights,
                                 'name'    => $searchName,
                                 'default_language'  => 'de',
-                                'language_override' => 'dummy'
+                                'language_override' => 'none'
                             ]
                         );
                     }

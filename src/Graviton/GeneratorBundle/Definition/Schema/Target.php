@@ -28,6 +28,11 @@ class Target
     private $indexes = [];
 
     /**
+     * @var string[]
+     */
+    private $textIndexes = [];
+
+    /**
      * @return Relation[]
      */
     public function getRelations()
@@ -99,5 +104,23 @@ class Target
     public function getIndexes()
     {
         return $this->indexes;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTextIndexes()
+    {
+        return $this->textIndexes;
+    }
+
+    /**
+     * @param string[] $textIndexes indexes from json def
+     * @return $this
+     */
+    public function setTextIndexes($textIndexes)
+    {
+        $this->textIndexes = $textIndexes;
+        return $this;
     }
 }

@@ -53,6 +53,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $searchableFields = array();
     /**
+     * @var string[]
+     */
+    protected $textIndexes = array();
+    /**
      * @var DocumentRepository
      */
     private $repository;
