@@ -1,5 +1,5 @@
 language: php
-sudo: required
+sudo: false
 services:
 - mongodb
 - rabbitmq
@@ -12,7 +12,7 @@ addons:
 before_script:
 - >
     if [ "$PHPUNIT_SUITE" != "integration" ]; then
-        sudo service mongodb stop
+        export MONGODB_URI=mongodb://does.not.exist.example.org:443
     fi
 - >
     if [ "$PHPUNIT_SUITE" != "unit" ]; then
