@@ -163,6 +163,12 @@ class ProxyController
     {
         $headers->remove('transfer-encoding'); // Chunked responses get not automatically re-chunked by graviton
         $headers->remove('trailer'); // Only for chunked responses, graviton should re-set this when chunking
+
+        // Change naming to Graviton output Allow options
+        if ($allow = $headers->get('Allow', false)) {
+            $headers->set('Access-Control-Allow-Methods', $allow);
+            $headers->remove('Allow');
+        }
     }
 
     /**
