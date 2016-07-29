@@ -32,7 +32,7 @@ class EventStatusControllerTest extends RestTestCase
         $statusEntry = new \stdClass();
         $statusEntry->workerId = 'testworker';
         $statusEntry->status = 'opened';
-        $statusEntry->description['en']  = 'status Description';
+        $statusEntry->action  = 'status-key-action';
 
         $status->status = [$statusEntry];
 
@@ -49,7 +49,7 @@ class EventStatusControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEquals('opened', $results->status[0]->status);
-        $this->assertEquals('status Description', $results->status[0]->description->en);
+        $this->assertEquals('status-key-action', $results->status[0]->action);
 
         // set invalid status
         $results->status[0]->status = 'thinking';
@@ -116,5 +116,62 @@ class EventStatusControllerTest extends RestTestCase
             "Does not have a value in the enumeration [\"debug\",\"info\",\"warning\",\"error\"]",
             $results[0]->message
         );
+    }
+
+    /**
+     * Event Status Action
+     *
+     * @return void
+     */
+    public function testEventStatusActionStatus()
+    {
+        // Create a action and translation
+        $action = new \stdClass();
+        $action->id = 'new-worker-action-id';
+        $action->description = new \stdClass();
+        $action->description->en = "Some translated action";
+
+        $client = static::createRestClient();
+        $client->put('/event/action/'.$action->id, $action);
+
+        // Check result
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+
+        // get our object again
+        $client = static::createRestClient();
+        $client->request('GET', '/event/action/'.$action->id);
+        $results = $client->getResults();
+        $this->assertEquals($action->description->en, $results->description->en);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // Creating the event
+        $eventStatus = new \stdClass();
+        $eventStatus->id = 'mynewstatus2';
+        $eventStatus->createDate = '2015-09-24T07:21:24+0000';
+        $eventStatus->eventName = 'document.test.app.create';
+
+        $status = new \stdClass();
+        $status->workerId = 'testworker';
+        $status->status = 'opened';
+        $status->action = new \stdClass();
+        $status->action->{'$ref'} = 'http://localhost/event/action/'.$action->id;
+        $eventStatus->status = [$status];
+
+        // Save the status
+        $client = static::createRestClient();
+        $client->put('/event/status/mynewstatus2', $eventStatus);
+
+        $this->assertNull($client->getResults());
+        $this->assertNull($client->getResponse()->headers->get('Location'));
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+
+        // get our object again, checking
+        $client = static::createRestClient();
+        $client->request('GET', '/event/status/mynewstatus2');
+        $results = $client->getResults();
+
+        $this->assertEquals('opened', $results->status[0]->status);
+        $this->assertEquals('http://localhost/event/action/'.$action->id, $results->status[0]->action->{'$ref'});
+
     }
 }

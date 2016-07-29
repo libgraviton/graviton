@@ -69,11 +69,14 @@
         ]
       },
       {
-        "name": "status.0.description",
-        "type": "string",
-        "title": "Description",
-        "description": "Description of what the worker does",
-        "translatable" : true,
+        "name": "status.0.action.ref",
+        "type": "extref",
+        "title": "Action",
+        "exposeAs": "$ref",
+        "description": "Action done for this event, EventWorkerAction",
+        "collection": [
+          "EventStatusAction"
+        ],
         "required": false
       },
       {
