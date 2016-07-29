@@ -128,7 +128,6 @@ class EventStatusControllerTest extends RestTestCase
         // Create a action and translation
         $action = new \stdClass();
         $action->id = 'new-worker-action-id';
-        $action->action = 'new-worker-action-create';
         $action->description = new \stdClass();
         $action->description->en = "Some translated action";
 
@@ -142,7 +141,6 @@ class EventStatusControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/event/action/'.$action->id);
         $results = $client->getResults();
-        $this->assertEquals($action->action, $results->action);
         $this->assertEquals($action->description->en, $results->description->en);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 

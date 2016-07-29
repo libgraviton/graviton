@@ -8,7 +8,6 @@
     "fixtures": [
       {
         "id": "worker1-default1",
-        "action": "core-create",
         "description": {
           "en": "Any core data load",
           "de": "Viele Kerndatenlast"
@@ -33,13 +32,6 @@
         "type": "varchar",
         "title": "Unique id to be referred",
         "description": "Unique identifier and a short string identifying a single worker",
-        "required": true
-      },
-      {
-        "name": "action",
-        "type": "string",
-        "title": "Action identifier",
-        "description": "The action done by the worker",
         "required": true
       },
       {
