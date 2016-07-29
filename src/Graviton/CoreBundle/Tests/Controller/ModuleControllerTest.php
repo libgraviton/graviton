@@ -77,7 +77,7 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/core/module/?search(module%20adminref)&select(key,path)');
+        $client->request('GET', '/core/module/?search(module%20adminref)&gt(order,0)&select(key,path)');
         $results = $client->getResults();
 
         $this->assertEquals('AdminRef', $results[0]->key);
