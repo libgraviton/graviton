@@ -1,0 +1,55 @@
+{
+  "id": "EventStatusAction",
+  "description": "Action translation for worker events",
+  "service": {
+    "readOnly": false,
+    "routerBase": "/event/action/",
+    "fixtureOrder": 1,
+    "fixtures": [
+      {
+        "id": "worker1-default1",
+        "action": "core-create",
+        "description": {
+          "en": "Any core data load",
+          "de": "Viele Kerndatenlast"
+        }
+      },
+      {
+        "id": "worker1-default2",
+        "action": "core-config-create",
+        "description": {
+          "en": "Any core config data load",
+          "de": "Viele Kerndatenlast config"
+        }
+      }
+    ]
+  },
+  "target": {
+    "indexes": [],
+    "relations": [],
+    "fields": [
+      {
+        "name": "id",
+        "type": "varchar",
+        "title": "Unique id to be referred",
+        "description": "Unique identifier and a short string identifying a single worker",
+        "required": true
+      },
+      {
+        "name": "action",
+        "type": "string",
+        "title": "Action identifier",
+        "description": "The action done by the worker",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "title": "Description",
+        "description": "A translated description for action done",
+        "required": false,
+        "translatable" : true
+      }
+    ]
+  }
+}
