@@ -731,4 +731,46 @@ class ModuleControllerTest extends RestTestCase
             ]
         );
     }
+
+    /**
+     * verify that finding stuff with dot in it works
+     *
+     * @return void
+     */
+    public function testSearchForDottedKeyInModule()
+    {
+        $testModule = new \stdClass;
+        $testModule->key = 'i.can.haz.dot';
+        $testModule->app = new \stdClass;
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/canhazdot';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'My name iz different and haz not dot';
+        $testModule->path = '/test/test';
+        $testModule->order = 50;
+
+        $client = static::createRestClient();
+        $client->post('/core/module/', $testModule);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        // simple search
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?search(can.haz)');
+        $results = $client->getResults();
+        $this->assertCount(1, $results);
+
+        $module = $results[0];
+        $this->assertEquals('i.can.haz.dot', $module->key);
+
+        // advanced search
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?limit(2)&search(can.haz)');
+        $results = $client->getResults();
+        $this->assertCount(1, $results);
+
+        $module = $results[0];
+        $this->assertEquals('i.can.haz.dot', $module->key);
+    }
 }
