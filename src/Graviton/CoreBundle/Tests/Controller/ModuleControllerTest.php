@@ -731,4 +731,69 @@ class ModuleControllerTest extends RestTestCase
             ]
         );
     }
+
+    /**
+     * verify that finding stuff with dot in it works
+     *
+     * @return void
+     */
+    public function testSearchForDottedKeyInModule()
+    {
+        // Create element 1
+        $testModule = new \stdClass;
+        $testModule->key = 'i.can.haz.dot';
+        $testModule->app = new \stdClass;
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/canhazdot';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'My name iz different and haz not dot';
+        $testModule->path = '/test/test';
+        $testModule->order = 50;
+
+        $client = static::createRestClient();
+        $client->post('/core/module/', $testModule);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        
+        // Create element 2
+        $testModule = new \stdClass;
+        $testModule->key = 'i.ban.haz.dot';
+        $testModule->app = new \stdClass;
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/banhazdot';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'My name iz different and ban not dot';
+        $testModule->path = '/test/test';
+        $testModule->order = 40;
+
+        $client = static::createRestClient();
+        $client->post('/core/module/', $testModule);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        // simple search, on second element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?search(i.ban)');
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+
+        $module = $results[0];
+        $this->assertEquals('i.ban.haz.dot', $module->key);
+
+        // advanced search, on first element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?limit(2)&search(i.can)&gt(order,10)');
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+
+        $module = $results[0];
+        $this->assertEquals('i.can.haz.dot', $module->key);
+
+        // advanced search, on first element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?limit(4)&search(haz.dot)&gt(order,10)');
+        $results = $client->getResults();
+        $this->assertEquals(2, count($results));
+    }
 }
