@@ -235,11 +235,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             foreach ($innerQuery->getQueries() as $key => $innerRql) {
                 if ($innerRql instanceof SearchNode) {
                     if (!$hasSearch) {
-                        $searchArr = [];
-                        foreach ($innerRql->getSearchTerms() as $string) {
-                            $searchArr[] = (strpos('.', $string)!==false) ? "\"{$string}\"" : $string;
-                        }
-                        $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
+                        $queryBuilder = $this->buildSearchTextQuery($queryBuilder, $innerRql);
                         $hasSearch = true;
                     }
                 } else {
@@ -248,11 +244,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             }
         } elseif ($innerQuery instanceof SearchNode) {
             $queryBuilder = $this->repository->createQueryBuilder();
-            $searchArr = [];
-            foreach ($innerQuery->getSearchTerms() as $string) {
-                $searchArr[] = (strpos('.', $string)!==false) ? "\"{$string}\"" : $string;
-            }
-            $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
+            $queryBuilder = $this->buildSearchTextQuery($queryBuilder, $innerQuery);
             $hasSearch = true;
         }
         // Remove the Search from RQL xiag
@@ -287,6 +279,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
+     * Check if collection has search indexes in DB
+     *
      * @param string $prefix the prefix for custom text search indexes
      * @return bool
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -301,6 +295,27 @@ class DocumentModel extends SchemaModel implements ModelInterface
             }
         }
         return false;
+    }
+
+    /**
+     * Build Search text index
+     *
+     * @param MongoBuilder $queryBuilder Doctrine mongo query builder object
+     * @param SearchNode   $searchNode   Graviton Search node
+     * @return MongoBuilder
+     */
+    private function buildSearchTextQuery(MongoBuilder $queryBuilder, SearchNode $searchNode)
+    {
+        $searchArr = [];
+        foreach ($searchNode->getSearchTerms() as $string) {
+            if (!empty(trim($string))) {
+                $searchArr[] = (strpos($string, '.') !== false) ? "\"{$string}\"" : $string;
+            }
+        }
+        if (!empty($searchArr)) {
+            $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
+        }
+        return $queryBuilder;
     }
 
     /**
