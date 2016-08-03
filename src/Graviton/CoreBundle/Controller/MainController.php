@@ -169,7 +169,7 @@ class MainController
         );
 
         foreach ($services as $key => $val) {
-            if ($this->isRelevantForMainPage($val)) {
+            if ($this->isRelevantForMainPage($val) && !in_array($val['$ref'], $sortArr)) {
                 $sortArr[$key] = $val['$ref'];
             } else {
                 unset($services[$key]);

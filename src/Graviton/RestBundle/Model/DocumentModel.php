@@ -235,8 +235,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             foreach ($innerQuery->getQueries() as $key => $innerRql) {
                 if ($innerRql instanceof SearchNode) {
                     if (!$hasSearch) {
-                        $searchString = implode(' ', $innerRql->getSearchTerms());
-                        $queryBuilder->addAnd($queryBuilder->expr()->text($searchString));
+                        $searchArr = [];
+                        foreach ($innerRql->getSearchTerms() as $string) {
+                            $searchArr[] = (strpos('.', $string)!==false) ? "\"{$string}\"" : $string;
+                        }
+                        $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
                         $hasSearch = true;
                     }
                 } else {
@@ -245,7 +248,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             }
         } elseif ($innerQuery instanceof SearchNode) {
             $queryBuilder = $this->repository->createQueryBuilder();
-            $queryBuilder->text(implode(' ', $innerQuery->getSearchTerms()));
+            $searchArr = [];
+            foreach ($innerQuery->getSearchTerms() as $string) {
+                $searchArr[] = (strpos('.', $string)!==false) ? "\"{$string}\"" : $string;
+            }
+            $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
             $hasSearch = true;
         }
         // Remove the Search from RQL xiag
