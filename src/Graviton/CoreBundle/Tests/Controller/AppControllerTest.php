@@ -108,7 +108,6 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
-
     }
 
     /**
@@ -493,7 +492,6 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/tablet>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
-
     }
 
     /**

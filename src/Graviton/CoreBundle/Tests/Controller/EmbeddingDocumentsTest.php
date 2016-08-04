@@ -297,7 +297,6 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
         $this->assertEntityExists('three', 'three');
-
     }
 
     /**

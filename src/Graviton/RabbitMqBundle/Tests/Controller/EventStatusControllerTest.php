@@ -174,6 +174,5 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals('opened', $results->status[0]->status);
         $this->assertEquals('http://localhost/event/action/'.$action->id, $results->status[0]->action->{'$ref'});
-
     }
 }

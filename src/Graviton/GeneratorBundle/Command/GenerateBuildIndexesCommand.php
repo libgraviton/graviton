@@ -126,7 +126,6 @@ class GenerateBuildIndexesCommand extends Command
                 }
             }
         }
-
     }
 
     /**

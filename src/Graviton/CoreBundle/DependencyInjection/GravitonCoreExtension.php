@@ -42,6 +42,5 @@ class GravitonCoreExtension extends GravitonBundleExtension
 
         $container->setParameter('graviton.core.links', $configs[0]['service_name']);
         $container->setParameter('graviton.core.main.path.whitelist', $configs[0]['uri_whitelist']);
-
     }
 }
