@@ -166,20 +166,20 @@ class SchemaConstraintsTest extends RestTestCase
             'decimal-string' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000.5555',
-                'rejectedValue' => '1.55555', // too much precision
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+                'rejectedValue' => '1.555555555', // too much precision
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
             ],
             'decimal-string-notation' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000',
                 'rejectedValue' => '1,0', // wrong separator
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
             ],
             'decimal-string-string' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '0',
                 'rejectedValue' => 'somestring', // string
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,4})?$'
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
             ],
 
             // Count (number of array elements)

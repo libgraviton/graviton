@@ -57,15 +57,15 @@ class ModuleControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $client->request('GET', '/core/module/?search(module)&select(key)');
-        $this->assertEquals('retirement', $client->getResults()[0]->key);
-        $this->assertEquals('realEstate', $client->getResults()[1]->key);
-        $this->assertEquals('investment', $client->getResults()[2]->key);
-        $this->assertEquals('requisition', $client->getResults()[3]->key);
-        $this->assertEquals('payAndSave', $client->getResults()[4]->key);
 
+        // should not find 'AdminRef'
+        $this->assertEquals(5, count($client->getResults()));
+
+        // the sixth
         $client = static::createRestClient();
         $client->request('GET', '/core/module/?search(AdminRef)&select(key)');
         $this->assertEquals('AdminRef', $client->getResults()[0]->key);
+        $this->assertEquals(1, count($client->getResults()));
     }
 
     /**
@@ -76,13 +76,20 @@ class ModuleControllerTest extends RestTestCase
     public function testSearchWeightedIndex()
     {
         $client = static::createRestClient();
-
-        $client->request('GET', '/core/module/?search(module%20adminref)&gt(order,0)&select(key,path)');
+        $client->request('GET', '/core/module/?search(module%20payandsave%20realestate)&gt(order,0)&select(key,path)');
         $results = $client->getResults();
 
-        $this->assertEquals('AdminRef', $results[0]->key);
-        $this->assertEquals('retirement', $results[1]->key);
-        $this->assertEquals('realEstate', $results[2]->key);
+        // This are the weighted important result, payAndSave and realEstate, order is not important.
+        $importantResults = [
+            $results[0]->key => $results[0]->path,
+            $results[1]->key => $results[1]->path
+        ];
+
+        $this->assertArrayHasKey('payAndSave', $importantResults);
+        $this->assertArrayHasKey('realEstate', $importantResults);
+
+        // Now, there shall be 5 results as we have 5 path containing module
+        $this->assertEquals(5, count($results));
     }
 
     /**
@@ -753,7 +760,7 @@ class ModuleControllerTest extends RestTestCase
         $client->post('/core/module/', $testModule);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        
+
         // Create element 2
         $testModule = new \stdClass;
         $testModule->key = 'i.ban.haz.dot';
