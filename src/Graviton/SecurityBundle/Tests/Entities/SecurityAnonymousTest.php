@@ -48,6 +48,5 @@ class SecurityAnonymousTest extends WebTestCase
             ->expects($this->never())
             ->method('getUsername')
             ->will($this->returnValue('anonymous'));
-
     }
 }
