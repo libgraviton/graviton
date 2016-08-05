@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "78cce980511352759612f58ea9ccebc4",
-    "content-hash": "983606009490e8a8b2dd9b41a3560c82",
+    "hash": "44eb8ec9915533fad9e359a518f58718",
+    "content-hash": "a981db41f83d4811d7e96acbf50e99dc",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -171,53 +171,6 @@
                 "transliterator"
             ],
             "time": "2015-09-28 16:26:35"
-        },
-        {
-            "name": "dbtlr/php-airbrake",
-            "version": "1.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dbtlr/php-airbrake.git",
-                "reference": "69fd4782219ba22fcfe4c278de1eebbbe38f0950"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dbtlr/php-airbrake/zipball/69fd4782219ba22fcfe4c278de1eebbbe38f0950",
-                "reference": "69fd4782219ba22fcfe4c278de1eebbbe38f0950",
-                "shasum": ""
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "php": ">=5.3.3",
-                "phpunit/phpunit": "*",
-                "squizlabs/php_codesniffer": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Airbrake\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Drew Butler",
-                    "email": "hi@dbtlr.com",
-                    "homepage": "http://dbtlr.com"
-                }
-            ],
-            "description": "A PHP 5.3 library for sending errors to the Airbrake.io service.",
-            "homepage": "https://github.com/dbtlr/php-airbrake",
-            "keywords": [
-                "airbrake",
-                "errors",
-                "exceptions",
-                "logging"
-            ],
-            "time": "2015-08-25 15:01:23"
         },
         {
             "name": "doctrine/annotations",
@@ -1333,53 +1286,6 @@
                 "orm"
             ],
             "time": "2016-01-05 21:34:58"
-        },
-        {
-            "name": "eo/airbrake-bundle",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/eymengunay/EoAirbrakeBundle.git",
-                "reference": "b935e55494aab0a62fbc743b9740cbd0e3221251"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/eymengunay/EoAirbrakeBundle/zipball/b935e55494aab0a62fbc743b9740cbd0e3221251",
-                "reference": "b935e55494aab0a62fbc743b9740cbd0e3221251",
-                "shasum": ""
-            },
-            "require": {
-                "dbtlr/php-airbrake": "~1.1",
-                "symfony/symfony": "~2.1"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Eo\\AirbrakeBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eymen Gunay",
-                    "email": "eymen@egunay.com"
-                }
-            ],
-            "description": "Airbrake.io integration for Symfony2",
-            "keywords": [
-                "airbrake",
-                "errbit",
-                "exception"
-            ],
-            "time": "2016-07-11 18:16:15"
         },
         {
             "name": "exercise/htmlpurifier-bundle",
