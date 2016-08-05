@@ -499,7 +499,6 @@ class ResourceGenerator extends AbstractGenerator
                 $paramNode->appendChild($rolesNode);
             }
         }
-
     }
 
     /**
@@ -807,7 +806,6 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
-
     }
 
     /**

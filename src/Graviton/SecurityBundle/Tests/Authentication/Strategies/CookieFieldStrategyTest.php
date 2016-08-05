@@ -36,7 +36,6 @@ class CookieFieldStrategyTest extends WebTestCase
         $this->strategy = new CookieFieldStrategy(
             $this->propertyKey
         );
-
     }
 
     /**

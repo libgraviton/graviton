@@ -161,7 +161,6 @@ final class SecurityAuthenticator implements
             $providerKey,
             $securityUser->getRoles()
         );
-
     }
 
     /**

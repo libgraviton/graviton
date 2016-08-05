@@ -71,6 +71,5 @@ class AcceptLanguageRequestListener
         }
 
         $request->attributes->set('languages', $languages);
-
     }
 }
