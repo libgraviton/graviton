@@ -43,7 +43,6 @@
         "graviton/rql-parser-bundle": "~0.11.0",
         "knplabs/knp-gaufrette-bundle": "~0.3",
         "aws/aws-sdk-php": "~2.8",
-        "eo/airbrake-bundle": "~1.0",
         "hwi/oauth-bundle": "~0.4",
         "graviton/deploy-scripts": "~0.4",
         "graviton/json-schema": "~1.0",

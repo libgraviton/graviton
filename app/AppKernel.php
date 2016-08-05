@@ -76,7 +76,6 @@ class AppKernel extends Kernel
             new \Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
-            new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
         );
