@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "78cce980511352759612f58ea9ccebc4",
-    "content-hash": "983606009490e8a8b2dd9b41a3560c82",
+    "hash": "ba027ad506c4029dafefbf296e06c11b",
+    "content-hash": "2448eeec915dd0d4cad72a665a0e6740",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1862,7 +1862,6 @@
                 "rest",
                 "web service"
             ],
-            "abandoned": "guzzlehttp/guzzle",
             "time": "2015-03-18 18:23:50"
         },
         {
@@ -4989,16 +4988,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.8.9",
+            "version": "v2.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "df02dd5d3f7decb3a05c6d0f31054b4263625dcb"
+                "reference": "038d13264f732f9bba850c423e374dc72874d1a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/df02dd5d3f7decb3a05c6d0f31054b4263625dcb",
-                "reference": "df02dd5d3f7decb3a05c6d0f31054b4263625dcb",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/038d13264f732f9bba850c423e374dc72874d1a6",
+                "reference": "038d13264f732f9bba850c423e374dc72874d1a6",
                 "shasum": ""
             },
             "require": {
@@ -5119,7 +5118,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-07-30 08:48:52"
+            "time": "2016-06-30 15:42:24"
         },
         {
             "name": "thefrozenfire/swagger",
