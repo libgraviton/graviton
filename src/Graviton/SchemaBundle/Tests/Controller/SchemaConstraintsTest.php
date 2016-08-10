@@ -166,20 +166,38 @@ class SchemaConstraintsTest extends RestTestCase
             'decimal-string' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000.5555',
-                'rejectedValue' => '1.555555555', // too much precision
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
+                'rejectedValue' => '1,0', // wrong separator
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
             ],
             'decimal-string-notation' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '1000000000',
-                'rejectedValue' => '1,0', // wrong separator
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
+                'rejectedValue' => '1.', // nothing after separator
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+            ],
+            'decimal-string-muchprecision' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '1000000000.3333333333333333',
+                'rejectedValue' => 'O', // other string
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+            ],
+            'decimal-string-minus' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '-3.3333333333333',
+                'rejectedValue' => ';1.0', // wrong prefix
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
+            ],
+            'decimal-string-plus' => [
+                'field' => 'decimalField',
+                'acceptedValue' => '+3.3333333333333',
+                'rejectedValue' => ';1.0', // wrong prefix
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
             ],
             'decimal-string-string' => [
                 'field' => 'decimalField',
                 'acceptedValue' => '0',
                 'rejectedValue' => 'somestring', // string
-                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d{0,8})?$'
+                'errorMessage' => 'Does not match the regex pattern ^[+\-]?\d+(\.\d+)?$'
             ],
 
             // Count (number of array elements)

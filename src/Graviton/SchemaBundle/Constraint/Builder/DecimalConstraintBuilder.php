@@ -21,7 +21,7 @@ class DecimalConstraintBuilder implements ConstraintBuilderInterface
      *
      * @var string
      */
-    private $pattern = '^[+\-]?\d+(\.\d{0,8})?$';
+    private $pattern = '^[+\-]?\d+(\.\d+)?$';
 
     /**
      * if this builder supports a given constraint
