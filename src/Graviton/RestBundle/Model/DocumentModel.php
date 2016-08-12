@@ -283,14 +283,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @param string $prefix the prefix for custom text search indexes
      * @return bool
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function hasCustomSearchIndex($prefix = 'search')
     {
-        $collection = $this->repository->getDocumentManager()->getDocumentCollection($this->repository->getClassName());
-        $indexesInfo = $collection->getIndexInfo();
-        foreach ($indexesInfo as $indexInfo) {
-            if ($indexInfo['name']==$prefix.$collection->getName().'Index') {
+        $metadata = $this->repository->getClassMetadata();
+        $indexes = $metadata->getIndexes();
+        if (count($indexes) < 1) {
+            return false;
+        }
+        $collectionsName = substr($metadata->getName(), strrpos($metadata->getName(), '\\') + 1);
+        $searchIndexName = $prefix.$collectionsName.'Index';
+        // We reverse as normally the search index is the last.
+        foreach (array_reverse($indexes) as $index) {
+            if (array_key_exists('keys', $index) && array_key_exists($searchIndexName, $index['keys'])) {
                 return true;
             }
         }
