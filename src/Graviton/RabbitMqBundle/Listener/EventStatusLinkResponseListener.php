@@ -149,19 +149,19 @@ class EventStatusLinkResponseListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        // exit if not master request or uninteresting method..
-        if (!$event->isMasterRequest() || $this->isNotConcerningRequest()) {
+        /**
+         * @var Response $response
+         */
+        $response = $event->getResponse();
+
+        // exit if not master request, uninteresting method or an error occurred
+        if (!$event->isMasterRequest() || $this->isNotConcerningRequest() || !$response->isSuccessful()) {
             return;
         }
 
         // we can always safely call this, it doesn't need much resources.
         // only if we have subscribers, it will create more load as it persists an EventStatus
         $queueEvent = $this->createQueueEventObject();
-
-        /**
-         * @var Response $response
-         */
-        $response = $event->getResponse();
 
         if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
             $linkHeader = LinkHeader::fromResponse($response);
