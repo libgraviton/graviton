@@ -69,8 +69,11 @@ class CoreVersionUtils
      */
     private function getContextVersion()
     {
+        // get current commit hash
+        $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
+
         $wrapper['id'] = 'self';
-        $wrapper['version'] = trim($this->runGitInContext('describe origin/master --tags --abbrev=0'));
+        $wrapper['version'] = trim($this->runGitInContext('tag --points-at '.$currentHash));
         return $wrapper;
     }
 
