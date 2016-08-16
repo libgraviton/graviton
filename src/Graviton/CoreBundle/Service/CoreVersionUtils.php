@@ -69,18 +69,8 @@ class CoreVersionUtils
      */
     private function getContextVersion()
     {
-        $output = $this->runComposerInContext('show -s --no-ansi');
-        $lines = explode(PHP_EOL, $output);
-        $wrapper = array();
-        foreach ($lines as $line) {
-            if (strpos($line, 'versions : *') !== false) {
-                list(, $wrapperVersion) = explode(': *', $line, 2);
-                $wrapper['id'] = 'self';
-                $wrapper['version'] = $this->getVersionNumber(trim($wrapperVersion));
-                break;
-            }
-        }
-
+        $wrapper['id'] = 'self';
+        $wrapper['version'] = trim($this->runGitInContext('describe origin/master --tags --abbrev=0'));
         return $wrapper;
     }
 
@@ -123,6 +113,27 @@ class CoreVersionUtils
             : $this->rootDir.'/../';
         $contextDir = escapeshellarg($path);
         $process = new Process('cd '.$contextDir.' && '.escapeshellcmd($this->composerCmd).' '.$command);
+        $process->mustRun();
+
+        return $process->getOutput();
+    }
+
+    /**
+     * runs a git command depending on the context
+     *
+     * @param string $command git args
+     * @return string
+     *
+     * @throws \RuntimeException
+     * @throws \LogicException
+     */
+    private function runGitInContext($command)
+    {
+        $path =  ($this->isWrapperContext())
+            ? $this->rootDir.'/../../../../'
+            : $this->rootDir.'/../';
+        $contextDir = escapeshellarg($path);
+        $process = new Process('cd '.$contextDir.' && git '.$command);
         $process->mustRun();
 
         return $process->getOutput();
