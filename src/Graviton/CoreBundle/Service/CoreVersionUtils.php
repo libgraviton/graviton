@@ -73,9 +73,9 @@ class CoreVersionUtils
         $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
         // get version from hash:
         $version = trim($this->runGitInContext('tag --points-at '.$currentHash));
-        // if empty, set current branchname to version:
+        // if empty, set dev- and current branchname to version:
         if (!strlen($version)) {
-            $version = trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
+            $version = 'dev-'.trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
         }
 
         $wrapper['id'] = 'self';
