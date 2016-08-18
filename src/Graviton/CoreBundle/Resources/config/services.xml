@@ -96,15 +96,6 @@
                 <argument type="service" id="graviton.core.model.version"/>
             </call>
         </service>
-        <service id="graviton.yaml.dumper"
-                 class="Symfony\Component\Yaml\Dumper">
-        </service>
-        <service id="graviton.core.service.coreversionutils"
-                 class="%graviton.core.service.coreversionutils.class%">
-            <argument>%graviton.composer.cmd%</argument>
-            <argument>%kernel.root_dir%</argument>
-            <argument type="service" id="graviton.yaml.dumper"/>
-        </service>
         <service id="graviton.core.listener.json_exception"
                  class="%graviton.core.listener.jsonexceptionlistener.class%">
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>

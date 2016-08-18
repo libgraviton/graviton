@@ -1,20 +1,29 @@
 <?php
 /**
- * A service providing functions for getting version numbers
+ * cleans dynamic bundle directory
  */
 
-namespace Graviton\CoreBundle\Service;
+namespace Graviton\CoreBundle\Command;
 
-use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Parser;
 use InvalidArgumentException;
 
 /**
+ * Reads out the used versions with composer and git and writes them in a file 'versions.yml'
+ *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class CoreVersionUtils
+class GenerateVersionsCommand extends Command
 {
     /**
      * @var string
@@ -24,23 +33,54 @@ class CoreVersionUtils
     /**
      * @var string
      */
-    private $rootDir;
+    private $contextDir;
+
+    /*
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    private $output;
 
     /**
-     * @var \Symfony\Component\Yaml\Dumper
+     * {@inheritDoc}
+     *
+     * @return void
      */
-    private $yamlDumper;
-
-    /**
-     * @param string                         $composerCmd ComposerCommand
-     * @param string                         $rootDir     Path to root dir
-     * @param \Symfony\Component\Yaml\Dumper $yamlDumper  Yaml dumper
-     */
-    public function __construct($composerCmd, $rootDir, $yamlDumper)
+    protected function configure()
     {
-        $this->composerCmd = $composerCmd;
-        $this->rootDir = $rootDir;
-        $this->yamlDumper = $yamlDumper;
+        parent::configure();
+
+        $this->setName('graviton:core:generateversions')
+            ->setDescription(
+                'Generates the versions.yml file according to definition in app/config/version_service.yml'
+            );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param InputInterface $input input
+     * @param OutputInterface $output output
+     *
+     * @return void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $container = $this->getApplication()->getKernel()->getContainer();
+        $rootDir = $container->getParameter('kernel.root_dir');
+        $this->composerCmd = $container->getParameter('graviton.composer.cmd');
+
+        $this->contextDir = $rootDir . '/../';
+        if (strpos($rootDir, 'vendor')) {
+            $this->contextDir = $rootDir . '/../../../../';
+        }
+
+        $this->output = $output;
+
+        $filesystem = new Filesystem();
+        $filesystem->dumpFile(
+            $rootDir . '/../versions.yml',
+            $this->getPackageVersions()
+        );
     }
 
     /**
@@ -59,11 +99,12 @@ class CoreVersionUtils
         }
         $versions = $this->getInstalledPackagesVersion($versions);
 
-        return $this->yamlDumper->dump($versions);
+        $yamlDumper = new Dumper();
+        return $yamlDumper->dump($versions);
     }
 
     /**
-     * returns the version of graviton or wrapper
+     * returns the version of graviton or wrapper using git
      *
      * @return array
      */
@@ -72,10 +113,10 @@ class CoreVersionUtils
         // get current commit hash
         $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
         // get version from hash:
-        $version = trim($this->runGitInContext('tag --points-at '.$currentHash));
+        $version = trim($this->runGitInContext('tag --points-at ' . $currentHash));
         // if empty, set dev- and current branchname to version:
         if (!strlen($version)) {
-            $version = 'dev-'.trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
+            $version = 'dev-' . trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
         }
 
         $wrapper['id'] = 'self';
@@ -114,17 +155,19 @@ class CoreVersionUtils
      * @return string
      *
      * @throws \RuntimeException
-     * @throws \LogicException
      */
     private function runComposerInContext($command)
     {
-        $path =  ($this->isWrapperContext())
-            ? $this->rootDir.'/../../../../'
-            : $this->rootDir.'/../';
-        $contextDir = escapeshellarg($path);
-        $process = new Process('cd '.$contextDir.' && '.escapeshellcmd($this->composerCmd).' '.$command);
-        $process->mustRun();
-
+        $process = new Process(
+            'cd ' . escapeshellarg($this->contextDir)
+            . ' && ' . escapeshellcmd($this->composerCmd)
+            . ' ' . $command
+        );
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $pFe) {
+            $this->output->writeln($pFe->getMessage());
+        }
         return $process->getOutput();
     }
 
@@ -135,17 +178,15 @@ class CoreVersionUtils
      * @return string
      *
      * @throws \RuntimeException
-     * @throws \LogicException
      */
     private function runGitInContext($command)
     {
-        $path =  ($this->isWrapperContext())
-            ? $this->rootDir.'/../../../../'
-            : $this->rootDir.'/../';
-        $contextDir = escapeshellarg($path);
-        $process = new Process('cd '.$contextDir.' && git '.$command);
-        $process->mustRun();
-
+        $process = new Process('cd ' . escapeshellarg($this->contextDir) . ' && git ' . $command);
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $pFe) {
+            $this->output->writeln($pFe->getMessage());
+        }
         return $process->getOutput();
     }
 
@@ -163,7 +204,7 @@ class CoreVersionUtils
             throw new \RuntimeException('Missing package name');
         }
 
-        $config = $this->getVersionConfig();
+        $config = $this->getConfiguration($this->contextDir . "/app/config/version_service.yml");
 
         if (!empty($config['desiredVersions'])) {
             foreach ($config['desiredVersions'] as $confEntry) {
@@ -174,34 +215,6 @@ class CoreVersionUtils
         }
 
         return false;
-    }
-
-    /**
-     * read and parses version config file
-     *
-     * @return string
-     */
-    public function getVersionConfig()
-    {
-        $filePath = $this->isWrapperContext()
-            ? $this->rootDir . '/../../../../app/config/version_service.yml'
-            : $this->rootDir . '/config/version_service.yml';
-
-        return $this->getConfiguration($filePath);
-    }
-
-    /**
-     * checks if context is a wrapper or not
-     *
-     * @return boolean
-     */
-    private function isWrapperContext()
-    {
-        if (strpos($this->rootDir, 'vendor')) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -267,7 +280,7 @@ class CoreVersionUtils
      * 'composer show -s'-command. Unfortunately Composer is adding an unnecessary ending.
      *
      * @param string $versionString SemVer version string
-     * @param string $prefix        Version prefix
+     * @param string $prefix Version prefix
      * @return string
      */
     private function normalizeVersionString($versionString, $prefix = 'v')
