@@ -1,6 +1,6 @@
 <?php
 /**
- * cleans dynamic bundle directory
+ * Generates the versions.yml file
  */
 
 namespace Graviton\CoreBundle\Command;
