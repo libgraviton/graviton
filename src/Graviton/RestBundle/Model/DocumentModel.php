@@ -168,7 +168,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder->find($this->repository->getDocumentName());
         }
 
-
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
 
@@ -357,12 +356,36 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param string $documentId id of entity to find
+     * @param string  $documentId id of entity to find
+     * @param Request $request    request
      *
      * @return Object
      */
-    public function find($documentId)
+    public function find($documentId, Request $request = null)
     {
+        if ($request instanceof Request) {
+            // if we are provided a Request, we apply RQL
+
+            /** @var MongoBuilder $queryBuilder */
+            $queryBuilder = $this->repository
+                ->createQueryBuilder();
+
+            /** @var XiagQuery $query */
+            $query = $request->attributes->get('rqlQuery');
+
+            if ($query instanceof XiagQuery) {
+                $queryBuilder = $this->doRqlQuery(
+                    $queryBuilder,
+                    $query
+                );
+            }
+
+            $queryBuilder->field('id')->equals($documentId);
+
+            $query = $queryBuilder->getQuery();
+            return $query->getSingleResult();
+        }
+
         return $this->repository->find($documentId);
     }
 

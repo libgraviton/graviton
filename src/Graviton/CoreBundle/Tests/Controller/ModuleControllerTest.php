@@ -124,6 +124,53 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
+     * check if RQL select() works on collections as expected..
+     *
+     * @return void
+     */
+    public function testRqlSelectOnCollection()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?select(app.$ref,name,path)&sort(+key)');
+
+        $results = $client->getResults();
+
+        // count
+        $this->assertEquals(6, count($client->getResults()));
+
+        // is extref rendered as expected?
+        $this->assertEquals('http://localhost/core/app/admin', $results[0]->app->{'$ref'});
+
+        // what about translatable?
+        $this->assertEquals('Admin Ref Module', $results[0]->name->en);
+
+        // we didn't select 'key', make sure it's not there..
+        $this->assertFalse(isset($results[0]->key));
+    }
+
+    /**
+     * check if RQL select() works on items as expected..
+     *
+     * @return void
+     */
+    public function testRqlSelectOnItem()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/admin-AdminRef?select(app%2E$ref,name,path)');
+
+        $results = $client->getResults();
+
+        // is extref rendered as expected?
+        $this->assertEquals('http://localhost/core/app/admin', $results->app->{'$ref'});
+
+        // what about translatable?
+        $this->assertEquals('Admin Ref Module', $results->name->en);
+
+        // we didn't select 'key', make sure it's not there..
+        $this->assertFalse(isset($results->key));
+    }
+
+    /**
      * check for empty collections when no fixtures are loaded
      *
      * @return void
