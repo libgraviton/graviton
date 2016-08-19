@@ -31,6 +31,5 @@ class ScriptHandler extends ScriptHandlerBase
         $cmd = escapeshellarg('graviton:core:generateversions');
 
         self::executeCommand($event, $consolePath, $cmd);
-
     }
 }

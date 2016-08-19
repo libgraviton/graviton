@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
@@ -58,7 +57,7 @@ class GenerateVersionsCommand extends Command
     /**
      * {@inheritDoc}
      *
-     * @param InputInterface $input input
+     * @param InputInterface  $input  input
      * @param OutputInterface $output output
      *
      * @return void
@@ -279,8 +278,8 @@ class GenerateVersionsCommand extends Command
      * At the moment, we are getting the version of the root package ('self') using the
      * 'composer show -s'-command. Unfortunately Composer is adding an unnecessary ending.
      *
-     * @param string $versionString SemVer version string
-     * @param string $prefix Version prefix
+     * @param string $versionString SemVer  version string
+     * @param string $prefix        Version prefix
      * @return string
      */
     private function normalizeVersionString($versionString, $prefix = 'v')
