@@ -29,9 +29,11 @@ desiredVersions:
 ```
 ...
     graviton.composer.cmd: composer
-    graviton.git.cmd: usr/local/git
+    graviton.git.cmd: /usr/bin/git
 ...
 ```
+This is just an example. The default values are plain "composer" and "git", assuming that these commands are in $PATH
+
 * run
 ```
 php app/console graviton:core:generateversions
