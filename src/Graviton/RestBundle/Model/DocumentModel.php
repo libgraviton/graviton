@@ -132,13 +132,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param Request        $request The request object
-     * @param SecurityUser   $user    SecurityUser Object
-     * @param SchemaDocument $schema  Schema model used for search fields extraction
+     * @param Request      $request The request object
+     * @param SecurityUser $user    SecurityUser Object
      *
      * @return array
      */
-    public function findAll(Request $request, SecurityUser $user = null, SchemaDocument $schema = null)
+    public function findAll(Request $request, SecurityUser $user = null)
     {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());

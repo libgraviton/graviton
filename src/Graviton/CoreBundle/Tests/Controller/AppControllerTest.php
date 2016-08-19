@@ -165,6 +165,35 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertSame('2', $response->headers->get('X-Total-Count'));
+
+        /*** pagination with different rql test **/
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?limit(1)&select(id)&sort(-order)');
+        $this->assertEquals(1, count($client->getResults()));
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            'http://localhost/core/app/?limit(1)&select(id)&sort(-order)>; rel="self"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="next"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="last"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertNotContains(
+            'rel="prev"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertSame('2', $response->headers->get('X-Total-Count'));
     }
 
     /**
