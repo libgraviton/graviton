@@ -158,15 +158,10 @@ class RestController
     public function getAction(Request $request, $id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent($this->serialize($this->findRecord($id)));
 
-        $record = $this->findRecord($id);
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($record)],
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -255,14 +250,7 @@ class RestController
                     $result
                 );
 
-                /*
-                 * clean up:
-                 *
-                 * - remove empty entries
-                 */
-                $result = array_filter($result);
-
-                return '['.implode(',', $result).']';
+                return '['.implode(',', array_filter($result)).']';
             }
 
             return $this->getRestUtils()->serializeContent($result);
@@ -296,8 +284,6 @@ class RestController
 
         list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
 
-        $schema = $this->schemaUtils->getModelSchema($modelName, $model);
-
         // Security is optional configured in Parameters
         try {
             /** @var SecurityUser $securityUser */
@@ -312,13 +298,10 @@ class RestController
         }
 
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent($this->serialize($model->findAll($request, $securityUser)));
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($model->findAll($request, $securityUser, $schema))],
-            $response
-        );
+        return $response;
     }
 
     /**
