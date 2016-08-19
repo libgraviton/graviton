@@ -40,7 +40,7 @@
         "misd/guzzle-bundle": "~1.1",
         "knplabs/knp-paginator-bundle": "~2.5",
         "exercise/htmlpurifier-bundle": "~0.2",
-        "graviton/php-rql-parser": ">=2.0.2",
+        "graviton/php-rql-parser": "dev-feature/apply-select-operations as 2.0.0",
         "graviton/rql-parser-bundle": "~0.11.0",
         "knplabs/knp-gaufrette-bundle": "~0.3",
         "aws/aws-sdk-php": "~2.8",

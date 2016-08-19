@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cd7018950754cac5f051559a9f7165c0",
-    "content-hash": "89740273232e6729c73ab982e28225a4",
+    "hash": "e7b2a5bb22c698d4a0820514a50cf0a9",
+    "content-hash": "d800e2832f11aeae03f83300bfa4fe24",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1669,22 +1669,22 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.0.3",
+            "version": "dev-feature/apply-select-operations",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "1db68fc3d5ec29ca481bcb8e9807354e232d1062"
+                "reference": "063cfa4ada356aaa79be98affbf7d9306f41fe0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/1db68fc3d5ec29ca481bcb8e9807354e232d1062",
-                "reference": "1db68fc3d5ec29ca481bcb8e9807354e232d1062",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/063cfa4ada356aaa79be98affbf7d9306f41fe0b",
+                "reference": "063cfa4ada356aaa79be98affbf7d9306f41fe0b",
                 "shasum": ""
             },
             "require": {
                 "doctrine/mongodb-odm": "~1.0@beta",
-                "php": "~5.4",
-                "symfony/event-dispatcher": "^2.6",
+                "php": "~5.6",
+                "symfony/event-dispatcher": "^2.6 || ^3.0",
                 "xiag/rql-parser": "^1.0.2"
             },
             "require-dev": {
@@ -1722,7 +1722,7 @@
                 "rest",
                 "rql"
             ],
-            "time": "2016-07-04 12:45:12"
+            "time": "2016-08-19 12:01:01"
         },
         {
             "name": "graviton/rql-parser-bundle",
@@ -1862,6 +1862,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": "guzzlehttp/guzzle",
             "time": "2015-03-18 18:23:50"
         },
         {
@@ -6925,9 +6926,17 @@
             "time": "2015-08-24 13:29:44"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "2.0.0",
+            "alias_normalized": "2.0.0.0",
+            "version": "dev-feature/apply-select-operations",
+            "package": "graviton/php-rql-parser"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "graviton/php-rql-parser": 20,
         "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
