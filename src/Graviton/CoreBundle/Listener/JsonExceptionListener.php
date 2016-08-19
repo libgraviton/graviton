@@ -8,6 +8,7 @@
 
 namespace Graviton\CoreBundle\Listener;
 
+use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -42,12 +43,41 @@ class JsonExceptionListener
             return;
         }
 
-        $data = [
-            'code' => $exception->getCode(),
-            'message' => $exception->getMessage()
-        ];
+        $data = $this->decorateKnownCases($exception);
+
+        if (!is_array($data)) {
+            $data = [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage()
+            ];
+        }
 
         $response = new JsonResponse($data);
         $event->setResponse($response);
+    }
+
+    /**
+     * Here we can pick up known cases that can happen and render a more detailed error message for the client.
+     * It may be cumbersome, but it's good to detail error messages then just to let general error messages
+     * generate support issues and work for us.
+     *
+     * @param \Exception $exception exception
+     *
+     * @return array|null either a error message array or null if the general should be displayed
+     */
+    private function decorateKnownCases($exception)
+    {
+        if (
+            $exception instanceof ContextErrorException &&
+            strpos($exception->getMessage(), 'Undefined index: $id') !== false
+        ) {
+            return [
+                'code' => $exception->getCode(),
+                'message' => 'An incomplete internal MongoDB ref has been discovered that can not be rendered. '.
+                    'Did you pass a select() RQL statement and shaved off on the wrong level? Try to select a level '.
+                    'higher.'
+            ];
+        }
+
     }
 }

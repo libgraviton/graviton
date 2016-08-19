@@ -132,13 +132,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param Request        $request The request object
-     * @param SecurityUser   $user    SecurityUser Object
-     * @param SchemaDocument $schema  Schema model used for search fields extraction
+     * @param Request      $request The request object
+     * @param SecurityUser $user    SecurityUser Object
      *
      * @return array
      */
-    public function findAll(Request $request, SecurityUser $user = null, SchemaDocument $schema = null)
+    public function findAll(Request $request, SecurityUser $user = null)
     {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
@@ -168,7 +167,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
             $queryBuilder->find($this->repository->getDocumentName());
         }
-
 
         /** @var LimitNode $rqlLimit */
         $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
@@ -358,12 +356,36 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param string $documentId id of entity to find
+     * @param string  $documentId id of entity to find
+     * @param Request $request    request
      *
      * @return Object
      */
-    public function find($documentId)
+    public function find($documentId, Request $request = null)
     {
+        if ($request instanceof Request) {
+            // if we are provided a Request, we apply RQL
+
+            /** @var MongoBuilder $queryBuilder */
+            $queryBuilder = $this->repository
+                ->createQueryBuilder();
+
+            /** @var XiagQuery $query */
+            $query = $request->attributes->get('rqlQuery');
+
+            if ($query instanceof XiagQuery) {
+                $queryBuilder = $this->doRqlQuery(
+                    $queryBuilder,
+                    $query
+                );
+            }
+
+            $queryBuilder->field('id')->equals($documentId);
+
+            $query = $queryBuilder->getQuery();
+            return $query->getSingleResult();
+        }
+
         return $this->repository->find($documentId);
     }
 
