@@ -75,10 +75,7 @@ class GenerateVersionsCommand extends Command
         $this->composerCmd = $container->getParameter('graviton.composer.cmd');
         $this->gitCmd = $container->getParameter('graviton.git.cmd');
 
-        $this->contextDir = $rootDir . '/../';
-        if (strpos($rootDir, 'vendor')) {
-            $this->contextDir = $rootDir . '/../../../../';
-        }
+        $this->contextDir = $rootDir . ((strpos($rootDir, 'vendor'))? '/../../../../' : '/../');
 
         $this->output = $output;
 
@@ -129,7 +126,6 @@ class GenerateVersionsCommand extends Command
             if (!strlen($version)) {
                 $version = 'dev-' . trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
             }
-
             $wrapper['id'] = 'self';
             $wrapper['version'] = $version;
         } else {
@@ -148,7 +144,6 @@ class GenerateVersionsCommand extends Command
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $versions = [];
         // composer available here?
         if ($this->commandAvailable($this->composerCmd)) {
             $output = $this->runComposerInContext('show --installed');
