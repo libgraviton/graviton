@@ -119,18 +119,18 @@ class GenerateVersionsCommand extends Command
         // git available here?
         if ($this->commandAvailable($this->gitCmd)) {
             // get current commit hash
-            $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
+            $currentHash = trim($this->runCommandInContext($this->gitCmd.' rev-parse --short HEAD'));
             // get version from hash:
-            $version = trim($this->runGitInContext('tag --points-at ' . $currentHash));
+            $version = trim($this->runCommandInContext($this->gitCmd.' tag --points-at ' . $currentHash));
             // if empty, set dev- and current branchname to version:
             if (!strlen($version)) {
-                $version = 'dev-' . trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
+                $version = 'dev-' . trim($this->runCommandInContext($this->gitCmd.' rev-parse --abbrev-ref HEAD'));
             }
             $wrapper['id'] = 'self';
             $wrapper['version'] = $version;
         } else {
             throw new CommandNotFoundException(
-                'getContextVersion: '. $this->gitCmdCmd . ' not available in ' . $this->contextDir
+                'getContextVersion: '. $this->gitCmd . ' not available in ' . $this->contextDir
             );
         }
         return $wrapper;
@@ -146,7 +146,7 @@ class GenerateVersionsCommand extends Command
     {
         // composer available here?
         if ($this->commandAvailable($this->composerCmd)) {
-            $output = $this->runComposerInContext('show --installed');
+            $output = $this->runCommandInContext($this->composerCmd.' show --installed');
             $packages = explode(PHP_EOL, $output);
             //last index is always empty
             array_pop($packages);
@@ -166,19 +166,18 @@ class GenerateVersionsCommand extends Command
     }
 
     /**
-     * runs a composer command depending on the context
+     * runs a command depending on the context
      *
-     * @param string $command composer args
+     * @param string $command in this case composer or git
      * @return string
      *
      * @throws \RuntimeException
      */
-    private function runComposerInContext($command)
+    private function runCommandInContext($command)
     {
         $process = new Process(
             'cd ' . escapeshellarg($this->contextDir)
-            . ' && ' . escapeshellcmd($this->composerCmd)
-            . ' ' . $command
+            . ' && ' . escapeshellcmd($command)
         );
         try {
             $process->mustRun();
@@ -203,30 +202,6 @@ class GenerateVersionsCommand extends Command
         );
         $process->run();
         return (boolean) strlen(trim($process->getOutput()));
-    }
-
-
-    /**
-     * runs a git command depending on the context
-     *
-     * @param string $command git args
-     * @return string
-     *
-     * @throws \RuntimeException
-     */
-    private function runGitInContext($command)
-    {
-        $process = new Process(
-            'cd ' . escapeshellarg($this->contextDir)
-            . ' && ' . escapeshellcmd($this->gitCmd)
-            . ' ' . $command
-        );
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException $pFe) {
-            $this->output->writeln($pFe->getMessage());
-        }
-        return $process->getOutput();
     }
 
     /**
