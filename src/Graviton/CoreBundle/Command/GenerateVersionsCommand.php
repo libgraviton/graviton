@@ -6,6 +6,7 @@
 namespace Graviton\CoreBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -28,6 +29,11 @@ class GenerateVersionsCommand extends Command
      * @var string
      */
     private $composerCmd;
+
+    /**
+     * @var string
+     */
+    private $gitCmd;
 
     /**
      * @var string
@@ -67,6 +73,7 @@ class GenerateVersionsCommand extends Command
         $container = $this->getApplication()->getKernel()->getContainer();
         $rootDir = $container->getParameter('kernel.root_dir');
         $this->composerCmd = $container->getParameter('graviton.composer.cmd');
+        $this->gitCmd = $container->getParameter('graviton.git.cmd');
 
         $this->contextDir = $rootDir . '/../';
         if (strpos($rootDir, 'vendor')) {
@@ -103,24 +110,33 @@ class GenerateVersionsCommand extends Command
     }
 
     /**
-     * returns the version of graviton or wrapper using git
+     * returns the version of graviton or wrapper (the context) using git
      *
      * @return array
+     *
+     * @throws CommandNotFoundException
      */
     private function getContextVersion()
     {
-        // get current commit hash
-        $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
-        // get version from hash:
-        $version = trim($this->runGitInContext('tag --points-at ' . $currentHash));
-        // if empty, set dev- and current branchname to version:
-        if (!strlen($version)) {
-            $version = 'dev-' . trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
+        $wrapper = [];
+        // git available here?
+        if ($this->commandAvailable($this->gitCmd)) {
+            // get current commit hash
+            $currentHash = trim($this->runGitInContext('rev-parse --short HEAD'));
+            // get version from hash:
+            $version = trim($this->runGitInContext('tag --points-at ' . $currentHash));
+            // if empty, set dev- and current branchname to version:
+            if (!strlen($version)) {
+                $version = 'dev-' . trim($this->runGitInContext('rev-parse --abbrev-ref HEAD'));
+            }
+
+            $wrapper['id'] = 'self';
+            $wrapper['version'] = $version;
+        } else {
+            throw new CommandNotFoundException(
+                'getContextVersion: '. $this->gitCmdCmd . ' not available in ' . $this->contextDir
+            );
         }
-
-        $wrapper['id'] = 'self';
-        $wrapper['version'] = $version;
-
         return $wrapper;
     }
 
@@ -132,18 +148,25 @@ class GenerateVersionsCommand extends Command
      */
     private function getInstalledPackagesVersion($versions)
     {
-        $output = $this->runComposerInContext('show --installed');
-        $packages = explode(PHP_EOL, $output);
-        //last index is always empty
-        array_pop($packages);
+        $versions = [];
+        // composer available here?
+        if ($this->commandAvailable($this->composerCmd)) {
+            $output = $this->runComposerInContext('show --installed');
+            $packages = explode(PHP_EOL, $output);
+            //last index is always empty
+            array_pop($packages);
 
-        foreach ($packages as $package) {
-            $content = preg_split('/([\s]+)/', $package);
-            if ($this->isDesiredVersion($content[0])) {
-                array_push($versions, array('id' => $content[0], 'version' => $content[1]));
+            foreach ($packages as $package) {
+                $content = preg_split('/([\s]+)/', $package);
+                if ($this->isDesiredVersion($content[0])) {
+                    array_push($versions, array('id' => $content[0], 'version' => $content[1]));
+                }
             }
+        } else {
+            throw new CommandNotFoundException(
+                'getInstalledPackagesVersion: '. $this->composerCmd . ' not available in ' . $this->contextDir
+            );
         }
-
         return $versions;
     }
 
@@ -171,6 +194,24 @@ class GenerateVersionsCommand extends Command
     }
 
     /**
+     * Checks if a command is available in an enviroment and in the context. The command might be as well a path
+     * to a command.
+     *
+     * @param String $command the command to be checked for availability
+     * @return bool
+     */
+    private function commandAvailable($command)
+    {
+        $process = new Process(
+            'cd ' . escapeshellarg($this->contextDir)
+            . ' && which ' . escapeshellcmd($command)
+        );
+        $process->run();
+        return (boolean) strlen(trim($process->getOutput()));
+    }
+
+
+    /**
      * runs a git command depending on the context
      *
      * @param string $command git args
@@ -180,7 +221,11 @@ class GenerateVersionsCommand extends Command
      */
     private function runGitInContext($command)
     {
-        $process = new Process('cd ' . escapeshellarg($this->contextDir) . ' && git ' . $command);
+        $process = new Process(
+            'cd ' . escapeshellarg($this->contextDir)
+            . ' && ' . escapeshellcmd($this->gitCmd)
+            . ' ' . $command
+        );
         try {
             $process->mustRun();
         } catch (ProcessFailedException $pFe) {
