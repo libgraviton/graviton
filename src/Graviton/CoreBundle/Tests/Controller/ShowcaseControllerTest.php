@@ -443,12 +443,12 @@ class ShowcaseControllerTest extends RestTestCase
 
         $fields = [
             'someFloatyDouble',
-            'contact.uri',
-            'contactCode.text.en',
+            'contact',
+            'contactCode.text',
             'unstructuredObject.booleanField',
             'unstructuredObject.hashField.someField',
             'unstructuredObject.nestedArrayField.anotherField',
-            'nestedCustomers.$ref',
+            'nestedCustomers',
             'choices'
         ];
         $rqlSelect = 'select('.implode(',', array_map([$this, 'encodeRqlString'], $fields)).')';
@@ -457,7 +457,6 @@ class ShowcaseControllerTest extends RestTestCase
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
 
         $this->assertEquals($filtred, $client->getResults());
-
 
         foreach ([
                      '500' => $filtred[0],

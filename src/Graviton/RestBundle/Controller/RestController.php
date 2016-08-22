@@ -159,7 +159,7 @@ class RestController
     {
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($this->findRecord($id)));
+            ->setContent($this->serialize($this->findRecord($id, $request)));
 
         return $response;
     }
@@ -177,13 +177,14 @@ class RestController
     /**
      * Get a single record from database or throw an exception if it doesn't exist
      *
-     * @param mixed $id Record id
+     * @param mixed   $id      Record id
+     * @param Request $request request
      *
      * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
      *
      * @return object $record Document object
      */
-    protected function findRecord($id)
+    protected function findRecord($id, Request $request = null)
     {
         $response = $this->getResponse();
 
@@ -193,7 +194,7 @@ class RestController
             throw $e;
         }
 
-        return $this->getModel()->find($id);
+        return $this->getModel()->find($id, $request);
     }
 
     /**
