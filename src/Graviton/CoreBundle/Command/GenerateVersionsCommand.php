@@ -45,6 +45,21 @@ class GenerateVersionsCommand extends Command
      */
     private $output;
 
+    /*
+    * @var \Symfony\Component\Filesystem\Filesystem
+    */
+    private $filesystem;
+
+    /*
+    * @var |Symfony\Component\Yaml\Dumper
+    */
+    private $dumper;
+
+    /*
+    * @var |Symfony\Component\Yaml\Parser
+    */
+    private $parser;
+
     /**
      * {@inheritDoc}
      *
@@ -58,6 +73,43 @@ class GenerateVersionsCommand extends Command
             ->setDescription(
                 'Generates the versions.yml file according to definition in app/config/version_service.yml'
             );
+    }
+
+
+    /**
+     * set filesystem (in service-definition)
+     *
+     * @param \Symfony\Component\Filesystem\Filesystem $filesystem filesystem
+     *
+     * @return void
+     */
+    public function setFilesystem(Filesystem  $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * set dumper (in service-definition)
+     *
+     * @param \Symfony\Component\Yaml\Dumper $dumper dumper
+     *
+     * @return void
+     */
+    public function setDumper(Dumper $dumper)
+    {
+        $this->dumper = $dumper;
+    }
+
+    /**
+     * set parser (in service-definition)
+     *
+     * @param \Symfony\Component\Yaml\Parser $parser parser
+     *
+     * @return void
+     */
+    public function setParser(Parser $parser)
+    {
+        $this->parser = $parser;
     }
 
     /**
@@ -79,8 +131,7 @@ class GenerateVersionsCommand extends Command
 
         $this->output = $output;
 
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile(
+        $this->filesystem->dumpFile(
             $rootDir . '/../versions.yml',
             $this->getPackageVersions()
         );
@@ -102,8 +153,7 @@ class GenerateVersionsCommand extends Command
         }
         $versions = $this->getInstalledPackagesVersion($versions);
 
-        $yamlDumper = new Dumper();
-        return $yamlDumper->dump($versions);
+        return $this->dumper->dump($versions);
     }
 
     /**
@@ -240,8 +290,7 @@ class GenerateVersionsCommand extends Command
      */
     private function getConfiguration($filePath)
     {
-        $parser = new Parser();
-        $config = $parser->parse(file_get_contents($filePath));
+        $config = $this->parser->parse(file_get_contents($filePath));
 
         return is_array($config) ? $config : [];
     }
