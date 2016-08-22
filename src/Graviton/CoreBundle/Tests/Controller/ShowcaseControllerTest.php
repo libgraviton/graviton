@@ -658,8 +658,10 @@ class ShowcaseControllerTest extends RestTestCase
             [
                 [
                     'op' => 'replace',
-                    'path' => '/nestedApps/0/$ref',
-                    'value' => 'http://localhost/core/app/admin'
+                    'path' => '/nestedApps/0',
+                    'value' => [
+                        '$ref' => 'http://localhost/core/app/admin'
+                    ]
                 ]
             ]
         );
