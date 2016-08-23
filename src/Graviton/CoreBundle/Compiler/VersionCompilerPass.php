@@ -24,8 +24,12 @@ class VersionCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $yaml = new Parser();
-        $versions = $yaml->parse(file_get_contents($container->getParameter('kernel.root_dir') . '/../versions.yml'));
+        $versions = array('self'=>'unknown');
+        $pathVersions = $container->getParameter('kernel.root_dir') . '/../versions.yml';
+        if (file_exists($pathVersions)) {
+            $yaml = new Parser();
+            $versions = $yaml->parse(file_get_contents($pathVersions));
+        }
         $container->setParameter(
             'graviton.core.version.data',
             $versions

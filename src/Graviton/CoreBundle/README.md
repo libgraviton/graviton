@@ -4,6 +4,7 @@
 
 ### version
 While bootstrapping the version numbers are fetched from versions.yml and saved into the container using a compiler pass.
+For this to work, composer and git have to be available on the build-enviroment during build-time.
 
 The version numbers are accessible trough the container as `graviton.core.version.data`.
 
@@ -21,6 +22,21 @@ desiredVersions:
   - self
   
   - graviton/graviton
+```
+
+#### How to (re)generate versions.yml
+* Make sure that composer and git are available on your machine either in $PATH or at a location that can be defined in the app/config/parameters.yml:
+```
+...
+    graviton.composer.cmd: composer
+    graviton.git.cmd: /usr/bin/git
+...
+```
+This is just an example. The default values are plain "composer" and "git", assuming that these commands are in $PATH
+
+* run
+```
+php app/console graviton:core:generateversions
 ```
 
 ### adding additional endpoints to the main page

@@ -68,6 +68,9 @@ parameters:
     # how to call composer on this machine
     graviton.composer.cmd: composer
 
+    # how to call git on this machine
+    graviton.git.cmd: git
+
     graviton.proxy.httploader.curloptions: []
 
     graviton.proxy.swagger.sources: {}

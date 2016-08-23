@@ -5,9 +5,7 @@
 
 namespace Graviton\CoreBundle\Composer;
 
-use Graviton\CoreBundle\Service\CoreVersionUtils;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Filesystem\Filesystem;
+use Graviton\CoreBundle\Composer\ScriptHandlerBase;
 use Composer\Script\Event;
 
 /**
@@ -28,50 +26,10 @@ class ScriptHandler extends ScriptHandlerBase
      */
     public static function generateVersionYml(Event $event)
     {
-        $baseDir = __DIR__.'/../../../..';
-        $rootDir = $baseDir.'/app';
+        $options = self::getOptions($event);
+        $consolePath = $options['symfony-app-dir'];
+        $cmd = escapeshellarg('graviton:core:generateversions');
 
-        if (self::hasComposerCommandInEnvVars()) {
-            $coreVersionUtils = new CoreVersionUtils(
-                self::getComposerCommand(),
-                $rootDir,
-                new Dumper
-            );
-            $filesystem = new Filesystem;
-
-            // read version config using composer
-            $coreVersionUtils->getVersionConfig();
-
-            $filesystem->dumpFile(
-                $baseDir . '/versions.yml',
-                $coreVersionUtils->getPackageVersions()
-            );
-        }
-    }
-
-    /**
-     * Finds the composer command set in environment var »COMPOSER_CMD«
-     *
-     * @return bool
-     */
-    private static function hasComposerCommandInEnvVars()
-    {
-        return 'false' !== getenv('COMPOSER_CMD');
-    }
-
-    /**
-     * Finds the composer command on defined for the current instance.
-     *
-     * @return string
-     */
-    private static function getComposerCommand()
-    {
-        $composerCommand = getenv('COMPOSER_CMD');
-
-        if (empty($composerCommand)) {
-            $composerCommand = 'composer';
-        }
-
-        return $composerCommand;
+        self::executeCommand($event, $consolePath, $cmd);
     }
 }
