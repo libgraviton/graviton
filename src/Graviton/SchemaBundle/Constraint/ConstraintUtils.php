@@ -97,8 +97,7 @@ class ConstraintUtils
         }
 
         // if we have a request, it must override it..
-        if (
-            $this->requestStack->getCurrentRequest() instanceof Request &&
+        if ($this->requestStack->getCurrentRequest() instanceof Request &&
             $this->requestStack->getCurrentRequest()->attributes->has('id')
         ) {
             $currentRecordId = $this->requestStack->getCurrentRequest()->attributes->get('id');

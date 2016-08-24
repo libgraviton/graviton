@@ -54,6 +54,35 @@ class RecordOriginConstraintTest extends RestTestCase
     }
 
     /**
+     * tests for the case if user doesn't provide an id in payload.. constraint
+     * must take the id from the request in that case.
+     *
+     * @return void
+     */
+    public function testRecordOriginHandlingWithNoIdInPayload()
+    {
+        $record = (object) [
+            //'id' => '' - no, no id.. that's the point ;-)
+            'customerNumber' => 555,
+            'name' => 'Muster Hans'
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/person/customer/100', $record);
+
+        $this->assertEquals(
+            (object) [
+                'propertyPath' => 'recordOrigin',
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
+            ],
+            $client->getResults()[0]
+        );
+
+        $this->assertEquals(1, count($client->getResults()));
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+    }
+
+    /**
      * Test the validation of the RecordOriginConstraint
      *
      * @param array   $fieldsToSet      Fields to be modified
