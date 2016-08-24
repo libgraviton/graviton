@@ -176,7 +176,7 @@ class RecordOriginConstraint
             $iteration = 1;
             foreach ($parts as $part) {
                 if ($iteration < $numParts) {
-                    if (!is_object($val->{$part})) {
+                    if (!isset($val->{$part}) || !is_object($val->{$part})) {
                         $val->{$part} = new \stdClass();
                     }
                     $val = &$val->{$part};
