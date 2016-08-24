@@ -94,6 +94,7 @@
     <service id="graviton.schema.constraint.utils" class="%graviton.schema.constraint.utils.class%">
       <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
       <argument type="service" id="graviton.rest.restutils"/>
+      <argument type="service" id="request_stack"/>
       <tag name="kernel.event_listener" event="graviton.json_schema.constraint.schema" method="onSchemaValidation" priority="999"/>
     </service>
     <service id="graviton.schema.utils" class="%graviton.schema.service.schemautils.class%">
