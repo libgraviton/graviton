@@ -8,6 +8,8 @@ namespace Graviton\SchemaBundle\Constraint;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
 use Graviton\RestBundle\Service\RestUtils;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -33,15 +35,23 @@ class ConstraintUtils
     private $currentData;
 
     /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
      * Constructor.
      *
-     * @param DocumentManager $dm        DocumentManager
-     * @param RestUtils       $restUtils RestUtils
+     * @param DocumentManager $dm           DocumentManager
+     * @param RestUtils       $restUtils    RestUtils
+     * @param RequestStack    $requestStack RequestStack
+     *
      */
-    public function __construct(DocumentManager $dm, RestUtils $restUtils)
+    public function __construct(DocumentManager $dm, RestUtils $restUtils, RequestStack $requestStack)
     {
         $this->dm = $dm;
         $this->restUtils = $restUtils;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -79,11 +89,26 @@ class ConstraintUtils
      */
     public function getCurrentEntity()
     {
+        $currentRecordId = null;
+
+        // first, let's the one from the payload..
+        if (isset($this->currentData->id)) {
+            $currentRecordId = $this->currentData->id;
+        }
+
+        // if we have a request, it must override it..
+        if (
+            $this->requestStack->getCurrentRequest() instanceof Request &&
+            $this->requestStack->getCurrentRequest()->attributes->has('id')
+        ) {
+            $currentRecordId = $this->requestStack->getCurrentRequest()->attributes->get('id');
+        }
+
         if (isset($this->currentSchema->{'x-documentClass'}) &&
             !empty($this->currentSchema->{'x-documentClass'}) &&
-            isset($this->currentData->id)
+            !is_null($currentRecordId)
         ) {
-            return $this->getSerializedEntity($this->currentSchema->{'x-documentClass'}, $this->currentData->id);
+            return $this->getSerializedEntity($this->currentSchema->{'x-documentClass'}, $currentRecordId);
         }
 
         return null;
