@@ -115,8 +115,8 @@ class RecordOriginConstraint
             $exceptions = $this->exceptionFieldMap[$documentClass];
 
             $accessor = PropertyAccess::createPropertyAccessorBuilder()
-                                      ->enableMagicCall()
-                                      ->getPropertyAccessor();
+                ->enableMagicCall()
+                ->getPropertyAccessor();
 
             $storedObject = clone $currentRecord;
             $userObject = clone $data;
@@ -141,11 +141,17 @@ class RecordOriginConstraint
         }
 
         if (!$isAllowed) {
+            $forbiddenFields = array_keys((array) $this->utils->getCurrentSchema()->properties);
+            if (isset($this->exceptionFieldMap[$documentClass]) && is_array($this->exceptionFieldMap[$documentClass])) {
+                $forbiddenFields = array_diff($forbiddenFields, $this->exceptionFieldMap[$documentClass]);
+            }
             $event->addError(
                 sprintf(
-                    'Prohibited modification attempt on record with %s of %s',
+                    'Prohibited modification attempt on record with %s of %s. '.
+                    'BTW, You are also not allowed to write in (%s)',
                     $this->recordOriginField,
-                    implode(', ', $this->recordOriginBlacklist)
+                    implode(', ', $this->recordOriginBlacklist),
+                    implode(', ', $forbiddenFields)
                 ),
                 $this->recordOriginField
             );
