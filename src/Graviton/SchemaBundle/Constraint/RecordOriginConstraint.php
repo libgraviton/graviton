@@ -106,7 +106,8 @@ class RecordOriginConstraint
         }
 
         $documentClass = $schema->{'x-documentClass'};
-
+        /*$this->exceptionFieldMap[$documentClass][] ="customerGroup";
+        $this->exceptionFieldMap[$documentClass][] ="hasBvg";*/
         if (!isset($this->exceptionFieldMap[$documentClass])) {
             // if he wants to edit on blacklist, but we have no exceptions, also deny..
             $isAllowed = false;
@@ -115,13 +116,14 @@ class RecordOriginConstraint
             $exceptions = $this->exceptionFieldMap[$documentClass];
 
             $accessor = PropertyAccess::createPropertyAccessorBuilder()
-                                      ->enableMagicCall()
-                                      ->getPropertyAccessor();
+                ->enableMagicCall()
+                ->getPropertyAccessor();
 
             $storedObject = clone $currentRecord;
             $userObject = clone $data;
 
             foreach ($exceptions as $fieldName) {
+                echo $fieldName.",";
                 if ($accessor->isWritable($storedObject, $fieldName)) {
                     $accessor->setValue($storedObject, $fieldName, null);
                 } else {
@@ -141,11 +143,17 @@ class RecordOriginConstraint
         }
 
         if (!$isAllowed) {
+            $forbiddenFields = array_keys((array) $this->utils->getCurrentSchema()->properties);
+            if (isset($this->exceptionFieldMap[$documentClass]) && is_array($this->exceptionFieldMap[$documentClass])) {
+                $forbiddenFields = array_diff($forbiddenFields, $this->exceptionFieldMap[$documentClass]);
+            }
             $event->addError(
                 sprintf(
-                    'Prohibited modification attempt on record with %s of %s',
+                    'Prohibited modification attempt on record with %s of %s. '.
+                    'BTW You are also not allowed to write in (%s)',
                     $this->recordOriginField,
-                    implode(', ', $this->recordOriginBlacklist)
+                    implode(', ', $this->recordOriginBlacklist),
+                    implode(', ', $forbiddenFields)
                 ),
                 $this->recordOriginField
             );
