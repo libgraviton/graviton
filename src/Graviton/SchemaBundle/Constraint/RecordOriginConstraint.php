@@ -135,26 +135,33 @@ class RecordOriginConstraint
             }
 
             // so now all unimportant fields were set to null on both - they should match if rest is untouched ;-)
+            $changedFields = [];
             if ($userObject != $storedObject) {
+                // find out what the User tried to change
+                foreach ($userObject as $fieldName => $value) {
+                    if ($value != $storedObject->$fieldName) {
+                        $changedFields[] = $fieldName;
+                    }
+                }
                 $isAllowed = false;
             }
         }
 
         if (!$isAllowed) {
-            $forbiddenFields = array_keys((array) $this->utils->getCurrentSchema()->properties);
-            if (isset($this->exceptionFieldMap[$documentClass]) && is_array($this->exceptionFieldMap[$documentClass])) {
-                $forbiddenFields = array_diff($forbiddenFields, $this->exceptionFieldMap[$documentClass]);
-            }
-            $event->addError(
-                sprintf(
-                    'Prohibited modification attempt on record with %s of %s. '.
-                    'BTW, You are also not allowed to write in (%s)',
-                    $this->recordOriginField,
-                    implode(', ', $this->recordOriginBlacklist),
-                    implode(', ', $forbiddenFields)
-                ),
-                $this->recordOriginField
+            $error = sprintf(
+                'Prohibited modification attempt on record with %s of %s.',
+                $this->recordOriginField,
+                implode(', ', $this->recordOriginBlacklist)
             );
+            // if there are recordCoreExceptions we can be more explicit
+            if (isset($changedFields) && isset($this->exceptionFieldMap[$documentClass])) {
+                $error.= sprintf(
+                    ' You tried to change (%s), but You can only change by recordCoreException: (%s).',
+                    implode(', ', $changedFields),
+                    implode(', ', $this->exceptionFieldMap[$documentClass])
+                );
+            }
+            $event->addError($error, $this->recordOriginField);
         }
 
         return;
