@@ -7,6 +7,8 @@ namespace Graviton\ExceptionBundle\Listener;
 
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
+use Graviton\SchemaBundle\Constraint\ConstraintUtils;
+use JsonSchema\Entity\JsonPointer;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,6 +21,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ValidationExceptionListener extends RestExceptionListener
 {
+
+    /**
+     * @var ConstraintUtils
+     */
+    private $constraintUtils;
+
+    /**
+     * set constraint utils
+     *
+     * @param ConstraintUtils $utils utils
+     *
+     * @return void
+     */
+    public function setConstraintUtils(ConstraintUtils $utils)
+    {
+        $this->constraintUtils = $utils;
+    }
+
     /**
      * Handle the exception and send the right response
      *
@@ -51,8 +71,12 @@ class ValidationExceptionListener extends RestExceptionListener
     {
         $content = [];
         foreach ($errors as $error) {
+            $property = $error->getProperty();
+            if ($property instanceof JsonPointer && $this->constraintUtils instanceof ConstraintUtils) {
+                $property = $this->constraintUtils->getNormalizedPathFromPointer($property);
+            }
             $content[] = [
-                'propertyPath' => $error->getProperty(),
+                'propertyPath' => $property,
                 'message' => $error->getMessage(),
             ];
         }

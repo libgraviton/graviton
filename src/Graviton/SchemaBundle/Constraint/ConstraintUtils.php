@@ -8,6 +8,7 @@ namespace Graviton\SchemaBundle\Constraint;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
 use Graviton\RestBundle\Service\RestUtils;
+use JsonSchema\Entity\JsonPointer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -132,6 +133,24 @@ class ConstraintUtils
     public function getCurrentData()
     {
         return $this->currentData;
+    }
+
+    /**
+     * own function to get standard path from a JsonPointer object
+     *
+     * @param JsonPointer|null $pointer pointer
+     *
+     * @return string path as string
+     */
+    public function getNormalizedPathFromPointer(JsonPointer $pointer = null)
+    {
+        $result = array_map(
+            function ($path) {
+                return sprintf(is_numeric($path) ? '[%d]' : '.%s', $path);
+            },
+            $pointer->getPropertyPaths()
+        );
+        return trim(implode('', $result), '.');
     }
 
     /**
