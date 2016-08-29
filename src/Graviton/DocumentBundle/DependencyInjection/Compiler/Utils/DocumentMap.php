@@ -200,6 +200,9 @@ class DocumentMap
             $validationField = isset($validationFields[$doctrineField['name']]) ?
                 $validationFields[$doctrineField['name']] :
                 null;
+            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
+                $schemaFields[$doctrineField['name']] :
+                null;
 
             $fields[] = new EmbedMany(
                 $this->getDocument($doctrineField['type']),
