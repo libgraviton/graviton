@@ -74,8 +74,8 @@ class RecordOriginConstraintTest extends RestTestCase
             (object) [
                 'propertyPath' => 'recordOrigin',
                 'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
-                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
-                    .' recordOrigin, someObject)'
+                    .' You tried to change (customerNumber, name, someObject), but You can only change'
+                    .' by recordCoreException: (addedField, someObject.twoField).'
             ],
             $client->getResults()[0]
         );
@@ -229,15 +229,6 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function updateDataProvider()
     {
-        $expectedErrorOutput = [
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
-                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
-                    .' recordOrigin, someObject)'
-            ]
-        ];
-
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
@@ -270,7 +261,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput,
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject'),
                 'checkSavedEntry' => false
             ],
             'denied-try-change-recordorigin' => [
@@ -278,10 +269,31 @@ class RecordOriginConstraintTest extends RestTestCase
                     'recordOrigin' => 'hans'
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput,
+                'expectedResponse' => $this->getExpectedErrorMessage('recordOrigin'),
                 'checkSavedEntry' => false
             ],
         ];
+    }
+
+
+    /**
+     * providing the conditional errorMessage Object
+     *
+     * @param string $changedFields the Field the user wants to change
+     *
+     * @return array
+     */
+    private function getExpectedErrorMessage($changedFields)
+    {
+        $expectedErrorOutput = [
+            (object) [
+                'propertyPath' => 'recordOrigin',
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
+                    .' You tried to change ('.$changedFields.'), but You can only change'
+                    .' by recordCoreException: (addedField, someObject.twoField).'
+            ]
+        ];
+        return $expectedErrorOutput;
     }
 
     /**
@@ -291,15 +303,6 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function patchDataProvider()
     {
-        $expectedErrorOutput = [
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
-                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
-                    .' recordOrigin, someObject)'
-            ]
-        ];
-
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
@@ -340,7 +343,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject')
             ],
             'patch-denied-recordorigin-change' => [
                 'ops' => [
@@ -351,7 +354,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput
+                'expectedResponse' => $this->getExpectedErrorMessage('recordOrigin')
             ],
 
         ];
