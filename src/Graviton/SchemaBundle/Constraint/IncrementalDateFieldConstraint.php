@@ -51,7 +51,7 @@ class IncrementalDateFieldConstraint
         }
 
         $data = $event->getElement();
-        $path = $event->getPath();
+        $path = $this->utils->getNormalizedPathFromPointer($event->getPath());
 
         // get the current value in database
         $accessor = PropertyAccess::createPropertyAccessor();
