@@ -107,6 +107,8 @@ class RecordOriginConstraint
 
         $documentClass = $schema->{'x-documentClass'};
 
+        // will be filled eventually if it comes to checking what went wrong
+        $changedFields = [];
         if (!isset($this->exceptionFieldMap[$documentClass])) {
             // if he wants to edit on blacklist, but we have no exceptions, also deny..
             $isAllowed = false;
@@ -135,7 +137,6 @@ class RecordOriginConstraint
             }
 
             // so now all unimportant fields were set to null on both - they should match if rest is untouched ;-)
-            $changedFields = [];
             if ($userObject != $storedObject) {
                 // find out what the User tried to change
                 foreach ($userObject as $fieldName => $value) {
@@ -154,7 +155,7 @@ class RecordOriginConstraint
                 implode(', ', $this->recordOriginBlacklist)
             );
             // if there are recordCoreExceptions we can be more explicit
-            if (isset($changedFields) && isset($this->exceptionFieldMap[$documentClass])) {
+            if (isset($this->exceptionFieldMap[$documentClass]) && !empty($changedFields)) {
                 $error.= sprintf(
                     ' You tried to change (%s), but You can only change by recordCoreException: (%s).',
                     implode(', ', $changedFields),
