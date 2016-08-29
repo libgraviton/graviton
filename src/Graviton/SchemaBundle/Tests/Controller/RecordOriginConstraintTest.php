@@ -73,7 +73,9 @@ class RecordOriginConstraintTest extends RestTestCase
         $this->assertEquals(
             (object) [
                 'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
+                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
+                    .' recordOrigin, someObject)'
             ],
             $client->getResults()[0]
         );
@@ -230,7 +232,9 @@ class RecordOriginConstraintTest extends RestTestCase
         $expectedErrorOutput = [
             (object) [
                 'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
+                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
+                    .' recordOrigin, someObject)'
             ]
         ];
 
@@ -290,7 +294,9 @@ class RecordOriginConstraintTest extends RestTestCase
         $expectedErrorOutput = [
             (object) [
                 'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
+                    .' BTW, You are also not allowed to write in (id, customerNumber, name, $ref,'
+                    .' recordOrigin, someObject)'
             ]
         ];
 
