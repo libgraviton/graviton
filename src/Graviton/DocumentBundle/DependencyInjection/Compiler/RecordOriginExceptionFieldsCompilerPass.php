@@ -32,7 +32,7 @@ class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Make readOnly fields map and set it to parameter
+     * Make recordOriginException fields map and set it to parameter
      *
      * @param ContainerBuilder $container container builder
      *
@@ -42,7 +42,7 @@ class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
     {
         $map = [];
         foreach ($this->documentMap->getDocuments() as $document) {
-            $readOnlyFields = $this->documentMap->getFieldNamesFlat(
+            $recordOriginExceptionFields = $this->documentMap->getFieldNamesFlat(
                 $document,
                 '',
                 '',
@@ -51,14 +51,14 @@ class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
                 }
             );
 
-            if (!empty($readOnlyFields)) {
-                foreach ($readOnlyFields as $key => $readOnlyField) {
-                    if (substr($readOnlyField, -2) == '.0') {
-                        unset($readOnlyFields[$key]);
+            if (!empty($recordOriginExceptionFields)) {
+                foreach ($recordOriginExceptionFields as $key => $recordOriginExceptionField) {
+                    if (substr($recordOriginExceptionField, -2) == '.0') {
+                        unset($recordOriginExceptionFields[$key]);
                     }
                 }
 
-                $map[$document->getClass()] = array_values($readOnlyFields);
+                $map[$document->getClass()] = array_values($recordOriginExceptionFields);
             }
         }
 

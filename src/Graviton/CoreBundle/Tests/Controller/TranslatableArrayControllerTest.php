@@ -212,7 +212,7 @@ class TranslatableArrayControllerTest extends RestTestCase
 
                 (object) [
                     'propertyPath' => 'deep.deep[0].field',
-                    'message'      => 'String value found, but a null is required',
+                    'message'      => 'String value found, but an object or a null is required',
                 ],
                 (object) [
                     'propertyPath' => 'deep.deep[0].array',
