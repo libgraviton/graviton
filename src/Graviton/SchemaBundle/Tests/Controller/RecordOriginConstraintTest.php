@@ -71,12 +71,7 @@ class RecordOriginConstraintTest extends RestTestCase
         $client->put('/person/customer/100', $record);
 
         $this->assertEquals(
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
-                    .' You tried to change (customerNumber, name, someObject), but You can only change'
-                    .' by recordCoreException: (addedField, someObject.twoField).'
-            ],
+            $this->getExpectedErrorMessage('customerNumber, name')[0],
             $client->getResults()[0]
         );
 
@@ -261,7 +256,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $this->getExpectedErrorMessage('someObject'),
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject.oneField'),
                 'checkSavedEntry' => false
             ],
             'denied-try-change-recordorigin' => [
@@ -290,7 +285,7 @@ class RecordOriginConstraintTest extends RestTestCase
                 'propertyPath' => 'recordOrigin',
                 'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
                     .' You tried to change ('.$changedFields.'), but You can only change'
-                    .' by recordCoreException: (addedField, someObject.twoField).'
+                    .' (addedField, someObject.twoField) by recordOriginException.'
             ]
         ];
         return $expectedErrorOutput;
@@ -343,7 +338,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $this->getExpectedErrorMessage('someObject')
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject.oneField')
             ],
             'patch-denied-recordorigin-change' => [
                 'ops' => [
