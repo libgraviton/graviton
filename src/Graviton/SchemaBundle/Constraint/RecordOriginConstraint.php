@@ -155,7 +155,7 @@ class RecordOriginConstraint
             // if there are recordCoreExceptions we can be more explicit
             if (isset($this->exceptionFieldMap[$documentClass]) && !empty($this->changedObjectPaths)) {
                 $error.= sprintf(
-                    ' You tried to change (%s), but You can only change (%s) by recordOriginException.',
+                    ' You tried to change (%s), but you can only change (%s) by recordOriginException.',
                     implode(', ', $this->changedObjectPaths),
                     implode(', ', $this->exceptionFieldMap[$documentClass])
                 );
