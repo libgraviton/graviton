@@ -284,7 +284,7 @@ class RecordOriginConstraintTest extends RestTestCase
             (object) [
                 'propertyPath' => 'recordOrigin',
                 'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
-                    .' You tried to change ('.$changedFields.'), but You can only change'
+                    .' You tried to change ('.$changedFields.'), but you can only change'
                     .' (addedField, someObject.twoField) by recordOriginException.'
             ]
         ];
