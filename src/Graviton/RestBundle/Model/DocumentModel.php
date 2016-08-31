@@ -432,11 +432,14 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $entity = $this->find($id);
         }
 
+        $this->checkIfOriginRecord($entity);
         $return = $entity;
-        if ($entity) {
-            $this->checkIfOriginRecord($entity);
-            $this->manager->remove($entity);
-            $this->manager->flush();
+
+        if (is_callable([$entity, 'getId']) && $entity->getId() != null) {
+            $this->deleteById($entity->getId());
+            // detach so odm knows it's gone
+            $this->manager->detach($entity);
+            $this->manager->clear();
             $return = null;
         }
 
