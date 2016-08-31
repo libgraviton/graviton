@@ -173,7 +173,7 @@ class RecordOriginConstraint
      * @param   mixed $object        the first of the datastructures to compare
      * @param   mixed $compareObject the second of the datastructures to compare
      * @param   array $path          the array holding the current path
-     * @return  array|null           returning the child nodes in an array
+     * @return  array                returning the child nodes in an array
      */
     private function getChangedObjectPaths($object, $compareObject, $path = [])
     {
@@ -194,7 +194,7 @@ class RecordOriginConstraint
             }
             array_pop($path);
         }
-        return empty($return) ? null : $return;
+        return $return;
     }
 
     /**
