@@ -228,6 +228,29 @@ class EmbeddingDocumentsTest extends RestTestCase
     }
 
     /**
+     * Assert that if we send a DELETE request to an entity, referenced objects will not be deleted
+     * as well..
+     *
+     * @return void
+     */
+    public function testThatReferencedObjectsWillNotBeDeletedOnDelete()
+    {
+        $client = static::createRestClient();
+        $client->request('DELETE', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertEmpty($client->getResults());
+
+        // check it's really gone ;-)
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
+
+        // both entities should still exist
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+    }
+
+    /**
      * Test Document as deep reference
      *
      * @return void

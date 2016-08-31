@@ -32,6 +32,11 @@ class RecordOriginConstraint
     private $exceptionFieldMap;
 
     /**
+     * @var array
+     */
+    private $changedObjectPaths;
+
+    /**
      * RecordOriginConstraint constructor.
      *
      * @param ConstraintUtils $utils                 Utils
@@ -115,8 +120,8 @@ class RecordOriginConstraint
             $exceptions = $this->exceptionFieldMap[$documentClass];
 
             $accessor = PropertyAccess::createPropertyAccessorBuilder()
-                                      ->enableMagicCall()
-                                      ->getPropertyAccessor();
+                ->enableMagicCall()
+                ->getPropertyAccessor();
 
             $storedObject = clone $currentRecord;
             $userObject = clone $data;
@@ -137,21 +142,59 @@ class RecordOriginConstraint
             // so now all unimportant fields were set to null on both - they should match if rest is untouched ;-)
             if ($userObject != $storedObject) {
                 $isAllowed = false;
+                $this->getChangedObjectPaths($userObject, $storedObject);
             }
         }
 
         if (!$isAllowed) {
-            $event->addError(
-                sprintf(
-                    'Prohibited modification attempt on record with %s of %s',
-                    $this->recordOriginField,
-                    implode(', ', $this->recordOriginBlacklist)
-                ),
-                $this->recordOriginField
+            $error = sprintf(
+                'Prohibited modification attempt on record with %s of %s.',
+                $this->recordOriginField,
+                implode(', ', $this->recordOriginBlacklist)
             );
+            // if there are recordCoreExceptions we can be more explicit
+            if (isset($this->exceptionFieldMap[$documentClass]) && !empty($this->changedObjectPaths)) {
+                $error.= sprintf(
+                    ' You tried to change (%s), but you can only change (%s) by recordOriginException.',
+                    implode(', ', $this->changedObjectPaths),
+                    implode(', ', $this->exceptionFieldMap[$documentClass])
+                );
+            }
+            $event->addError($error, $this->recordOriginField);
         }
 
         return;
+    }
+
+    /**
+     * recursive helperfunction that walks through two arrays/objects of the same structure,
+     * compares the values and writes the paths containining differences into the $this->changedObjectPaths
+     *
+     * @param   mixed $object        the first of the datastructures to compare
+     * @param   mixed $compareObject the second of the datastructures to compare
+     * @param   array $path          the array holding the current path
+     * @return  array                returning the child nodes in an array
+     */
+    private function getChangedObjectPaths($object, $compareObject, $path = [])
+    {
+        $return = [];
+        foreach ($object as $fieldName => $value) {
+            if (is_object($compareObject)) {
+                $compareValue = $compareObject->$fieldName;
+            } else {
+                $compareValue = $compareObject[$fieldName];
+            }
+            $path[]=$fieldName;
+            if (is_object($value) || is_array($value)) {
+                $return[$fieldName] = $this->getChangedObjectPaths($value, $compareValue, $path);
+            } else {
+                if ($value!=$compareValue) {
+                    $this->changedObjectPaths[] = implode('.', $path);
+                }
+            }
+            array_pop($path);
+        }
+        return $return;
     }
 
     /**
