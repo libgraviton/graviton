@@ -71,10 +71,7 @@ class RecordOriginConstraintTest extends RestTestCase
         $client->put('/person/customer/100', $record);
 
         $this->assertEquals(
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
-            ],
+            $this->getExpectedErrorMessage('customerNumber, name')[0],
             $client->getResults()[0]
         );
 
@@ -227,13 +224,6 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function updateDataProvider()
     {
-        $expectedErrorOutput = [
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
-            ]
-        ];
-
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
@@ -266,7 +256,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput,
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject.oneField'),
                 'checkSavedEntry' => false
             ],
             'denied-try-change-recordorigin' => [
@@ -274,10 +264,31 @@ class RecordOriginConstraintTest extends RestTestCase
                     'recordOrigin' => 'hans'
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput,
+                'expectedResponse' => $this->getExpectedErrorMessage('recordOrigin'),
                 'checkSavedEntry' => false
             ],
         ];
+    }
+
+
+    /**
+     * providing the conditional errorMessage Object
+     *
+     * @param string $changedFields the Field the user wants to change
+     *
+     * @return array
+     */
+    private function getExpectedErrorMessage($changedFields)
+    {
+        $expectedErrorOutput = [
+            (object) [
+                'propertyPath' => 'recordOrigin',
+                'message' => 'Prohibited modification attempt on record with recordOrigin of core.'
+                    .' You tried to change ('.$changedFields.'), but you can only change'
+                    .' (addedField, someObject.twoField) by recordOriginException.'
+            ]
+        ];
+        return $expectedErrorOutput;
     }
 
     /**
@@ -287,13 +298,6 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function patchDataProvider()
     {
-        $expectedErrorOutput = [
-            (object) [
-                'propertyPath' => 'recordOrigin',
-                'message' => 'Prohibited modification attempt on record with recordOrigin of core'
-            ]
-        ];
-
         return [
 
             /*** STUFF THAT SHOULD BE ALLOWED ***/
@@ -334,7 +338,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput
+                'expectedResponse' => $this->getExpectedErrorMessage('someObject.oneField')
             ],
             'patch-denied-recordorigin-change' => [
                 'ops' => [
@@ -345,7 +349,7 @@ class RecordOriginConstraintTest extends RestTestCase
                     ]
                 ],
                 'httpStatusExpected' => Response::HTTP_BAD_REQUEST,
-                'expectedResponse' => $expectedErrorOutput
+                'expectedResponse' => $this->getExpectedErrorMessage('recordOrigin')
             ],
 
         ];
