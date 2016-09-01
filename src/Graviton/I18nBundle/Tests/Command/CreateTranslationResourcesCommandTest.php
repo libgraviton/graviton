@@ -36,6 +36,22 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('findAll')
             ->willReturn([$enMock, $deMock]);
 
+        $connection = $this->getMockBuilder('\Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->any())->method('isConnected')
+            ->willReturn(true);
+
+        $documentManager = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $documentManager->expects($this->once())->method('getConnection')
+            ->willReturn($connection);
+
+        $languageMock->expects($this->once())
+            ->method('getDocumentManager')
+            ->willReturn($documentManager);
+
         $translatableMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\TranslatableRepository')
             ->disableOriginalConstructor()
             ->getMock();
@@ -94,6 +110,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
         $command->execute(array());
 
         $this->assertContains('Creating translation resource stubs', $command->getDisplay());
+        $this->assertContains('Checking DB connection', $command->getDisplay());
         $this->assertContains('Generated file core.en.odm', $command->getDisplay());
         $this->assertContains('Generated file core.de.odm', $command->getDisplay());
         $this->assertContains('Generated file i18n.en.odm', $command->getDisplay());
