@@ -122,12 +122,7 @@ class CreateTranslationResourcesCommand extends Command
         $output->writeln('Checking DB connection');
 
         $loopCount = 0;
-        $documentManager = $this->languageRepo->getDocumentManager();
-        if (!$documentManager) {
-            return;
-        }
-        
-        $connection = $documentManager->getConnection();
+        $connection = $this->languageRepo->getDocumentManager()->getConnection();
 
         while (!($connected = $connection->isConnected())) {
             try {

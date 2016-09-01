@@ -36,6 +36,22 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('findAll')
             ->willReturn([$enMock, $deMock]);
 
+        $connection = $this->getMockBuilder('\Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->any())->method('isConnected')
+            ->willReturn(true);
+
+        $documentManager = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $documentManager->expects($this->once())->method('getConnection')
+            ->willReturn($connection);
+
+        $languageMock->expects($this->once())
+            ->method('getDocumentManager')
+            ->willReturn($documentManager);
+
         $translatableMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\TranslatableRepository')
             ->disableOriginalConstructor()
             ->getMock();
