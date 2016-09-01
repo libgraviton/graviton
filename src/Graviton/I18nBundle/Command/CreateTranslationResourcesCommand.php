@@ -85,7 +85,7 @@ class CreateTranslationResourcesCommand extends Command
         $output->writeln("Creating translation resource stubs");
 
         // Pause a bit before generating the languages.
-        $this->verifyDbConnection($output);
+        $this->openDbConnection($output);
 
         $languages = $this->languageRepo->findAll();
         $domains = $this->translatableRepo->createQueryBuilder()
@@ -117,7 +117,7 @@ class CreateTranslationResourcesCommand extends Command
      *
      * @return void
      */
-    private function verifyDbConnection(OutputInterface $output)
+    private function openDbConnection(OutputInterface $output)
     {
         $output->writeln('Checking DB connection');
 
