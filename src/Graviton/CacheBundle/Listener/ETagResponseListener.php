@@ -27,6 +27,11 @@ class ETagResponseListener
     {
         $response = $event->getResponse();
 
-        $response->headers->set('ETag', sha1($response->getContent()));
+        /**
+         * the "W/" prefix is necessary to qualify it as a "weak" Etag.
+         * only then a proxy like nginx will leave the tag alone because a strong cannot
+         * match if gzip is applied.
+         */
+        $response->headers->set('ETag', 'W/'.sha1($response->getContent()));
     }
 }
