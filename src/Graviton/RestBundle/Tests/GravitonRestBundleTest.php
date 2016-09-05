@@ -7,7 +7,6 @@ namespace Graviton\RestBundle\Tests;
 
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 
@@ -46,7 +45,6 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains(new JMSSerializerBundle(), $result, '', false, false);
         $this->assertContains(new MisdGuzzleBundle(), $result, '', false, false);
-        $this->assertContains(new KnpPaginatorBundle(), $result, '', false, false);
     }
 
     /**
