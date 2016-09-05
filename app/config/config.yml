@@ -94,14 +94,6 @@ stof_doctrine_extensions:
             loggable: true
             softdeleteable: true
 
-# Swiftmailer Configuration
-#swiftmailer:
-#    transport: "%mailer_transport%"
-#    host:      "%mailer_host%"
-#    username:  "%mailer_user%"
-#    password:  "%mailer_password%"
-#    spool:     { type: memory }
-
 # SensionFrameworkExtraBundle Configuration
 # see: http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
 sensio_framework_extra:
