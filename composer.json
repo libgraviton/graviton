@@ -55,7 +55,7 @@
         "guzzlehttp/guzzle": ">=6.2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.3",
+        "phpunit/phpunit": "~5.5",
         "liip/functional-test-bundle": "~1.6",
         "squizlabs/php_codesniffer": "~2.6",
         "libgraviton/codesniffer": "~1.3",
