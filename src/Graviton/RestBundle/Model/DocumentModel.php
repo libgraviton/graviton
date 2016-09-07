@@ -7,6 +7,8 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Graviton\CoreBundle\Document\BaseDocument;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
@@ -87,6 +89,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @var DocumentManager
      */
     protected $manager;
+    
+    
 
     /**
      * @param Visitor $visitor                    rql query visitor
@@ -400,21 +404,57 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
-        if (!is_null($documentId)) {
-            $this->deleteById($documentId);
-            // detach so odm knows it's gone
-            $this->manager->detach($entity);
-            $this->manager->clear();
-        }
+        $keep = $this->getDocumentsToPersist($entity, $documentId);
 
         $entity = $this->manager->merge($entity);
 
         $this->manager->persist($entity);
         $this->manager->flush($entity);
+        
+        foreach ($keep as $obj) {
+            $this->manager->persist($obj);
+            $this->manager->flush($obj);
+        }
 
         if ($returnEntity) {
             return $entity;
         }
+    }
+
+    /**
+     * Get those Documents that will be removed by a updated Document
+     * This is required as it can happen a document update removes a
+     * document required by another. We just keep orphans
+     *
+     * @param Object $entity     The new entity to be persisted
+     * @param String $documentId id to be udpated
+     * @return array of Documents to be re-inserted
+     */
+    private function getDocumentsToPersist($entity, $documentId)
+    {
+        $getMethods = [];
+        foreach (get_class_methods($entity) as $method) {
+            if (substr($method, 0, 3)=='get') {
+                $getMethods[] = $method;
+            }
+        }
+
+        if ($getMethods && $original = $this->manager->find(get_class($entity), $documentId)) {
+            $keepItems = [];
+            foreach ($getMethods as $method) {
+                if (is_object($item = $original->$method())
+                    && ($item != $entity->$method())
+                    && !($item instanceof \DateTime)
+                    && method_exists($item, 'getId')) {
+                    $this->manager->detach($item);
+                    $this->manager->merge($item);
+                    $keepItems[] = $item;
+                }
+            }
+            return $keepItems;
+        }
+
+        return [];
     }
 
     /**
