@@ -43,6 +43,11 @@ class MongodbMigrateCommand extends Command
     private $databaseName;
 
     /**
+     * @var array
+     */
+    private $errors = [];
+
+    /**
      * @param ContainerInterface    $container       container instance for injecting into aware migrations
      * @param Finder                $finder          finder that finds configs
      * @param DocumentManagerHelper $documentManager dm helper to get access to db in command
@@ -110,15 +115,25 @@ class MongodbMigrateCommand extends Command
             $arguments['--configuration'] = $file->getPathname();
 
             $migrateInput = new ArrayInput($arguments);
+            $migrateInput->setInteractive($input->isInteractive());
             $returnCode = $command->run($migrateInput, $output);
 
             if ($returnCode !== 0) {
-                $output->writeln(
-                    '<error>Calling mongodb:migrations:migrate failed for '.$file->getRelativePathname().'</error>'
+                $this->errors[] = sprintf(
+                    'Calling mongodb:migrations:migrate failed for %s',
+                    $file->getRelativePathname()
                 );
-                return $returnCode;
             }
         }
+
+        if (!empty($this->errors)) {
+            $output->writeln(
+                sprintf('<error>%s</error>', implode(PHP_EOL, $this->errors))
+            );
+            return -1;
+        }
+
+        return 0;
     }
 
     /**
