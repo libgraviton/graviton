@@ -50,9 +50,6 @@
         <service id="graviton.rest.doctrine" alias="doctrine"/>
         <service id="graviton.rest.router" alias="router"/>
 
-        <!-- Pagination -->
-        <service id="graviton.rest.paginator" alias="knp_paginator"/>
-
         <!-- Routing -->
         <!-- Routing collection -->
         <service id="graviton.rest.routing.collection" class="%graviton.rest.routing.collection.class%"/>

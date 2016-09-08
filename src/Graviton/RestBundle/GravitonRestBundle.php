@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle;
 
-use Knp\Bundle\PaginatorBundle\KnpPaginatorBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -37,7 +36,6 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         return array(
             new MisdGuzzleBundle(),
             new JMSSerializerBundle(),
-            new KnpPaginatorBundle(),
         );
     }
 
