@@ -27,7 +27,7 @@ before_script:
     if [ $(phpenv version-name) = "7.0" ]; then
         # installing mongofill requires more than 1GB of RAM
         echo "memory_limit=-1"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
-        composer require mongofill/mongofill:dev-master --ignore-platform-reqs --profile;
+        composer require mongofill/mongofill:dev-master --ignore-platform-reqs --profile --no-scripts;
     fi
 - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile
 - >
