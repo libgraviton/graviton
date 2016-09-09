@@ -1,8 +1,0 @@
-imports:
-    - { resource: config_dev.yml }
-    - { resource: oauth/config.yml }
-
-framework:
-    router:
-        resource: "%kernel.root_dir%/config/routing_oauth_dev.yml"
-        strict_requirements: true

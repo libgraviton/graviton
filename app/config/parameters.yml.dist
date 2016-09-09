@@ -25,9 +25,6 @@ parameters:
     graviton.router.port_http: null
     graviton.router.port_https: null
 
-    graviton.security.oauth.github.client_id: ~
-    graviton.security.oauth.github.client_secret: ~
-
     # service info injected by cloudfoundry
     vcap.services: ~
 
