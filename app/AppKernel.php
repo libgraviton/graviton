@@ -86,10 +86,6 @@ class AppKernel extends Kernel
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
         }
 
-        if (strpos($this->getEnvironment(), 'oauth') !== false) {
-            $bundles[] = new \HWI\Bundle\OAuthBundle\HWIOAuthBundle();
-        }
-
         // autoload of Graviton specific bundles.
         if ($this->bundleLoader) {
             $bundles = $this->bundleLoader->load($bundles);
