@@ -42,5 +42,3 @@ monolog:
         #    type:   chromephp
         #    level:  info
 
-eo_airbrake:
-    api_key: ~

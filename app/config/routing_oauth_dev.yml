@@ -1,5 +1,0 @@
-_oauth:
-    resource: oauth/routing.yml
-
-_maindev:
-    resource: routing_dev.yml

@@ -25,9 +25,6 @@ parameters:
     graviton.router.port_http: null
     graviton.router.port_https: null
 
-    graviton.security.oauth.github.client_id: ~
-    graviton.security.oauth.github.client_secret: ~
-
     # service info injected by cloudfoundry
     vcap.services: ~
 
@@ -49,10 +46,6 @@ parameters:
     graviton.file.s3.key: ~
     graviton.file.s3.secret: ~
     graviton.file.s3.bucket_name: graviton-dev-bucket
-
-    # errbit config
-    graviton.errbit.api_key: ~
-    graviton.errbit.host: ~
 
     # rabbitmq config
     graviton.rabbitmq.host: localhost
