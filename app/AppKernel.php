@@ -74,7 +74,6 @@ class AppKernel extends Kernel
             new \Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
-            new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
         );
@@ -85,10 +84,6 @@ class AppKernel extends Kernel
             $bundles[] = new \Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new \Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
-        }
-
-        if (strpos($this->getEnvironment(), 'oauth') !== false) {
-            $bundles[] = new \HWI\Bundle\OAuthBundle\HWIOAuthBundle();
         }
 
         // autoload of Graviton specific bundles.

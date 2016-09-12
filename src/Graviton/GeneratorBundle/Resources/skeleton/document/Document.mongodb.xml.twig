@@ -8,9 +8,9 @@
     </mapped-superclass>
 
     {% if docType is defined and docType == "embedded-document" %}
-        {% set hideIdField = true %}
+        {% set isEmbeddedDocument = true %}
     {% else %}
-        {% set hideIdField = false %}
+        {% set isEmbeddedDocument = false %}
     {% endif %}
 
     {% if docType is not defined %}
@@ -20,7 +20,7 @@
   <{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository" collection="{{ collection }}" inheritance-type="COLLECTION_PER_CLASS">
 
   {% if idField is defined %}
-      {% if hideIdField == false %}
+      {% if isEmbeddedDocument == false %}
           <field fieldName="id" id="true" strategy="UUID" />
       {% else %}
           <field fieldName="id" type="{{ idField.doctrineType }}" id="false"/>
@@ -74,6 +74,7 @@
             <field fieldName="recordOrigin" type="string"/>
         {% endif %}
 
+{% if not isEmbeddedDocument %}
     <indexes>
     {% if indexes is defined and indexes is not empty %}
             {% for index in indexes %}
@@ -94,6 +95,7 @@
             </index>
     {% endif %}
     </indexes>
+{% endif %}
 
     </{{ docType }}>
 </doctrine-mongo-mapping>

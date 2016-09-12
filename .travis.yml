@@ -10,6 +10,7 @@ addons:
     packages:
     - mongodb-org-server
 before_script:
+- free -m
 - >
     if [ "$PHPUNIT_SUITE" != "integration" ]; then
         export MONGODB_URI=mongodb://does.not.exist.example.org:443
@@ -24,9 +25,11 @@ before_script:
     fi
 - >
     if [ $(phpenv version-name) = "7.0" ]; then
-        composer require mongofill/mongofill:dev-master --ignore-platform-reqs;
+        # installing mongofill requires more than 1GB of RAM
+        echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
+        composer require mongofill/mongofill:dev-master --ignore-platform-reqs --profile --no-scripts;
     fi
-- composer install --no-interaction  --ignore-platform-reqs --no-scripts
+- composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile
 - >
     if [ "$PHPUNIT" = "true" ]; then
         wget https://scrutinizer-ci.com/ocular.phar
