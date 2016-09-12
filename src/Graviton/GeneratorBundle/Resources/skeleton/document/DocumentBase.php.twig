@@ -6,6 +6,7 @@
 namespace {{ base }}Document;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use Graviton\CoreBundle\Document\BaseDocument;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\DeserializationContext;
@@ -22,7 +23,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
 * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
 * @link     http://swisscom.ch
 */
-abstract class {{ document }}Base implements TranslatableDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
+abstract class {{ document }}Base extends BaseDocument implements TranslatableDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
 
 /**

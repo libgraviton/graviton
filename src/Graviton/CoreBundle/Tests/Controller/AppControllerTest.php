@@ -5,6 +5,8 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\CoreBundle\Document\App;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -378,14 +380,15 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->post('/core/app/', $testApp);
         $response = $client->getResponse();
+        $urlLocation = $response->headers->get('Location');
         $results = $client->getResults();
 
         // we sent a location header so we don't want a body
         $this->assertNull($results);
-        $this->assertContains('/core/app/', $response->headers->get('Location'));
+        $this->assertContains('/core/app/', $urlLocation);
 
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $urlLocation);
         $response = $client->getResponse();
         $results = $client->getResults();
 
@@ -396,6 +399,32 @@ class AppControllerTest extends RestTestCase
             '<http://localhost/core/app/'.$results->id.'>; rel="self"',
             explode(',', $response->headers->get('Link'))
         );
+
+        // Simple original object
+        $original = $results;
+        
+        /** @var DocumentManager $documentManager */
+        $documentManager = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        $repository = $documentManager->getRepository(get_class(new App()));
+        /** @var App $app */
+        $app = $repository->find($original->id);
+        $this->assertNotEmpty($app->getModifiedAt());
+        $this->assertNotEmpty($app->getModifiedBy());
+        $this->assertEquals('anonymous', $app->getModifiedBy());
+
+        sleep(1);
+        // Lets update the record and chech for updatedAt
+        $original->name->en = 'change en name';
+        $client = static::createRestClient();
+        $client->put($urlLocation, $original);
+        $response = $client->getResponse();
+
+        $documentManager->refresh($app);
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertNotEmpty($app->getModifiedAt());
+        $this->assertEquals('anonymous', $app->getModifiedBy());
+        $this->assertEquals($app->getModifiedAt()->getTimestamp(), $app->getModifiedAt()->getTimestamp());
+        $this->assertEquals($app->getModifiedBy(), $app->getModifiedBy());
     }
 
     /**

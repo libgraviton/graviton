@@ -17,6 +17,7 @@
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
         <parameter key="graviton.core.service.coreversionutils.class">Graviton\CoreBundle\Service\CoreVersionUtils</parameter>
         <parameter key="graviton.core.listener.jsonexceptionlistener.class">Graviton\CoreBundle\Listener\JsonExceptionListener</parameter>
+        <parameter key="graviton.core.listener.basedocument.class">Graviton\CoreBundle\Listener\BaseDocumentListener</parameter>
     </parameters>
     <services>
         <service id="graviton.core.controller.main"
@@ -124,6 +125,13 @@
                 <argument type="service" id="graviton.core.command.parser"/>
             </call>
             <tag name="console.command" />
+        </service>
+
+        <service id="graviton.core.listener.basedocument_db_listener"
+                 class="%graviton.core.listener.basedocument.class%">
+            <argument type="service" id="security.token_storage" />
+            <tag name="doctrine_mongodb.odm.event_listener" event="prePersist"/>
+            <tag name="doctrine_mongodb.odm.event_listener" event="preUpdate"/>
         </service>
     </services>
 </container>

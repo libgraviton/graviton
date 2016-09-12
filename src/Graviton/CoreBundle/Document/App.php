@@ -14,7 +14,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class App implements TranslatableDocumentInterface
+class App extends BaseDocument implements TranslatableDocumentInterface
 {
     /**
      * @var string app id
