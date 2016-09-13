@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface as PrependInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * GravitonBundleExtension
@@ -33,11 +35,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new Loader\XmlFileLoader(
-            $container,
-            new FileLocator($this->getConfigDir())
-        );
-        $loader->load('services.xml');
+        $this->loadFiles($this->getConfigDir(), $container, ['services.xml','services.yml']);
     }
 
     /**
@@ -61,11 +59,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      */
     public function prepend(ContainerBuilder $container)
     {
-        $loader = new Loader\XmlFileLoader(
-            $container,
-            new FileLocator($this->getConfigDir())
-        );
-        $loader->load('config.xml');
+        $this->loadFiles($this->getConfigDir(), $container, ['config.xml','config.yml','parameters.yml']);
     }
 
     /**
@@ -86,5 +80,36 @@ class GravitonBundleExtension extends Extension implements PrependInterface
         }
 
         throw new \RuntimeException('Expected configuration class not found!');
+    }
+
+    /**
+     * Made to have in one place the loading
+     *
+     * @param string           $dir       folder
+     * @param ContainerBuilder $container Sf container
+     * @param array            $allowed   array of files to load
+     *
+     * @return void
+     */
+    private function loadFiles($dir, $container, $allowed)
+    {
+        $locator = new FileLocator($dir);
+        $xmlLoader = new Loader\XmlFileLoader($container, $locator);
+        $ymlLoader = new Loader\YamlFileLoader($container, $locator);
+
+        $finder = new Finder();
+        $finder->files()->in($dir);
+
+        /** @var SplFileInfo $file */
+        foreach ($finder as $file) {
+            if (!in_array($file->getFilename(), $allowed)) {
+                continue;
+            }
+            if ('xml' == $file->getExtension()) {
+                $xmlLoader->load($file->getRealPath());
+            } elseif ('yml' == $file->getExtension()) {
+                $ymlLoader->load($file->getRealPath());
+            }
+        }
     }
 }

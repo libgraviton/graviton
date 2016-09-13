@@ -36,6 +36,11 @@ class SchemaModel implements ContainerAwareInterface
         $file = __DIR__ . '/../../' . $bundle . '/Resources/config/schema/' . $model . '.json';
 
         if (!file_exists($file)) {
+            $reflection = new \ReflectionClass($this);
+            $file = dirname($reflection->getFileName()).'/../Resources/config/schema/' . $model . '.json';
+        }
+
+        if (!file_exists($file)) {
             // fallback try on model property (this should be available on some generated classes)
             if (isset($this->_modelPath)) {
                 // try to find schema.json relative to the model involved..
