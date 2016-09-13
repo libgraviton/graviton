@@ -1,0 +1,128 @@
+{
+
+  "x-documentClass": "Graviton\\AuditTrackingBundle\\Document\\AuditTracking",
+
+  "description": "user Activity log",
+
+  "x-id-in-post-allowed": false,
+
+    "title": "user Activity log",
+
+  "properties": {
+
+    "thread": {
+
+      "title": "Unique id per request",
+
+
+
+
+
+
+      "description": "Unique id per request"
+
+    
+
+
+    },
+    "coreId": {
+
+      "title": "User id per request",
+
+
+
+
+
+
+      "description": "user id per request"
+
+    
+
+
+    },
+    "action": {
+
+      "title": "Action executed",
+
+
+
+
+
+
+      "description": "Action done"
+
+    
+
+
+    },
+    "type": {
+
+      "title": "Type of action",
+
+
+
+
+
+
+      "description": "Type of action"
+
+    
+
+
+    },
+    "location": {
+
+      "title": "What was done, collection or request uri",
+
+
+
+
+
+
+      "description": "location of action"
+
+    
+
+
+    },
+    "data": {
+
+      "title": "parameters sent or received",
+
+
+
+
+
+
+      "description": "data of action"
+
+    
+
+
+    },
+    "createdAt": {
+
+      "title": "parameters sent or received",
+
+
+
+
+
+
+      "description": "data of action"
+
+    
+
+
+    },
+    "id": {
+      "title": "ID",
+      "description": "Unique identifier"
+    }
+  },
+
+  "recordOriginModifiable": true,
+  "required": ["thread","coreId","action","type","location","data","createdAt"],
+  "searchable": [],
+  "readOnlyFields": []
+}

@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SecurityBundle\Entities\SecurityUser;
@@ -22,6 +23,7 @@ use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
 use Xiag\Rql\Parser\Query as XiagQuery;
 use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
+use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 
 /**
  * Use doctrine odm as backend
@@ -88,18 +90,24 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $manager;
 
+    /** @var EventDispatcher */
+    protected $eventDispatcher;
+
     /**
-     * @param Visitor $visitor                    rql query visitor
-     * @param array   $notModifiableOriginRecords strings with not modifiable recordOrigin values
-     * @param integer $paginationDefaultLimit     amount of data records to be returned when in pagination context
+     * @param Visitor         $visitor                    rql query visitor
+     * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
+     * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param integer         $paginationDefaultLimit     amount of data records to be returned when in pagination cnt
      */
     public function __construct(
         Visitor $visitor,
+        $eventDispatcher,
         $notModifiableOriginRecords,
         $paginationDefaultLimit
     ) {
         parent::__construct();
         $this->visitor = $visitor;
+        $this->eventDispatcher = $eventDispatcher;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
@@ -350,6 +358,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if ($doFlush) {
             $this->manager->flush($entity);
         }
+
+        // Fire ModelEvent
+        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_INSERT, $entity);
+
         if ($returnEntity) {
             return $this->find($entity->getId());
         }
@@ -411,6 +423,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $this->manager->persist($entity);
         $this->manager->flush($entity);
+        
+        // Fire ModelEvent
+        $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
 
         if ($returnEntity) {
             return $entity;
@@ -441,6 +456,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->manager->detach($entity);
             $this->manager->clear();
             $return = null;
+            
+            // Dispatch ModelEvent
+            $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
         }
 
         return $return;
@@ -604,13 +622,29 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param Boolean $active active
-     * @param String  $field  field
+     * Will fire a ModelEvent
+     *
+     * @param string $action     insert or update
+     * @param Object $collection the changed Document
+     *
      * @return void
      */
-    public function setFilterByAuthUser($active, $field)
+    private function dispatchModelEvent($action, $collection)
     {
-        $this->filterByAuthUser = is_bool($active) ? $active : false;
-        $this->filterByAuthField = $field;
+        if (!($this->repository instanceof DocumentRepository)) {
+            return;
+        }
+        if (!method_exists($collection, 'getId')) {
+            return;
+        }
+
+        $event = new ModelEvent();
+        $event->setCollectionId($collection->getId());
+        $event->setActionByDispatchName($action);
+        $event->setCollectionName($this->repository->getClassMetadata()->getCollection());
+        $event->setCollectionClass($this->repository->getClassName());
+        $event->setCollection($collection);
+        
+        $this->eventDispatcher->dispatch($action, $event);
     }
 }

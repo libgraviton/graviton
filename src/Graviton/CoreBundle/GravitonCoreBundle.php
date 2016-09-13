@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle;
 
+use Graviton\AuditTrackingBundle\GravitonAuditTrackingBundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\CacheBundle\GravitonCacheBundle;
 use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
@@ -64,6 +65,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonRabbitMqBundle(),
             new GravitonMigrationBundle(),
             new GravitonProxyBundle(),
+            new GravitonAuditTrackingBundle()
         );
     }
 

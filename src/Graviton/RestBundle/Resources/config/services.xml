@@ -83,12 +83,9 @@
         <!-- Model -->
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
             <argument type="service" id="graviton.rql.visitor.mongodb" />
+            <argument type="service" id="event_dispatcher" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
             <argument>%graviton.rest.pagination.limit%</argument>
-            <call method="setFilterByAuthUser">
-                <argument>%graviton.security.query.filter_by_user%</argument>
-                <argument>%graviton.security.query.filter_by_field%</argument>
-            </call>
         </service>
 
         <!-- Response object wrapper with scope request (get a new one for each request) -->
