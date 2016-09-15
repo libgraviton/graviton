@@ -190,6 +190,18 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get hideOnEmptyExtref flag for a given field
+     *
+     * @param string $field field name
+     *
+     * @return boolean the hideOnEmptyExtref flag
+     */
+    public function getHideOnEmptyExtref($field)
+    {
+        return $this->getSchemaField($field, 'hideOnEmptyExtref', false);
+    }
+
+    /**
      * get readOnly flag for a given field
      *
      * @param string $field field name

@@ -39,10 +39,10 @@ protected $deletedDate;
 
 {% for field in fields %}
     /**
-    {% if 'Graviton' in field.type %}
-        * @var \{{ field.type }} ${{ field.fieldName }}
+    {% if 'Graviton' in field.serializerType %}
+        * @return \{{ field.serializerType }} ${{ field.fieldName }}
     {% else %}
-        * @var {{ field.type }} ${{ field.fieldName }}
+        * @return {{ field.serializerType }} ${{ field.fieldName }}
     {% endif %}
     */
     {% if field.type == 'array' %}
@@ -130,10 +130,10 @@ return $this->deletedDate;
     /**
     * Get {{ field.fieldName }}
     *
-    {% if 'Graviton' in field.type %}
-        * @return \{{ field.type }} ${{ field.fieldName }}
+    {% if 'Graviton' in field.serializerType %}
+        * @return \{{ field.serializerType }} ${{ field.fieldName }}
     {% else %}
-        * @return {{ field.type }} ${{ field.fieldName }}
+        * @return {{ field.serializerType }} ${{ field.fieldName }}
     {% endif %}
     */
     {% if field.type == 'boolean' %}
@@ -145,17 +145,21 @@ return $this->deletedDate;
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         return XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
     {% else %}
-        return $this->{{ field.fieldName }};
+        {% if field.hideOnEmptyExtref is defined and field.hideOnEmptyExtref==true and field.relType=='embed' %}
+            return $this->{{ field.fieldName }} && $this->{{ field.fieldName }}->getRef() ? $this->{{ field.fieldName }} : null;
+        {% else %}
+            return $this->{{ field.fieldName }};
+        {% endif %}
     {% endif %}
     }
 
     /**
     * Set {{ field.fieldName }}
     *
-    {% if 'Graviton' in field.type %}
-        * @param \{{ field.type }} ${{ field.fieldName }} object for {{ field.fieldName }}
+    {% if 'Graviton' in field.serializerType %}
+        * @param \{{ field.serializerType }} ${{ field.fieldName }} object for {{ field.fieldName }}
     {% else %}
-        * @param {{ field.type }} ${{ field.fieldName }} value for {{ field.fieldName }}
+        * @param {{ field.serializerType }} ${{ field.fieldName }} value for {{ field.fieldName }}
     {% endif %}
     *
     * @return self
@@ -194,7 +198,7 @@ return $this->deletedDate;
         /**
         * add element to {{ field.fieldName }}
         *
-        * @param {{ itemTypeName }} ${{ field.singularName }} value to add to {{ field.fieldName }}
+        * @param \{{ itemTypeName }} ${{ field.singularName }} value to add to {{ field.fieldName }}
         *
         * @return self
         */
@@ -206,7 +210,7 @@ return $this->deletedDate;
         /**
         * remove element from {{ field.fieldName }}
         *
-        * @param {{ itemTypeName }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
+        * @param \{{ itemTypeName }} ${{ field.singularName }} value to remove from {{ field.fieldName }}
         *
         * @return self
         */

@@ -22,6 +22,9 @@
         <property name="readOnly"
                   type="boolean"
                   serialized-name="readOnly"/>
+        <property name="hideOnEmptyExtref"
+                  type="boolean"
+                  serialized-name="hideOnEmptyExtref"/>
         <property name="recordOriginException"
                   type="boolean"
                   serialized-name="recordOriginException"/>

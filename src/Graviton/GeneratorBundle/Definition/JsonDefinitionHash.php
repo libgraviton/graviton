@@ -83,6 +83,7 @@ class JsonDefinitionHash implements DefinitionElementInterface
                 'readOnly'          => $this->definition->getReadOnly(),
                 'required'          => $this->definition->getRequired(),
                 'searchable'        => $this->definition->getSearchable(),
+                'hideOnEmptyExtref' => $this->definition->isHideOnEmptyExtref(),
                 'constraints'       => array_map(
                     [Utils\ConstraintNormalizer::class, 'normalize'],
                     $this->definition->getConstraints()
