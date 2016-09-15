@@ -117,7 +117,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'collection' => array(),
             'xDynamicKey' => null,
             'searchable' => 1,
-            'recordOriginException' => false
+            'recordOriginException' => false,
+            'hideOnEmptyExtref' => false
         );
 
         $this->assertEquals($def, $field->getDefAsArray());
