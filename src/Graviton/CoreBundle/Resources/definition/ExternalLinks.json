@@ -42,12 +42,10 @@
         "description": "The order index"
       },
       {
-        "name": "type.ref",
-        "type": "extref",
-        "title": "Type",
-        "description": "Link to any element in order to build groups of links.",
-        "exposeAs": "$ref",
-        "collection": ["*"]
+        "name": "group",
+        "type": "varchar",
+        "title": "Group",
+        "description": "A field to build groups of links."
       }
     ]
   }
