@@ -8,6 +8,7 @@ use JMS\Serializer\Exclusion\ExclusionStrategyInterface;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Context;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * In this Strategy we skip all properties on first level who are not selected if there is a select in rql.
@@ -18,6 +19,21 @@ use JMS\Serializer\Context;
  */
 class SelectExclusionStrategy implements ExclusionStrategyInterface
 {
+    /**
+     * @var RequestStack $requestStack
+     */
+    protected $requestStack;
+
+    /**
+     * for injection of the global request_stack to access the XiagQuery-Object
+     * @param RequestStack $requestStack the global request_stack
+     * @return void
+     */
+    public function setRequestStack(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
     /**
      * @InheritDoc: Whether the class should be skipped.
      * @param ClassMetadata $metadata         the ClassMetadata for the Class of the property to be serialized
@@ -43,20 +59,14 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
             return false;
         }
 
-        $select = false;
-        $selectVars=[];
-        foreach ($_GET as $getVar => $val) {
-            if (strstr($getVar, 'select(')) {
-                preg_match('/\((.*?)\)/', $getVar, $match);
-                $select = true;
-                $selectVars = explode(',', $match[1]);
-                break;
+        $return = false;
+        $xiagQuery = $this->requestStack->getCurrentRequest()->get('rqlQuery');
+        if ($xiagQuery) {
+            $select = $xiagQuery->getSelect();
+            if ($select) {
+                $return = ! in_array($property->name, $select->getFields());
             }
         }
-        if ($select && ! in_array($property->name, $selectVars)) {
-            return true;
-        } else {
-            return false;
-        }
+        return $return;
     }
 }
