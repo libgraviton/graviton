@@ -20,8 +20,8 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
 {
     /**
      * @InheritDoc: Whether the class should be skipped.
-     * @param ClassMetadata $metadata         blabla
-     * @param Context       $navigatorContext blabla
+     * @param ClassMetadata $metadata         the ClassMetadata for the Class of the property to be serialized
+     * @param Context       $navigatorContext the context for serialization
      * @return boolean
      */
     public function shouldSkipClass(ClassMetadata $metadata, Context $navigatorContext)
@@ -32,8 +32,8 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
     /**
      * @InheritDoc: Whether the property should be skipped.
      * Skipping properties on first level who are not selected if there is a select in rql.
-     * @param PropertyMetadata $property blabla
-     * @param Context          $context  blabla
+     * @param PropertyMetadata $property the property to be serialized
+     * @param Context          $context  the context for serialization
      * @return boolean
      */
     public function shouldSkipProperty(PropertyMetadata $property, Context $context)
