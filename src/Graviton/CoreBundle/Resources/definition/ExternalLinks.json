@@ -23,7 +23,6 @@
         "description": "Name of the external link",
         "translatable": true
       },
-
       {
         "name": "url",
         "type": "varchar",
@@ -41,6 +40,12 @@
         "type": "int",
         "title": "Order",
         "description": "The order index"
+      },
+      {
+        "name": "group",
+        "type": "varchar",
+        "title": "Group",
+        "description": "A field to build groups of links."
       }
     ]
   }
