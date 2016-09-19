@@ -23,7 +23,6 @@
         "description": "Name of the external link",
         "translatable": true
       },
-
       {
         "name": "url",
         "type": "varchar",
@@ -41,6 +40,14 @@
         "type": "int",
         "title": "Order",
         "description": "The order index"
+      },
+      {
+        "name": "type.ref",
+        "type": "extref",
+        "title": "Type",
+        "description": "Link to any element in order to build groups of links.",
+        "exposeAs": "$ref",
+        "collection": ["*"]
       }
     ]
   }
