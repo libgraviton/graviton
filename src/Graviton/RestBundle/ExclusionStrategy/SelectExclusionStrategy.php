@@ -9,6 +9,7 @@ use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Context;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Xiag\Rql\Parser\Query;
 
 /**
  * In this Strategy we skip all properties on first level who are not selected if there is a select in rql.
@@ -61,7 +62,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
 
         $return = false;
         $xiagQuery = $this->requestStack->getCurrentRequest()->get('rqlQuery');
-        if ($xiagQuery) {
+        if ($xiagQuery && $xiagQuery instanceof Query) {
             $select = $xiagQuery->getSelect();
             if ($select) {
                 $return = ! in_array($property->name, $select->getFields());
