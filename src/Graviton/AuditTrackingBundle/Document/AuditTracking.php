@@ -6,6 +6,7 @@
 namespace Graviton\AuditTrackingBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Graviton\DocumentBundle\Entity\ExtReference;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -50,14 +51,19 @@ class AuditTracking
     protected $data;
 
     /**
-     * @ string $collectionName
+     * @var string $collectionName
      */
     protected $collectionId;
 
     /**
-     * @ string $collectionName
+     * @var string $collectionName
      */
     protected $collectionName;
+
+    /**
+     * @var extref $ref
+     */
+    protected $ref;
 
     /**
      * @var \datetime $createdAt
@@ -215,6 +221,18 @@ class AuditTracking
     public function setCollectionName($collectionName)
     {
         $this->collectionName = $collectionName;
+    }
+
+    /**
+     * @return extref
+     */
+    public function getRef()
+    {
+        if ($this->collectionId && $this->collectionName) {
+            return ExtReference::create($this->collectionName, $this->collectionId);
+        }
+
+        return null;
     }
 
     /**

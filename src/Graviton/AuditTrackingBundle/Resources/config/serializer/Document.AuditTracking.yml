@@ -6,3 +6,7 @@ Graviton\AuditTrackingBundle\Document\AuditTracking:
             expose: true
             accessor:
                 getter: getData
+        ref:
+            type: Graviton\DocumentBundle\Entity\ExtReference
+            accessor:
+                getter: getRef
