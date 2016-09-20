@@ -46,8 +46,8 @@
         </service>
         <service id="graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy"
                  class="%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%">
-            <call method="setRequestStack">
-                <argument type="service" id="request_stack" />
+            <call method="getSelectedFieldsFromRQL">
+                <argument type="service" id="request_stack"/>
             </call>
         </service>
         <service id="graviton.rest.serializer.deserializercontext"

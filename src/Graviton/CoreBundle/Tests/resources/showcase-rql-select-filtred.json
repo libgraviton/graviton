@@ -7,13 +7,11 @@
       "protocol": "mailto",
       "uri": "mailto:joe@example.com"
     },
-    "contacts": [],
     "contactCode": {
       "text": {
         "en": "Ad mailing campaign 2012"
       }
     },
-    "nestedArray": [],
     "unstructuredObject": {
       "hashField": {
         "someField": 21
@@ -27,7 +25,6 @@
         }
       ]
     },
-    "nestedApps": [],
     "nestedCustomers": [
       {
         "customerNumber": 1234,
@@ -47,17 +44,14 @@
       "protocol": "mailto",
       "uri": "mailto:dave@example-company.com"
     },
-    "contacts": [],
     "contactCode": {
       "text": {
         "en": "Phone call"
       }
     },
-    "nestedArray": [],
     "unstructuredObject": {
       "booleanField": true
     },
-    "nestedApps": [],
     "nestedCustomers": [],
     "choices": "<>",
     "id": "600"

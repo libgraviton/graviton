@@ -21,18 +21,48 @@ use Xiag\Rql\Parser\Query;
 class SelectExclusionStrategy implements ExclusionStrategyInterface
 {
     /**
-     * @var RequestStack $requestStack
+     * @var Array $selectedFields
      */
-    protected $requestStack;
+    protected $selectedFields;
 
     /**
-     * for injection of the global request_stack to access the XiagQuery-Object
+     * @var Boolean $isSelect
+     */
+    protected $isSelect;
+
+    /**
+     * Injection of the global request_stack to access the selected Fields via Query-Object
      * @param RequestStack $requestStack the global request_stack
      * @return void
      */
-    public function setRequestStack(RequestStack $requestStack)
+    public function getSelectedFieldsFromRQL(RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
+        $currentRequest = $requestStack->getCurrentRequest();
+        $this->selectedFields = [];
+        $this->isSelect = false;
+        if ($currentRequest) {
+            $rqlQuery = $currentRequest->get('rqlQuery');
+            if ($rqlQuery && $rqlQuery instanceof Query) {
+                $select = $rqlQuery->getSelect();
+                if ($select) {
+                    $this->isSelect = true;
+                    $this->selectedFields = $select->getFields();
+                    // get the nested fields as well
+                    $nestedFields = [];
+                    foreach ($this->selectedFields as $key => $field) {
+                        if (strstr($field, '.')) {
+                            $nestedFields=array_merge($nestedFields, explode('.', $field));
+                            unset($this->selectedFields[$key]);
+                        }
+                    }
+                    $this->selectedFields = array_merge($this->selectedFields, $nestedFields);
+                    // id is always included in response (bug/feature)?
+                    if (! in_array('id', $this->selectedFields)) {
+                        $this->selectedFields[] = 'id';
+                    };
+                }
+            }
+        }
     }
 
     /**
@@ -59,15 +89,10 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
         if ($context->getDepth() > 1) {
             return false;
         }
-
-        $return = false;
-        $xiagQuery = $this->requestStack->getCurrentRequest()->get('rqlQuery');
-        if ($xiagQuery && $xiagQuery instanceof Query) {
-            $select = $xiagQuery->getSelect();
-            if ($select) {
-                $return = ! in_array($property->name, $select->getFields());
-            }
+        // nothing selected, default serialization
+        if (! $this->isSelect) {
+            return false;
         }
-        return $return;
+        return ! in_array($property->name, $this->selectedFields);
     }
 }
