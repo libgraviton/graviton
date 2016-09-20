@@ -21,6 +21,11 @@ use Xiag\Rql\Parser\Query;
 class SelectExclusionStrategy implements ExclusionStrategyInterface
 {
     /**
+     * @var RequestStack $requestStack
+     */
+    protected $requestStack;
+
+    /**
      * @var Array $selectedFields
      */
     protected $selectedFields;
@@ -31,13 +36,25 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
     protected $isSelect;
 
     /**
-     * Injection of the global request_stack to access the selected Fields via Query-Object
+     * SelectExclusionStrategy constructor.
+     * Comstructor Injection of the global request_stack to access the selected Fields via Query-Object
      * @param RequestStack $requestStack the global request_stack
+     */
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+        $this->getSelectedFieldsFromRQL();
+    }
+
+    /**
+     * Initializing $this->selectedFields and $this->isSelect
+     * getting the fields that should be really serialized and setting the switch that there is actually a select
+     * called once in the object, so shouldSkipProperty can use the information for every field
      * @return void
      */
-    public function getSelectedFieldsFromRQL(RequestStack $requestStack)
+    public function getSelectedFieldsFromRQL()
     {
-        $currentRequest = $requestStack->getCurrentRequest();
+        $currentRequest = $this->requestStack->getCurrentRequest();
         $this->selectedFields = [];
         $this->isSelect = false;
         if ($currentRequest) {
