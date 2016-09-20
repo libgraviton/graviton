@@ -24,3 +24,5 @@ parameters:
         exceptions: false
         # Exclude header status exceptions code, 400=bad request, form validation
         exceptions_exclude: [400]
+        # Exlucde listed URLS, array
+        exlude_urls: ["/auditing"]

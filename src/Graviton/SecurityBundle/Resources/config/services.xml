@@ -109,5 +109,13 @@
             </call>
         </service>
 
+        <!--
+            Service Security Utils
+        -->
+        <service id="graviton.security.service.utils"
+                 class="Graviton\SecurityBundle\Service\SecurityUtils">
+            <argument type="service" id="security.token_storage"/>
+        </service>
+
     </services>
 </container>

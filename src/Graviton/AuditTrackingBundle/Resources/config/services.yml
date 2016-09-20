@@ -37,8 +37,9 @@ services:
         class: Graviton\AuditTrackingBundle\Manager\StoreManager
         arguments:
             activityManager: '@graviton.audit.manager.activity'
+            logger: '@monolog.logger'
             doctrine: '@doctrine_mongodb'
-            tokenStorage: '@security.token_storage'
+            securityUtils: '@graviton.security.service.utils'
         tags:
             - { name: kernel.event_listener, event: kernel.response, method: persistEvents, priority: -2 }
 

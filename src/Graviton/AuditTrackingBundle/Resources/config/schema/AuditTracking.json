@@ -1,128 +1,59 @@
 {
-
   "x-documentClass": "Graviton\\AuditTrackingBundle\\Document\\AuditTracking",
-
   "description": "user Activity log",
-
   "x-id-in-post-allowed": false,
-
-    "title": "user Activity log",
-
+  "title": "User Activity log",
   "properties": {
-
-    "thread": {
-
-      "title": "Unique id per request",
-
-
-
-
-
-
-      "description": "Unique id per request"
-
-    
-
-
-    },
-    "coreId": {
-
-      "title": "User id per request",
-
-
-
-
-
-
-      "description": "user id per request"
-
-    
-
-
-    },
-    "action": {
-
-      "title": "Action executed",
-
-
-
-
-
-
-      "description": "Action done"
-
-    
-
-
-    },
-    "type": {
-
-      "title": "Type of action",
-
-
-
-
-
-
-      "description": "Type of action"
-
-    
-
-
-    },
-    "location": {
-
-      "title": "What was done, collection or request uri",
-
-
-
-
-
-
-      "description": "location of action"
-
-    
-
-
-    },
-    "data": {
-
-      "title": "parameters sent or received",
-
-
-
-
-
-
-      "description": "data of action"
-
-    
-
-
-    },
-    "createdAt": {
-
-      "title": "parameters sent or received",
-
-
-
-
-
-
-      "description": "data of action"
-
-    
-
-
-    },
-    "id": {
-      "title": "ID",
-      "description": "Unique identifier"
-    }
   },
-
+  "id": {
+    "title": "ID",
+    "description": "Unique identifier"
+  },
+  "thread": {
+    "title": "Unique id per request",
+    "description": "Unique id per request"
+  },
+  "username": {
+    "title": "User id per request",
+    "description": "user id per request"
+  },
+  "action": {
+    "title": "Action executed",
+    "description": "Action done"
+  },
+  "type": {
+    "title": "Type of action",
+    "description": "Type of action"
+  },
+  "location": {
+    "title": "What was done, collection or request uri",
+    "description": "location of action"
+  },
+  "data": {
+    "title": "parameters sent or received",
+    "description": "object data of action"
+  },
+  "collectionId": {
+    "title": "Collection modified",
+    "description": "String name of collection that was modified"
+  },
+  "collectionName": {
+    "title": "Collection ID modified",
+    "description": "String ID of collection modified"
+  },
+  "createdAt": {
+    "title": "Created At",
+    "description": "Timestamp of when record was saved"
+  },
   "recordOriginModifiable": true,
-  "required": ["thread","coreId","action","type","location","data","createdAt"],
+  "required": [
+    "thread",
+    "coreId",
+    "action",
+    "type",
+    "location",
+    "createdAt"
+  ],
   "searchable": [],
   "readOnlyFields": []
 }

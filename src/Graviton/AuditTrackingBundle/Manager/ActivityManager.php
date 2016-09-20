@@ -12,7 +12,6 @@ use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -116,8 +115,14 @@ class ActivityManager
         }
         
         // We never log tracking service calls
-        if ((strpos($this->request->getRequestUri(), '/_debug') !== false)) {
-            return false;
+        $excludeUrls = $this->getConfigValue('exlude_urls', 'array');
+        if ($excludeUrls) {
+            $currentUrl = $this->request->getRequestUri();
+            foreach ($excludeUrls as $url) {
+                if (substr($currentUrl, 0, strlen($url)) == $url) {
+                    return false;
+                }
+            }
         }
 
         // Check if we wanna log test and localhost calls
@@ -159,12 +164,14 @@ class ActivityManager
             $data['content'] = ($length==1) ? $cnt : substr($cnt, 0, $length);
         }
 
-        $this->createEvent(
-            'request',
-            $request->getRequestUri(),
-            $method,
-            $data
-        );
+        /** @var AuditTracking $event */
+        $event = new $this->document();
+        $event->setAction('request');
+        $event->setType($method);
+        $event->setData((object) $data);
+        $event->setLocation($request->getRequestUri());
+        $event->setCreatedAt(new \DateTime());
+        $this->events[] = $event;
     }
 
     /**
@@ -200,12 +207,14 @@ class ActivityManager
         // Header links
         $location = $this->extractHeaderLink($response->headers->get('link'), 'self');
 
-        $this->createEvent(
-            'response',
-            $statusCode,
-            $location,
-            $data
-        );
+        /** @var AuditTracking $audit */
+        $audit = new $this->document();
+        $audit->setAction('response');
+        $audit->setType($statusCode);
+        $audit->setData((object) $data);
+        $audit->setLocation($location);
+        $audit->setCreatedAt(new \DateTime());
+        $this->events[] = $audit;
     }
 
     /**
@@ -222,16 +231,19 @@ class ActivityManager
         if (!$this->getConfigValue('exceptions', 'bool')) {
             return;
         }
-        $data = [
+        $data = (object) [
             'message'   => $exception->getMessage(),
             'trace'     => $exception->getTraceAsString()
         ];
-        $this->createEvent(
-            'exception',
-            $exception->getCode(),
-            get_class($exception),
-            $data
-        );
+
+        /** @var AuditTracking $audit */
+        $audit = new $this->document();
+        $audit->setAction('exception');
+        $audit->setType($exception->getCode());
+        $audit->setData($data);
+        $audit->setLocation(get_class($exception));
+        $audit->setCreatedAt(new \DateTime());
+        $this->events[] = $audit;
     }
 
     /**
@@ -254,59 +266,21 @@ class ActivityManager
             return;
         }
 
-        $this->createEvent(
-            $event->getAction(),
-            'collection',
-            $this->globalRequestLocation,
-            [
-                'class' => $event->getCollectionClass()
-            ],
-            $event->getCollectionId(),
-            $event->getCollectionName()
-        );
-    }
+        $data = (object) [
+            'class' => $event->getCollectionClass()
+        ];
 
-    /**
-     * Creating the Document to be saved into DB.
-     *
-     * @param string $action         What did happen
-     * @param string $type           What was it
-     * @param string $location       Where was it
-     * @param string $data           Aditioanl data
-     * @param string $collectionId   Modified collection identifier
-     * @param string $collectionName Modified collection name
-     *
-     * @return void
-     */
-    private function createEvent(
-        $action,
-        $type,
-        $location,
-        $data,
-        $collectionId = '',
-        $collectionName = ''
-    ) {
-        if (!is_object($data)) {
-            $data = (object) $data;
-        }
+        /** @var AuditTracking $audit */
+        $audit = new $this->document();
+        $audit->setAction($event->getAction());
+        $audit->setType('collection');
+        $audit->setData($data);
+        $audit->setLocation($this->globalRequestLocation);
+        $audit->setCollectionId($event->getCollectionId());
+        $audit->setCollectionName($event->getCollectionName());
+        $audit->setCreatedAt(new \DateTime());
 
-        /** @var AuditTracking $event */
-        $event = new $this->document();
-        $event->setAction($action);
-        $event->setType($type);
-        $event->setData($data);
-        $event->setLocation($location);
-
-        if ($collectionId) {
-            $event->setCollectionId($collectionId);
-        }
-        if ($collectionName) {
-            $event->setCollectionName($collectionName);
-        }
-
-        $event->setCreatedAt(new \DateTime());
-
-        $this->events[] = $event;
+        $this->events[] = $audit;
     }
 
     /**
@@ -334,6 +308,8 @@ class ActivityManager
     }
 
     /**
+     * Get events AuditTracking
+     *
      * @return array
      */
     public function getEvents()

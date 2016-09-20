@@ -7,10 +7,9 @@ namespace Graviton\AuditTrackingBundle\Listener;
 use Graviton\AuditTrackingBundle\Manager\ActivityManager;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\HttpKernel;
 
 /**
- * Class DBActivityListener
+ * Class ExceptionActivityListener
  * @package Graviton\AuditTrackingBundle\Listener
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

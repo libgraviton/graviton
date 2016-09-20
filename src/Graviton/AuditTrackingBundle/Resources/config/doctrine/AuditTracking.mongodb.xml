@@ -20,7 +20,6 @@
         <field fieldName="data" type="raw"/>
         <field fieldName="createdAt" type="date"/>
 
-
         <indexes>
             <index background="true">
                 <key name="collectionName"/>

@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
-use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
@@ -20,7 +19,6 @@ use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
 use Xiag\Rql\Parser\Query;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
-use Graviton\SchemaBundle\Document\Schema as SchemaDocument;
 use Xiag\Rql\Parser\Query as XiagQuery;
 use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
@@ -140,12 +138,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param Request      $request The request object
-     * @param SecurityUser $user    SecurityUser Object
+     * @param Request $request The request object
      *
      * @return array
      */
-    public function findAll(Request $request, SecurityUser $user = null)
+    public function findAll(Request $request)
     {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());

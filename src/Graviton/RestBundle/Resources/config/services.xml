@@ -75,8 +75,8 @@
             <call method="setJsonPatchValidator">
                 <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
             </call>
-            <call method="setTokenStorage">
-                <argument type="service" id="security.token_storage"/>
+            <call method="setSecurityUtils">
+                <argument type="service" id="graviton.security.service.utils"/>
             </call>
         </service>
 

@@ -7,11 +7,11 @@ namespace Graviton\AuditTrackingBundle\Manager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AuditTrackingBundle\Document\AuditTracking;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Graviton\SecurityBundle\Entities\SecurityUser;
+use Graviton\SecurityBundle\Service\SecurityUtils;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class StoreManager
@@ -28,26 +28,32 @@ class StoreManager
     /** @var ActivityManager */
     private $activityManager;
 
+    /** @var Logger */
+    private $logger;
+
     /** @var DocumentManager */
     private $documentManager;
     
-    /** @var SecurityUser */
-    private $securityUser;
+    /** @var SecurityUtils */
+    private $securityUtils;
 
     /**
      * StoreManager constructor.
      * @param ActivityManager $activityManager Main activity manager
+     * @param Logger          $logger          Monolog log service
      * @param ManagerRegistry $doctrine        Doctrine document mapper
-     * @param TokenStorage    $tokenStorage    Sf Auth token storage
+     * @param SecurityUtils   $securityUtils   Sf Auth token storage
      */
     public function __construct(
         ActivityManager $activityManager,
+        Logger $logger,
         ManagerRegistry $doctrine,
-        TokenStorage $tokenStorage
+        SecurityUtils $securityUtils
     ) {
         $this->activityManager = $activityManager;
+        $this->logger = $logger;
         $this->documentManager = $doctrine->getManager();
-        $this->tokenStorage = $tokenStorage;
+        $this->securityUtils = $securityUtils;
     }
 
     /**
@@ -60,27 +66,52 @@ class StoreManager
      */
     public function persistEvents(FilterResponseEvent $event)
     {
-        if (!($events = $this->activityManager->getEvents())
-            || !($username = $this->getSecurityUsername())) {
+        // No events or no user.
+        if (!($events = $this->activityManager->getEvents())) {
+            $this->logger->debug('AuditTracking:exit-no-events');
             return;
         }
 
-        $thread = $this->generateUUID();
-        $response = $event->getResponse();
-        
-        // If request is valid we save it or we do not.
-        if (!$this->activityManager->getConfigValue('log_on_failure', 'bool')) {
-            if (!$response->isSuccessful()) {
-                // TODO log that we do not save
+        // No events or no user.
+        if (!$this->securityUtils->isSecurityUser()) {
+            $this->logger->debug('AuditTracking:exit-no-user');
+            return;
+        }
+
+        // Check if we wanna log test calls
+        if (!$this->activityManager->getConfigValue('log_test_calls', 'bool')) {
+            if (!$this->securityUtils->isSecurityUser()
+                || !$this->securityUtils->hasRole(SecurityUser::ROLE_CONSULTANT)) {
+                $this->logger->debug('AuditTracking:exit-no-real-user');
                 return;
             }
         }
 
-        // Set Audit header information
-        $response->headers->set(self::AUDIT_HEADER_KEY, $thread);
+        $thread = $this->securityUtils->getThreadId();
+        $response = $event->getResponse();
+        
+        // If request is valid we save it or we do not depending on the exceptions exclude policy
+        if (!$this->activityManager->getConfigValue('log_on_failure', 'bool')) {
+            $excludedStatus = $this->activityManager->getConfigValue('exceptions_exclude', 'array');
+            if (!$response->isSuccessful()
+                && !in_array($response->getStatusCode(), $excludedStatus)) {
+                $this->logger->debug('AuditTracking:exit-on-failure:'.$thread.':'.json_encode($events));
+                return;
+            }
+        }
 
+        $username = $this->securityUtils->getSecurityUsername();
+
+        $saved = false;
         foreach ($events as $event) {
-            $this->trackEvent($event, $thread, $username);
+            if (!($saved = $this->trackEvent($event, $thread, $username))) {
+                break;
+            }
+        }
+
+        // Set Audit header information
+        if ($saved) {
+            $response->headers->set(self::AUDIT_HEADER_KEY, $thread);
         }
     }
 
@@ -90,75 +121,23 @@ class StoreManager
      * @param AuditTracking $event    Performed by user
      * @param string        $thread   The thread ID
      * @param string        $username User connected name
-     * @return void
+     * @return bool
      */
     private function trackEvent($event, $thread, $username)
     {
         // Request information
         $event->setThread($thread);
         $event->setUsername($username);
+        $saved = true;
 
         try {
             $this->documentManager->persist($event);
             $this->documentManager->flush($event);
         } catch (\Exception $e) {
-            // TODO LOG the error and event
-        }
-    }
-
-
-
-    /**
-     * Generate a unique identifer
-     *
-     * @return string
-     */
-    private function generateUUID()
-    {
-        if (!function_exists('openssl_random_pseudo_bytes')) {
-            return uniqid('unq', true);
+            $this->logger->error('AuditTracking:persist-error:'.$thread.':'.json_encode($event));
+            $saved = false;
         }
 
-        $data = openssl_random_pseudo_bytes(16);
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // set version to 0100
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // set bits 6-7 to 10
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }
-    
-    /**
-     * Find current user
-     *
-     * @return string|bool
-     */
-    private function getSecurityUser()
-    {
-        /** @var PreAuthenticatedToken $token */
-        if (($token = $this->tokenStorage->getToken())
-            && ($user = $token->getUser()) instanceof UserInterface ) {
-            return $user;
-        }
-        return false;
-    }
-
-    /**
-     * Last check before saving the Event into DB
-     *
-     * @return bool|string
-     */
-    public function getSecurityUsername()
-    {
-        // No securityUser, no tracking
-        if (!($this->securityUser = $this->getSecurityUser())) {
-            return false;
-        }
-
-        // Check if we wanna log test and localhost calls
-        if (!$this->activityManager->getConfigValue('log_test_calls', 'bool')) {
-            if (!$this->securityUser->hasRole(SecurityUser::ROLE_CONSULTANT)) {
-                return false;
-            }
-        }
-
-        return $this->securityUser->getUsername();
+        return $saved;
     }
 }
