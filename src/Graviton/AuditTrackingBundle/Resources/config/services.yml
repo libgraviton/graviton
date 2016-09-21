@@ -1,0 +1,75 @@
+services:
+    graviton.audit.controller.default:
+        class: Graviton\AuditTrackingBundle\Controller\DefaultController
+        parent: graviton.rest.controller
+        scope: request
+        tags:
+            - { name: graviton.rest, collection: AuditTracking, read-only: true, router-base: /auditing }
+        calls:
+            - [setModel, ['@graviton.audit.model.auditracking']]
+
+    graviton.audit.document.audittracking:
+        class: Graviton\AuditTrackingBundle\Document\AuditTracking
+
+    graviton.audit.repository.audittracking:
+        class: Graviton\AuditTrackingBundle\Repository\AuditTrackingRepository
+        arguments: ["GravitonAuditTrackingBundle:AuditTracking"]
+        factory:   ['@doctrine.odm.mongodb.document_manager', getRepository]
+
+    graviton.audit.model.auditracking:
+        class: Graviton\AuditTrackingBundle\Model\AuditTracking
+        parent: graviton.rest.model
+        arguments: ['@graviton.rql.visitor.mongodb']
+        calls:
+            - [setRepository, ['@graviton.audit.repository.audittracking']]
+
+    # Activity Manager to keep all in one place
+    graviton.audit.manager.activity:
+        class: Graviton\AuditTrackingBundle\Manager\ActivityManager
+        arguments:
+            requestStack: '@request_stack'
+            document: '@graviton.audit.document.audittracking'
+        calls:
+            - [setConfiguration, ["%graviton_audit_tracking%"]]
+
+    # Store Manager to save all events into DB
+    graviton.audit.store.activity:
+        class: Graviton\AuditTrackingBundle\Manager\StoreManager
+        arguments:
+            activityManager: '@graviton.audit.manager.activity'
+            logger: '@monolog.logger'
+            doctrine: '@doctrine_mongodb'
+            securityUtils: '@graviton.security.service.utils'
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: persistEvents, priority: -2 }
+
+    # Listeners
+    graviton.audit.listener.request:
+        class: Graviton\AuditTrackingBundle\Listener\RequestActivityListener
+        arguments:
+            activityManager: '@graviton.audit.manager.activity'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 201 }
+
+    graviton.audit.listener.db:
+        class: Graviton\AuditTrackingBundle\Listener\DocumentModelListener
+        arguments:
+            activityManager: '@graviton.audit.manager.activity'
+        tags:
+            - { name: kernel.event_listener, event: document.model.event.insert, method: modelInsert }
+            - { name: kernel.event_listener, event: document.model.event.update, method: modelUpdate }
+            - { name: kernel.event_listener, event: document.model.event.delete, method: modelDelete }
+
+    graviton.audit.listener.response:
+        class: Graviton\AuditTrackingBundle\Listener\ResponseActivityListener
+        arguments:
+            activityManager: '@graviton.audit.manager.activity'
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -1 }
+
+    graviton.audit.listener.exception:
+        class: Graviton\AuditTrackingBundle\Listener\ExceptionActivityListener
+        arguments:
+            activityManager: '@graviton.audit.manager.activity'
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 1 }

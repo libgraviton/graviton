@@ -1,0 +1,3 @@
+graviton_audit_tracking_default:
+    path:     /
+    defaults: { _controller: graviton.audit.controller.default:indexAction }

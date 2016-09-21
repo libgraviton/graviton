@@ -68,6 +68,7 @@ doctrine_mongodb:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
                 GravitonI18nBundle: ~
+                GravitonAuditTrackingBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
@@ -80,6 +81,7 @@ doctrine_mongodb:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
                 GravitonI18nBundle: ~
+                GravitonAuditTrackingBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter

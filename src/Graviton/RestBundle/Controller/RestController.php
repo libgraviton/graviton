@@ -12,20 +12,19 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\RestBundle\Model\DocumentModel;
-use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\RestBundle\Service\RestUtilsInterface;
+use Graviton\SecurityBundle\Entities\SecurityUser;
+use Graviton\SecurityBundle\Service\SecurityUtils;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\PreconditionRequiredHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Rs\Json\Patch;
 use Rs\Json\Patch\InvalidPatchDocumentJsonException;
@@ -87,9 +86,9 @@ class RestController
     private $jsonPatchValidator;
 
     /**
-     * @var TokenStorage
+     * @var SecurityUtils
      */
-    protected $tokenStorage;
+    protected $securityUtils;
 
     /**
      * @param Response           $response    Response
@@ -116,14 +115,14 @@ class RestController
     }
 
     /**
-     * Setter for the tokenStorage
+     * Setter for the SecurityUtils
      *
-     * @param TokenStorage $tokenStorage The token storage
+     * @param SecurityUtils $securityUtils The securityUtils service
      * @return void
      */
-    public function setTokenStorage(TokenStorage $tokenStorage)
+    public function setSecurityUtils(SecurityUtils $securityUtils)
     {
-        $this->tokenStorage = $tokenStorage;
+        $this->securityUtils = $securityUtils;
     }
 
     /**
@@ -283,24 +282,9 @@ class RestController
     {
         $model = $this->getModel();
 
-        list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
-
-        // Security is optional configured in Parameters
-        try {
-            /** @var SecurityUser $securityUser */
-            $securityUser = $this->getSecurityUser();
-        } catch (PreconditionRequiredHttpException $e) {
-            $securityUser = null;
-        }
-
-        if ($model instanceof PaginatorAwareInterface && !$model->hasPaginator()) {
-            $paginator = new Paginator();
-            $model->setPaginator($paginator);
-        }
-
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($model->findAll($request, $securityUser)));
+            ->setContent($this->serialize($model->findAll($request)));
 
         return $response;
     }
@@ -638,16 +622,10 @@ class RestController
      * Security needs to be enabled to get Object.
      *
      * @return SecurityUser
-     * @throws PreconditionRequiredHttpException
+     * @throws UsernameNotFoundException
      */
     public function getSecurityUser()
     {
-        /** @var PreAuthenticatedToken $token */
-        if (($token = $this->tokenStorage->getToken())
-            && ($user = $token->getUser()) instanceof UserInterface ) {
-            return $user;
-        }
-
-        throw new PreconditionRequiredHttpException('Not allowed');
+        return $this->securityUtils->getSecurityUser();
     }
 }
