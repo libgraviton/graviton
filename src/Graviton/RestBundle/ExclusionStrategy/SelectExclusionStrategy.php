@@ -52,7 +52,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
      * called once in the object, so shouldSkipProperty can use the information for every field
      * @return void
      */
-    public function getSelectedFieldsFromRQL()
+    private function getSelectedFieldsFromRQL()
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         $this->selectedFields = [];
