@@ -7,6 +7,7 @@
 
 namespace Graviton\TestBundle\Test;
 
+use Graviton\TestBundle\Client;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -105,5 +106,24 @@ class RestTestCase extends GravitonTestCase
         $response = $client->getResponse();
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
+    }
+
+    /**
+     * Testing private methods for a class.
+     *
+     * $class = new YourClass(); or service...
+     * $method = $this->getPrivateClassMethod(get_class($class), 'getPrivateFunction');
+     * $result = $method->invokeArgs( $this->activityManager, [argument1, argument2, ...]);
+     *
+     * @param string $className  String name for class, full namespace.
+     * @param string $methodName Method name to be used
+     * @return \ReflectionMethod
+     */
+    public function getPrivateClassMethod($className, $methodName)
+    {
+        $reflector = new \ReflectionClass($className);
+        $method = $reflector->getMethod($methodName);
+        $method->setAccessible(true);
+        return $method;
     }
 }
