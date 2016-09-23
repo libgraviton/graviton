@@ -92,11 +92,13 @@ class NullExtrefControllerTest extends RestTestCase
     /**
      * Test POST method
      *
-     * @param array $data Data to POST
+     * @param array $data        Data to POST
+     * @param array $compareData optional data to compare return to
+     *
      * @return void
      * @dataProvider dataTestData
      */
-    public function testPostMethod(array $data)
+    public function testPostMethod(array $data, array $compareData = null)
     {
         $client = static::createRestClient();
         $client->post('/testcase/nullextref/', $data);
@@ -112,8 +114,13 @@ class NullExtrefControllerTest extends RestTestCase
         $result = $client->getResults();
         $this->assertNotNull($result->id);
         unset($result->id);
+
+        if (is_null($compareData)) {
+            $compareData = $data;
+        }
+
         $this->assertJsonStringEqualsJsonString(
-            json_encode($this->removeNullRefs($data)),
+            json_encode($this->removeNullRefs($compareData)),
             json_encode($client->getResults())
         );
     }
@@ -121,11 +128,13 @@ class NullExtrefControllerTest extends RestTestCase
     /**
      * Test PUT method
      *
-     * @param array $data Data to PUT
+     * @param array $data        Data to PUT
+     * @param array $compareData optional data to compare return to
+     *
      * @return void
      * @dataProvider dataTestData
      */
-    public function testPutMethod(array $data)
+    public function testPutMethod(array $data, array $compareData = null)
     {
         $data['id'] = 'testdata';
 
@@ -137,8 +146,15 @@ class NullExtrefControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/nullextref/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        if (is_null($compareData)) {
+            $compareData = $data;
+        } else {
+            $compareData['id'] = $data['id'];
+        }
+
         $this->assertJsonStringEqualsJsonString(
-            json_encode($this->removeNullRefs($data)),
+            json_encode($this->removeNullRefs($compareData)),
             json_encode($client->getResults())
         );
     }
@@ -208,7 +224,38 @@ class NullExtrefControllerTest extends RestTestCase
                             ],
                         ],
                     ],
-                ]
+                ],
+                [
+                    'requiredExtref'      => ['$ref' => 'http://localhost/core/app/admin'],
+                    'optionalExtrefArray' => [],
+                    'requiredExtrefArray' => [
+                        ['$ref' => 'http://localhost/core/app/admin'],
+                    ],
+                    'optionalExtrefDeep'  => [
+                        [
+                            'deep' => [
+                                [
+                                    'deep' => [
+                                        'deep' => [],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'requiredExtrefDeep'  => [
+                        [
+                            'deep' => [
+                                [
+                                    'deep' => [
+                                        'deep' => [
+                                            ['$ref' => 'http://localhost/core/app/admin'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'filled refs' => [
                 [
