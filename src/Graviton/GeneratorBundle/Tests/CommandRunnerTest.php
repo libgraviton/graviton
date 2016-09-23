@@ -33,7 +33,7 @@ class CommandRunnerTest extends \PHPUnit_Framework_TestCase
             ->method('isSuccessful')
             ->willReturn(false);
 
-        $kernelDouble = $this->getMock('\Symfony\Component\HttpKernel\KernelInterface');
+        $kernelDouble = $this->createMock('\Symfony\Component\HttpKernel\KernelInterface');
         $kernelDouble
             ->expects($this->once())
             ->method('getRootDir')
@@ -41,7 +41,7 @@ class CommandRunnerTest extends \PHPUnit_Framework_TestCase
 
         $runner = new CommandRunner($kernelDouble, $processDouble);
 
-        $this->setExpectedException('\RuntimeException');
+        $this->expectException('\RuntimeException');
         $runner->executeCommand(array('graviton:test:command'), $outputDouble, 'test mesage');
     }
 }

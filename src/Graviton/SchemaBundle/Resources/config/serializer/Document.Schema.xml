@@ -3,20 +3,34 @@
   <class name="Graviton\SchemaBundle\Document\Schema" exclusion-policy="ALL" accessor-order="custom" custom-accessor-order="title,description,type,items,collection,properties,required">
     <property name="title" type="string" accessor-getter="getTitle" accessor-setter="setTitle" expose="true"/>
     <property name="description" type="string" accessor-getter="getDescription" accessor-setter="setDescription" expose="true"/>
-    <property name="type" type="string" accessor-getter="getType" accessor-setter="setType" expose="true"/>
+    <property name="type" type="Graviton\SchemaBundle\Document\SchemaType" accessor-getter="getType"  accessor-setter="setType" expose="true"/>
     <property name="readOnly" type="boolean" accessor-getter="getReadOnly" accessor-setter="setReadOnly" expose="true"/>
+    <property name="recordOriginModifiable" serialized-name="x-recordOriginModifiable" type="boolean" accessor-getter="isRecordOriginModifiable" accessor-setter="setRecordOriginModifiable" expose="true"/>
+    <property name="recordOriginException" serialized-name="x-recordOriginException" type="boolean" accessor-getter="isRecordOriginException" accessor-setter="setRecordOriginException" expose="true"/>
     <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
+    <property name="minLength" type="integer" accessor-getter="getMinLength" accessor-setter="setMinLength" expose="true"/>
+    <property name="maxLength" type="integer" accessor-getter="getMaxLength" accessor-setter="setMaxLength" expose="true"/>
+    <property name="minItems" type="integer" accessor-getter="getMinItems" accessor-setter="setMinItems" expose="true"/>
+    <property name="maxItems" type="integer" accessor-getter="getMaxItems" accessor-setter="setMaxItems" expose="true"/>
+    <property name="regexPattern" serialized-name="pattern" type="string" accessor-getter="getRegexPattern" accessor-setter="setRegexPattern" expose="true"/>
+    <property name="documentClass" serialized-name="x-documentClass" type="string" accessor-getter="getDocumentClass" accessor-setter="getDocumentClass" expose="true"/>
+    <property name="numericMinimum" serialized-name="minimum" type="double" accessor-getter="getNumericMinimum" accessor-setter="setNumericMinimum" expose="true"/>
+    <property name="numericMaximum" serialized-name="maximum" type="double" accessor-getter="getNumericMaximum" accessor-setter="setNumericMaximum" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
+    <property name="constraints" serialized-name="x-constraints" accessor-getter="getConstraints" accessor-setter="setConstraints" expose="true">
+      <type><![CDATA[array<string>]]></type>
+    </property>
     <property name="refCollection" accessor-getter="getRefCollection" accessor-setter="setRefCollection" serialized-name="x-collection" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
     <property name="eventNames" accessor-getter="getEventNames" accessor-setter="setEventNames" serialized-name="x-events" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="enum" type="Graviton\SchemaBundle\Document\SchemaEnum" accessor-getter="getEnum" accessor-setter="setEnum" expose="true"/>
     <property name="properties" accessor-getter="getProperties" expose="true">
       <type><![CDATA[array<string, Graviton\SchemaBundle\Document\Schema>]]></type>
     </property>
-    <property name="additionalProperties" accessor-getter="getAdditionalProperties" expose="true" type="Graviton\SchemaBundle\Document\Schema"/>
+    <property name="additionalProperties" accessor-getter="getAdditionalProperties" expose="true" type="Graviton\SchemaBundle\Document\SchemaAdditionalProperties"/>
     <property name="required" accessor-getter="getRequired" accessor-setter="setRequired" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>

@@ -22,16 +22,15 @@ class ResourceGeneratorProxy extends ResourceGenerator
      * (non-PHPdoc)
      * @see \Graviton\GeneratorBundle\Generator\ResourceGenerator::generateDocument()
      *
-     * @param array   $parameters     twig parameters
-     * @param string  $dir            base bundle dir
-     * @param string  $document       document name
-     * @param boolean $withRepository generate repository class
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
      *
      * @return void
      */
-    public function generateDocument($parameters, $dir, $document, $withRepository)
+    public function generateDocument($parameters, $dir, $document)
     {
-        parent::generateDocument($parameters, $dir, $document, $withRepository);
+        parent::generateDocument($parameters, $dir, $document);
     }
 
     /**

@@ -5,12 +5,17 @@
 
 namespace Graviton\SchemaBundle;
 
+use Doctrine\Common\Cache\CacheProvider;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
+use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
+use Graviton\SchemaBundle\Document\SchemaType;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
+use JMS\Serializer\Serializer;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -38,6 +43,13 @@ class SchemaUtils
      * @var RouterInterface router
      */
     private $router;
+
+    /**
+     * serializer
+     *
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * mapping service names => route names
@@ -74,35 +86,62 @@ class SchemaUtils
     private $serializerMetadataFactory;
 
     /**
+     * @var CacheProvider
+     */
+    private $cache;
+
+    /**
+     * @var string
+     */
+    private $cacheInvalidationMapKey;
+
+    /**
+     * @var ConstraintBuilder
+     */
+    private $constraintBuilder;
+
+    /**
      * Constructor
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
      * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
      * @param LanguageRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
+     * @param Serializer                         $serializer                serializer
      * @param array                              $extrefServiceMapping      Extref service mapping
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
      * @param string                             $defaultLocale             Default Language
+     * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
+     * @param CacheProvider                      $cache                     Doctrine cache provider
+     * @param string                             $cacheInvalidationMapKey   Cache invalidation map cache key
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
         SerializerMetadataFactoryInterface $serializerMetadataFactory,
         LanguageRepository $languageRepository,
         RouterInterface $router,
+        Serializer $serializer,
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
-        $defaultLocale
+        $defaultLocale,
+        ConstraintBuilder $constraintBuilder,
+        CacheProvider $cache,
+        $cacheInvalidationMapKey
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
         $this->languageRepository = $languageRepository;
         $this->router = $router;
+        $this->serializer = $serializer;
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->defaultLocale = $defaultLocale;
+        $this->constraintBuilder = $constraintBuilder;
+        $this->cache = $cache;
+        $this->cacheInvalidationMapKey = $cacheInvalidationMapKey;
     }
 
     /**
@@ -127,24 +166,56 @@ class SchemaUtils
     /**
      * return the schema for a given route
      *
-     * @param string        $modelName name of mode to generate schema for
-     * @param DocumentModel $model     model to generate schema for
-     * @param boolean       $online    if we are online and have access to mongodb during this build
+     * @param string        $modelName  name of mode to generate schema for
+     * @param DocumentModel $model      model to generate schema for
+     * @param boolean       $online     if we are online and have access to mongodb during this build
+     * @param boolean       $internal   if true, we generate the schema for internal validation use
+     * @param boolean       $serialized if true, it will serialize the Schema object and return a \stdClass instead
      *
-     * @return Schema
+     * @return Schema|\stdClass Either a Schema instance or serialized as \stdClass if $serialized is true
      */
-    public function getModelSchema($modelName, DocumentModel $model, $online = true)
-    {
+    public function getModelSchema(
+        $modelName,
+        DocumentModel $model,
+        $online = true,
+        $internal = false,
+        $serialized = false
+    ) {
+
+        $cacheKey = sprintf(
+            'schema.%s.%s.%s.%s',
+            $model->getEntityClass(),
+            (string) $online,
+            (string) $internal,
+            (string) $serialized
+        );
+
+        if ($this->cache->contains($cacheKey)) {
+            return $this->cache->fetch($cacheKey);
+        }
+
+        $invalidateCacheMap = [];
+        if ($this->cache->contains($this->cacheInvalidationMapKey)) {
+            $invalidateCacheMap = $this->cache->fetch($this->cacheInvalidationMapKey);
+        }
+
         // build up schema data
         $schema = new Schema;
 
         if (!empty($model->getTitle())) {
             $schema->setTitle($model->getTitle());
         } else {
-            $schema->setTitle(ucfirst($modelName));
+            if (!is_null($modelName)) {
+                $schema->setTitle(ucfirst($modelName));
+            } else {
+                $reflection = new \ReflectionClass($model);
+                $schema->setTitle(ucfirst($reflection->getShortName()));
+            }
         }
 
         $schema->setDescription($model->getDescription());
+        $schema->setDocumentClass($model->getDocumentClass());
+        $schema->setRecordOriginModifiable($model->getRecordOriginModifiable());
         $schema->setType('object');
 
         // grab schema info from model
@@ -167,11 +238,16 @@ class SchemaUtils
             $translatableFields = [];
         }
 
+        if (!empty($translatableFields)) {
+            $invalidateCacheMap[$this->languageRepository->getClassName()][] = $cacheKey;
+        }
+
         // exposed fields
         $documentFieldNames = isset($this->documentFieldNames[$repo->getClassName()]) ?
             $this->documentFieldNames[$repo->getClassName()] :
             [];
 
+        $languages = [];
         if ($online) {
             $languages = array_map(
                 function (Language $language) {
@@ -179,7 +255,8 @@ class SchemaUtils
                 },
                 $this->languageRepository->findAll()
             );
-        } else {
+        }
+        if (empty($languages)) {
             $languages = [
                 $this->defaultLocale
             ];
@@ -189,6 +266,19 @@ class SchemaUtils
         $classShortName = $documentReflection->getShortName();
         if (isset($this->eventMap[$classShortName])) {
             $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
+        }
+
+        $requiredFields = [];
+        $modelRequiredFields = $model->getRequiredFields();
+        if (is_array($modelRequiredFields)) {
+            foreach ($modelRequiredFields as $field) {
+                // don't describe hidden fields
+                if (!isset($documentFieldNames[$field])) {
+                    continue;
+                }
+
+                $requiredFields[] = $documentFieldNames[$field];
+            }
         }
 
         foreach ($meta->getFieldNames() as $field) {
@@ -208,6 +298,11 @@ class SchemaUtils
             $property->setType($meta->getTypeOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
 
+            // we only want to render if it's true
+            if ($model->getRecordOriginExceptionOfField($field) === true) {
+                $property->setRecordOriginException(true);
+            }
+
             if ($meta->getTypeOfField($field) === 'many') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
 
@@ -221,6 +316,9 @@ class SchemaUtils
 
                         $documentId = $dynamicKeySpec->{'document-id'};
                         $dynamicRepository = $this->repositoryFactory->get($documentId);
+
+                        // put this in invalidate map so when know we have to invalidate when this document is used
+                        $invalidateCacheMap[$dynamicRepository->getDocumentName()][] = $cacheKey;
 
                         $repositoryMethod = $dynamicKeySpec->{'repository-method'};
                         $records = $dynamicRepository->$repositoryMethod();
@@ -238,8 +336,10 @@ class SchemaUtils
                             );
                         }
                     } else {
-                        // in the swagger case we can use additionPorerties which where introduced by json-schema v4
-                        $property->setAdditionalProperties($this->getModelSchema($field, $propertyModel, $online));
+                        // swagger case
+                        $property->setAdditionalProperties(
+                            new SchemaAdditionalProperties($this->getModelSchema($field, $propertyModel, $online))
+                        );
                     }
                 } else {
                     $property->setItems($this->getModelSchema($field, $propertyModel, $online));
@@ -296,6 +396,24 @@ class SchemaUtils
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
             }
+
+            if (in_array($meta->getTypeOfField($field), $property->getMinLengthTypes())) {
+                // make sure a required field cannot be blank
+                if (in_array($documentFieldNames[$field], $requiredFields)) {
+                    $property->setMinLength(1);
+                } else {
+                    // in the other case, make sure also null can be sent..
+                    $currentType = $property->getType();
+                    if ($currentType instanceof SchemaType) {
+                        $property->setType(array_merge($currentType->getTypes(), ['null']));
+                    } else {
+                        $property->setType('null');
+                    }
+                }
+            }
+
+            $property = $this->constraintBuilder->addConstraints($field, $property, $model);
+
             $schema->addProperty($documentFieldNames[$field], $property);
         }
 
@@ -303,23 +421,32 @@ class SchemaUtils
             $schema->removeProperty('id');
         }
 
-        $requiredFields = [];
-        $modelRequiredFields = $model->getRequiredFields();
-        if (is_array($modelRequiredFields)) {
-            foreach ($modelRequiredFields as $field) {
-                // don't describe hidden fields
-                if (!isset($documentFieldNames[$field])) {
-                    continue;
-                }
-
-                $requiredFields[] = $documentFieldNames[$field];
-            }
+        /**
+         * if we generate schema for internal use; don't have id in required array as
+         * it's 'requiredness' depends on the method used (POST/PUT/PATCH) and is checked in checks
+         * before validation.
+         */
+        $idPosition = array_search('id', $requiredFields);
+        if ($internal === true && $idPosition !== false) {
+            unset($requiredFields[$idPosition]);
         }
+
         $schema->setRequired($requiredFields);
 
-        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
+        // set additionalProperties to false (as this is our default policy) if not already set
+        if (is_null($schema->getAdditionalProperties()) && $online) {
+            $schema->setAdditionalProperties(new SchemaAdditionalProperties(false));
+        }
 
+        $searchableFields = array_merge($subSearchableFields, $model->getSearchableFields());
         $schema->setSearchable($searchableFields);
+
+        if ($serialized === true) {
+            $schema = json_decode($this->serializer->serialize($schema, 'json'));
+        }
+
+        $this->cache->save($cacheKey, $schema);
+        $this->cache->save($this->cacheInvalidationMapKey, $invalidateCacheMap);
 
         return $schema;
     }

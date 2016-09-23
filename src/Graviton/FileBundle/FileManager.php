@@ -6,13 +6,16 @@
 namespace Graviton\FileBundle;
 
 use Gaufrette\File;
-use Gaufrette\FileSystem;
+use Gaufrette\Filesystem;
 use Graviton\RestBundle\Model\DocumentModel;
 use GravitonDyn\FileBundle\Document\File as FileDocument;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use GravitonDyn\FileBundle\Document\FileMetadata;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -22,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class FileManager
 {
     /**
-     * @var FileSystem
+     * @var Filesystem
      */
     private $fileSystem;
 
@@ -34,10 +37,10 @@ class FileManager
     /**
      * FileManager constructor.
      *
-     * @param FileSystem          $fileSystem          file system abstraction layer for s3 and more
+     * @param Filesystem          $fileSystem          file system abstraction layer for s3 and more
      * @param FileDocumentFactory $fileDocumentFactory Instance to be used to create action entries.
      */
-    public function __construct(FileSystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
+    public function __construct(Filesystem $fileSystem, FileDocumentFactory $fileDocumentFactory)
     {
         $this->fileSystem = $fileSystem;
         $this->fileDocumentFactory = $fileDocumentFactory;
@@ -106,7 +109,7 @@ class FileManager
             /** @var \Gaufrette\File $file */
             $file = $this->saveFile($record->getId(), $fileInfo['content']);
 
-            $this->initOrUpdateMetadata(
+            $this->initOrUpdateMetaData(
                 $record,
                 $file->getSize(),
                 $fileInfo,
@@ -157,12 +160,14 @@ class FileManager
         /** @var  $uploadedFile \Symfony\Component\HttpFoundation\File\UploadedFile */
         foreach ($request->files->all() as $field => $uploadedFile) {
             if (0 === $uploadedFile->getError()) {
+                $content = file_get_contents($uploadedFile->getPathname());
                 $uploadedFiles[$field] = [
                     'data' => [
                         'mimetype' => $uploadedFile->getMimeType(),
-                        'filename' => $uploadedFile->getClientOriginalName()
+                        'filename' => $uploadedFile->getClientOriginalName(),
+                        'hash'     => hash('sha256', $content)
                     ],
-                    'content' => file_get_contents($uploadedFile->getPathName())
+                    'content' => $content
                 ];
             } else {
                 throw new UploadException($uploadedFile->getErrorMessage());
@@ -170,12 +175,14 @@ class FileManager
         }
 
         if (empty($uploadedFiles)) {
+            $content = $request->getContent();
             $uploadedFiles['upload'] = [
                 'data' => [
                     'mimetype' => $request->headers->get('Content-Type'),
-                    'filename' => ''
+                    'filename' => '',
+                    'hash'     => hash('sha256', $content)
                 ],
-                'content' => $request->getContent()
+                'content' => $content
             ];
         }
 
@@ -220,20 +227,44 @@ class FileManager
      */
     private function initOrUpdateMetaData(FileDocument $file, $fileSize, array $fileInfo, FileDocument $fileData = null)
     {
-        if (empty($meta = $file->getMetadata()) && (empty($fileData) || empty($meta = $fileData->getMetadata()))) {
+        $now = new \DateTime();
+        /** Original Metadata
+         * @var FileMetadata $meta */
+        $meta = $file->getMetadata();
+        if (!$meta || !$meta->getCreatedate()) {
             $meta = $this->fileDocumentFactory->createFileMataData();
             $meta->setId($file->getId());
-            $meta->setCreatedate(new \DateTime());
+            $meta->setCreatedate($now);
         }
 
-        $meta->setModificationdate(new \DateTime());
+        /** Posted Metadata
+         * @var FileMetadata $postedMeta */
+        if (!empty($fileData) && !empty($postedMeta = $fileData->getMetadata())) {
+            $postedMeta->setId($meta->getId());
+            $postedMeta->setCreatedate($meta->getCreatedate());
+            // If no file sent and no hash change sent, keep original.
+            if (empty($fileInfo['data']['filename'])) {
+                $postedMeta->setHash($meta->getHash());
+                $postedMeta->setMime($meta->getMime());
+                $postedMeta->setSize($meta->getSize());
+                $postedMeta->setFilename($meta->getFilename());
+            }
+            $meta = $postedMeta;
+        }
+        // If no hash defined use the content if there was so.
+        if (empty($meta->getHash()) && !empty($fileInfo['data']['hash'])) {
+            $meta->setHash($fileInfo['data']['hash']);
+        }
+
         if (empty($meta->getFilename()) && !empty($fileInfo['data']['filename'])) {
             $meta->setFilename($fileInfo['data']['filename']);
         }
-        if (!empty($fileInfo['data']['mimetype'])) {
+        if (empty($meta->getMime()) && !empty($fileInfo['data']['mimetype'])) {
             $meta->setMime($fileInfo['data']['mimetype']);
         }
+
         $meta->setSize($fileSize);
+        $meta->setModificationdate($now);
         $file->setMetadata($meta);
     }
 
@@ -263,11 +294,14 @@ class FileManager
             if (empty($contentBlock)) {
                 continue;
             }
-            if (40 === strpos($contentBlock, 'upload')) {
+            preg_match('/name=\"(.*?)\"[^"]/i', $contentBlock, $matches);
+            $name = isset($matches[1]) ? $matches[1] : '';
+
+            if ($name === 'upload') {
                 $fileInfo = $contentBlock;
                 continue;
             }
-            if (40 === strpos($contentBlock, 'metadata')) {
+            if ($name === 'metadata') {
                 $metadataInfo = $contentBlock;
                 continue;
             }
@@ -295,8 +329,15 @@ class FileManager
             return ['metadata' => '{}'];
         }
 
+        // When using curl or Guzzle the position of data can change.
+        // Here we grab the first valid json start.
         $metadataInfo = explode("\r\n", ltrim($metadataInfoString));
-        return ['metadata' => $metadataInfo[2]];
+        foreach ($metadataInfo as $data) {
+            if (substr($data, 0, 1) === '{') {
+                return ['metadata' => $data];
+            }
+        }
+        return ['metadata' => '{}'];
     }
 
     /**
@@ -314,23 +355,42 @@ class FileManager
 
         $fileInfo = explode("\r\n\r\n", ltrim($fileInfoString), 2);
 
-        // write content to file ("upload_tmp_dir" || sys_get_temp_dir() )
-        preg_match('@name=\"([^"]*)\";\sfilename=\"([^"]*)\"\s*Content-Type:\s([^"]*)@', $fileInfo[0], $matches);
-        $originalName = $matches[2];
+        preg_match('/name=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $name = isset($matches[1]) ? $matches[1] : '';
+
+        preg_match('/filename=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        $fileName = isset($matches[1]) ? $matches[1] : '';
+
         $dir = ini_get('upload_tmp_dir');
         $dir = (empty($dir)) ? sys_get_temp_dir() : $dir;
-        $file = $dir . '/' . $originalName;
+        $file = $dir . DIRECTORY_SEPARATOR . $fileName;
+
         $fileContent = substr($fileInfo[1], 0, -2);
 
         // create file
         touch($file);
         $size = file_put_contents($file, $fileContent, LOCK_EX);
 
+        // FileType Content-Type
+        preg_match('/Content-Type=\"(.*?)\"[^"]/i', $fileInfo[0], $matches);
+        if (isset($matches[1])) {
+            $contentType = $matches[1];
+        } else {
+            $fInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $contentType = finfo_file($fInfo, $file);
+            if (!$contentType) {
+                throw new HttpException(
+                    Response::HTTP_NOT_ACCEPTABLE,
+                    'Could not determine Content type of file: '.$fileName
+                );
+            }
+        }
+
         $files = [
-            $matches[1] => new UploadedFile(
+            $name => new UploadedFile(
                 $file,
-                $originalName,
-                $matches[3],
+                $fileName,
+                $contentType,
                 $size
             )
         ];

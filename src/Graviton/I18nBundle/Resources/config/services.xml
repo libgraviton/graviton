@@ -25,8 +25,6 @@
     <parameter key="graviton.i18n.listener.postpersisttranslatable.class">Graviton\I18nBundle\Listener\PostPersistTranslatableListener</parameter>
     <parameter key="graviton.i18n.utils.class">Graviton\I18nBundle\Service\I18nUtils</parameter>
     <parameter key="graviton.i18n.cacheutils.class">Graviton\I18nBundle\Service\I18nCacheUtils</parameter>
-    <parameter key="graviton.i18n.form.transformer.translatabletodefaultstring.class">Graviton\I18nBundle\Form\DataTransformer\TranslatableToDefaultStringTransformer</parameter>
-    <parameter key="graviton.i18n.form.type.translatable.class">Graviton\I18nBundle\Form\Type\TranslatableType</parameter>
     <parameter key="graviton.i18n.command.createtranslationresources.class">Graviton\I18nBundle\Command\CreateTranslationResourcesCommand</parameter>
 
     <!-- should we move this to somewhere else? -->
@@ -119,6 +117,9 @@
       <call method="setUtils">
         <argument type="service" id="graviton.18n.utils"/>
       </call>
+      <call method="setDocumentManager">
+        <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
+      </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onpreserialize" direction="serialization"/>
       <tag name="jms_serializer.event_listener" event="serializer.post_serialize" method="onpostserialize" direction="serialization"/>
     </service>
@@ -127,9 +128,9 @@
         <argument type="service" id="graviton.18n.utils"/>
       </call>
       <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" method="onPreDeserialize" direction="deserialization"/>
-      <tag name="jms_serializer.event_listener" event="serializer.post_deserialize" method="onPostDeserialize" direction="deserialization"/>
+      <!-- done on the kernel.finish_request so we are sure it's done as client leaves - and to be before 'graviton.i18n.listener.i18ncaching' -->
+      <tag name="kernel.event_listener" event="kernel.finish_request" method="onKernelFinishRequest" />
     </service>
-
     <service id="graviton.i18n.listener.i18nrqlparsinglistener" class="%graviton.i18n.listener.i18nrqlparsinglistener.class%">
       <argument type="service" id="graviton.18n.utils"/>
       <argument>%graviton.document.type.translatable.fields%</argument>
@@ -157,14 +158,6 @@
     <service id="graviton.i18n.listener.postpersisttranslatable" class="%graviton.i18n.listener.postpersisttranslatable.class%">
       <argument type="service" id="event_dispatcher"/>
       <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" class="stdClass"/>
-    </service>
-    <service id="graviton.i18n.form.transformer.translatabletodefaultstring" class="%graviton.i18n.form.transformer.translatabletodefaultstring.class%">
-      <argument type="service" id="graviton.18n.utils"/>
-    </service>
-    <service id="graviton.i18n.form.type.translatable" class="%graviton.i18n.form.type.translatable.class%">
-      <argument type="service" id="graviton.18n.utils"/>
-      <argument type="service" id="graviton.i18n.form.transformer.translatabletodefaultstring"/>
-      <tag name="form.type" alias="translatable"/>
     </service>
 
     <service id="graviton.i18n.command.createtranslationresources" class="%graviton.i18n.command.createtranslationresources.class%">

@@ -45,11 +45,11 @@ class GenerateDynamicBundleCommandTest extends BaseTest
             ->setMethods(array('setCommandLine', 'run', 'isSuccessful', 'getErrorOutput', 'getExitCode'))
             ->getMock();
 
-        $kernelDouble = $this->getMock('\Symfony\Component\HttpKernel\KernelInterface');
+        $kernelDouble = $this->createMock('\Symfony\Component\HttpKernel\KernelInterface');
         $runnerDouble = $this->getMockBuilder('\Graviton\GeneratorBundle\CommandRunner')
             ->setConstructorArgs(array($kernelDouble, $processDouble))
             ->getMock();
-        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
+        $xmlManipulatorDouble = $this->createMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $commando = new GenerateDynamicBundleCommand(
             $runnerDouble,
@@ -65,7 +65,7 @@ class GenerateDynamicBundleCommandTest extends BaseTest
 
         $tester = new CommandTester($command);
 
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $tester->execute(
             array_merge(
@@ -198,8 +198,8 @@ class GenerateDynamicBundleCommandTest extends BaseTest
      */
     private function executeGenerateSubresources(JsonDefinition $jsonDefDouble)
     {
-        $outputDouble = $this->getMock('Symfony\\Component\\Console\\Output\\OutputInterface');
-        $xmlManipulatorDouble = $this->getMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
+        $outputDouble = $this->createMock('Symfony\\Component\\Console\\Output\\OutputInterface');
+        $xmlManipulatorDouble = $this->createMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $command = $this->getProxyBuilder('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand')
             ->disableOriginalConstructor()

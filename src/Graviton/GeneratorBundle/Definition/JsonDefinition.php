@@ -465,4 +465,49 @@ class JsonDefinition
         }
         return $indexes;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getSearchables()
+    {
+        $indexes = [];
+        if ($fields = $this->def->getTarget()->getFields()) {
+            foreach ($fields as $field) {
+                if ($value = (int) $field->getSearchable()) {
+                    $indexes[$field->getName()] = $value;
+                }
+            }
+        }
+        return $indexes;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTextIndexes()
+    {
+        $indexes = [];
+        if ($keys = $this->def->getTarget()->getTextIndexes()) {
+            foreach ($keys as $key) {
+                if ($value = (int) $key['weight']) {
+                    $indexes[$key['field']] = $value;
+                }
+            }
+        }
+        return $indexes;
+    }
+
+    /**
+     * Combine in one array the Search text indexes
+     * 
+     * @return array
+     */
+    public function getAllTextIndexes()
+    {
+        return array_merge(
+            $this->getSearchables(),
+            $this->getTextIndexes()
+        );
+    }
 }

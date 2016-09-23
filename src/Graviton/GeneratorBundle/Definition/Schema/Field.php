@@ -46,11 +46,15 @@ class Field
     /**
      * @var bool
      */
-    private $required = false;
+    private $recordOriginException = false;
     /**
      * @var bool
      */
-    private $searchable = false;
+    private $required = false;
+    /**
+     * @var integer
+     */
+    private $searchable = 0;
     /**
      * @var bool
      */
@@ -197,6 +201,28 @@ class Field
     }
 
     /**
+     * get RecordOriginException
+     *
+     * @return boolean RecordOriginException
+     */
+    public function isRecordOriginException()
+    {
+        return $this->recordOriginException;
+    }
+
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
+    }
+
+    /**
      * @return bool
      */
     public function getRequired()
@@ -287,20 +313,20 @@ class Field
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getSearchable()
     {
-        return $this->searchable;
+        return (int) $this->searchable;
     }
 
     /**
-     * @param mixed $searchable searchable flag
+     * @param integer $searchable searchable flag
      *
      * @return void
      */
     public function setSearchable($searchable)
     {
-        $this->searchable = $searchable;
+        $this->searchable = (int) $searchable;
     }
 }

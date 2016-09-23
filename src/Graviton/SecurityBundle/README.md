@@ -30,10 +30,6 @@ In order to register this bundle it has to be instantiated in the method »\Grav
 Graviton supports multiple Authentication schemes, each of one can be activated by switching to a corresponding Symfony
 environment.
 
-Environment name  | What it contains
-------------- | -------------
-oauth_dev  | Standard `dev` environment with activated oauth security
-
 #### Model
 
 The authentication con be configured to use custom tables in order to be valid for any possible environment.

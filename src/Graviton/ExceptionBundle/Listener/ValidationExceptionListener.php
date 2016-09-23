@@ -5,11 +5,12 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Graviton\ExceptionBundle\Exception\ValidationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
+use Graviton\SchemaBundle\Constraint\ConstraintUtils;
+use JsonSchema\Entity\JsonPointer;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormError;
 
 /**
  * Listener for validation exceptions
@@ -20,6 +21,24 @@ use Symfony\Component\Form\FormError;
  */
 class ValidationExceptionListener extends RestExceptionListener
 {
+
+    /**
+     * @var ConstraintUtils
+     */
+    private $constraintUtils;
+
+    /**
+     * set constraint utils
+     *
+     * @param ConstraintUtils $utils utils
+     *
+     * @return void
+     */
+    public function setConstraintUtils(ConstraintUtils $utils)
+    {
+        $this->constraintUtils = $utils;
+    }
+
     /**
      * Handle the exception and send the right response
      *
@@ -44,28 +63,22 @@ class ValidationExceptionListener extends RestExceptionListener
     }
 
     /**
-     * @param FormErrorIterator $errors errors
+     * @param ValidationExceptionError[] $errors errors
      *
      * @return array
      */
-    private function getErrorMessages(FormErrorIterator $errors)
+    private function getErrorMessages(array $errors)
     {
         $content = [];
         foreach ($errors as $error) {
-            if ($error instanceof FormErrorIterator) {
-                $content = array_merge($content, $this->getErrorMessages($error));
-            } elseif ($error instanceof FormError) {
-                $cause = $error->getCause();
-                if (!$cause) {
-                    $path = 'unknkown';
-                } else {
-                    $path = $cause->getPropertyPath();
-                }
-                $content[] = [
-                    'propertyPath' => $path,
-                    'message' => $error->getMessage(),
-                ];
+            $property = $error->getProperty();
+            if ($property instanceof JsonPointer && $this->constraintUtils instanceof ConstraintUtils) {
+                $property = $this->constraintUtils->getNormalizedPathFromPointer($property);
             }
+            $content[] = [
+                'propertyPath' => $property,
+                'message' => $error->getMessage(),
+            ];
         }
         return $content;
     }

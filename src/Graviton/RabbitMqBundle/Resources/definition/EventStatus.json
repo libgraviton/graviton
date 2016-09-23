@@ -28,7 +28,14 @@
         "title": "Event Name",
         "description": "Name of the created event",
         "readOnly": true,
-        "searchable": true
+        "searchable": 1
+      },
+      {
+        "name": "userId",
+        "type": "varchar",
+        "title": "User Identifier",
+        "description": "User who created the event entry",
+        "readOnly": true
       },
       {
         "name": "eventResource.ref",
@@ -54,9 +61,23 @@
         "required": true,
         "constraints": [
           {
-            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidStatus"
+            "name": "Choice",
+            "options": [
+              {"name": "choices", "value": "opened|working|ignored|done|failed"}
+            ]
           }
         ]
+      },
+      {
+        "name": "status.0.action.ref",
+        "type": "extref",
+        "title": "Action",
+        "exposeAs": "$ref",
+        "description": "Action done for this event, EventWorkerAction",
+        "collection": [
+          "EventStatusAction"
+        ],
+        "required": false
       },
       {
         "name": "information",
@@ -80,7 +101,10 @@
         "required": true,
         "constraints": [
           {
-            "name": "Graviton\\RabbitMqBundle\\Validator\\Constraints\\ValidInformationType"
+            "name": "Choice",
+            "options": [
+              {"name": "choices", "value": "debug|info|warning|error"}
+            ]
           }
         ]
       },

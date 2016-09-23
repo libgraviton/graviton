@@ -36,6 +36,9 @@
     <service id="kernel.listener.graviton_exception_validation_exception"
              class="%kernel.listener.graviton_exception_validation_exception.class%"
              parent="kernel.listener.graviton_exception_rest_exception">
+        <call method="setConstraintUtils">
+          <argument type="service" id="graviton.schema.constraint.utils"/>
+        </call>
         <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException"/>
     </service>
 

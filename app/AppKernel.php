@@ -64,8 +64,6 @@ class AppKernel extends Kernel
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Symfony\Bundle\MonologBundle\MonologBundle(),
-            new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
-            new \Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
@@ -76,8 +74,6 @@ class AppKernel extends Kernel
             new \Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
-            new \Eo\AirbrakeBundle\EoAirbrakeBundle(),
-            new \HadesArchitect\JsonSchemaBundle\JsonSchemaBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
         );
@@ -88,10 +84,6 @@ class AppKernel extends Kernel
             $bundles[] = new \Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new \Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
-        }
-
-        if (strpos($this->getEnvironment(), 'oauth') !== false) {
-            $bundles[] = new \HWI\Bundle\OAuthBundle\HWIOAuthBundle();
         }
 
         // autoload of Graviton specific bundles.

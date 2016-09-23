@@ -28,7 +28,7 @@ class ModuleControllerTest extends RestTestCase
     const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/module/collection';
 
     /**
-     * setup client and load fixtures
+     * setup client and load fixtures, generate search indexes separately
      *
      * @return void
      */
@@ -42,6 +42,54 @@ class ModuleControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+
+        $this->setVerbosityLevel(1);
+        $this->isDecorated(true);
+        $this->runCommand('graviton:generate:build-indexes', [], true);
+    }
+
+    /**
+     * testing the search in search index, combined with a select (RQL)
+     *
+     * @return void
+     */
+    public function testSearchIndex()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(module)&select(key)');
+
+        // should not find 'AdminRef'
+        $this->assertEquals(5, count($client->getResults()));
+
+        // the sixth
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(AdminRef)&select(key)');
+        $this->assertEquals('AdminRef', $client->getResults()[0]->key);
+        $this->assertEquals(1, count($client->getResults()));
+    }
+
+    /**
+     * testing the search index using second param, non sensitive, combined with a select (RQL)
+     *
+     * @return void
+     */
+    public function testSearchWeightedIndex()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(module%20payandsave%20realestate)&gt(order,0)&select(key,path)');
+        $results = $client->getResults();
+
+        // This are the weighted important result, payAndSave and realEstate, order is not important.
+        $importantResults = [
+            $results[0]->key => $results[0]->path,
+            $results[1]->key => $results[1]->path
+        ];
+
+        $this->assertArrayHasKey('payAndSave', $importantResults);
+        $this->assertArrayHasKey('realEstate', $importantResults);
+
+        // Now, there shall be 5 results as we have 5 path containing module
+        $this->assertEquals(5, count($results));
     }
 
     /**
@@ -73,6 +121,53 @@ class ModuleControllerTest extends RestTestCase
         );
 
         $this->assertEquals('http://localhost/core/app/admin', $client->getResults()[0]->app->{'$ref'});
+    }
+
+    /**
+     * check if RQL select() works on collections as expected..
+     *
+     * @return void
+     */
+    public function testRqlSelectOnCollection()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?select(app.$ref,name,path)&sort(+key)');
+
+        $results = $client->getResults();
+
+        // count
+        $this->assertEquals(6, count($client->getResults()));
+
+        // is extref rendered as expected?
+        $this->assertEquals('http://localhost/core/app/admin', $results[0]->app->{'$ref'});
+
+        // what about translatable?
+        $this->assertEquals('Admin Ref Module', $results[0]->name->en);
+
+        // we didn't select 'key', make sure it's not there..
+        $this->assertFalse(isset($results[0]->key));
+    }
+
+    /**
+     * check if RQL select() works on items as expected..
+     *
+     * @return void
+     */
+    public function testRqlSelectOnItem()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/admin-AdminRef?select(app%2E$ref,name,path)');
+
+        $results = $client->getResults();
+
+        // is extref rendered as expected?
+        $this->assertEquals('http://localhost/core/app/admin', $results->app->{'$ref'});
+
+        // what about translatable?
+        $this->assertEquals('Admin Ref Module', $results->name->en);
+
+        // we didn't select 'key', make sure it's not there..
+        $this->assertFalse(isset($results->key));
     }
 
     /**
@@ -492,7 +587,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals(400, $response->getStatusCode());
 
         $this->assertContains('order', $results[0]->propertyPath);
-        $this->assertEquals('This value is not valid.', $results[0]->message);
+        $this->assertEquals('String value found, but an integer is required', $results[0]->message);
     }
 
     /**
@@ -635,8 +730,8 @@ class ModuleControllerTest extends RestTestCase
             $this->assertEquals(
                 [
                     (object) [
-                        'propertyPath' => 'children[app].children[ref]',
-                        'message' => sprintf('URL "%s" is not a valid ext reference.', $url),
+                        'propertyPath' => 'app.$ref',
+                        'message' => sprintf('Value "%s" is not a valid extref.', $url)
                     ],
                 ],
                 $client->getResults()
@@ -666,7 +761,7 @@ class ModuleControllerTest extends RestTestCase
         $this->assertEquals('array', $service->type);
         $this->assertEquals('object', $service->items->properties->name->type);
         $this->assertEquals('string', $service->items->properties->name->properties->en->type);
-        $this->assertEquals('object', $service->items->properties->description->type);
+        $this->assertEquals(['object', 'null'], $service->items->properties->description->type);
         $this->assertEquals('string', $service->items->properties->description->properties->en->type);
         $this->assertEquals('object', $service->items->properties->service->type);
         $this->assertEquals('string', $service->items->properties->service->properties->{'$ref'}->type);
@@ -689,5 +784,70 @@ class ModuleControllerTest extends RestTestCase
                 '~' => '%7E',
             ]
         );
+    }
+
+    /**
+     * verify that finding stuff with dot in it works
+     *
+     * @return void
+     */
+    public function testSearchForDottedKeyInModule()
+    {
+        // Create element 1
+        $testModule = new \stdClass;
+        $testModule->key = 'i.can.haz.dot';
+        $testModule->app = new \stdClass;
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/canhazdot';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'My name iz different and haz not dot';
+        $testModule->path = '/test/test';
+        $testModule->order = 50;
+
+        $client = static::createRestClient();
+        $client->post('/core/module/', $testModule);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        // Create element 2
+        $testModule = new \stdClass;
+        $testModule->key = 'i.ban.haz.dot';
+        $testModule->app = new \stdClass;
+        $testModule->app->{'$ref'} = 'http://localhost/core/app/banhazdot';
+        $testModule->name = new \stdClass;
+        $testModule->name->en = 'My name iz different and ban not dot';
+        $testModule->path = '/test/test';
+        $testModule->order = 40;
+
+        $client = static::createRestClient();
+        $client->post('/core/module/', $testModule);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        // simple search, on second element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?search(i.ban)');
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+
+        $module = $results[0];
+        $this->assertEquals('i.ban.haz.dot', $module->key);
+
+        // advanced search, on first element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?limit(2)&search(i.can)&gt(order,10)');
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+
+        $module = $results[0];
+        $this->assertEquals('i.can.haz.dot', $module->key);
+
+        // advanced search, on first element
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/module/?limit(4)&search(haz.dot)&gt(order,10)');
+        $results = $client->getResults();
+        $this->assertEquals(2, count($results));
     }
 }

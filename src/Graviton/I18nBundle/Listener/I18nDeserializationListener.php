@@ -9,6 +9,7 @@ use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\I18NBundle\Service\I18nUtils;
 use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 
 /**
  * translate fields during serialization
@@ -22,12 +23,17 @@ class I18nDeserializationListener
     /**
      * @var mixed[]
      */
-    protected $localizedFields = array();
+    protected $translatableStore = [];
 
     /**
      * @var \Graviton\I18nBundle\Service\I18nUtils
      */
     protected $utils;
+
+    /**
+     * @var string
+     */
+    protected $defaultLanguage = null;
 
     /**
      * set utils (i18nutils)
@@ -39,6 +45,7 @@ class I18nDeserializationListener
     public function setUtils(I18nUtils $utils)
     {
         $this->utils = $utils;
+        $this->defaultLanguage = $utils->getDefaultLanguage();
     }
 
     /**
@@ -72,10 +79,10 @@ class I18nDeserializationListener
                 }
 
                 if ($isArray) {
-                    $this->localizedFields = array_merge($this->localizedFields, array_values($data[$field]));
+                    $this->queueTranslatable($data[$field], true);
                     $data[$field] = array_map([$this, 'getDefaultTranslation'], array_values($data[$field]));
                 } else {
-                    $this->localizedFields[] = $data[$field];
+                    $this->queueTranslatable($data[$field]);
                     $data[$field] = $this->getDefaultTranslation($data[$field]);
                 }
             }
@@ -84,18 +91,42 @@ class I18nDeserializationListener
     }
 
     /**
-     * translate all strings marked as multi lang
+     * Function will be executed on kernel finish_request event; persists all translatables at once (uniquefied)
+     *
+     * @throws \Exception
      *
      * @return void
      */
-    public function onPostDeserialize()
+    public function onKernelFinishRequest()
     {
-        \array_walk(
-            $this->localizedFields,
-            function ($values) {
-                $this->utils->insertTranslatable($values);
-            }
-        );
+        if (empty($this->translatableStore)) {
+            return;
+        }
+
+        foreach ($this->translatableStore as $translatable) {
+            $this->utils->insertTranslatable($translatable, false);
+        }
+        $this->utils->flushTranslatables();
+        $this->translatableStore = [];
+    }
+
+    /**
+     * Queues a translatable to be inserted at a later time
+     *
+     * @param array $translatable the translatable
+     * @param bool  $isArray      if is many or not
+     *
+     * @return void
+     */
+    private function queueTranslatable(array $translatable, $isArray = false)
+    {
+        if (!$isArray) {
+            $translatable = [$translatable];
+        }
+
+        foreach ($translatable as $singleItem) {
+            $this->translatableStore[$singleItem[$this->defaultLanguage]] = $singleItem;
+        }
     }
 
     /**
@@ -106,7 +137,7 @@ class I18nDeserializationListener
      */
     private function getDefaultTranslation(array $translations)
     {
-        $defaultLanguage = $this->utils->getDefaultLanguage();
-        return isset($translations[$defaultLanguage]) ? $translations[$defaultLanguage] : reset($translations);
+        return
+            isset($translations[$this->defaultLanguage]) ? $translations[$this->defaultLanguage] : reset($translations);
     }
 }

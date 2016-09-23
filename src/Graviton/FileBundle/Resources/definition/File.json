@@ -80,6 +80,12 @@
         "description": "Additional information for this file."
       },
       {
+        "name": "metadata.hash",
+        "type": "string",
+        "title": "Unique file content hash value",
+        "description": "File content hash encoded sha256"
+      },
+      {
         "name": "metadata.additionalProperties.0.name",
         "type": "string",
         "title": "property name",

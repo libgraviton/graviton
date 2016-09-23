@@ -228,6 +228,29 @@ class EmbeddingDocumentsTest extends RestTestCase
     }
 
     /**
+     * Assert that if we send a DELETE request to an entity, referenced objects will not be deleted
+     * as well..
+     *
+     * @return void
+     */
+    public function testThatReferencedObjectsWillNotBeDeletedOnDelete()
+    {
+        $client = static::createRestClient();
+        $client->request('DELETE', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertEmpty($client->getResults());
+
+        // check it's really gone ;-)
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
+
+        // both entities should still exist
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
+    }
+
+    /**
      * Test Document as deep reference
      *
      * @return void
@@ -272,11 +295,30 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals($data, $client->getResults());
 
         // check entities again
-        // record "one" was removed. it is correct
-        $this->assertEntityNotExists('one');
+        // record "one" was *not* removed.
+        $this->assertEntityExists('one', 'one');
         $this->assertEntityExists('two', 'two');
+        $this->assertEntityExists('three', 'three');
 
-        // ok. new entity was added
+        // change to two again
+        $data = $client->getResults();
+        $data->deep->document = (object) [
+            'id'    => 'two',
+            'data'  => 'two',
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/embedtest-document-as-deep-reference/test', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($data, $client->getResults());
+
+        // all still exist
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
         $this->assertEntityExists('three', 'three');
     }
 

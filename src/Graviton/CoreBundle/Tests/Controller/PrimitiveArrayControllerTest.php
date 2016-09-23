@@ -238,54 +238,69 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(
             [
                 (object) [
-                    'propertyPath' => 'children[intarray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'intarray[1]',
+                    'message'      => 'String value found, but an integer is required',
                 ],
                 (object) [
-                    'propertyPath' => 'data.boolarray[1]',
-                    'message'      => 'This value should be of type boolean.',
+                    'propertyPath' => 'strarray[1]',
+                    'message'      => 'Boolean value found, but a string is required',
                 ],
                 (object) [
-                    'propertyPath' => 'children[datearray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'boolarray[1]',
+                    'message'      => 'String value found, but a boolean is required',
                 ],
                 (object) [
-                    'propertyPath' => 'data.hasharray[1]',
-                    'message'      => 'This value should be of type object.',
+                    'propertyPath' => 'datearray[1]',
+                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
+                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
                 ],
                 (object) [
-                    'propertyPath' => 'children[hash].children[intarray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'hasharray[1]',
+                    'message'      => 'Double value found, but an object is required',
                 ],
                 (object) [
-                    'propertyPath' => 'data.hash.boolarray[1]',
-                    'message'      => 'This value should be of type boolean.',
+                    'propertyPath' => 'hash.intarray[1]',
+                    'message'      => 'String value found, but an integer is required',
                 ],
                 (object) [
-                    'propertyPath' => 'children[hash].children[datearray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'hash.strarray[1]',
+                    'message'      => 'Boolean value found, but a string is required',
                 ],
                 (object) [
-                    'propertyPath' => 'data.hash.hasharray[1]',
-                    'message'      => 'This value should be of type object.',
+                    'propertyPath' => 'hash.boolarray[1]',
+                    'message'      => 'String value found, but a boolean is required',
                 ],
 
                 (object) [
-                    'propertyPath' => 'children[arrayhash].children[0].children[intarray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'hash.datearray[1]',
+                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
+                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
                 ],
                 (object) [
-                    'propertyPath' => 'data.arrayhash[0].boolarray[1]',
-                    'message'      => 'This value should be of type boolean.',
+                    'propertyPath' => 'hash.hasharray[1]',
+                    'message'      => 'Double value found, but an object is required',
                 ],
                 (object) [
-                    'propertyPath' => 'children[arrayhash].children[0].children[datearray].children[1]',
-                    'message'      => 'This value is not valid.',
+                    'propertyPath' => 'arrayhash[0].intarray[1]',
+                    'message'      => 'String value found, but an integer is required',
                 ],
                 (object) [
-                    'propertyPath' => 'data.arrayhash[0].hasharray[1]',
-                    'message'      => 'This value should be of type object.',
+                    'propertyPath' => 'arrayhash[0].strarray[1]',
+                    'message'      => 'Boolean value found, but a string is required',
                 ],
+                (object) [
+                    'propertyPath' => 'arrayhash[0].boolarray[1]',
+                    'message'      => 'String value found, but a boolean is required',
+                ],
+                (object) [
+                    'propertyPath' => 'arrayhash[0].datearray[1]',
+                    'message'      => 'Invalid date-time "abc", expected format YYYY-MM-DDThh:mm:ssZ '.
+                        'or YYYY-MM-DDThh:mm:ss+hh:mm',
+                ],
+                (object) [
+                    'propertyPath' => 'arrayhash[0].hasharray[1]',
+                    'message'      => 'Double value found, but an object is required',
+                ]
             ],
             $client->getResults()
         );

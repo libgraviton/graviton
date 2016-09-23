@@ -26,15 +26,31 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $enMock = $this->getMock('\Graviton\I18nBundle\Document\Language');
+        $enMock = $this->createMock('\Graviton\I18nBundle\Document\Language');
         $enMock->expects($this->any())->method('getId')->willReturn('en');
 
-        $deMock = $this->getMock('\Graviton\I18nBundle\Document\Language');
+        $deMock = $this->createMock('\Graviton\I18nBundle\Document\Language');
         $deMock->expects($this->any())->method('getId')->willReturn('de');
 
         $languageMock->expects($this->once())
             ->method('findAll')
             ->willReturn([$enMock, $deMock]);
+
+        $connection = $this->getMockBuilder('\Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->any())->method('isConnected')
+            ->willReturn(true);
+
+        $documentManager = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $documentManager->expects($this->once())->method('getConnection')
+            ->willReturn($connection);
+
+        $languageMock->expects($this->once())
+            ->method('getDocumentManager')
+            ->willReturn($documentManager);
 
         $translatableMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\TranslatableRepository')
             ->disableOriginalConstructor()
@@ -79,7 +95,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('createQueryBuilder')
             ->willReturn($builderMock);
 
-        $fsMock = $this->getMock('\Symfony\Component\Filesystem\Filesystem');
+        $fsMock = $this->createMock('\Symfony\Component\Filesystem\Filesystem');
 
         $fsMock->expects($this->exactly(4))
             ->method('touch');
@@ -94,6 +110,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
         $command->execute(array());
 
         $this->assertContains('Creating translation resource stubs', $command->getDisplay());
+        $this->assertContains('Checking DB connection', $command->getDisplay());
         $this->assertContains('Generated file core.en.odm', $command->getDisplay());
         $this->assertContains('Generated file core.de.odm', $command->getDisplay());
         $this->assertContains('Generated file i18n.en.odm', $command->getDisplay());

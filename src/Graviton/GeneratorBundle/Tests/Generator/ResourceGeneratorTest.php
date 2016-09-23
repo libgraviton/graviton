@@ -257,7 +257,7 @@ class ResourceGeneratorTest extends GravitonTestCase
     public function testGenerateDocument($base)
     {
         $servicesMock = $this->getMockBuilder('\DOMDocument')
-            ->setMethods(array("saveXml"))
+            ->setMethods(['saveXml', 'getElementsByTagName'])
             ->getMock();
 
         $jsonDefinitionMock = $this->getMockBuilder('\Graviton\GeneratorBundle\Definition\JsonDefinition')
@@ -271,8 +271,6 @@ class ResourceGeneratorTest extends GravitonTestCase
             'json' => $jsonDefinitionMock
         );
 
-        $docName = 'graviton.bundlename.document.documenttest';
-
         $dir = self::GRAVITON_TMP_DIR;
         $document = 'DocumentTest';
 
@@ -282,7 +280,7 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->getMock();
 
         $generator
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(7))
             ->method('renderFile');
 
         $generator
@@ -294,17 +292,32 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->expects($this->exactly(2))
             ->method('addXmlParameter');
 
+        $containerNodeMock = $this->getMockBuilder('\DOMNode')
+            ->setMethods(['item', 'appendChild'])
+            ->getMock();
+
+        $servicesMock
+            ->expects($this->any())
+            ->method('getElementsByTagName')
+            ->willReturn($containerNodeMock);
+
+        $containerNodeMock->length = 0;
+        $containerNodeMock
+            ->expects($this->exactly(2))
+            ->method('item')
+            ->with(0)
+            ->willReturn($containerNodeMock);
 
         $generator
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('addService')
             ->with(
-                $this->equalTo($servicesMock),
-                $this->equalTo($docName)
+                $this->equalTo($servicesMock)//,
+                //$this->equalTo($docName)
             )
             ->will($this->returnValue($servicesMock));
 
-        $generator->generateDocument($parameters, $dir, $document, false);
+        $generator->generateDocument($parameters, $dir, $document);
     }
 
     /**

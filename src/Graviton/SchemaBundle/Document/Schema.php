@@ -27,7 +27,7 @@ class Schema
     protected $description;
 
     /**
-     * @var string
+     * @var SchemaType
      */
     protected $type;
 
@@ -47,14 +47,14 @@ class Schema
     protected $properties;
 
     /**
-     * @var Schema
+     * @var SchemaAdditionalProperties
      */
     protected $additionalProperties;
 
     /**
      * @var string[]
      */
-    protected $required = array();
+    protected $required = [];
 
     /**
      * @var boolean
@@ -64,14 +64,14 @@ class Schema
     /**
      * @var array
      */
-    protected $refCollection = array();
+    protected $refCollection = [];
 
     /**
      * possible event names this collection implements (queue events)
      *
      * @var array
      */
-    protected $eventNames = array();
+    protected $eventNames = [];
 
     /**
      * @var bool
@@ -79,9 +79,74 @@ class Schema
     protected $readOnly = false;
 
     /**
+     * @var bool
+     */
+    protected $recordOriginModifiable;
+
+    /**
+     * @var bool
+     */
+    protected $recordOriginException;
+
+    /**
      * @var string[]
      */
-    protected $searchable = array();
+    protected $searchable = [];
+
+    /**
+     * @var int
+     */
+    protected $minLength;
+
+    /**
+     * @var int
+     */
+    protected $maxLength;
+
+    /**
+     * @var int
+     */
+    protected $minItems;
+
+    /**
+     * @var int
+     */
+    protected $maxItems;
+
+    /**
+     * @var float
+     */
+    protected $numericMinimum;
+
+    /**
+     * @var float
+     */
+    protected $numericMaximum;
+
+    /**
+     * @var SchemaEnum
+     */
+    protected $enum;
+
+    /**
+     * @var string
+     */
+    protected $regexPattern;
+
+    /**
+     * @var string
+     */
+    protected $documentClass;
+
+    /**
+     * @var array<string>
+     */
+    protected $constraints;
+
+    /**
+     * @var array<string>
+     */
+    protected $textIndexes;
 
     /**
      * these are the BSON primitive types.
@@ -90,7 +155,7 @@ class Schema
      *
      * @var string[]
      */
-    protected $primitiveTypes = array(
+    protected $primitiveTypes = [
         'array',
         'boolean',
         'integer',
@@ -98,7 +163,25 @@ class Schema
         'null',
         'object',
         'string'
-    );
+    ];
+
+    /**
+     * those are types that when they are required, a minimal length
+     * shall be specified in schema (or allow null if not required; that will lead
+     * to the inclusion of "null" in the "type" property array)
+     *
+     * @var array
+     */
+    protected $minLengthTypes = [
+        'integer',
+        'number',
+        'float',
+        'double',
+        'decimal',
+        'string',
+        'date',
+        'extref'
+    ];
 
     /**
      * known non-primitive types we map to primitives here.
@@ -106,10 +189,18 @@ class Schema
      *
      * @var string[]
      */
-    protected $specialTypeMapping = array(
+    protected $specialTypeMapping = [
         'extref' => 'string',
-        'translatable' => 'object'
-    );
+        'translatable' => 'object',
+        'date' => 'string',
+        'float' => 'number',
+        'double' => 'number',
+        'decimal' => 'number'
+    ];
+
+    protected $formatOverrides = [
+        'date' => 'date-time'
+    ];
 
     /**
      * Build properties
@@ -166,40 +257,64 @@ class Schema
     /**
      * set type
      *
-     * @param string $type type
+     * @param string|array $types types
      *
      * @return void
      */
-    public function setType($type)
+    public function setType($types)
     {
-        if ($type === 'int') {
-            $type = 'integer';
-        }
-        if ($type === 'hash') {
-            $type = 'object';
+        if (!is_array($types)) {
+            $types = [$types];
         }
 
-        // handle non-primitive types
-        if (!in_array($type, $this->primitiveTypes)) {
-            $setType = 'string';
-            if (isset($this->specialTypeMapping[$type])) {
-                $setType = $this->specialTypeMapping[$type];
+        $typesToSet = [];
+        foreach ($types as $type) {
+            if ($type === 'int') {
+                $type = 'integer';
             }
-            $this->type = $setType;
-            $this->setFormat($type);
-        } else {
-            $this->type = $type;
+            if ($type === 'hash') {
+                $type = 'object';
+            }
+
+            // handle non-primitive types
+            if (!in_array($type, $this->primitiveTypes)) {
+                $setType = 'string';
+                if (isset($this->specialTypeMapping[$type])) {
+                    $setType = $this->specialTypeMapping[$type];
+                }
+                $typesToSet[] = $setType;
+
+                if (isset($this->formatOverrides[$type])) {
+                    $type = $this->formatOverrides[$type];
+                }
+
+                $this->setFormat($type);
+            } else {
+                $typesToSet[] = $type;
+            }
         }
+
+        $this->type = new SchemaType($typesToSet);
     }
 
     /**
      * get type
      *
-     * @return string type
+     * @return SchemaType type
      */
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * get MinLengthTypes
+     *
+     * @return array MinLengthTypes
+     */
+    public function getMinLengthTypes()
+    {
+        return $this->minLengthTypes;
     }
 
     /**
@@ -222,6 +337,238 @@ class Schema
     public function setFormat($format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * get numeric minimum
+     *
+     * @return float numeric minimum
+     */
+    public function getNumericMinimum()
+    {
+        return $this->numericMinimum;
+    }
+
+    /**
+     * set numeric minimum
+     *
+     * @param float $numericMinimum numeric mimimum
+     *
+     * @return void
+     */
+    public function setNumericMinimum($numericMinimum)
+    {
+        $this->numericMinimum = $numericMinimum;
+    }
+
+    /**
+     * get numeric maximum
+     *
+     * @return float numeric maximum
+     */
+    public function getNumericMaximum()
+    {
+        return $this->numericMaximum;
+    }
+
+    /**
+     * set numeric maximum
+     *
+     * @param float $numericMaximum maximum
+     *
+     * @return void
+     */
+    public function setNumericMaximum($numericMaximum)
+    {
+        $this->numericMaximum = $numericMaximum;
+    }
+
+    /**
+     * set min length
+     *
+     * @return int length
+     */
+    public function getMinLength()
+    {
+        return $this->minLength;
+    }
+
+    /**
+     * get min length
+     *
+     * @param int $minLength length
+     *
+     * @return void
+     */
+    public function setMinLength($minLength)
+    {
+        $this->minLength = $minLength;
+    }
+
+    /**
+     * gets maxlength
+     *
+     * @return int length
+     */
+    public function getMaxLength()
+    {
+        return $this->maxLength;
+    }
+
+    /**
+     * set maxlength
+     *
+     * @param int $maxLength length
+     *
+     * @return void
+     */
+    public function setMaxLength($maxLength)
+    {
+        $this->maxLength = $maxLength;
+    }
+
+    /**
+     * set min Items
+     *
+     * @return int Items
+     */
+    public function getMinItems()
+    {
+        return $this->minItems;
+    }
+
+    /**
+     * get min Items
+     *
+     * @param int $minItems length
+     *
+     * @return void
+     */
+    public function setMinItems($minItems)
+    {
+        $this->minItems = $minItems;
+    }
+
+    /**
+     * gets maxItems
+     *
+     * @return int Items
+     */
+    public function getMaxItems()
+    {
+        return $this->maxItems;
+    }
+
+    /**
+     * set maxItems
+     *
+     * @param int $maxItems Items
+     *
+     * @return void
+     */
+    public function setMaxItems($maxItems)
+    {
+        $this->maxItems = $maxItems;
+    }
+
+    /**
+     * get Enum
+     *
+     * @return array Enum
+     */
+    public function getEnum()
+    {
+        return $this->enum;
+    }
+
+    /**
+     * set Enum
+     *
+     * @param array $enum enum
+     *
+     * @return void
+     */
+    public function setEnum(array $enum)
+    {
+        $this->enum = new SchemaEnum($enum);
+    }
+
+    /**
+     * get regex pattern
+     *
+     * @return string pattern
+     */
+    public function getRegexPattern()
+    {
+        return $this->regexPattern;
+    }
+
+    /**
+     * set regex pattern
+     *
+     * @param string $regexPattern regex pattern
+     *
+     * @return void
+     */
+    public function setRegexPattern($regexPattern)
+    {
+        $this->regexPattern = $regexPattern;
+    }
+
+    /**
+     * get DocumentClass
+     *
+     * @return string DocumentClass
+     */
+    public function getDocumentClass()
+    {
+        return $this->documentClass;
+    }
+
+    /**
+     * set DocumentClass
+     *
+     * @param string $documentClass documentClass
+     *
+     * @return void
+     */
+    public function setDocumentClass($documentClass)
+    {
+        $this->documentClass = $documentClass;
+    }
+
+    /**
+     * get Constraints
+     *
+     * @return mixed Constraints
+     */
+    public function getConstraints()
+    {
+        return $this->constraints;
+    }
+
+    /**
+     * set Constraints
+     *
+     * @param mixed $constraints constraints
+     *
+     * @return void
+     */
+    public function setConstraints($constraints)
+    {
+        $this->constraints = $constraints;
+    }
+
+    /**
+     * add a constraint
+     *
+     * @param string $name constraint name
+     *
+     * @return void
+     */
+    public function addConstraint($name)
+    {
+        $this->constraints[] = $name;
     }
 
     /**
@@ -302,19 +649,19 @@ class Schema
     /**
      * set additionalProperties on schema
      *
-     * @param Schema $schema schema to use for additionalProperties type
+     * @param SchemaAdditionalProperties $additionalProperties additional properties
      *
      * @return void
      */
-    public function setAdditionalProperties(Schema $schema)
+    public function setAdditionalProperties(SchemaAdditionalProperties $additionalProperties)
     {
-        $this->additionalProperties = $schema;
+        $this->additionalProperties = $additionalProperties;
     }
 
     /**
      * get addtionalProperties for schema
      *
-     * @return Schema
+     * @return SchemaAdditionalProperties
      */
     public function getAdditionalProperties()
     {
@@ -324,13 +671,14 @@ class Schema
     /**
      * set required variables
      *
-     * @param string[] $required arary of required fields
+     * @param string[] $required array of required fields
      *
      * @return void
      */
-    public function setRequired($required)
+    public function setRequired(array $required)
     {
-        $this->required = $required;
+        // needed as indexes could we off and we want to enforce an array after json_encode
+        $this->required = array_values($required);
     }
 
     /**
@@ -459,9 +807,53 @@ class Schema
     }
 
     /**
+     * get RecordOriginModifiable
+     *
+     * @return boolean RecordOriginModifiable
+     */
+    public function isRecordOriginModifiable()
+    {
+        return $this->recordOriginModifiable;
+    }
+
+    /**
+     * set RecordOriginModifiable
+     *
+     * @param boolean $recordOriginModifiable recordOriginModifiable
+     *
+     * @return void
+     */
+    public function setRecordOriginModifiable($recordOriginModifiable)
+    {
+        $this->recordOriginModifiable = $recordOriginModifiable;
+    }
+
+    /**
+     * get RecordOriginException
+     *
+     * @return boolean RecordOriginException
+     */
+    public function isRecordOriginException()
+    {
+        return $this->recordOriginException;
+    }
+
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
+    }
+
+    /**
      * set searchable variables
      *
-     * @param string[] $searchable arary of searchable fields
+     * @param string[] $searchable array of searchable fields
      *
      * @return void
      */
@@ -477,11 +869,29 @@ class Schema
      */
     public function getSearchable()
     {
-        $searchable = $this->searchable;
-        if (empty($searchable)) {
-            $searchable = null;
+        if (empty($this->searchable)) {
+            return null;
         }
+        return $this->searchable;
+    }
 
-        return $searchable;
+    /**
+     * @return array
+     */
+    public function getTextIndexes()
+    {
+        return $this->textIndexes;
+    }
+
+    /**
+     * get textIndexes fields
+     *
+     * @param array $textIndexes Data array of special text search values
+     *
+     * @return void
+     */
+    public function setTextIndexes($textIndexes)
+    {
+        $this->textIndexes = $textIndexes;
     }
 }

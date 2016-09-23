@@ -5,8 +5,6 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
-use Symfony\Component\Form\FormConfigBuilder;
-
 /**
  * Base document field
  *
@@ -36,23 +34,29 @@ class AbstractField
      * @var bool
      */
     private $searchable;
+    /**
+     * @var bool
+     */
+    private $recordOriginException;
 
     /**
      * Constructor
      *
-     * @param string $fieldName   Field name
-     * @param string $exposedName Exposed name
-     * @param bool   $readOnly    Read only
-     * @param bool   $required    Is required
-     * @param bool   $searchable  Is searchable
+     * @param string $fieldName             Field name
+     * @param string $exposedName           Exposed name
+     * @param bool   $readOnly              Read only
+     * @param bool   $required              Is required
+     * @param bool   $searchable            Is searchable
+     * @param bool   $recordOriginException Is an exception to record origin
      */
-    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable)
+    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable, $recordOriginException)
     {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;
         $this->required = $required;
         $this->searchable = $searchable;
+        $this->recordOriginException = $recordOriginException;
     }
 
     /**
@@ -116,20 +120,24 @@ class AbstractField
     }
 
     /**
-     * Get form name
+     * get RecordOriginException
      *
-     * @return string
+     * @return boolean RecordOriginException
      */
-    public function getFormName()
+    public function isRecordOriginException()
     {
-        if (FormConfigBuilder::isValidName($this->exposedName)) {
-            return $this->exposedName;
-        }
+        return $this->recordOriginException;
+    }
 
-        $name = $this->exposedName;
-        $name = preg_replace('/[^a-zA-Z0-9_]/', '', $name);
-        $name = preg_replace('/[^a-zA-Z0-9_\-:]/', '', $name);
-
-        return $name === '' ? $this->fieldName : $name;
+    /**
+     * set RecordOriginException
+     *
+     * @param boolean $recordOriginException recordOriginException
+     *
+     * @return void
+     */
+    public function setRecordOriginException($recordOriginException)
+    {
+        $this->recordOriginException = $recordOriginException;
     }
 }

@@ -8,8 +8,8 @@ namespace Graviton\GeneratorBundle\Tests\Definition;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;
 use Graviton\GeneratorBundle\Definition\Schema\Definition;
+use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
-use HadesArchitect\JsonSchemaBundle\Error\Error;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -108,12 +108,13 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
      * check if schema is invalid
      *
      * @return void
-     * @expectedException \HadesArchitect\JsonSchemaBundle\Exception\ViolationException
+     * @expectedException \Graviton\JsonSchemaBundle\Exception\ValidationException
      */
     public function testLoadInvalidDefinition()
     {
         $json = __METHOD__;
-        $errors = [new Error(__FILE__, __CLASS__)];
+
+        $errors = [new ValidationExceptionError(['message' => 'wrong', "property" => '.'])];
 
         $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
             ->disableOriginalConstructor()

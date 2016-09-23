@@ -18,16 +18,11 @@ web_profiler:
     toolbar: false
     intercept_redirects: false
 
-swiftmailer:
-    disable_delivery: true
-
 monolog:
     handler:
         name: main
         type: "test"
 
-eo_airbrake:
-    api_key: ~
 
 old_sound_rabbit_mq:
     connections:
@@ -72,6 +67,7 @@ doctrine_mongodb:
             mappings:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
+                GravitonI18nBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
@@ -83,6 +79,7 @@ doctrine_mongodb:
             mappings:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
+                GravitonI18nBundle: ~
             filters:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter

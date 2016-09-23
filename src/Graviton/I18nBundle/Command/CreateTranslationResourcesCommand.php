@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Command;
 
+use MongoDB\Driver\Exception\ConnectionTimeoutException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -83,6 +84,9 @@ class CreateTranslationResourcesCommand extends Command
     {
         $output->writeln("Creating translation resource stubs");
 
+        // Pause a bit before generating the languages.
+        $this->openDbConnection($output);
+
         $languages = $this->languageRepo->findAll();
         $domains = $this->translatableRepo->createQueryBuilder()
             ->distinct('domain')
@@ -104,5 +108,36 @@ class CreateTranslationResourcesCommand extends Command
                 );
             }
         );
+    }
+
+    /**
+     * Loop until DB connection is insured.
+     *
+     * @param OutputInterface $output Used to inform about db connection status
+     *
+     * @return void
+     */
+    private function openDbConnection(OutputInterface $output)
+    {
+        $output->writeln('Checking DB connection');
+
+        $loopCount = 0;
+        $connection = $this->languageRepo->getDocumentManager()->getConnection();
+
+        while (!($connected = $connection->isConnected())) {
+            try {
+                $connection->connect();
+                break;
+            } catch (\MongoConnectionException $e) {
+                $output->writeln('DB is not yet connected, sleep 1 second.');
+                sleep(1);
+            }
+            $loopCount++;
+            if ($loopCount > 20) {
+                throw new ConnectionTimeoutException('DB connection failed.');
+            }
+        }
+
+        $output->writeln('DB connected.');
     }
 }

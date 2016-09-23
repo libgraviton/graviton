@@ -60,8 +60,9 @@ class JsonDefinitionArray implements DefinitionElementInterface
                 'name'              => $this->getName(),
                 'type'              => $this->getType(),
                 'doctrineType'      => $this->getTypeDoctrine(),
-                'serializerType'    => $this->getTypeSerializer(),
-            ]
+                'serializerType'    => $this->getTypeSerializer()
+            ],
+            $this->getHashAnonymousHashRequired()
         );
     }
 
@@ -73,6 +74,21 @@ class JsonDefinitionArray implements DefinitionElementInterface
     public function getTypeDoctrine()
     {
         return $this->element->getTypeDoctrine().'[]';
+    }
+
+    /**
+     * possible overrides. if the element is an anonymous hash, we will always
+     * default to required => false.
+     *
+     * @return array additional overrides
+     */
+    private function getHashAnonymousHashRequired()
+    {
+       if ($this->element instanceof JsonDefinitionHash && $this->element->isAnonymous()) {
+           return ['required' => false];
+       }
+
+       return [];
     }
 
     /**

@@ -91,3 +91,20 @@ curl -X PUT \
     -F upload=@example.jpg \ 
     http://example.org/file/myPersonalFile
 ```
+
+## File content hashing : hash
+Property file Hash is meant to easily know if file content has changed.
+The value can either be calculated on client side by sending the information via Post/Put param or in query URL, or server side.
+- *hash* » Optional, It's by default a sha256 based encoding of file content.
+
+```bash
+curl -X POST -F \
+    'metadata={"links":[],"metadata": {"action":[], "hash":"custom-hash","additionalInformation":"some-extra"}}' \
+     -F upload=@Karta-2013_PSD_web.jpg 'http://localhost:8000/file' -v
+```
+Updating some data.
+```bash
+curl -X PUT -F \
+    'metadata={"links":[],"metadata": {"action":[],"additionalInformation":"update-extra"}}'
+    'http://localhost:8000/file/{fileId}' -v
+```

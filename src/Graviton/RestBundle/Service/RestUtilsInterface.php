@@ -5,12 +5,13 @@
 
 namespace Graviton\RestBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Graviton\RestBundle\Model\DocumentModel;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializationContext;
-use Graviton\RestBundle\Controller\RestController;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -103,4 +104,16 @@ interface RestUtilsInterface
      * @return bool|object The controller or false
      */
     public function getControllerFromRoute(Route $route);
+
+    /**
+     * validate raw json input
+     *
+     * @param Request       $request  request
+     * @param Response      $response response
+     * @param DocumentModel $model    model
+     * @param string        $content  Alternative request content.
+     *
+     * @return void
+     */
+    public function checkJsonRequest(Request $request, Response $response, DocumentModel $model, $content = '');
 }

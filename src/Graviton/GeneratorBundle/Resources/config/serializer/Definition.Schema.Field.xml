@@ -22,11 +22,14 @@
         <property name="readOnly"
                   type="boolean"
                   serialized-name="readOnly"/>
+        <property name="recordOriginException"
+                  type="boolean"
+                  serialized-name="recordOriginException"/>
         <property name="required"
                   type="boolean"
                   serialized-name="required"/>
         <property name="searchable"
-                  type="boolean"
+                  type="integer"
                   serialized-name="searchable"/>
         <property name="translatable"
                   type="boolean"

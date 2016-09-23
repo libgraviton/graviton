@@ -89,6 +89,19 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get recordOriginModifiable
+     *
+     * @return bool
+     */
+    public function getRecordOriginModifiable()
+    {
+        if (isset($this->schema->recordOriginModifiable)) {
+            return $this->schema->recordOriginModifiable;
+        }
+        return true;
+    }
+
+    /**
      * Returns the bare schema
      *
      * @return \stdClass Schema
@@ -177,15 +190,27 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
-     * get searchable flag for a given field
+     * get readOnly flag for a given field
      *
      * @param string $field field name
      *
-     * @return boolean the searchable flag
+     * @return boolean the readOnly flag
+     */
+    public function getRecordOriginExceptionOfField($field)
+    {
+        return $this->getSchemaField($field, 'recordOriginException', false);
+    }
+
+    /**
+     * get searchable flag for a given field, weight based.
+     *
+     * @param string $field field name
+     *
+     * @return integer the searchable flag
      */
     public function getSearchableOfField($field)
     {
-        return $this->getSchemaField($field, 'searchable', false);
+        return (int) $this->getSchemaField($field, 'searchable', 0);
     }
 
     /**
@@ -210,6 +235,47 @@ class SchemaModel implements ContainerAwareInterface
     public function getDynamicKeySpec($field)
     {
         return $this->getSchemaField($field, 'x-dynamic-key');
+    }
+
+    /**
+     * Gets the defined document class in shortform from schema
+     *
+     * @return string|false either the document class or false it not given
+     */
+    public function getDocumentClass()
+    {
+        $documentClass = false;
+        if (isset($this->schema->{'x-documentClass'})) {
+            $documentClass = $this->schema->{'x-documentClass'};
+        }
+        return $documentClass;
+    }
+
+    /**
+     * Get defined constraints on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getConstraints($field)
+    {
+        return $this->getSchemaField($field, 'x-constraints', false);
+    }
+
+    /**
+     * Tells us if in this model, the ID can be given on a POST request or not (in the payload).
+     * This basically depends on if the "id" property is given in the JSON definition or not.
+     *
+     * @return bool true if yes, false otherwise
+     */
+    public function isIdInPostAllowed()
+    {
+        $isAllowed = true;
+        if (isset($this->schema->{'x-id-in-post-allowed'})) {
+            $isAllowed = $this->schema->{'x-id-in-post-allowed'};
+        }
+        return $isAllowed;
     }
 
     /**

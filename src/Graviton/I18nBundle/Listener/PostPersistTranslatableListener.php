@@ -9,7 +9,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Graviton\I18nBundle\Document\Translatable;
 use Graviton\I18nBundle\Event\TranslatablePersistEvent;
-use Graviton\I18nBundle\Service\I18nCacheUtils;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;

@@ -41,17 +41,18 @@ class TranslatableRequiredTest extends RestTestCase
      *
      * @param array  $data          data to post
      * @param string $complainField field to complain about
+     * @param string $errorMessage  error message
      *
      * @return void
      */
-    public function testPutMethodIncludeRequiredTranslatable($data, $complainField)
+    public function testPutMethodIncludeRequiredTranslatable($data, $complainField, $errorMessage)
     {
         $client = static::createRestClient();
         $client->put('/testcase/translatable-required/testdata', $data);
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertSame('children['.$complainField.']', $client->getResults()[0]->propertyPath);
-        $this->assertSame('This value is not valid.', $client->getResults()[0]->message);
+        $this->assertSame($complainField, $client->getResults()[0]->propertyPath);
+        $this->assertSame($errorMessage, $client->getResults()[0]->message);
     }
 
     /**
@@ -99,7 +100,8 @@ class TranslatableRequiredTest extends RestTestCase
                         'en' => 'Test'
                     ]
                 ],
-                'complainField' => 'required'
+                'complainField' => 'required',
+                'errorMessage' => 'The property required is required'
             ],
             'empty-optional' => [
                 'data' => [
@@ -109,7 +111,8 @@ class TranslatableRequiredTest extends RestTestCase
                         'en' => 'Test'
                     ]
                 ],
-                'complainField' => 'optional'
+                'complainField' => 'optional',
+                'errorMessage' => 'Array value found, but an object or a null is required'
             ],
             'empty-no-default' => [
                 'data' => [
@@ -121,7 +124,8 @@ class TranslatableRequiredTest extends RestTestCase
                         'en' => 'Test'
                     ]
                 ],
-                'complainField' => 'optional'
+                'complainField' => 'optional.en',
+                'errorMessage' => 'The property en is required'
             ]
         ];
     }

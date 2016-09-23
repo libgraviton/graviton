@@ -22,16 +22,17 @@ class ArrayField extends AbstractField
     /**
      * Constructor
      *
-     * @param string $serializerType Field type
-     * @param string $fieldName      Field name
-     * @param string $exposedName    Exposed name
-     * @param bool   $readOnly       Read only
-     * @param bool   $required       Is required
+     * @param string $serializerType        Field type
+     * @param string $fieldName             Field name
+     * @param string $exposedName           Exposed name
+     * @param bool   $readOnly              Read only
+     * @param bool   $required              Is required
+     * @param bool   $recordOriginException Is an exception to record origin
      */
-    public function __construct($serializerType, $fieldName, $exposedName, $readOnly, $required)
+    public function __construct($serializerType, $fieldName, $exposedName, $readOnly, $required, $recordOriginException)
     {
         $this->serializerType = $serializerType;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required, false);
+        parent::__construct($fieldName, $exposedName, $readOnly, $required, false, $recordOriginException);
     }
 
     /**

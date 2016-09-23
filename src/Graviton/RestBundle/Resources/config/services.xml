@@ -9,7 +9,6 @@
         <parameter key="graviton.rest.serializer.serializercontext.class">JMS\Serializer\SerializationContext</parameter>
         <parameter key="graviton.rest.serializer.deserializercontext.class">JMS\Serializer\DeserializationContext</parameter>
         <parameter key="graviton.rest.listener.paginglinkresponselistener.class">Graviton\RestBundle\Listener\PagingLinkResponseListener</parameter>
-        <parameter key="graviton.rest.objectslicer.class">Graviton\RestBundle\Utils\ObjectSlicer</parameter>
         <parameter key="graviton.rest.response.class">Symfony\Component\HttpFoundation\Response</parameter>
         <parameter key="graviton.rest.listener.corsresponselistener.class">Graviton\RestBundle\Listener\CorsResponseListener</parameter>
         <parameter key="graviton.rest.request.class">Symfony\Component\HttpFoundation\Request</parameter>
@@ -18,9 +17,6 @@
         <parameter key="graviton.rest.listener.rqlqueryrequestlistener.class">Graviton\RestBundle\Listener\RqlQueryRequestListener</parameter>
         <parameter key="graviton.rest.listener.rqlallowedoperatorrequestlistener.class">Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener</parameter>
         <parameter key="graviton.rest.event.subscriber.class">Graviton\RestBundle\Subscriber\RestEventSubscriber</parameter>
-        <parameter key="graviton.rest.validator.readonly.class">Graviton\RestBundle\Validator\Constraints\ReadOnly\ReadOnlyValidator</parameter>
-        <parameter key="graviton.rest.validator.extref.class">Graviton\RestBundle\Validator\Constraints\ExtReference\ExtReferenceValidator</parameter>
-        <parameter key="graviton.rest.validator.form.class">Graviton\RestBundle\Validator\Form</parameter>
         <parameter key="graviton.rest.model.documentmodel.class">Graviton\RestBundle\Model\DocumentModel</parameter>
         <parameter key="graviton.rest.services" type="collection"/>
         <parameter key="graviton.rest.listener.rqlqueryrequestlistener.allowedroutes" type="collection"/>
@@ -52,14 +48,7 @@
         </service>
 
         <service id="graviton.rest.doctrine" alias="doctrine"/>
-        <service id="graviton.rest.validator" alias="validator"/>
         <service id="graviton.rest.router" alias="router"/>
-
-        <!-- Pagination -->
-        <service id="graviton.rest.paginator" alias="knp_paginator"/>
-
-        <!-- Object slicer -->
-        <service id="graviton.rest.objectslicer" class="%graviton.rest.objectslicer.class%"/>
 
         <!-- Routing -->
         <!-- Routing collection -->
@@ -75,28 +64,16 @@
         <!-- Service for validating JSON Patches -->
         <service id="graviton.rest.service.jsonpatchvalidator" class="Graviton\RestBundle\Service\JsonPatchValidator"/>
 
-        <!-- Service for translating RQL queries into simplified structures (ie SearchNode to LikeNodes) -->
-        <service id="graviton.rest.service.rqlTranslator" class="Graviton\RestBundle\Service\RqlTranslator"/>
-
         <!-- Controller -->
         <service id="graviton.rest.controller" abstract="true">
             <argument type="service" id="graviton.rest.response" strict="false"/>
             <argument type="service" id="graviton.rest.restutils"/>
             <argument type="service" id="graviton.rest.router"/>
-            <argument type="service" id="graviton.rest.validator"/>
             <argument type="service" id="templating"/>
-            <argument type="service" id="form.factory"/>
-            <argument type="service" id="graviton.document.form.type.document"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="graviton.schema.utils"/>
-            <call method="setFormDataMapper">
-                <argument type="service" id="graviton.document.service.formdatamapper"/>
-            </call>
             <call method="setJsonPatchValidator">
                 <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
-            </call>
-            <call method="setFormValidator">
-                <argument type="service" id="graviton.rest.validator.form"/>
             </call>
             <call method="setTokenStorage">
                 <argument type="service" id="security.token_storage"/>
@@ -106,7 +83,6 @@
         <!-- Model -->
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
             <argument type="service" id="graviton.rql.visitor.mongodb" />
-            <argument type="service" id="graviton.rest.service.rqlTranslator" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
             <argument>%graviton.rest.pagination.limit%</argument>
             <call method="setFilterByAuthUser">
@@ -144,6 +120,8 @@
             <argument type="service" id="graviton.rest.serializer"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="graviton.rest.serializer.serializercontext"/>
+            <argument type="service" id="graviton.schema.utils"/>
+            <argument type="service" id="graviton.jsonschema.validator"/>
         </service>
 
         <!-- Graviton rest event stuff -->
@@ -238,13 +216,6 @@
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 
-        <!-- RQL select listener -->
-        <service id="graviton.rest.listener.rqlselectresponselistener"
-                 class="%graviton.rest.listener.rqlselectresponselistener.class%">
-            <argument type="service" id="graviton.rest.objectslicer"/>
-            <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
-        </service>
-
         <!-- RQL query listener (see RqlQueryDecoratorCompilerPass) -->
         <service id="graviton.rest.listener.rqlqueryrequestlistener"
                  class="%graviton.rest.listener.rqlqueryrequestlistener.class%"
@@ -252,23 +223,6 @@
                  decoration-inner-name="graviton.rest.listener.rqlqueryrequestlistener.inner">
             <argument type="service" id="graviton.rest.listener.rqlqueryrequestlistener.inner"/>
             <argument>%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%</argument>
-        </service>
-
-        <!-- Validators -->
-        <service id="graviton.rest.validator.readonly"
-                 class="%graviton.rest.validator.readonly.class%">
-            <argument type="service" id="doctrine_mongodb.odm.default_document_manager"/>
-            <tag name="validator.constraint_validator" alias="graviton.rest.validator.readonly"/>
-        </service>
-
-        <service id="graviton.rest.validator.extref" class="%graviton.rest.validator.extref.class%">
-            <tag name="validator.constraint_validator" alias="graviton.rest.validator.extref" />
-        </service>
-
-        <service id="graviton.rest.validator.form" class="%graviton.rest.validator.form.class%">
-            <argument type="service" id="form.factory"/>
-            <argument type="service" id="graviton.document.form.type.document"/>
-            <argument type="service" id="graviton.rest.validator"/>
         </service>
     </services>
 </container>

@@ -4,6 +4,7 @@
   "service": {
     "readOnly": false,
     "routerBase": "/event/worker/",
+    "fixtureOrder": 2,
     "fixtures": [
       {
         "id": "worker1",

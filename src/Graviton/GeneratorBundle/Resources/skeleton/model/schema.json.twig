@@ -1,9 +1,17 @@
 {
 
+  "x-documentClass": {{ (base ~ 'Document\\' ~ document) | json_encode() }},
+
 {% if json is defined %}
   "description": {{ json.getDescription()|json_encode() }},
 {% else %}
   "description": "@todo replace me",
+{% endif %}
+
+{% if noIdField is not defined %}
+  "x-id-in-post-allowed": false,
+{% else %}
+  "x-id-in-post-allowed": true,
 {% endif %}
 
 {% if json is defined %}
@@ -13,6 +21,8 @@
   "properties": {
 {% set requiredFields = [] %}
 {% set searchableFields = [] %}
+{% set readOnlyFields = [] %}
+
 {% for field in fields %}
     "{{ field.fieldName }}": {
 
@@ -30,12 +40,20 @@
       "readOnly": {{ field.readOnly|json_encode() }},
 {% endif %}
 
+{% if field.recordOriginException is defined and field.recordOriginException == true %}
+      "recordOriginException": {{ field.recordOriginException|json_encode() }},
+{% endif %}
+
 {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
       "x-dynamic-key": {
           "document-id": "{{ field.xDynamicKey.documentId }}",
           "repository-method": "{{ field.xDynamicKey.repositoryMethod }}",
           "ref-field": "{{ field.xDynamicKey.refField }}"
       },
+{% endif %}
+
+{% if field.constraints is defined and field.constraints != null %}
+      "x-constraints": {{ field.constraints|json_encode() }},
 {% endif %}
 
 {% if field.description is defined and field.description != '' %}
@@ -48,8 +66,12 @@
     {% set requiredFields = requiredFields|merge([field.fieldName]) %}
 {% endif %}
 
-{% if field.searchable is defined and field.searchable == true %}
+{% if field.searchable is defined and field.searchable > 0 %}
     {% set searchableFields = searchableFields|merge([field.fieldName]) %}
+{% endif %}
+
+{% if field.readOnly is defined and field.readOnly == true %}
+    {% set readOnlyFields = readOnlyFields|merge([field.fieldName]) %}
 {% endif %}
 
     },
@@ -65,6 +87,18 @@
 {% endif %}
     }
   },
+
+{#
+the whole recordOrigin thing is kinda messed up as you need 2 vars to correctly detect what should be done.
+for schema, we condense it so recordOriginModifiable holds the whole truth in one..
+ #}
+{% if (recordOriginModifiable is defined and recordOriginModifiable == "false") and
+  (isrecordOriginFlagSet is defined and isrecordOriginFlagSet == true) %}
+  "recordOriginModifiable": false,
+{% else %}
+  "recordOriginModifiable": true,
+{% endif %}
   "required": {{ requiredFields|json_encode() }},
-  "searchable": {{ searchableFields|json_encode() }}
+  "searchable": {{ searchableFields|json_encode() }},
+  "readOnlyFields": {{ readOnlyFields|json_encode() }}
 }

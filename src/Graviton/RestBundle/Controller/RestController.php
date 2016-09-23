@@ -5,17 +5,15 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\DocumentBundle\Service\FormDataMapperInterface;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\RestBundle\Validator\Form;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Model\PaginatorAwareInterface;
 use Graviton\SchemaBundle\SchemaUtils;
-use Graviton\DocumentBundle\Form\Type\DocumentType;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Knp\Component\Pager\Paginator;
@@ -64,16 +62,6 @@ class RestController
     private $response;
 
     /**
-     * @var FormFactory
-     */
-    private $formFactory;
-
-    /**
-     * @var DocumentType
-     */
-    private $formType;
-
-    /**
      * @var RestUtilsInterface
      */
     private $restUtils;
@@ -84,19 +72,9 @@ class RestController
     private $schemaUtils;
 
     /**
-     * @var FormDataMapperInterface
-     */
-    protected $formDataMapper;
-
-    /**
      * @var Router
      */
     private $router;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
 
     /**
      * @var EngineInterface
@@ -109,11 +87,6 @@ class RestController
     private $jsonPatchValidator;
 
     /**
-     * @var Form
-     */
-    protected $formValidator;
-
-    /**
      * @var TokenStorage
      */
     protected $tokenStorage;
@@ -122,10 +95,7 @@ class RestController
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
      * @param Router             $router      Router
-     * @param ValidatorInterface $validator   Validator
      * @param EngineInterface    $templating  Templating
-     * @param FormFactory        $formFactory form factory
-     * @param DocumentType       $formType    generic form
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
      */
@@ -133,20 +103,14 @@ class RestController
         Response $response,
         RestUtilsInterface $restUtils,
         Router $router,
-        ValidatorInterface $validator,
         EngineInterface $templating,
-        FormFactory $formFactory,
-        DocumentType $formType,
         ContainerInterface $container,
         SchemaUtils $schemaUtils
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->validator = $validator;
         $this->templating = $templating;
-        $this->formFactory = $formFactory;
-        $this->formType = $formType;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
     }
@@ -163,35 +127,12 @@ class RestController
     }
 
     /**
-     * Set form data mapper
-     *
-     * @param FormDataMapperInterface $formDataMapper Form data mapper
-     * @return void
-     */
-    public function setFormDataMapper(FormDataMapperInterface $formDataMapper)
-    {
-        $this->formDataMapper = $formDataMapper;
-    }
-
-    /**
      * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
      * @return void
      */
     public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
     {
         $this->jsonPatchValidator = $jsonPatchValidator;
-    }
-
-    /**
-     * Defines the Form validator to be used.
-     *
-     * @param Form $validator Validator to be used
-     *
-     * @return void
-     */
-    public function setFormValidator(Form $validator)
-    {
-        $this->formValidator = $validator;
     }
 
     /**
@@ -217,15 +158,10 @@ class RestController
     public function getAction(Request $request, $id)
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent($this->serialize($this->findRecord($id, $request)));
 
-        $record = $this->findRecord($id);
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($record)],
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -241,23 +177,24 @@ class RestController
     /**
      * Get a single record from database or throw an exception if it doesn't exist
      *
-     * @param mixed $id Record id
+     * @param mixed   $id      Record id
+     * @param Request $request request
      *
      * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
      *
      * @return object $record Document object
      */
-    protected function findRecord($id)
+    protected function findRecord($id, Request $request = null)
     {
         $response = $this->getResponse();
 
-        if (!($record = $this->getModel()->find($id))) {
+        if (!($this->getModel()->recordExists($id))) {
             $e = new NotFoundException("Entry with id " . $id . " not found!");
             $e->setResponse($response);
             throw $e;
         }
 
-        return $record;
+        return $this->getModel()->find($id, $request);
     }
 
     /**
@@ -314,14 +251,7 @@ class RestController
                     $result
                 );
 
-                /*
-                 * clean up:
-                 *
-                 * - remove empty entries
-                 */
-                $result = array_filter($result);
-
-                return '['.implode(',', $result).']';
+                return '['.implode(',', array_filter($result)).']';
             }
 
             return $this->getRestUtils()->serializeContent($result);
@@ -353,9 +283,7 @@ class RestController
     {
         $model = $this->getModel();
 
-        list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));
-
-        $schema = $this->schemaUtils->getModelSchema($modelName, $model);
+        list(, , , $modelName, ) = explode('.', $request->attributes->get('_route'));
 
         // Security is optional configured in Parameters
         try {
@@ -371,13 +299,10 @@ class RestController
         }
 
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+            ->setStatusCode(Response::HTTP_OK)
+            ->setContent($this->serialize($model->findAll($request, $securityUser)));
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($model->findAll($request, $securityUser, $schema))],
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -393,13 +318,9 @@ class RestController
         $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->formValidator->checkJsonRequest($request, $response);
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $request->getContent()
-        );
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+
+        $record = $this->validateRequest($request->getContent(), $model);
 
         // Insert the new record
         $record = $this->getModel()->insertRecord($record);
@@ -416,6 +337,25 @@ class RestController
         );
 
         return $response;
+    }
+
+    /**
+     * Validates the current request on schema violations. If there are errors,
+     * the exception is thrown. If not, the deserialized record is returned.
+     *
+     * @param object|string $content \stdClass of the request content
+     * @param DocumentModel $model   the model to check the schema for
+     *
+     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
+     * @throws \Exception
+     */
+    protected function validateRequest($content, DocumentModel $model)
+    {
+        $errors = $this->restUtils->validateContent($content, $model);
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
+        return $this->deserialize($content, $model->getEntityClass());
     }
 
     /**
@@ -476,23 +416,9 @@ class RestController
         $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->formValidator->checkJsonRequest($request, $response);
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $request->getContent()
-        );
-
-        // does it really exist??
-        $upsert = false;
-        try {
-            $this->findRecord($id);
-        } catch (NotFoundException $e) {
-            // who cares, we'll upsert it
-            $upsert = true;
-        }
+        $record = $this->validateRequest($request->getContent(), $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -506,10 +432,10 @@ class RestController
         }
 
         // And update the record, if everything is ok
-        if ($upsert) {
-            $this->getModel()->insertRecord($record);
+        if (!$this->getModel()->recordExists($id)) {
+            $this->getModel()->insertRecord($record, false);
         } else {
-            $this->getModel()->updateRecord($id, $record);
+            $this->getModel()->updateRecord($id, $record, false);
         }
 
         // Set status code
@@ -534,10 +460,10 @@ class RestController
     public function patchAction($id, Request $request)
     {
         $response = $this->getResponse();
-        $this->formValidator->checkJsonRequest($request, $response);
 
         // Check JSON Patch request
-        $this->formValidator->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
@@ -564,12 +490,7 @@ class RestController
 
         // Validate result object
         $model = $this->getModel();
-        $record = $this->formValidator->checkForm(
-            $this->formValidator->getForm($request, $model),
-            $model,
-            $this->formDataMapper,
-            $patchedDocument
-        );
+        $record = $this->validateRequest($patchedDocument, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
@@ -680,16 +601,6 @@ class RestController
             ['response' => $this->serialize($schema)],
             $response
         );
-    }
-
-    /**
-     * Get the validator
-     *
-     * @return ValidatorInterface
-     */
-    public function getValidator()
-    {
-        return $this->validator;
     }
 
     /**

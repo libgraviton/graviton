@@ -133,10 +133,11 @@ class PagingLinkResponseListener
             $limit = sprintf('limit(%s,%s)', $perPage, $page);
         }
         if (strpos($rql, 'limit') !== false) {
-            $rql = preg_replace('/limit\(.*\)/', $limit, $rql);
+            $rql = preg_replace('/limit\(.*\)/U', $limit, $rql);
         } else {
-            $rql = $limit;
+            $rql .= '&'.$limit;
         }
+
         $url = $this->getRqlUrl(
             $request,
             $this->router->generate($routeName, [], true) . '?' . strtr($rql, [',' => '%2C'])

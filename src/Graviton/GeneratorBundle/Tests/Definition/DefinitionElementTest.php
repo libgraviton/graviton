@@ -116,7 +116,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'constraints' => array(),
             'collection' => array(),
             'xDynamicKey' => null,
-            'searchable' => true
+            'searchable' => 1,
+            'recordOriginException' => false
         );
 
         $this->assertEquals($def, $field->getDefAsArray());
@@ -253,7 +254,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
                 'isClassType' => true,
                 'constraints' => [],
                 'required' => true,
-                'searchable' => false
+                'searchable' => 0
             ],
             $field->getDefAsArray()
         );

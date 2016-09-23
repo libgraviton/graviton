@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Sensio\Bundle\GeneratorBundle\Model\EntityGeneratorResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
@@ -123,20 +124,18 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate the resource with all its bits and parts
      *
-     * @param BundleInterface $bundle         bundle
-     * @param string          $document       document name
-     * @param string          $format         format of config files (please use xml)
-     * @param array           $fields         fields to add
-     * @param boolean         $withRepository generate repository class
+     * @param BundleInterface $bundle   bundle
+     * @param string          $document document name
+     * @param string          $format   format of config files (please use xml)
+     * @param array           $fields   fields to add
      *
-     * @return void
+     * @return EntityGeneratorResult
      */
     public function generate(
         BundleInterface $bundle,
         $document,
         $format,
-        array $fields,
-        $withRepository
+        array $fields
     ) {
         $dir = $bundle->getPath();
         $basename = $this->getBundleBaseName($document);
@@ -154,6 +153,7 @@ class ResourceGenerator extends AbstractGenerator
             },
             $fields
         );
+        
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
@@ -166,9 +166,10 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
+            ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->getParameters();
 
-        $this->generateDocument($parameters, $dir, $document, $withRepository);
+        $this->generateDocument($parameters, $dir, $document);
         $this->generateSerializer($parameters, $dir, $document);
         $this->generateModel($parameters, $dir, $document);
 
@@ -181,6 +182,12 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         $this->generateParameters($dir);
+
+        return new EntityGeneratorResult(
+            $dir . '/Document/' . $document . '.php',
+            $dir . '/Repository/' . $document . 'Repository.php',
+            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml'
+        );
     }
 
     /**
@@ -200,14 +207,13 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate document part of a resource
      *
-     * @param array   $parameters     twig parameters
-     * @param string  $dir            base bundle dir
-     * @param string  $document       document name
-     * @param boolean $withRepository generate repository class
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
      *
      * @return void
      */
-    protected function generateDocument($parameters, $dir, $document, $withRepository)
+    protected function generateDocument($parameters, $dir, $document)
     {
         // doctrine mapping normal class
         $this->renderFile(
@@ -245,20 +251,19 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
-        $this->generateServices($parameters, $dir, $document, $withRepository);
+        $this->generateServices($parameters, $dir, $document);
     }
 
     /**
      * update xml services
      *
-     * @param array   $parameters     twig parameters
-     * @param string  $dir            base bundle dir
-     * @param string  $document       document name
-     * @param boolean $withRepository generate repository class
+     * @param array  $parameters twig parameters
+     * @param string $dir        base bundle dir
+     * @param string $document   document name
      *
      * @return void
      */
-    protected function generateServices($parameters, $dir, $document, $withRepository)
+    protected function generateServices($parameters, $dir, $document)
     {
         $services = $this->loadServices($dir);
 
@@ -292,81 +297,79 @@ class ResourceGenerator extends AbstractGenerator
             $docName
         );
 
-        if ($withRepository) {
-            $repoName = implode(
-                '.',
+        $repoName = implode(
+            '.',
+            array(
+                strtolower($shortName),
+                strtolower($shortBundle),
+                'repository',
+                strtolower($parameters['document'])
+            )
+        );
+
+        // normal repo service
+        $services = $this->addParam(
+            $services,
+            $repoName . '.class',
+            $parameters['base'] . 'Repository\\' . $parameters['document']
+        );
+
+        $this->addService(
+            $services,
+            $repoName,
+            null,
+            null,
+            array(),
+            null,
+            array(
                 array(
-                    strtolower($shortName),
-                    strtolower($shortBundle),
-                    'repository',
-                    strtolower($parameters['document'])
+                    'type' => 'string',
+                    'value' => $parameters['bundle'] . ':' . $document
                 )
-            );
+            ),
+            'doctrine_mongodb.odm.default_document_manager',
+            'getRepository'
+        );
 
-            // normal repo service
-            $services = $this->addParam(
-                $services,
-                $repoName . '.class',
-                $parameters['base'] . 'Repository\\' . $parameters['document']
-            );
+        // embedded repo service
+        $services = $this->addParam(
+            $services,
+            $repoName . 'embedded.class',
+            $parameters['base'] . 'Repository\\' . $parameters['document'] . 'Embedded'
+        );
 
-            $this->addService(
-                $services,
-                $repoName,
-                null,
-                null,
-                array(),
-                null,
+        $this->addService(
+            $services,
+            $repoName . 'embedded',
+            null,
+            null,
+            array(),
+            null,
+            array(
                 array(
-                    array(
-                        'type' => 'string',
-                        'value' => $parameters['bundle'] . ':' . $document
-                    )
-                ),
-                'doctrine_mongodb.odm.default_document_manager',
-                'getRepository'
-            );
-
-            // embedded repo service
-            $services = $this->addParam(
-                $services,
-                $repoName . 'embedded.class',
-                $parameters['base'] . 'Repository\\' . $parameters['document'] . 'Embedded'
-            );
-
-            $this->addService(
-                $services,
-                $repoName . 'embedded',
-                null,
-                null,
-                array(),
-                null,
-                array(
-                    array(
-                        'type' => 'string',
-                        'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
-                    )
-                ),
-                'doctrine_mongodb.odm.default_document_manager',
-                'getRepository'
-            );
-
-            $this->renderFile(
-                'document/DocumentRepository.php.twig',
-                $dir . '/Repository/' . $document . 'Repository.php',
-                $parameters
-            );
-            $this->renderFile(
-                'document/DocumentRepository.php.twig',
-                $dir . '/Repository/' . $document . 'EmbeddedRepository.php',
-                array_merge(
-                    $parameters,
-                    [
-                        'document' => $document.'Embedded',
-                    ]
+                    'type' => 'string',
+                    'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                 )
-            );
-        }
+            ),
+            'doctrine_mongodb.odm.default_document_manager',
+            'getRepository'
+        );
+
+        $this->renderFile(
+            'document/DocumentRepository.php.twig',
+            $dir . '/Repository/' . $document . 'Repository.php',
+            $parameters
+        );
+        $this->renderFile(
+            'document/DocumentRepository.php.twig',
+            $dir . '/Repository/' . $document . 'EmbeddedRepository.php',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                ]
+            )
+        );
 
         $this->persistServicesXML($dir);
     }
@@ -496,7 +499,6 @@ class ResourceGenerator extends AbstractGenerator
                 $paramNode->appendChild($rolesNode);
             }
         }
-
     }
 
     /**
@@ -769,13 +771,16 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
+
         foreach ($parameters['fields'] as $key => $field) {
             if (substr($field['serializerType'], 0, 14) == 'array<Graviton' &&
-                strpos($field['serializerType'], '\\Entity') === false
+                strpos($field['serializerType'], '\\Entity') === false &&
+                $field['relType'] == 'embed'
             ) {
                 $parameters['fields'][$key]['serializerType'] = substr($field['serializerType'], 0, -1).'Embedded>';
             } elseif (substr($field['serializerType'], 0, 8) == 'Graviton' &&
-                strpos($field['serializerType'], '\\Entity') === false
+                strpos($field['serializerType'], '\\Entity') === false &&
+                $field['relType'] == 'embed'
             ) {
                 $parameters['fields'][$key]['serializerType'] = $field['serializerType'].'Embedded';
             }
@@ -801,7 +806,6 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
-
     }
 
     /**
