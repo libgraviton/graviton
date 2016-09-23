@@ -8,7 +8,6 @@ use JMS\Serializer\Exclusion\ExclusionStrategyInterface;
 use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Context;
-use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Xiag\Rql\Parser\Query;
 
@@ -132,7 +131,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
         if ($depth <= $this->currentDepth) {
             // reduce the currentPath by one step
             array_pop($this->currentPath);
-            // start a new currentPath
+            // start a new currentPath on depth 0
             if ($depth == 0) {
                 $this->currentPath = [];
             }

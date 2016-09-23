@@ -1,6 +1,6 @@
 <?php
 /**
- * PrimitiveArrayControllerTest class file
+ * SerializerSelectExclusionStrategyTest class file
  */
 
 namespace Graviton\CoreBundle\Tests\Controller;
@@ -20,7 +20,7 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
     const DATE_FORMAT = 'Y-m-d\\TH:i:sO';
 
     /**
-     * load fixtures
+     * load fixtures (in this case we can reuse fixtures from other tests)
      *
      * @return void
      */
@@ -34,31 +34,51 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
         }
 
         $this->loadFixtures(
-            [LoadTestCasePrimitiveArrayData::class,LoadTestCaseNullExtrefData::class],
+            [LoadTestCasePrimitiveArrayData::class, LoadTestCaseNullExtrefData::class],
             null,
             'doctrine_mongodb'
         );
     }
 
     /**
-     * Test item schema
+     * Test testRqlSelectionOnArrays testing the correct serialization of nested arrays
      *
      * @return void
      */
     public function testRqlSelectionOnArrays()
     {
+        $expectedResult = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/serializer-exclusion-array.json'),
+            false
+        );
+
         $client = static::createRestClient();
-        $client->request('GET',
-            '/testcase/primitivearray/testdata?select(arrayhash.datearray,arrayhash.intarray,arrayhash.hasharray)');
+        $client->request(
+            'GET',
+            '/testcase/primitivearray/testdata?select(hash.strarray,arrayhash.intarray,arrayhash.hasharray)'
+        );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($expectedResult, $client->getResults());
     }
 
+    /**
+     * Test testRqlSelectionOnNested testing the correct serialization of deeply nested values
+     *
+     * @return void
+     */
     public function testRqlSelectionOnNested()
     {
-        $client = static::createRestClient();
-        $client->request('GET',
-            '/testcase/nullextref/testdata?select(requiredExtref,requiredExtrefDeep.deep.deep,optionalExtrefDeep)');
-        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-    }
+        $expectedResult = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/serializer-exclusion-nested.json'),
+            false
+        );
 
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/testcase/nullextref/testdata?select(requiredExtref,requiredExtrefDeep.deep.deep,optionalExtrefDeep)'
+        );
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($expectedResult, $client->getResults());
+    }
 }
