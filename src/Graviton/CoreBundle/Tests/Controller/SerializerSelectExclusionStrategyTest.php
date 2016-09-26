@@ -17,7 +17,6 @@ use GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullEx
  */
 class SerializerSelectExclusionStrategyTest extends RestTestCase
 {
-    const DATE_FORMAT = 'Y-m-d\\TH:i:sO';
 
     /**
      * load fixtures (in this case we can reuse fixtures from other tests)
