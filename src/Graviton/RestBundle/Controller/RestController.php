@@ -17,11 +17,9 @@ use Graviton\RestBundle\Service\RestUtilsInterface;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\PreconditionRequiredHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -32,7 +30,6 @@ use Rs\Json\Patch\InvalidTargetDocumentJsonException;
 use Rs\Json\Patch\InvalidOperationException;
 use Rs\Json\Patch\FailedTestException;
 use Graviton\RestBundle\Service\JsonPatchValidator;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * This is a basic rest controller. It should fit the most needs but if you need to add some

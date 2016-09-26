@@ -23,7 +23,7 @@ class SecurityUtils
     private $securityUser;
     
     /** @var string  */
-    private $threadId;
+    private $requestId;
 
     /**
      * StoreManager constructor.
@@ -99,27 +99,36 @@ class SecurityUtils
     }
 
     /**
-     * Generate a unique Thread Id.
+     * Get current unique request ID
      *
      * @return string
      */
-    public function getThreadId()
+    public function getRequestId()
     {
-        if ($this->threadId) {
-            return $this->threadId;
+        if ($this->requestId) {
+            return $this->requestId;
         }
-        
+        return $this->requestId = $this->generateUuid();
+    }
+
+    /**
+     * Generate a unique UUID.
+     *
+     * @return string
+     */
+    private function generateUuid()
+    {
         if (!function_exists('openssl_random_pseudo_bytes')) {
-            $this->threadId = uniqid('unq', true);
+            $this->requestId = uniqid('unq', true);
         } else {
             $data = openssl_random_pseudo_bytes(16);
             // set version to 0100
             $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
             // set bits 6-7 to 10
             $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-            $this->threadId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+            $this->requestId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
         }
 
-        return $this->threadId;
+        return $this->requestId;
     }
 }

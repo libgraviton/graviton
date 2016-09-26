@@ -84,7 +84,7 @@ class ModelEvent extends Event
         if (array_key_exists($dispatchName, $this->availableEvents)) {
             $this->action = $this->availableEvents[$dispatchName];
         } else {
-            throw new Exception('Document Model event dispatch type not found: ' . $dispatchName);
+            throw new \RuntimeException('Document Model event dispatch type not found: ' . $dispatchName);
         }
     }
 

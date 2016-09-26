@@ -91,7 +91,7 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      *
      * @return void
      */
-    private function loadFiles($dir, $container, $allowed)
+    private function loadFiles($dir, ContainerBuilder $container, array $allowed)
     {
         $locator = new FileLocator($dir);
         $xmlLoader = new Loader\XmlFileLoader($container, $locator);
