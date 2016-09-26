@@ -26,6 +26,8 @@
     </property>
 {% endif %}
 
+   <property name="fieldsAddedCount" type="int" accessor-getter="getFieldsAddedCount" exclude="true"/>
+
 {% for field in fields %}
 
     {% if field.type == 'boolean' %}
