@@ -1,0 +1,28 @@
+{
+  "hash": {
+    "strarray": [
+      "a",
+      "b",
+      "c"
+    ]
+  },
+  "arrayhash": [
+    {
+      "intarray": [
+        1,
+        2,
+        3
+      ],
+      "hasharray": [
+        {
+          "a": "b"
+        },
+        {
+          "c": "d"
+        },
+        {}
+      ]
+    }
+  ],
+  "id": "testdata"
+}
