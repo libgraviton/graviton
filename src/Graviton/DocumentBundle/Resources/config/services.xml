@@ -9,12 +9,24 @@
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
         <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
         <parameter key="graviton.document.serializer.handler.date.class">Graviton\DocumentBundle\Serializer\Handler\DateHandler</parameter>
+        <parameter key="graviton.document.serializer.handler.empty.class">Graviton\DocumentBundle\Serializer\Handler\EmptyHandler</parameter>
+        <parameter key="graviton.document.serializer.listener.emptyextref.class">Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener</parameter>
     </parameters>
     <services>
         <!-- extref converter -->
         <service id="graviton.document.service.extrefconverter" class="%graviton.document.service.extrefconverter.class%">
             <argument type="service" id="router"/>
             <argument>%graviton.document.type.extref.mapping%</argument>
+        </service>
+
+        <!-- empty extref serializing listener -->
+        <service id="graviton.document.serializer.listener.emptyextref" class="%graviton.document.serializer.listener.emptyextref.class%">
+            <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onPreSerialize" direction="serialization"/>
+        </service>
+
+        <!-- empty serializer handler -->
+        <service id="graviton.document.serializer.handler.empty" class="%graviton.document.serializer.handler.empty.class%">
+            <tag name="jms_serializer.handler" type="Empty" format="json"/>
         </service>
 
         <service id="graviton.document.listener.extreferencesearchlistener" class="%graviton.document.listener.extreferencesearchlistener.class%">

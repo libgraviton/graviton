@@ -1,0 +1,33 @@
+{
+  "requiredExtref": {
+    "$ref": "http://localhost/core/app/admin"
+  },
+  "optionalExtrefDeep": [
+    {
+      "deep": [
+        {
+          "deep": {
+            "deep": [
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "requiredExtrefDeep": [
+    {
+      "deep": [
+        {
+          "deep": {
+            "deep": [
+              {
+                "$ref": "http://localhost/core/app/admin"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "id": "testdata"
+}
