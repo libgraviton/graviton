@@ -83,7 +83,8 @@ class GravitonBundleExtension extends Extension implements PrependInterface
     }
 
     /**
-     * Made to have in one place the loading
+     * Load config files, xml or yml.
+     * If will only include the config file if it's in the allowed array.
      *
      * @param string           $dir       folder
      * @param ContainerBuilder $container Sf container
