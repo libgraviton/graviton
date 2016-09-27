@@ -69,21 +69,34 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
+        // If it's inside vendor library or running as graviton base.
+        $rootDir = $container->getParameter('kernel.root_dir');
+        if (strpos($rootDir, 'vendor/graviton')) {
+            $dirs = [
+                $rootDir.'/../..'
+            ];
+        } else {
+            $dirs = [
+                __DIR__ . '/../..',
+                $rootDir.'/../vendor/graviton'
+            ];
+        }
+
         $documentMap = new DocumentMap(
             (new Finder())
-                ->in(__DIR__ . '/../..')
+                ->in($dirs)
                 ->path('Resources/config/doctrine')
                 ->name('*.mongodb.xml'),
             (new Finder())
-                ->in(__DIR__ . '/../..')
+                ->in($dirs)
                 ->path('Resources/config/serializer')
                 ->name('*.xml'),
             (new Finder())
-                ->in(__DIR__ . '/../..')
+                ->in($dirs)
                 ->path('Resources/config')
                 ->name('validation.xml'),
             (new Finder())
-                ->in(__DIR__ . '/../..')
+                ->in($dirs)
                 ->path('Resources/config/schema')
                 ->name('*.json')
         );

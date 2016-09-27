@@ -131,10 +131,10 @@ final class SecurityAuthenticator implements
                 sprintf('Authentication key is required.')
             );
         }
-
+        
         /** @var SecurityUser $securityUser */
         if ($user = $this->userProvider->loadUserByUsername($username)) {
-            $securityUser = new SecurityUser($user, [SecurityUser::ROLE_USER]);
+            $securityUser = new SecurityUser($user, [SecurityUser::ROLE_USER, SecurityUser::ROLE_CONSULTANT]);
         } elseif ($this->securityTestUsername) {
             $this->logger->info('Authentication, loading test user: '.$this->securityTestUsername);
             if ($user = $this->userProvider->loadUserByUsername($this->securityTestUsername)) {

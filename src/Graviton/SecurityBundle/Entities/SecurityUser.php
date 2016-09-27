@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class SecurityUser implements UserInterface
 {
     const ROLE_USER = 'ROLE_GRAVITON_USER';
+    const ROLE_CONSULTANT = 'ROLE_GRAVITON_CONSULTANT';
     const ROLE_ANONYMOUS = 'ROLE_GRAVITON_ANONYMOUS';
 
     /**
@@ -125,6 +126,6 @@ class SecurityUser implements UserInterface
     {
         $roles = $this->$this->getRoles();
         $username = $this->getUsername() ? $this->getUsername() : 'anonymous';
-        return reser($roles).':'.$username;
+        return reset($roles).':'.$username;
     }
 }
