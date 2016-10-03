@@ -23,6 +23,12 @@
 {% set searchableFields = [] %}
 {% set readOnlyFields = [] %}
 
+{% if idField is defined %}
+      {% if idField.required is defined and idField.required == true %}
+      {% set requiredFields = requiredFields|merge(['id']) %}
+      {% endif %}
+{% endif %}
+
 {% for field in fields %}
     "{{ field.fieldName }}": {
 

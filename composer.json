@@ -59,7 +59,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "~0.9",
+        "graviton/test-services-bundle": "dev-feature/EVO-7324-id-as-null-fix",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
