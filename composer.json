@@ -29,7 +29,7 @@
         "sensio/generator-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.1",
         "jms/serializer-bundle": ">=1.1,<2",
-        "jms/serializer": "!=1.2.0",
+        "jms/serializer": "=1.1.0",
         "jms/di-extra-bundle": "~1.7",
         "doctrine/mongodb-odm": "~1.0",
         "doctrine/mongodb-odm-bundle": "~3.1",
