@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "57dbae5b7f5592a3633d430b378edb91",
-    "content-hash": "28c566b7899e00f27896e4c6ec4c026b",
+    "hash": "860d7b087ff5ef8cf1a97ea666c10a69",
+    "content-hash": "ccfb9b1ee6cef7746d9097b0cd5282c4",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -4701,16 +4701,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "dev-feature/EVO-7324-id-as-null-fix",
+            "version": "v0.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "756044a7721f2cd8cc79b1aa34325cc95aee722f"
+                "reference": "323fe8680b4a312775c715494f45ab90b115623c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/756044a7721f2cd8cc79b1aa34325cc95aee722f",
-                "reference": "756044a7721f2cd8cc79b1aa34325cc95aee722f",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/323fe8680b4a312775c715494f45ab90b115623c",
+                "reference": "323fe8680b4a312775c715494f45ab90b115623c",
                 "shasum": ""
             },
             "type": "library",
@@ -4730,10 +4730,10 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "support": {
-                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/feature/EVO-7324-id-as-null-fix",
+                "source": "https://github.com/libgraviton/GravitonTestServicesBundle/tree/v0.22.0",
                 "issues": "https://github.com/libgraviton/GravitonTestServicesBundle/issues"
             },
-            "time": "2016-10-06 13:56:15"
+            "time": "2016-10-07 07:11:25"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -6264,8 +6264,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "lapistano/proxy-object": 20,
-        "graviton/test-services-bundle": 20
+        "lapistano/proxy-object": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
