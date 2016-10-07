@@ -147,5 +147,12 @@
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
             <tag name="console.command" />
         </service>
+
+        <service id="graviton_generator.command.generateschemaexport"
+                 class="Graviton\GeneratorBundle\Command\SchemaExportCommand">
+            <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
+            <argument type="service" id="graviton.core.command.filesystem" />
+            <tag name="console.command" />
+        </service>
     </services>
 </container>

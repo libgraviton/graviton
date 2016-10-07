@@ -1,0 +1,267 @@
+{
+    "App": {
+        "class": "Graviton\\CoreBundle\\Document\\App",
+        "fields": {
+            "id": {
+                "fieldName": "id",
+                "id": true,
+                "strategy": "UUID",
+                "options": [],
+                "name": "_id",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "type": "custom_id",
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false
+            },
+            "name": {
+                "fieldName": "name",
+                "type": "string",
+                "name": "name",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "showInMenu": {
+                "fieldName": "showInMenu",
+                "type": "boolean",
+                "name": "showInMenu",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "order": {
+                "fieldName": "order",
+                "type": "int",
+                "name": "order",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            }
+        },
+        "relations": []
+    },
+    "Product": {
+        "class": "Graviton\\CoreBundle\\Document\\Product",
+        "fields": {
+            "id": {
+                "fieldName": "id",
+                "id": true,
+                "strategy": "UUID",
+                "options": [],
+                "name": "_id",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "type": "custom_id",
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false
+            },
+            "name": {
+                "fieldName": "name",
+                "type": "hash",
+                "name": "name",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            }
+        },
+        "relations": []
+    },
+    "Language": {
+        "class": "Graviton\\I18nBundle\\Document\\Language",
+        "fields": {
+            "id": {
+                "fieldName": "id",
+                "type": "string",
+                "id": true,
+                "strategy": "UUID",
+                "options": [],
+                "name": "_id",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false
+            },
+            "name": {
+                "fieldName": "name",
+                "type": "string",
+                "name": "name",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            }
+        },
+        "relations": []
+    },
+    "Translatable": {
+        "class": "Graviton\\I18nBundle\\Document\\Translatable",
+        "fields": {
+            "id": {
+                "fieldName": "id",
+                "type": "string",
+                "id": true,
+                "strategy": "UUID",
+                "options": [],
+                "name": "_id",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false
+            },
+            "domain": {
+                "fieldName": "domain",
+                "type": "string",
+                "name": "domain",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "locale": {
+                "fieldName": "locale",
+                "type": "string",
+                "name": "locale",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "original": {
+                "fieldName": "original",
+                "type": "string",
+                "name": "original",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "translated": {
+                "fieldName": "translated",
+                "type": "string",
+                "name": "translated",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "isLocalized": {
+                "fieldName": "isLocalized",
+                "type": "boolean",
+                "name": "isLocalized",
+                "isCascadeRemove": false,
+                "isCascadePersist": false,
+                "isCascadeRefresh": false,
+                "isCascadeMerge": false,
+                "isCascadeDetach": false,
+                "nullable": false,
+                "isOwningSide": true,
+                "isInverseSide": false,
+                "strategy": "set"
+            },
+            "language": {
+                "type": "one",
+                "embedded": true,
+                "targetDocument": "Graviton\\I18nBundle\\Document\\TranslatableLanguage",
+                "collectionClass": null,
+                "name": "language",
+                "strategy": "set",
+                "fieldName": "language",
+                "isCascadeRemove": true,
+                "isCascadePersist": true,
+                "isCascadeRefresh": true,
+                "isCascadeMerge": true,
+                "isCascadeDetach": true,
+                "nullable": false,
+                "association": 3,
+                "isOwningSide": true,
+                "isInverseSide": false
+            }
+        },
+        "relations": {
+            "language": {
+                "type": "one",
+                "embedded": true,
+                "targetDocument": "Graviton\\I18nBundle\\Document\\TranslatableLanguage",
+                "collectionClass": null,
+                "name": "language",
+                "strategy": "set",
+                "fieldName": "language",
+                "isCascadeRemove": true,
+                "isCascadePersist": true,
+                "isCascadeRefresh": true,
+                "isCascadeMerge": true,
+                "isCascadeDetach": true,
+                "nullable": false,
+                "association": 3,
+                "isOwningSide": true,
+                "isInverseSide": false
+            }
+        }
+    }
+}
