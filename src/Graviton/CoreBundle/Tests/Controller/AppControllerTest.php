@@ -80,6 +80,43 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * test that our paging headers are correct if client does NOT provide rql BUT
+     * we have more records in the db then the default pagesize (= we will add limit() clauses to Link elements)
+     *
+     * @return void
+     */
+    public function testGeneratedPagingHeadersNoRql()
+    {
+        $this->loadFixtures(
+            [
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit'
+            ],
+            null,
+            'doctrine_mongodb'
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/');
+
+        $response = $client->getResponse();
+
+        $this->assertContains(
+            '<http://localhost/core/app/?limit(0%2C10)>; rel="self"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app/?limit(10%2C10)>; rel="next"',
+            $response->headers->get('Link')
+        );
+
+        $this->assertContains(
+            '<http://localhost/core/app/?limit(10%2C10)>; rel="last"',
+            $response->headers->get('Link')
+        );
+    }
+
+    /**
      * test if we can get list of apps, paged and with filters..
      *
      * @return void
