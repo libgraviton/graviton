@@ -26,7 +26,15 @@
         "name": "metadata.language",
         "type": "string",
         "title": "Language Iso",
-        "description": "Short language iso code, in lowercase (en, de, fr, it)"
+        "description": "Short language iso code, in lowercase.",
+        "constraints": [
+          {
+            "name": "Choice",
+            "options": [
+              {"name": "choices", "value": "de|en|fr|it"}
+            ]
+          }
+        ]
       },
       {
         "name": "links.0.type",
