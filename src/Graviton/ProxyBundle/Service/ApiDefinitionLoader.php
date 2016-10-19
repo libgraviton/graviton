@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Service;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
+use Graviton\ProxyBundle\Definition\Loader\LoaderFactory;
 use Graviton\ProxyBundle\Definition\Loader\LoaderInterface;
 
 /**
@@ -38,6 +39,21 @@ class ApiDefinitionLoader
      */
     private $definition;
 
+    /** @var  LoaderFactory */
+    private $loaderFactory;
+
+
+    /**
+     * ApiDefinitionLoader constructor.
+     *
+     * @param LoaderFactory $loaderFactory
+     */
+    public function __construct(LoaderFactory $loaderFactory)
+    {
+        $this->loaderFactory = $loaderFactory;
+    }
+
+
     /**
      * set loader
      *
@@ -47,8 +63,22 @@ class ApiDefinitionLoader
      */
     public function setDefinitionLoader($loader)
     {
-        $this->definitionLoader = $loader;
+
+        throw new \RuntimeException('ApiDefinitionLoader::setDefinitionLoader is deprecated.');
+
+        //$this->definitionLoader = $loader;
     }
+
+    /**
+     * Provides the definition loader instance.
+     */
+    public function getDefinitionLoader()
+    {
+        if (empty($this->definitionLoader) && array_key_exists('prefix', $this->options)) {
+            $this->definitionLoader = $this->loaderFactory->create($this->options['prefix']);
+        }
+    }
+
 
     /**
      * set options for the loader
@@ -60,9 +90,8 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
-        if (!empty($this->definitionLoader)) {
-            $this->definitionLoader->setOptions($options);
-        }
+        $this->getDefinitionLoader();
+        $this->definitionLoader->setOptions($options);
     }
 
     /**
@@ -152,6 +181,8 @@ class ApiDefinitionLoader
      */
     private function loadApiDefinition($forceReload = false)
     {
+        $this->getDefinitionLoader();
+
         $supported = $this->definitionLoader->supports($this->options['uri']);
 
         if ($forceReload || ($this->definition == null && $supported)) {

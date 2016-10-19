@@ -101,8 +101,19 @@ class TransformationHandler
      */
     public function getRequestTransformations($api, $endpoint)
     {
-        return isset($this->requestTransformations[$api][$endpoint]) ?
-            $this->requestTransformations[$api][$endpoint] : [];
+        if (isset($this->requestTransformations[$api])) {
+
+            $patterns = array_keys($this->requestTransformations[$api]);
+
+            foreach ($patterns as $pattern) {
+
+                preg_match($pattern, $endpoint, $matches);
+
+                if (!empty($matches[1])) {
+                    return $this->requestTransformations[$api][$pattern];
+                }
+            }
+        }
     }
 
     /**

@@ -105,7 +105,7 @@ class ProxyController
         $this->registerProxySources($api['apiName']);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
-        if (parse_url($url, PHP_URL_SCHEME) === false) {
+        if (parse_url($url, PHP_URL_SCHEME) === null) {
             $scheme = $request->getScheme();
             $url = $scheme.'://'.$url;
         }
@@ -236,14 +236,15 @@ class ProxyController
      */
     private function registerProxySources($apiPrefix = '')
     {
-        if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
-            foreach ($this->proxySourceConfiguration['swagger'] as $config) {
+        foreach (array_keys($this->proxySourceConfiguration) as $source) {
+            foreach ($this->proxySourceConfiguration[$source] as $config) {
                 if ($apiPrefix == $config['prefix']) {
                     $this->apiLoader->setOption($config);
                     return;
                 }
             }
         }
+
         $e = new NotFoundException('No such thirdparty API.');
         $e->setResponse(Response::create());
         throw $e;

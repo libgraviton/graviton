@@ -53,6 +53,8 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('uri')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('host')->cannotBeEmpty()->end()
                             ->booleanNode('includeBasePath')->defaultValue(false)->end()
+                            ->scalarNode('apiKey')->cannotBeEmpty()->end()
+                            ->scalarNode('queryStringTemplate')->cannotBeEmpty()->end()
                             ->end()
                         ->end()
                     ->end()
