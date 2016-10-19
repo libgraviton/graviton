@@ -46,3 +46,15 @@ This shouldn't be a dealbreaker as this task is only used on deployment and/or
 development where a shell is accessible. It should be executed in the same context
 as the previous generator tools, and also those used the shell (backtick operator
 to get git name/email for example).
+
+#### Dynamic bundle caching mechanism
+
+There is a mechanism that only regenerates existing dynamic bundles when necessary.
+
+The following changes lead to a regeneration of the bundle:
+* The JSON definition file of a service has changes (content)
+* Any of the templates files in `Resources/skeleton` in this bundle change (keeping track per `mtime`)
+
+**Please note:** If you're developing on the Generator itself (the PHP side, not the templates), you'll need to manually 
+clean the content of the dynamic bundles. You can either execute `rm -Rf src/GravitonDyn` or call the command 
+`php app/console graviton:clean:dynamicbundles` - to simplify things, you can put those in `dev-cleanstart.sh` during your work.
