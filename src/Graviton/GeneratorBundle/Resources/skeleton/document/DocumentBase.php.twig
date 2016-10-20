@@ -120,12 +120,7 @@ return $this->deletedDate;
     */
     public function setRecordOrigin($recordOrigin)
     {
-    if (!isset($this->recordOrigin)) {
     $this->recordOrigin = $recordOrigin;
-    } else {
-    throw new \LogicException("recordOrigin can not be overwritten");
-    }
-
     return $this;
     }
 {% endif %}
