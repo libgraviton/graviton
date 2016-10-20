@@ -191,9 +191,7 @@ class GenerateDynamicBundleCommand extends Command
 
         $fs = new Filesystem();
 
-        if ($fs->exists($this->bundleBundleClassfile)) {
-            $fs->remove($this->bundleBundleClassfile);
-        }
+        $this->createInitialBundleBundle($input->getOption('srcDir'));
 
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
@@ -223,8 +221,7 @@ class GenerateDynamicBundleCommand extends Command
                 }
 
                 if ($needsGeneration) {
-                    $fs->remove($bundleDir);
-                    $this->generateBundle($namespace, $bundleName, $input, $output);
+                    $this->generateBundle($namespace, $bundleName, $input, $output, $bundleDir);
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
 
@@ -291,8 +288,7 @@ class GenerateDynamicBundleCommand extends Command
             return $existingBundles;
         }
 
-        $bundleFinder = new Finder();
-        $bundleFinder->directories()->in($bundleBaseDir)->depth('== 0')->notName('BundleBundle');
+        $bundleFinder = $this->getBundleFinder($baseDir);
 
         foreach ($bundleFinder as $bundleDir) {
             $genHash = '';
@@ -315,6 +311,54 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $existingBundles;
+    }
+
+    /**
+     * we cannot just delete the BundleBundle at the beginning, we need to prefill
+     * it with all existing dynamic bundles..
+     *
+     * @param string $baseDir base dir
+     *
+     * @return void
+     */
+    private function createInitialBundleBundle($baseDir)
+    {
+        $bundleFinder = $this->getBundleFinder($baseDir);
+
+        if (!$bundleFinder) {
+            return;
+        }
+
+        foreach ($bundleFinder as $bundleDir) {
+            $name = $bundleDir->getFilename();
+            if (substr($name, -6) == 'Bundle') {
+                $name = substr($name, 0, -6);
+            }
+            $this->bundleBundleList[] = sprintf(self::BUNDLE_NAME_MASK, $name);
+        }
+
+        $this->generateBundleBundleClass();
+    }
+
+    /**
+     * returns a finder that iterates all bundle directories
+     *
+     * @param string $baseDir the base dir to search
+     *
+     * @return Finder|null finder or null if basedir does not exist
+     */
+    private function getBundleFinder($baseDir)
+    {
+        $bundleBaseDir = $baseDir.self::BUNDLE_NAMESPACE;
+
+        if (!(new Filesystem())->exists($bundleBaseDir)) {
+            return null;
+        }
+
+        $bundleFinder = new Finder();
+        $bundleFinder->directories()->in($bundleBaseDir)->depth('== 0')->notName('BundleBundle');
+
+        return $bundleFinder;
     }
 
     /**
@@ -357,6 +401,7 @@ class GenerateDynamicBundleCommand extends Command
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $arguments = [
                 'graviton:generate:resource',
+                '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $subRecource->getId(),
                 '--format' => 'xml',
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
@@ -389,6 +434,7 @@ class GenerateDynamicBundleCommand extends Command
         if (!empty($fields)) {
             $arguments = array(
                 'graviton:generate:resource',
+                '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
                 '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
                 '--format' => 'xml',
@@ -449,10 +495,11 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generates a Bundle via command line (wrapping graviton:generate:bundle)
      *
-     * @param string          $namespace  Namespace
-     * @param string          $bundleName Name of bundle
-     * @param InputInterface  $input      Input
-     * @param OutputInterface $output     Output
+     * @param string          $namespace    Namespace
+     * @param string          $bundleName   Name of bundle
+     * @param InputInterface  $input        Input
+     * @param OutputInterface $output       Output
+     * @param string          $deleteBefore Delete before directory
      *
      * @return void
      *
@@ -462,11 +509,13 @@ class GenerateDynamicBundleCommand extends Command
         $namespace,
         $bundleName,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
+        $deleteBefore = null
     ) {
         // first, create the bundle
         $arguments = array(
             'graviton:generate:bundle',
+            '--no-debug' => null,
             '--namespace' => $namespace,
             '--bundle-name' => $bundleName,
             '--dir' => $input->getOption('srcDir'),
@@ -474,6 +523,10 @@ class GenerateDynamicBundleCommand extends Command
             '--doUpdateKernel' => 'false',
             '--loaderBundleName' => $input->getOption('bundleBundleName'),
         );
+
+        if (!is_null($deleteBefore)) {
+            $arguments['--deleteBefore'] = $deleteBefore;
+        }
 
         $this->runner->executeCommand(
             $arguments,
