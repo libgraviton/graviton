@@ -87,13 +87,13 @@
 
         <service id="graviton.proxy.service.loaderfactory" class="Graviton\ProxyBundle\Definition\Loader\LoaderFactory">
             <argument  type="collection">
-                <argument key="swagger" type="service" id="graviton.proxy.definition.loader.swagger"/>
+                <argument key="swissquant" type="service" id="graviton.proxy.definition.loader.swagger"/>
                 <argument key="fundinfo" type="service" id="graviton.proxy.definition.loader.fundinfo"/>
             </argument>
         </service>
 
         <!-- transformers -->
-        <service id="graviton.proxy.service.transformation.fundinfo" class="Graviton\ProxyBundle\Transformation\FundinfoRequestTransformation">
+        <service id="graviton.proxy.service.transformation.request.fundinfo" class="Graviton\ProxyBundle\Transformation\FundinfoRequestTransformation">
             <argument>%graviton.proxy.sources%</argument>
         </service>
 
@@ -101,7 +101,7 @@
             <call method="addRequestTransformation">
                 <argument>fundinfo</argument>
                 <argument>@\/(factsheet)\/.*@</argument>
-                <argument type="service" id="graviton.proxy.service.transformation.fundinfo" />
+                <argument type="service" id="graviton.proxy.service.transformation.request.fundinfo" />
             </call>
         </service>
 

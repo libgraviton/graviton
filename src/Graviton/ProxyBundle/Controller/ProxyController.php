@@ -103,6 +103,7 @@ class ProxyController
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources($api['apiName']);
+        $this->apiLoader->addOptions($api);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
         if (parse_url($url, PHP_URL_SCHEME) === null) {
@@ -182,6 +183,8 @@ class ProxyController
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources($api['apiName']);
+        $this->apiLoader->addOptions($api);
+
         $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
         $schema = $this->transformationHandler->transformSchema(
             $api['apiName'],

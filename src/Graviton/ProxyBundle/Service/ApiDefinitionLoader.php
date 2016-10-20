@@ -79,6 +79,13 @@ class ApiDefinitionLoader
         }
     }
 
+    /**
+     * Resets the definition loader
+     */
+    public function resetDefinitionLoader()
+    {
+        $this->definitionLoader = null;
+    }
 
     /**
      * set options for the loader
@@ -90,6 +97,17 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
+        $this->getDefinitionLoader();
+        $this->definitionLoader->setOptions($options);
+    }
+
+    /**
+     * @param array $options
+     */
+    public function addOptions(array $options)
+    {
+        $this->options = array_merge($this->options, $options);
+
         $this->getDefinitionLoader();
         $this->definitionLoader->setOptions($options);
     }

@@ -7,6 +7,7 @@ use Doctrine\Common\Cache\CacheProvider;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -91,6 +92,32 @@ class ConfigurationLoader implements LoaderInterface
         $apiDef->setHost(parse_url($url, PHP_URL_HOST));
         $apiDef->setBasePath(parse_url($url, PHP_URL_PATH));
 
+        $this->defineSchema($apiDef);
+        $apiDef->addEndpoint($this->options['endpoint'] . '/');
+
         return $apiDef;
+    }
+
+    private function defineSchema(ApiDefinition $apiDef)
+    {
+        if (array_key_exists('endpoint', $this->options)) {
+
+            $finder = new Finder();
+            $finder->files()->in(__DIR__ .'/../../Resources/schema/'. $this->options['storeKey']);
+
+            foreach ($finder as $file) {
+                $endpoint = $this->options['endpoint'];
+
+                // MAGIC happens here:
+                // need to streamline endpoint and filename to be able to find the endpoint.
+                $cmp = str_replace('/', '', $endpoint);
+                list($filename, ) = explode('.', $file->getFilename());
+
+                if ($cmp == $filename) {
+                    $schema = json_decode(file_get_contents($file->getRealPath()));
+                    $apiDef->addSchema($endpoint, $schema);
+                }
+            }
+        }
     }
 }

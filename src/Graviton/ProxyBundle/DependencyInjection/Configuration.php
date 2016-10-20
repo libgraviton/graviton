@@ -55,7 +55,7 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('includeBasePath')->defaultValue(false)->end()
                             ->scalarNode('apiKey')->cannotBeEmpty()->end()
                             ->scalarNode('queryStringTemplate')->cannotBeEmpty()->end()
-                            ->end()
+                            ->scalarNode('serviceEndpoint')->cannotBeEmpty()->end()
                         ->end()
                     ->end()
                 ->end() // swagger_proxy

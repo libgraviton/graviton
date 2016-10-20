@@ -48,7 +48,7 @@ class MainController
      * @var ApiDefinitionLoader
      */
     private $apiLoader;
-    
+
     /**
      * @var array
      */
@@ -248,19 +248,41 @@ class MainController
     private function registerThirdPartyServices()
     {
         $services = [];
+
         // getenv()... it's a workaround for run all tests on travis! will be removed!
-        if (array_key_exists('swagger', $this->proxySourceConfiguration)
-            && getenv('USER') !== 'travis'
-            && getenv('HAS_JOSH_K_SEAL_OF_APPROVAL') !== true) {
-            //@todo: this needs to be refactored in case there are other sources than swagger configuration files
-            foreach ($this->proxySourceConfiguration['swagger'] as $thirdparty => $option) {
-                $this->apiLoader->setOption($option);
-                $services[$thirdparty] = $this->determineThirdPartyServices(
-                    $this->apiLoader->getAllEndpoints(false, true)
-                );
+        if (getenv('USER') !== 'travis' && getenv('HAS_JOSH_K_SEAL_OF_APPROVAL') !== true) {
+
+            foreach (array_keys($this->proxySourceConfiguration) as $source) {
+                foreach ($this->proxySourceConfiguration[$source] as $thirdparty => $option) {
+                    $this->apiLoader->resetDefinitionLoader();
+                    $this->apiLoader->setOption($option);
+                    $this->apiLoader->addOptions($this->decideApiAndEndpoint($option));
+                    $services[$thirdparty] = $this->determineThirdPartyServices(
+                        $this->apiLoader->getAllEndpoints(false, true)
+                    );
+                }
             }
         }
 
         return $services;
+    }
+
+    /**
+     * get API name and endpoint from the url (third party API)
+     *
+     * @param string $url the url
+     *
+     * @return array
+     */
+    protected function decideApiAndEndpoint($config)
+    {
+        if (array_key_exists('serviceEndpoint', $config)) {
+            return array (
+                "apiName" => $config['prefix'],
+                "endpoint" => $config['serviceEndpoint'],
+            );
+        }
+
+        return [];
     }
 }

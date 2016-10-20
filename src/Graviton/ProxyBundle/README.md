@@ -24,14 +24,23 @@ graviton_proxy:
       anotherApi:
         prefix: anotherApi
         uri: http://example.org/another/api/swagger.json
+    custom:
+      <NameOfCustomApi>:
+        prefix: fundinfo
+        uri: http://example.org/3.0/document
+        apiKey: preSharedKey
+        queryStringTemplate: shareClass={shareClass}&documentType={documentType}&language={language}
 
 ```
 
 See the following table concerning the config nodes which CAN or MUST be set for each API:
 
-| Config Node         | Description                                                                       | Default Value / Behavior (empty if required) |
-|---------------------|-----------------------------------------------------------------------------------|----------------------------------------------|
-| **prefix**          |The graviton URL prefix where the API endpoints get exposed.                       |                                              |
-| **uri**             | The URL of the API schema (e.g `swagger.json`)                                    |                                              |
-| **host**            | Defines the host of the API. This overwrites any host defined in the API schema.  | Use the host defined by the API schema.      |
-| **includeBasePath** | Defines whether the APIs base path should be included in the graviton URL or not. | `false`                                      |
+| Config Node             | Description                                                                       | Default Value / Behavior (empty if required) |
+|-------------------------|-----------------------------------------------------------------------------------|----------------------------------------------|
+| **prefix**              |The graviton URL prefix where the API endpoints get exposed.                       |                                              |
+| **uri**                 | The URL of the API schema (e.g `swagger.json`)                                    |                                              |
+| **host**                | Defines the host of the API. This overwrites any host defined in the API schema.  | Use the host defined by the API schema.      |
+| **includeBasePath**     | Defines whether the APIs base path should be included in the graviton URL or not. | `false`                                      |
+| **apiKey**              | Defines the preshared key to be granted access to a service                       |                                              |
+| **queryStringTemplate** | Defines whether the APIs base path should be included in the graviton URL or not. |                                              |
+|                         | Use '{' and  '}' to encapsulate a string to be replaced.                          |                                              |
