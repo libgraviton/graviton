@@ -102,11 +102,9 @@ class TransformationHandler
     public function getRequestTransformations($api, $endpoint)
     {
         if (isset($this->requestTransformations[$api])) {
-
             $patterns = array_keys($this->requestTransformations[$api]);
 
             foreach ($patterns as $pattern) {
-
                 preg_match($pattern, $endpoint, $matches);
 
                 if (!empty($matches[1])) {

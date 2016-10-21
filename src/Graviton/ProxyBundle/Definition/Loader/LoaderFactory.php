@@ -4,7 +4,6 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 
 use Graviton\ProxyBundle\Exception\LoaderException;
 
-
 /**
  * Class LoaderFactory
  *
@@ -48,7 +47,6 @@ class LoaderFactory
     public function create($source)
     {
         if (array_key_exists($source, $this->loader)) {
-
             return $this->loader[$source];
         }
 

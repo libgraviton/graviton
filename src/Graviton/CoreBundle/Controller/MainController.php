@@ -251,7 +251,6 @@ class MainController
 
         // getenv()... it's a workaround for run all tests on travis! will be removed!
         if (getenv('USER') !== 'travis' && getenv('HAS_JOSH_K_SEAL_OF_APPROVAL') !== true) {
-
             foreach (array_keys($this->proxySourceConfiguration) as $source) {
                 foreach ($this->proxySourceConfiguration[$source] as $thirdparty => $option) {
                     $this->apiLoader->resetDefinitionLoader();

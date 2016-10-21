@@ -2,7 +2,6 @@
 
 namespace Graviton\ProxyBundle\Definition\Loader;
 
-
 use Doctrine\Common\Cache\CacheProvider;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
@@ -10,7 +9,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 
 /**
  * Class ConfigurationLoader
@@ -98,10 +96,12 @@ class ConfigurationLoader implements LoaderInterface
         return $apiDef;
     }
 
+    /**
+     * @param ApiDefinition $apiDef
+     */
     private function defineSchema(ApiDefinition $apiDef)
     {
         if (array_key_exists('endpoint', $this->options)) {
-
             $finder = new Finder();
             $finder->files()->in(__DIR__ .'/../../Resources/schema/'. $this->options['storeKey']);
 

@@ -2,9 +2,13 @@
 
 namespace Graviton\ProxyBundle\Transformation;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class FundinfoRequestTransformation
+ *
+ * @package Graviton\ProxyBundle\Transformation
+ */
 class FundinfoRequestTransformation implements RequestTransformationInterface
 {
     /** @var array  */
@@ -26,8 +30,6 @@ class FundinfoRequestTransformation implements RequestTransformationInterface
     public function transformRequest(Request $requestIn, Request $requestOut)
     {
         $options = $this->configuration['custom']['fundinfo'];
-
-        // /3rdparty/fundinfo/factsheet/GB0009583252
         preg_match("@[^/]+$@", $requestIn->getRequestUri(), $pathItems);
 
         $queryString = str_replace("{shareClass}", $pathItems[0], $options['queryStringTemplate']);
@@ -46,5 +48,4 @@ class FundinfoRequestTransformation implements RequestTransformationInterface
             'GET'
         );
     }
-
 }
