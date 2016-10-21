@@ -23,7 +23,7 @@ class FundinfoRequestTransformation implements RequestTransformationInterface
     /**
      * FundinfoRequestTransformation constructor.
      *
-     * @param array $configuration
+     * @param array $configuration Configuration options
      */
     public function __construct(array $configuration)
     {

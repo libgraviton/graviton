@@ -269,7 +269,7 @@ class MainController
     /**
      * get API name and endpoint from the url (third party API)
      *
-     * @param array $config
+     * @param array $config Configuration information ['prefix', 'serviceEndpoint']
      *
      * @return array
      */

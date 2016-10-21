@@ -49,7 +49,9 @@ class ConfigurationLoader implements LoaderInterface
     /**
      * @inheritDoc
      *
-     * @param array $options
+     * @param array $options Configuration options ['prefix']
+     *
+     * @return void
      */
     public function setOptions($options)
     {
@@ -64,7 +66,9 @@ class ConfigurationLoader implements LoaderInterface
     /**
      * @inheritDoc
      *
-     * @param DispersalStrategyInterface $strategy
+     * @param DispersalStrategyInterface $strategy Strategy to be used
+     *
+     * @return void
      */
     public function setDispersalStrategy(DispersalStrategyInterface $strategy)
     {
@@ -77,6 +81,8 @@ class ConfigurationLoader implements LoaderInterface
      * @param CacheProvider $cache          Cache layer to be used
      * @param string        $cacheNamespace Name of the cache to be used
      * @param int           $cacheLifetime  Cache time to life
+     *
+     * @return void
      */
     public function setCache(CacheProvider $cache, $cacheNamespace, $cacheLifetime)
     {
@@ -119,6 +125,8 @@ class ConfigurationLoader implements LoaderInterface
      * @inheritDoc
      *
      * @param ApiDefinition $apiDef Api definition the Schema to be defined in.
+     *
+     * @return void
      */
     private function defineSchema(ApiDefinition $apiDef)
     {
