@@ -13,6 +13,7 @@ use Sensio\Bundle\GeneratorBundle\Model\Bundle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -57,6 +58,13 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
                  'If "true", update the kernel, "false" if we should skip that.',
                  'true'
              )
+             ->addOption(
+                 'deleteBefore',
+                 'delbef',
+                 InputOption::VALUE_OPTIONAL,
+                 'If a string, that directory will be deleted prior to generation',
+                 null
+             )
              ->setName('graviton:generate:bundle')
              ->setDescription('Generates a graviton bundle');
     }
@@ -73,6 +81,12 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
     {
         $this->loaderBundleName = $input->getOption('loaderBundleName');
         $this->doUpdate = $input->getOption('doUpdateKernel');
+
+        $deleteBefore = $input->getOption('deleteBefore');
+        $fs = new Filesystem();
+        if ($deleteBefore != null && $fs->exists($deleteBefore)) {
+            $fs->remove($deleteBefore);
+        }
 
         parent::execute(
             $input,

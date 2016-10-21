@@ -625,10 +625,13 @@ class Schema
      *
      * @param string $name property name
      *
-     * @return void|Schema property
+     * @return null|Schema property
      */
-    public function getProperty($name)
+    public function getProperty($name = null)
     {
+        if (is_null($name)) {
+            return null;
+        }
         return $this->properties->get($name);
     }
 
