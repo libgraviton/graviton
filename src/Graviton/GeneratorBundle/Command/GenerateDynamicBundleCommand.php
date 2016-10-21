@@ -17,6 +17,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Here, we generate all "dynamic" Graviton bundles..
@@ -30,7 +33,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateDynamicBundleCommand extends Command
 {
-    const BUNDLE_NAME_MASK = 'GravitonDyn/%sBundle';
+
+    /** @var  string */
+    const BUNDLE_NAMESPACE = 'GravitonDyn';
+
+    /** @var  string */
+    const BUNDLE_NAME_MASK = self::BUNDLE_NAMESPACE.'/%sBundle';
+
+    /** @var  string */
+    const GENERATION_HASHFILE_FILENAME = 'genhash';
 
     /** @var  string */
     private $bundleBundleNamespace;
@@ -178,6 +189,13 @@ class GenerateDynamicBundleCommand extends Command
             throw new \LogicException("Could not find any usable JSON files.");
         }
 
+        $fs = new Filesystem();
+
+        $this->createInitialBundleBundle($input->getOption('srcDir'));
+
+        $templateHash = $this->getTemplateHash();
+        $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
+
         /**
          * GENERATE THE BUNDLE(S)
          */
@@ -191,17 +209,44 @@ class GenerateDynamicBundleCommand extends Command
             $this->bundleBundleList[] = $namespace;
 
             try {
-                $this->generateBundle($namespace, $bundleName, $input, $output);
-                $this->generateBundleBundleClass();
-                $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
-                $this->generateMainResource($output, $jsonDef, $bundleName);
-                $this->generateValidationXml($this->xmlManipulator, $this->getGeneratedValidationXmlPath($namespace));
+                $bundleDir = $input->getOption('srcDir').$namespace;
+                $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
 
-                $output->writeln('');
-                $output->writeln(
-                    sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
-                );
-                $output->writeln('');
+                $needsGeneration = true;
+                if (isset($existingBundles[$bundleDir])) {
+                    if ($existingBundles[$bundleDir] == $thisHash) {
+                        $needsGeneration = false;
+                    }
+                    unset($existingBundles[$bundleDir]);
+                }
+
+                if ($needsGeneration) {
+                    $this->generateBundle($namespace, $bundleName, $input, $output, $bundleDir);
+                    $this->generateGenerationHashFile($bundleDir, $thisHash);
+                }
+
+                $this->generateBundleBundleClass();
+
+                if ($needsGeneration) {
+                    $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
+                    $this->generateMainResource($output, $jsonDef, $bundleName);
+                    $this->generateValidationXml(
+                        $this->xmlManipulator,
+                        $this->getGeneratedValidationXmlPath($namespace)
+                    );
+
+                    $output->write(
+                        PHP_EOL.
+                        sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId()).
+                        PHP_EOL
+                    );
+                } else {
+                    $output->write(
+                        PHP_EOL.
+                        sprintf('<info>Using pre-existing "%s"</info>', $bundleName).
+                        PHP_EOL
+                    );
+                }
             } catch (\Exception $e) {
                 $output->writeln(
                     sprintf('<error>%s</error>', $e->getMessage())
@@ -213,6 +258,125 @@ class GenerateDynamicBundleCommand extends Command
 
             $this->xmlManipulator->reset();
         }
+
+        // whatever is left in $existingBundles is not defined anymore and needs to be deleted..
+        foreach ($existingBundles as $dirName => $hash) {
+            $fs->remove($dirName);
+            $output->write(
+                PHP_EOL.
+                sprintf('<info>Deleted obsolete bundle "%s"</info>', $dirName).
+                PHP_EOL
+            );
+        }
+    }
+
+    /**
+     * scans through all existing dynamic bundles, checks if there is a generation hash and collect that
+     * all in an array that can be used for fast checking.
+     *
+     * @param string $baseDir base directory of dynamic bundles
+     *
+     * @return array key is bundlepath, value is the current hash
+     */
+    private function getExistingBundleHashes($baseDir)
+    {
+        $existingBundles = [];
+        $fs = new Filesystem();
+        $bundleBaseDir = $baseDir.self::BUNDLE_NAMESPACE;
+
+        if (!$fs->exists($bundleBaseDir)) {
+            return $existingBundles;
+        }
+
+        $bundleFinder = $this->getBundleFinder($baseDir);
+
+        foreach ($bundleFinder as $bundleDir) {
+            $genHash = '';
+            $hashFileFinder = new Finder();
+            $hashFileIterator = $hashFileFinder
+                ->files()
+                ->in($bundleDir->getPathname())
+                ->name(self::GENERATION_HASHFILE_FILENAME)
+                ->depth('== 0')
+                ->getIterator();
+
+            $hashFileIterator->rewind();
+
+            $hashFile = $hashFileIterator->current();
+            if ($hashFile instanceof SplFileInfo) {
+                $genHash = $hashFile->getContents();
+            }
+
+            $existingBundles[$bundleDir->getPathname()] = $genHash;
+        }
+
+        return $existingBundles;
+    }
+
+    /**
+     * we cannot just delete the BundleBundle at the beginning, we need to prefill
+     * it with all existing dynamic bundles..
+     *
+     * @param string $baseDir base dir
+     *
+     * @return void
+     */
+    private function createInitialBundleBundle($baseDir)
+    {
+        $bundleFinder = $this->getBundleFinder($baseDir);
+
+        if (!$bundleFinder) {
+            return;
+        }
+
+        foreach ($bundleFinder as $bundleDir) {
+            $name = $bundleDir->getFilename();
+            if (substr($name, -6) == 'Bundle') {
+                $name = substr($name, 0, -6);
+            }
+            $this->bundleBundleList[] = sprintf(self::BUNDLE_NAME_MASK, $name);
+        }
+
+        $this->generateBundleBundleClass();
+    }
+
+    /**
+     * returns a finder that iterates all bundle directories
+     *
+     * @param string $baseDir the base dir to search
+     *
+     * @return Finder|null finder or null if basedir does not exist
+     */
+    private function getBundleFinder($baseDir)
+    {
+        $bundleBaseDir = $baseDir.self::BUNDLE_NAMESPACE;
+
+        if (!(new Filesystem())->exists($bundleBaseDir)) {
+            return null;
+        }
+
+        $bundleFinder = new Finder();
+        $bundleFinder->directories()->in($bundleBaseDir)->depth('== 0')->notName('BundleBundle');
+
+        return $bundleFinder;
+    }
+
+    /**
+     * Calculates a hash of all templates that generator uses to output it's file.
+     * That way a regeneration will be triggered when one of them changes..
+     *
+     * @return string hash
+     */
+    private function getTemplateHash()
+    {
+        $templateDir = __DIR__ . '/../Resources/skeleton';
+        $resourceFinder = new Finder();
+        $resourceFinder->in($templateDir)->files()->sortByName();
+        $templateTimes = '';
+        foreach ($resourceFinder as $file) {
+            $templateTimes .= PATH_SEPARATOR . $file->getMTime();
+        }
+        return sha1($templateTimes);
     }
 
     /**
@@ -237,6 +401,7 @@ class GenerateDynamicBundleCommand extends Command
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $arguments = [
                 'graviton:generate:resource',
+                '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $subRecource->getId(),
                 '--format' => 'xml',
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
@@ -269,6 +434,7 @@ class GenerateDynamicBundleCommand extends Command
         if (!empty($fields)) {
             $arguments = array(
                 'graviton:generate:resource',
+                '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
                 '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
                 '--format' => 'xml',
@@ -329,10 +495,11 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generates a Bundle via command line (wrapping graviton:generate:bundle)
      *
-     * @param string          $namespace  Namespace
-     * @param string          $bundleName Name of bundle
-     * @param InputInterface  $input      Input
-     * @param OutputInterface $output     Output
+     * @param string          $namespace    Namespace
+     * @param string          $bundleName   Name of bundle
+     * @param InputInterface  $input        Input
+     * @param OutputInterface $output       Output
+     * @param string          $deleteBefore Delete before directory
      *
      * @return void
      *
@@ -342,11 +509,13 @@ class GenerateDynamicBundleCommand extends Command
         $namespace,
         $bundleName,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
+        $deleteBefore = null
     ) {
         // first, create the bundle
         $arguments = array(
             'graviton:generate:bundle',
+            '--no-debug' => null,
             '--namespace' => $namespace,
             '--bundle-name' => $bundleName,
             '--dir' => $input->getOption('srcDir'),
@@ -354,6 +523,10 @@ class GenerateDynamicBundleCommand extends Command
             '--doUpdateKernel' => 'false',
             '--loaderBundleName' => $input->getOption('bundleBundleName'),
         );
+
+        if (!is_null($deleteBefore)) {
+            $arguments['--deleteBefore'] = $deleteBefore;
+        }
 
         $this->runner->executeCommand(
             $arguments,
@@ -465,6 +638,22 @@ class GenerateDynamicBundleCommand extends Command
             $xmlManipulator
                 ->renderDocument(file_get_contents($location))
                 ->saveDocument($location);
+        }
+    }
+
+    /**
+     * Generates the file containing the hash to determine if this bundle needs regeneration
+     *
+     * @param string $bundleDir directory of the bundle
+     * @param string $hash      the hash to save
+     *
+     * @return void
+     */
+    private function generateGenerationHashFile($bundleDir, $hash)
+    {
+        $fs = new Filesystem();
+        if ($fs->exists($bundleDir)) {
+            $fs->dumpFile($bundleDir.DIRECTORY_SEPARATOR.self::GENERATION_HASHFILE_FILENAME, $hash);
         }
     }
 

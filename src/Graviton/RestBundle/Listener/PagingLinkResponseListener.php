@@ -134,6 +134,8 @@ class PagingLinkResponseListener
         }
         if (strpos($rql, 'limit') !== false) {
             $rql = preg_replace('/limit\(.*\)/U', $limit, $rql);
+        } elseif (empty($rql)) {
+            $rql .= $limit;
         } else {
             $rql .= '&'.$limit;
         }
