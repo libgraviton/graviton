@@ -1,4 +1,7 @@
 <?php
+/**
+ * FundinfoRequestTransformation
+ */
 
 namespace Graviton\ProxyBundle\Transformation;
 
@@ -8,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
  * Class FundinfoRequestTransformation
  *
  * @package Graviton\ProxyBundle\Transformation
+ * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link    http://swisscom.ch
  */
 class FundinfoRequestTransformation implements RequestTransformationInterface
 {
@@ -26,6 +32,11 @@ class FundinfoRequestTransformation implements RequestTransformationInterface
 
     /**
      * @inheritDoc
+     *
+     * @param Request $requestIn  Currently incoming request
+     * @param Request $requestOut Transformed request
+     *
+     * @return Request
      */
     public function transformRequest(Request $requestIn, Request $requestOut)
     {

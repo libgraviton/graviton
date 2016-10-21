@@ -1,4 +1,7 @@
 <?php
+/**
+ * LoaderFactory
+ */
 
 namespace Graviton\ProxyBundle\Definition\Loader;
 
@@ -8,6 +11,9 @@ use Graviton\ProxyBundle\Exception\LoaderException;
  * Class LoaderFactory
  *
  * @package Graviton\ProxyBundle\Definition\Loader
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class LoaderFactory
 {
@@ -18,7 +24,7 @@ class LoaderFactory
     /**
      * LoaderFactory constructor.
      *
-     * @param array $loader
+     * @param array $loader The set of definition loaders available.
      */
     public function __construct(array $loader)
     {
@@ -38,7 +44,7 @@ class LoaderFactory
     /**
      * Provides
      *
-     * @param string $source
+     * @param string $source Information of what loader to be initiated.
      *
      * @return LoaderInterface
      *

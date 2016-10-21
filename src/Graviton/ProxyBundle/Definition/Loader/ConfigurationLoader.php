@@ -1,4 +1,7 @@
 <?php
+/**
+ * ConfigurationLoader
+ */
 
 namespace Graviton\ProxyBundle\Definition\Loader;
 
@@ -14,6 +17,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * Class ConfigurationLoader
  *
  * @package Graviton\ProxyBundle\Definition\Loader
+ *
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
  */
 class ConfigurationLoader implements LoaderInterface
 {
@@ -41,6 +48,8 @@ class ConfigurationLoader implements LoaderInterface
 
     /**
      * @inheritDoc
+     *
+     * @param array $options
      */
     public function setOptions($options)
     {
@@ -54,6 +63,8 @@ class ConfigurationLoader implements LoaderInterface
 
     /**
      * @inheritDoc
+     *
+     * @param DispersalStrategyInterface $strategy
      */
     public function setDispersalStrategy(DispersalStrategyInterface $strategy)
     {
@@ -62,6 +73,10 @@ class ConfigurationLoader implements LoaderInterface
 
     /**
      * @inheritDoc
+     *
+     * @param CacheProvider $cache          Cache layer to be used
+     * @param string        $cacheNamespace Name of the cache to be used
+     * @param int           $cacheLifetime  Cache time to life
      */
     public function setCache(CacheProvider $cache, $cacheNamespace, $cacheLifetime)
     {
@@ -70,7 +85,7 @@ class ConfigurationLoader implements LoaderInterface
     /**
      * Determines, if the current loader is capable of handling the request.
      *
-     * @param string $url
+     * @param string $url Current url
      *
      * @return bool
      */
@@ -83,6 +98,10 @@ class ConfigurationLoader implements LoaderInterface
 
     /**
      * @inheritDoc
+     *
+     * @param string $url Current Url
+     *
+     * @return ApiDefinition
      */
     public function load($url)
     {
@@ -97,7 +116,9 @@ class ConfigurationLoader implements LoaderInterface
     }
 
     /**
-     * @param ApiDefinition $apiDef
+     * @inheritDoc
+     *
+     * @param ApiDefinition $apiDef Api definition the Schema to be defined in.
      */
     private function defineSchema(ApiDefinition $apiDef)
     {

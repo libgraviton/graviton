@@ -46,13 +46,12 @@ class ApiDefinitionLoader
     /**
      * ApiDefinitionLoader constructor.
      *
-     * @param LoaderFactory $loaderFactory
+     * @param LoaderFactory $loaderFactory Factory to initiate an apiloader
      */
     public function __construct(LoaderFactory $loaderFactory)
     {
         $this->loaderFactory = $loaderFactory;
     }
-
 
     /**
      * set loader
@@ -71,6 +70,8 @@ class ApiDefinitionLoader
 
     /**
      * Provides the definition loader instance.
+     *
+     * @return void
      */
     public function getDefinitionLoader()
     {
@@ -81,6 +82,8 @@ class ApiDefinitionLoader
 
     /**
      * Resets the definition loader
+     *
+     * @return void
      */
     public function resetDefinitionLoader()
     {
@@ -102,7 +105,9 @@ class ApiDefinitionLoader
     }
 
     /**
-     * @param array $options
+     * @param array $options Options to be added
+     *
+     * @return void
      */
     public function addOptions(array $options)
     {

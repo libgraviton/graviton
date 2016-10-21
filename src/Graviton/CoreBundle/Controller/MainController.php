@@ -269,11 +269,11 @@ class MainController
     /**
      * get API name and endpoint from the url (third party API)
      *
-     * @param string $url the url
+     * @param array $config
      *
      * @return array
      */
-    protected function decideApiAndEndpoint($config)
+    protected function decideApiAndEndpoint(array $config)
     {
         if (array_key_exists('serviceEndpoint', $config)) {
             return array (
