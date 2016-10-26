@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseDeepEqualNamingBundle\DataFixtures\MongoDB\LoadTestCaseDeepEqualNamingData;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,5 +107,36 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
         );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($expectedResult, $client->getResults());
+    }
+
+    /**
+     * Test the private select function
+     *
+     * @return void
+     */
+    public function testSelectExclusionStrategyPrivateCreateArrayByPath()
+    {
+        /** @var SelectExclusionStrategy $class */
+        $class = $this->getContainer()->get('graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy');
+        $method = $this->getPrivateClassMethod(get_class($class), 'createArrayByPath');
+
+        $mainResult = [];
+
+        $path = 'level.levela.levela1';
+        $arr = $method->invokeArgs($class, [$path]);
+        $mainResult = array_merge_recursive($mainResult, $arr);
+
+        $path = 'level.levelb.levelb1';
+        $arr = $method->invokeArgs($class, [$path]);
+        $mainResult = array_merge_recursive($mainResult, $arr);
+
+        $expectedResult = [
+            'level' => [
+                'levela' => ['levela1' => true],
+                'levelb' => ['levelb1' => true]
+            ]
+        ];
+
+        $this->assertEquals($expectedResult, $mainResult);
     }
 }

@@ -61,13 +61,14 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
      */
     private function createArrayByPath($path)
     {
-        $arr = [];
-        $scope = &$arr;
         $keys = explode('.', $path);
-        while ($key = array_shift($keys)) {
-            $scope = &$scope[$key];
+        $val = true;
+        $localArray = [];
+        for ($i=count($keys)-1; $i>=0; $i--) {
+            $localArray = [$keys[$i]=>$val];
+            $val = $localArray;
         }
-        return $arr;
+        return $localArray;
     }
 
     /**
@@ -141,7 +142,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
         // check path and parent/son should be seen.
         $tree = $this->selectTree;
         foreach ($keyPath as $path) {
-            if (empty($tree)) {
+            if (!is_array($tree)) {
                 break;
             }
             if (array_key_exists($path, $tree)) {
