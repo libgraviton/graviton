@@ -25,11 +25,15 @@ graviton_proxy:
         prefix: anotherApi
         uri: http://example.org/another/api/swagger.json
     custom:
-      <NameOfCustomApi>:
-        prefix: fundinfo
+      example:
+        prefix: example
         uri: http://example.org/3.0/document
         apiKey: preSharedKey
         queryStringTemplate: shareClass={shareClass}&documentType={documentType}&language={language}
+    redirect:
+      anotherexapmle:
+        prefix: example
+        uri: http://example.org
 
 ```
 

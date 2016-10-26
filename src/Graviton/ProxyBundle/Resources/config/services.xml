@@ -6,14 +6,12 @@
         <parameter key="graviton.proxy.controller.proxy.class">Graviton\ProxyBundle\Controller\ProxyController</parameter>
         <parameter key="graviton.proxy.adapter.guzzle.class">Graviton\ProxyBundle\Adapter\Guzzle\GuzzleAdapter</parameter>
         <parameter key="graviton.proxy.definition.httploader.class">Graviton\ProxyBundle\Definition\Loader\HttpLoader</parameter>
-        <parameter key="graviton.proxy.definition.configurationloader.class">Graviton\ProxyBundle\Definition\Loader\ConfigurationLoader</parameter>
+        <parameter key="graviton.proxy.definition.loader.factory.class">Graviton\ProxyBundle\Definition\Loader\LoaderFactory</parameter>
         <parameter key="graviton.proxy.dispersalstrategy.swagger.class">Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy</parameter>
-        <parameter key="graviton.proxy.dispersalstrategy.fundinfo.class">Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\FundinfoStrategy</parameter>
         <parameter key="graviton.proxy.service.apidefinitionloader.class">Graviton\ProxyBundle\Service\ApiDefinitionLoader</parameter>
         <parameter key="graviton.proxy.swagger.document.parser.class">Swagger\Document</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.httpfoundationfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.diactorosfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory</parameter>
-        <parameter key="graviton.proxy.transformationhandler.class">Graviton\ProxyBundle\Service\TransformationHandler</parameter>
     </parameters>
     <services>
 
@@ -71,39 +69,15 @@
             <call method="setDispersalStrategy">
                 <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
             </call>
+            <tag name="graviton.proxy.definition.loader" alias="swissquant" />
         </service>
-
-        <service id="graviton.proxy.definition.configurationloader" class="%graviton.proxy.definition.configurationloader.class%">
-            <argument type="service" id="validator" />
-            <argument type="service" id="logger" />
-        </service>
-
-        <service id="graviton.proxy.definition.loader.fundinfo" parent="graviton.proxy.definition.configurationloader" />
 
         <!-- api loaders -->
         <service id="graviton.proxy.service.apiloader" class="%graviton.proxy.service.apidefinitionloader.class%">
             <argument type="service" id="graviton.proxy.service.loaderfactory" />
         </service>
 
-        <service id="graviton.proxy.service.loaderfactory" class="Graviton\ProxyBundle\Definition\Loader\LoaderFactory">
-            <argument  type="collection">
-                <argument key="swissquant" type="service" id="graviton.proxy.definition.loader.swagger"/>
-                <argument key="fundinfo" type="service" id="graviton.proxy.definition.loader.fundinfo"/>
-            </argument>
-        </service>
-
-        <!-- transformers -->
-        <service id="graviton.proxy.service.transformation.request.fundinfo" class="Graviton\ProxyBundle\Transformation\FundinfoRequestTransformation">
-            <argument>%graviton.proxy.sources%</argument>
-        </service>
-
-        <service id="graviton.proxy.transformationhandler" class="%graviton.proxy.transformationhandler.class%">
-            <call method="addRequestTransformation">
-                <argument>fundinfo</argument>
-                <argument>@\/(factsheet)\/.*@</argument>
-                <argument type="service" id="graviton.proxy.service.transformation.request.fundinfo" />
-            </call>
-        </service>
+        <service id="graviton.proxy.service.loaderfactory" class="%graviton.proxy.definition.loader.factory.class%" />
 
     </services>
 </container>

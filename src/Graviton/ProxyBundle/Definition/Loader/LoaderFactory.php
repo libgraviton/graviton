@@ -22,13 +22,30 @@ class LoaderFactory
 
 
     /**
-     * LoaderFactory constructor.
+     * Adds a loader to the set of registered loaders.
      *
-     * @param array $loader The set of definition loaders available.
+     * @param LoaderInterface $loader Loader definintion
+     * @param string          $key    Indentifier to find the registered loader
      */
-    public function __construct(array $loader)
+    public function addLoaderDefinition(LoaderInterface $loader, $key)
     {
-        $this->loader = $loader;
+        $this->loader[$key] = $loader;
+    }
+
+    /**
+     * Provides the definition loader identified by the given key.
+     *
+     * @param string $key Name of the loader to be returned
+     *
+     * @return LoaderInterface|null
+     */
+    public function getLoaderDefinition($key)
+    {
+        if (array_key_exists($key, $this->loader)) {
+            return $this->loader[$key];
+        }
+
+        return null;
     }
 
     /**
