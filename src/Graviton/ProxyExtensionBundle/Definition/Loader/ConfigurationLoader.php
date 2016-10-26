@@ -3,11 +3,12 @@
  * ConfigurationLoader
  */
 
-namespace Graviton\ProxyBundle\Definition\Loader;
+namespace Graviton\ProxyExtensionBundle\Definition\Loader;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
+use Graviton\ProxyBundle\Definition\Loader\LoaderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Validator\Constraints\Url;
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class ConfigurationLoader
  *
- * @package Graviton\ProxyBundle\Definition\Loader
+ * @package Graviton\ProxyExtensionBundle\Definition\Loader
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
