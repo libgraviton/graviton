@@ -5,7 +5,9 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\TestCaseDeepEqualNamingBundle\DataFixtures\MongoDB\LoadTestCaseDeepEqualNamingData;
 use Symfony\Component\HttpFoundation\Response;
 use GravitonDyn\TestCasePrimitiveArrayBundle\DataFixtures\MongoDB\LoadTestCasePrimitiveArrayData;
 use GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData;
@@ -33,7 +35,11 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
         }
 
         $this->loadFixtures(
-            [LoadTestCasePrimitiveArrayData::class, LoadTestCaseNullExtrefData::class],
+            [
+                LoadTestCasePrimitiveArrayData::class,
+                LoadTestCaseNullExtrefData::class,
+                LoadTestCaseDeepEqualNamingData::class
+            ],
             null,
             'doctrine_mongodb'
         );
@@ -79,5 +85,58 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
         );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($expectedResult, $client->getResults());
+    }
+
+    /**
+     * Test testRqlSelectionOnNestedDouble testing the correct serialization of deeply nested values
+     * The error was that if fields had the same name only first was checked and only the second if first not empty
+     *
+     * @return void
+     */
+    public function testRqlSelectionOnNestedDouble()
+    {
+        $expectedResult = json_decode(
+            file_get_contents(dirname(__FILE__).'/../resources/serializer-exclusion-nested-double.json'),
+            false
+        );
+
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/testcase/deep-naming/?select(level.levela.levela1,level.levelb.levelb1)'
+        );
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals($expectedResult, $client->getResults());
+    }
+
+    /**
+     * Test the private select function
+     *
+     * @return void
+     */
+    public function testSelectExclusionStrategyPrivateCreateArrayByPath()
+    {
+        /** @var SelectExclusionStrategy $class */
+        $class = $this->getContainer()->get('graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy');
+        $method = $this->getPrivateClassMethod(get_class($class), 'createArrayByPath');
+
+        $mainResult = [];
+
+        $path = 'level.levela.levela1';
+        $arr = $method->invokeArgs($class, [$path]);
+        $mainResult = array_merge_recursive($mainResult, $arr);
+
+        $path = 'level.levelb.levelb1';
+        $arr = $method->invokeArgs($class, [$path]);
+        $mainResult = array_merge_recursive($mainResult, $arr);
+
+        $expectedResult = [
+            'level' => [
+                'levela' => ['levela1' => true],
+                'levelb' => ['levelb1' => true]
+            ]
+        ];
+
+        $this->assertEquals($expectedResult, $mainResult);
     }
 }

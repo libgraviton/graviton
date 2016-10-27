@@ -1,0 +1,92 @@
+[
+  {
+    "level": [
+      {
+        "levela": [
+          {
+            "levela1": [
+              {
+                "levela2": "testdata1 A2 reached"
+              }
+            ]
+          }
+        ],
+        "levelb": [
+          {
+            "levelb1": [
+              {
+                "levelb2": "testdata1 B2 reached"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "id": "testdata1"
+  },
+  {
+    "level": [
+      {
+        "levela": [
+          {
+            "levela1": [
+              {}
+            ]
+          }
+        ],
+        "levelb": [
+          {
+            "levelb1": [
+              {
+                "levelb2": " testdata2 2 reached"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "id": "testdata2"
+  },
+  {
+    "level": [
+      {
+        "levela": [
+          {
+            "levela1": []
+          }
+        ],
+        "levelb": [
+          {
+            "levelb1": [
+              {
+                "levelb2": "testdata3 B2  reached"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "id": "testdata3"
+  },
+  {
+    "level": [
+      {
+        "levela": [
+          {
+            "levela1": [
+              {
+                "levela2": "testdata4 A2 reached"
+              }
+            ]
+          }
+        ],
+        "levelb": [
+          {
+            "levelb1": []
+          }
+        ]
+      }
+    ],
+    "id": "testdata4"
+  }
+]
