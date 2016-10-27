@@ -30,15 +30,4 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
         return array();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param ContainerBuilder $container Symfony Service container
-     *
-     * @return void
-     */
-    public function build(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new ApiDefinitionLoaderPass());
-    }
 }

@@ -4,7 +4,6 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="graviton.proxy.definition.configurationloader.class">Graviton\ProxyExtensionBundle\Definition\Loader\ConfigurationLoader</parameter>
-        <parameter key="graviton.proxy.transformationhandler.class">Graviton\ProxyBundle\Service\TransformationHandler</parameter>
     </parameters>
     <services>
 
@@ -13,50 +12,6 @@
         <service id="graviton.proxy.definition.configurationloader" class="%graviton.proxy.definition.configurationloader.class%">
             <argument type="service" id="validator" />
             <argument type="service" id="logger" />
-        </service>
-
-        <service id="graviton.proxy.definition.loader.fundinfo" parent="graviton.proxy.definition.configurationloader">
-            <tag name="graviton.proxy.definition.loader" alias="fundinfo" />
-        </service>
-
-        <service id="graviton.proxy.definition.loader.zugerkb" parent="graviton.proxy.definition.configurationloader">
-            <tag name="graviton.proxy.definition.loader" alias="zugerkb" />
-        </service>
-
-        <service id="graviton.proxy.definition.loader.vontobel" parent="graviton.proxy.definition.configurationloader">
-            <tag name="graviton.proxy.definition.loader" alias="vontobel" />
-        </service>
-
-        <!-- transformers -->
-        <service id="graviton.proxy.service.transformation.request.fundinfo" class="Graviton\ProxyExtensionBundle\Transformation\FundinfoRequestTransformation">
-            <argument>%graviton.proxy.sources%</argument>
-            <tag name="graviton.proxy.transformer" />
-        </service>
-        <service id="graviton.proxy.service.transformation.request.zugerkb" class="Graviton\ProxyExtensionBundle\Transformation\RedirectRequestTransformation">
-            <argument>%graviton.proxy.sources%</argument>
-            <tag name="graviton.proxy.transformer" />
-        </service>
-        <service id="graviton.proxy.service.transformation.request.vontobel" class="Graviton\ProxyExtensionBundle\Transformation\RedirectRequestTransformation">
-            <argument>%graviton.proxy.sources%</argument>
-            <tag name="graviton.proxy.transformer" />
-        </service>
-
-        <service id="graviton.proxy.transformationhandler" class="%graviton.proxy.transformationhandler.class%">
-            <call method="addRequestTransformation">
-                <argument>fundinfo</argument>
-                <argument>@\/(factsheet)\/.*@</argument>
-                <argument type="service" id="graviton.proxy.service.transformation.request.fundinfo" />
-            </call>
-            <call method="addRequestTransformation">
-                <argument>zugerkb</argument>
-                <argument>@\/(factsheet)\/.*@</argument>
-                <argument type="service" id="graviton.proxy.service.transformation.request.zugerkb" />
-            </call>
-            <call method="addRequestTransformation">
-                <argument>vontobel</argument>
-                <argument>@\/(factsheet)\/.*@</argument>
-                <argument type="service" id="graviton.proxy.service.transformation.request.vontobel" />
-            </call>
         </service>
 
     </services>

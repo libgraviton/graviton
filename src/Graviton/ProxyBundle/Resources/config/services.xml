@@ -12,6 +12,7 @@
         <parameter key="graviton.proxy.swagger.document.parser.class">Swagger\Document</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.httpfoundationfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory</parameter>
         <parameter key="graviton.proxy.psrhttpmessage.diactorosfactory.class">Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory</parameter>
+        <parameter key="graviton.proxy.transformationhandler.class">Graviton\ProxyBundle\Service\TransformationHandler</parameter>
     </parameters>
     <services>
 
@@ -79,5 +80,7 @@
 
         <service id="graviton.proxy.service.loaderfactory" class="%graviton.proxy.definition.loader.factory.class%" />
 
+        <!-- transformation definitions -->
+        <service id="graviton.proxy.transformationhandler" class="%graviton.proxy.transformationhandler.class%" />
     </services>
 </container>
