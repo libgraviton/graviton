@@ -35,10 +35,27 @@ class TransformerPass implements CompilerPassInterface
             return;
         }
 
-        $definition = $container->findDefinition('graviton.proxy.service.transformationhandler');
-        $this->findTaggedTransformer($container, $definition, 'graviton.proxy.transformer.request', 'addRequestTransformation');
-        $this->findTaggedTransformer($container, $definition, 'graviton.proxy.transformer.response', 'addResponseTransformation');
-        $this->findTaggedTransformer($container, $definition, 'graviton.proxy.transformer.schema', 'addSchemaTransformation');
+        $definition = $container->findDefinition(
+            'graviton.proxy.service.transformationhandler'
+        );
+        $this->findTaggedTransformer(
+            $container,
+            $definition,
+            'graviton.proxy.transformer.request',
+            'addRequestTransformation'
+        );
+        $this->findTaggedTransformer(
+            $container,
+            $definition,
+            'graviton.proxy.transformer.response',
+            'addResponseTransformation'
+        );
+        $this->findTaggedTransformer(
+            $container,
+            $definition,
+            'graviton.proxy.transformer.schema',
+            'addSchemaTransformation'
+        );
     }
 
     /**
@@ -49,6 +66,7 @@ class TransformerPass implements CompilerPassInterface
      * @param string           $tag        Tag identifying the service to be added
      * @param string           $callable   Name of the method to call to add the tagged service.
      *
+     * @return void
      */
     private function findTaggedTransformer(ContainerBuilder $container, Definition $definition, $tag, $callable)
     {

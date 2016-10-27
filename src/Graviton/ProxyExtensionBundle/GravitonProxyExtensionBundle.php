@@ -19,7 +19,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInterface
 {
-
     /**
      * {@inheritDoc}
      *
@@ -29,5 +28,4 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
     {
         return array();
     }
-
 }
