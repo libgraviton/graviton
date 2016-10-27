@@ -3,7 +3,7 @@
  * ApiDefinitionLoaderPass
  */
 
-namespace Graviton\ProxyExtensionBundle\DependencyInjection\Compiler;
+namespace Graviton\ProxyBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
