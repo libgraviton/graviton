@@ -117,7 +117,7 @@ class ConfigurationLoader implements LoaderInterface
         $apiDef->setBasePath(parse_url($url, PHP_URL_PATH));
 
         $this->defineSchema($apiDef);
-        $apiDef->addEndpoint($this->options['endpoint'] . '/');
+        $apiDef->addEndpoint($this->options['endpoint']);
 
         return $apiDef;
     }

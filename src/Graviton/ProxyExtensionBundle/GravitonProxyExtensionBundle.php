@@ -33,7 +33,7 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
     /**
      * {@inheritDoc}
      *
-     * @param ContainerBuilder $container
+     * @param ContainerBuilder $container Symfony Service container
      *
      * @return void
      */

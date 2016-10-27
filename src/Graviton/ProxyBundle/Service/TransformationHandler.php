@@ -5,6 +5,7 @@
 
 namespace Graviton\ProxyBundle\Service;
 
+use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Transformation\RequestTransformationInterface;
 use Graviton\ProxyBundle\Transformation\ResponseTransformationInterface;
 use Graviton\ProxyBundle\Transformation\SchemaTransformationInterface;
@@ -43,15 +44,22 @@ class TransformationHandler
      * @param  Request $requestIn  The original request object.
      * @param  Request $requestOut The request object to use for transformations
      * @return Request The transformed request
+     * @throws TransformationException
      */
     public function transformRequest($api, $endpoint, Request $requestIn, Request $requestOut)
     {
         $transformations = $this->getRequestTransformations($api, $endpoint);
-        foreach ($transformations as $transformation) {
-            $transformedRequest = $transformation->transformRequest($requestIn, $requestOut);
-            $requestOut = $transformedRequest instanceof Request ? $transformedRequest : $requestOut;
+
+        if (!empty($transformations)) {
+            foreach ($transformations as $transformation) {
+                $transformedRequest = $transformation->transformRequest($requestIn, $requestOut);
+                $requestOut = $transformedRequest instanceof Request ? $transformedRequest : $requestOut;
+            }
+
+            return $requestOut;
         }
-        return $requestOut;
+
+        throw new TransformationException('No transformation for endpoint ('.$endpoint.') found.');
     }
 
     /**
@@ -112,6 +120,8 @@ class TransformationHandler
                 }
             }
         }
+
+        return [];
     }
 
     /**
