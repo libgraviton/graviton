@@ -10,6 +10,7 @@ use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Context;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Xiag\Rql\Parser\Query;
+use Xiag\Rql\Parser\Node\SelectNode;
 
 /**
  * In this Strategy we skip all properties on first level who are not selected if there is a select in rql.
@@ -26,16 +27,6 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
     protected $requestStack;
 
     /**
-     * @var Array $selectedFields contains all the selected fields and its combinations with nested fields
-     */
-    protected $selectedFields;
-
-    /**
-     * @var Array $selectedLeafs contains the leafs of the selection "tree"
-     */
-    protected $selectedLeafs;
-
-    /**
      * @var Boolean $isSelect
      */
     protected $isSelect;
@@ -46,9 +37,9 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
     protected $currentPath;
 
     /**
-     * @var Integer $currentDepth
+     * @var array for selected tree level
      */
-    protected $currentDepth;
+    protected $selectTree = [];
 
     /**
      * SelectExclusionStrategy constructor.
@@ -58,9 +49,26 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
-        $this->currentDepth = 0;
-        $this->currentPath = [];
-        $this->getSelectedFieldsFromRQL();
+        $this->createSelectionTreeFromRQL();
+    }
+
+    /**
+     * Convert dot string to array.
+     *
+     * @param string $path string dotted array
+     *
+     * @return array
+     */
+    private function createArrayByPath($path)
+    {
+        $keys = explode('.', $path);
+        $val = true;
+        $localArray = [];
+        for ($i=count($keys)-1; $i>=0; $i--) {
+            $localArray = [$keys[$i]=>$val];
+            $val = $localArray;
+        }
+        return $localArray;
     }
 
     /**
@@ -69,35 +77,26 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
      * called once in the object, so shouldSkipProperty can use the information for every field
      * @return void
      */
-    private function getSelectedFieldsFromRQL()
+    private function createSelectionTreeFromRQL()
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
-        $this->selectedFields = [];
-        $this->selectedLeafs = [];
+        $this->selectTree = [];
+        $this->currentPath = [];
         $this->isSelect = false;
+
+        /** @var SelectNode $select */
         if ($currentRequest
             && ($rqlQuery = $currentRequest->get('rqlQuery')) instanceof Query
             && $select = $rqlQuery->getSelect()
         ) {
             $this->isSelect = true;
-            // the selected fields are the leafs
-            $this->selectedLeafs = $select->getFields();
-            // get all combinations of leaf with nested fields
-            foreach ($this->selectedLeafs as $selectedLeaf) {
-                //clean up $
-                $selectedLeaf = str_replace('$', '', $selectedLeaf);
-                $this->selectedFields[] = $selectedLeaf;
-                if (strstr($selectedLeaf, '.')) {
-                    $nestedFields = explode('.', $selectedLeaf);
-                    for ($i = 1; $i < count($nestedFields); $i++) {
-                        $this->selectedFields[] = implode('.', array_slice($nestedFields, 0, $i));
-                    }
-                }
+            // Build simple selected field tree
+            foreach ($select->getFields() as $field) {
+                $field = str_replace('$', '', $field);
+                $arr = $this->createArrayByPath($field);
+                $this->selectTree = array_merge_recursive($this->selectTree, $arr);
             }
-            // id is always included in response (bug/feature)?
-            if (!in_array('id', $this->selectedFields)) {
-                $this->selectedFields[] = 'id';
-            };
+            $this->selectTree['id'] = true;
         }
     }
 
@@ -126,31 +125,32 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
             return false;
         }
 
-        // calculate the currentPath in the "tree" of the document to be serialized
-        $depth = $context->getDepth() - 1;
-        if ($depth <= $this->currentDepth) {
-            // reduce the currentPath by one step
-            array_pop($this->currentPath);
-            // start a new currentPath on depth 0
-            if ($depth == 0) {
-                $this->currentPath = [];
-            }
-        }
-        $this->currentPath[] = $property->name;
-        $this->currentDepth = $depth;
-        $currentPath = implode('.', $this->currentPath);
+        // Level starts at 1, so -1 to have it level 0
+        $depth = $context->getDepth()-1;
 
-        // test the currentpath
-        $skip = ! in_array($currentPath, $this->selectedFields);
-        // give it a second chance if its a nested path, go through all the selectedLeafs
-        if ($this->currentDepth>0 && $skip) {
-            foreach ($this->selectedLeafs as $leaf) {
-                if (strstr($currentPath, $leaf)) {
-                    $skip = false;
-                    break;
-                }
+        // Here we build a level based array so we get them all
+        $this->currentPath[$depth] = $property->name;
+        $keyPath = [];
+        foreach ($this->currentPath as $key => $path) {
+            if ($key > $depth && array_key_exists($key, $this->currentPath)) {
+                unset($this->currentPath[$key]);
+            } else {
+                $keyPath[] = $path;
             }
         }
-        return $skip;
+
+        // check path and parent/son should be seen.
+        $tree = $this->selectTree;
+        foreach ($keyPath as $path) {
+            if (!is_array($tree)) {
+                break;
+            }
+            if (array_key_exists($path, $tree)) {
+                $tree = $tree[$path];
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }
