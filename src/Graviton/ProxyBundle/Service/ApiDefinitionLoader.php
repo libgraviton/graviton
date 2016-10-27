@@ -59,13 +59,11 @@ class ApiDefinitionLoader
      * @param LoaderInterface $loader loader
      *
      * @return void
+     * @throws \RuntimeException
      */
     public function setDefinitionLoader($loader)
     {
-
         throw new \RuntimeException('ApiDefinitionLoader::setDefinitionLoader is deprecated.');
-
-        //$this->definitionLoader = $loader;
     }
 
     /**
@@ -102,8 +100,7 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
-        $this->definitionLoader = $this->getDefinitionLoader();
-        $this->definitionLoader->setOptions($options);
+        $this->getDefinitionLoader()->setOptions($options);
     }
 
     /**
@@ -115,8 +112,7 @@ class ApiDefinitionLoader
     {
         $this->options = array_merge($this->options, $options);
 
-        $this->definitionloader = $this->getDefinitionLoader();
-        $this->definitionLoader->setOptions($options);
+        $this->getDefinitionLoader()->setOptions($options);
     }
 
     /**
@@ -206,12 +202,12 @@ class ApiDefinitionLoader
      */
     private function loadApiDefinition($forceReload = false)
     {
-        $this->definitionLoader = $this->getDefinitionLoader();
+        $definitionLoader = $this->getDefinitionLoader();
 
-        $supported = $this->definitionLoader->supports($this->options['uri']);
+        $supported = $definitionLoader->supports($this->options['uri']);
 
         if ($forceReload || ($this->definition == null && $supported)) {
-            $this->definition = $this->definitionLoader->load($this->options['uri']);
+            $this->definition = $definitionLoader->load($this->options['uri']);
         } elseif (!$supported) {
             throw new \RuntimeException("This resource (".$this->options['uri'].") is not supported.");
         }
