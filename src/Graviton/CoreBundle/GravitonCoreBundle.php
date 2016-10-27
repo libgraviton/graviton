@@ -14,6 +14,7 @@ use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
 use Graviton\PersonBundle\GravitonPersonBundle;
+use Graviton\ProxyExtensionBundle\GravitonProxyExtensionBundle;
 use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RestBundle\GravitonRestBundle;
@@ -64,6 +65,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonRabbitMqBundle(),
             new GravitonMigrationBundle(),
             new GravitonProxyBundle(),
+            new GravitonProxyExtensionBundle(),
         );
     }
 
