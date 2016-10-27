@@ -71,13 +71,15 @@ class ApiDefinitionLoader
     /**
      * Provides the definition loader instance.
      *
-     * @return void
+     * @return LoaderInterface
      */
     public function getDefinitionLoader()
     {
         if (empty($this->definitionLoader) && array_key_exists('prefix', $this->options)) {
             $this->definitionLoader = $this->loaderFactory->create($this->options['prefix']);
         }
+
+        return $this->definitionLoader;
     }
 
     /**
@@ -100,7 +102,7 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
-        $this->getDefinitionLoader();
+        $this->definitionLoader = $this->getDefinitionLoader();
         $this->definitionLoader->setOptions($options);
     }
 
@@ -113,7 +115,7 @@ class ApiDefinitionLoader
     {
         $this->options = array_merge($this->options, $options);
 
-        $this->getDefinitionLoader();
+        $this->definitionloader = $this->getDefinitionLoader();
         $this->definitionLoader->setOptions($options);
     }
 
@@ -204,7 +206,7 @@ class ApiDefinitionLoader
      */
     private function loadApiDefinition($forceReload = false)
     {
-        $this->getDefinitionLoader();
+        $this->definitionLoader = $this->getDefinitionLoader();
 
         $supported = $this->definitionLoader->supports($this->options['uri']);
 

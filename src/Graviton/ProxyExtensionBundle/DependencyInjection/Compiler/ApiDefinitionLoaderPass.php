@@ -35,8 +35,6 @@ class ApiDefinitionLoaderPass implements CompilerPassInterface
         }
 
         $definition = $container->findDefinition('graviton.proxy.service.loaderfactory');
-
-        // find all service IDs with the app.mail_transport tag
         $taggedServices = $container->findTaggedServiceIds('graviton.proxy.definition.loader');
 
         foreach ($taggedServices as $id => $tags) {
