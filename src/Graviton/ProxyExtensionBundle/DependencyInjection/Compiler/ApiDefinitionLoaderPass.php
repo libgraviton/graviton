@@ -21,7 +21,11 @@ use Symfony\Component\DependencyInjection\Reference;
 class ApiDefinitionLoaderPass implements CompilerPassInterface
 {
     /**
+     * {@inheritDoc}
+     *
      * @param ContainerBuilder $container Symfony Service container
+     *
+     * @return void
      */
     public function process(ContainerBuilder $container)
     {

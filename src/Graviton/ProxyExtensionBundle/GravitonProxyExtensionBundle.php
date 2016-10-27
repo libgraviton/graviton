@@ -31,7 +31,11 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @param ContainerBuilder $container
+     *
+     * @return void
      */
     public function build(ContainerBuilder $container)
     {

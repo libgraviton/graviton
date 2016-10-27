@@ -26,6 +26,8 @@ class LoaderFactory
      *
      * @param LoaderInterface $loader Loader definintion
      * @param string          $key    Indentifier to find the registered loader
+     *
+     * @return void
      */
     public function addLoaderDefinition(LoaderInterface $loader, $key)
     {
