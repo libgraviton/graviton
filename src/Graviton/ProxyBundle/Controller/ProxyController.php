@@ -6,9 +6,11 @@
 namespace Graviton\ProxyBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\NotFoundException;
+use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
@@ -17,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * general controller for all proxy staff
@@ -147,6 +150,18 @@ class ProxyController
             $response = $e->getResponse();
         } catch (ServerException $serverException) {
             $response = $serverException->getResponse();
+        } catch (TransformationException $e) {
+            $message = json_encode(
+                ['code' => 404, 'message' => 'HTTP 404 Not found']
+            );
+
+            throw new NotFoundHttpException($message, $e);
+        } catch (RequestException $e) {
+            $message = json_encode(
+                ['code' => 404, 'message' => 'HTTP 404 Not found']
+            );
+
+            throw new NotFoundHttpException($message, $e);
         }
 
         return $response;
