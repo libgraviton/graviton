@@ -38,7 +38,7 @@
             <argument type="service" id="graviton.proxy.service.apiloader" />
             <argument type="service" id="graviton.proxy.psrhttpmessage.diactorosfactory" />
             <argument type="service" id="graviton.proxy.psrhttpmessage.httpfoundationfactory" />
-            <argument type="service" id="graviton.proxy.transformationhandler" />
+            <argument type="service" id="graviton.proxy.service.transformationhandler" />
             <argument>%graviton.proxy.sources%</argument>
         </service>
 
