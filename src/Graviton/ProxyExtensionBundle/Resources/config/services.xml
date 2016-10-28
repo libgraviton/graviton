@@ -8,7 +8,6 @@
     <services>
 
         <!-- definition loaders -->
-
         <service id="graviton.proxy.definition.configurationloader" class="%graviton.proxy.definition.configurationloader.class%" abstract="true">
             <argument type="service" id="validator" />
             <argument type="service" id="logger" />

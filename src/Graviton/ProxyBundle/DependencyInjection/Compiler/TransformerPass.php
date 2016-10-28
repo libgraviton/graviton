@@ -38,19 +38,19 @@ class TransformerPass implements CompilerPassInterface
         $definition = $container->findDefinition(
             'graviton.proxy.service.transformationhandler'
         );
-        $this->findTaggedTransformer(
+        $this->registerTaggedTransformation(
             $container,
             $definition,
             'graviton.proxy.transformer.request',
             'addRequestTransformation'
         );
-        $this->findTaggedTransformer(
+        $this->registerTaggedTransformation(
             $container,
             $definition,
             'graviton.proxy.transformer.response',
             'addResponseTransformation'
         );
-        $this->findTaggedTransformer(
+        $this->registerTaggedTransformation(
             $container,
             $definition,
             'graviton.proxy.transformer.schema',
@@ -68,7 +68,7 @@ class TransformerPass implements CompilerPassInterface
      *
      * @return void
      */
-    private function findTaggedTransformer(ContainerBuilder $container, Definition $definition, $tag, $callable)
+    private function registerTaggedTransformation(ContainerBuilder $container, Definition $definition, $tag, $callable)
     {
         $taggedServices = $container->findTaggedServiceIds($tag);
 

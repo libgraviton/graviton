@@ -43,6 +43,9 @@ class GravitonProxyExtension extends GravitonBundleExtension
 
         $configs = $this->processConfiguration(new Configuration(), $configs);
 
-        $container->setParameter('graviton.proxy.sources', $configs['sources']);
+        $sources = $container->hasParameter('graviton.proxy.sources') ?
+            $container->getParameter('graviton.proxy.sources') : [];
+
+        $container->setParameter('graviton.proxy.sources', array_merge_recursive($configs['sources'], $sources));
     }
 }

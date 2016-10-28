@@ -66,13 +66,6 @@
             </call>
         </service>
 
-        <service id="graviton.proxy.definition.loader.swagger" parent="graviton.proxy.definition.httploader">
-            <call method="setDispersalStrategy">
-                <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
-            </call>
-            <tag name="graviton.proxy.definition.loader" alias="swissquant" />
-        </service>
-
         <!-- api loaders -->
         <service id="graviton.proxy.service.apiloader" class="%graviton.proxy.service.apidefinitionloader.class%">
             <argument type="service" id="graviton.proxy.service.loaderfactory" />
