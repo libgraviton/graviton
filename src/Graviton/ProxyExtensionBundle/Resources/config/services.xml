@@ -3,13 +3,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="graviton.proxy.definition.configurationloader.class">Graviton\ProxyExtensionBundle\Definition\Loader\ConfigurationLoader</parameter>
+        <parameter key="graviton.proxy.definition.configurationloader.class">Graviton\ProxyExtensionBundle\Definition\Loader\ConfigurationLoaderAbstract</parameter>
     </parameters>
     <services>
 
         <!-- definition loaders -->
 
-        <service id="graviton.proxy.definition.configurationloader" class="%graviton.proxy.definition.configurationloader.class%">
+        <service id="graviton.proxy.definition.configurationloader" class="%graviton.proxy.definition.configurationloader.class%" abstract="true">
             <argument type="service" id="validator" />
             <argument type="service" id="logger" />
         </service>

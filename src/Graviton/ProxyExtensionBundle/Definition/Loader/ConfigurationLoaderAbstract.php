@@ -1,6 +1,6 @@
 <?php
 /**
- * ConfigurationLoader
+ * ConfigurationLoaderAbstract
  */
 
 namespace Graviton\ProxyExtensionBundle\Definition\Loader;
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class ConfigurationLoader
+ * Class ConfigurationLoaderAbstract
  *
  * @package Graviton\ProxyExtensionBundle\Definition\Loader
  *
@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ConfigurationLoader implements LoaderInterface
+abstract class ConfigurationLoaderAbstract implements LoaderInterface
 {
     /** @var ValidatorInterface */
     private $validator;
@@ -132,8 +132,7 @@ class ConfigurationLoader implements LoaderInterface
     private function defineSchema(ApiDefinition $apiDef)
     {
         if (array_key_exists('endpoint', $this->options)) {
-            $finder = new Finder();
-            $finder->files()->in(__DIR__ .'/../../Resources/schema/'. $this->options['storeKey']);
+            $finder = $this->findSchemaFile($this->options['storeKey']);
 
             foreach ($finder as $file) {
                 $endpoint = $this->options['endpoint'];
@@ -150,4 +149,13 @@ class ConfigurationLoader implements LoaderInterface
             }
         }
     }
+
+    /**
+     * Provides information about a filesystem directory and its' containing files.
+     *
+     * @param string $prefix Name of the directory to search in.
+     *
+     * @return Finder
+     */
+    abstract protected function findSchemaFile($prefix);
 }

@@ -6,8 +6,9 @@
 namespace Graviton\ProxyExtensionBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\ProxyExtensionBundle\DependencyInjection\Compiler\ApiDefinitionLoaderPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Graviton\ProxyFundinfoExtensionBundle\GravitonProxyFundinfoExtensionBundle;
+use Graviton\ProxyVontobelExtensionBundle\GravitonProxyVontobelExtensionBundle;
+use Graviton\ProxyZugerkbExtensionBundle\GravitonProxyZugerkbExtensionBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -26,6 +27,10 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
      */
     public function getBundles()
     {
-        return array();
+        return array(
+            new GravitonProxyFundinfoExtensionBundle(),
+            new GravitonProxyVontobelExtensionBundle(),
+            new GravitonProxyZugerkbExtensionBundle()
+        );
     }
 }
