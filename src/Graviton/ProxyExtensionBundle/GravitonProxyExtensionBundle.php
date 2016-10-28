@@ -27,10 +27,6 @@ class GravitonProxyExtensionBundle extends Bundle implements GravitonBundleInter
      */
     public function getBundles()
     {
-        return array(
-            new GravitonProxyFundinfoExtensionBundle(),
-            new GravitonProxyVontobelExtensionBundle(),
-            new GravitonProxyZugerkbExtensionBundle()
-        );
+        return array();
     }
 }
