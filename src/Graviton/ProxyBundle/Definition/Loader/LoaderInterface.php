@@ -34,7 +34,7 @@ interface LoaderInterface
      *
      * @return void
      */
-    public function setDispersalStrategy($strategy);
+    public function setDispersalStrategy(DispersalStrategyInterface $strategy);
 
     /**
      * set a cache
@@ -57,7 +57,7 @@ interface LoaderInterface
     public function supports($input);
 
     /**
-     * @param string|null $input input
+     * @param string $input input
      *
      * @return ApiDefinition
      */

@@ -6,9 +6,11 @@
 namespace Graviton\ProxyBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\NotFoundException;
+use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
@@ -17,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * general controller for all proxy staff
@@ -103,9 +106,10 @@ class ProxyController
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources($api['apiName']);
+        $this->apiLoader->addOptions($api);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
-        if (parse_url($url, PHP_URL_SCHEME) === false) {
+        if (parse_url($url, PHP_URL_SCHEME) === null) {
             $scheme = $request->getScheme();
             $url = $scheme.'://'.$url;
         }
@@ -146,6 +150,18 @@ class ProxyController
             $response = $e->getResponse();
         } catch (ServerException $serverException) {
             $response = $serverException->getResponse();
+        } catch (TransformationException $e) {
+            $message = json_encode(
+                ['code' => 404, 'message' => 'HTTP 404 Not found']
+            );
+
+            throw new NotFoundHttpException($message, $e);
+        } catch (RequestException $e) {
+            $message = json_encode(
+                ['code' => 404, 'message' => 'HTTP 404 Not found']
+            );
+
+            throw new NotFoundHttpException($message, $e);
         }
 
         return $response;
@@ -182,6 +198,8 @@ class ProxyController
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
         $this->registerProxySources($api['apiName']);
+        $this->apiLoader->addOptions($api);
+
         $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
         $schema = $this->transformationHandler->transformSchema(
             $api['apiName'],
@@ -236,14 +254,15 @@ class ProxyController
      */
     private function registerProxySources($apiPrefix = '')
     {
-        if (array_key_exists('swagger', $this->proxySourceConfiguration)) {
-            foreach ($this->proxySourceConfiguration['swagger'] as $config) {
+        foreach (array_keys($this->proxySourceConfiguration) as $source) {
+            foreach ($this->proxySourceConfiguration[$source] as $config) {
                 if ($apiPrefix == $config['prefix']) {
                     $this->apiLoader->setOption($config);
                     return;
                 }
             }
         }
+
         $e = new NotFoundException('No such thirdparty API.');
         $e->setResponse(Response::create());
         throw $e;

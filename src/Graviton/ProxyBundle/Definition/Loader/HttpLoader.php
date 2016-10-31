@@ -91,7 +91,7 @@ class HttpLoader implements LoaderInterface
      *
      * @return void
      */
-    public function setDispersalStrategy($strategy)
+    public function setDispersalStrategy(DispersalStrategyInterface $strategy)
     {
         $this->strategy = $strategy;
     }

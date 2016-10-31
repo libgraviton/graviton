@@ -1,9 +1,9 @@
 <?php
 /**
- * ProxyBundle configuration
+ * ProxyExtensionBundle configuration
  */
 
-namespace Graviton\ProxyBundle\DependencyInjection;
+namespace Graviton\ProxyExtensionBundle\DependencyInjection;
 
 use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link    http://swisscom.ch
  */
-class GravitonProxyExtension extends GravitonBundleExtension
+class GravitonProxyExtensionExtension extends GravitonBundleExtension
 {
     /**
      * {@inheritDoc}
@@ -40,12 +40,5 @@ class GravitonProxyExtension extends GravitonBundleExtension
     public function load(array $configs, ContainerBuilder $container)
     {
         parent::load($configs, $container);
-
-        $configs = $this->processConfiguration(new Configuration(), $configs);
-
-        $sources = $container->hasParameter('graviton.proxy.sources') ?
-            $container->getParameter('graviton.proxy.sources') : [];
-
-        $container->setParameter('graviton.proxy.sources', array_merge_recursive($configs['sources'], $sources));
     }
 }
