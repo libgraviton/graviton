@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Service;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
+use Graviton\ProxyBundle\Definition\Loader\LoaderFactory;
 use Graviton\ProxyBundle\Definition\Loader\LoaderInterface;
 
 /**
@@ -38,16 +39,55 @@ class ApiDefinitionLoader
      */
     private $definition;
 
+    /** @var  LoaderFactory */
+    private $loaderFactory;
+
+
+    /**
+     * ApiDefinitionLoader constructor.
+     *
+     * @param LoaderFactory $loaderFactory Factory to initiate an apiloader
+     */
+    public function __construct(LoaderFactory $loaderFactory)
+    {
+        $this->loaderFactory = $loaderFactory;
+    }
+
     /**
      * set loader
      *
      * @param LoaderInterface $loader loader
      *
      * @return void
+     * @throws \RuntimeException
      */
     public function setDefinitionLoader($loader)
     {
-        $this->definitionLoader = $loader;
+        throw new \RuntimeException('ApiDefinitionLoader::setDefinitionLoader is deprecated.');
+    }
+
+    /**
+     * Provides the definition loader instance.
+     *
+     * @return LoaderInterface
+     */
+    public function getDefinitionLoader()
+    {
+        if (empty($this->definitionLoader) && array_key_exists('prefix', $this->options)) {
+            $this->definitionLoader = $this->loaderFactory->create($this->options['prefix']);
+        }
+
+        return $this->definitionLoader;
+    }
+
+    /**
+     * Resets the definition loader
+     *
+     * @return void
+     */
+    public function resetDefinitionLoader()
+    {
+        $this->definitionLoader = null;
     }
 
     /**
@@ -60,9 +100,19 @@ class ApiDefinitionLoader
     public function setOption(array $options)
     {
         $this->options = $options;
-        if (!empty($this->definitionLoader)) {
-            $this->definitionLoader->setOptions($options);
-        }
+        $this->getDefinitionLoader()->setOptions($options);
+    }
+
+    /**
+     * @param array $options Options to be added
+     *
+     * @return void
+     */
+    public function addOptions(array $options)
+    {
+        $this->options = array_merge($this->options, $options);
+
+        $this->getDefinitionLoader()->setOptions($options);
     }
 
     /**
@@ -152,10 +202,12 @@ class ApiDefinitionLoader
      */
     private function loadApiDefinition($forceReload = false)
     {
-        $supported = $this->definitionLoader->supports($this->options['uri']);
+        $definitionLoader = $this->getDefinitionLoader();
+
+        $supported = $definitionLoader->supports($this->options['uri']);
 
         if ($forceReload || ($this->definition == null && $supported)) {
-            $this->definition = $this->definitionLoader->load($this->options['uri']);
+            $this->definition = $definitionLoader->load($this->options['uri']);
         } elseif (!$supported) {
             throw new \RuntimeException("This resource (".$this->options['uri'].") is not supported.");
         }

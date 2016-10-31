@@ -67,3 +67,5 @@ parameters:
     graviton.proxy.httploader.curloptions: []
 
     graviton.proxy.swagger.sources: {}
+    graviton.proxy.custom.sources: {}
+    graviton.proxy.redirect.sources: {}
