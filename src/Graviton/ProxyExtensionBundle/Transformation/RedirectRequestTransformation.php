@@ -22,7 +22,7 @@ class RedirectRequestTransformation implements RequestTransformationInterface
     private $configuration;
 
     /**
-     * FundinfoRequestTransformation constructor.
+     * RedirectRequestTransformation constructor.
      *
      * @param array $configuration Configuration options
      */

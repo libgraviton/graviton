@@ -6,9 +6,6 @@
 namespace Graviton\ProxyExtensionBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\ProxyFundinfoExtensionBundle\GravitonProxyFundinfoExtensionBundle;
-use Graviton\ProxyVontobelExtensionBundle\GravitonProxyVontobelExtensionBundle;
-use Graviton\ProxyZugerkbExtensionBundle\GravitonProxyZugerkbExtensionBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
