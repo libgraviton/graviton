@@ -40,6 +40,7 @@ class DocumentEventMapCompilerPass implements CompilerPassInterface
                 'baseRoute' => $baseRouteName,
                 'events' => [
                     'put' => $baseRoutingKey.'.update',
+                    'patch' => $baseRoutingKey.'.update',
                     'post' => $baseRoutingKey.'.create',
                     'postNoSlash' => $baseRoutingKey.'.create',
                     'delete' => $baseRoutingKey.'.delete',

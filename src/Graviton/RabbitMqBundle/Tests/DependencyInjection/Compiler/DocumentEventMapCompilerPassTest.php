@@ -31,6 +31,7 @@ class DocumentEventMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 'baseRoute' => 'graviton.core.rest.app',
                 'events' => [
                     'put' => 'document.core.app.update',
+                    'patch' => 'document.core.app.update',
                     'post' => 'document.core.app.create',
                     'delete' => 'document.core.app.delete',
                     'postNoSlash' => 'document.core.app.create'
@@ -40,6 +41,7 @@ class DocumentEventMapCompilerPassTest extends \PHPUnit_Framework_TestCase
                 'baseRoute' => 'gravitondyn.hans.rest.whatever',
                 'events' => [
                     'put' => 'document.hans.whatever.update',
+                    'patch' => 'document.hans.whatever.update',
                     'post' => 'document.hans.whatever.create',
                     'delete' => 'document.hans.whatever.delete',
                     'postNoSlash' => 'document.hans.whatever.create'
