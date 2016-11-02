@@ -55,7 +55,7 @@
         "type": "int",
         "title": "File size",
         "description": "Size of file.",
-        "readOnly": true
+        "readOnly": false
       },
       {
         "name": "metadata.action.0.command",
