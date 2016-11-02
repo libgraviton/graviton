@@ -256,7 +256,7 @@ class FileManagerTest extends WebTestCase
         unset($contentArray['metadata']['modificationDate']);
         unset($contentArray['metadata']['createDate']);
 
-        // Lets UPDATE some additional Params, PATCH
+        // PUT Lets UPDATE some additional Params
         $client = $this->createClient();
         $value = new \stdClass();
         $value->name = 'aField';
@@ -280,7 +280,28 @@ class FileManagerTest extends WebTestCase
         $contentUpdatedArray = json_decode($response->getContent(), true);
         $modifiedAt = \DateTime::createFromFormat($timeFormat, $contentUpdatedArray['metadata']['modificationDate']);
 
-        $this->assertTrue($modifiedAt > $originalAt, 'File uploaded in put should have changed mod date and did not');
+        $this->assertTrue($modifiedAt > $originalAt, 'File put should have changed modification date and did not');
+
+        // PATCH Lets patch, and time should be changed
+        $value->value = 'bValue';
+        $patchJson = json_encode(
+            array(
+                'op' => 'replace',
+                'path' => '/metadata/additionalProperties',
+                'value' => [$value]
+            )
+        );
+        sleep(1);
+        $client = $this->createClient();
+        $client->request('PATCH', $location, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = $client->getResponse();
+        $contentPatchedArray = json_decode($response->getContent(), true);
+        $pacthedAt = \DateTime::createFromFormat($timeFormat, $contentPatchedArray['metadata']['modificationDate']);
+        $this->assertTrue($pacthedAt > $modifiedAt, 'File patched should have changed modification date and did not');
 
         // clean up
         $client = $this->createClient();
