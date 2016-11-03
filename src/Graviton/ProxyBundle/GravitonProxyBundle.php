@@ -29,9 +29,7 @@ class GravitonProxyBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array(
-            new GravitonProxyExtensionBundle(),
-        );
+        return array();
     }
 
     /**
