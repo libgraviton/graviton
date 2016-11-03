@@ -464,13 +464,11 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('integer', $schema->properties->metadata->properties->size->type);
         $this->assertEquals('File size', $schema->properties->metadata->properties->size->title);
         $this->assertEquals('Size of file.', $schema->properties->metadata->properties->size->description);
-        $this->assertEquals(true, $schema->properties->metadata->properties->size->readOnly);
 
         // Metadata mime
         $this->assertContains('string', $schema->properties->metadata->properties->mime->type);
         $this->assertEquals('MIME Type', $schema->properties->metadata->properties->mime->title);
         $this->assertEquals('MIME-Type of file.', $schema->properties->metadata->properties->mime->description);
-        $this->assertEquals(true, $schema->properties->metadata->properties->mime->readOnly);
 
         // Metadata createDate
         $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->createDate->type);
@@ -480,7 +478,6 @@ class FileControllerTest extends RestTestCase
             'Timestamp of file upload.',
             $schema->properties->metadata->properties->createDate->description
         );
-        $this->assertEquals(true, $schema->properties->metadata->properties->createDate->readOnly);
 
         // Metadata modificationDate
         $this->assertEquals(['string', 'null'], $schema->properties->metadata->properties->modificationDate->type);
@@ -490,7 +487,6 @@ class FileControllerTest extends RestTestCase
             'Timestamp of the last file change.',
             $schema->properties->metadata->properties->modificationDate->description
         );
-        $this->assertEquals(true, $schema->properties->metadata->properties->modificationDate->readOnly);
 
         // Metadata filename
         $this->assertContains('string', $schema->properties->metadata->properties->filename->type);
