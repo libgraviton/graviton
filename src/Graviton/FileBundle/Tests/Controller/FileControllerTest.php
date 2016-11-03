@@ -201,34 +201,6 @@ class FileControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEmpty($results->links);
-
-        // read only fields
-        $data->metadata->size = 1;
-        $data->metadata->createDate = '1984-05-02T00:00:00+0000';
-        $data->metadata->modificationDate = '1984-05-02T00:00:00+0000';
-        $data->metadata->mime = 'application/octet-stream';
-        $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $data->id), $data);
-
-        $expectedErrors = [];
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "metadata.size";
-        $expectedError->message = "The value 18 is read only.";
-        $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "metadata.mime";
-        $expectedError->message = "The value \"text\\/plain\" is read only.";
-        $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "metadata.createDate";
-        $expectedError->message = "The value ".json_encode($results->metadata->createDate)." is read only.";
-        $expectedErrors[] = $expectedError;
-        $expectedError = new \stdClass();
-        $expectedError->propertyPath = "metadata.modificationDate";
-        $expectedError->message = "The value ".json_encode($results->metadata->modificationDate)." is read only.";
-        $expectedErrors[] = $expectedError;
-
-        $this->assertEquals($expectedErrors, $client->getResults());
     }
 
     /**
