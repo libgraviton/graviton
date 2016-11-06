@@ -5,7 +5,6 @@
 
 namespace Graviton\ProxyBundle\Service;
 
-use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Transformation\RequestTransformationInterface;
 use Graviton\ProxyBundle\Transformation\ResponseTransformationInterface;
 use Graviton\ProxyBundle\Transformation\SchemaTransformationInterface;
@@ -59,7 +58,8 @@ class TransformationHandler
             return $requestOut;
         }
 
-        throw new TransformationException('No transformation for endpoint ('.$endpoint.') found.');
+        // TODO [taafeba2]: add logging
+        return $requestOut;
     }
 
     /**
