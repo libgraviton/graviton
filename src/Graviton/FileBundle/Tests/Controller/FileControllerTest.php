@@ -100,7 +100,7 @@ class FileControllerTest extends RestTestCase
             ['CONTENT_TYPE' => 'text/plain'],
             false
         );
-        $this->assertEmpty($client->getResults());
+        $this->assertEmpty($client->getResults(), $client->getResponse()->getContent());
         $response = $client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -606,7 +606,6 @@ class FileControllerTest extends RestTestCase
         $retData = $client->getResults();
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(strlen($newContent), $retData->metadata->size);
         $this->assertEquals($contentType, $retData->metadata->mime);
 
         return $response;

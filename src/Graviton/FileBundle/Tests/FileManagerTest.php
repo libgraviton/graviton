@@ -5,10 +5,12 @@
 
 namespace Graviton\FileBundle\Tests;
 
-use Graviton\FileBundle\FileManager;
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\FileBundle\Manager\FileManager;
+use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\FileBundle\Document\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File as SfFile;
 
 /**
  * Basic functional test for /file
@@ -17,13 +19,10 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class FileManagerTest extends WebTestCase
+class FileManagerTest extends RestTestCase
 {
-    /** @var \Gaufrette\Filesystem $fileSystem */
-    private $fileSystem;
-
-    /** @var \Graviton\FileBundle\FileDocumentFactory $fileDocumentFactory */
-    private $fileDocumentFactory;
+    /** @var FileManager $fileManager */
+    private $fileManager;
 
     /**
      * Initiates mandatory properties
@@ -32,64 +31,11 @@ class FileManagerTest extends WebTestCase
      */
     public function setUp()
     {
-        $this->fileSystem = $this->getMockBuilder('\Gaufrette\Filesystem')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->fileDocumentFactory = $this->getMockBuilder('\Graviton\FileBundle\FileDocumentFactory')
-            ->getMock();
+        if (!$this->fileManager) {
+            $this->fileManager = $this->getContainer()->get('graviton.file.file_manager');
+        }
     }
 
-    /**
-     * Verifies the correct behavior of has method
-     *
-     * @return void
-     */
-    public function testHas()
-    {
-        $this->fileSystem
-            ->expects($this->once())
-            ->method('has')
-            ->willReturn(true);
-
-        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
-
-        $this->assertTrue($manager->has('myKey'));
-    }
-
-    /**
-     * Verifies the correct behavior of read method
-     *
-     * @return void
-     */
-    public function testRead()
-    {
-        $this->fileSystem
-            ->expects($this->once())
-            ->method('read')
-            ->willReturn('myData');
-
-        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
-
-        $this->assertEquals('myData', $manager->read('myKey'));
-    }
-
-    /**
-     * Verifies the correct behavior of read method
-     *
-     * @return void
-     */
-    public function testDelete()
-    {
-        $this->fileSystem
-            ->expects($this->once())
-            ->method('delete')
-            ->willReturn(true);
-
-        $manager = new FileManager($this->fileSystem, $this->fileDocumentFactory);
-
-        $this->assertTrue($manager->delete('myKey'));
-    }
 
     /**
      * Verifies the correct behavior of the FileManager
@@ -114,9 +60,7 @@ class FileManagerTest extends WebTestCase
           }
         }';
 
-        copy(__DIR__ . '/Fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
-        $file = sys_get_temp_dir() . '/test.txt';
-        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+        $uploadedFile = $this->getUploadFile('test.txt');
         $client = $this->createClient();
         $client->request(
             'POST',
@@ -136,15 +80,7 @@ class FileManagerTest extends WebTestCase
 
         // receive generated file information
         $client = $this->createClient();
-        $client->request(
-            'GET',
-            $location,
-            [],
-            [],
-            [
-                'HTTP_ACCEPT' => 'application/json'
-            ]
-        );
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $response = $client->getResponse();
         $contentArray = json_decode($response->getContent(), true);
@@ -221,9 +157,7 @@ class FileManagerTest extends WebTestCase
           }
         }';
 
-        copy(__DIR__ . '/Fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
-        $file = sys_get_temp_dir() . '/test.txt';
-        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+        $uploadedFile = $this->getUploadFile('test.txt');
         $client = $this->createClient();
         $client->request(
             'POST',
@@ -271,7 +205,7 @@ class FileManagerTest extends WebTestCase
             ]
         );
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
         $client = $this->createClient();
         $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
@@ -308,6 +242,92 @@ class FileManagerTest extends WebTestCase
         $client->request(
             'DELETE',
             $location
+        );
+    }
+
+
+    /**
+     * validIdRequest in File Manager, should not be valid to post or put
+     *
+     * @return void
+     */
+    public function testPostOrPutIdvalidIdRequestError()
+    {
+        $document = new File();
+
+        // document
+        $shouldFailArray = [
+            'fail-not-equal-0' => ['file-id', 'request-id'],
+            'fail-not-equal-1' => [''       , 'request-id'],
+            'fail-not-equal-2' => ['file-id',  '']
+        ];
+
+        foreach ($shouldFailArray as $name => $values) {
+            $document->setId($values[0]);
+            $requestId = $values[1];
+
+            $method = $this->getPrivateClassMethod(get_class($this->fileManager), 'validIdRequest');
+            $result = $method->invokeArgs($this->fileManager, [$document, $requestId]);
+
+            $this->assertFalse($result, $name);
+        }
+    }
+
+    /**
+     * To test standard file upload, just posting a file
+     *
+     * @return void
+     */
+    public function testNormalDirectUpload()
+    {
+        $upload = $this->getUploadFile('test-file.txt');
+        $client = $this->createClient();
+
+        $client->request('POST', '/file', [], [$upload]);
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode(), $response->getContent());
+        $location = $response->headers->get('location');
+
+        // Lets get content as JSON
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode(), $response->getContent());
+        $contentArray = json_decode($response->getContent(), true);
+
+        // Check contain data
+        $this->assertArrayHasKey('modificationDate', $contentArray['metadata']);
+        $this->assertArrayHasKey('createDate', $contentArray['metadata']);
+        $this->assertArrayHasKey('mime', $contentArray['metadata']);
+        $this->assertArrayHasKey('hash', $contentArray['metadata']);
+        $this->assertEquals('text/plain', $contentArray['metadata']['mime']);
+        $this->assertEquals('test-file.txt', $contentArray['metadata']['filename']);
+
+        $client->request('DELETE', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
+
+        $client->request('DELETE', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode(), $response->getContent());
+    }
+
+    /**
+     * Simple function to create a upload file
+     *
+     * @param string $fileName desired new filename
+     * @return UploadedFile
+     */
+    private function getUploadFile($fileName)
+    {
+        $newDir = sys_get_temp_dir() . '/'. $fileName;
+        copy(__DIR__ . '/Fixtures/test.txt', $newDir);
+        $file = new SfFile($newDir);
+        return new UploadedFile(
+            $file->getRealPath(),
+            $fileName,
+            $file->getMimeType(),
+            $file->getSize()
         );
     }
 }

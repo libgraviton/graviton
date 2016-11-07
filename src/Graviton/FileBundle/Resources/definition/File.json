@@ -67,22 +67,19 @@
         "name": "metadata.mime",
         "type": "string",
         "title": "MIME Type",
-        "description": "MIME-Type of file.",
-        "readOnly": false
+        "description": "MIME-Type of file."
       },
       {
         "name": "metadata.createDate",
         "type": "datetime",
         "title": "Creation date",
-        "description": "Timestamp of file upload.",
-        "readOnly": false
+        "description": "Timestamp of file upload."
       },
       {
         "name": "metadata.modificationDate",
         "type": "datetime",
         "title": "Modification date",
-        "description": "Timestamp of the last file change.",
-        "readOnly": false
+        "description": "Timestamp of the last file change."
       },
       {
         "name": "metadata.filename",
