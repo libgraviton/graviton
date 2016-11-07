@@ -69,3 +69,6 @@ parameters:
     graviton.proxy.swagger.sources: {}
     graviton.proxy.custom.sources: {}
     graviton.proxy.redirect.sources: {}
+
+    # Add full qualified type, application/pdf, image/jpeg...
+    graviton.file.allowed.mime_types: []
