@@ -55,7 +55,7 @@
         "type": "int",
         "title": "File size",
         "description": "Size of file.",
-        "readOnly": true
+        "readOnly": false
       },
       {
         "name": "metadata.action.0.command",
@@ -68,21 +68,21 @@
         "type": "string",
         "title": "MIME Type",
         "description": "MIME-Type of file.",
-        "readOnly": true
+        "readOnly": false
       },
       {
         "name": "metadata.createDate",
         "type": "datetime",
         "title": "Creation date",
         "description": "Timestamp of file upload.",
-        "readOnly": true
+        "readOnly": false
       },
       {
         "name": "metadata.modificationDate",
         "type": "datetime",
         "title": "Modification date",
         "description": "Timestamp of the last file change.",
-        "readOnly": true
+        "readOnly": false
       },
       {
         "name": "metadata.filename",

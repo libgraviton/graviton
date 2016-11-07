@@ -5,6 +5,7 @@
 
 namespace Graviton\FileBundle\Controller;
 
+use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\FileBundle\FileManager;
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\RestBundle\Service\RestUtilsInterface;
@@ -236,5 +237,47 @@ class FileController extends RestController
         );
 
         return $normalized;
+    }
+
+    /**
+     * Patch a record, we add here a patch on Modification Data.
+     *
+     * @param Number  $id      ID of record
+     * @param Request $request Current http request
+     *
+     * @throws MalformedInputException
+     *
+     * @return Response $response Result of action with data (if successful)
+     */
+    public function patchAction($id, Request $request)
+    {
+        // Update modified date
+        $content = json_decode($request->getContent(), true);
+        if ($content) {
+            $now = new \DateTime();
+            $patch = [
+                'op' => 'replace',
+                'path' => '/metadata/modificationDate',
+                'value' => $now->format(DATE_ISO8601)
+            ];
+            // It can be a simple patch or a multi array patching.
+            if (array_key_exists(0, $content)) {
+                $content[] = $patch;
+            } else {
+                $content = [$content, $patch];
+            }
+
+            $request = new Request(
+                $request->query->all(),
+                $request->request->all(),
+                $request->attributes->all(),
+                $request->cookies->all(),
+                $request->files->all(),
+                $request->server->all(),
+                json_encode($content)
+            );
+        }
+
+        return parent::patchAction($id, $request);
     }
 }

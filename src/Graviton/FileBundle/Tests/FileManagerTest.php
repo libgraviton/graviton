@@ -194,4 +194,120 @@ class FileManagerTest extends WebTestCase
             $location
         );
     }
+
+
+    /**
+     * Verifies the correct behavior of the FileManager
+     *
+     * @return void
+     */
+    public function testUpdateFiles()
+    {
+        $timeFormat = 'Y-m-d\TH:i:sP';
+
+        $jsonData = '{
+          "links": [
+            {
+              "$ref": "http://localhost/testcase/readonly/101",
+              "type": "owner"
+            },
+            {
+              "$ref": "http://localhost/testcase/readonly/102",
+              "type": "module"
+            }
+          ],
+          "metadata": {
+            "action":[{"command":"print"},{"command":"archive"}]
+          }
+        }';
+
+        copy(__DIR__ . '/Fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
+        $file = sys_get_temp_dir() . '/test.txt';
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+        $client = $this->createClient();
+        $client->request(
+            'POST',
+            '/file',
+            [
+                'metadata' => $jsonData,
+            ],
+            [
+                'upload' => $uploadedFile,
+            ]
+        );
+        $response = $client->getResponse();
+        $location = $response->headers->get('location');
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $this->assertContains('/file/', $location);
+
+        // receive generated file information
+        $client = $this->createClient();
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $response = $client->getResponse();
+        $contentArray = json_decode($response->getContent(), true);
+
+        // Check contain data
+        $this->assertArrayHasKey('modificationDate', $contentArray['metadata']);
+        $this->assertArrayHasKey('createDate', $contentArray['metadata']);
+        // Test Metadata, and Remove date.
+        $originalAt = \DateTime::createFromFormat($timeFormat, $contentArray['metadata']['modificationDate']);
+        unset($contentArray['metadata']['modificationDate']);
+        unset($contentArray['metadata']['createDate']);
+
+        // PUT Lets UPDATE some additional Params
+        $client = $this->createClient();
+        $value = new \stdClass();
+        $value->name = 'aField';
+        $value->value = 'aValue';
+        $contentArray['metadata']['additionalProperties'] = [$value];
+        sleep(1);
+        $client->request(
+            'PUT',
+            $location,
+            [
+                'metadata' => json_encode($contentArray),
+            ]
+        );
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        $client = $this->createClient();
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $response = $client->getResponse();
+        $contentUpdatedArray = json_decode($response->getContent(), true);
+        $modifiedAt = \DateTime::createFromFormat($timeFormat, $contentUpdatedArray['metadata']['modificationDate']);
+
+        $this->assertTrue($modifiedAt > $originalAt, 'File put should have changed modification date and did not');
+
+        // PATCH Lets patch, and time should be changed
+        $value->value = 'bValue';
+        $patchJson = json_encode(
+            array(
+                'op' => 'replace',
+                'path' => '/metadata/additionalProperties',
+                'value' => [$value]
+            )
+        );
+        sleep(1);
+        $client = $this->createClient();
+        $client->request('PATCH', $location, array(), array(), array(), $patchJson);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        $client->request('GET', $location, [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = $client->getResponse();
+        $contentPatchedArray = json_decode($response->getContent(), true);
+        $pacthedAt = \DateTime::createFromFormat($timeFormat, $contentPatchedArray['metadata']['modificationDate']);
+        $this->assertTrue($pacthedAt > $modifiedAt, 'File patched should have changed modification date and did not');
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            $location
+        );
+    }
 }
