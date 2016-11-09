@@ -207,12 +207,13 @@ class FileManager
     {
         $now = new \DateTime();
 
+        // If only a file is posted, check if there is a original object and clone it
+        if ($file && $original && !$document->getMetadata()) {
+            $document = clone $original;
+        }
+
         // Basic Metadata update
         $metadata = $document->getMetadata() ?: new FileMetadataEmbedded();
-        if ($original || !$metadata->getCreatedate()) {
-            $metadata->setCreatedate($now);
-        }
-        $metadata->setModificationdate($now);
 
         // File related
         if ($file) {
@@ -225,15 +226,12 @@ class FileManager
                 $fileName = preg_replace("/[^a-zA-Z0-9.]/", "-", $fileName);
                 $metadata->setFilename($fileName);
             }
-
-            // Check links, they should not be overwritten if only a file upload
-            if ($original) {
-                $links = $original->getLinks();
-                if ($links && count($document->getLinks())==0) {
-                    $document->setLinks($links);
-                }
-            }
         }
+
+        if (!$metadata->getCreatedate()) {
+            $metadata->setCreatedate($now);
+        }
+        $metadata->setModificationdate($now);
 
         $document->setMetadata($metadata);
 
