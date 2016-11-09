@@ -228,7 +228,7 @@ class FileManager
             }
         }
 
-        if (!$metadata->getCreatedate()) {
+        if (!$original || !$metadata->getCreatedate()) {
             $metadata->setCreatedate($now);
         }
         $metadata->setModificationdate($now);
