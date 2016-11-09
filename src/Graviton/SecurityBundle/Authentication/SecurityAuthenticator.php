@@ -7,13 +7,14 @@ namespace Graviton\SecurityBundle\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
 use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
+use Graviton\SecurityBundle\Authentication\Token\SecurityToken;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use Graviton\SecurityBundle\Entities\SecurityUser;
+use Graviton\SecurityBundle\Entities\SubnetUser;
 use Psr\Log\LoggerInterface as Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -93,18 +94,23 @@ final class SecurityAuthenticator implements
      * @param Request $request     request to authenticate
      * @param string  $providerKey provider key to auth with
      *
-     * @return \Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken
+     * @return SecurityToken
      */
     public function createToken(Request $request, $providerKey)
     {
         // look for an apikey query parameter
         $apiKey = $this->extractionStrategy->apply($request);
 
-        return new PreAuthenticatedToken(
+        $token = new SecurityToken(
             'anon.',
             $apiKey,
-            $providerKey
+            $providerKey,
+            $this->extractionStrategy->getRoles()
         );
+
+        $token->setAttribute('ipAddress', $request->getClientIp());
+
+        return $token;
     }
 
     /**
@@ -114,7 +120,7 @@ final class SecurityAuthenticator implements
      * @param UserProviderInterface $userProvider provider to auth against
      * @param string                $providerKey  key to auth with
      *
-     * @return \Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken
+     * @return SecurityToken
      */
     public function authenticateToken(
         TokenInterface $token,
@@ -131,9 +137,12 @@ final class SecurityAuthenticator implements
                 sprintf('Authentication key is required.')
             );
         }
-        
+
         /** @var SecurityUser $securityUser */
-        if ($user = $this->userProvider->loadUserByUsername($username)) {
+        if ($token->hasRole(SecurityUser::ROLE_SUBNET)) {
+            $this->logger->info('Authentication, loading graviton subnet user IP address: '. $token->getAttribute('ipAddress'));
+            $securityUser = new SecurityUser(new SubnetUser($username), [SecurityUser::ROLE_SUBNET]);
+        } elseif ($user = $this->userProvider->loadUserByUsername($username)) {
             $securityUser = new SecurityUser($user, [SecurityUser::ROLE_USER, SecurityUser::ROLE_CONSULTANT]);
         } elseif ($this->securityTestUsername) {
             $this->logger->info('Authentication, loading test user: '.$this->securityTestUsername);
@@ -155,7 +164,7 @@ final class SecurityAuthenticator implements
             }
         }
 
-        return new PreAuthenticatedToken(
+        return new SecurityToken(
             $securityUser,
             $username,
             $providerKey,
@@ -171,7 +180,7 @@ final class SecurityAuthenticator implements
      */
     public function supportsToken(TokenInterface $token, $providerKey)
     {
-        return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
+        return $token instanceof SecurityToken && $token->getProviderKey() === $providerKey;
     }
 
     /**

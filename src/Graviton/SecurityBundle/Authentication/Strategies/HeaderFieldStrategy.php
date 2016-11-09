@@ -5,7 +5,9 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * Class HeaderFieldStrategy
@@ -38,5 +40,15 @@ class HeaderFieldStrategy extends AbstractHttpStrategy
     public function apply(Request $request)
     {
         return $this->extractFieldInfo($request->headers, $this->field);
+    }
+
+    /**
+     * Provides the list of registered roles.
+     *
+     * @return Role[]
+     */
+    public function getRoles()
+    {
+        return [SecurityUser::ROLE_USER, SecurityUser::ROLE_CONSULTANT];
     }
 }

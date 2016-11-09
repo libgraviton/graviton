@@ -1,19 +1,19 @@
 <?php
 /**
- * security AnonymousUser entity
- * A basic user to allow loggin, query and find object based on anonymous authentication.
+ * security SubnetUser entity
+ * A basic user to allow login, query and find object based on anonymous authentication.
  */
 
 namespace Graviton\SecurityBundle\Entities;
 
 /**
- * Class AnonymousUser
+ * Class SubnetUser
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class AnonymousUser
+class SubnetUser
 {
     const DEFAULT_ID = 0;
 
@@ -25,13 +25,16 @@ class AnonymousUser
     /**
      * @var string
      */
-    private $username = 'anonymous';
+    private $username;
 
     /**
      * Constructor of the class.
+     *
+     * @param string $username Name of the user
      */
-    public function __construct()
+    public function __construct($username)
     {
+        $this->username = $username;
         $this->setId(self::DEFAULT_ID);
     }
 

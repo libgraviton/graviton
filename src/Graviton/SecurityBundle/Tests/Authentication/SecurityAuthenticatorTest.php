@@ -6,9 +6,9 @@
 namespace Graviton\SecurityBundle\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
+use Graviton\SecurityBundle\Authentication\Token\SecurityToken;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * Class AirlockAuthenticationKeyAuthenticatorTest
@@ -33,7 +33,6 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->getMockForAbstractClass();
     }
 
-
     /**
      * @dataProvider stringProvider
      *
@@ -56,6 +55,10 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('apply')
             ->will($this->returnValue($headerFieldValue));
+        $strategy
+            ->expects($this->once())
+            ->method('getRoles')
+            ->will($this->returnValue([]));
 
         $authenticator = new SecurityAuthenticator(true, true, true, $userProviderMock, $strategy, $this->logger);
 
@@ -68,7 +71,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->createToken($request, 'AirlockProviderKey');
 
         $this->assertInstanceOf(
-            '\Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken',
+            '\Graviton\SecurityBundle\Authentication\Token\SecurityToken',
             $token
         );
 
@@ -111,7 +114,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->method('loadUserByUsername')
             ->will($this->returnValue($securityUserMock));
 
-        $anonymousToken = new PreAuthenticatedToken(
+        $anonymousToken = new SecurityToken(
             'anon.',
             $apiKey,
             $providerKey
@@ -129,7 +132,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
 
         $this->assertInstanceOf(
-            '\Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken',
+            '\Graviton\SecurityBundle\Authentication\Token\SecurityToken',
             $token
         );
 
@@ -151,7 +154,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo($apiKey))
             ->will($this->returnValue(false));
 
-        $anonymousToken = new PreAuthenticatedToken(
+        $anonymousToken = new SecurityToken(
             'anon.',
             $apiKey,
             $providerKey
@@ -179,7 +182,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $providerKey = 'some providerKey';
         $apiKey = 'exampleAuthenticationHeader';
 
-        $anonymousToken = new PreAuthenticatedToken(
+        $anonymousToken = new SecurityToken(
             'anon.',
             $apiKey,
             $providerKey
