@@ -8,7 +8,6 @@ namespace Graviton\ProxyBundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\ProxyBundle\DependencyInjection\Compiler\ApiDefinitionLoaderPass;
 use Graviton\ProxyBundle\DependencyInjection\Compiler\TransformerPass;
-use Graviton\ProxyExtensionBundle\GravitonProxyExtensionBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
