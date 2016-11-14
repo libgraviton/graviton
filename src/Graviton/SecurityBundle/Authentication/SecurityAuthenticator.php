@@ -140,7 +140,7 @@ final class SecurityAuthenticator implements
 
         /** @var SecurityUser $securityUser */
         if ($token->hasRole(SecurityUser::ROLE_SUBNET)) {
-            $this->logger->info('Authentication, loading graviton subnet user IP address: '. $token->getAttribute('ipAddress'));
+            $this->logger->info('Authentication, loaded subnet user IP address: '. $token->getAttribute('ipAddress'));
             $securityUser = new SecurityUser(new SubnetUser($username), [SecurityUser::ROLE_SUBNET]);
         } elseif ($user = $this->userProvider->loadUserByUsername($username)) {
             $securityUser = new SecurityUser($user, [SecurityUser::ROLE_USER, SecurityUser::ROLE_CONSULTANT]);
