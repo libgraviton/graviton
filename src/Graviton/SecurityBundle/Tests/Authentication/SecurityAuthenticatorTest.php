@@ -6,9 +6,9 @@
 namespace Graviton\SecurityBundle\Authentication;
 
 use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
-use Graviton\SecurityBundle\Authentication\Token\SecurityToken;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 /**
  * Class AirlockAuthenticationKeyAuthenticatorTest
@@ -71,7 +71,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->createToken($request, 'AirlockProviderKey');
 
         $this->assertInstanceOf(
-            '\Graviton\SecurityBundle\Authentication\Token\SecurityToken',
+            PreAuthenticatedToken::class,
             $token
         );
 
@@ -114,7 +114,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->method('loadUserByUsername')
             ->will($this->returnValue($securityUserMock));
 
-        $anonymousToken = new SecurityToken(
+        $anonymousToken = new PreAuthenticatedToken(
             'anon.',
             $apiKey,
             $providerKey
@@ -132,7 +132,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
 
         $this->assertInstanceOf(
-            '\Graviton\SecurityBundle\Authentication\Token\SecurityToken',
+            PreAuthenticatedToken::class,
             $token
         );
 
@@ -154,7 +154,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo($apiKey))
             ->will($this->returnValue(false));
 
-        $anonymousToken = new SecurityToken(
+        $anonymousToken = new PreAuthenticatedToken(
             'anon.',
             $apiKey,
             $providerKey
@@ -182,7 +182,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $providerKey = 'some providerKey';
         $apiKey = 'exampleAuthenticationHeader';
 
-        $anonymousToken = new SecurityToken(
+        $anonymousToken = new PreAuthenticatedToken(
             'anon.',
             $apiKey,
             $providerKey
@@ -232,7 +232,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string[] $methods methods to mock
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|SecurityAuthenticator
+     * @return SecurityAuthenticator|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getProviderMock(array $methods = array())
     {

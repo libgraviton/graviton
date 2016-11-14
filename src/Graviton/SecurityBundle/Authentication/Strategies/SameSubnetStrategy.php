@@ -64,7 +64,7 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function getRoles()
     {
-        return [SecurityUser::ROLE_SUBNET];
+        return [SecurityUser::ROLE_USER, SecurityUser::ROLE_SUBNET];
     }
 
     /**

@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Bundle\FrameworkBundle\Client;
 
 /**
  * Class SameSubnetStrategyTest
@@ -18,6 +18,7 @@ use Symfony\Component\BrowserKit\Cookie;
 class SameSubnetStrategyTest extends WebTestCase
 {
     protected $strategy;
+    /** @var Client */
     protected $client;
     protected $propertyKey;
 
@@ -29,7 +30,6 @@ class SameSubnetStrategyTest extends WebTestCase
     {
         parent::setUp();
 
-        /** @var \Symfony\Bundle\FrameworkBundle\Client client */
         $this->client = static::createClient();
         $this->propertyKey = $this->client->getKernel()
             ->getContainer()
@@ -57,6 +57,21 @@ class SameSubnetStrategyTest extends WebTestCase
         );
 
         $this->assertSame('graviton_subnet_user', $this->strategy->apply($this->client->getRequest()));
+    }
+
+    /**
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     *
+     * @return void
+     */
+    public function testApplyHeader()
+    {
+        $client = static::createClient([], ['HTTP_X-GRAVITON-AUTHENTICATION' => 'test-user-name']);
+        $client->request('GET', '/');
+
+        $this->assertSame('test-user-name', $this->strategy->apply($client->getRequest()));
     }
 
     /**

@@ -49,6 +49,6 @@ class HeaderFieldStrategy extends AbstractHttpStrategy
      */
     public function getRoles()
     {
-        return [SecurityUser::ROLE_USER, SecurityUser::ROLE_CONSULTANT];
+        return [SecurityUser::ROLE_USER];
     }
 }

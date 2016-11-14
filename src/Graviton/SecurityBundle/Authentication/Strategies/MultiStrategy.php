@@ -78,6 +78,6 @@ class MultiStrategy implements StrategyInterface
      */
     public function getRoles()
     {
-        return $this->roles;
+        return array_unique($this->roles);
     }
 }
