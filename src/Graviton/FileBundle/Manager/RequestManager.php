@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -18,6 +19,22 @@ use Symfony\Component\Filesystem\Filesystem;
 class RequestManager
 {
     /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * RequestManager constructor.
+     *
+     * @param RequestStack $requestStack To get the original request
+     */
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
+
+    /**
      * Simple RAW http request parser.
      * Ideal for PUT requests where PUT is streamed but you still need the data.
      *
@@ -26,10 +43,14 @@ class RequestManager
      */
     public function updateFileRequest(Request $request)
     {
-        $input = $request->getContent();
+        $original = $this->requestStack->getMasterRequest();
+        $input = $original ? $original->getContent() : false;
+
         if (!$input) {
             return $request;
         }
+
+        $input = urldecode($input);
         $server = $request->server;
         $contentType = $server->get('CONTENT_TYPE', $server->get('HTTP_CONTENT_TYPE'));
         $data = [];
