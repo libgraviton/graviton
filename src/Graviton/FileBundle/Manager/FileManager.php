@@ -87,10 +87,10 @@ class FileManager
             throw new InvalidArgumentException('Loaded file have no valid metadata');
         }
 
-        // If no data, 404.
+        // We use file's mimeType, just in case none we use DB's.
         $mimeType = $this->fileSystem->mimeType($file->getId());
-        if ($mimeType !== $file->getMetadata()->getMime()) {
-            throw new InvalidArgumentException('Loaded file do not match source MimeType');
+        if (!$mimeType) {
+            $mimeType = $metadata->getMime();
         }
         if ($this->allowedMimeTypes && !in_array($mimeType, $this->allowedMimeTypes)) {
             throw new InvalidArgumentException('File mime type: '.$mimeType.' is not allowed as response.');
