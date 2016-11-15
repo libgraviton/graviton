@@ -50,7 +50,6 @@ class RequestManager
             return $request;
         }
 
-        $input = urldecode($input);
         $server = $request->server;
         $contentType = $server->get('CONTENT_TYPE', $server->get('HTTP_CONTENT_TYPE'));
         $data = [];
