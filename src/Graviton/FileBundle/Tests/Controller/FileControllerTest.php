@@ -326,6 +326,55 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * post a file without any mime type.. check if that mime type is correctly determined.
+     * fetch content back and compare the contents of the file
+     *
+     * @return void
+     */
+    public function testPostFileContentMimeDetectionAndContent()
+    {
+        $testData = file_get_contents(__DIR__.'/resources/testpicture.jpg');
+        $contentType = 'image/jpeg';
+        $client = static::createRestClient();
+
+        $client->post(
+            '/file/',
+            $testData,
+            [],
+            [],
+            [],
+            false
+        );
+        $response = $client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $linkHeader = $response->headers->get('Link');
+        $this->assertRegExp('@/file/[a-z0-9]{32}>; rel="self"@', $linkHeader);
+
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', $response->headers->get('Location'));
+        $retData = $client->getResults();
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals($contentType, $retData->metadata->mime);
+
+        /** we use the standard client as we don't want to have json forced */
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            $response->headers->get('Location'),
+            [],
+            [],
+            ['ACCEPT' => $contentType]
+        );
+
+        $response = $client->getInternalResponse();
+
+        $this->assertTrue(($response->getContent() === $testData));
+    }
+
+    /**
      * test getting collection schema
      *
      * @return void
