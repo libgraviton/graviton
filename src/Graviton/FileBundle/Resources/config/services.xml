@@ -18,7 +18,11 @@
     </parameters>
 
     <services>
-        <service id="graviton.file.request_manager" class="%graviton.file.request_manager.class%"/>
+
+        <service id="graviton.file.request_manager" class="%graviton.file.request_manager.class%">
+            <argument type="service" id="request_stack" on-invalid="null" />
+        </service>
+
         <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%">
             <factory class="%graviton.aws_s3.client.class%" method="factory"/>
             <argument>%graviton.aws_s3.client.args%</argument>
