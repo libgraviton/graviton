@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "63e941a42846f24563c102c1987c9047",
-    "content-hash": "85f95f71d686b005290fabbd66c10cc4",
+    "hash": "d3c1c138be8be61c0180226f390e9089",
+    "content-hash": "1a32bbde68a5a383e60869ba98831c5b",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -3413,6 +3413,51 @@
                 "psr-7"
             ],
             "time": "2015-06-25 14:27:22"
+        },
+        {
+            "name": "riverline/multipart-parser",
+            "version": "1.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Riverline/multipart-parser.git",
+                "reference": "a25de1a3b01886a6cf25203d7623aa908895ebfb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/a25de1a3b01886a6cf25203d7623aa908895ebfb",
+                "reference": "a25de1a3b01886a6cf25203d7623aa908895ebfb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Riverline\\MultiPartParser": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Cambien",
+                    "email": "romain@riverline.fr"
+                },
+                {
+                    "name": "Riverline",
+                    "homepage": "http://www.riverline.fr"
+                }
+            ],
+            "description": "One class library to parse multipart content with encoding and charset support.",
+            "keywords": [
+                "http",
+                "multipart",
+                "parser"
+            ],
+            "time": "2015-12-17 14:31:51"
         },
         {
             "name": "sensio/distribution-bundle",
