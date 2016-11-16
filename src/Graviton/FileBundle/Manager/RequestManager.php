@@ -5,6 +5,7 @@
 
 namespace Graviton\FileBundle\Manager;
 
+use Riverline\MultiPartParser\Part;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
@@ -50,19 +51,34 @@ class RequestManager
             return $request;
         }
 
-        $server = $request->server;
-        $contentType = $server->get('CONTENT_TYPE', $server->get('HTTP_CONTENT_TYPE'));
-        $data = [];
+        $part = new Part((string) $request);
 
-        // grab multipart boundary from content type header
-        preg_match('/boundary=(.*)$/', $contentType, $matches);
+        if ($part->isMultiPart()) {
+            // do we have metadata?
+            $metadata = $part->getPartsByName('metadata');
+            if (is_array($metadata) && !empty($metadata)) {
+                $request->request->set('metadata', $metadata[0]->getBody());
+            }
 
-        // content type is probably regular form-encoded
-        if (!count($matches)) {
-            $json = json_decode($input, true);
+            // the file itself
+            $upload = $part->getPartsByName('upload');
+            if (is_array($upload) && !empty($upload)) {
+                $uploadPart = $upload[0];
+
+                $file = $this->extractFileFromString(
+                    $uploadPart->getBody(),
+                    $uploadPart->getFileName()
+                );
+
+                $request->files->add([$file]);
+            }
+        } else {
+            // see if body is json or binary..
+            $json = json_decode($part->getBody(), true);
+
             // Check if content is binary, convert to file upload
             if (!$json && $request->files->count() == 0) {
-                $file = $this->extractFileFromString($input, $contentType);
+                $file = $this->extractFileFromString($part->getBody());
                 if ($file) {
                     $request->files->add([$file]);
                 }
@@ -72,60 +88,23 @@ class RequestManager
             return $request;
         }
 
-        $contentBlocks = preg_split("/-+$matches[1]/", $input);
-
-        // determine content blocks usage
-        foreach ($contentBlocks as $contentBlock) {
-            if (empty($contentBlock)) {
-                continue;
-            }
-            preg_match('/name=\"(.*?)\"[^"]/i', $contentBlock, $matches);
-            $name = isset($matches[1]) ? $matches[1] : '';
-            if ('upload' !== $name) {
-                preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $contentBlock, $matches);
-                $contentBlock = array_key_exists(2, $matches) ? $matches[2]: $contentBlock;
-            }
-            $data[$name] = $contentBlock;
-        }
-
-        if (array_key_exists('metadata', $data)) {
-            $request->request->set('metadata', $data['metadata']);
-        }
-        if (array_key_exists('upload', $data)) {
-            $file = $this->extractFileFromString($data['upload']);
-            $request->files->add([$file]);
-        }
-
         return $request;
     }
-
 
     /**
      * Extracts file data from request content
      *
-     * @param string $fileInfoString Information about uploaded files.
-     * @param string $contentType    Optional type of string
+     * @param string $fileContent      the file content
+     * @param string $originalFileName an overriding original file name
      *
      * @return false|UploadedFile
      */
-    private function extractFileFromString($fileInfoString, $contentType = '')
+    private function extractFileFromString($fileContent, $originalFileName = null)
     {
-        $str = (string) $fileInfoString;
-        $tmpName = $fileName = microtime() . '_' . md5($str);
+        $tmpName = $fileName = uniqid(true);
 
-        if ((preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0) || $contentType) {
-            $fileContent = $str;
-        } else {
-            // Original Name
-            preg_match('/filename=\"(.*?)\"/i', $str, $matches);
-            if (array_key_exists(1, $matches)) {
-                $fileName = preg_replace('/\s+/', '-', $matches[1]);
-            }
-            $fileInfo = explode("\r\n\r\n", ltrim($str), 2);
-            if (!array_key_exists(1, $fileInfo)) {
-                return false;
-            }
-            $fileContent = substr($fileInfo[1], 0, -2);
+        if (!is_null($originalFileName)) {
+            $fileName = $originalFileName;
         }
 
         $dir = ini_get('upload_tmp_dir');
@@ -133,8 +112,7 @@ class RequestManager
         $tmpFile = $dir . DIRECTORY_SEPARATOR . $tmpName;
 
         // create temporary file;
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($tmpFile, $fileContent);
+        (new Filesystem())->dumpFile($tmpFile, $fileContent);
         $file = new File($tmpFile);
 
         return new UploadedFile(
