@@ -138,8 +138,8 @@
                     "graviton.security.authentication.strategy": "SECURITY_AUTHENTICATION_STRATEGY",
                     "graviton.security.authentication.strategy.header.key": "SECURITY_AUTHENTICATION_STRATEGY_HEADER_KEY",
                     "graviton.security.authentication.strategy.cookie.key": "SECURITY_AUTHENTICATION_STRATEGY_COOKIE_KEY",
-                    "graviton.security.authentication.strategy.subnet.key": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_HEADER_FIELD",
-                    "graviton.security.authentication.strategy.subnet.header_field": "SECURITY_AUTHENTICATION_STRATEGY_HEADER_KEY",
+                    "graviton.security.authentication.strategy.subnet.key": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_KEY",
+                    "graviton.security.authentication.strategy.subnet.header_field": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_HEADER_FIELD",
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD"
                 }
