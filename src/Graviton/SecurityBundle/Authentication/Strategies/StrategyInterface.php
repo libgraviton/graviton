@@ -6,6 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * Interface StrategyInterface
@@ -24,4 +25,18 @@ interface StrategyInterface
      * @return string
      */
     public function apply(Request $request);
+
+    /**
+     * Decider to stop other strategies running after from being considered.
+     *
+     * @return boolean
+     */
+    public function stopPropagation();
+
+    /**
+     * Provides the list of registered roles.
+     *
+     * @return Role[]
+     */
+    public function getRoles();
 }

@@ -68,4 +68,14 @@ abstract class AbstractHttpStrategy implements StrategyInterface
             }
         }
     }
+
+    /**
+     * Decider to stop other strategies running after from being considered.
+     *
+     * @return boolean
+     */
+    public function stopPropagation()
+    {
+        return true;
+    }
 }

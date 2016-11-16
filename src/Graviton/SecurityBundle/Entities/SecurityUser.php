@@ -20,6 +20,8 @@ class SecurityUser implements UserInterface
     const ROLE_USER = 'ROLE_GRAVITON_USER';
     const ROLE_CONSULTANT = 'ROLE_GRAVITON_CONSULTANT';
     const ROLE_ANONYMOUS = 'ROLE_GRAVITON_ANONYMOUS';
+    const ROLE_SUBNET = 'ROLE_GRAVITON_SUBNET_USER';
+    const ROLE_TEST = 'ROLE_GRAVITON_TEST_USER';
 
     /**
      * @var Object
