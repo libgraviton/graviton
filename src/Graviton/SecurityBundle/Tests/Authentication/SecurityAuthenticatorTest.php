@@ -33,7 +33,6 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->getMockForAbstractClass();
     }
 
-
     /**
      * @dataProvider stringProvider
      *
@@ -56,6 +55,10 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('apply')
             ->will($this->returnValue($headerFieldValue));
+        $strategy
+            ->expects($this->once())
+            ->method('getRoles')
+            ->will($this->returnValue([]));
 
         $authenticator = new SecurityAuthenticator(true, true, true, $userProviderMock, $strategy, $this->logger);
 
@@ -68,7 +71,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->createToken($request, 'AirlockProviderKey');
 
         $this->assertInstanceOf(
-            '\Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken',
+            PreAuthenticatedToken::class,
             $token
         );
 
@@ -129,7 +132,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
 
         $this->assertInstanceOf(
-            '\Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken',
+            PreAuthenticatedToken::class,
             $token
         );
 
@@ -229,7 +232,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string[] $methods methods to mock
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|SecurityAuthenticator
+     * @return SecurityAuthenticator|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getProviderMock(array $methods = array())
     {

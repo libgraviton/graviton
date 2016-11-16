@@ -32,7 +32,7 @@ class HeaderFieldStrategyTest extends WebTestCase
     {
         $client = static::createClient();
         $headerFieldName = $client->getKernel()
-            ->getContainer()->getParameter('graviton.security.authentication.strategy_key');
+            ->getContainer()->getParameter('graviton.security.authentication.strategy.header.key');
 
         $server = array(
             'HTTP_'.strtoupper($headerFieldName) => $headerFieldValue,
@@ -47,7 +47,7 @@ class HeaderFieldStrategyTest extends WebTestCase
         );
 
         $strategy = new HeaderFieldStrategy(
-            $client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy_key')
+            $client->getKernel()->getContainer()->getParameter('graviton.security.authentication.strategy.header.key')
         );
 
         $this->assertEquals(

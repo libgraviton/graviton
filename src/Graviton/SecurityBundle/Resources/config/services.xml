@@ -19,17 +19,33 @@
         <!--
             Strategies used by AuthenticationKeyAuthenticator
             Value set in Dpc Injection
-            graviton.security.authentication.strategy
+            graviton.security.authentication.strategy.*
         -->
+        <service id="graviton.security.authentication.strategy.multi"
+                 class="Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy">
+            <argument type="collection">
+                <argument type="service" id="graviton.security.authentication.strategy.subnet"/>
+                <argument type="service" id="graviton.security.authentication.strategy.cookie"/>
+            </argument>
+            <tag name="graviton.security.authenticationkey.finder"/>
+        </service>
+
+        <service id="graviton.security.authentication.strategy.subnet"
+                 class="Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy">
+            <argument>%graviton.security.authentication.strategy.subnet.key%</argument>
+            <argument>%graviton.security.authentication.strategy.subnet.header_field%</argument>
+            <tag name="graviton.security.authenticationkey.finder"/>
+        </service>
+
         <service id="graviton.security.authentication.strategy.header"
                  class="Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy">
-            <argument>%graviton.security.authentication.strategy_key%</argument>
+            <argument>%graviton.security.authentication.strategy.header.key%</argument>
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 
         <service id="graviton.security.authentication.strategy.cookie"
                  class="Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy">
-            <argument>%graviton.security.authentication.strategy_key%</argument>
+            <argument>%graviton.security.authentication.strategy.cookie.key%</argument>
             <tag name="graviton.security.authenticationkey.finder"/>
         </service>
 

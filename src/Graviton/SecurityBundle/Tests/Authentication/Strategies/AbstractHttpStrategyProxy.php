@@ -7,6 +7,7 @@ namespace Graviton\SecurityBundle\Tests\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * Class AbstractHttpStrategyProxy
@@ -52,5 +53,15 @@ class AbstractHttpStrategyProxy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        return [];
     }
 }
