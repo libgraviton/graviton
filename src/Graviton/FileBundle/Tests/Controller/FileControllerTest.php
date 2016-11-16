@@ -375,6 +375,62 @@ class FileControllerTest extends RestTestCase
     }
 
     /**
+     * here we PUT a file, then try to update the mimetype in the metadata
+     * to 'something/other' and see if we can still GET it and receive the correct mime type
+     * (meaning we were not able to modify the mime type)
+     *
+     * @return void
+     */
+    public function testIllegalMimeTypeModificationHandling()
+    {
+        $fileData = "This is a new text!!!";
+        $contentType = 'text/plain';
+
+        $client = static::createRestClient();
+        $client->put(
+            '/file/mimefile',
+            $fileData,
+            [],
+            [],
+            [],
+            [],
+            false
+        );
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        // GET the metadata
+        $client = static::createRestClient();
+        $client->request('GET', '/file/mimefile');
+        $retData = $client->getResults();
+
+        $this->assertEquals($retData->metadata->mime, $contentType);
+
+        // change metadata and save
+        $retData->metadata->mime = 'something/other';
+
+        $client = static::createRestClient();
+        $client->put('/file/mimefile', $retData);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/file/mimefile',
+            [],
+            [],
+            ['ACCEPT' => '*/*']
+        );
+
+        $response = $client->getInternalResponse();
+
+        // still the good one?
+        $this->assertContains($contentType, $response->getHeader('content-type'));
+
+        $client = static::createRestClient();
+        $client->request('DELETE', '/file/mimefile');
+    }
+
+    /**
      * test getting collection schema
      *
      * @return void
