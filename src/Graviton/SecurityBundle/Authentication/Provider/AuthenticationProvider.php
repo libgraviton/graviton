@@ -55,7 +55,7 @@ class AuthenticationProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username)
     {
-        if (!$this->queryField) {
+        if (!$this->queryField || !$username) {
             return false;
         }
 
