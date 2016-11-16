@@ -215,7 +215,7 @@ class FileManager
         // Basic Metadata update
         $metadata = $document->getMetadata() ?: new FileMetadataEmbedded();
 
-        // File related
+        // File related, if no file uploaded we keep original file info.
         if ($file) {
             $hash = hash('sha256', file_get_contents($file->getRealPath()));
             $metadata->setHash($hash);
@@ -226,6 +226,13 @@ class FileManager
                 $fileName = preg_replace("/[^a-zA-Z0-9.]/", "-", $fileName);
                 $metadata->setFilename($fileName);
             }
+        } elseif ($original && ($originalMetadata = $original->getMetadata())) {
+            if (!$metadata->getFilename()) {
+                $metadata->setFilename($originalMetadata->getFilename());
+            }
+            $metadata->setHash($originalMetadata->getHash());
+            $metadata->setMime($originalMetadata->getMime());
+            $metadata->setSize($originalMetadata->getSize());
         }
 
         if (!$original || !$metadata->getCreatedate()) {
