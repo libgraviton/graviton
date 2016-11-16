@@ -26,6 +26,11 @@ class FileController extends RestController
     private $fileManager;
 
     /**
+     * @var RequestManager
+     */
+    private $requestManager;
+
+    /**
      * On build time we inject the Manager
      *
      * @param FileManager $fileManager Service Manager
@@ -35,6 +40,18 @@ class FileController extends RestController
     public function setFileManager(FileManager $fileManager)
     {
         $this->fileManager = $fileManager;
+    }
+
+    /**
+     * set RequestManager
+     *
+     * @param RequestManager $requestManager requestManager
+     *
+     * @return void
+     */
+    public function setRequestManager($requestManager)
+    {
+        $this->requestManager = $requestManager;
     }
 
     /**
@@ -52,9 +69,7 @@ class FileController extends RestController
             $file = $this->validateRequest($formData, $this->getModel());
         }
 
-        /** @var RequestManager $requestManager */
-        $requestManager = $this->getContainer()->get('graviton.file.request_manager');
-        $request = $requestManager->updateFileRequest($request);
+        $request = $this->requestManager->updateFileRequest($request);
 
         $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
 
@@ -108,9 +123,7 @@ class FileController extends RestController
             return parent::putAction($id, $request);
         }
 
-        /** @var RequestManager $requestManager */
-        $requestManager = $this->getContainer()->get('graviton.file.request_manager');
-        $request = $requestManager->updateFileRequest($request);
+        $request = $this->requestManager->updateFileRequest($request);
 
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {

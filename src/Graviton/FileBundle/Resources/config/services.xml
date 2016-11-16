@@ -46,6 +46,9 @@
             <call method="setFileManager">
                 <argument type="service" id="graviton.file.file_manager"/>
             </call>
+            <call method="setRequestManager">
+                <argument type="service" id="graviton.file.request_manager"/>
+            </call>
         </service>
     </services>
 </container>
