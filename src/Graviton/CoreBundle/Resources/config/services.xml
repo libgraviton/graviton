@@ -9,11 +9,7 @@
         <parameter key="graviton.core.model.app.class">Graviton\CoreBundle\Model\App</parameter>
         <parameter key="graviton.core.model.version.class">Graviton\CoreBundle\Model\Version</parameter>
         <parameter key="graviton.core.document.app.class">Graviton\CoreBundle\Document\App</parameter>
-        <parameter key="graviton.core.controller.product.class">Graviton\CoreBundle\Controller\ProductController</parameter>
-        <parameter key="graviton.core.repository.product.class">Graviton\CoreBundle\Repository\ProductRepository</parameter>
-        <parameter key="graviton.core.model.product.class">Graviton\CoreBundle\Model\Product</parameter>
         <parameter key="graviton.core.listener.requesthost.class">Graviton\CoreBundle\Listener\RequestHostListener</parameter>
-        <parameter key="graviton.core.document.product.class">Graviton\CoreBundle\Document\Product</parameter>
         <parameter key="graviton.core.service.coreutils.class">Graviton\CoreBundle\Service\CoreUtils</parameter>
         <parameter key="graviton.core.service.coreversionutils.class">Graviton\CoreBundle\Service\CoreVersionUtils</parameter>
         <parameter key="graviton.core.listener.jsonexceptionlistener.class">Graviton\CoreBundle\Listener\JsonExceptionListener</parameter>
@@ -52,28 +48,6 @@
             </call>
         </service>
         <service id="graviton.core.document.app" class="%graviton.core.document.app.class%"/>
-        <service id="graviton.core.controller.product"
-                 class="%graviton.core.controller.product.class%"
-                 parent="graviton.rest.controller" scope="request">
-            <call method="setModel">
-                <argument type="service" id="graviton.core.model.product"/>
-            </call>
-            <tag name="graviton.rest" read-only="true"/>
-        </service>
-        <service id="graviton.core.repository.product"
-            class="%graviton.core.repository.product.class%">
-            <factory service="doctrine_mongodb.odm.default_document_manager" method="getRepository"/>
-            <argument type="string">GravitonCoreBundle:Product</argument>
-        </service>
-        <service id="graviton.core.model.product"
-                 class="%graviton.core.model.product.class%"
-                 parent="graviton.rest.model">
-            <argument type="service" id="graviton.rql.visitor.mongodb"/>
-            <call method="setRepository">
-                <argument type="service" id="graviton.core.repository.product"/>
-            </call>
-        </service>
-        <service id="graviton.core.document.product" class="%graviton.core.document.product.class%"/>
         <service id="graviton.core.utils" class="%graviton.core.service.coreutils.class%">
             <argument type="string">%graviton.core.version.data%</argument>
         </service>
