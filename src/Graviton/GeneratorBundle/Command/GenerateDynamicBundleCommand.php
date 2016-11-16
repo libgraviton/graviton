@@ -261,13 +261,22 @@ class GenerateDynamicBundleCommand extends Command
 
         // whatever is left in $existingBundles is not defined anymore and needs to be deleted..
         foreach ($existingBundles as $dirName => $hash) {
+            $fileInfo = new \SplFileInfo($dirName);
+            $bundleClassName = $this->getBundleClassnameFromFolder($fileInfo->getFilename());
+
+            // remove from bundlebundle list
+            unset($this->bundleBundleList[array_search($bundleClassName, $this->bundleBundleList)]);
+
             $fs->remove($dirName);
+
             $output->write(
                 PHP_EOL.
                 sprintf('<info>Deleted obsolete bundle "%s"</info>', $dirName).
                 PHP_EOL
             );
         }
+
+        $this->generateBundleBundleClass();
     }
 
     /**
@@ -330,14 +339,26 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         foreach ($bundleFinder as $bundleDir) {
-            $name = $bundleDir->getFilename();
-            if (substr($name, -6) == 'Bundle') {
-                $name = substr($name, 0, -6);
-            }
-            $this->bundleBundleList[] = sprintf(self::BUNDLE_NAME_MASK, $name);
+            $this->bundleBundleList[] = $this->getBundleClassnameFromFolder($bundleDir->getFilename());
         }
 
         $this->generateBundleBundleClass();
+    }
+
+    /**
+     * from a name of a folder of a bundle, this function returns the corresponding class name
+     *
+     * @param string $folderName folder name
+     *
+     * @return string
+     */
+    private function getBundleClassnameFromFolder($folderName)
+    {
+        if (substr($folderName, -6) == 'Bundle') {
+            $folderName = substr($folderName, 0, -6);
+        }
+
+        return sprintf(self::BUNDLE_NAME_MASK, $folderName);
     }
 
     /**
