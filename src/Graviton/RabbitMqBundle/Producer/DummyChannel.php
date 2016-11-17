@@ -5,9 +5,6 @@
 
 namespace Graviton\RabbitMqBundle\Producer;
 
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
-use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
-
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -32,14 +29,14 @@ class DummyChannel
 
     /**
      * Dummy function queue_declare
-     * @param string $queue  tmp value
-     * @param bool   $false1 tmp value
-     * @param bool   $true1  tmp value
-     * @param bool   $false2 tmp value
-     * @param bool   $false3 tmp value
+     * @param string $queue tmp value
+     * @param bool   $fooA  tmp value
+     * @param bool   $fooB  tmp value
+     * @param bool   $fooC  tmp value
+     * @param bool   $fooD  tmp value
      * @return void
      */
-    public function queueDeclare($queue, $false1, $true1, $false2, $false3)
+    public function queueDeclare($queue, $fooA, $fooB, $fooC, $fooD)
     {
     }
 }
