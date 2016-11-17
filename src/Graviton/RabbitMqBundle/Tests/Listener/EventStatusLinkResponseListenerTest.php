@@ -62,9 +62,9 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
         );
 
         $securityMock = $this
-            ->getMockBuilder('\Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage')
+            ->getMockBuilder('Graviton\SecurityBundle\Service\SecurityUtils')
             ->disableOriginalConstructor()
-            ->setMethods(['getToken'])->getMockForAbstractClass();
+            ->setMethods(['isSecurityUser'])->getMockForAbstractClass();
 
         $requestMock = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')->disableOriginalConstructor(
         )->setMethods(['get'])->getMock();

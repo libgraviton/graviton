@@ -22,7 +22,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Rs\Json\Patch;
 use Rs\Json\Patch\InvalidPatchDocumentJsonException;
@@ -618,7 +617,7 @@ class RestController
     /**
      * Security needs to be enabled to get Object.
      *
-     * @return SecurityUser
+     * @return String
      * @throws UsernameNotFoundException
      */
     public function getSecurityUser()

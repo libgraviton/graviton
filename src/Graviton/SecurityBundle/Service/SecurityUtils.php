@@ -58,7 +58,7 @@ class SecurityUtils
     /**
      * Find current user
      *
-     * @return string|bool
+     * @return string
      * @throws UsernameNotFoundException
      */
     public function getSecurityUser()
