@@ -217,7 +217,8 @@ class FileManager
 
         // File related, if no file uploaded we keep original file info.
         if ($file) {
-            $hash = hash('sha256', file_get_contents($file->getRealPath()));
+            $hash = $metadata->getHash() ? $metadata->getHash() :
+                hash('sha256', file_get_contents($file->getRealPath()));
             $metadata->setHash($hash);
             $metadata->setMime($file->getMimeType());
             $metadata->setSize($file->getSize());

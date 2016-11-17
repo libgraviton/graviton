@@ -508,6 +508,7 @@ class FileControllerTest extends RestTestCase
             }
           ],
           "metadata": {
+            "hash": "demo-test-hash",
             "action":[{"command":"print"},{"command":"archive"}],
             "additionalInformation": "someInfo",
             "additionalProperties": [
@@ -554,6 +555,7 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertCount(2, $returnData['metadata']['additionalProperties']);
         $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
+        $this->assertEquals($metaData['metadata']['hash'], $returnData['metadata']['hash']);
 
         // clean up
         $client = $this->createClient();
