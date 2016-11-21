@@ -12,6 +12,7 @@
         <parameter key="graviton.rabbitmq.document.eventstatuseventresource.class">GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded</parameter>
         <parameter key="graviton.rabbitmq.validator.validinformationtype.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidInformationTypeValidator</parameter>
         <parameter key="graviton.rabbitmq.validator.validstatus.class">Graviton\RabbitMqBundle\Validator\Constraints\ValidStatusValidator</parameter>
+        <parameter key="graviton.rabbitmq.producer.job.class">Graviton\RabbitMqBundle\Producer\JobProducer</parameter>
 
         <!-- this is the route the DocumentEventPublisher will use to generate the 'statusUrl' field where the status can be fetched -->
         <parameter key="graviton.rabbitmq.document.eventstatusstatus.route">gravitondyn.eventstatus.rest.eventstatus.get</parameter>
@@ -19,7 +20,9 @@
     <services>
         <service id="graviton.rabbitmq.consumer.dump" class="%graviton.rabbitmq.consumer.dump.class%" />
         <service id="graviton.rabbitmq.document.queueevent" class="%graviton.rabbitmq.document.queueevent.class%" />
-        <service id="graviton.rabbitmq.jobproducer" parent="old_sound_rabbit_mq.document_event_producer">
+        <service id="graviton.rabbitmq.jobproducer"
+                 class="%graviton.rabbitmq.producer.job.class%"
+                 parent="old_sound_rabbit_mq.document_event_producer">
             <call method="setContentType">
                 <argument>application/json</argument>
             </call>
@@ -37,7 +40,7 @@
             <argument>%graviton.rabbitmq.document.eventstatusstatus.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatuseventresource.class%</argument>
             <argument>%graviton.rabbitmq.document.eventstatusstatus.route%</argument>
-            <argument type="service" id="security.token_storage" />
+            <argument type="service" id="graviton.security.service.utils" />
             <!-- the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
             <tag name="kernel.event_listener" event="graviton.rest.response.selfaware" method="onKernelResponse"/>
         </service>

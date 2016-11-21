@@ -5,7 +5,9 @@
 
 namespace Graviton\RabbitMqBundle\Tests\Controller;
 
+use Graviton\RabbitMqBundle\Producer\Dummy;
 use Graviton\TestBundle\Test\RestTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Functional test for /event/status.
@@ -174,5 +176,55 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals('opened', $results->status[0]->status);
         $this->assertEquals('http://localhost/event/action/'.$action->id, $results->status[0]->action->{'$ref'});
+    }
+
+
+    /**
+     * Verifies the correct workflow of the ResponseListener
+     *
+     * @return void
+     */
+    public function testEventStatusLinkResponseListener()
+    {
+        // Create a test worker
+        $worker = new \stdClass();
+        $worker->id = 'test-worker-listener';
+        $worker->subscription = [];
+        $event = new \stdClass();
+        $event->event = 'document.core.app.create';
+        $worker->subscription[] = $event;
+        $event = new \stdClass();
+        $event->event = 'document.core.app.update';
+        $worker->subscription[] = $event;
+
+        $client = static::createRestClient();
+        $client->put('/event/worker/' . $worker->id, $worker);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        $testApp = new \stdClass();
+        $testApp->id = "test-event-app";
+        $testApp->name = new \stdClass();
+        $testApp->name->en = "test-event-app";
+        $testApp->showInMenu = false;
+
+
+        $client = static::createRestClient();
+        /** @var Dummy $dbProducer */
+        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
+        $dbProducer->resetEventList();
+
+        $client->put('/core/app/' . $testApp->id, $testApp);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+
+        /** @var Dummy $dbProducer */
+        $events = $dbProducer->getEventList();
+
+        $this->assertCount(1, $events);
+        $data = json_decode($events[0], true);
+        $this->assertEquals('document.core.app.update', $data['event']);
+        $this->assertEquals('anonymous', $data['coreUserId']);
+        $this->assertEquals('http://localhost/core/app/test-event-app', $data['document']['$ref']);
     }
 }
