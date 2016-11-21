@@ -240,17 +240,6 @@ class ModuleControllerTest extends RestTestCase
      */
     public function testFindByAppRef($ref, $url, $count)
     {
-        $this->loadFixtures(
-            [
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadProductData',
-            ],
-            null,
-            'doctrine_mongodb'
-        );
-
         $url = sprintf(
             '/core/module/?%s=%s',
             $this->encodeRqlString($ref),
@@ -304,17 +293,6 @@ class ModuleControllerTest extends RestTestCase
      */
     public function testExtrefOperators($rqlQuery, array $expectedIds)
     {
-        $this->loadFixtures(
-            [
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData',
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadProductData',
-            ],
-            null,
-            'doctrine_mongodb'
-        );
-
         $client = static::createRestClient();
         $client->request('GET', '/core/module/?'.$rqlQuery);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());

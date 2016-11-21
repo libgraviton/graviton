@@ -1,19 +1,17 @@
 <?php
 /**
- * basic product model
+ * dummy publisher
  */
 
-namespace Graviton\CoreBundle\Model;
+namespace Graviton\RabbitMqBundle\Producer;
 
-use Graviton\RestBundle\Model\DocumentModel;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 /**
- * Model based on Graviton\RestBundle\Model\DocumentModel.
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class Product extends DocumentModel
+class JobProducer extends Producer
 {
 }

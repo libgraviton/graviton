@@ -17,9 +17,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
 
 /**
@@ -46,7 +44,7 @@ class EventStatusLinkResponseListener
     private $request;
 
     /**
-     * @var QueueEvent queueevent document
+     * @var QueueEvent queue event document
      */
     private $queueEventDocument;
 
@@ -91,9 +89,9 @@ class EventStatusLinkResponseListener
     private $documentManager;
 
     /**
-     * @var TokenStorage
+     * @var SecurityUtils
      */
-    protected $tokenStorage;
+    protected $securityUtils;
 
     /**
      * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
@@ -108,7 +106,7 @@ class EventStatusLinkResponseListener
      * @param string                $eventStatusStatusClassname        classname of the EventStatusStatus document
      * @param string                $eventStatusEventResourceClassname classname of the E*S*E*Resource document
      * @param string                $eventStatusRouteName              name of the route to EventStatus
-     * @param TokenStorage          $tokenStorage                      Security service
+     * @param SecurityUtils         $securityUtils                     Security utils service
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -123,7 +121,7 @@ class EventStatusLinkResponseListener
         $eventStatusStatusClassname,
         $eventStatusEventResourceClassname,
         $eventStatusRouteName,
-        TokenStorage $tokenStorage
+        SecurityUtils $securityUtils
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
@@ -137,7 +135,7 @@ class EventStatusLinkResponseListener
         $this->eventStatusStatusClassname = $eventStatusStatusClassname;
         $this->eventStatusEventResourceClassname = $eventStatusEventResourceClassname;
         $this->eventStatusRouteName = $eventStatusRouteName;
-        $this->tokenStorage = $tokenStorage;
+        $this->securityUtils = $securityUtils;
     }
 
     /**
@@ -344,10 +342,8 @@ class EventStatusLinkResponseListener
      */
     private function getSecurityUsername()
     {
-        /** @var PreAuthenticatedToken $token */
-        if (($token = $this->tokenStorage->getToken())
-            && ($user = $token->getUser()) instanceof UserInterface ) {
-            return $user->getUsername();
+        if ($this->securityUtils->isSecurityUser()) {
+            return $this->securityUtils->getSecurityUsername();
         }
 
         return '';

@@ -201,6 +201,27 @@ class FileControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertEmpty($results->links);
+
+        // Let's update links but without sending file and still have file info
+        $id = $data->id;
+        $data = new \stdClass;
+        $data->id = $id;
+        $link = new \stdClass;
+        $link->{'$ref'} = 'http://localhost/core/app/web';
+        $data->links = [];
+        $data->links[] = $link;
+        $client = static::createRestClient();
+        $client->put(sprintf('/file/%s', $id), $data);
+        // re-fetch
+        $client = static::createRestClient();
+        $client->request('GET', sprintf('/file/%s', $data->id));
+        $data = $client->getResults();
+        // check metadata for kept file info
+        $this->assertEquals(18, $data->metadata->size);
+        $this->assertEquals('text/plain', $data->metadata->mime);
+        $this->assertEquals('test.txt', $data->metadata->filename);
+        $this->assertNotNull($data->metadata->createDate);
+        $this->assertNotNull($data->metadata->modificationDate);
     }
 
     /**
@@ -487,6 +508,7 @@ class FileControllerTest extends RestTestCase
             }
           ],
           "metadata": {
+            "hash": "demo-test-hash",
             "action":[{"command":"print"},{"command":"archive"}],
             "additionalInformation": "someInfo",
             "additionalProperties": [
@@ -533,6 +555,7 @@ class FileControllerTest extends RestTestCase
         );
         $this->assertCount(2, $returnData['metadata']['additionalProperties']);
         $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
+        $this->assertEquals($metaData['metadata']['hash'], $returnData['metadata']['hash']);
 
         // clean up
         $client = $this->createClient();

@@ -4,7 +4,8 @@ imports:
 
 parameters:
     kernel.debug: false
-    graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
+    graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
+    #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
 
 framework:
     test: ~
