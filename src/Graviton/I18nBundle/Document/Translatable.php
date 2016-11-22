@@ -45,7 +45,7 @@ class Translatable
     protected $isLocalized;
 
     /**
-     * set id
+     * set id, converted to sha1 40 chars if not xdigit
      *
      * @param string $id id
      *
@@ -53,7 +53,7 @@ class Translatable
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->id = ctype_xdigit($id) ? $id : sha1($id);
     }
 
     /**
