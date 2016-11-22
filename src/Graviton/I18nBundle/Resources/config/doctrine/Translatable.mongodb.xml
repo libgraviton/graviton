@@ -18,7 +18,6 @@
       <index unique="false">
         <key name="domain"/>
         <key name="locale"/>
-        <key name="original"/>
       </index>
     </indexes>
   </document>
