@@ -26,7 +26,7 @@ class MongodbMigrateCommand extends Command
      * @var ContainerInterface
      */
     private $container;
-    
+
     /**
      * @var Finder
      */
@@ -89,9 +89,19 @@ class MongodbMigrateCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->finder->in(
-            strpos(getcwd(), 'vendor/') === false ? getcwd() :  getcwd() . '/../../../../'
-        )->path('Resources/config')->name('/migrations.(xml|yml)/')->files();
+        // graviton root
+        $baseDir = __DIR__.'/../../../';
+
+        // vendorized? - go back some more..
+        if (strpos($baseDir, '/vendor/') !== false) {
+            $baseDir .= '../../../';
+        }
+
+        $this->finder
+            ->in($baseDir)
+            ->path('Resources/config')
+            ->name('/migrations.(xml|yml)/')
+            ->files();
 
         foreach ($this->finder as $file) {
             if (!$file->isFile()) {
@@ -169,7 +179,7 @@ class MongodbMigrateCommand extends Command
 
         return $configuration;
     }
-    
+
     /**
      * Injects the container to migrations aware of it
      *
