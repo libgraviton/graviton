@@ -43,7 +43,7 @@ class TranslatableControllerTest extends RestTestCase
         $client->request('GET', '/i18n/translatable/');
         $results = $client->getResults();
 
-        $this->assertEquals('http://localhost/i18n/language/de', $results[0]->language->{'$ref'});
+        $this->assertEquals('http://localhost/i18n/language/de', $results[1]->language->{'$ref'});
     }
 
     /**
@@ -55,7 +55,7 @@ class TranslatableControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/i18n/translatable/i18n-de-English');
+        $client->request('GET', '/i18n/translatable/'.sha1('i18n-de-English'));
         $results = $client->getResults();
 
         $this->assertEquals('http://localhost/i18n/language/de', $results->language->{'$ref'});
