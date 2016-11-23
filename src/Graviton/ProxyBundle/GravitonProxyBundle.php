@@ -7,6 +7,7 @@ namespace Graviton\ProxyBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\ProxyBundle\DependencyInjection\Compiler\ApiDefinitionLoaderPass;
+use Graviton\ProxyBundle\DependencyInjection\Compiler\ProxySourceRegistryPass;
 use Graviton\ProxyBundle\DependencyInjection\Compiler\TransformerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -42,5 +43,6 @@ class GravitonProxyBundle extends Bundle implements GravitonBundleInterface
     {
         $container->addCompilerPass(new TransformerPass());
         $container->addCompilerPass(new ApiDefinitionLoaderPass());
+        $container->addCompilerPass(new ProxySourceRegistryPass());
     }
 }

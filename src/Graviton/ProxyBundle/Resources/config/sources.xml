@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <!-- proxy sources definitions -->
+        <service id="graviton.proxy.service.source.petstore" class="Graviton\ProxyBundle\Service\Source\Swagger">
+            <argument type="service" id="graviton.proxy.adapter.guzzle" />
+            <argument type="service" id="graviton.proxy.dispersalstrategy.swagger" />
+            <argument>petstore</argument>
+            <argument>http://petstore.swagger.io/v2/swagger.json</argument>
+            <argument type="service" id="doctrine_cache.providers.local"/>
+            <tag name="graviton.proxy.source" alias="petstore" />
+        </service>
+
+<!--
+        <service id="graviton.proxy.service.source.fundinfo" class="Graviton\ProxyBundle\Service\Source\Fundinfo">
+            <tag name="graviton.proxy.source" alias="fundinfo" />
+        </service>
+
+        <service id="graviton.proxy.service.source.vontobel" class="Graviton\ProxyBundle\Service\Source\Redirect">
+            <tag name="graviton.proxy.source" alias="vontobel" />
+        </service>
+
+        <service id="graviton.proxy.service.source.zugerkb" class="Graviton\ProxyBundle\Service\Source\Redirect">
+            <tag name="graviton.proxy.source" alias="zugerkb" />
+        </service>
+-->
+    </services>
+</container>

@@ -23,9 +23,7 @@
         <service id="graviton.proxy.guzzle.client" class="GuzzleHttp\Client" />
         <service id="graviton.proxy.adapter.guzzle" class="%graviton.proxy.adapter.guzzle.class%">
             <argument type="service" id="graviton.proxy.guzzle.client" />
-            <call method="setCurlOptions">
-                <argument>%graviton.proxy.httploader.curloptions%</argument>
-            </call>
+            <argument>%graviton.proxy.httploader.curloptions%</argument>
         </service>
         <service id="graviton.proxy" class="Proxy\Proxy">
             <argument type="service" id="graviton.proxy.adapter.guzzle" />
@@ -39,8 +37,10 @@
             <argument type="service" id="graviton.proxy.psrhttpmessage.diactorosfactory" />
             <argument type="service" id="graviton.proxy.psrhttpmessage.httpfoundationfactory" />
             <argument type="service" id="graviton.proxy.service.transformationhandler" />
-            <argument>%graviton.proxy.sources%</argument>
+            <argument type="service" id="graviton.proxy.service.source_registry" />
         </service>
+
+        <service id="graviton.proxy.service.source_registry" class="Graviton\ProxyBundle\Service\Source\Registry" />
 
         <!-- swagger related definitions -->
         <service id="graviton.proxy.swagger.document.dummy" class="stdClass"></service>

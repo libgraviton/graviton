@@ -192,7 +192,8 @@ class HttpLoader implements LoaderInterface
                     $content = $this->fetchFile($request);
                 }
             } else {
-                $content = $this->fetchFile($request);
+                //$content = $this->fetchFile($request);
+                $content = file_get_contents('/Users/taafeba2/development/swisscom/graviton-api-zgkb-bap/vendor/graviton/graviton/app/cache/swagger.json');
             }
 
             // store current host (name or ip) serving the API. This MUST be the host only and does not include the

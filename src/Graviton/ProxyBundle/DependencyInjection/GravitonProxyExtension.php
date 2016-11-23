@@ -41,6 +41,8 @@ class GravitonProxyExtension extends GravitonBundleExtension
     {
         parent::load($configs, $container);
 
+        $this->loadFiles($this->getConfigDir(), $container, ['sources.xml']);
+
         $configs = $this->processConfiguration(new Configuration(), $configs);
 
         $sources = $container->hasParameter('graviton.proxy.sources') ?
