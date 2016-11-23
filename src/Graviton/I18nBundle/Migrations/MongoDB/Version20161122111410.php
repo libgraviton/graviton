@@ -43,15 +43,22 @@ class Version20161122111410 extends AbstractMigration
     public function up(Database $db)
     {
         $collection = $db->createCollection($this->collection);
-        $qb = $collection->createQueryBuilder();
-        /** @var Translatable $translatable */
-        foreach ($qb->find() as $translatable) {
-            $id = $translatable->getId();
+
+        // Remove index
+        $collection->deleteIndex(['domain_1_locale_1_original_1']);
+
+        /** @var array $translatable */
+        foreach ($collection->find() as $translatable) {
+            $id = $translatable['_id'];
             if (!ctype_xdigit($id)) {
-                $collection->update(
-                    ['id' => $id],
-                    ['id' => sha1($id)]
-                );
+                $newId = sha1($id);
+                if ($collection->findOne(['_id' => $newId], ['id'])) {
+                    $collection->remove(['_id' => $id]);
+                } else {
+                    $translatable['_id'] = $newId;
+                    $collection->insert($translatable);
+                    $collection->remove(['_id' => $id]);
+                }
             }
         }
     }
