@@ -118,11 +118,6 @@ class FileController extends RestController
      */
     public function putAction($id, Request $request)
     {
-        // If a json request, let parent handle it
-        if ('application/json' == $request->getContentType()) {
-            return parent::putAction($id, $request);
-        }
-
         $request = $this->requestManager->updateFileRequest($request);
 
         $file = new File();
