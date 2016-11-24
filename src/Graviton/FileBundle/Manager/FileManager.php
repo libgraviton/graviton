@@ -236,11 +236,14 @@ class FileManager
             $metadata->setSize($originalMetadata->getSize());
         }
 
-        if (!$original || !$metadata->getCreatedate()) {
+        // Creation date. keep original if available
+        if ($original && $original->getMetadata() && $original->getMetadata()->getCreatedate()) {
+            $metadata->setCreatedate($original->getMetadata()->getCreatedate());
+        } else {
             $metadata->setCreatedate($now);
         }
-        $metadata->setModificationdate($now);
 
+        $metadata->setModificationdate($now);
         $document->setMetadata($metadata);
 
         return $document;
