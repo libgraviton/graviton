@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
@@ -22,6 +23,7 @@ use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Xiag\Rql\Parser\Query as XiagQuery;
 use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
  * Use doctrine odm as backend
@@ -91,15 +93,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /** @var EventDispatcher */
     protected $eventDispatcher;
 
+    /** @var $collectionCache */
+    protected $cache;
+
     /**
      * @param Visitor         $visitor                    rql query visitor
      * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
+     * @param CollectionCache $collectionCache            Cache Service
      * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer         $paginationDefaultLimit     amount of data records to be returned when in pagination cnt
      */
     public function __construct(
         Visitor $visitor,
         $eventDispatcher,
+        CollectionCache $collectionCache,
         $notModifiableOriginRecords,
         $paginationDefaultLimit
     ) {
@@ -108,6 +115,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
+        $this->cache = $collectionCache;
     }
 
     /**
@@ -368,34 +376,31 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param string  $documentId id of entity to find
      * @param Request $request    request
      *
+     * @throws NotFoundException
      * @return Object
      */
     public function find($documentId, Request $request = null)
     {
-        if ($request instanceof Request) {
-            // if we are provided a Request, we apply RQL
-
+        if (($request instanceof Request)  &&
+            ($query = $request->attributes->get('rqlQuery')) &&
+            (($query instanceof XiagQuery))
+        ) {
             /** @var MongoBuilder $queryBuilder */
-            $queryBuilder = $this->repository
-                ->createQueryBuilder();
-
-            /** @var XiagQuery $query */
-            $query = $request->attributes->get('rqlQuery');
-
-            if ($query instanceof XiagQuery) {
-                $queryBuilder = $this->doRqlQuery(
-                    $queryBuilder,
-                    $query
-                );
-            }
-
+            $queryBuilder = $this->doRqlQuery($queryBuilder, $query);
             $queryBuilder->field('id')->equals($documentId);
-
-            $query = $queryBuilder->getQuery();
-            return $query->getSingleResult();
+            $result = $queryBuilder->getQuery()->getSingleResult();
+        } elseif ($cache = $this->cache->getByRepository($this->repository, $documentId)) {
+            $result = $cache;
+        } else {
+            $result = $this->repository->find($documentId);
+            $this->cache->setByRepository($this->repository, $result);
         }
 
-        return $this->repository->find($documentId);
+        if (empty($result)) {
+            throw new NotFoundException("Entry with id " . $documentId . " not found!");
+        }
+
+        return $result;
     }
 
     /**

@@ -175,20 +175,10 @@ class RestController
      * @param mixed   $id      Record id
      * @param Request $request request
      *
-     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
-     *
      * @return object $record Document object
      */
     protected function findRecord($id, Request $request = null)
     {
-        $response = $this->getResponse();
-
-        if (!($this->getModel()->recordExists($id))) {
-            $e = new NotFoundException("Entry with id " . $id . " not found!");
-            $e->setResponse($response);
-            throw $e;
-        }
-
         return $this->getModel()->find($id, $request);
     }
 
