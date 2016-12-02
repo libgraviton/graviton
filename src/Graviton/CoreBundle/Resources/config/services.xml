@@ -65,7 +65,9 @@
 
         <service id="graviton.core.controller.version"
                  class="Graviton\CoreBundle\Controller\VersionController" parent="graviton.rest.controller">
-            <argument type="service" id="graviton.core.utils"/>
+            <call method="setCoreUtils">
+                <argument type="service" id="graviton.core.utils"/>
+            </call>
             <call method="setModel">
                 <argument type="service" id="graviton.core.model.version"/>
             </call>

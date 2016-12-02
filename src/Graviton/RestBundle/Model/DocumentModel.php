@@ -11,7 +11,6 @@ use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\SchemaBundle\Model\SchemaModel;
-use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
@@ -386,7 +385,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             (($query instanceof XiagQuery))
         ) {
             /** @var MongoBuilder $queryBuilder */
-            $queryBuilder = $this->doRqlQuery($queryBuilder, $query);
+            $queryBuilder = $this->doRqlQuery($this->repository->createQueryBuilder(), $query);
             $queryBuilder->field('id')->equals($documentId);
             $result = $queryBuilder->getQuery()->getSingleResult();
         } elseif ($cache = $this->cache->getByRepository($this->repository, $documentId)) {
@@ -414,6 +413,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
+        $this->cache->addUpdateLock($this->repository, $documentId);
+        $this->cache->setByRepository($this->repository, $entity);
+
         if (!is_null($documentId)) {
             $this->deleteById($documentId);
             // detach so odm knows it's gone
@@ -425,7 +427,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $this->manager->persist($entity);
         $this->manager->flush($entity);
-        
+
+        $this->cache->releaseUpdateLock($this->repository, $documentId);
+
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);
 

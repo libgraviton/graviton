@@ -28,31 +28,12 @@ class VersionController extends RestController
     private $coreUtils;
 
     /**
-     * @param Response           $response    Response
-     * @param RestUtilsInterface $restUtils   Rest utils
-     * @param Router             $router      Router
-     * @param EngineInterface    $templating  Templating
-     * @param ContainerInterface $container   Container
-     * @param SchemaUtils        $schemaUtils schema utils
-     * @param CoreUtils          $coreUtils   coreUtils
+     * Build core utils
+     * @param CoreUtils $coreUtils coreUtils
+     * @return void
      */
-    public function __construct(
-        Response $response,
-        RestUtilsInterface $restUtils,
-        Router $router,
-        EngineInterface $templating,
-        ContainerInterface $container,
-        SchemaUtils $schemaUtils,
-        CoreUtils $coreUtils
-    ) {
-        parent::__construct(
-            $response,
-            $restUtils,
-            $router,
-            $templating,
-            $container,
-            $schemaUtils
-        );
+    public function setCoreUtils(CoreUtils $coreUtils)
+    {
         $this->coreUtils = $coreUtils;
     }
 

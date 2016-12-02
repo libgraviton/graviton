@@ -24,6 +24,9 @@ class CollectionCache
     /** Prefix cache key */
     const BASE_KEY = 'CollectionCache';
 
+    /** Prefix cache key */
+    const BASE_UPDATE_KEY = 'CollectionUpdate';
+
     /** @var array  */
     private $config = [];
 
@@ -107,5 +110,70 @@ class CollectionCache
         $key = $this->buildCacheKey($collection, $document->getId());
 
         return $this->cache->save($key, serialize($document), $time);
+    }
+
+    /**
+     * Will sleep until previous operation has finished but for max 10s
+     * Loops by 1/4 second
+     *
+     * @param Repository $repository Model repository
+     * @param string     $id         Object identifier
+     *
+     * @return void
+     */
+    public function updateOperationCheck(Repository $repository, $id)
+    {
+        $collection = $repository->getClassMetadata()->collection;
+        $key = self::BASE_UPDATE_KEY.'-'.$this->buildCacheKey($collection, $id);
+
+        while ($this->cache->fetch($key)) {
+            sleep(0.25);
+        }
+    }
+
+    /**
+     * Will add update lock
+     *
+     * @param Repository $repository Model repository
+     * @param string     $id         Object identifier
+     * @param integer    $maxTime    Set timeout for lock
+     *
+     * @return bool
+     */
+    public function addUpdateLock(Repository $repository, $id, $maxTime = 10)
+    {
+        $collection = $repository->getClassMetadata()->collection;
+        $key = self::BASE_UPDATE_KEY.'-'.$this->buildCacheKey($collection, $id);
+
+        return  $this->cache->save($key, true, $maxTime);
+    }
+
+    /**
+     * Will remove lock if there was one.
+     *
+     * @param Repository $repository Model repository
+     * @param string     $id         Object identifier
+     *
+     * @return void
+     */
+    public function releaseUpdateLock(Repository $repository, $id)
+    {
+        $collection = $repository->getClassMetadata()->collection;
+        $baseKey = $this->buildCacheKey($collection, $id);
+        $key = self::BASE_UPDATE_KEY.'-'.$baseKey;
+        if ($this->cache->delete($key)) {
+            $this->cache->delete($baseKey);
+        }
+    }
+
+    /**
+     * Update cache if needed
+     *
+     * @param array $configuration configuration array
+     * @return void
+     */
+    public function setConfiguration($configuration)
+    {
+        $this->config = $configuration;
     }
 }

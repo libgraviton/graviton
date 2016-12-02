@@ -80,6 +80,7 @@
             <argument type="service" id="templating"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="graviton.schema.utils"/>
+            <argument type="service" id="graviton.document.service.collectioncache" />
             <call method="setJsonPatchValidator">
                 <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
             </call>
