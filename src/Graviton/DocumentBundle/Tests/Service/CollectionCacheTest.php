@@ -106,6 +106,11 @@ class CollectionCacheTest extends RestTestCase
         $this->assertFalse($shouldNotBeSet, '');
     }
 
+    /**
+     * Update lock tests
+     *
+     * @return void
+     */
     public function testLocks()
     {
         /** @var AppRepository $repository */
