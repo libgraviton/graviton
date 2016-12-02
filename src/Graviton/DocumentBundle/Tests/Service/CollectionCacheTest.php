@@ -117,11 +117,13 @@ class CollectionCacheTest extends RestTestCase
         $repository = $this->getContainer()->get('gravitondyn.eventstatus.repository.eventstatus');
 
         $id = 'ocack-test';
-        $this->cache->addUpdateLock($repository, $id, 0.4);
+        $this->cache->addUpdateLock($repository, $id, 1);
         $start = microtime(true);
-        $shouldHaveBeenReleased = $start + 500;
+        $shouldHaveBeenReleased = $start + 2;
         $this->cache->updateOperationCheck($repository, $id);
         $end = microtime(true);
-        $this->assertTrue(($start < $end) && ($end < $shouldHaveBeenReleased));
+        $this->assertTrue(($start+0.15) < $end);
+
+        $this->assertTrue($end < $shouldHaveBeenReleased);
     }
 }

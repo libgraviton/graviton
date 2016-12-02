@@ -127,7 +127,7 @@ class CollectionCache
         $key = self::BASE_UPDATE_KEY.'-'.$this->buildCacheKey($collection, $id);
 
         while ($this->cache->fetch($key)) {
-            sleep(0.25);
+            usleep(250000);
         }
     }
 
