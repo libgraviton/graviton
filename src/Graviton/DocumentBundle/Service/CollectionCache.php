@@ -162,7 +162,6 @@ class CollectionCache
 
         $this->cache->delete($key);
 
-        $collection = $repository->getClassMetadata()->collection;
         if ($this->getCollectionCacheTime($collection)) {
             $this->cache->delete($baseKey);
         }

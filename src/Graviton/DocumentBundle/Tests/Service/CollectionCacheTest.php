@@ -120,7 +120,7 @@ class CollectionCacheTest extends RestTestCase
         $id = 'ocack-test';
         $this->cache->addUpdateLock($repository, $id, 1);
         $start = microtime(true);
-        $shouldHaveBeenReleased = $start + 2;
+        $shouldHaveBeenReleased = $start + 3;
         $this->cache->updateOperationCheck($repository, $id);
         $end = microtime(true);
         $this->assertTrue(($start+0.15) < $end);
