@@ -10,6 +10,7 @@ use Graviton\FileBundle\Manager\FileManager;
 use Graviton\FileBundle\Manager\RequestManager;
 use Graviton\RestBundle\Controller\RestController;
 use GravitonDyn\FileBundle\Document\File;
+use GravitonDyn\FileBundle\Model\File as FileModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -71,7 +72,9 @@ class FileController extends RestController
 
         $request = $this->requestManager->updateFileRequest($request);
 
-        $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
+        /** @var FileModel $model */
+        $model = $this->getModel();
+        $file = $this->fileManager->handleSaveRequest($file, $request, $model);
 
         // Set status code and content
         $response = $this->getResponse();
@@ -119,13 +122,21 @@ class FileController extends RestController
     public function putAction($id, Request $request)
     {
         $request = $this->requestManager->updateFileRequest($request);
+        /** @var FileModel $model */
+        $model = $this->getModel();
+
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 1);
 
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
-            $file = $this->validateRequest($metadata, $this->getModel());
+            $file = $this->validateRequest($metadata, $model);
         }
 
-        $file = $this->fileManager->handleSaveRequest($file, $request, $this->getModel());
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 5);
+        $file = $this->fileManager->handleSaveRequest($file, $request, $model);
+        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         // Set status code and content
         $response = $this->getResponse();
@@ -167,6 +178,8 @@ class FileController extends RestController
         // Update modified date
         $content = json_decode($request->getContent(), true);
         if ($content) {
+            // Checking so update time is correct
+            $this->collectionCache->updateOperationCheck($this->getModel()->getRepository(), $id);
             $now = new \DateTime();
             $patch = [
                 'op' => 'replace',

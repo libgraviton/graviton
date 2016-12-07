@@ -23,6 +23,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Filesystem\Filesystem as SfFileSystem;
 use GravitonDyn\FileBundle\Model\File as DocumentModel;
+use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -153,7 +154,12 @@ class FileManager
             $document->setId($requestId);
         }
 
-        $original = $model->find($requestId);
+        try {
+            $original = $model->find($requestId);
+        } catch (NotFoundException $e) {
+            $original = false;
+        }
+
         $isNew = $requestId ? !$original : true;
 
         // If posted  file document not equal the one to be created or updated, then error

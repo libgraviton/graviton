@@ -5,16 +5,15 @@
 
 namespace Graviton\RestBundle\Controller;
 
+use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -86,6 +85,9 @@ class RestController
      */
     protected $securityUtils;
 
+    /** @var CollectionCache */
+    protected $collectionCache;
+
     /**
      * @param Response           $response    Response
      * @param RestUtilsInterface $restUtils   Rest utils
@@ -93,6 +95,7 @@ class RestController
      * @param EngineInterface    $templating  Templating
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
+     * @param CollectionCache    $cache       Cache service
      */
     public function __construct(
         Response $response,
@@ -100,7 +103,8 @@ class RestController
         Router $router,
         EngineInterface $templating,
         ContainerInterface $container,
-        SchemaUtils $schemaUtils
+        SchemaUtils $schemaUtils,
+        CollectionCache $cache
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
@@ -108,6 +112,7 @@ class RestController
         $this->templating = $templating;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
+        $this->collectionCache = $cache;
     }
 
     /**
@@ -152,9 +157,17 @@ class RestController
      */
     public function getAction(Request $request, $id)
     {
+        $repository = $this->model->getRepository();
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($repository, $id);
+        if (!$document = $this->collectionCache->getByRepository($repository, $id)) {
+            $document = $this->serialize($this->findRecord($id, $request));
+            $this->collectionCache->setByRepository($repository, $document, $id);
+        }
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($this->findRecord($id, $request)));
+            ->setContent($document);
 
         return $response;
     }
@@ -175,20 +188,10 @@ class RestController
      * @param mixed   $id      Record id
      * @param Request $request request
      *
-     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
-     *
      * @return object $record Document object
      */
     protected function findRecord($id, Request $request = null)
     {
-        $response = $this->getResponse();
-
-        if (!($this->getModel()->recordExists($id))) {
-            $e = new NotFoundException("Entry with id " . $id . " not found!");
-            $e->setResponse($response);
-            throw $e;
-        }
-
         return $this->getModel()->find($id, $request);
     }
 
@@ -398,6 +401,10 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
+
         $record = $this->validateRequest($request->getContent(), $model);
 
         // handle missing 'id' field in input to a PUT operation
@@ -407,9 +414,12 @@ class RestController
             if (is_callable(array($record, 'setId'))) {
                 $record->setId($id);
             } else {
+                $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
                 throw new MalformedInputException('No ID was supplied in the request payload.');
             }
         }
+
+        $repository = $model->getRepository();
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
@@ -417,6 +427,8 @@ class RestController
         } else {
             $this->getModel()->updateRecord($id, $record, false);
         }
+
+        $this->collectionCache->releaseUpdateLock($repository, $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -440,10 +452,15 @@ class RestController
     public function patchAction($id, Request $request)
     {
         $response = $this->getResponse();
+        $model = $this->getModel();
 
         // Check JSON Patch request
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+        $this->restUtils->checkJsonRequest($request, $response, $model);
         $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
 
         // Find record && apply $ref converter
         $record = $this->findRecord($id);
@@ -451,6 +468,7 @@ class RestController
 
         // Check/validate JSON Patch
         if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {
+            $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
             throw new InvalidJsonPatchException($this->jsonPatchValidator->getException()->getMessage());
         }
 
@@ -459,12 +477,14 @@ class RestController
             $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
         } catch (InvalidPatchDocumentJsonException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
+            goto patch_error_handle;
         } catch (InvalidTargetDocumentJsonException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
+            goto patch_error_handle;
         } catch (InvalidOperationException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
+            goto patch_error_handle;
         } catch (FailedTestException $e) {
+            patch_error_handle:
+            $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
             throw new InvalidJsonPatchException($e->getMessage());
         }
 
@@ -474,6 +494,8 @@ class RestController
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
+
+        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_OK);
@@ -497,12 +519,19 @@ class RestController
     public function deleteAction($id)
     {
         $response = $this->getResponse();
+        $model = $this->getModel();
+
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 1);
 
         // does this record exist?
         $this->findRecord($id);
 
         $this->getModel()->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
+        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         return $response;
     }

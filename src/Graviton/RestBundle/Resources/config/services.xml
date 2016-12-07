@@ -80,6 +80,7 @@
             <argument type="service" id="templating"/>
             <argument type="service" id="service_container"/>
             <argument type="service" id="graviton.schema.utils"/>
+            <argument type="service" id="graviton.document.service.collectioncache" />
             <call method="setJsonPatchValidator">
                 <argument type="service" id="graviton.rest.service.jsonpatchvalidator"/>
             </call>
@@ -92,6 +93,7 @@
         <service id="graviton.rest.model" abstract="true" class="%graviton.rest.model.documentmodel.class%" parent="graviton.schema.model.schemamodel">
             <argument type="service" id="graviton.rql.visitor.mongodb" />
             <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="graviton.document.service.collectioncache" />
             <argument>%graviton.rest.not_modifiable.origin.records%</argument>
             <argument>%graviton.rest.pagination.limit%</argument>
         </service>
