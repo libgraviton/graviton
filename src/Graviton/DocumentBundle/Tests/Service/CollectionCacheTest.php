@@ -83,9 +83,10 @@ class CollectionCacheTest extends RestTestCase
         $document = new EventStatus();
         $document->setId('testing-cache');
         $document->setCreatedate(new \DateTime());
-        $this->cache->setByRepository($repository, $document);
+        $this->cache->setByRepository($repository, serialize($document), 'testing-cache');
 
-        $object = $this->cache->getByRepository($repository, 'testing-cache');
+        $stringCache = $this->cache->getByRepository($repository, 'testing-cache');
+        $object = unserialize($stringCache);
         $this->assertEquals($document->getId(), $object->getId());
         $this->assertEquals($document->getCreatedate(), $object->getCreatedate());
     }
@@ -101,7 +102,7 @@ class CollectionCacheTest extends RestTestCase
         $repository = $this->getContainer()->get('gravitondyn.eventstatus.repository.eventstatusstatus');
         $document = new EventStatusStatus();
         $document->setId('testing-cache-2');
-        $shouldNotBeSet = $this->cache->setByRepository($repository, $document);
+        $shouldNotBeSet = $this->cache->setByRepository($repository, serialize($document), $document->getId());
 
         $this->assertFalse($shouldNotBeSet, '');
     }

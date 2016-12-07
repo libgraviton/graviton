@@ -157,9 +157,17 @@ class RestController
      */
     public function getAction(Request $request, $id)
     {
+        $repository = $this->model->getRepository();
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($repository, $id);
+        if (!$document = $this->collectionCache->getByRepository($repository, $id)) {
+            $document = $this->serialize($this->findRecord($id, $request));
+            $this->collectionCache->setByRepository($repository, $document, $id);
+        }
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($this->findRecord($id, $request)));
+            ->setContent($document);
 
         return $response;
     }
@@ -411,13 +419,16 @@ class RestController
             }
         }
 
+        $repository = $model->getRepository();
+
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
             $this->getModel()->insertRecord($record, false);
-            $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
         } else {
             $this->getModel()->updateRecord($id, $record, false);
         }
+
+        $this->collectionCache->releaseUpdateLock($repository, $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -483,6 +494,8 @@ class RestController
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
+
+        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_OK);

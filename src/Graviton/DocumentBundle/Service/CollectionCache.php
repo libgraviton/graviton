@@ -88,28 +88,26 @@ class CollectionCache
         $key = $this->buildCacheKey($collection, $id);
 
         if ($result = $this->cache->fetch($key)) {
-            return unserialize($result);
+            return $result;
         }
         return false;
     }
 
     /**
      * @param Repository $repository DB Repository
-     * @param object     $document   Object document
+     * @param string     $serialized Serialised Object document
+     * @param string     $id         Object document identifier
      * @return bool
      */
-    public function setByRepository(Repository $repository, $document)
+    public function setByRepository(Repository $repository, $serialized, $id)
     {
-        if (empty($document)) {
-            return false;
-        }
         $collection = $repository->getClassMetadata()->collection;
         if (!$time = $this->getCollectionCacheTime($collection)) {
             return false;
         }
-        $key = $this->buildCacheKey($collection, $document->getId());
+        $key = $this->buildCacheKey($collection, $id);
 
-        return $this->cache->save($key, serialize($document), $time);
+        return $this->cache->save($key, $serialized, $time);
     }
 
     /**
@@ -161,7 +159,11 @@ class CollectionCache
         $collection = $repository->getClassMetadata()->collection;
         $baseKey = $this->buildCacheKey($collection, $id);
         $key = self::BASE_UPDATE_KEY.'-'.$baseKey;
-        if ($this->cache->delete($key)) {
+
+        $this->cache->delete($key);
+
+        $collection = $repository->getClassMetadata()->collection;
+        if ($this->getCollectionCacheTime($collection)) {
             $this->cache->delete($baseKey);
         }
     }
