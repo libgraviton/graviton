@@ -67,7 +67,7 @@ class FileController extends RestController
     {
         $file = new File();
         if ($formData = $request->get('metadata')) {
-            $file = $this->validateRequest($formData, $this->getModel());
+            $file = $this->restUtils->validateRequest($formData, $this->getModel());
         }
 
         $request = $this->requestManager->updateFileRequest($request);
@@ -102,7 +102,7 @@ class FileController extends RestController
         }
 
         /** @var File $file */
-        $file = $this->findRecord($id);
+        $file = $this->getModel()->find($id);
 
         /** @var Response $response */
         return $this->fileManager->buildGetContentResponse(
@@ -131,7 +131,7 @@ class FileController extends RestController
 
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
-            $file = $this->validateRequest($metadata, $model);
+            $file = $this->restUtils->validateRequest($metadata, $model);
         }
 
         $this->collectionCache->addUpdateLock($model->getRepository(), $id, 5);

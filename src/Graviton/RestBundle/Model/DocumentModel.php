@@ -23,6 +23,7 @@ use Xiag\Rql\Parser\Query as XiagQuery;
 use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
+use Graviton\RestBundle\Service\RestUtils;
 
 /**
  * Use doctrine odm as backend
@@ -96,7 +97,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     protected $cache;
 
     /**
+     * @var RestUtils
+     */
+    private $restUtils;
+
+    /**
      * @param Visitor         $visitor                    rql query visitor
+     * @param RestUtils       $restUtils                  Rest utils
      * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
      * @param CollectionCache $collectionCache            Cache Service
      * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
@@ -104,6 +111,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function __construct(
         Visitor $visitor,
+        RestUtils $restUtils,
         $eventDispatcher,
         CollectionCache $collectionCache,
         $notModifiableOriginRecords,
@@ -115,6 +123,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->cache = $collectionCache;
+        $this->restUtils = $restUtils;
     }
 
     /**
@@ -369,16 +378,37 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if ($returnEntity) {
             return $this->find($entity->getId());
         }
+        return null;
     }
 
     /**
-     * @param string  $documentId id of entity to find
-     * @param Request $request    request
+     * @param string $documentId id of entity to find
      *
      * @throws NotFoundException
      * @return Object
      */
-    public function find($documentId, Request $request = null)
+    public function find($documentId)
+    {
+        $result = $this->repository->find($documentId);
+
+        if (empty($result)) {
+            throw new NotFoundException("Entry with id " . $documentId . " not found!");
+        }
+
+        return $result;
+    }
+
+    /**
+     * Will attempt to find Document by ID.
+     * If config cache is enabled for document it will save it.
+     *
+     * @param string  $documentId id of entity to find
+     * @param Request $request    request
+     *
+     * @throws NotFoundException
+     * @return string Serialised object
+     */
+    public function getSerialised($documentId, Request $request = null)
     {
         if (($request instanceof Request)  &&
             ($query = $request->attributes->get('rqlQuery')) &&
@@ -388,15 +418,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $queryBuilder = $this->doRqlQuery($this->repository->createQueryBuilder(), $query);
             $queryBuilder->field('id')->equals($documentId);
             $result = $queryBuilder->getQuery()->getSingleResult();
+            if (empty($result)) {
+                throw new NotFoundException("Entry with id " . $documentId . " not found!");
+            }
+            $document = $this->restUtils->serialize($result);
+        } elseif ($cached = $this->cache->getByRepository($this->repository, $documentId)) {
+            $document = $cached;
         } else {
-            $result = $this->repository->find($documentId);
+            $this->cache->updateOperationCheck($this->repository, $documentId);
+            $document = $this->restUtils->serialize($this->find($documentId));
+            $this->cache->setByRepository($this->repository, $document, $documentId);
         }
 
-        if (empty($result)) {
-            throw new NotFoundException("Entry with id " . $documentId . " not found!");
-        }
-
-        return $result;
+        return $document;
     }
 
     /**
@@ -428,6 +462,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         if ($returnEntity) {
             return $entity;
         }
+        return null;
     }
 
     /**
@@ -439,6 +474,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function deleteRecord($id)
     {
+        // Check and wait if another update is being processed, avoid double delete
+        $this->cache->updateOperationCheck($this->repository, $id);
+        $this->cache->addUpdateLock($this->repository, $id, 1);
+
         if (is_object($id)) {
             $entity = $id;
         } else {
@@ -457,6 +496,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;
         }
+
+        $this->cache->releaseUpdateLock($this->repository, $id);
 
         return $return;
     }

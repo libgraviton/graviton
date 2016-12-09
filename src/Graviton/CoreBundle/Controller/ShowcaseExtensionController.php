@@ -48,7 +48,7 @@ class ShowcaseExtensionController extends RestController
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($data));
+            ->setContent($this->restUtils->serialize($data));
 
         return $this->render(
             'GravitonCoreBundle:Main:index.json.twig',
