@@ -158,9 +158,10 @@ class RestController
     public function getAction(Request $request, $id)
     {
         $repository = $this->model->getRepository();
-        // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($repository, $id);
         if (!$document = $this->collectionCache->getByRepository($repository, $id)) {
+            // Check and wait if another update is being processed
+            // if there is no cache else we need to wait if there is a lock or possible 404
+            $this->collectionCache->updateOperationCheck($repository, $id);
             $document = $this->serialize($this->findRecord($id, $request));
             $this->collectionCache->setByRepository($repository, $document, $id);
         }
@@ -476,14 +477,7 @@ class RestController
             // Apply JSON patches
             $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
-        } catch (InvalidPatchDocumentJsonException $e) {
-            goto patch_error_handle;
-        } catch (InvalidTargetDocumentJsonException $e) {
-            goto patch_error_handle;
-        } catch (InvalidOperationException $e) {
-            goto patch_error_handle;
-        } catch (FailedTestException $e) {
-            patch_error_handle:
+        } catch (\Exception $e) {
             $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
             throw new InvalidJsonPatchException($e->getMessage());
         }

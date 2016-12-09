@@ -111,8 +111,9 @@ class CollectionCache
     }
 
     /**
-     * Will sleep until previous operation has finished but for max 10s
-     * Loops by 1/4 second
+     * Will sleep until previous operation has finished.
+     * Default sleep time 10 seconds.
+     * Loops by 1/4 second while there is a cache update lock
      *
      * @param Repository $repository Model repository
      * @param string     $id         Object identifier
