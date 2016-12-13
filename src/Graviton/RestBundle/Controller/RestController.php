@@ -5,16 +5,13 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\ExceptionBundle\Exception\DeserializationException;
+use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
-use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
-use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\RestBundle\Model\DocumentModel;
+use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
-use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,10 +21,6 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Rs\Json\Patch;
-use Rs\Json\Patch\InvalidPatchDocumentJsonException;
-use Rs\Json\Patch\InvalidTargetDocumentJsonException;
-use Rs\Json\Patch\InvalidOperationException;
-use Rs\Json\Patch\FailedTestException;
 use Graviton\RestBundle\Service\JsonPatchValidator;
 
 /**
@@ -57,14 +50,14 @@ class RestController
     private $response;
 
     /**
-     * @var RestUtilsInterface
-     */
-    private $restUtils;
-
-    /**
      * @var SchemaUtils
      */
     private $schemaUtils;
+
+    /**
+     * @var RestUtils
+     */
+    protected $restUtils;
 
     /**
      * @var Router
@@ -86,21 +79,30 @@ class RestController
      */
     protected $securityUtils;
 
+    /** @var CollectionCache */
+    protected $collectionCache;
+
     /**
      * @param Response           $response    Response
-     * @param RestUtilsInterface $restUtils   Rest utils
+     * @param RestUtils          $restUtils   Rest Utils
      * @param Router             $router      Router
      * @param EngineInterface    $templating  Templating
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
+     * @param CollectionCache    $cache       Cache service
+     * @param JsonPatchValidator $jsonPatch   Service for validation json patch
+     * @param SecurityUtils      $security    The securityUtils service
      */
     public function __construct(
         Response $response,
-        RestUtilsInterface $restUtils,
+        RestUtils $restUtils,
         Router $router,
         EngineInterface $templating,
         ContainerInterface $container,
-        SchemaUtils $schemaUtils
+        SchemaUtils $schemaUtils,
+        CollectionCache $cache,
+        JsonPatchValidator $jsonPatch,
+        SecurityUtils $security
     ) {
         $this->response = $response;
         $this->restUtils = $restUtils;
@@ -108,26 +110,9 @@ class RestController
         $this->templating = $templating;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
-    }
-
-    /**
-     * Setter for the SecurityUtils
-     *
-     * @param SecurityUtils $securityUtils The securityUtils service
-     * @return void
-     */
-    public function setSecurityUtils(SecurityUtils $securityUtils)
-    {
-        $this->securityUtils = $securityUtils;
-    }
-
-    /**
-     * @param JsonPatchValidator $jsonPatchValidator Service for validation json patch
-     * @return void
-     */
-    public function setJsonPatchValidator(JsonPatchValidator $jsonPatchValidator)
-    {
-        $this->jsonPatchValidator = $jsonPatchValidator;
+        $this->collectionCache = $cache;
+        $this->jsonPatchValidator = $jsonPatch;
+        $this->securityUtils = $security;
     }
 
     /**
@@ -152,9 +137,11 @@ class RestController
      */
     public function getAction(Request $request, $id)
     {
+        $document = $this->getModel()->getSerialised($id, $request);
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($this->findRecord($id, $request)));
+            ->setContent($document);
 
         return $response;
     }
@@ -167,29 +154,6 @@ class RestController
     public function getResponse()
     {
         return $this->response;
-    }
-
-    /**
-     * Get a single record from database or throw an exception if it doesn't exist
-     *
-     * @param mixed   $id      Record id
-     * @param Request $request request
-     *
-     * @throws \Graviton\ExceptionBundle\Exception\NotFoundException
-     *
-     * @return object $record Document object
-     */
-    protected function findRecord($id, Request $request = null)
-    {
-        $response = $this->getResponse();
-
-        if (!($this->getModel()->recordExists($id))) {
-            $e = new NotFoundException("Entry with id " . $id . " not found!");
-            $e->setResponse($response);
-            throw $e;
-        }
-
-        return $this->getModel()->find($id, $request);
     }
 
     /**
@@ -223,51 +187,6 @@ class RestController
     }
 
     /**
-     * Serialize the given record and throw an exception if something went wrong
-     *
-     * @param object|object[] $result Record(s)
-     *
-     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
-     *
-     * @return string $content Json content
-     */
-    protected function serialize($result)
-    {
-        $response = $this->getResponse();
-
-        try {
-            // array is serialized as an object {"0":{...},"1":{...},...} when data contains an empty objects
-            // we serialize each item because we can assume this bug affects only root array element
-            if (is_array($result) && array_keys($result) === range(0, count($result) - 1)) {
-                $result = array_map(
-                    function ($item) {
-                        return $this->getRestUtils()->serializeContent($item);
-                    },
-                    $result
-                );
-
-                return '['.implode(',', array_filter($result)).']';
-            }
-
-            return $this->getRestUtils()->serializeContent($result);
-        } catch (\Exception $e) {
-            $exception = new SerializationException($e);
-            $exception->setResponse($response);
-            throw $exception;
-        }
-    }
-
-    /**
-     * Get RestUtils service
-     *
-     * @return \Graviton\RestBundle\Service\RestUtils
-     */
-    public function getRestUtils()
-    {
-        return $this->restUtils;
-    }
-
-    /**
      * Returns all records
      *
      * @param Request $request Current http request
@@ -278,9 +197,11 @@ class RestController
     {
         $model = $this->getModel();
 
+        $content = $this->restUtils->serialize($model->findAll($request));
+
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($this->serialize($model->findAll($request)));
+            ->setContent($content);
 
         return $response;
     }
@@ -300,10 +221,10 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $record = $this->validateRequest($request->getContent(), $model);
+        $record = $this->restUtils->validateRequest($request->getContent(), $model);
 
         // Insert the new record
-        $record = $this->getModel()->insertRecord($record);
+        $record = $model->insertRecord($record);
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
@@ -313,62 +234,10 @@ class RestController
 
         $response->headers->set(
             'Location',
-            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
+            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
         );
 
         return $response;
-    }
-
-    /**
-     * Validates the current request on schema violations. If there are errors,
-     * the exception is thrown. If not, the deserialized record is returned.
-     *
-     * @param object|string $content \stdClass of the request content
-     * @param DocumentModel $model   the model to check the schema for
-     *
-     * @return \Graviton\JsonSchemaBundle\Exception\ValidationExceptionError[]
-     * @throws \Exception
-     */
-    protected function validateRequest($content, DocumentModel $model)
-    {
-        $errors = $this->restUtils->validateContent($content, $model);
-        if (!empty($errors)) {
-            throw new ValidationException($errors);
-        }
-        return $this->deserialize($content, $model->getEntityClass());
-    }
-
-    /**
-     * Deserialize the given content throw an exception if something went wrong
-     *
-     * @param string $content       Request content
-     * @param string $documentClass Document class
-     *
-     * @throws DeserializationException
-     *
-     * @return object $record Document
-     */
-    protected function deserialize($content, $documentClass)
-    {
-        $response = $this->getResponse();
-
-        try {
-            $record = $this->getRestUtils()->deserializeContent(
-                $content,
-                $documentClass
-            );
-        } catch (\Exception $e) {
-            // pass the previous exception in this case to get the error message in the handler
-            // http://php.net/manual/de/exception.getprevious.php
-            $exception = new DeserializationException("Deserialization failed", $e);
-
-            // at the moment, the response has to be set on the exception object.
-            // try to refactor this and return the graviton.rest.response if none is set...
-            $exception->setResponse($response);
-            throw $exception;
-        }
-
-        return $record;
     }
 
     /**
@@ -398,7 +267,11 @@ class RestController
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
 
-        $record = $this->validateRequest($request->getContent(), $model);
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
+
+        $record = $this->restUtils->validateRequest($request->getContent(), $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -407,9 +280,12 @@ class RestController
             if (is_callable(array($record, 'setId'))) {
                 $record->setId($id);
             } else {
+                $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
                 throw new MalformedInputException('No ID was supplied in the request payload.');
             }
         }
+
+        $repository = $model->getRepository();
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
@@ -417,6 +293,8 @@ class RestController
         } else {
             $this->getModel()->updateRecord($id, $record, false);
         }
+
+        $this->collectionCache->releaseUpdateLock($repository, $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -440,40 +318,39 @@ class RestController
     public function patchAction($id, Request $request)
     {
         $response = $this->getResponse();
+        $model = $this->getModel();
 
         // Check JSON Patch request
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+        $this->restUtils->checkJsonRequest($request, $response, $model);
         $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
-        // Find record && apply $ref converter
-        $record = $this->findRecord($id);
-        $jsonDocument = $this->serialize($record);
+        // Check and wait if another update is being processed
+        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
 
-        // Check/validate JSON Patch
-        if (!$this->jsonPatchValidator->validate($jsonDocument, $request->getContent())) {
-            throw new InvalidJsonPatchException($this->jsonPatchValidator->getException()->getMessage());
-        }
+        // Find record && apply $ref converter
+        $jsonDocument = $model->getSerialised($id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
 
         try {
+            // Check if valid
+            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
+
             // Apply JSON patches
             $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
-        } catch (InvalidPatchDocumentJsonException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
-        } catch (InvalidTargetDocumentJsonException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
-        } catch (InvalidOperationException $e) {
-            throw new InvalidJsonPatchException($e->getMessage());
-        } catch (FailedTestException $e) {
+        } catch (\Exception $e) {
+            $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
             throw new InvalidJsonPatchException($e->getMessage());
         }
 
         // Validate result object
         $model = $this->getModel();
-        $record = $this->validateRequest($patchedDocument, $model);
+        $record = $this->restUtils->validateRequest($patchedDocument, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
+
+        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_OK);
@@ -481,7 +358,7 @@ class RestController
         // Set Content-Location header
         $response->headers->set(
             'Content-Location',
-            $this->getRouter()->generate($this->getRouteName($request), array('id' => $record->getId()))
+            $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
         );
 
         return $response;
@@ -497,11 +374,7 @@ class RestController
     public function deleteAction($id)
     {
         $response = $this->getResponse();
-
-        // does this record exist?
-        $this->findRecord($id);
-
-        $this->getModel()->deleteRecord($id);
+        $this->model->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
 
         return $response;
@@ -578,7 +451,7 @@ class RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($schema)],
+            ['response' => $this->restUtils->serialize($schema)],
             $response
         );
     }
@@ -597,22 +470,6 @@ class RestController
         return $this->templating->renderResponse($view, $parameters, $response);
     }
 
-    /**
-     * @param Request $request request
-     * @return string
-     */
-    private function getRouteName(Request $request)
-    {
-        $routeName = $request->get('_route');
-        $routeParts = explode('.', $routeName);
-        $routeType = end($routeParts);
-
-        if ($routeType == 'post') {
-            $routeName = substr($routeName, 0, -4) . 'get';
-        }
-
-        return $routeName;
-    }
 
     /**
      * Security needs to be enabled to get Object.

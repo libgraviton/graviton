@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="graviton.document.service.extrefconverter.class">Graviton\DocumentBundle\Service\ExtReferenceConverter</parameter>
+        <parameter key="graviton.document.service.collectioncache.class">Graviton\DocumentBundle\Service\CollectionCache</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
         <parameter key="graviton.document.listener.fieldnamesearchlistener.class">Graviton\DocumentBundle\Listener\FieldNameSearchListener</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
@@ -17,6 +18,12 @@
         <service id="graviton.document.service.extrefconverter" class="%graviton.document.service.extrefconverter.class%">
             <argument type="service" id="router"/>
             <argument>%graviton.document.type.extref.mapping%</argument>
+        </service>
+
+        <!-- Collection Cache Service -->
+        <service id="graviton.document.service.collectioncache" class="%graviton.document.service.collectioncache.class%">
+            <argument type="service" id="doctrine_cache.providers.local"/>
+            <argument>%graviton.cache.collections%</argument>
         </service>
 
         <!-- empty extref serializing listener -->
