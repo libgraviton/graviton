@@ -5,9 +5,13 @@
 
 namespace Graviton\RestBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\NoInputException;
+use Graviton\ExceptionBundle\Exception\SerializationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
+use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\Validator;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -405,5 +409,96 @@ final class RestUtils implements RestUtilsInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * @param Request $request request
+     * @return string
+     */
+    public function getRouteName(Request $request)
+    {
+        $routeName = $request->get('_route');
+        $routeParts = explode('.', $routeName);
+        $routeType = end($routeParts);
+
+        if ($routeType == 'post') {
+            $routeName = substr($routeName, 0, -4) . 'get';
+        }
+
+        return $routeName;
+    }
+
+    /**
+     * Serialize the given record and throw an exception if something went wrong
+     *
+     * @param object|object[] $result Record(s)
+     *
+     * @throws \Graviton\ExceptionBundle\Exception\SerializationException
+     *
+     * @return string $content Json content
+     */
+    public function serialize($result)
+    {
+        try {
+            // array is serialized as an object {"0":{...},"1":{...},...} when data contains an empty objects
+            // we serialize each item because we can assume this bug affects only root array element
+            if (is_array($result) && array_keys($result) === range(0, count($result) - 1)) {
+                $result = array_map(
+                    function ($item) {
+                        return $this->serializeContent($item);
+                    },
+                    $result
+                );
+
+                return '['.implode(',', array_filter($result)).']';
+            }
+
+            return $this->serializeContent($result);
+        } catch (\Exception $e) {
+            throw new SerializationException($e);
+        }
+    }
+
+    /**
+     * Deserialize the given content throw an exception if something went wrong
+     *
+     * @param string $content       Request content
+     * @param string $documentClass Document class
+     *
+     * @throws DeserializationException
+     *
+     * @return object $record Document
+     */
+    public function deserialize($content, $documentClass)
+    {
+        try {
+            $record = $this->deserializeContent(
+                $content,
+                $documentClass
+            );
+        } catch (\Exception $e) {
+            throw new DeserializationException("Deserialization failed", $e);
+        }
+
+        return $record;
+    }
+
+    /**
+     * Validates the current request on schema violations. If there are errors,
+     * the exception is thrown. If not, the deserialized record is returned.
+     *
+     * @param object|string $content \stdClass of the request content
+     * @param DocumentModel $model   the model to check the schema for
+     *
+     * @return ValidationExceptionError|Object
+     * @throws \Exception
+     */
+    public function validateRequest($content, DocumentModel $model)
+    {
+        $errors = $this->validateContent($content, $model);
+        if (!empty($errors)) {
+            throw new ValidationException($errors);
+        }
+        return $this->deserialize($content, $model->getEntityClass());
     }
 }

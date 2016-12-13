@@ -48,7 +48,7 @@ class WhoAmIController extends RestController
 
         return $this->render(
             'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->serialize($securityUser->getUser())],
+            ['response' => $this->restUtils->serialize($securityUser->getUser())],
             $response
         );
     }

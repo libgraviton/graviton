@@ -75,3 +75,7 @@ parameters:
 
     # Add full qualified type, application/pdf, image/jpeg...
     graviton.file.allowed.mime_types: []
+
+    # List of collections to be saved in cache, in seconds
+    graviton.cache.collections:
+        EventStatus: 60

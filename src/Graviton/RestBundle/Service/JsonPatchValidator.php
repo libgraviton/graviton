@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Service;
 
+use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Rs\Json\Pointer;
 use Rs\Json\Pointer\InvalidPointerException;
 use Rs\Json\Pointer\NonexistentValueReferencedException;
@@ -12,14 +13,10 @@ use Rs\Json\Pointer\NonexistentValueReferencedException;
 class JsonPatchValidator
 {
     /**
-     * @var \Exception
-     */
-    private $exception;
-
-    /**
      * @param string $targetDocument JSON of target document
      * @param string $jsonPatch
      * @return boolean
+     * @throws InvalidJsonPatchException
      */
     public function validate($targetDocument, $jsonPatch)
     {
@@ -29,9 +26,7 @@ class JsonPatchValidator
             try {
                 $pointer->get($op['path']);
             } catch (InvalidPointerException $e) {
-                // Basic validation failed
-                $this->setException($e);
-                return false;
+                throw new InvalidJsonPatchException($e);
             } catch (NonexistentValueReferencedException $e) {
                 $pathParts = explode('/', $op['path']);
                 $lastPart = end($pathParts);
@@ -52,29 +47,12 @@ class JsonPatchValidator
                     try {
                         $pointer->get(implode('/', $pathParts));
                     } catch (NonexistentValueReferencedException $e) {
-                        $this->setException($e);
-                        return false;
+                        throw new InvalidJsonPatchException($e);
                     }
                 }
             }
         }
 
         return true;
-    }
-
-    /**
-     * @param \Exception $e
-     */
-    private function setException($e)
-    {
-        $this->exception = $e;
-    }
-
-    /**
-     * @return \Exception
-     */
-    public function getException()
-    {
-        return $this->exception;
     }
 }
