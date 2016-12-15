@@ -74,6 +74,7 @@ class I18nSerializationListener
 
         // Doctrine try to map value fields that may not exists.
         // @TODO why is this done here? clearify and maybe remove(?)
+        // To know what object could not be serialised and what reference.
         try {
             $methods = get_class_methods($object);
             foreach ($methods as $method) {
@@ -142,24 +143,24 @@ class I18nSerializationListener
         }
 
         $hash = \spl_object_hash($object);
-
         if (!array_key_exists($hash, $this->localizedFields)) {
             return;
         }
 
+        /** @var \JMS\Serializer\JsonSerializationVisitor $visitor */
+        $visitor = $event->getVisitor();
         foreach ($this->localizedFields[$hash] as $field => $value) {
             if (substr($field, -2, 2) === '[]') {
                 $field = substr($field, 0, -2);
-                $event->getVisitor()->addData(
-                    $field,
-                    array_map([$this->utils, 'getTranslatedField'], $value)
-                );
+                $translated = array_map([$this->utils, 'getTranslatedField'], $value);
             } else {
-                $event->getVisitor()->addData(
-                    $field,
-                    $this->utils->getTranslatedField($value)
-                );
+                $translated = $this->utils->getTranslatedField($value);
             }
+            try {
+                $visitor->addData($field, $translated);
+            } catch (\Exception $e) {
+                // JMS serializer do in newer version have a simple "hasData" check.
+            };
         }
     }
 }
