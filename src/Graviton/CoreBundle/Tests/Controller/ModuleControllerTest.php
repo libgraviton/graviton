@@ -76,19 +76,19 @@ class ModuleControllerTest extends RestTestCase
     public function testSearchWeightedIndex()
     {
         $client = static::createRestClient();
-        $client->request('GET', '/core/module/?search(module%20payandsave%20realestate)&gt(order,0)&select(key,path)');
+        $client->request('GET', '/core/module/?search(module%20payandsave)&gt(order,0)&select(key,path)');
         $results = $client->getResults();
 
-        // This are the weighted important result, payAndSave and realEstate, order is not important.
-        $importantResults = [
-            $results[0]->key => $results[0]->path,
-            $results[1]->key => $results[1]->path
-        ];
+        // First is a very specific request
+        $this->assertEquals('payAndSave', $results[0]->key);
+        $this->assertEquals(1, count($results));
 
-        $this->assertArrayHasKey('payAndSave', $importantResults);
-        $this->assertArrayHasKey('realEstate', $importantResults);
+        // Now we search for a common name, module
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(module)&gt(order,0)&select(key,path,order)');
+        $results = $client->getResults();
 
-        // Now, there shall be 5 results as we have 5 path containing module
+        // Here we have all 5 testing modules
         $this->assertEquals(5, count($results));
     }
 
