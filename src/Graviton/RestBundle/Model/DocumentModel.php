@@ -333,7 +333,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $searchArr = [];
         foreach ($searchNode->getSearchTerms() as $string) {
             if (!empty(trim($string))) {
-                $searchArr[] = (strpos($string, '.') !== false) ? "\"{$string}\"" : $string;
+                $searchArr[] = "\"{$string}\"";
             }
         }
         if (!empty($searchArr)) {
