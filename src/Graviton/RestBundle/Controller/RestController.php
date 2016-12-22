@@ -265,10 +265,11 @@ class RestController
         $response = $this->getResponse();
         $model = $this->getModel();
 
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-
         // Check and wait if another update is being processed
         $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 2);
+
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
         $this->collectionCache->addUpdateLock($model->getRepository(), $id);
 
         $record = $this->restUtils->validateRequest($request->getContent(), $model);
