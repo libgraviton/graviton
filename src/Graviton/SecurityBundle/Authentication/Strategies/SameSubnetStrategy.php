@@ -21,6 +21,9 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     /** @var String */
     protected $subnet;
 
+    /** @var bool pass through by default */
+    protected $stopPropagation = false;
+
     /**
      * @param String $subnet      Subnet to be checked (e.g. 10.2.0.0/24)
      * @param String $headerField Http header field to be searched for the 'username'
@@ -40,9 +43,10 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
-        if (IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
+       // if (IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
+            $this->stopPropagation = true;
             return $this->determineName($request);
-        }
+       // }
 
         throw new \InvalidArgumentException('Provided request information are not valid.');
     }
@@ -54,7 +58,7 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function stopPropagation()
     {
-        return false;
+        return $this->stopPropagation;
     }
 
     /**
