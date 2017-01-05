@@ -174,6 +174,14 @@ class FileManager
             $document->setId($uuid);
         }
 
+        // Filename limitation
+        if ($filename = $document->getMetadata()->getFilename()) {
+            // None English chars
+            if (preg_match('/[^a-z_\-0-9.]/i', $filename)) {
+                throw new InvalidArgumentException('None special chars allowed for filename, given: '.$filename);
+            }
+        }
+
         // All ok, let's save the file
         if ($isNew) {
             if (!$file || $file->getSize() == 0) {
