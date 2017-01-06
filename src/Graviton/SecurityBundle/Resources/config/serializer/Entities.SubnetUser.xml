@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+  <class name="Graviton\SecurityBundle\Entities\SubnetUser" exclusion-policy="ALL">
+    <property name="id" type="int" accessor-getter="getId" expose="false"/>
+    <property name="username" type="string" accessor-getter="getUsername" accessor-setter="setUsername" exclude="false" expose="true"/>
+  </class>
+</serializer>

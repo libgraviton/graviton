@@ -21,6 +21,12 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     /** @var String */
     protected $subnet;
 
+    /** @var String */
+    protected $headerField;
+
+    /** @var bool pass through by default */
+    protected $stopPropagation = false;
+
     /**
      * @param String $subnet      Subnet to be checked (e.g. 10.2.0.0/24)
      * @param String $headerField Http header field to be searched for the 'username'
@@ -54,7 +60,7 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function stopPropagation()
     {
-        return false;
+        return $this->stopPropagation;
     }
 
     /**
@@ -77,6 +83,7 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     private function determineName(Request $request)
     {
         if ($request->headers->has($this->headerField)) {
+            $this->stopPropagation = true;
             return $request->headers->get($this->headerField);
         }
 
