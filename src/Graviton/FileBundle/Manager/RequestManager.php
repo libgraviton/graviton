@@ -85,7 +85,7 @@ class RequestManager
                 if ($file) {
                     $request->files->add([$file]);
                 }
-            } elseif ($json && $contentType == 'application/json') {
+            } elseif ($json && $contentType != 'application/javascript') {
                 $request->request->set('metadata', json_encode($json));
             } else {
                 $file = $this->extractFileFromString($part->getBody());
