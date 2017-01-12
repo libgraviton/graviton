@@ -76,8 +76,7 @@ class RequestManager
             // see if body is json or binary..
             $json = json_decode($part->getBody(), true);
 
-            if (
-                $request->headers->get('Content-Type') == 'application/javascript'
+            if ($request->headers->get('Content-Type') == 'application/javascript'
                 || (!$json && $request->files->count() == 0)
             ) {
                 $file = $this->extractFileFromString($part->getBody());
