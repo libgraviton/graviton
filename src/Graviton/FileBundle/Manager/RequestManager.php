@@ -76,24 +76,17 @@ class RequestManager
             // see if body is json or binary..
             $json = json_decode($part->getBody(), true);
 
-            // Content Type
-            $contentType = $request->headers->get('Content-Type');
-
-            // Check if content is binary, convert to file upload
-            if (!$json && $request->files->count() == 0) {
+            if (
+                $request->headers->get('Content-Type') == 'application/javascript'
+                || (!$json && $request->files->count() == 0)
+            ) {
                 $file = $this->extractFileFromString($part->getBody());
                 if ($file) {
                     $request->files->add([$file]);
                 }
-            } elseif ($json && $contentType != 'application/javascript') {
+            } elseif ($json) {
                 $request->request->set('metadata', json_encode($json));
-            } else {
-                $file = $this->extractFileFromString($part->getBody());
-                if ($file) {
-                    $request->files->add([$file]);
-                }
             }
-            return $request;
         }
 
         return $request;
