@@ -565,6 +565,45 @@ class FileControllerTest extends RestTestCase
         );
     }
 
+
+
+    /**
+     * test behavior when data sent was multipart/form-data
+     *
+     * @return void
+     */
+    public function testPutNewJsonFileViaForm()
+    {
+        $fileId = 'simple-json-content';
+        $newContent = '{
+          "id": "myPersonalFile",
+          "someArrayData": [
+            {
+              "field1": "fieldDataValue"
+            }
+          ],
+          "UnknownData": {
+            "testField": "filed"
+          }
+        }';
+
+        $this->updateFileContent($fileId, $newContent);
+
+        $client = $this->createClient([], ['CONTENT_TYPE' => 'text/plain']);
+        $client->request('GET', sprintf('/file/%s', $fileId));
+
+        $retData = $client->getResponse()->getContent();
+
+        $this->assertEquals($retData, $newContent);
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            '/file/'.$fileId
+        );
+    }
+
     /**
      * check if a schema is of the file type
      *
