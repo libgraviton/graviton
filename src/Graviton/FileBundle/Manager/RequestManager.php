@@ -52,7 +52,7 @@ class RequestManager
         }
 
         $part = new Part((string) $request);
-
+        // Form multipart
         if ($part->isMultiPart()) {
             // do we have metadata?
             $metadata = $part->getPartsByName('metadata');
@@ -72,15 +72,16 @@ class RequestManager
 
                 $request->files->add([$file]);
             }
+        // Type json and can be parsed
+        } else if ((strpos($request->headers->get('Content-Type'), 'application/json') !== false)
+            && $json = json_decode($part->getBody(), true)
+        ) {
+            $request->request->set('metadata', json_encode($json));
+        // Anything else should be saved as file
         } else {
-            if (strpos($request->headers->get('Content-Type'), 'application/json') !== false) {
-                $json = json_decode($part->getBody(), true);
-                $request->request->set('metadata', json_encode($json));
-            } else {
-                $file = $this->extractFileFromString($part->getBody());
-                if ($file) {
-                    $request->files->add([$file]);
-                }
+            $file = $this->extractFileFromString($part->getBody());
+            if ($file) {
+                $request->files->add([$file]);
             }
         }
 
