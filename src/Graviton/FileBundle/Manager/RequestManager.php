@@ -54,7 +54,7 @@ class RequestManager
         $part = new Part((string) $request);
 
         if ($part->isMultiPart()) {
-            // do we have metadata? for a multipart form 
+            // do we have metadata? for a multipart form
             $metadata = $part->getPartsByName('metadata');
             if (is_array($metadata) && !empty($metadata)) {
                 $request->request->set('metadata', $metadata[0]->getBody());
