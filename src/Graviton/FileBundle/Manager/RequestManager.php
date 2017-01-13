@@ -73,18 +73,14 @@ class RequestManager
                 $request->files->add([$file]);
             }
         } else {
-            // see if body is json or binary..
-            $json = json_decode($part->getBody(), true);
-
-            if ($request->headers->get('Content-Type') == 'application/javascript'
-                || (!$json && $request->files->count() == 0)
-            ) {
+            if (strpos($request->headers->get('Content-Type'), 'application/json') !== false) {
+                $json = json_decode($part->getBody(), true);
+                $request->request->set('metadata', json_encode($json));
+            } else {
                 $file = $this->extractFileFromString($part->getBody());
                 if ($file) {
                     $request->files->add([$file]);
                 }
-            } elseif ($json) {
-                $request->request->set('metadata', json_encode($json));
             }
         }
 
