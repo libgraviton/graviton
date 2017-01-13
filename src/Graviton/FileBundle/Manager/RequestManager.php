@@ -73,7 +73,7 @@ class RequestManager
                 $request->files->add([$file]);
             }
         // Type json and can be parsed
-        } else if ((strpos($request->headers->get('Content-Type'), 'application/json') !== false)
+        } elseif ((strpos($request->headers->get('Content-Type'), 'application/json') !== false)
             && $json = json_decode($part->getBody(), true)
         ) {
             $request->request->set('metadata', json_encode($json));
