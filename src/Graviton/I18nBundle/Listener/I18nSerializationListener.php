@@ -157,9 +157,11 @@ class I18nSerializationListener
                 $translated = $this->utils->getTranslatedField($value);
             }
 
-            if (!$visitor->hasData($field)) {
-                $visitor->setData($field, $translated);
-            }
+            try {
+                $visitor->addData($field, $translated);
+            } catch (\Exception $e) {
+                // JMS serializer do in newer version have a simple "hasData" check.
+            };
         }
     }
 }
