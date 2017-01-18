@@ -40,6 +40,8 @@ class SameSubnetStrategyTest extends WebTestCase
     }
 
     /**
+     * x header shall be sent in order to gain the roles for the subnet user.
+     *
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
@@ -56,7 +58,8 @@ class SameSubnetStrategyTest extends WebTestCase
             array() //server
         );
 
-        $this->assertSame('graviton_subnet_user', $this->strategy->apply($this->client->getRequest()));
+        $this->setExpectedException('\InvalidArgumentException');
+        $this->strategy->apply($this->client->getRequest());
     }
 
     /**
@@ -69,6 +72,7 @@ class SameSubnetStrategyTest extends WebTestCase
     public function testApplyHeader()
     {
         $client = static::createClient([], ['HTTP_X-GRAVITON-AUTHENTICATION' => 'test-user-name']);
+        $this->strategy->setSubnetIp('127.0.0.0/7');
         $client->request('GET', '/');
 
         $this->assertSame('test-user-name', $this->strategy->apply($client->getRequest()));
