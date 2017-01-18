@@ -138,11 +138,13 @@ final class SecurityAuthenticator implements
             throw new AuthenticationException('Authentication key is required.');
         }
 
-        if (in_array(SecurityUser::ROLE_SUBNET, $roles)) {
-            $this->logger->info('Authentication, loaded subnet user IP address: '. $token->getAttribute('ipAddress'));
-            $user = new SubnetUser($username);
-        } elseif ($username && $user = $this->userProvider->loadUserByUsername($username)) {
-            $roles[] = SecurityUser::ROLE_CONSULTANT;
+        if ($username) {
+            if (in_array(SecurityUser::ROLE_SUBNET, $roles)) {
+                $this->logger->info('Authentication, subnet user IP address: ' . $token->getAttribute('ipAddress'));
+                $user = new SubnetUser($username);
+            } elseif ($user = $this->userProvider->loadUserByUsername($username)) {
+                $roles[] = SecurityUser::ROLE_CONSULTANT;
+            }
         }
 
         // If no user, try to fetch the test user, else check if anonymous is enabled
