@@ -38,6 +38,16 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     }
 
     /**
+     * Ip subnet check
+     * @param string $subnet IpAddress
+     * @return void
+     */
+    public function setSubnetIp($subnet)
+    {
+        $this->subnet = $subnet;
+    }
+
+    /**
      * Applies the defined strategy on the provided request.
      *
      * @param Request $request request to handle
