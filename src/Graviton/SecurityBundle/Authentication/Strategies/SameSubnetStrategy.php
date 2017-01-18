@@ -83,8 +83,11 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     private function determineName(Request $request)
     {
         if ($request->headers->has($this->headerField)) {
-            $this->stopPropagation = true;
-            return $request->headers->get($this->headerField);
+            $name = $request->headers->get($this->headerField);
+            if (!empty($name)) {
+                $this->stopPropagation = true;
+            }
+            return $name;
         }
 
         return 'graviton_subnet_user';
