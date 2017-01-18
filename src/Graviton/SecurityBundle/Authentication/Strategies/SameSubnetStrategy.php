@@ -47,7 +47,11 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     public function apply(Request $request)
     {
         if (IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
-            return $this->determineName($request);
+            $name = $this->determineName($request);
+            if (!empty($name)) {
+                $this->stopPropagation = true;
+                return $name;
+            }
         }
 
         throw new \InvalidArgumentException('Provided request information are not valid.');
@@ -83,13 +87,9 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     private function determineName(Request $request)
     {
         if ($request->headers->has($this->headerField)) {
-            $name = $request->headers->get($this->headerField);
-            if (!empty($name)) {
-                $this->stopPropagation = true;
-            }
-            return $name;
+            return $request->headers->get($this->headerField);
         }
 
-        return 'graviton_subnet_user';
+        return '';
     }
 }

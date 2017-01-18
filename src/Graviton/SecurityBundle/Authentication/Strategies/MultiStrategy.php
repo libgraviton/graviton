@@ -48,7 +48,7 @@ class MultiStrategy implements StrategyInterface
         foreach ($this->strategies as $strategy) {
             try {
                 $name = $strategy->apply($request);
-                $this->roles = array_merge($this->roles, $strategy->getRoles());
+                $this->roles = $strategy->getRoles();
 
                 if ($strategy->stopPropagation()) {
                     return $name;
