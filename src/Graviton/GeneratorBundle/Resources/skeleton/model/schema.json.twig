@@ -46,6 +46,10 @@
       "readOnly": {{ field.readOnly|json_encode() }},
 {% endif %}
 
+{% if field.hideOnEmptyExtref is defined and field.hideOnEmptyExtref == true %}
+        "hideOnEmptyExtref": {{ field.hideOnEmptyExtref|json_encode() }},
+{% endif %}
+
 {% if field.recordOriginException is defined and field.recordOriginException == true %}
       "recordOriginException": {{ field.recordOriginException|json_encode() }},
 {% endif %}

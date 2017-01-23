@@ -50,6 +50,10 @@ class Field
     /**
      * @var bool
      */
+    private $hideOnEmptyExtref = false;
+    /**
+     * @var bool
+     */
     private $required = false;
     /**
      * @var integer
@@ -198,6 +202,28 @@ class Field
     {
         $this->readOnly = $readOnly;
         return $this;
+    }
+
+    /**
+     * is HideOnEmptyExtref
+     *
+     * @return boolean HideOnEmptyExtref
+     */
+    public function isHideOnEmptyExtref()
+    {
+        return $this->hideOnEmptyExtref;
+    }
+
+    /**
+     * set setHideOnEmptyExtref
+     *
+     * @param boolean $hideOnEmptyExtref hideOnEmptyExtref
+     *
+     * @return void
+     */
+    public function setHideOnEmptyExtref($hideOnEmptyExtref)
+    {
+        $this->hideOnEmptyExtref = $hideOnEmptyExtref;
     }
 
     /**

@@ -97,7 +97,8 @@ class JsonDefinitionRelTest extends BaseJsonDefinitionFieldTest
                     'relType'               => $relation->getType(),
                     'isClassType'           => true,
                     'searchable'            => 0,
-                    'recordOriginException' => false
+                    'recordOriginException' => false,
+                    'hideOnEmptyExtref'     => false
                 ]
             ),
             $field->getDefAsArray()

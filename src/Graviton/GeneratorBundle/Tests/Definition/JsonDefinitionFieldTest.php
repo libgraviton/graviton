@@ -159,16 +159,17 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
             array_replace(
                 $this->getBaseDefAsArray($definition),
                 [
-                    'name'                 => $field->getName(),
-                    'type'                 => $field->getType(),
-                    'exposedName'          => $definition->getExposeAs(),
-                    'doctrineType'         => $field->getTypeDoctrine(),
-                    'serializerType'       => $field->getTypeSerializer(),
-                    'relType'              => null,
-                    'isClassType'          => false,
-                    'xDynamicKey'          => null,
-                    'searchable'           => 0,
-                    'recordOriginException' => false
+                    'name'                  => $field->getName(),
+                    'type'                  => $field->getType(),
+                    'exposedName'           => $definition->getExposeAs(),
+                    'doctrineType'          => $field->getTypeDoctrine(),
+                    'serializerType'        => $field->getTypeSerializer(),
+                    'relType'               => null,
+                    'isClassType'           => false,
+                    'xDynamicKey'           => null,
+                    'searchable'            => 0,
+                    'recordOriginException' => false,
+                    'hideOnEmptyExtref'     => false
                 ]
             ),
             $field->getDefAsArray()
@@ -205,7 +206,8 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'isClassType'           => false,
                     'xDynamicKey'           => $key,
                     'searchable'            => 0,
-                    'recordOriginException' => false
+                    'recordOriginException' => false,
+                    'hideOnEmptyExtref'     => false
                 ]
             ),
             $field->getDefAsArray()
