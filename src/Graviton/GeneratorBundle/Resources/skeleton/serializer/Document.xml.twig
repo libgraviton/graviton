@@ -39,7 +39,7 @@
     {% if '[]' in field.type %}
         {% set fieldType = 'array' %}
     {% else %}
-        {% set fieldType = field.type %}
+        {% set fieldType = false %}
     {% endif %}
 
     <property name="{{ field.fieldName }}"
@@ -47,7 +47,7 @@
               serialized-name="{{ field.exposedName }}"
               accessor-getter="{{ getterMethod }}"
               accessor-setter="set{{ field.fieldName|capitalize }}"
-              {% if fieldType != 'extref' %}type="{{ fieldType }}"{% endif %}>
+              {% if fieldType %}type="{{ fieldType }}"{% endif %}>
         <type><![CDATA[{{ field.serializerType }}]]></type>
     </property>
 
