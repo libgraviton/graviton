@@ -60,7 +60,7 @@ class IncrementalDateFieldConstraintTest extends RestTestCase
                 ]
             );
 
-            // same with patch
+            // same with patch, no change made, same date if first validation goes through
             $patchObject = json_encode(
                 [
                     [
@@ -72,14 +72,17 @@ class IncrementalDateFieldConstraintTest extends RestTestCase
             );
             $client->request('PATCH', '/testcase/incremental-date-constraint/dude', [], [], [], $patchObject);
 
-            $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-            $this->assertEquals(
-                $client->getResults()[0],
-                (object) [
-                    'propertyPath' => 'mightyDate',
-                    'message' => 'The date must be greater than the saved date 1984-05-02T07:00:01+0000'
-                ]
-            );
+            if ($client->getResponse()->getStatusCode() == Response::HTTP_BAD_REQUEST) {
+                $this->assertEquals(
+                    $client->getResults()[0],
+                    (object) [
+                        'propertyPath' => 'mightyDate',
+                        'message' => 'The date must be greater than the saved date 1984-05-02T07:00:01+0000'
+                    ]
+                );
+            } else {
+                $this->assertEquals(Response::HTTP_NOT_MODIFIED, $client->getResponse()->getStatusCode());
+            }
         }
 
         // this should work (+1 sec)

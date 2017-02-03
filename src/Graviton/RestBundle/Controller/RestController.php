@@ -344,6 +344,12 @@ class RestController
             throw new InvalidJsonPatchException($e->getMessage());
         }
 
+        // Validation don't check for not valid path HTTP_NOT_MODIFIED, so if no change done, notify.
+        if ($jsonDocument == $patchedDocument) {
+            $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
+            return $response;
+        }
+
         // Validate result object
         $model = $this->getModel();
         $record = $this->restUtils->validateRequest($patchedDocument, $model);
