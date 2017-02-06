@@ -226,5 +226,35 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertEquals('document.core.app.update', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
         $this->assertEquals('http://localhost/core/app/test-event-app', $data['document']['$ref']);
+
+
+        // A failing event should not be published
+        // using patch
+        $patchObject = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/lastModified',
+                    'value' => '2014-10-03T20:10:05+2000'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/core/app/' . $testApp->id, [], [], [], $patchObject);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NOT_MODIFIED, $response->getStatusCode());
+
+        /** @var Dummy $dbProducer */
+        $events = $dbProducer->getEventList();
+        $this->assertCount(1, $events);
+
+        // With a wrong param S
+        $testApp->showInMenuS = false;
+        $client->put('/core/app/' . $testApp->id, $testApp);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+
+        /** @var Dummy $dbProducer */
+        $events = $dbProducer->getEventList();
+        $this->assertCount(1, $events);
     }
 }
