@@ -101,7 +101,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertContains(
-            '<http://localhost/core/app/?limit(0%2C10)>; rel="self"',
+            '<http://localhost/core/app/?limit(10%2C0)>; rel="self"',
             $response->headers->get('Link')
         );
 

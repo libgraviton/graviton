@@ -1,7 +1,9 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\Service;
+use Graviton\SchemaBundle\Constraint\VersionFieldConstraint;
 
 /**
  * This class represents the json file that defines the structure
@@ -152,6 +154,20 @@ class JsonDefinition
     }
 
     /**
+     * Returns whether this service is versioning
+     *
+     * @return bool true if yes, false if not
+     */
+    public function isVersionedService()
+    {
+        if ($this->def->getService() === null || !$this->def->getService()->getVersioning()) {
+            return false;
+        }
+
+        return $this->def->getService()->getVersioning();
+    }
+
+    /**
      * Returns whether this service has fixtures
      *
      * @return bool true if yes, false if not
@@ -278,6 +294,16 @@ class JsonDefinition
         $fields = [];
         foreach ($hierarchy as $name => $definition) {
             $fields[$name] = $this->processFieldHierarchyRecursive($name, $definition);
+        }
+
+        // Versioning field, for version control.
+        if ($this->def->getService() && $this->def->getService()->getVersioning()) {
+            $definition = new Schema\Field();
+            $constraint = new Constraint();
+            $constraint->setName('versioning');
+            $definition->setName(VersionFieldConstraint::FIELD_NAME)->setTitle('Version')->setType('int')
+                ->setConstraints([$constraint])->setDescription('Version control, auto-increment on update');
+            $fields['version'] = $this->processSimpleField('version',  $definition);
         }
 
         return $fields;

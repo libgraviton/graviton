@@ -135,8 +135,8 @@ class SelfLinkResponseListener
             // no rql given, we can do our own limit
             $limit = sprintf(
                 'limit(%s,%s)',
-                $request->attributes->get('startAt'),
-                $request->attributes->get('perPage')
+                $request->attributes->get('perPage'),
+                $request->attributes->get('startAt')
             );
 
             $parameters = ['q' => $limit];

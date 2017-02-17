@@ -14,6 +14,7 @@
     <parameter key="graviton.schema.constraint.incrementaldate.class">Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint</parameter>
     <parameter key="graviton.schema.constraint.readonlyfield.class">Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint</parameter>
     <parameter key="graviton.schema.constraint.recordorigin.class">Graviton\SchemaBundle\Constraint\RecordOriginConstraint</parameter>
+    <parameter key="graviton.schema.constraint.versionfield.class">Graviton\SchemaBundle\Constraint\VersionFieldConstraint</parameter>
     <parameter key="graviton.schema.serializer.handler.additionalproperties.class">Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler</parameter>
     <parameter key="graviton.schema.serializer.handler.type.class">Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler</parameter>
     <parameter key="graviton.schema.serializer.handler.enum.class">Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler</parameter>
@@ -114,6 +115,11 @@
     <service id="graviton.schema.constraint.incrementaldate" class="%graviton.schema.constraint.incrementaldate.class%">
       <argument type="service" id="graviton.schema.constraint.utils"/>
       <tag name="kernel.event_listener" event="graviton.json_schema.constraint.format" method="checkIncrementalDate"/>
+    </service>
+    <service id="graviton.schema.constraint.versionfield" class="%graviton.schema.constraint.versionfield.class%">
+      <argument type="service" id="graviton.schema.constraint.utils"/>
+      <tag name="kernel.event_listener" event="graviton.json_schema.constraint.format" method="validate"/>
+      <tag name="kernel.event_listener" event="kernel.response" method="setCurrentVersionHeader"/>
     </service>
     <service id="graviton.schema.constraint.readonlyfield" class="%graviton.schema.constraint.readonlyfield.class%">
       <argument type="service" id="graviton.schema.constraint.utils"/>
