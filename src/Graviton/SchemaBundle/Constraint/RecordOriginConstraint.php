@@ -7,6 +7,7 @@ namespace Graviton\SchemaBundle\Constraint;
 
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventSchema;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use JsonSchema\Rfc3339;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -100,6 +101,9 @@ class RecordOriginConstraint
         $schema = $event->getSchema();
         $isAllowed = true;
 
+        // Date Time conversion to UTC
+        $data = $this->convertDatetimeToUTC($data, $schema, new \DateTimeZone('UTC'));
+
         if (!isset($schema->{'x-documentClass'})) {
             // this should never happen but we need to check. if schema has no information to *check* our rules, we
             // MUST deny it in that case..
@@ -164,6 +168,27 @@ class RecordOriginConstraint
         }
 
         return;
+    }
+
+    /**
+     * Recursive convert date time to UTC
+     * @param object        $object   Form data to be verified
+     * @param object        $schema   Entity schema
+     * @param \DateTimeZone $timezone to be converted to
+     * @return object
+     */
+    private function convertDatetimeToUTC($object, $schema, \DateTimeZone $timezone)
+    {
+        foreach ($schema->properties as $field => $property) {
+            if (isset($property->format) && $property->format == 'date-time' && isset($object->{$field})) {
+                $dateTime = Rfc3339::createFromString($object->{$field});
+                $dateTime->setTimezone($timezone);
+                $object->{$field} = $dateTime->format(\DateTime::ISO8601);
+            } elseif (isset($property->properties) && isset($object->{$field})) {
+                $object->{$field} = $this->convertDatetimeToUTC($object->{$field}, $property, $timezone);
+            }
+        }
+        return $object;
     }
 
     /**
