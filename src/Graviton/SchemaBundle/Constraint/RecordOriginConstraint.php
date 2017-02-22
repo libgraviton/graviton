@@ -101,9 +101,6 @@ class RecordOriginConstraint
         $schema = $event->getSchema();
         $isAllowed = true;
 
-        // Date Time conversion to UTC
-        $data = $this->convertDatetimeToUTC($data, $schema, new \DateTimeZone('UTC'));
-
         if (!isset($schema->{'x-documentClass'})) {
             // this should never happen but we need to check. if schema has no information to *check* our rules, we
             // MUST deny it in that case..
@@ -129,6 +126,9 @@ class RecordOriginConstraint
 
             $storedObject = clone $currentRecord;
             $userObject = clone $data;
+
+            // convert all datetimes to UTC so we compare eggs with eggs
+            $userObject = $this->convertDatetimeToUTC($userObject, $schema, new \DateTimeZone('UTC'));
 
             foreach ($exceptions as $fieldName) {
                 if ($accessor->isWritable($storedObject, $fieldName)) {
