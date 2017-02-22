@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "44cc3175eac26ab2b64baa72dd8cb07c",
+    "content-hash": "d92998025b8503b4a7fc366a4bccac69",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1528,16 +1528,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.5.0",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e"
+                "reference": "587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e",
-                "reference": "dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8",
+                "reference": "587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8",
                 "shasum": ""
             },
             "require": {
@@ -1571,7 +1571,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-08-29T08:47:55+00:00"
+            "time": "2017-02-21T09:42:22+00:00"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -4745,16 +4745,16 @@
     "packages-dev": [
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.25.0",
+            "version": "v0.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "fb7ac6e04c871132d9a33e8ba1f67a1621c51a30"
+                "reference": "7c676f3cdc793706c3640a34daf53118afc4c9ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/fb7ac6e04c871132d9a33e8ba1f67a1621c51a30",
-                "reference": "fb7ac6e04c871132d9a33e8ba1f67a1621c51a30",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/7c676f3cdc793706c3640a34daf53118afc4c9ae",
+                "reference": "7c676f3cdc793706c3640a34daf53118afc4c9ae",
                 "shasum": ""
             },
             "type": "library",
@@ -4774,7 +4774,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2017-02-22T08:38:23+00:00"
+            "time": "2017-02-21T09:44:22+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
