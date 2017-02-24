@@ -107,6 +107,20 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get isVersioning
+     *
+     * @return bool
+     */
+    public function isVersioning()
+    {
+        $isVersioning = false;
+        if (isset($this->schema->{'x-versioning'})) {
+            $isVersioning = $this->schema->{'x-versioning'};
+        }
+        return $isVersioning;
+    }
+
+    /**
      * Returns the bare schema
      *
      * @return \stdClass Schema

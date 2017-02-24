@@ -20,6 +20,10 @@ class Service
     /**
      * @var bool
      */
+    private $versioning;
+    /**
+     * @var bool
+     */
     private $recordOriginModifiable;
     /**
      * @var string
@@ -101,6 +105,24 @@ class Service
     public function setReadOnly($readOnly)
     {
         $this->readOnly = $readOnly;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getVersioning()
+    {
+        return is_null($this->versioning) ? false : $this->versioning;
+    }
+
+    /**
+     * @param bool $versioning Is a versioned service
+     * @return $this
+     */
+    public function setVersioning($versioning)
+    {
+        $this->versioning = $versioning;
         return $this;
     }
 

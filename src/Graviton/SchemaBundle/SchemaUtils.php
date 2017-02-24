@@ -216,6 +216,7 @@ class SchemaUtils
         $schema->setDescription($model->getDescription());
         $schema->setDocumentClass($model->getDocumentClass());
         $schema->setRecordOriginModifiable($model->getRecordOriginModifiable());
+        $schema->setIsVersioning($model->isVersioning());
         $schema->setType('object');
 
         // grab schema info from model
