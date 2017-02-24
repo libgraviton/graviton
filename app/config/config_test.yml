@@ -4,7 +4,10 @@ imports:
 
 parameters:
     kernel.debug: false
+    # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
+    # we don't want to use any cache provider of collection cache
+    graviton.document.collectioncache.provider: doctrine_cache.providers.array
     #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
 
 framework:
