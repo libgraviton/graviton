@@ -7,6 +7,7 @@
     <property name="readOnly" type="boolean" accessor-getter="getReadOnly" accessor-setter="setReadOnly" expose="true"/>
     <property name="recordOriginModifiable" serialized-name="x-recordOriginModifiable" type="boolean" accessor-getter="isRecordOriginModifiable" accessor-setter="setRecordOriginModifiable" expose="true"/>
     <property name="recordOriginException" serialized-name="x-recordOriginException" type="boolean" accessor-getter="isRecordOriginException" accessor-setter="setRecordOriginException" expose="true"/>
+    <property name="isVersioning" serialized-name="x-versioning" type="boolean" accessor-getter="isVersioning" accessor-setter="setIsVersioning" expose="true"/>
     <property name="format" type="string" accessor-getter="getFormat" accessor-setter="setFormat" expose="true"/>
     <property name="minLength" type="integer" accessor-getter="getMinLength" accessor-setter="setMinLength" expose="true"/>
     <property name="maxLength" type="integer" accessor-getter="getMaxLength" accessor-setter="setMaxLength" expose="true"/>

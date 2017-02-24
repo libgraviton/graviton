@@ -164,7 +164,7 @@ class JsonDefinition
             return false;
         }
 
-        return $this->def->getService()->getVersioning();
+        return (boolean) $this->def->getService()->getVersioning();
     }
 
     /**
@@ -526,7 +526,7 @@ class JsonDefinition
 
     /**
      * Combine in one array the Search text indexes
-     * 
+     *
      * @return array
      */
     public function getAllTextIndexes()
