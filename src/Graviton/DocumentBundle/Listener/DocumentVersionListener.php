@@ -7,7 +7,7 @@ namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\RestBundle\Event\ModelEvent;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Graviton\SchemaBundle\Constraint\VersionFieldConstraint;
+use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
 
 /**
  * Class DocumentVersionListener
@@ -23,12 +23,20 @@ class DocumentVersionListener
     private $documentManager;
 
     /**
-     * constructor.
-     * @param DocumentManager $documentManager Db Connection document manager
+     * @var VersionServiceConstraint
      */
-    public function __construct(DocumentManager $documentManager)
+    private $constraint;
+
+    /**
+     * constructor.
+     *
+     * @param DocumentManager          $documentManager Db Connection document manager
+     * @param VersionServiceConstraint $constraint      constraint
+     */
+    public function __construct(DocumentManager $documentManager, VersionServiceConstraint $constraint)
     {
         $this->documentManager = $documentManager;
+        $this->constraint = $constraint;
     }
 
     /**
@@ -59,7 +67,7 @@ class DocumentVersionListener
      */
     private function updateCounter(ModelEvent $event, $action)
     {
-        if (!property_exists($event->getCollection(), VersionFieldConstraint::FIELD_NAME)) {
+        if (!$this->constraint->isVersioningService()) {
             return;
         }
 
@@ -67,12 +75,12 @@ class DocumentVersionListener
         if ('update' == $action) {
             $qb->findAndUpdate()
                 ->field('id')->equals($event->getCollectionId())
-                ->field(VersionFieldConstraint::FIELD_NAME)->inc(1)
+                ->field(VersionServiceConstraint::FIELD_NAME)->inc(1)
                 ->getQuery()->execute();
         } else {
             $qb->findAndUpdate()
                 ->field('id')->equals($event->getCollectionId())
-                ->field(VersionFieldConstraint::FIELD_NAME)->set(1)
+                ->field(VersionServiceConstraint::FIELD_NAME)->set(1)
                 ->getQuery()->execute();
         }
     }

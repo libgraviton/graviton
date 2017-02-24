@@ -35,6 +35,7 @@
         <!-- Version listener -->
         <service id="graviton.document.listener.documentversion" class="%graviton.document.listener.documentversionlistener.class%">
             <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
+            <argument type="service" id="graviton.schema.constraint.versionservice"/>
             <tag name="kernel.event_listener" event="document.model.event.insert" method="modelInsert"/>
             <tag name="kernel.event_listener" event="document.model.event.update" method="modelUpdate"/>
         </service>
