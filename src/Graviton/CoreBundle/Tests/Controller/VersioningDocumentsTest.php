@@ -5,7 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\SchemaBundle\Constraint\VersionFieldConstraint;
+use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
 use GravitonDyn\TestCaseVersioningEntityBundle\DataFixtures\MongoDB\LoadTestCaseVersioningEntityData;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\TestBundle\Test\RestTestCase;
@@ -80,7 +80,7 @@ class VersioningDocumentsTest extends RestTestCase
         $client->put('/testcase/versioning-entity/one', $original);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        $this->assertEquals($initialVersion, $response->headers->get(VersionFieldConstraint::HEADER_NAME));
+        $this->assertEquals($initialVersion, $response->headers->get(VersionServiceConstraint::HEADER_NAME));
 
 
         // Update with correct version
@@ -93,8 +93,31 @@ class VersioningDocumentsTest extends RestTestCase
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
     }
 
+    /**
+     * there was a bug that clients could 'reset' the version by just not sending it.
+     * that's because version is not a required field per se; so the _field_ validator would not execute.
+     * this is testing the service validator now.
+     *
+     * @return void
+     */
+    public function testSubsequentCreateWithNoVersion()
+    {
+        // create a record, specify no version
+        $record = (object) [
+            'id' => 'dude',
+            'data' => 'mydata'
+        ];
 
+        $client = static::createRestClient();
+        $client->put('/testcase/versioning-entity/dude', $record);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
+        // now again with empty id
+        $client = static::createRestClient();
+        $client->put('/testcase/versioning-entity/dude', $record);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(1, $client->getResponse()->headers->get(VersionServiceConstraint::HEADER_NAME));
+    }
 
     /**
      * Test Document as embedded
