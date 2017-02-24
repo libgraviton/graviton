@@ -89,6 +89,11 @@ class Schema
     protected $recordOriginException;
 
     /**
+     * @var bool
+     */
+    protected $isVersioning;
+
+    /**
      * @var string[]
      */
     protected $searchable = [];
@@ -851,6 +856,28 @@ class Schema
     public function setRecordOriginException($recordOriginException)
     {
         $this->recordOriginException = $recordOriginException;
+    }
+
+    /**
+     * isVersioning
+     *
+     * @return bool IsVersioning
+     */
+    public function isVersioning()
+    {
+        return $this->isVersioning;
+    }
+
+    /**
+     * set IsVersioning
+     *
+     * @param bool $isVersioning isVersioning
+     *
+     * @return void
+     */
+    public function setIsVersioning($isVersioning)
+    {
+        $this->isVersioning = $isVersioning;
     }
 
     /**

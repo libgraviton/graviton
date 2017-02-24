@@ -24,6 +24,7 @@
         <parameter key="graviton.rest.not_modifiable.origin.records" type="collection">
             <parameter type="string">core</parameter>
         </parameter>
+        <parameter key="graviton.rest.headers.x-versioning" type="constant">Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME</parameter>
     </parameters>
     <services>
         <!-- Serializer / Serializer context -->
@@ -191,6 +192,10 @@
             </call>
             <call method="addHeader">
                 <argument>X-Total-Count</argument>
+            </call>
+            <!-- clients need this to read the current version in case of a versioned service -->
+            <call method="addHeader">
+                <argument>%graviton.rest.headers.x-versioning%</argument>
             </call>
             <call method="addAllowHeader">
                 <argument>Content-Type</argument>

@@ -1,7 +1,9 @@
 <?php
 namespace Graviton\GeneratorBundle\Definition;
 
+use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\Service;
+use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
 
 /**
  * This class represents the json file that defines the structure
@@ -152,6 +154,20 @@ class JsonDefinition
     }
 
     /**
+     * Returns whether this service is versioning
+     *
+     * @return bool true if yes, false if not
+     */
+    public function isVersionedService()
+    {
+        if ($this->def->getService() === null || !$this->def->getService()->getVersioning()) {
+            return false;
+        }
+
+        return (boolean) $this->def->getService()->getVersioning();
+    }
+
+    /**
      * Returns whether this service has fixtures
      *
      * @return bool true if yes, false if not
@@ -276,6 +292,29 @@ class JsonDefinition
         }
 
         $fields = [];
+
+        /*******
+         * CONDITIONAL GENERATED FIELD AREA
+         *
+         * so simplify things, you can put fields here that should be conditionally created by Graviton.
+         * @TODO refactor into a FieldBuilder* type of thing where different builders can add fields conditionally.
+         */
+
+        // Versioning field, for version control.
+        if ($this->def->getService() && $this->def->getService()->getVersioning()) {
+            $definition = new Schema\Field();
+            $constraint = new Constraint();
+            $constraint->setName('versioning');
+            $definition->setName(VersionServiceConstraint::FIELD_NAME)->setTitle('Version')->setType('int')
+                       ->setConstraints([$constraint])
+                       ->setDescription('Document version. You need to send current version if you want to update.');
+            $fields['version'] = $this->processSimpleField('version',  $definition);
+        }
+
+        /*******
+         * add fields as defined in the definition file.
+         */
+
         foreach ($hierarchy as $name => $definition) {
             $fields[$name] = $this->processFieldHierarchyRecursive($name, $definition);
         }
@@ -500,7 +539,7 @@ class JsonDefinition
 
     /**
      * Combine in one array the Search text indexes
-     * 
+     *
      * @return array
      */
     public function getAllTextIndexes()

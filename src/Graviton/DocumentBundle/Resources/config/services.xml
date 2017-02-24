@@ -7,11 +7,14 @@
         <parameter key="graviton.document.service.collectioncache.class">Graviton\DocumentBundle\Service\CollectionCache</parameter>
         <parameter key="graviton.document.listener.extreferencesearchlistener.class">Graviton\DocumentBundle\Listener\ExtReferenceSearchListener</parameter>
         <parameter key="graviton.document.listener.fieldnamesearchlistener.class">Graviton\DocumentBundle\Listener\FieldNameSearchListener</parameter>
+        <parameter key="graviton.document.listener.documentversionlistener.class">Graviton\DocumentBundle\Listener\DocumentVersionListener</parameter>
         <parameter key="graviton.document.serializer.handler.hash.class">Graviton\DocumentBundle\Serializer\Handler\HashHandler</parameter>
         <parameter key="graviton.document.serializer.handler.extref.class">Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler</parameter>
         <parameter key="graviton.document.serializer.handler.date.class">Graviton\DocumentBundle\Serializer\Handler\DateHandler</parameter>
         <parameter key="graviton.document.serializer.handler.empty.class">Graviton\DocumentBundle\Serializer\Handler\EmptyHandler</parameter>
         <parameter key="graviton.document.serializer.listener.emptyextref.class">Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener</parameter>
+
+        <parameter key="graviton.document.collectioncache.provider">doctrine_cache.providers.local</parameter>
     </parameters>
     <services>
         <!-- extref converter -->
@@ -22,13 +25,22 @@
 
         <!-- Collection Cache Service -->
         <service id="graviton.document.service.collectioncache" class="%graviton.document.service.collectioncache.class%">
-            <argument type="service" id="doctrine_cache.providers.local"/>
+            <!-- this will get the service that is defined by the parameter 'graviton.document.collectioncache.provider' -->
+            <argument type="expression">service(parameter('graviton.document.collectioncache.provider'))</argument>
             <argument>%graviton.cache.collections%</argument>
         </service>
 
         <!-- empty extref serializing listener -->
         <service id="graviton.document.serializer.listener.emptyextref" class="%graviton.document.serializer.listener.emptyextref.class%">
             <tag name="jms_serializer.event_listener" event="serializer.pre_serialize" method="onPreSerialize" direction="serialization"/>
+        </service>
+
+        <!-- Version listener -->
+        <service id="graviton.document.listener.documentversion" class="%graviton.document.listener.documentversionlistener.class%">
+            <argument type="service" id="doctrine_mongodb.odm.default_document_manager" />
+            <argument type="service" id="graviton.schema.constraint.versionservice"/>
+            <tag name="kernel.event_listener" event="document.model.event.insert" method="modelInsert"/>
+            <tag name="kernel.event_listener" event="document.model.event.update" method="modelUpdate"/>
         </service>
 
         <!-- empty serializer handler -->

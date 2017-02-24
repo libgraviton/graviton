@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "44cc3175eac26ab2b64baa72dd8cb07c",
+    "content-hash": "d73784e3529e4a6a50704bd759c96636",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -1528,16 +1528,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.5.0",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e"
+                "reference": "587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e",
-                "reference": "dda2e67bec8dc51907c0cb3055fb12d7e51e9d5e",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8",
+                "reference": "587ea20729d8ef9bb453cbd89eb8ba7fbffe18b8",
                 "shasum": ""
             },
             "require": {
@@ -1571,7 +1571,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2016-08-29T08:47:55+00:00"
+            "time": "2017-02-21T09:42:22+00:00"
         },
         {
             "name": "graviton/php-rql-parser",

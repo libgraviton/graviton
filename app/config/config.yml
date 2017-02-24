@@ -45,6 +45,8 @@ doctrine_cache:
         local:
             file_system:
                 directory: "%kernel.cache_dir%/doctrine_cache"
+        array:
+            array:
 
 # Doctrine Configuration
 doctrine:

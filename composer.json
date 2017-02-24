@@ -36,7 +36,7 @@
         "knplabs/knp-gaufrette-bundle": "~0.3",
         "aws/aws-sdk-php": "~2.8",
         "graviton/deploy-scripts": "~0.4",
-        "graviton/json-schema": "~1.0",
+        "graviton/json-schema": "^1.6",
         "php-jsonpatch/php-jsonpatch": "~3.0",
         "antimattr/mongodb-migrations": "^1.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
@@ -54,7 +54,7 @@
         "libgraviton/codesniffer": "~1.3",
         "lapistano/proxy-object": "dev-master",
         "johnkary/phpunit-speedtrap": "~1.0",
-        "graviton/test-services-bundle": "~0.23",
+        "graviton/test-services-bundle": "~0.24",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {

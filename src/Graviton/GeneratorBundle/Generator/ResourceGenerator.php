@@ -164,6 +164,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('basename', $basename)
             ->setParameter('isrecordOriginFlagSet', $this->json->isRecordOriginFlagSet())
             ->setParameter('recordOriginModifiable', $this->json->isRecordOriginModifiable())
+            ->setParameter('isVersioning', $this->json->isVersionedService())
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())

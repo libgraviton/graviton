@@ -3,7 +3,7 @@
  * test for RecordOriginConstraint
  */
 
-namespace Graviton\SchemaBundle\Tests\ConstraintBuilder;
+namespace Graviton\SchemaBundle\Tests\Controller;
 
 use Graviton\SchemaBundle\Constraint\RecordOriginConstraint;
 use Graviton\TestBundle\Test\RestTestCase;

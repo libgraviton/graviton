@@ -8,6 +8,8 @@
   "description": "@todo replace me",
 {% endif %}
 
+  "x-versioning": {{ isVersioning|json_encode() }},
+
 {% if noIdField is not defined %}
   "x-id-in-post-allowed": false,
 {% else %}

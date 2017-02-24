@@ -3,7 +3,7 @@
  * test for IncrementalDateFieldConstraint
  */
 
-namespace Graviton\SchemaBundle\Tests\ConstraintBuilder;
+namespace Graviton\SchemaBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -110,5 +110,44 @@ class IncrementalDateFieldConstraintTest extends RestTestCase
         $client->request('PATCH', '/testcase/incremental-date-constraint/dude', [], [], [], $patchObject);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertNull($client->getResults());
+    }
+
+    /**
+     * check correct behavior in respect to different timezones..
+     *
+     * @return void
+     */
+    public function testCorrectTimezoneHandling()
+    {
+        // create the record
+        $object = (object) [
+            'id' => 'tz',
+            'mightyDate' => '1984-05-02T00:00:00+0000'
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/incremental-date-constraint/tz', $object);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertNull($client->getResults());
+
+        // change with value of different timezone
+        $object = (object) [
+            'id' => 'tz',
+            'mightyDate' => '1984-05-02T06:00:00-7000'
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/incremental-date-constraint/tz', $object);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertNull($client->getResults());
+
+        // now, this should be denied (same time as saved)
+        $object = (object) [
+            'id' => 'tz',
+            'mightyDate' => '1984-05-01T21:00:00+5000'
+        ];
+        $client = static::createRestClient();
+        $client->put('/testcase/incremental-date-constraint/tz', $object);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
     }
 }

@@ -4,6 +4,9 @@
         <property name="readOnly"
                   type="boolean"
                   serialized-name="readOnly"/>
+        <property name="versioning"
+                  type="boolean"
+                  serialized-name="versioning"/>
         <property name="recordOriginModifiable"
                   type="boolean"
                   serialized-name="recordOriginModifiable"/>
