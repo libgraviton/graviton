@@ -1,0 +1,3840 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "impaqt_plus"
+    },
+    "basePath": "/publicavanti/xlejrKaeSf198sdafij",
+    "tags": [{
+        "name": "diagnostic"
+    }, {
+        "name": "portfolio"
+    }, {
+        "name": "tempPortfolioPosition"
+    }, {
+        "name": "saaTaaAnalysis"
+    }, {
+        "name": "client"
+    }, {
+        "name": "file"
+    }, {
+        "name": "restriction"
+    }, {
+        "name": "disabledRestriction"
+    }, {
+        "name": "clientProfiling"
+    }, {
+        "name": "portfolioPosition"
+    }, {
+        "name": "translation"
+    }, {
+        "name": "status"
+    }, {
+        "name": "clientExperience"
+    }],
+    "paths": {
+        "/client/{clientId}": {
+            "put": {
+                "tags": ["client"],
+                "summary": "Create or update a client by id (external string ID)",
+                "description": "",
+                "operationId": "putClient",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Client"
+                    }
+                }, {
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["client"],
+                "summary": "Delete a client with all its dependencies (e.g. user, portfolio)",
+                "description": "",
+                "operationId": "deleteClient",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/clientExperience/{clientId}": {
+            "put": {
+                "tags": ["clientExperience"],
+                "summary": "Replaces old entries with new client experience profiles for a client",
+                "description": "",
+                "operationId": "putClientExperienceProfiles",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/ClientExperienceProfile"
+                        }
+                    }
+                }, {
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["clientExperience"],
+                "summary": "Delete all experience profiles for a client",
+                "description": "",
+                "operationId": "deleteClientExperienceProfiles",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/clientProfiling/{clientId}": {
+            "put": {
+                "tags": ["clientProfiling"],
+                "summary": "Update client profiling of existing client by clientId (external string ID)",
+                "description": "",
+                "operationId": "putClientProfiling",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/ClientProfiling"
+                    }
+                }, {
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/clientExperienceProfiles/{clientId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get Listings by instrument id",
+                "description": "",
+                "operationId": "getClientExperienceProfile",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/ClientExperienceProfile"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/clientProfilings/{clientId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get client profiling by clientId",
+                "description": "",
+                "operationId": "getClientProfiling",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/ClientProfiling"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/clients/{clientId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get client by clientId",
+                "description": "",
+                "operationId": "getClient",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "clientId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Client"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/creditratings": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get all credit ratings",
+                "description": "",
+                "operationId": "getCreditRatings",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/CreditRating"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/fxRates": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get all fx rates",
+                "description": "",
+                "operationId": "getFxRates",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/FxRate"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/instrumentRisk": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get instrument risk figures for all instruments. Optional only instrument from a specific universe can be delivered.",
+                "description": "",
+                "operationId": "getInstrumentRisk",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "universe",
+                    "in": "query",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["SAMPLE_PORTFOLIO", "RECOMMENDED_LIST", "INVESTMENT_UNIVERSE", "BANK_UNIVERSE"]
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/InstrumentRisk"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/instruments": {
+            "post": {
+                "tags": ["diagnostic"],
+                "summary": "Get instruments by list of instrumentId",
+                "description": "",
+                "operationId": "getInstruments",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Instrument"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/instruments/{instrumentId}/listings": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get Listings by instrument id",
+                "description": "",
+                "operationId": "getListings",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "instrumentId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/Listing"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/portfolios/{portfolioId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get Portfolio by portfolioId",
+                "description": "",
+                "operationId": "getPortfolio",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Portfolio"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/portfolios/{portfolioId}/portfolioWithPositions": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get portfolio with positions",
+                "description": "",
+                "operationId": "getPortfolioPositionByPortfolioId",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioWithPositions"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/portfolios/{portfolioId}/positions": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get positions for portfolio",
+                "description": "",
+                "operationId": "getPositionsByPortfolioId",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Position"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/realationshipManagers/{userId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get relationship managers by userId",
+                "description": "",
+                "operationId": "getRelationshipManager",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/RelationshipManager"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/riskDataStatus": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get risk data status",
+                "description": "",
+                "operationId": "getRiskDataStatus",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/RiskDataStatusData"
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/rtas": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get all RTAs",
+                "description": "",
+                "operationId": "getRTAs",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/RTA"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/throwOutOfMemoryError": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "throw dummy Error",
+                "description": "",
+                "operationId": "throwOutOfMemoryError",
+                "produces": ["application/json"],
+                "parameters": [],
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "/diagnostic/throwRuntimeException": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "throw dummy RuntimeException",
+                "description": "",
+                "operationId": "throwRunTimeException",
+                "produces": ["application/json"],
+                "parameters": [],
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "/diagnostic/translations": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get Translations",
+                "description": "",
+                "operationId": "getTranslations",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "objectId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "resourceId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/Translation"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic/users/{userId}": {
+            "get": {
+                "tags": ["diagnostic"],
+                "summary": "Get users by userId",
+                "description": "",
+                "operationId": "getUser",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "userId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/User"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/disabledRestriction/{restrictionId}": {
+            "put": {
+                "tags": ["disabledRestriction"],
+                "summary": "Disable a bank restriction by id",
+                "description": "",
+                "operationId": "disableRestriction",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "name": "restrictionId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "portfolioId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["disabledRestriction"],
+                "summary": "Delete the disabling of a bank restriction (reactivate restriction)",
+                "description": "",
+                "operationId": "enableRestriction",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "restrictionId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "portfolioId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                }
+            }
+        },
+        "/file/{type}": {
+            "post": {
+                "tags": ["file"],
+                "summary": "Upload param files as a zip. MIME-type 'multipart/form-data' cannot be resolved properly by Swagger.",
+                "description": "",
+                "operationId": "postParamFiles",
+                "consumes": ["multipart/form-data"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "file",
+                    "in": "formData",
+                    "required": false,
+                    "type": "file"
+                }, {
+                    "name": "type",
+                    "in": "path",
+                    "required": true,
+                    "type": "string",
+                    "enum": ["SAA_TAA_ALLOCATIONS", "TARGET_ALLOCATION_ASSET_CLASS_SAA", "TARGET_ALLOCATION_ASSET_CLASS_TAA", "TARGET_ALLOCATION_CREDIT_RATING", "TARGET_ALLOCATION_CURRENCY", "UNIVERSE", "ACCOUNT_DISPLAY_MODE", "INSTRUMENT_DISPLAY_MODE", "CLIENT_DOMICILE", "INSTRUMENT_DOMICILE", "SHOPPING_LIST", "TRANSLATION"]
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/BankParamResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio/{portfolioId}": {
+            "put": {
+                "tags": ["portfolio"],
+                "summary": "Create or update a portfolio by id",
+                "description": "",
+                "operationId": "putPortfolio",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Portfolio"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["portfolio"],
+                "summary": "Delete a Portfolio",
+                "description": "",
+                "operationId": "deletePortfolio",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio/{portfolioId}/findInstruments": {
+            "post": {
+                "tags": ["portfolio"],
+                "summary": "Find instruments for portfolio. Returns a list of instrument ids.",
+                "description": "",
+                "operationId": "findInstruments",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/InstrumentSearchParameter"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio/{portfolioId}/portfolioCheck": {
+            "get": {
+                "tags": ["portfolio"],
+                "summary": "Run Portfolio Check for a portfolio",
+                "description": "",
+                "operationId": "getPortfolioCheck",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioCheck"
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio/{portfolioId}/restrictions": {
+            "get": {
+                "tags": ["portfolio"],
+                "summary": "Get all client restrictions for a portfolio",
+                "description": "",
+                "operationId": "getRestrictionsByPortfolio",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ClientRestriction"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolioPosition/{portfolioId}": {
+            "put": {
+                "tags": ["portfolioPosition"],
+                "summary": "Update portfolio and positions at same time",
+                "description": "",
+                "operationId": "putPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restriction": {
+            "put": {
+                "tags": ["restriction"],
+                "summary": "Save or update a Client Portfolio Restriction. A client restriction conflicts an existing bank restriction, the bank restriction will get disabled.",
+                "description": "",
+                "operationId": "putRestriction",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Restriction"
+                    }
+                }, {
+                    "name": "restrictionId",
+                    "in": "query",
+                    "required": false,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/LongIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restriction/{restrictionId}": {
+            "delete": {
+                "tags": ["restriction"],
+                "summary": "Delete a Client Restriction. If the deleted restriction was overriding bank restrictions, the overrides are getting disabled.",
+                "description": "",
+                "operationId": "deleteRestriction",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "restrictionId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/LongIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/saaTaaAnalysis/analysis/{investmentStrategyId}/{referenceCurrency}": {
+            "get": {
+                "tags": ["saaTaaAnalysis"],
+                "summary": "Get information about stress tests in Understand UI",
+                "description": "",
+                "operationId": "getSaaTaaAnalysis",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "investmentStrategyId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int32"
+                }, {
+                    "name": "referenceCurrency",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/SaaTaaAnalysis"
+                        }
+                    }
+                }
+            }
+        },
+        "/saaTaaAnalysis/isSaa/{serviceClassType}": {
+            "get": {
+                "tags": ["saaTaaAnalysis"],
+                "summary": "Get whether impl class type is based on SAA or TAA",
+                "description": "",
+                "operationId": "isSaa",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "serviceClassType",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/saaTaaAnalysis/riskReturn/{investmentStrategyId}/{referenceCurrency}": {
+            "get": {
+                "tags": ["saaTaaAnalysis"],
+                "summary": "Get information for Risk-Return chart in Understand UI",
+                "description": "",
+                "operationId": "getSaaTaaRiskReturn",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "investmentStrategyId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int32"
+                }, {
+                    "name": "referenceCurrency",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/SaaTaaRiskReturn"
+                        }
+                    }
+                }
+            }
+        },
+        "/status/getStatus": {
+            "get": {
+                "tags": ["status"],
+                "summary": "Get status of Evoja Adapter",
+                "description": "",
+                "operationId": "getStatus",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/EvojaAdapterStatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status/setStatus": {
+            "post": {
+                "tags": ["status"],
+                "summary": "Set status of Evoja Adapater",
+                "description": "",
+                "operationId": "setStatus",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/ScIppEvojaAdapterStatusCommand"
+                    }
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/EvojaAdapterStatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/convertPortfolioWithPosition": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "operationId": "transformPortfolioWithPosition",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioWithPositions"
+                        },
+                        "headers": {}
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/investmentProposal": {
+            "put": {
+                "tags": ["tempPortfolioPosition"],
+                "operationId": "postInvestmentProposal",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "requestId",
+                    "in": "query",
+                    "required": false,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "investmentProposalId",
+                    "in": "query",
+                    "required": false,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "reference",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "investmentAmount",
+                    "in": "query",
+                    "required": false,
+                    "type": "number"
+                }, {
+                    "name": "portfolioId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "clientId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/SaveInvestmentProposalResponse"
+                        },
+                        "headers": {}
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/investmentProposal/{investmentProposalId}": {
+            "get": {
+                "tags": ["tempPortfolioPosition"],
+                "operationId": "getInvestmentProposal",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "investmentProposalId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "requestId",
+                    "in": "query",
+                    "required": false,
+                    "type": "integer",
+                    "format": "int64"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/GetInvestmentProposalResponse"
+                        },
+                        "headers": {}
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/characteristics": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Post temporary portfolio with positions to calculate characteristics (attention: PortfolioWithPositions might change to just List<Position>)",
+                "description": "",
+                "operationId": "getCharacteristicsForPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioCharacteristics"
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/clientRestrictionStatus": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Post temporary portfolio with positions to calculate restriction status",
+                "description": "",
+                "operationId": "getClientRestrictionStatusForPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ClientRestriction"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/optimized/{optimizationId}": {
+            "get": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Get optimized positions for temporary client portfolio",
+                "description": "",
+                "operationId": "getOptimizedPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "optimizationId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/GetOptimizedPortfolioPositionsResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Put portfolio positions and optimization parameters for getting optimized positions for temporary client portfolio",
+                "description": "",
+                "operationId": "putOptimizedPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/OptimizePortfolioParameters"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "optimizationId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Delete optimized positions for temporary client portfolio",
+                "description": "",
+                "operationId": "deleteOptimizedPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "optimizationId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/StringIdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/portfolioComparison": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Post temporary portfolio with positions to calculate portfolio breakdown and comparison (attention: Swagger cannot decode the class PortfolioAnalysisEntry properly. Please refer to the java documentation oder JSON examples for the correct definition. PortfolioWithPositions might change to just List<Position>)",
+                "description": "",
+                "operationId": "getPortfolioComparisonForPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioComparisonContainer"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioAnalysisGroup"
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/portfolioRisk": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Post temporary portfolio with positions to calculate portfolio risk (attention: PortfolioWithPositions might change to just List<Position>)",
+                "description": "",
+                "operationId": "getPortfolioRiskForPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioRisk"
+                        }
+                    }
+                }
+            }
+        },
+        "/tempPortfolioPosition/{portfolioId}/riskExposures": {
+            "post": {
+                "tags": ["tempPortfolioPosition"],
+                "summary": "Post temporary portfolio with positions to calculate risk exposures (attention: PortfolioWithPositions might change to just List<Position>)",
+                "description": "",
+                "operationId": "getRiskExposuresForPortfolioPositions",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/PortfolioWithPositions"
+                    }
+                }, {
+                    "name": "portfolioId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "userId",
+                    "in": "query",
+                    "required": false,
+                    "type": "string"
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/PortfolioExposures"
+                        }
+                    }
+                }
+            }
+        },
+        "/translation/{translationResourceId}": {
+            "get": {
+                "tags": ["translation"],
+                "summary": "Get translations for all available languages by TranslationResourceId",
+                "description": "",
+                "operationId": "getTranslation",
+                "produces": ["application/json"],
+                "parameters": [{
+                    "name": "translationResourceId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string",
+                    "enum": ["STRESS_TEST", "INSTRUMENT_NAME", "RISK_FACTOR", "ASSET_ALLOCATION_REGION"]
+                }, {
+                    "name": "language",
+                    "in": "query",
+                    "description": "Language in which notifications, warnings and errors will be returned",
+                    "required": false,
+                    "type": "string",
+                    "enum": ["DE", "FR", "IT", "EN"]
+                }],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Translation"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "PortfolioComparisonContainer": {
+            "type": "object",
+            "required": ["portfolioComparisonTypes", "tempPortfolioWithPositions"],
+            "properties": {
+                "portfolioComparisonTypes": {
+                    "type": "array",
+                    "description": "Tree of PortfolioComparisonType to define which analyses and sub-analyses (for drill-down) should be performed}",
+                    "readOnly": true,
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["ByAssetClass", "ByCurrency", "ByRegion", "ByIndustry", "ByRiskFactor", "ByCreditRating", "BondByExpiry", "BondAvgDurationByRating", "BondByCreditRating"]
+                        }
+                    }
+                },
+                "tempPortfolioWithPositions": {
+                    "description": "Temporary portfolio with positions as base of the comparison analysis",
+                    "readOnly": true,
+                    "$ref": "#/definitions/PortfolioWithPositions"
+                }
+            }
+        },
+        "TimeSeries": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            }
+        },
+        "InvestmentProposal": {
+            "type": "object",
+            "required": ["portfolioId", "userId"],
+            "properties": {
+                "reference": {
+                    "type": "string"
+                },
+                "investmentProposalId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "portfolioId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "userId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "versionInfo": {
+                    "type": "string"
+                },
+                "originDate": {
+                    "type": "string"
+                },
+                "investmentProposalPositions": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/InvestmentProposalPosition"
+                    }
+                }
+            }
+        },
+        "LongIdResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "OptimizePortfolioParameters": {
+            "type": "object",
+            "required": ["clientId", "currency", "options", "portfolioId", "positions", "tradeAccount"],
+            "properties": {
+                "options": {
+                    "description": "options for the requested portfolio optimization",
+                    "$ref": "#/definitions/OptimizePortfolioOptions"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "portfolioId": {
+                    "type": "string"
+                },
+                "tradeAccount": {
+                    "type": "string",
+                    "description": "Account identifier (positionId) from which liquidity should be taken"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Position"
+                    }
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "portfolio currency"
+                }
+            }
+        },
+        "PortfolioWithPositions": {
+            "type": "object",
+            "required": ["portfolio", "positions"],
+            "properties": {
+                "portfolio": {
+                    "$ref": "#/definitions/Portfolio"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Position"
+                    }
+                }
+            }
+        },
+        "PortfolioExposures": {
+            "type": "object",
+            "required": ["details", "exposures"],
+            "properties": {
+                "exposures": {
+                    "type": "array",
+                    "description": "Riskfactor exposures (instrument ID is risk factor ID)",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioComparisonSimple"
+                    }
+                },
+                "details": {
+                    "type": "array",
+                    "description": "Instrument risk exposures (instrument ID is {@link Instrument#instrumentId})",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioExposureDetails"
+                    }
+                }
+            }
+        },
+        "InvestmentProposalPosition": {
+            "type": "object",
+            "required": ["transaction"],
+            "properties": {
+                "accountType": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "applTypeCode": {
+                    "type": "string"
+                },
+                "proposalPositionId": {
+                    "type": "string"
+                },
+                "depositId": {
+                    "type": "string"
+                },
+                "depositPositionId": {
+                    "type": "string"
+                },
+                "securitiesId": {
+                    "type": "string"
+                },
+                "versionInfo": {
+                    "type": "string"
+                },
+                "valuation": {
+                    "$ref": "#/definitions/Valuation"
+                },
+                "transaction": {
+                    "readOnly": true,
+                    "$ref": "#/definitions/Transaction"
+                }
+            }
+        },
+        "Currency": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
+        "InstrumentDisplayMode": {
+            "type": "object",
+            "properties": {
+                "instrumentDisplayModeId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "instrumentTypeNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "displayMode": {
+                    "type": "string",
+                    "enum": ["INVESTMENT", "ACCOUNT", "EXCLUSION"]
+                }
+            }
+        },
+        "PortfolioRisk": {
+            "type": "object",
+            "required": ["contributions", "expectedReturn", "risk"],
+            "properties": {
+                "risk": {
+                    "description": "Risk value (volatility) in percent (0.1 means 10%) for implemented, current, and target(SAA/TAA) portfolio",
+                    "readOnly": true,
+                    "$ref": "#/definitions/PortfolioComparisonSimple"
+                },
+                "var": {
+                    "description": "Risk value (VaR) in percent (0.1 means 10%) for implemented, current, and target(SAA/TAA) portfolio",
+                    "$ref": "#/definitions/PortfolioComparisonSimple"
+                },
+                "cvar": {
+                    "description": "Risk value (CVaR) in percent (0.1 means 10%) for implemented, current, and target(SAA/TAA) portfolio",
+                    "$ref": "#/definitions/PortfolioComparisonSimple"
+                },
+                "expectedReturn": {
+                    "description": "Expected return value in percent (0.1 means 10%) for implemented, current, and target(SAA/TAA) portfolio",
+                    "readOnly": true,
+                    "$ref": "#/definitions/PortfolioComparisonSimple"
+                },
+                "targetMinRisk": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "targetMaxRisk": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "contributions": {
+                    "type": "array",
+                    "description": "Expected return value in percent (0.1 means 10%) for implemented, current, and target(SAA/TAA) portfolio",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/RiskContribution"
+                    }
+                }
+            }
+        },
+        "ClientProfiling": {
+            "type": "object",
+            "required": ["clientId", "questionnaireResultsValid"],
+            "properties": {
+                "clientId": {
+                    "type": "string"
+                },
+                "kagQualified": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "investmentHorizon": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "investmentStrategy": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "questionnaireResultsValid": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "riskProfilingDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "Client": {
+            "type": "object",
+            "required": ["clientDomicileRegionCode", "clientId", "countryIsoCode", "legalClassification", "refCcyIsoCode"],
+            "properties": {
+                "clientId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 200
+                },
+                "title": {
+                    "type": "string"
+                },
+                "countryIsoCode": {
+                    "type": "string"
+                },
+                "clientDomicileRegionCode": {
+                    "type": "string"
+                },
+                "refCcyIsoCode": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "legalClassification": {
+                    "type": "string",
+                    "enum": ["NATURAL_PERSON", "LEGAL_PERSON", "PUBLIC_CORPORATION", "UNKNOWN"]
+                },
+                "securityCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "clientStatus": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "InstrumentRisk": {
+            "type": "object",
+            "properties": {
+                "instrument": {
+                    "$ref": "#/definitions/Instrument"
+                },
+                "calculationDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "fixingDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "prcScoreList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PrcScores"
+                    }
+                },
+                "instrumentType": {
+                    "type": "string",
+                    "enum": ["Linear", "NonLinear", "UnderlyingFx", "BondComponent", "BondFx", "Unknown"]
+                },
+                "spotPriceLoc": {
+                    "$ref": "#/definitions/CashAmount"
+                },
+                "spotPrice": {
+                    "$ref": "#/definitions/CashAmount"
+                }
+            }
+        },
+        "Translation": {
+            "type": "object",
+            "required": ["language", "resourceId", "value"],
+            "properties": {
+                "objectId": {
+                    "type": "string"
+                },
+                "resourceId": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["STRESS_TEST", "INSTRUMENT_NAME", "RISK_FACTOR", "ASSET_ALLOCATION_REGION"]
+                },
+                "language": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["DE", "FR", "IT", "EN"]
+                },
+                "value": {
+                    "type": "string",
+                    "readOnly": true
+                }
+            }
+        },
+        "CreditRating": {
+            "type": "object",
+            "properties": {
+                "creditRatingId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ranking": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "ratingNr": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "Position": {
+            "type": "object",
+            "required": ["accountTypeNumber", "blocked", "instrumentId", "listingId", "portfolioId", "positionId", "quantity", "securityCode", "status"],
+            "properties": {
+                "positionId": {
+                    "type": "string"
+                },
+                "portfolioId": {
+                    "type": "string"
+                },
+                "listingId": {
+                    "type": "string"
+                },
+                "instrumentId": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "number"
+                },
+                "value": {
+                    "type": "number"
+                },
+                "valueInPortfolioCcy": {
+                    "type": "number"
+                },
+                "availableAmount": {
+                    "type": "number"
+                },
+                "valueCcyIsoCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": ["OPEN", "HOLD"]
+                },
+                "securityCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "accountTypeNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "valuationDate": {
+                    "type": "string"
+                },
+                "blocked": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "blockedAmount": {
+                    "type": "number"
+                }
+            }
+        },
+        "InstrumentSymbol": {
+            "type": "object",
+            "required": ["externalInstrumentSymbolId", "symbol", "symbolType"],
+            "properties": {
+                "instrumentSymbolId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "externalInstrumentSymbolId": {
+                    "type": "string"
+                },
+                "symbolType": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "SaaTaaAnalysis": {
+            "type": "object",
+            "required": ["performanceBenchmarks", "stressTestResults"],
+            "properties": {
+                "performanceBenchmarks": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/TimeSeries"
+                    }
+                },
+                "stressTestResults": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/StressTestResult"
+                    }
+                }
+            }
+        },
+        "RestrictionType": {
+            "type": "object",
+            "required": ["restrictionType"],
+            "properties": {
+                "targetParameter": {
+                    "type": "string"
+                },
+                "restrictionType": {
+                    "type": "string",
+                    "enum": ["ASSETCLASS_BW", "REGION_BW", "CURRENCY_BW", "INDUSTRY_BW", "RISK_BW", "OUT_OF_UNIVERSE", "BULK_MAX", "ISSUER_MAX", "RATING_MAX", "MINRATING_MIN", "EXCLUDE_INSTRUMENT", "COLLECTIVE_INVESTMENTS", "BULK_COLLECTIVE_INVESTMENTS_MAX", "BULK_NONCOLLECTIVE_INVESTMENTS_MAX", "PRC_MAX", "CASH_MIN"]
+                }
+            }
+        },
+        "CurrencyAmount": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                }
+            }
+        },
+        "GeneralComment": {
+            "type": "object",
+            "properties": {
+                "generalCommentId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "clientId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "relationshipManagerId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "portfolioId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "positionId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "commentText": {
+                    "type": "string"
+                },
+                "modificationDate": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "Transaction": {
+            "type": "object",
+            "properties": {
+                "quantityChangeEffective": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "transactionCosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransactionCost"
+                    }
+                }
+            }
+        },
+        "StressTestResult": {
+            "type": "object",
+            "properties": {
+                "stressTestResultId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "stressTestId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "saaPortfolioId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "recoveryTime": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "maxDrawDown": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "SaaTaaRiskReturn": {
+            "type": "object",
+            "properties": {
+                "saaTaaRisk": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "saaTaaReturn": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "isSaa": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "saaTaaMinRisk": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "saaTaaMaxRisk": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "saaTaaMinReturn": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "saaTaaMaxReturn": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "ClientExperienceProfile": {
+            "type": "object",
+            "required": ["assetClassCode", "clientId"],
+            "properties": {
+                "clientExperienceProfileId": {
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "assetClassCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "PortfolioExposureDetails": {
+            "type": "object",
+            "properties": {
+                "instrumentId": {
+                    "type": "string"
+                },
+                "exposures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PortfolioComparisonSimple"
+                    }
+                }
+            }
+        },
+        "AccountDisplayMode": {
+            "type": "object",
+            "properties": {
+                "accountDisplayModeId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "accountTypeNumber": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "displayMode": {
+                    "type": "string",
+                    "enum": ["INVESTMENT", "ACCOUNT", "EXCLUSION"]
+                }
+            }
+        },
+        "GetOptimizedPortfolioPositionsResponse": {
+            "type": "object",
+            "properties": {
+                "optimizePortfolioResult": {
+                    "$ref": "#/definitions/OptimizePortfolioResult"
+                }
+            }
+        },
+        "RTA": {
+            "type": "object",
+            "required": ["assetAllocationRegionCode", "assetClassCode", "assetSubClassCode", "rta", "rtaNumber"],
+            "properties": {
+                "rtaNumber": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "rta": {
+                    "type": "string"
+                },
+                "assetClassCode": {
+                    "type": "string"
+                },
+                "assetSubClassCode": {
+                    "type": "string"
+                },
+                "assetAllocationRegionCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "RiskDataStatusData": {
+            "type": "object",
+            "properties": {
+                "fixingDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "riskFactorStatus": {
+                    "type": "string",
+                    "enum": ["OK", "QUEUED", "ERROR", "FALLBACK"]
+                },
+                "instrumentRiskStatus": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/InstrumentRiskDataStatusData"
+                    }
+                }
+            }
+        },
+        "DisabledRestriction": {
+            "type": "object",
+            "required": ["portfolioId", "restrictionDisablingDate", "restrictionId"],
+            "properties": {
+                "commentText": {
+                    "type": "string"
+                },
+                "portfolioId": {
+                    "type": "string"
+                },
+                "restrictionId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "the overridden/disabled restriction"
+                },
+                "restrictionDisablingDate": {
+                    "type": "string"
+                },
+                "overridingRestrictionId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "the overriding restriction; is null in case of disabling a bank restriction"
+                }
+            }
+        },
+        "OptimizePortfolioOptions": {
+            "type": "object",
+            "required": ["maxRegrouping", "optimizationType", "universeId"],
+            "properties": {
+                "maxRegrouping": {
+                    "type": "number",
+                    "description": "maximum amount allowed to be reallocated in portfolio currency",
+                    "readOnly": true
+                },
+                "universeId": {
+                    "type": "string",
+                    "description": "Id of universe to use for optimization",
+                    "readOnly": true,
+                    "enum": ["SAMPLE_PORTFOLIO", "RECOMMENDED_LIST", "INVESTMENT_UNIVERSE", "BANK_UNIVERSE"]
+                },
+                "optimizationType": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["FULL_OPTIMIZATION", "INVEST_LIQUIDITY", "GENERATE_LIQUIDITY_CREDIT_TRADE_ACCOUNT"]
+                },
+                "additionalLiquidity": {
+                    "type": "number",
+                    "description": "only relevant for optimizationType INVEST_LIQUIDITY"
+                },
+                "freeUpLiquidity": {
+                    "type": "number",
+                    "description": "only relevant for optimizationType GENERATE_LIQUIDITY_*"
+                }
+            }
+        },
+        "PortfolioCheck": {
+            "type": "object",
+            "properties": {
+                "portfolioId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "portfolioRisk": {
+                    "description": "Contains risk (vola, var, cvar) values for current, implemented and target portfolio and risk contributions of the portfolio",
+                    "readOnly": true,
+                    "$ref": "#/definitions/PortfolioRisk"
+                },
+                "normPortfolioRisk": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioComparisonSimple"
+                    }
+                },
+                "restrictionCheck": {
+                    "type": "array",
+                    "description": "Contains summarized result of restriction checks",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/RestrictionCheck"
+                    }
+                },
+                "portfolioExposures": {
+                    "type": "array",
+                    "description": "Contains portfolio exposures to risk factors",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioCheckExposure"
+                    }
+                }
+            }
+        },
+        "StringIdResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "User": {
+            "type": "object",
+            "required": ["userId"],
+            "properties": {
+                "userId": {
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 200
+                },
+                "costCenter": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "GetInvestmentProposalResponse": {
+            "type": "object",
+            "required": ["bankId", "investmentProposal", "requestId"],
+            "properties": {
+                "requestId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "readOnly": true
+                },
+                "bankId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "investmentProposal": {
+                    "readOnly": true,
+                    "$ref": "#/definitions/InvestmentProposal"
+                },
+                "validationRun": {
+                    "$ref": "#/definitions/ValidationRun"
+                }
+            }
+        },
+        "Valuation": {
+            "type": "object",
+            "properties": {
+                "price": {
+                    "$ref": "#/definitions/CurrencyAmount"
+                },
+                "priceTimestamp": {
+                    "type": "string"
+                },
+                "priceUnit": {
+                    "type": "string",
+                    "enum": ["PRICE_PER_UNIT", "PRICE_IN_PERCENT"]
+                },
+                "exchangeId": {
+                    "type": "string"
+                }
+            }
+        },
+        "ClientRestriction": {
+            "type": "object",
+            "required": ["lastModifiedBy", "modificationDate", "restrictionTypes", "source"],
+            "properties": {
+                "restrictionId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "commentText": {
+                    "type": "string"
+                },
+                "minRestrictionValue": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "maxRestrictionValue": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "source": {
+                    "type": "string",
+                    "enum": ["BANK", "CLIENT"]
+                },
+                "restrictionTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RestrictionType"
+                    }
+                },
+                "portfolioId": {
+                    "type": "string"
+                },
+                "investmentStrategy": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "refCcy": {
+                    "type": "string"
+                },
+                "lastModifiedBy": {
+                    "type": "string"
+                },
+                "modificationDate": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "disabledRestriction": {
+                    "$ref": "#/definitions/DisabledRestriction"
+                },
+                "violationStatus": {
+                    "$ref": "#/definitions/RestrictionViolationStatus"
+                }
+            }
+        },
+        "ValidationRunResult": {
+            "type": "object",
+            "required": ["validationRunItemId"],
+            "properties": {
+                "validationRunItemId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "violationType": {
+                    "type": "string"
+                },
+                "violationDescription": {
+                    "type": "string"
+                },
+                "restrictionType": {
+                    "type": "string"
+                },
+                "testId": {
+                    "type": "string"
+                },
+                "accepted": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "FxRate": {
+            "type": "object",
+            "required": ["asOfDate", "ccy1IsoCode", "ccy2IsoCode", "fxRateId", "rate"],
+            "properties": {
+                "fxRateId": {
+                    "type": "string"
+                },
+                "ccy1IsoCode": {
+                    "type": "string"
+                },
+                "ccy2IsoCode": {
+                    "type": "string"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "asOfDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "PortfolioComparisonSimple": {
+            "type": "object",
+            "properties": {
+                "comparison": {
+                    "type": "string"
+                },
+                "implemented": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "current": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "target": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "SaveInvestmentProposalResponse": {
+            "type": "object",
+            "required": ["bankId", "investmentProposalId", "requestId"],
+            "properties": {
+                "requestId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "readOnly": true
+                },
+                "bankId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "investmentProposalId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "readOnly": true
+                }
+            }
+        },
+        "PortfolioAnalysisGroup": {
+            "type": "object",
+            "required": ["portfolioAnalyses", "portfolioVersionNames"],
+            "properties": {
+                "portfolioVersionNames": {
+                    "type": "array",
+                    "description": "Aligned list to portfolioAnalyses which specifies the version (implemented/current/target) of the analysis",
+                    "readOnly": true,
+                    "items": {
+                        "type": "string",
+                        "enum": ["IMPLEMENTED", "CURRENT", "TARGET"]
+                    }
+                },
+                "portfolioAnalyses": {
+                    "type": "array",
+                    "description": "Aligned list to portfolioAnalyses which specifies the version (implemented/current/target) of the analysis",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioAnalysis"
+                    }
+                }
+            }
+        },
+        "RestrictionCheck": {
+            "type": "object",
+            "properties": {
+                "restrictionType": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["ASSETCLASS_BW", "REGION_BW", "CURRENCY_BW", "INDUSTRY_BW", "RISK_BW", "OUT_OF_UNIVERSE", "BULK_MAX", "ISSUER_MAX", "RATING_MAX", "MINRATING_MIN", "EXCLUDE_INSTRUMENT", "COLLECTIVE_INVESTMENTS", "BULK_COLLECTIVE_INVESTMENTS_MAX", "BULK_NONCOLLECTIVE_INVESTMENTS_MAX", "PRC_MAX", "CASH_MIN"]
+                },
+                "restrictionSubType": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["ASSETCLASS_BW", "REGION_BW", "CURRENCY_BW", "INDUSTRY_BW", "RISK_BW", "OUT_OF_UNIVERSE", "BULK_MAX", "ISSUER_MAX", "RATING_MAX", "MINRATING_MIN", "EXCLUDE_INSTRUMENT", "COLLECTIVE_INVESTMENTS", "BULK_COLLECTIVE_INVESTMENTS_MAX", "BULK_NONCOLLECTIVE_INVESTMENTS_MAX", "PRC_MAX", "CASH_MIN"]
+                },
+                "isViolated": {
+                    "type": "boolean",
+                    "readOnly": true,
+                    "default": false
+                },
+                "isEnabled": {
+                    "type": "boolean",
+                    "readOnly": true,
+                    "default": false
+                }
+            }
+        },
+        "InstrumentRiskDataStatusData": {
+            "type": "object",
+            "properties": {
+                "instrumentSymbol": {
+                    "$ref": "#/definitions/InstrumentSymbol"
+                },
+                "listing": {
+                    "$ref": "#/definitions/InstrumentListing"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": ["OK", "QUEUED", "ERROR", "FALLBACK"]
+                },
+                "message": {
+                    "type": "string"
+                },
+                "market": {
+                    "type": "string"
+                }
+            }
+        },
+        "PositionCharacteristic": {
+            "type": "object",
+            "properties": {
+                "positionId": {
+                    "type": "string"
+                },
+                "instrumentId": {
+                    "type": "string"
+                },
+                "noRiskData": {
+                    "type": "boolean",
+                    "description": "Indicates whether risk data is available or not. True if risk data is missing",
+                    "default": false
+                },
+                "universe": {
+                    "type": "string",
+                    "description": "Universe of the positions instrument. Is null if no instrument is assigned to position or if no universe is defined for instrument",
+                    "enum": ["SAMPLE_PORTFOLIO", "RECOMMENDED_LIST", "INVESTMENT_UNIVERSE", "BANK_UNIVERSE"]
+                },
+                "outOfUniverse": {
+                    "type": "boolean",
+                    "description": "Indicates whether the positions instrument is classified as out of universe, whereas value is true, if the instrument is classified as out of universe. Is false if no instrument is assigned to position.  ",
+                    "default": false
+                },
+                "recommendationLabel": {
+                    "type": "string",
+                    "description": "Label of the bank recommendation of the positions instrument. Indicates recommended action and/or detailed information about the reasoning to include the position",
+                    "enum": ["BANK_RECOMMENDATION", "CUSTOMER_REQUEST", "SELL", "SWITCH"]
+                }
+            }
+        },
+        "BankParamResponse": {
+            "type": "object",
+            "properties": {
+                "info": {
+                    "type": "string"
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "RestrictionViolationStatus": {
+            "type": "object",
+            "required": ["affectedValue", "contributionToPortfolio", "restrictionId", "violated", "violatingPositions"],
+            "properties": {
+                "restrictionId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "readOnly": true
+                },
+                "violated": {
+                    "type": "boolean",
+                    "readOnly": true,
+                    "default": false
+                },
+                "contributionToPortfolio": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "contribution of the positions affected by this restriction to the portfolio (0.2 means 20%)",
+                    "readOnly": true
+                },
+                "affectedValue": {
+                    "description": "affected value",
+                    "readOnly": true,
+                    "$ref": "#/definitions/CashAmount"
+                },
+                "violatingPositions": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PositionWithInstrument"
+                    }
+                }
+            }
+        },
+        "OptimizePortfolioResult": {
+            "type": "object",
+            "properties": {
+                "optimizationId": {
+                    "type": "string",
+                    "description": "Id of optimization"
+                },
+                "positions": {
+                    "type": "array",
+                    "description": "Optimized positions",
+                    "items": {
+                        "$ref": "#/definitions/Position"
+                    }
+                },
+                "infeasibleRestrictionId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "id of the restriction causing an infeasible problem"
+                },
+                "statusCode": {
+                    "type": "string",
+                    "description": "Status of the optimization",
+                    "enum": ["NO_INSTRUMENTS_AVAILABLE", "NO_INSTRUMENTS_AVAILABLE_WITH_CLIENT_KNOWLEDGE", "TO_MANY_INSTRUMENTS", "NEGATIVE_PORTFOLIO_VALUE", "SHORT_POSITION_NOT_ALLOWED", "NO_INVESTMENT_STRATEGY_FOUND", "RESTRICTION_CONSTRAINT_INFEASIBLE", "BULK_CONSTRAINT_INFEASIBLE", "HOLD_CONSTRAINT_INFEASIBLE", "NO_RISK_CONSTRAINT_INFEASIBLE", "OUT_OF_UNIVERSE_CONSTRAINT_INFEASIBLE", "LIQUIDITY_CONSTRAINT_INFEASIBLE", "NO_INSTRUMENTS_IN_CONSTRAINT", "EMPTY_SHELF", "NO_MIXED_INTEGER_SOLUTION_FOUND", "UNSPECIFIED_ERROR", "OK"]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Message containing detail information about errors during optimization"
+                }
+            }
+        },
+        "Portfolio": {
+            "type": "object",
+            "required": ["clientId", "creationDate", "displayCcyIsoCode", "modificationDate", "portfolioId", "refCcyIsoCode", "relationshipManagerIds", "type", "virtualPortfolio", "vvCode"],
+            "properties": {
+                "portfolioId": {
+                    "type": "string"
+                },
+                "modificationDate": {
+                    "type": "string"
+                },
+                "creationDate": {
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": ["IMPLEMENTED", "SAVED", "PROPOSED", "NETTED"]
+                },
+                "relationshipManagerIds": {
+                    "type": "array",
+                    "readOnly": true,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "primaryRelationshipManager": {
+                    "type": "string"
+                },
+                "investmentStrategy": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "refCcyIsoCode": {
+                    "type": "string"
+                },
+                "displayCcyIsoCode": {
+                    "type": "string"
+                },
+                "vvCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "virtualPortfolio": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "InstrumentSearchParameter": {
+            "type": "object",
+            "required": ["universe"],
+            "properties": {
+                "valor": {
+                    "type": "string"
+                },
+                "isin": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "assetClass": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "ccy": {
+                    "type": "string"
+                },
+                "industryCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "universe": {
+                    "type": "string",
+                    "enum": ["SAMPLE_PORTFOLIO", "RECOMMENDED_LIST", "INVESTMENT_UNIVERSE", "BANK_UNIVERSE"]
+                },
+                "filterWithClientKnowledge": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "pfValue": {
+                    "type": "number"
+                }
+            }
+        },
+        "EvojaAdapterStatus": {
+            "type": "object",
+            "required": ["remark", "status", "updated"],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["UP_AND_RUNNING", "MAINTENANCE"]
+                },
+                "remark": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "updated": {
+                    "type": "string",
+                    "readOnly": true
+                }
+            }
+        },
+        "PortfolioCharacteristics": {
+            "type": "object",
+            "properties": {
+                "invested": {
+                    "type": "number",
+                    "description": "Amount of all invested positions"
+                },
+                "liquidity": {
+                    "type": "number",
+                    "description": "Amount of all liquidity positions"
+                },
+                "risk": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Portfoliorisiko - Volatility"
+                },
+                "var": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Portfoliorisiko - Value at Risk"
+                },
+                "cvar": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Portfoliorisiko - Conditional Value at Risk"
+                },
+                "minCreditRating": {
+                    "type": "string",
+                    "description": "Min. Anleihen Rating"
+                },
+                "maxPrc": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Maximum-PRC"
+                },
+                "restrictionsOk": {
+                    "type": "boolean",
+                    "description": "Restriktionsstatus",
+                    "default": false
+                },
+                "riskBandWidthRestrictionOk": {
+                    "type": "boolean",
+                    "description": "riskBandWidthRestrictionOk",
+                    "default": false
+                },
+                "minBondRatingRestrictionOk": {
+                    "type": "boolean",
+                    "description": "minBondRatingRestrictionOk",
+                    "default": false
+                },
+                "maxPrcRestrictionOk": {
+                    "type": "boolean",
+                    "description": "maxPrcRestrictionOk",
+                    "default": false
+                },
+                "positionCharacteristicsMap": {
+                    "type": "object",
+                    "description": "Collection of positions, extended with position specific characteristics",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/PositionCharacteristic"
+                    }
+                }
+            }
+        },
+        "PortfolioAnalysisEntry": {
+            "type": "object",
+            "required": ["category", "value"],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "value": {
+                    "type": "number",
+                    "readOnly": true
+                },
+                "subAnalysis": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PortfolioAnalysis"
+                    }
+                }
+            }
+        },
+        "InstrumentListing": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "$ref": "#/definitions/InstrumentSymbol"
+                },
+                "valor": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "market": {
+                    "type": "string"
+                },
+                "currency": {
+                    "$ref": "#/definitions/Currency"
+                }
+            }
+        },
+        "Restriction": {
+            "type": "object",
+            "required": ["lastModifiedBy", "modificationDate", "restrictionTypes", "source"],
+            "properties": {
+                "restrictionId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "commentText": {
+                    "type": "string"
+                },
+                "minRestrictionValue": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "maxRestrictionValue": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "source": {
+                    "type": "string",
+                    "enum": ["BANK", "CLIENT"]
+                },
+                "restrictionTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RestrictionType"
+                    }
+                },
+                "portfolioId": {
+                    "type": "string"
+                },
+                "investmentStrategy": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "refCcy": {
+                    "type": "string"
+                },
+                "lastModifiedBy": {
+                    "type": "string"
+                },
+                "modificationDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "PortfolioAnalysis": {
+            "type": "object",
+            "required": ["analysisType", "entries"],
+            "properties": {
+                "analysisType": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["ByAssetClass", "ByCurrency", "ByRegion", "ByIndustry", "ByRiskFactor", "ByCreditRating", "BondByExpiry", "BondAvgDurationByRating", "BondByCreditRating"]
+                },
+                "entries": {
+                    "type": "array",
+                    "readOnly": true,
+                    "items": {
+                        "$ref": "#/definitions/PortfolioAnalysisEntry"
+                    }
+                }
+            }
+        },
+        "RiskContribution": {
+            "type": "object",
+            "required": ["contribution", "creditPrc", "instrumentId", "liquidityPrc", "marketPrc", "prc", "value"],
+            "properties": {
+                "instrumentId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "value": {
+                    "type": "number",
+                    "description": "Value of portfolio position in instrument",
+                    "readOnly": true
+                },
+                "prc": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Product Risk Classification for instrument",
+                    "readOnly": true
+                },
+                "marketPrc": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Product Risk Classification for instrument - Market Risk portion",
+                    "readOnly": true
+                },
+                "liquidityPrc": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Product Risk Classification for instrument - Liquidity Risk portion",
+                    "readOnly": true
+                },
+                "creditPrc": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Product Risk Classification for instrument - Credit Risk portion",
+                    "readOnly": true
+                },
+                "contribution": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Risk contribution of instrument in percent (0.5 means 50%)",
+                    "readOnly": true
+                }
+            }
+        },
+        "Listing": {
+            "type": "object",
+            "required": ["ccyIsoCode", "countryIsoCode", "externalListingId", "marketCode", "price", "pricePerUnit", "priceType"],
+            "properties": {
+                "listingId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "externalListingId": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "priceType": {
+                    "type": "string"
+                },
+                "pricePerUnit": {
+                    "type": "number"
+                },
+                "ccyIsoCode": {
+                    "type": "string"
+                },
+                "marketCode": {
+                    "type": "string"
+                },
+                "countryIsoCode": {
+                    "type": "string"
+                },
+                "valuationDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "yieldToMaturity": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": ["ACTIVE", "INACTIVE"]
+                },
+                "contractSize": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "timeToMaturity": {
+                    "type": "number"
+                },
+                "accruedInterest": {
+                    "type": "number"
+                },
+                "accruedInterestCcyIsoCode": {
+                    "type": "string"
+                },
+                "accruedInterestDays": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "PositionWithInstrument": {
+            "type": "object",
+            "required": ["instrument", "position"],
+            "properties": {
+                "position": {
+                    "readOnly": true,
+                    "$ref": "#/definitions/Position"
+                },
+                "positionRestrictionValue": {
+                    "type": "object",
+                    "readOnly": true
+                },
+                "instrument": {
+                    "readOnly": true,
+                    "$ref": "#/definitions/Instrument"
+                }
+            }
+        },
+        "EvojaAdapterStatusResponse": {
+            "type": "object",
+            "required": ["bankId", "requestId", "status"],
+            "properties": {
+                "requestId": {
+                    "type": "integer",
+                    "format": "int64",
+                    "readOnly": true
+                },
+                "bankId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "status": {
+                    "readOnly": true,
+                    "$ref": "#/definitions/EvojaAdapterStatus"
+                }
+            }
+        },
+        "RelationshipManager": {
+            "type": "object",
+            "properties": {
+                "relationshipManagerId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "externalRelationshipManagerId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": ["TEAM", "PERSON"]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "members": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/RelationshipManager"
+                    }
+                },
+                "userId": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "Instrument": {
+            "type": "object",
+            "required": ["externalInstrumentId", "primaryListing", "riskCcyIsoCode", "statusCode", "taNumber"],
+            "properties": {
+                "instrumentId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "externalInstrumentId": {
+                    "type": "string"
+                },
+                "symbols": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/InstrumentSymbol"
+                    },
+                    "maxItems": 2147483647,
+                    "minItems": 1
+                },
+                "listings": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/Listing"
+                    },
+                    "maxItems": 2147483647,
+                    "minItems": 1
+                },
+                "primaryListing": {
+                    "$ref": "#/definitions/Listing"
+                },
+                "countryIsoCode": {
+                    "type": "string"
+                },
+                "expiryDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "denomination": {
+                    "type": "number"
+                },
+                "valuationType": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "creditRating": {
+                    "$ref": "#/definitions/CreditRating"
+                },
+                "rtaNumber": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "taNumber": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "universe": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "industryCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "warrantorCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "issuerCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "statusCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "instrumentDisplayMode": {
+                    "$ref": "#/definitions/InstrumentDisplayMode"
+                },
+                "creationDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "modificationDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "riskCcyIsoCode": {
+                    "type": "string"
+                },
+                "correctionFactory": {
+                    "type": "number"
+                }
+            }
+        },
+        "TransactionCost": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "cost": {
+                    "$ref": "#/definitions/CurrencyAmount"
+                }
+            }
+        },
+        "PrcScores": {
+            "type": "object",
+            "properties": {
+                "prcSource": {
+                    "type": "string",
+                    "enum": ["SwissQuant", "CreditSuisse"]
+                },
+                "totalScore": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "marketRiskScore": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "creditRiskScore": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "liquidityRiskScore": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "marketQualityFlag": {
+                    "type": "string",
+                    "enum": ["NOTAVAILABLE", "FALLBACK", "GOOD", "HARDCODED"]
+                },
+                "creditQualityFlag": {
+                    "type": "string",
+                    "enum": ["NOTAVAILABLE", "FALLBACK", "GOOD", "HARDCODED"]
+                },
+                "liquidityQualityFlag": {
+                    "type": "string",
+                    "enum": ["NOTAVAILABLE", "FALLBACK", "GOOD", "HARDCODED"]
+                }
+            }
+        },
+        "ValidationRun": {
+            "type": "object",
+            "required": ["portfolioId", "validationRunId"],
+            "properties": {
+                "validationRunId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "portfolioId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "violationStatus": {
+                    "type": "string"
+                },
+                "versionInfo": {
+                    "type": "string"
+                },
+                "validationRunResults": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ValidationRunResult"
+                    }
+                }
+            }
+        },
+        "PortfolioCheckExposure": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "implemented": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "current": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "target": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PortfolioCheckExposure"
+                    }
+                }
+            }
+        },
+        "ScIppEvojaAdapterStatusCommand": {
+            "type": "object",
+            "required": ["bankId", "remark", "status"],
+            "properties": {
+                "bankId": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "status": {
+                    "type": "string",
+                    "readOnly": true,
+                    "enum": ["UP_AND_RUNNING", "MAINTENANCE"]
+                },
+                "remark": {
+                    "type": "string",
+                    "readOnly": true
+                }
+            }
+        },
+        "CashAmount": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -6,8 +6,8 @@
 namespace Graviton\ProxyBundle\Controller;
 
 use Graviton\ExceptionBundle\Exception\NotFoundException;
-use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
+use Graviton\ProxyBundle\Service\Source\Registry;
 use Graviton\ProxyBundle\Service\TransformationHandler;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -57,9 +57,9 @@ class ProxyController
     private $httpFoundationFactory;
 
     /**
-     * @var array
+     * @var Registry
      */
-    private $proxySourceConfiguration;
+    private $registry;
 
     /**
      * @var TransformationHandler
@@ -75,7 +75,7 @@ class ProxyController
      * @param DiactorosFactory      $diactorosFactory         convert HttpFoundation objects to PSR-7
      * @param HttpFoundationFactory $httpFoundationFactory    convert PSR-7 interfaces to HttpFoundation
      * @param TransformationHandler $transformationHandler    transformation handler
-     * @param array                 $proxySourceConfiguration Set of sources to be recognized by the controller.
+     * @param Registry              $registry                 Registry of proxy sources
      */
     public function __construct(
         Proxy $proxy,
@@ -84,14 +84,14 @@ class ProxyController
         DiactorosFactory $diactorosFactory,
         HttpFoundationFactory $httpFoundationFactory,
         TransformationHandler $transformationHandler,
-        array $proxySourceConfiguration
+        Registry $registry
     ) {
         $this->proxy = $proxy;
         $this->templating = $templating;
         $this->apiLoader = $loader;
         $this->diactorosFactory = $diactorosFactory;
         $this->httpFoundationFactory = $httpFoundationFactory;
-        $this->proxySourceConfiguration = $proxySourceConfiguration;
+        $this->registry = $registry;
         $this->transformationHandler = $transformationHandler;
     }
 
@@ -105,7 +105,7 @@ class ProxyController
     public function proxyAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources($api['apiName']);
+        $this->registerProxySource($api['apiName']);
         $this->apiLoader->addOptions($api);
 
         $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
@@ -115,28 +115,7 @@ class ProxyController
         }
         $response = null;
         try {
-            $newRequest = Request::create(
-                $url,
-                $request->getMethod(),
-                array (),
-                array (),
-                array (),
-                array (),
-                $request->getContent(false)
-            );
-            $newRequest->headers->add($request->headers->all());
-            $newRequest->query->add($request->query->all());
-            $queryString = $request->server->get('QUERY_STRING');
-            $newRequest->server->set('QUERY_STRING', $queryString);
-
-            $newRequest = $this->transformationHandler->transformRequest(
-                $api['apiName'],
-                $api['endpoint'],
-                $request,
-                $newRequest
-            );
-            $psrRequest = $this->diactorosFactory->createRequest($newRequest);
-            $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
+            $psrRequest = $this->buildRequest($request, $url, $api);
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->cleanResponseHeaders($response->headers);
@@ -150,12 +129,6 @@ class ProxyController
             $response = $e->getResponse();
         } catch (ServerException $serverException) {
             $response = $serverException->getResponse();
-        } catch (TransformationException $e) {
-            $message = json_encode(
-                ['code' => 404, 'message' => 'HTTP 404 Not found']
-            );
-
-            throw new NotFoundHttpException($message, $e);
         } catch (RequestException $e) {
             $message = json_encode(
                 ['code' => 404, 'message' => 'HTTP 404 Not found']
@@ -197,7 +170,7 @@ class ProxyController
     public function schemaAction(Request $request)
     {
         $api = $this->decideApiAndEndpoint($request->getUri());
-        $this->registerProxySources($api['apiName']);
+        $this->registerProxySource($api['apiName']);
         $this->apiLoader->addOptions($api);
 
         $schema = $this->apiLoader->getEndpointSchema(urldecode($api['endpoint']));
@@ -252,15 +225,11 @@ class ProxyController
      *
      * @return void
      */
-    private function registerProxySources($apiPrefix = '')
+    private function registerProxySource($apiPrefix = '')
     {
-        foreach (array_keys($this->proxySourceConfiguration) as $source) {
-            foreach ($this->proxySourceConfiguration[$source] as $config) {
-                if ($apiPrefix == $config['prefix']) {
-                    $this->apiLoader->setOption($config);
-                    return;
-                }
-            }
+        if ($this->registry->has($apiPrefix)) {
+            $this->apiLoader->setOption($config);
+            return;
         }
 
         $e = new NotFoundException('No such thirdparty API.');
@@ -284,5 +253,41 @@ class ProxyController
         }
 
         return $host;
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $url
+     * @param array   $api
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    private function buildRequest(Request $request, $url, array $api)
+    {
+        $newRequest = Request::create(
+            $url,
+            $request->getMethod(),
+            array(),
+            array(),
+            array(),
+            array(),
+            $request->getContent(false)
+        );
+        $newRequest->headers->add($request->headers->all());
+        $newRequest->query->add($request->query->all());
+        $queryString = $request->server->get('QUERY_STRING');
+        $newRequest->server->set('QUERY_STRING', $queryString);
+
+        $newRequest = $this->transformationHandler->transformRequest(
+            $api['apiName'],
+            $api['endpoint'],
+            $request,
+            $newRequest
+        );
+        /** @var \Psr\Http\Message\ResponseInterface $psrRequest */
+        $psrRequest = $this->diactorosFactory->createRequest($newRequest);
+        $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
+
+        return $psrRequest;
     }
 }

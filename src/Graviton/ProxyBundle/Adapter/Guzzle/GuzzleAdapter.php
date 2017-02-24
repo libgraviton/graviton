@@ -31,15 +31,21 @@ class GuzzleAdapter implements AdapterInterface
      *
      * @var array
      */
-    private $curlOptions;
+    private $options;
+
+
     /**
-     * constructor
+     * GuzzleAdapter constructor.
      *
-     * @param Client $client guzzle client
+     * @link https://gist.github.com/jseidl/3218673
+     *
+     * @param Client $client      guzzle client
+     * @param array  $curlOptions List of curl options to be recognized for a request.
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, array $curlOptions)
     {
         $this->client = $client;
+        $this->options = $this->applyOptions($curlOptions);
     }
 
     /**
@@ -51,24 +57,37 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function send(RequestInterface $request)
     {
-        $options = array('curl' => []);
-        foreach ($this->curlOptions as $option => $value) {
-            $options['curl'][constant('CURLOPT_'.strtoupper($option))] = $value;
-        }
-        $options['verify'] = __DIR__.'/../../Resources/cert/cacert.pem';
-
-        return $this->client->send($request, $options);
+        return $this->client->send($request, $this->options);
     }
 
     /**
-     * set curl options
+     * @param string $method
+     * @param string $uri
+     * @param array  $options
      *
-     * @param array $curlOptions the curl options
-     *
-     * @return void
+     * @return mixed|ResponseInterface
      */
-    public function setCurlOptions(array $curlOptions)
+    public function request($method, $uri = '', array $options = [])
     {
-        $this->curlOptions = $curlOptions;
+        // provide possibility to override default curlopts by passing $options.
+        $options = array_merge($this->options, $options);
+
+        return $this->client->request($method, $uri, $options);
     }
+
+    /**
+     * @return array
+     */
+    private function applyOptions($options)
+    {
+        $options = array('curl' => []);
+        foreach ($options as $option => $value) {
+            $options['curl'][constant('CURLOPT_' . strtoupper($option))] = $value;
+        }
+        $options['verify'] = __DIR__ . '/../../Resources/cert/cacert.pem';
+
+        return $options;
+    }
+
+
 }
