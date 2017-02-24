@@ -13,6 +13,8 @@
         <parameter key="graviton.document.serializer.handler.date.class">Graviton\DocumentBundle\Serializer\Handler\DateHandler</parameter>
         <parameter key="graviton.document.serializer.handler.empty.class">Graviton\DocumentBundle\Serializer\Handler\EmptyHandler</parameter>
         <parameter key="graviton.document.serializer.listener.emptyextref.class">Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener</parameter>
+
+        <parameter key="graviton.document.collectioncache.provider">doctrine_cache.providers.local</parameter>
     </parameters>
     <services>
         <!-- extref converter -->
@@ -23,7 +25,8 @@
 
         <!-- Collection Cache Service -->
         <service id="graviton.document.service.collectioncache" class="%graviton.document.service.collectioncache.class%">
-            <argument type="service" id="doctrine_cache.providers.local"/>
+            <!-- this will get the service that is defined by the parameter 'graviton.document.collectioncache.provider' -->
+            <argument type="expression">service(parameter('graviton.document.collectioncache.provider'))</argument>
             <argument>%graviton.cache.collections%</argument>
         </service>
 
