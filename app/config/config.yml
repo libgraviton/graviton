@@ -80,7 +80,6 @@ stof_doctrine_extensions:
     default-locale: "en_US"
     mongodb:
         default:
-            loggable: true
             softdeleteable: true
 
 # SensionFrameworkExtraBundle Configuration
