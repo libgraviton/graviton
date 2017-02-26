@@ -70,13 +70,6 @@ class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
             ->with(
                 $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass')
             );
-        $containerDouble
-            ->expects($this->at(2))
-            ->method('addCompilerPass')
-            ->with(
-                $this->isInstanceOf('\Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryDecoratorCompilerPass'),
-                PassConfig::TYPE_OPTIMIZE
-            );
 
         $bundle = new GravitonRestBundle();
         $bundle->build($containerDouble);

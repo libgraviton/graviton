@@ -52,6 +52,5 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
 
         $container->addCompilerPass(new RestServicesCompilerPass);
         $container->addCompilerPass(new RqlQueryRoutesCompilerPass());
-        $container->addCompilerPass(new RqlQueryDecoratorCompilerPass(), PassConfig::TYPE_OPTIMIZE);
     }
 }
