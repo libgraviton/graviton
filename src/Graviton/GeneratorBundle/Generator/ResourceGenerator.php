@@ -25,8 +25,6 @@ use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
- *
- * @todo     split all the xml handling on services.conf into a Manipulator
  */
 class ResourceGenerator extends AbstractGenerator
 {
@@ -153,7 +151,7 @@ class ResourceGenerator extends AbstractGenerator
             },
             $fields
         );
-        
+
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
@@ -841,12 +839,6 @@ class ResourceGenerator extends AbstractGenerator
             'model/schema.json.twig',
             $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
             array_merge($parameters, ['document' => $document.'Embedded'])
-        );
-
-        $this->renderFile(
-            'validator/validation.xml.twig',
-            $dir . '/Resources/config/validation.xml',
-            $parameters
         );
 
         $services = $this->loadServices($dir);
