@@ -10,7 +10,6 @@ use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
