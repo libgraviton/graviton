@@ -150,12 +150,10 @@ class HttpLoader implements LoaderInterface
     {
         $retVal = new ApiDefinition();
         if (isset($this->strategy)) {
-
             if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
                 $content = $this->cache->fetch($this->options['storeKey']);
             }
 
-            $request =
             $request = new Request('GET', $input);
             if (empty($content)) {
                 $content = $this->fetchFile($request);

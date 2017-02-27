@@ -34,31 +34,21 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setup()
     {
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')
-            ->setConstructorArgs([200])
+        $response = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->getMock();
         $response
             ->expects($this->any())
             ->method("getBody")
             ->willReturn("{ 'test': 'bablaba' }");
-        $curlMock = $this->createMock('Guzzle\Common\Collection');
-        $request = $this->getMockForAbstractClass('Guzzle\Http\Message\RequestInterface');
-        $request->expects($this->any())
-            ->method("send")
-            ->withAnyParameters()
-            ->willReturn($response);
-        $request->method('getCurlOptions')
-            ->willReturn($curlMock);
-        $client = $this->getMockBuilder('Guzzle\Http\Client')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $client
-            ->expects($this->any())
-            ->method('get')
-            ->willReturn($request);
-        $validator = $this->getMockForAbstractClass('Symfony\Component\Validator\Validator\ValidatorInterface');
 
-        $this->logger = $this->createMock('Psr\Log\Loggerinterface');
+        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
+        $client->expects($this->any())
+                ->method("send")
+                ->withAnyParameters()
+                ->willReturn($response);
+
+        $validator = $this->getMockForAbstractClass('Symfony\Component\Validator\Validator\ValidatorInterface');
+        $this->logger = $this->createMock('Psr\Log\LoggerInterface');
 
         $this->sut = new HttpLoader($validator, $client, $this->logger);
     }
@@ -70,9 +60,9 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testSupports()
     {
-        $client = $this->getMockBuilder('Guzzle\Http\Client')->getMock();
+        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
         $validator = $this->getMockBuilder('Symfony\Component\Validator\Validator\ValidatorInterface')
-            ->getMockForAbstractClass();
+                          ->getMockForAbstractClass();
         $validator
             ->expects($this->once())
             ->method('validate')
