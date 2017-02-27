@@ -34,7 +34,6 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array(
-            new MisdGuzzleBundle(),
             new JMSSerializerBundle(),
         );
     }
