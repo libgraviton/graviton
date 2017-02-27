@@ -74,7 +74,6 @@ abstract class RestExceptionListener
      */
     public function getSerializedContent($content)
     {
-        // can't use the same context twice.. maybe scope="prototype" in service.xml would do the trick
         $serializationContext = clone $this->serializationContext;
 
         return $this->serializer->serialize(

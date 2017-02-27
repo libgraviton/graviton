@@ -317,7 +317,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $repoName,
             null,
-            null,
             array(),
             null,
             array(
@@ -340,7 +339,6 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $services,
             $repoName . 'embedded',
-            null,
             null,
             array(),
             null,
@@ -578,7 +576,6 @@ class ResourceGenerator extends AbstractGenerator
      * @param \DOMDocument $dom            services.xml dom
      * @param string       $id             id of new service
      * @param string       $parent         parent for service
-     * @param string       $scope          scope of service
      * @param array        $calls          methodCalls to add
      * @param string       $tag            tag name or empty if no tag needed
      * @param array        $arguments      service arguments
@@ -591,7 +588,6 @@ class ResourceGenerator extends AbstractGenerator
         $dom,
         $id,
         $parent = null,
-        $scope = null,
         array $calls = array(),
         $tag = null,
         array $arguments = array(),
@@ -610,7 +606,6 @@ class ResourceGenerator extends AbstractGenerator
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
             $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
-            $this->addAttributeToNode('scope', $scope, $dom, $attrNode);
             if ($factoryService && $factoryMethod) {
                 $factoryNode = $dom->createElement('factory');
                 $this->addAttributeToNode('service', $factoryService, $dom, $factoryNode);
@@ -856,7 +851,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName,
             'graviton.rest.model',
-            null,
             array(
                 [
                     'method' => 'setRepository',
@@ -876,7 +870,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName . 'embedded',
             'graviton.rest.model',
-            null,
             array(
                 [
                     'method' => 'setRepository',
@@ -922,7 +915,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName,
             $parameters['parent'],
-            'request',
             array(
                 array(
                     'method' => 'setModel',

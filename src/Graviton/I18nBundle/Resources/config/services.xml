@@ -48,7 +48,7 @@
     </service>
     <service id="graviton.i18n.controller.language"
              class="%graviton.i18n.controller.language.class%"
-             parent="graviton.rest.controller" scope="request">
+             parent="graviton.rest.controller">
       <call method="setModel">
         <argument type="service" id="graviton.i18n.model.language"/>
       </call>
@@ -84,7 +84,7 @@
     <service id="graviton.i18n.document.translatablelanguage" class="%graviton.i18n.document.translatablelanguage.class%"/>
     <service id="graviton.i18n.controller.translatable"
       class="%graviton.i18n.controller.translatable.class%"
-      parent="graviton.rest.controller" scope="request">
+      parent="graviton.rest.controller">
       <call method="setModel">
         <argument type="service" id="graviton.i18n.model.translatable"/>
       </call>

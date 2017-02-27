@@ -38,8 +38,7 @@
 
         <service id="graviton.file.controller.file"
                  class="%graviton.file.controller.file.class%"
-                 parent="graviton.rest.controller"
-                 scope="request">
+                 parent="graviton.rest.controller">
             <call method="setModel">
                 <argument type="service" id="gravitondyn.file.model.file" on-invalid="null" />
             </call>

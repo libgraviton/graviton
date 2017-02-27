@@ -28,7 +28,7 @@
         </service>
         <service id="graviton.core.controller.app"
                  class="%graviton.core.controller.app.class%"
-                 parent="graviton.rest.controller" scope="request">
+                 parent="graviton.rest.controller">
             <call method="setModel">
                 <argument type="service" id="graviton.core.model.app"/>
             </call>
