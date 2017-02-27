@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b04aa4fc2315a558134393fb78be1c03",
+    "content-hash": "b7c9d5df221a23cc589c52d2b1f22883",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -2660,79 +2660,6 @@
                 "media"
             ],
             "time": "2016-01-16T00:12:11+00:00"
-        },
-        {
-            "name": "misd/guzzle-bundle",
-            "version": "v1.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/misd-service-development/guzzle-bundle.git",
-                "reference": "555c105ef4ac66597a029fe634dee0fe4f9cb084"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/misd-service-development/guzzle-bundle/zipball/555c105ef4ac66597a029fe634dee0fe4f9cb084",
-                "reference": "555c105ef4ac66597a029fe634dee0fe4f9cb084",
-                "shasum": ""
-            },
-            "require": {
-                "guzzle/guzzle": "~3.0",
-                "php": ">=5.3.3",
-                "symfony/framework-bundle": "~2.2"
-            },
-            "conflict": {
-                "jms/serializer-bundle": "<0.11-dev",
-                "sensio/framework-extra-bundle": ">=4.0-dev"
-            },
-            "require-dev": {
-                "doctrine/cache": "~1.0",
-                "jms/serializer-bundle": "~0.11",
-                "phpunit/phpunit": "~4.3",
-                "sensio/framework-extra-bundle": "~2.2",
-                "symfony/monolog-bundle": "~2.2",
-                "symfony/yaml": "~2.2"
-            },
-            "suggest": {
-                "jms/serializer-bundle": "Serialize/deserialize objects to/from XML, JSON and YAML",
-                "sensio/framework-extra-bundle": "Provides a parameter converter",
-                "symfony/monolog-bundle": "Log requests"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Misd\\GuzzleBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Chris Wilkinson",
-                    "email": "chris.wilkinson@admin.cam.ac.uk"
-                }
-            ],
-            "description": "Integrates Guzzle into your Symfony2 application",
-            "homepage": "https://github.com/misd-service-development/guzzle-bundle",
-            "keywords": [
-                "Guzzle",
-                "api",
-                "bundle",
-                "client",
-                "curl",
-                "http",
-                "http client",
-                "rest",
-                "web service"
-            ],
-            "abandoned": true,
-            "time": "2014-12-01T08:29:51+00:00"
         },
         {
             "name": "monolog/monolog",
