@@ -108,6 +108,13 @@ class JsonDefinitionArray implements DefinitionElementInterface
      */
     public function getTypeSerializer()
     {
-        return 'array<'.$this->element->getTypeSerializer().'>';
+        $type = 'array<'.$this->element->getTypeSerializer().'>';
+
+        // if we have a x-dynamic-key field, serializer type must be changed
+        if ($this->element instanceof JsonDefinitionField && !empty($this->element->getXDynamicKey())) {
+            $type = 'array<string, '.$this->element->getTypeSerializer().'>';
+        }
+
+        return $type;
     }
 }
