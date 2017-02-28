@@ -96,12 +96,16 @@ jms_serializer:
             default_format: Y-m-d\TH:i:sO
             default_timezone: UTC # defaults to whatever timezone set in php.ini or via date_default_timezone_set
     metadata:
+        cache: file
+        debug: "%kernel.debug%"
+        file_cache:
+            dir: "%kernel.cache_dir%/serializer"
         # if you don't want to use auto-detection, you can also define the
         # namespace prefix and the corresponding directory explicitly
-        directories:
-            any-name:
-                namespace_prefix: Graviton\CoreBundle
-                path: "@GravitonCoreBundle/Resources/config/serializer"
+        #directories:
+        #    any-name:
+        #        namespace_prefix: Graviton\CoreBundle
+        #        path: "@GravitonCoreBundle/Resources/config/serializer"
 
         # Using auto-detection, the mapping files for each bundle will be
         # expected in the Resources/config/serializer directory.

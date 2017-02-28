@@ -4,8 +4,6 @@
  */
 namespace Graviton\GeneratorBundle\Definition\Schema;
 
-use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
-
 /**
  * JSON definition "target.fields"
  *
