@@ -43,7 +43,6 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             ->addDefaultSerializationVisitors()
             ->addDefaultDeserializationVisitors()
             ->addMetadataDir(__DIR__.'/../../Resources/config/serializer', 'Graviton\\GeneratorBundle')
-            ->setCacheDir(sys_get_temp_dir())
             ->setDebug(true)
             ->build();
 
