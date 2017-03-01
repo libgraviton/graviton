@@ -79,3 +79,24 @@ parameters:
     # List of collections to be saved in cache, in seconds
     graviton.cache.collections:
         EventStatus: 60
+
+    # caching related settings
+    # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
+    # for redis use:
+    #    graviton.cache.provider.service_id: doctrine_cache.providers.redis
+    graviton.cache.provider.service_id: doctrine_cache.providers.local
+    graviton.cache.redis.host: localhost
+    graviton.cache.redis.port: 6379
+
+    # and those are the *doctrine* specific parameters - default to array
+    # redis example:
+    #    doctrine.odm.cache.type: redis
+    #    doctrine.odm.cache.class: Doctrine\Common\Cache\RedisCache
+    #    doctrine.odm.cache.host: localhost
+    #    doctrine.odm.cache.port: 6379
+    #    doctrine.odm.cache.instance_class: Redis
+    doctrine.odm.cache.type: array
+    doctrine.odm.cache.class: null
+    doctrine.odm.cache.host: null
+    doctrine.odm.cache.port: 0
+    doctrine.odm.cache.instance_class: null
