@@ -150,7 +150,7 @@
     <!-- I18nCacheUtils -->
     <service id="graviton.18n.cacheutils"
              class="%graviton.i18n.cacheutils.class%">
-      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument type="expression">service(parameter('graviton.doctrine.cache.provider.service_id'))</argument>
       <argument type="string">%kernel.cache_dir%</argument>
       <argument type="string">odm</argument>
     </service>

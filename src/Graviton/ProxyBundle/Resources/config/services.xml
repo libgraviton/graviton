@@ -57,7 +57,7 @@
             <argument type="service" id="graviton.proxy.adapter.guzzle" />
             <argument type="service" id="logger" />
             <call method="setCache">
-                <argument type="service" id="doctrine_cache.providers.local"/>
+                <argument type="expression">service(parameter('graviton.doctrine.cache.provider.service_id'))</argument>
                 <argument>ProxyBundle</argument>
                 <argument>86400</argument>
             </call>
