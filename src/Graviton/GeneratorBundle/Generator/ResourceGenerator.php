@@ -25,8 +25,6 @@ use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
- *
- * @todo     split all the xml handling on services.conf into a Manipulator
  */
 class ResourceGenerator extends AbstractGenerator
 {
@@ -153,7 +151,7 @@ class ResourceGenerator extends AbstractGenerator
             },
             $fields
         );
-        
+
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
@@ -319,7 +317,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $repoName,
             null,
-            null,
             array(),
             null,
             array(
@@ -342,7 +339,6 @@ class ResourceGenerator extends AbstractGenerator
         $this->addService(
             $services,
             $repoName . 'embedded',
-            null,
             null,
             array(),
             null,
@@ -580,7 +576,6 @@ class ResourceGenerator extends AbstractGenerator
      * @param \DOMDocument $dom            services.xml dom
      * @param string       $id             id of new service
      * @param string       $parent         parent for service
-     * @param string       $scope          scope of service
      * @param array        $calls          methodCalls to add
      * @param string       $tag            tag name or empty if no tag needed
      * @param array        $arguments      service arguments
@@ -593,7 +588,6 @@ class ResourceGenerator extends AbstractGenerator
         $dom,
         $id,
         $parent = null,
-        $scope = null,
         array $calls = array(),
         $tag = null,
         array $arguments = array(),
@@ -612,7 +606,6 @@ class ResourceGenerator extends AbstractGenerator
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
             $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
-            $this->addAttributeToNode('scope', $scope, $dom, $attrNode);
             if ($factoryService && $factoryMethod) {
                 $factoryNode = $dom->createElement('factory');
                 $this->addAttributeToNode('service', $factoryService, $dom, $factoryNode);
@@ -843,12 +836,6 @@ class ResourceGenerator extends AbstractGenerator
             array_merge($parameters, ['document' => $document.'Embedded'])
         );
 
-        $this->renderFile(
-            'validator/validation.xml.twig',
-            $dir . '/Resources/config/validation.xml',
-            $parameters
-        );
-
         $services = $this->loadServices($dir);
 
         $bundleParts = explode('\\', $parameters['base']);
@@ -864,7 +851,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName,
             'graviton.rest.model',
-            null,
             array(
                 [
                     'method' => 'setRepository',
@@ -884,7 +870,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName . 'embedded',
             'graviton.rest.model',
-            null,
             array(
                 [
                     'method' => 'setRepository',
@@ -930,7 +915,6 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $paramName,
             $parameters['parent'],
-            'request',
             array(
                 array(
                     'method' => 'setModel',

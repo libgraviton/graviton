@@ -8,10 +8,11 @@ namespace Graviton\ProxyBundle\Definition\Loader;
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyInterface;
 use Doctrine\Common\Cache\CacheProvider;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\RequestInterface;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use Proxy\Adapter\AdapterInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -30,7 +31,7 @@ class HttpLoader implements LoaderInterface
     private $validator;
 
     /**
-     * @var Client
+     * @var AdapterInterface
      */
     private $client;
 
@@ -59,11 +60,6 @@ class HttpLoader implements LoaderInterface
     private $cacheLifetime;
 
     /**
-     * @var array curl options to apply on each request
-     */
-    private $curlOptions = [];
-
-    /**
      * @var array
      */
     private $options = [
@@ -74,10 +70,10 @@ class HttpLoader implements LoaderInterface
      * constructor
      *
      * @param ValidatorInterface $validator validator
-     * @param Client             $client    http client
+     * @param AdapterInterface   $client    http client
      * @param LoggerInterface    $logger    Logger
      */
-    public function __construct(ValidatorInterface $validator, Client $client, LoggerInterface $logger)
+    public function __construct(ValidatorInterface $validator, AdapterInterface $client, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->client = $client;
@@ -113,18 +109,6 @@ class HttpLoader implements LoaderInterface
     }
 
     /**
-     * set curl options
-     *
-     * @param array $curlOptions the curl options
-     *
-     * @return void
-     */
-    public function setCurlOptions(array $curlOptions)
-    {
-        $this->curlOptions = $curlOptions;
-    }
-
-    /**
      * @inheritDoc
      *
      * @param array $options cache strategy
@@ -156,23 +140,6 @@ class HttpLoader implements LoaderInterface
     }
 
     /**
-     * Applies the specified curl option on a request
-     *
-     * @param RequestInterface $request request
-     *
-     * @return void
-     */
-    protected function applyCurlOptions($request)
-    {
-        $curl = $request->getCurlOptions();
-        foreach ($this->curlOptions as $option => $value) {
-            $option = 'CURLOPT_'.strtoupper($option);
-            $curl->set(constant($option), $value);
-        }
-        $curl->set(constant('CURLOPT_CAINFO'), __DIR__.'/../../Resources/cert/cacert.pem');
-    }
-
-    /**
      * @inheritDoc
      *
      * @param string $input url
@@ -183,15 +150,12 @@ class HttpLoader implements LoaderInterface
     {
         $retVal = new ApiDefinition();
         if (isset($this->strategy)) {
-            $request = $this->client->get($input);
-            $this->applyCurlOptions($request);
             if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
                 $content = $this->cache->fetch($this->options['storeKey']);
+            }
 
-                if (empty($content)) {
-                    $content = $this->fetchFile($request);
-                }
-            } else {
+            $request = new Request('GET', $input);
+            if (empty($content)) {
                 $content = $this->fetchFile($request);
             }
 
@@ -201,10 +165,11 @@ class HttpLoader implements LoaderInterface
             $fallbackHost = array();
             $fallbackHost['host'] = sprintf(
                 '%s://%s:%d',
-                $request->getScheme(),
-                $request->getHost(),
-                $request->getPort()
+                $request->getUri()->getScheme(),
+                $request->getUri()->getHost(),
+                $request->getUri()->getPort()
             );
+
             if ($this->strategy->supports($content)) {
                 $retVal = $this->strategy->process($content, $fallbackHost);
             }
@@ -224,18 +189,18 @@ class HttpLoader implements LoaderInterface
     {
         $content = "{}";
         try {
-            $response = $request->send();
-            $content = $response->getBody(true);
+            $response = $this->client->send($request);
+            $content = (string) $response->getBody();
             if (isset($this->cache)) {
                 $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
             }
-        } catch (\Guzzle\Http\Exception\HttpException $e) {
+        } catch (RequestException $e) {
             $this->logger->info(
                 "Unable to fetch File!",
                 [
                     "message" => $e->getMessage(),
-                    "url" => $request->getUrl(),
-                    "code" => (!empty($request->getResponse())? $request->getResponse()->getStatusCode() : 500)
+                    "url" => $request->getRequestTarget(),
+                    "code" => (!empty($e->getResponse())? $e->getResponse()->getStatusCode() : 500)
                 ]
             );
         }

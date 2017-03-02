@@ -32,7 +32,7 @@
       <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
     </service>
     <service id="graviton.schema.listener.schemacacheinvalidation" class="%graviton.schema.listener.schemacacheinvalidation.class%">
-      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument type="expression">service(parameter('graviton.doctrine.cache.provider.service_id'))</argument>
       <argument>%graviton.schema.cache.invalidateMapKey%</argument>
       <tag name="kernel.event_listener" event="graviton.rest.request" method="onRestRequest"/>
     </service>
@@ -109,7 +109,7 @@
       <argument>%graviton.document.field.names%</argument>
       <argument>%locale%</argument>
       <argument type="service" id="graviton.schema.constraint.builder"/>
-      <argument type="service" id="doctrine_cache.providers.local"/>
+      <argument type="expression">service(parameter('graviton.doctrine.cache.provider.service_id'))</argument>
       <argument>%graviton.schema.cache.invalidateMapKey%</argument>
     </service>
     <service id="graviton.schema.constraint.incrementaldate" class="%graviton.schema.constraint.incrementaldate.class%">
