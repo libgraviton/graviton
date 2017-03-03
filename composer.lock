@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "718fb97fb289c1431ac2eb455af8894d",
+    "content-hash": "4fc205ae7d1ceffb6290b3f55d54c958",
     "packages": [
         {
             "name": "antimattr/mongodb-migrations",
@@ -4362,20 +4362,17 @@
         },
         {
             "name": "thefrozenfire/swagger",
-            "version": "2.0.10",
+            "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TheFrozenFire/PHP-Swagger-Parser.git",
-                "reference": "8a32809220641fa79ae39c0ccabebfda0b1be2d4"
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TheFrozenFire/PHP-Swagger-Parser/zipball/8a32809220641fa79ae39c0ccabebfda0b1be2d4",
-                "reference": "8a32809220641fa79ae39c0ccabebfda0b1be2d4",
+                "url": "https://api.github.com/repos/TheFrozenFire/PHP-Swagger-Parser/zipball/8007be78295f5a3f174f7e18421a9f6604067edf",
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf",
                 "shasum": ""
-            },
-            "require": {
-                "php": "^5.5"
             },
             "require-dev": {
                 "phpunit/phpunit": "~3.7.22",
@@ -4398,7 +4395,7 @@
                 }
             ],
             "description": "Swagger parser for PHP",
-            "time": "2016-08-04T22:00:17+00:00"
+            "time": "2015-09-23T22:52:23+00:00"
         },
         {
             "name": "twig/extensions",
