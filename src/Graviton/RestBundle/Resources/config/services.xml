@@ -131,7 +131,7 @@
 
         <!-- Graviton rest event stuff -->
         <!-- Rest event with scope prototype (get e new event object, every time you get it from the container) -->
-        <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" scope="prototype">
+        <service id="graviton.rest.event" class="Graviton\RestBundle\Event\RestEvent" shared="false">
         </service>
 
         <service id="graviton.rest.event.subscriber" class="%graviton.rest.event.subscriber.class%">

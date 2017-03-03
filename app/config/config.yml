@@ -5,6 +5,7 @@ imports:
 parameters:
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     graviton.translator.default.locale: en
+    graviton.doctrine.cache.provider.service_id: %graviton.cache.provider.service_id%
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
@@ -47,6 +48,11 @@ doctrine_cache:
                 directory: "%kernel.cache_dir%/doctrine_cache"
         array:
             array:
+        redis:
+            redis:
+                database: 2
+                host: "%graviton.cache.redis.host%"
+                port: "%graviton.cache.redis.port%"
 
 # Doctrine Configuration
 doctrine:
@@ -73,6 +79,12 @@ doctrine_mongodb:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
                     enabled: true
+            metadata_cache_driver:
+                type: "%doctrine.odm.cache.type%"
+                class: "%doctrine.odm.cache.class%"
+                host: "%doctrine.odm.cache.host%"
+                port: "%doctrine.odm.cache.port%"
+                instance_class: "%doctrine.odm.cache.instance_class%"
 
 # StofDoctrineExtensions Configuration
 # see: https://github.com/stof/StofDoctrineExtensionsBundle/blob/master/Resources/doc/index.rst
@@ -80,7 +92,6 @@ stof_doctrine_extensions:
     default-locale: "en_US"
     mongodb:
         default:
-            loggable: true
             softdeleteable: true
 
 # SensionFrameworkExtraBundle Configuration
@@ -94,32 +105,14 @@ sensio_framework_extra:
 jms_serializer:
     handlers:
         datetime:
-            default_format: "Y-m-d\TH:i:sO"
-            default_timezone: "UTC" # defaults to whatever timezone set in php.ini or via date_default_timezone_set
+            default_format: Y-m-d\TH:i:sO
+            default_timezone: UTC # defaults to whatever timezone set in php.ini or via date_default_timezone_set
     metadata:
-        # if you don't want to use auto-detection, you can also define the
-        # namespace prefix and the corresponding directory explicitly
-        directories:
-            any-name:
-                namespace_prefix: "Graviton\\CoreBundle"
-                path: "@GravitonCoreBundle/Resources/config/serializer"
-
-        # Using auto-detection, the mapping files for each bundle will be
-        # expected in the Resources/config/serializer directory.
-        #
-        # Example:
-        # class: My\FooBundle\Entity\User
-        # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
+        cache: graviton.core.jms.cache.provider
+        debug: "%kernel.debug%"
+        file_cache:
+            dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
-
-# Exercise/HTMLPurifierBundle Configuration
-# see: https://github.com/Exercise/HTMLPurifierBundle
-# see: http://htmlpurifier.org/live/configdoc/plain.html
-exercise_html_purifier:
-    default:
-        Cache.SerializerPath: '%kernel.cache_dir%/htmlpurifier'
-    graviton:
-        Core.Encoding: 'UTF-8'
 
 knp_gaufrette:
     adapters:

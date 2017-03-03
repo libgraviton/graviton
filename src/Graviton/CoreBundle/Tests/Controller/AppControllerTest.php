@@ -124,9 +124,7 @@ class AppControllerTest extends RestTestCase
     public function testGetAppWithFilteringAndPaging()
     {
         $client = static::createRestClient();
-        $_SERVER['QUERY_STRING'] = 'eq(showInMenu,true)&limit(1)';
         $client->request('GET', '/core/app/?eq(showInMenu,true)&limit(1)');
-        unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
         $this->assertEquals(1, count($client->getResults()));
