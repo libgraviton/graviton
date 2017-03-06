@@ -10,37 +10,19 @@ Due to the dependency on gaufrette\file at least one *adapter* and the *filesyst
 has to be configured in config.yml:
 
 ```yml
-knp_gaufrette:
+oneup_flysystem:
     adapters:
-        local:
+        localfile:
             local:
                 directory: '%kernel.root_dir%/files'
-                create: true
-        s3:
-            aws_s3:
-                service_id: 'graviton.aws_s3.client'
-                bucket_name: '%graviton.aws_s3.bucket_name%'
-                options:
-                    create: true
     filesystems:
-        file_service:
-            adapter: %graviton.file.gaufrette.backend%
+        graviton:
+            adapter: localfile
 ```
 
-There is further the option to configure the access to the Amazone Webservices S3 for file storage.
-Use the following configuration parameters to do so:
+For other storages (such as S3) and more, additional adapters can be installed and configured on demand.
 
-```yml
-    graviton.file.backend: (local|s3)
-    graviton.file.s3.endpoint: (the S3 access host)
-    graviton.file.s3.key: (the S3 client key)
-    graviton.file.s3.secret: (the S3 preshared secret)
-    graviton.file.s3.bucket_name: (the location of the files on S3. Usually: graviton-dev-bucket) 
-```
-
->**NOTICE**
->In case an environment variable named *VCAP_SERVICES* is available every configuration option accessible via parameter.yml will be replaced by the settings provided by *VCAP_SERVICES*. 
-
+Please see [http://flysystem.thephpleague.com/](http://flysystem.thephpleague.com/) for a list of available adapters and their configuration.
 
 ## Usage
 ### Creating a new file

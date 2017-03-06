@@ -4,32 +4,18 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="graviton.aws_s3.client.class">Aws\S3\S3Client</parameter>
-
-        <parameter key="graviton.aws_s3.client.args" type="collection">
-            <parameter key="endpoint">%graviton.aws_s3.client.endpoint%</parameter>
-            <parameter key="key">%graviton.aws_s3.client.key%</parameter>
-            <parameter key="secret">%graviton.aws_s3.client.secret%</parameter>
-        </parameter>
-
         <parameter key="graviton.file.controller.file.class">Graviton\FileBundle\Controller\FileController</parameter>
         <parameter key="graviton.file.file_manager.class">Graviton\FileBundle\Manager\FileManager</parameter>
         <parameter key="graviton.file.request_manager.class">Graviton\FileBundle\Manager\RequestManager</parameter>
     </parameters>
 
     <services>
-
         <service id="graviton.file.request_manager" class="%graviton.file.request_manager.class%">
             <argument type="service" id="request_stack" on-invalid="null" />
         </service>
 
-        <service id="graviton.aws_s3.client" class="%graviton.aws_s3.client.class%">
-            <factory class="%graviton.aws_s3.client.class%" method="factory"/>
-            <argument>%graviton.aws_s3.client.args%</argument>
-        </service>
-
         <service id="graviton.file.file_manager" class="%graviton.file.file_manager.class%">
-            <argument type="service" key="fileSystem" id="gaufrette.file_service_filesystem"/>
+            <argument type="service" key="fileSystem" id="oneup_flysystem.graviton_filesystem"/>
             <argument type="service" key="managerRegistry" id="doctrine_mongodb"/>
             <call method="setAllowedMimeTypes">
                 <argument>%graviton.file.allowed.mime_types%</argument>

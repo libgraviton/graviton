@@ -6,16 +6,14 @@
 namespace Graviton\FileBundle\Manager;
 
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
-use Gaufrette\File as GaufretteFile;
-use Gaufrette\Filesystem;
 use GravitonDyn\FileBundle\Document\File as FileDocument;
 use GravitonDyn\FileBundle\Document\FileMetadataBase;
 use GravitonDyn\FileBundle\Document\FileMetadataEmbedded;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use GravitonDyn\FileBundle\Document\File as DocumentFile;
@@ -74,7 +72,7 @@ class FileManager
     /**
      * Will update the response object with provided file data
      *
-     * @param Response     $response To building the response on
+     * @param Response     $response response
      * @param DocumentFile $file     File document object from DB
      *
      * @return Response
@@ -89,7 +87,7 @@ class FileManager
         }
 
         // We use file's mimeType, just in case none we use DB's.
-        $mimeType = $this->fileSystem->mimeType($file->getId());
+        $mimeType = $this->fileSystem->getMimetype($file->getId());
         if (!$mimeType) {
             $mimeType = $metadata->getMime();
         }
@@ -97,17 +95,15 @@ class FileManager
             throw new InvalidArgumentException('File mime type: '.$mimeType.' is not allowed as response.');
         }
 
-        // Read Data
-        $file = $this->fileSystem->read($file->getId());
-
         // Create Response
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_INLINE,
             $metadata->getFilename()
         );
+
         $response
             ->setStatusCode(Response::HTTP_OK)
-            ->setContent($file);
+            ->setContent($this->fileSystem->read($file->getId()));
         $response
             ->headers->set('Content-Type', $mimeType);
         $response
@@ -119,22 +115,20 @@ class FileManager
     /**
      * Save or update a file
      *
-     * @param string $id   ID of file
-     * @param String $data content to save
+     * @param string $id       ID of file
+     * @param String $filepath path to the file to save
      *
-     * @return GaufretteFile
-     *
-     * @throws BadRequestHttpException
+     * @return void
      */
-    public function saveFile($id, $data)
+    public function saveFile($id, $filepath)
     {
-        if (is_resource($data)) {
-            throw new BadRequestHttpException('/file does not support storing resources');
-        }
-        $file = new GaufretteFile($id, $this->fileSystem);
-        $file->setContent($data);
+        // will save using a stream
+        $fp = fopen($filepath, 'r+');
 
-        return $file;
+        $this->fileSystem->putStream($id, $fp);
+
+        // close file
+        fclose($fp);
     }
 
     /**
@@ -190,7 +184,7 @@ class FileManager
         }
 
         if ($file) {
-            $this->saveFile($document->getId(), file_get_contents($file->getRealPath()));
+            $this->saveFile($document->getId(), $file->getRealPath());
             $sfFileSys = new SfFileSystem();
             $sfFileSys->remove($file->getRealPath());
         }
