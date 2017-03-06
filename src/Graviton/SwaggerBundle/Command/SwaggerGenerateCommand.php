@@ -121,14 +121,6 @@ class SwaggerGenerateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * somehow as the swagger spec generation digs deep in the utils/router stuff,
-         * somewhere Request is needed.. so we need to enter the request scope
-         * manually.. maybe there is another possibility for this?
-         */
-        $this->container->enterScope('request');
-        $this->container->set('request', new Request(), 'request');
-
         $this->filesystem->dumpFile(
             $this->rootDir.'/../app/cache/swagger.json',
             json_encode($this->apidoc->getSwaggerSpec())
