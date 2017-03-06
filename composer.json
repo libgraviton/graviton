@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.6",
         "ext-fileinfo": "*",
-        "symfony/symfony": "^2.8.0",
+        "symfony/symfony": "^3.2.0",
         "doctrine/orm": "~2.5",
         "twig/extensions": "^1.4.0",
         "symfony/monolog-bundle": "~3.0",
@@ -35,7 +35,7 @@
         "graviton/rql-parser-bundle": "^0.12.0",
         "graviton/json-schema": "^1.7.0",
         "php-jsonpatch/php-jsonpatch": "~3.0",
-        "antimattr/mongodb-migrations": "^1.0.0",
+        "doesntmattr/mongodb-migrations": "^1.1.3",
         "jenssegers/proxy": ">=3.0.0-beta2",
         "thefrozenfire/swagger": "=2.0.7",
         "symfony/psr-http-message-bridge": "^0.3.0",
