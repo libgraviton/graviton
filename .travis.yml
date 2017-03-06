@@ -24,10 +24,11 @@ before_script:
         echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
     fi
 - >
-    if [ $(phpenv version-name) = "7.0" ]; then
+    if [ $(phpenv version-name) = "7.0" ] || [ $(phpenv version-name) = "7.1" ]; then
         # installing mongofill requires more than 1GB of RAM
         echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
-        composer require mongofill/mongofill:dev-master --ignore-platform-reqs --profile --no-scripts;
+        echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
+        composer require alcaeus/mongo-php-adapter:dev-master --ignore-platform-reqs --profile --no-scripts;
     fi
 - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile
 - >
@@ -35,6 +36,7 @@ before_script:
         wget https://scrutinizer-ci.com/ocular.phar
     fi
 php:
+- 7.1
 - 7.0
 - 5.6
 env:
@@ -67,13 +69,6 @@ script:
     if [ "$COMPOSER_CHECK" = "true" ]; then
         composer check;
     fi
-notifications:
-  hipchat:
-    rooms:
-      secure: F5pTVtwBACRIXMdkQ/oE6f5faK3eHvPqDmD7jmAv4vU7Nyog4RN1h1nqa8kJo6fRaRvdbIF5ovAwfdX5nuoMBQqio4FpfpT4jkfFNf5gGEFOlGW3UTQR/8JyoVCEvZ4Wau3OsIouv1U3du9uWvaqHoxIeI9HvnTVinSzu9P4EjE=
-    on_success: change
-    on_failure: always
-
 cache:
     directories:
     - vendor/
