@@ -35,7 +35,7 @@
         "knplabs/knp-gaufrette-bundle": "~0.3",
         "aws/aws-sdk-php": "~2.8",
         "graviton/deploy-scripts": "~0.4",
-        "graviton/json-schema": "dev-feature/update-deps as 1.6.0",
+        "graviton/json-schema": "^1.7.0",
         "php-jsonpatch/php-jsonpatch": "~3.0",
         "antimattr/mongodb-migrations": "^1.0.0",
         "jenssegers/proxy": ">=3.0.0-beta2",
