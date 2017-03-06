@@ -33,7 +33,7 @@ class IfNoneMatchResponseListener
 
         if ($ifNoneMatch === $etag) {
             $response->setStatusCode(304);
-            $response->setContent('');
+            $response->setContent(null);
         }
     }
 }
