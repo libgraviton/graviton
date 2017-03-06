@@ -270,8 +270,8 @@ class RestController
         $this->collectionCache->updateOperationCheck($repository, $id);
         $this->collectionCache->addUpdateLock($repository, $id);
 
+        // Validate received data. On failure release the lock.
         try {
-            // Any of the following can throw a not valid json or data. So we release the lock.
             $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
             $record = $this->restUtils->validateRequest($request->getContent(), $model);
         } catch (\Exception $e) {
