@@ -264,15 +264,20 @@ class RestController
     {
         $response = $this->getResponse();
         $model = $this->getModel();
+        $repository = $model->getRepository();
 
         // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
-        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 2);
+        $this->collectionCache->updateOperationCheck($repository, $id);
+        $this->collectionCache->addUpdateLock($repository, $id);
 
-        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
-
-        $record = $this->restUtils->validateRequest($request->getContent(), $model);
+        try {
+            // Any of the following can throw a not valid json or data. So we release the lock.
+            $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+            $record = $this->restUtils->validateRequest($request->getContent(), $model);
+        } catch (\Exception $e) {
+            $this->collectionCache->releaseUpdateLock($repository, $id);
+            throw $e;
+        }
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -281,12 +286,10 @@ class RestController
             if (is_callable(array($record, 'setId'))) {
                 $record->setId($id);
             } else {
-                $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
+                $this->collectionCache->releaseUpdateLock($repository, $id);
                 throw new MalformedInputException('No ID was supplied in the request payload.');
             }
         }
-
-        $repository = $model->getRepository();
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
