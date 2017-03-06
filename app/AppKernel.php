@@ -72,7 +72,7 @@ class AppKernel extends Kernel
             new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
-            new \Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
+            new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle()
         );
