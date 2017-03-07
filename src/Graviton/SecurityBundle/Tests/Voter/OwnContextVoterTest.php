@@ -6,6 +6,7 @@ namespace Graviton\SecurityBundle\Voter;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\TestBundle\Test\GravitonTestCase;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 /**
@@ -15,58 +16,24 @@ use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
  */
 class OwnContextVoterTest extends GravitonTestCase
 {
-    /**
-     * validate supportsAttribute
-     *
-     * @return void
-     */
-    public function testSupportsAttribute()
-    {
-        $voter = new OwnContextVoter();
-
-        $this->assertTrue($voter->supportsAttribute('VIEW'));
-    }
-
-    /**
-     * validate supportsClass
-     *
-     * @return void
-     */
-    public function testSupportsClass()
-    {
-        $voter = new OwnContextVoter();
-
-        $this->assertFalse($voter->supportsClass('\stdClass'));
-    }
 
     /**
      * validates isGranted
      *
-     * @dataProvider invalidUserProvider
-     *
-     * @param object|null $user The user asking for permission.
-     *
      * @return void
      */
-    public function testIsGrantedNoValidUser($user)
+    public function testIsGrantedNoValidUser()
     {
         $attribute = 'VIEW';
         $object = new \stdClass();
 
-        $voter = $this->getVoterProxy(array('isGranted'));
+        $voter = $this->getVoterProxy(array('voteOnAttribute'));
 
-        $this->assertFalse($voter->isGranted($attribute, $object, $user));
-    }
+        $token = $this
+            ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
+            ->getMock();
 
-    /**
-     * @return array
-     */
-    public function invalidUserProvider()
-    {
-        return array(
-            'null user' => array(null),
-            'some user object' => array(new \stdClass())
-        );
+        $this->assertFalse($voter->voteOnAttribute($attribute, $object, $token));
     }
 
     /**
@@ -78,7 +45,7 @@ class OwnContextVoterTest extends GravitonTestCase
     {
         $object = new \stdClass();
 
-        $contractDouble = $this->getContractDouble(array('getAccount', 'getCustomer'));
+        $contractDouble = $this->getContractDouble(['getAccount', 'getCustomer']);
         $contractDouble
             ->expects($this->any())
             ->method('getAccount')
@@ -97,9 +64,16 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getContract')
             ->willReturn($contractDouble);
 
-        $voter = $this->getVoterProxy(array('isGranted'));
+        $token = $this
+            ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
+            ->getMock();
+        $token->expects($this->once())
+            ->method('getUser')
+            ->willReturn($userDouble);
 
-        $this->assertFalse($voter->isGranted('VIEW', $object, $userDouble));
+        $voter = $this->getVoterProxy(array('voteOnAttribute'));
+
+        $this->assertFalse($voter->voteOnAttribute('VIEW', $object, $token));
     }
 
     /**
