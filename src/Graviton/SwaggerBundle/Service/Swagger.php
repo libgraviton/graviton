@@ -117,7 +117,7 @@ class Swagger
                     $isCollectionRequest = false;
                 }
 
-                $thisPattern = $route->getPattern();
+                $thisPattern = $route->getPath();
                 $entityName = ucfirst($document);
 
                 $thisPath = $this->getBasicPathStructure(

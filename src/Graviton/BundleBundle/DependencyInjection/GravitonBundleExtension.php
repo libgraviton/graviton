@@ -69,17 +69,10 @@ class GravitonBundleExtension extends Extension implements PrependInterface
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container A ContainerBuilder instance
      *
      * @return \Symfony\Component\Config\Definition\ConfigurationInterface
-     * @throws \RuntimeException
      */
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
-        $configuration = parent::getConfiguration($config, $container);
-
-        if ($configuration instanceof ConfigurationInterface) {
-            return $configuration;
-        }
-
-        throw new \RuntimeException('Expected configuration class not found!');
+        return parent::getConfiguration($config, $container);
     }
 
     /**

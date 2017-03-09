@@ -27,39 +27,6 @@ class ServiceAllowedVoterTest extends GravitonTestCase
     }
 
     /**
-     * verifies getSupportedAttributes()
-     *
-     * @return void
-     */
-    public function testGetSupportedAttributes()
-    {
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
-            ->setConstructorArgs(array($this->whitelist))
-            ->setMethods(array('getSupportedAttributes'))
-            ->getProxy();
-
-        $this->assertContains('VIEW', $voter->getSupportedAttributes());
-    }
-
-    /**
-     * verifies getSupportedAttributes()
-     *
-     * @return void
-     */
-    public function testGetSupportedClasses()
-    {
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
-            ->setConstructorArgs(array($this->whitelist))
-            ->setMethods(array('getSupportedClasses'))
-            ->getProxy();
-
-        $this->assertContains(
-            'Symfony\Component\HttpFoundation\Request',
-            $voter->getSupportedClasses()
-        );
-    }
-
-    /**
      * verifies isGranted()
      *
      * @return void
@@ -74,9 +41,13 @@ class ServiceAllowedVoterTest extends GravitonTestCase
 
         $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
             ->setConstructorArgs(array($this->whitelist))
-            ->setMethods(array('isGranted'))
+            ->setMethods(array('voteOnAttribute'))
             ->getProxy();
 
-        $this->assertTrue($voter->isGranted('VIEW', $request));
+        $token = $this
+            ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
+            ->getMock();
+
+        $this->assertTrue($voter->voteOnAttribute('VIEW', $request, $token));
     }
 }

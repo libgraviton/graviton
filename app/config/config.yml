@@ -114,21 +114,14 @@ jms_serializer:
             dir: "%kernel.cache_dir%/serializer"
         auto_detection: true
 
-knp_gaufrette:
+oneup_flysystem:
     adapters:
         local:
             local:
                 directory: '%kernel.root_dir%/files'
-                create: true
-        s3:
-            aws_s3:
-                service_id: 'graviton.aws_s3.client'
-                bucket_name: '%graviton.aws_s3.bucket_name%'
-                options:
-                    create: true
     filesystems:
-        file_service:
-            adapter: %graviton.file.gaufrette.backend%
+        graviton:
+            adapter: '%graviton.file.backend%'
 
 old_sound_rabbit_mq:
     connections:
