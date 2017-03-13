@@ -23,16 +23,6 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
     private $documentMap;
 
     /**
-     * Constructor
-     *
-     * @param DocumentMap $documentMap Document map
-     */
-    public function __construct(DocumentMap $documentMap)
-    {
-        $this->documentMap = $documentMap;
-    }
-
-    /**
      * load services
      *
      * @param ContainerBuilder $container container builder
@@ -41,6 +31,8 @@ class DocumentFieldNamesCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $this->documentMap = $container->get('graviton.document.map');
+
         $map = [];
         foreach ($this->documentMap->getDocuments() as $document) {
             $map[$document->getClass()] = $this->getFieldNames($document);
