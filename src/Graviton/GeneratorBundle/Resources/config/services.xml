@@ -12,6 +12,7 @@
         <parameter key="graviton_generator.resourcegenerator.field_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_type_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_name_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper</parameter>
+        <parameter key="graviton_generator.resourcegenerator.field_title_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTitleMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.field_json_mapper.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper</parameter>
         <parameter key="graviton_generator.resourcegenerator.parameter_builder.class">Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder</parameter>
         <parameter key="graviton_generator.generator.resourcegenerator.class">Graviton\GeneratorBundle\Generator\ResourceGenerator</parameter>
@@ -32,10 +33,14 @@
             <call method="addMapper">
                 <argument type="service" id="graviton_generator.resourcegenerator.field_json_mapper"/>
             </call>
+            <call method="addMapper">
+                <argument type="service" id="graviton_generator.resourcegenerator.field_title_mapper"/>
+            </call>
         </service>
         <service id="graviton_generator.resourcegenerator.field_type_mapper" class="%graviton_generator.resourcegenerator.field_type_mapper.class%"/>
         <service id="graviton_generator.resourcegenerator.field_name_mapper" class="%graviton_generator.resourcegenerator.field_name_mapper.class%"/>
         <service id="graviton_generator.resourcegenerator.field_json_mapper" class="%graviton_generator.resourcegenerator.field_json_mapper.class%"/>
+        <service id="graviton_generator.resourcegenerator.field_title_mapper" class="%graviton_generator.resourcegenerator.field_title_mapper.class%"/>
 
         <!-- ArrayObject serializer handler -->
         <service id="graviton.document.serializer.handler.arrayobject"

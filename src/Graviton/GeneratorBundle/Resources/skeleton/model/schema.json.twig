@@ -33,12 +33,7 @@
 
 {% for field in fields %}
     "{{ field.fieldName }}": {
-
-{% if field.title is defined %}
-      "title": {{ field.title|json_encode() }},
-{% else %}
-      "title": {{ field.fieldName|json_encode() }},
-{% endif %}
+        "title": {{ field.title|json_encode() }},
 
 {% if field.collection is defined and field.type == 'extref' %}
       "collection": {{ field.collection|json_encode() }},

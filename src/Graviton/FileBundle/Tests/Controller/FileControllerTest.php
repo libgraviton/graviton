@@ -704,7 +704,7 @@ class FileControllerTest extends RestTestCase
         // Links
         $this->assertEquals('array', $schema->properties->links->type);
         $this->assertEquals('many', $schema->properties->links->format);
-        $this->assertEquals('links', $schema->properties->links->title);
+        $this->assertEquals('Links', $schema->properties->links->title);
         $this->assertEquals('@todo replace me', $schema->properties->links->description);
         $this->assertObjectNotHasAttribute('readOnly', $schema->properties->links);
 
