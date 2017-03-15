@@ -72,7 +72,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(
             new DocumentMapCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
-            10
+            100
         );
         $container->addCompilerPass(
             new ExtRefMappingCompilerPass(),

@@ -51,6 +51,9 @@ class DocumentMapCompilerPass implements CompilerPassInterface
             }
 
             $dirs[] = $dynamicBundleDir;
+        } else {
+            // default dynamic bundle dir is withing our ./src
+            $dynamicBundleDir = __DIR__.'/../../../../GravitonDyn';
         }
 
         $documentMap = new DocumentMap(
@@ -73,5 +76,6 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         );
 
         $container->set('graviton.document.map', $documentMap);
+        $container->setParameter('graviton.generator.dynamicbundle.dir', $dynamicBundleDir);
     }
 }

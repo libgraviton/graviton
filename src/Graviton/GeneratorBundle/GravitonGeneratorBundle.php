@@ -6,6 +6,9 @@
 namespace Graviton\GeneratorBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
+use Graviton\GeneratorBundle\DependencyInjection\Compiler\GeneratorHashCompilerPass;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -24,6 +27,24 @@ class GravitonGeneratorBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array();
+        return [];
+    }
+
+    /**
+     * load compiler pass
+     *
+     * @param ContainerBuilder $container container builder
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(
+            new GeneratorHashCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            50
+        );
     }
 }
