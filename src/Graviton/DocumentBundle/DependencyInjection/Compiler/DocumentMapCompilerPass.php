@@ -54,6 +54,9 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         } else {
             // default dynamic bundle dir is withing our ./src
             $dynamicBundleDir = __DIR__.'/../../../../GravitonDyn';
+            if (!is_dir($dynamicBundleDir)) {
+                $dynamicBundleDir = null;
+            }
         }
 
         $documentMap = new DocumentMap(

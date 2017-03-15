@@ -29,32 +29,36 @@ class GeneratorHashCompilerPass implements CompilerPassInterface
         // first type of hash: the genhash'es of all GravitonDyn bundles
         $dir = $container->getParameter('graviton.generator.dynamicbundle.dir');
 
-        $finder = (new Finder())
-            ->in($dir)
-            ->files()
-            ->sortByName()
-            ->name('genhash');
-
         $dynHash = '';
-        foreach ($finder as $file) {
-            $dynHash .= DIRECTORY_SEPARATOR . $file->getContents();
+        if (is_dir($dir)) {
+            $finder = (new Finder())
+                ->in($dir)
+                ->files()
+                ->sortByName()
+                ->name('genhash');
+
+            foreach ($finder as $file) {
+                $dynHash .= DIRECTORY_SEPARATOR . $file->getContents();
+            }
         }
 
         // 2nd hash: configuration of our own graviton things (static stuff)
-        $finder = (new Finder())
-            ->in(__DIR__.'/../../../')
-            ->path('/serializer/')
-            ->path('/doctrine/')
-            ->path('/schema/')
-            ->notPath('/Tests/')
-            ->files()
-            ->sortByName()
-            ->name('*.xml')
-            ->name('*.json');
-
         $staticHash = '';
-        foreach ($finder as $file) {
-            $staticHash .= DIRECTORY_SEPARATOR . sha1_file($file->getPathname());
+        if (is_dir(__DIR__.'/../../../')) {
+            $finder = (new Finder())
+                ->in(__DIR__ . '/../../../')
+                ->path('/serializer/')
+                ->path('/doctrine/')
+                ->path('/schema/')
+                ->notPath('/Tests/')
+                ->files()
+                ->sortByName()
+                ->name('*.xml')
+                ->name('*.json');
+
+            foreach ($finder as $file) {
+                $staticHash .= DIRECTORY_SEPARATOR . sha1_file($file->getPathname());
+            }
         }
 
         $dynHash = sha1($dynHash);
