@@ -323,49 +323,51 @@ class RestController
     {
         $response = $this->getResponse();
         $model = $this->getModel();
+        $repository = $model->getRepository();
 
         // Check JSON Patch request
         $this->restUtils->checkJsonRequest($request, $response, $model);
         $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
         // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
+        $this->collectionCache->updateOperationCheck($repository, $id);
 
         // Find record && apply $ref converter
         $jsonDocument = $model->getSerialised($id);
-        $this->collectionCache->addUpdateLock($model->getRepository(), $id);
+        $this->collectionCache->addUpdateLock($repository, $id);
 
         try {
             // Check if valid
             $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
-
             // Apply JSON patches
             $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
         } catch (\Exception $e) {
-            $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
+            $this->collectionCache->releaseUpdateLock($repository, $id);
             throw new InvalidJsonPatchException($e->getMessage());
         }
 
         // Validation don't check for not valid path HTTP_NOT_MODIFIED, so if no change done, notify.
         if ($jsonDocument == $patchedDocument) {
+            $this->collectionCache->releaseUpdateLock($repository, $id);
             $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
             return $response;
         }
 
         // Validate result object
-        $model = $this->getModel();
-        $record = $this->restUtils->validateRequest($patchedDocument, $model);
+        try {
+            $record = $this->restUtils->validateRequest($patchedDocument, $model);
+        } catch (\Exception $e) {
+            $this->collectionCache->releaseUpdateLock($repository, $id);
+            throw $e;
+        }
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
+        $this->collectionCache->releaseUpdateLock($repository, $id);
 
-        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
-
-        // Set status code
+        // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
-
-        // Set Content-Location header
         $response->headers->set(
             'Content-Location',
             $this->getRouter()->generate($this->restUtils->getRouteName($request), array('id' => $record->getId()))
