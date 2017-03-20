@@ -90,8 +90,8 @@ class GenerateBuildIndexesCommand extends Command
                         $newIndex = [];
                         $weights = [];
                         foreach ($index['options'] as $optionName => $optionsValue) {
-                            if (strpos($optionName, 'search_') !== false) {
-                                $optionName = str_replace('search_', '', $optionName);
+                            if (substr($optionName, 0, 6) == 'search') {
+                                $optionName = substr($optionName, 6);
                                 $newIndex[$optionName] = 'text';
                                 $weights[$optionName] = floatval($optionsValue);
                             }
