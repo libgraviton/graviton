@@ -75,6 +75,7 @@
         {% endif %}
 
 {% if not isEmbeddedDocument %}
+{% if (indexes is defined and indexes is not empty) or (textIndexes is defined and textIndexes is not empty) %}
     <indexes>
     {% if indexes is defined and indexes is not empty %}
             {% for index in indexes %}
@@ -90,11 +91,12 @@
             <index>
                 <key name="search{{ document }}Index"/>
                 {% for index, value in textIndexes %}
-                    <option name="search_{{ index }}" value="{{ value }}"/>
+                    <option name="search{{ index }}" value="{{ value }}"/>
                 {% endfor %}
             </index>
     {% endif %}
     </indexes>
+{% endif %}
 {% endif %}
 
     </{{ docType }}>
