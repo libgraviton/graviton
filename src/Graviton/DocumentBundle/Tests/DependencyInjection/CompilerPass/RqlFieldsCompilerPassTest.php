@@ -67,10 +67,30 @@ class RqlFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->with('graviton.rest')
             ->willReturn([]);
 
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/Resources/doctrine/extref')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/serializer/extref')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/validation/extref')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/schema')
+                ->name('*.json')
+        );
+
         $containerDouble = $this
             ->getMockBuilder('Symfony\\Component\\DependencyInjection\\ContainerBuilder')
             ->disableOriginalConstructor()
             ->getMock();
+        $containerDouble
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('graviton.document.map'))
+            ->willReturn($documentMap);
         $containerDouble
             ->expects($this->once())
             ->method('findTaggedServiceIds')
@@ -92,22 +112,7 @@ class RqlFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ]
             );
 
-        $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/extref')
-                ->name('*.mongodb.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/serializer/extref')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/validation/extref')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/schema')
-                ->name('*.json')
-        );
-
-        $compilerPass = new RqlFieldsCompilerPass($documentMap);
+        $compilerPass = new RqlFieldsCompilerPass();
         $compilerPass->process($containerDouble);
     }
 }

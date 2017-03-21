@@ -23,9 +23,29 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit_Framework_TestCase
     {
         $baseNamespace = 'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document';
 
+        $documentMap = new DocumentMap(
+            (new Finder())
+                ->in(__DIR__.'/Resources/doctrine/form')
+                ->name('*.mongodb.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/serializer/form')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/validation/form')
+                ->name('*.xml'),
+            (new Finder())
+                ->in(__DIR__.'/Resources/schema')
+                ->name('*.json')
+        );
+
         $containerDouble = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
             ->disableOriginalConstructor()
             ->getMock();
+        $containerDouble
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('graviton.document.map'))
+            ->willReturn($documentMap);
         $containerDouble
             ->expects($this->once())
             ->method('setParameter')
@@ -57,22 +77,7 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ]
             );
 
-        $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/form')
-                ->name('*.mongodb.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/serializer/form')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/validation/form')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/schema')
-                ->name('*.json')
-        );
-
-        $compilerPass = new DocumentFieldNamesCompilerPass($documentMap);
+        $compilerPass = new DocumentFieldNamesCompilerPass();
         $compilerPass->process($containerDouble);
     }
 }

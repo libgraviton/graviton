@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
@@ -290,7 +291,7 @@ class EventStatusLinkResponseListener
             [
                 'id' => $eventStatus->getId()
             ],
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         return $url;

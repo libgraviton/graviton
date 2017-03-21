@@ -5,10 +5,10 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
@@ -69,45 +69,46 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
-        // If it's inside vendor library or running as graviton base.
-        $rootDir = $container->getParameter('kernel.root_dir');
-        if (strpos($rootDir, 'vendor/graviton')) {
-            $dirs = [
-                $rootDir.'/../..'
-            ];
-        } else {
-            $dirs = [
-                __DIR__ . '/../..',
-                $rootDir.'/../vendor/graviton'
-            ];
-        }
-
-        $documentMap = new DocumentMap(
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config/doctrine')
-                ->name('*.mongodb.xml'),
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config/serializer')
-                ->name('*.xml'),
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config')
-                ->name('validation.xml'),
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config/schema')
-                ->name('*.json')
+        $container->addCompilerPass(
+            new DocumentMapCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            100
         );
-
-        $container->addCompilerPass(new ExtRefMappingCompilerPass());
-        $container->addCompilerPass(new ExtRefFieldsCompilerPass($documentMap));
-        $container->addCompilerPass(new RqlFieldsCompilerPass($documentMap));
-        $container->addCompilerPass(new TranslatableFieldsCompilerPass($documentMap));
-        $container->addCompilerPass(new DocumentFieldNamesCompilerPass($documentMap));
-        $container->addCompilerPass(new ReadOnlyFieldsCompilerPass($documentMap));
-        $container->addCompilerPass(new RecordOriginExceptionFieldsCompilerPass($documentMap));
+        $container->addCompilerPass(
+            new ExtRefMappingCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new ExtRefFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new RqlFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new TranslatableFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new DocumentFieldNamesCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new ReadOnlyFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new RecordOriginExceptionFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
     }
 
     /**

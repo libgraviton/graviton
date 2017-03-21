@@ -5,6 +5,8 @@
 
 namespace Graviton\I18nBundle;
 
+use Graviton\I18nBundle\DependencyInjection\Compiler\ReplaceTranslatorCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;
 
@@ -27,5 +29,19 @@ class GravitonI18nBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return array();
+    }
+
+    /**
+     * add our compiler pass
+     *
+     * @param ContainerBuilder $container container
+     *
+     * @return void
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ReplaceTranslatorCompilerPass());
     }
 }

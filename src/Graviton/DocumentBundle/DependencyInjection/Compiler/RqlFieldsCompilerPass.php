@@ -23,16 +23,6 @@ class RqlFieldsCompilerPass implements CompilerPassInterface
     private $documentMap;
 
     /**
-     * Constructor
-     *
-     * @param DocumentMap $documentMap Document map
-     */
-    public function __construct(DocumentMap $documentMap)
-    {
-        $this->documentMap = $documentMap;
-    }
-
-    /**
      * Make extref fields map and set it to parameter
      *
      * @param ContainerBuilder $container container builder
@@ -40,6 +30,8 @@ class RqlFieldsCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $this->documentMap = $container->get('graviton.document.map');
+
         $map = [];
 
         $services = array_keys($container->findTaggedServiceIds('graviton.rest'));

@@ -57,8 +57,13 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                     '_format' => '~'
                 ],
                 [
-                    '_method' => 'GET',
                     'id' => '[a-zA-Z0-9\-_\/]+',
+                ],
+                [],
+                '',
+                [],
+                [
+                    'GET'
                 ]
             ),
             new Route(
@@ -67,8 +72,12 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                     '_controller' => 'graviton.core.controller.app.appAction',
                     '_format' => '~'
                 ],
+                [],
+                [],
+                '',
+                [],
                 [
-                    '_method' => 'GET',
+                    'GET'
                 ]
             ),
             new Route(
@@ -78,8 +87,13 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                     '_format' => '~'
                 ],
                 [
-                    '_method' => 'GET',
                     'id' => '[a-zA-Z0-9\-_\/]+',
+                ],
+                [],
+                '',
+                [],
+                [
+                    'GET'
                 ]
             ),
             new Route(
@@ -89,8 +103,13 @@ class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
                     '_format' => '~'
                 ],
                 [
-                    '_method' => 'GET',
                     'id' => '[a-zA-Z0-9\-_\/]+',
+                ],
+                [],
+                '',
+                [],
+                [
+                    'GET'
                 ]
             ),
         ];

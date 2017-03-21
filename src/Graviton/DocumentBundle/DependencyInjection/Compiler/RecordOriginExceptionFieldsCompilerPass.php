@@ -22,16 +22,6 @@ class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
     private $documentMap;
 
     /**
-     * Constructor
-     *
-     * @param DocumentMap $documentMap Document map
-     */
-    public function __construct(DocumentMap $documentMap)
-    {
-        $this->documentMap = $documentMap;
-    }
-
-    /**
      * Make recordOriginException fields map and set it to parameter
      *
      * @param ContainerBuilder $container container builder
@@ -40,6 +30,8 @@ class RecordOriginExceptionFieldsCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $this->documentMap = $container->get('graviton.document.map');
+
         $map = [];
         foreach ($this->documentMap->getDocuments() as $document) {
             $recordOriginExceptionFields = $this->documentMap->getFieldNamesFlat(
