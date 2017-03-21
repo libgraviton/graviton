@@ -69,7 +69,7 @@ doctrine_mongodb:
             options: { connect: true }
     document_managers:
         default:
-            retry_connect: 3
+            retry_connect: 10
             retry_query: 1
             mappings:
                 GravitonCoreBundle: ~
