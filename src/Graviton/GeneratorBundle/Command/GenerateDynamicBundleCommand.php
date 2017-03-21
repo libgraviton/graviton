@@ -395,7 +395,7 @@ class GenerateDynamicBundleCommand extends Command
         $resourceFinder->in($templateDir)->files()->sortByName();
         $templateTimes = '';
         foreach ($resourceFinder as $file) {
-            $templateTimes .= PATH_SEPARATOR . $file->getMTime();
+            $templateTimes .= PATH_SEPARATOR . sha1_file($file->getPathname());
         }
         return sha1($templateTimes);
     }

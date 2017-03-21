@@ -39,12 +39,11 @@ class GenerateBundleCommandTest extends BaseTest
      * get command
      *
      * @param \Graviton\GeneratorBundle\Generator\BundleGenerator $generator generator
-     * @param object                                              $input     input mock
      * @param object                                              $container Container
      *
      * @return \Graviton\GeneratorBundle\Command\GenerateBundleCommand
      */
-    protected function getCommand($generator, $input, $container)
+    protected function getCommand($generator, $container)
     {
         $command = $this
             ->getMockBuilder('Graviton\GeneratorBundle\Command\GenerateBundleCommand')
@@ -52,7 +51,7 @@ class GenerateBundleCommandTest extends BaseTest
             ->getMock();
 
         $command->setContainer($container);
-        $command->setHelperSet($this->getHelperSet($input));
+        $command->setHelperSet($this->getHelperSet());
         $command->setGenerator($generator);
 
         return $command;

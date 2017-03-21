@@ -42,6 +42,26 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
         );
 
         // make sure we have no resource files for domain 'external'
+        $this->cleanFiles();
+    }
+
+    /**
+     * cleanup actions
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        $this->cleanFiles();
+    }
+
+    /**
+     * clean up our mess
+     *
+     * @return void
+     */
+    private function cleanFiles()
+    {
         $fs = new Filesystem();
         $finder = new Finder();
         $finder

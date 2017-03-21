@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * FilterResponseListener for adding a rel=self Link header to a response.
@@ -142,7 +143,8 @@ class PagingLinkResponseListener
 
         $url = $this->getRqlUrl(
             $request,
-            $this->router->generate($routeName, [], true) . '?' . strtr($rql, [',' => '%2C'])
+            $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL) .
+                '?' . strtr($rql, [',' => '%2C'])
         );
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));

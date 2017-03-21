@@ -8,7 +8,6 @@ namespace Graviton\SwaggerBundle\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Generates swagger.json
@@ -121,9 +120,33 @@ class SwaggerGenerateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->filesystem->dumpFile(
-            $this->rootDir.'/../app/cache/swagger.json',
-            json_encode($this->apidoc->getSwaggerSpec())
-        );
+        $baseDir = $this->rootDir . '/../app/cache/';
+        $swaggerFile = $baseDir . 'swagger.json';
+        $swaggerHashFile = $baseDir . 'swagger.json.hash';
+
+        $hash = $this->container->getParameter('graviton.generator.hash.all');
+        $doGenerate = !($this->filesystem->exists($swaggerFile) && $this->filesystem->exists($swaggerHashFile));
+
+        // really don't generate? -> compare hash
+        if (!$doGenerate) {
+            $currentHash = file_get_contents($swaggerHashFile);
+            if ($hash != $currentHash) {
+                $doGenerate = true;
+            }
+        }
+
+        if ($doGenerate) {
+            $this->filesystem->dumpFile(
+                $swaggerFile,
+                json_encode($this->apidoc->getSwaggerSpec())
+            );
+
+            $this->filesystem->dumpFile(
+                $swaggerHashFile,
+                $hash
+            );
+        } else {
+            echo 'swagger.json already up to date, no need to generate...'.PHP_EOL;
+        }
     }
 }

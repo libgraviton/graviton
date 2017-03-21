@@ -37,9 +37,7 @@ if ($activateDebug) {
     Debug::enable();
 }
 $kernel = new AppKernel($env, $activateDebug);
-
 $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
-$kernel->loadClassCache();
 
 if (!$activateDebug) {
     $kernel = new AppCache($kernel);
