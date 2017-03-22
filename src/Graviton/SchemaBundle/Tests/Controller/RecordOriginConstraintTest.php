@@ -72,8 +72,10 @@ class RecordOriginConstraintTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/person/customer/100', $record);
 
+        $fields = 'customerNumber, name, recordOrigin, someObject.oneField, createDate, id';
+
         $this->assertEquals(
-            $this->getExpectedErrorMessage('customerNumber, name')[0],
+            $this->getExpectedErrorMessage($fields)[0],
             $client->getResults()[0]
         );
 

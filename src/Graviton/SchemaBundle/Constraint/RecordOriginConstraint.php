@@ -35,7 +35,7 @@ class RecordOriginConstraint
     /**
      * @var array
      */
-    private $changedObjectPaths;
+    private $changedObjectPaths = [];
 
     /**
      * RecordOriginConstraint constructor.
@@ -146,7 +146,10 @@ class RecordOriginConstraint
             // so now all unimportant fields were set to null on both - they should match if rest is untouched ;-)
             if ($userObject != $storedObject) {
                 $isAllowed = false;
+                $this->changedObjectPaths = [];
                 $this->getChangedObjectPaths($userObject, $storedObject);
+                $this->getChangedObjectPaths($storedObject, $userObject);
+                $this->changedObjectPaths = array_keys($this->changedObjectPaths);
             }
         }
 
@@ -195,31 +198,24 @@ class RecordOriginConstraint
      * recursive helperfunction that walks through two arrays/objects of the same structure,
      * compares the values and writes the paths containining differences into the $this->changedObjectPaths
      *
-     * @param   mixed $object        the first of the datastructures to compare
-     * @param   mixed $compareObject the second of the datastructures to compare
-     * @param   array $path          the array holding the current path
-     * @return  array                returning the child nodes in an array
+     * @param mixed $object  the first of the datastructures to compare
+     * @param mixed $compare the second of the datastructures to compare
+     * @param array $path    array of current path
+     * @return void
      */
-    private function getChangedObjectPaths($object, $compareObject, $path = [])
+    private function getChangedObjectPaths($object, $compare, $path = [])
     {
-        $return = [];
+        $compare = (array) $compare;
+        $object = (array) $object;
         foreach ($object as $fieldName => $value) {
-            if (is_object($compareObject)) {
-                $compareValue = $compareObject->$fieldName;
-            } else {
-                $compareValue = $compareObject[$fieldName];
-            }
-            $path[]=$fieldName;
-            if (is_object($value) || is_array($value)) {
-                $return[$fieldName] = $this->getChangedObjectPaths($value, $compareValue, $path);
-            } else {
-                if ($value!=$compareValue) {
-                    $this->changedObjectPaths[] = implode('.', $path);
-                }
+            $path[] = $fieldName;
+            if ((is_object($value) || is_array($value)) && array_key_exists($fieldName, $compare)) {
+                $this->getChangedObjectPaths($value, $compare[$fieldName], $path);
+            } elseif (!array_key_exists($fieldName, $compare) || $value!=$compare[$fieldName]) {
+                $this->changedObjectPaths[implode('.', $path)] = $value;
             }
             array_pop($path);
         }
-        return $return;
     }
 
     /**
