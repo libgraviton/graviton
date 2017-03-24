@@ -52,6 +52,8 @@ class AcceptLanguageRequestListener
         $request = $event->getRequest();
         $headers = AcceptHeader::fromString($request->headers->get('Accept-Language'));
 
+        $defaultLanguage = [$this->defaultLocale => $this->defaultLocale];
+
         $languages = array_intersect(
             array_map(
                 function ($header) {
@@ -66,9 +68,10 @@ class AcceptLanguageRequestListener
                 $this->repository->findAll()
             )
         );
-        if (empty($languages)) {
-            $languages[$this->defaultLocale] = $this->defaultLocale;
-        }
+
+        $languages = array_unique(
+            array_merge($defaultLanguage, $languages)
+        );
 
         $request->attributes->set('languages', $languages);
     }
