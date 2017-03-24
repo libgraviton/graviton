@@ -186,7 +186,7 @@ class LanguageControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Español', $results->name->es);
-        $this->assertEquals('es', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, es', $response->headers->get('Content-Language'));
 
         // now, do it again to see if subsequent changes get reflected properly (triggerfile check)
         $newPutLang = clone $putLang;
@@ -209,7 +209,7 @@ class LanguageControllerTest extends RestTestCase
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Espanyol', $results->name->es);
-        $this->assertEquals('es', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, es', $response->headers->get('Content-Language'));
     }
 
     /**
