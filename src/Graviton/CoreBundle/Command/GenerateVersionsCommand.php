@@ -190,28 +190,27 @@ class GenerateVersionsCommand extends Command
      * returns version for every installed package
      *
      * @param array $versions versions array
+     * @throws CommandNotFoundException | \RuntimeException
      * @return array
      */
     private function getInstalledPackagesVersion($versions)
     {
-        // composer available here?
-        if ($this->commandAvailable($this->composerCmd)) {
-            $output = $this->runCommandInContext($this->composerCmd.' show --installed');
-            $packages = explode(PHP_EOL, $output);
-            //last index is always empty
-            array_pop($packages);
-
-            foreach ($packages as $package) {
-                $content = preg_split('/([\s]+)/', $package);
-                if ($this->isDesiredVersion($content[0])) {
-                    array_push($versions, array('id' => $content[0], 'version' => $content[1]));
-                }
-            }
-        } else {
-            throw new CommandNotFoundException(
-                'getInstalledPackagesVersion: '. $this->composerCmd . ' not available in ' . $this->contextDir
-            );
+        $composerFile = $this->contextDir . 'composer.lock';
+        if (!file_exists($composerFile)) {
+            throw new CommandNotFoundException('Composer lock file not found: '.$composerFile);
         }
+
+        $composerJson = json_decode(file_get_contents($composerFile));
+        if (!$composerJson || json_last_error()) {
+            throw new \RuntimeException('Error on parsing json file: '.$composerFile);
+        }
+
+        foreach ($composerJson->packages as $package) {
+            if ($this->isDesiredVersion($package->name)) {
+                array_push($versions, array('id' => $package->name, 'version' => $package->version));
+            }
+        }
+
         return $versions;
     }
 

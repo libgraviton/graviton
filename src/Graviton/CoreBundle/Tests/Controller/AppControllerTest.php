@@ -870,6 +870,40 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * see that if primary locale is not in accept languages, that we ca apply
+     * changes on translatables anyway..
+     *
+     * @return void
+     */
+    public function testUpdateTranslatableOnlySecondaryLocale()
+    {
+        // 2. PATCH request
+        $client = static::createRestClient();
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/name/de',
+                    'value' => 'Mein neuer Name'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/core/app/tablet', [], [], ['HTTP_ACCEPT_LANGUAGE' => 'de'], $patchJson);
+        $response = $client->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/app/tablet', [], [], ['HTTP_ACCEPT_LANGUAGE' => 'de,en']);
+        $result = $client->getResults();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Tablet', $result->name->en);
+        $this->assertEquals('Mein neuer Name', $result->name->de);
+    }
+
+    /**
      * data provider for searchable translations
      *
      * @return array data
