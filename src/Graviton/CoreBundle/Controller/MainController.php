@@ -10,6 +10,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -282,5 +283,21 @@ class MainController
         }
 
         return [];
+    }
+
+    /**
+     * Return OPTIONS results.
+     *
+     * @param Request $request Current http request
+     *
+     * @return Response $response Result of the action
+     */
+    public function optionsAction(Request $request)
+    {
+        $response = $this->response;
+        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+        $request->attributes->set('corsMethods', 'GET, OPTIONS');
+
+        return $response;
     }
 }
