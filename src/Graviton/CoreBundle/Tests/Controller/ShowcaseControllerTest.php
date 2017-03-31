@@ -278,7 +278,7 @@ class ShowcaseControllerTest extends RestTestCase
             (object) [
                 'propertyPath' => "nestedApps[1].\$ref",
                 'message' =>
-                    'Does not match the regex pattern (\/core\/app\/)([a-zA-Z0-9\-_\/\+\040\'\.]+)$'
+                    'Does not match the regex pattern (\/core\/app\/)([a-zA-Z0-9\-_\+\040\'\.]+)$'
             ]
         ];
 
