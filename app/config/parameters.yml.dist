@@ -1,5 +1,7 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
+    graviton.api.generated_service_directory: '%kernel.root_dir%/services'
+
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 

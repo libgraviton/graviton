@@ -1,3 +1,7 @@
+graviton_api:
+    resource: "@GravitonApiBundle/Resources/config/routing.yml"
+    prefix:   /v2
+
 graviton_rest_routing:
     resource: "@GravitonRestBundle/Resources/config/routing.xml"
     prefix: /

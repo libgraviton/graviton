@@ -1,0 +1,46 @@
+graviton_api_rest_home:
+    path:     /
+    defaults: { _controller: graviton_api.rest_controller:indexAction }
+    methods:  [GET,OPTIONS]
+
+graviton_api_rest_options:
+    path:     /{service}
+    methods:  [OPTIONS]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:getAction }
+
+graviton_api_rest_schema:
+    path:     /schema/{service}/collection
+    methods:  [GET,OPTIONS]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:schemaAction }
+
+graviton_api_rest_get:
+    path:     /{service}
+    methods:  [GET]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:getAction }
+
+graviton_api_rest_post:
+    path:     /{service}
+    methods:  [POST]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:postAction }
+
+graviton_api_rest_put:
+    path:     /{service}
+    methods:  [PUT]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:putAction }
+
+graviton_api_rest_patch:
+    path:     /{service}
+    methods:  [PATCH]
+    requirements:
+        service: .+
+    defaults: { _controller: graviton_api.rest_controller:patchAction }
