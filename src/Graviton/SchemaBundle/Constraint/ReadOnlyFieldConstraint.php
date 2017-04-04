@@ -64,11 +64,12 @@ class ReadOnlyFieldConstraint
             return;
         }
 
-        // compare fields in both objects
+        // compare fields in both objects, if it doesn't exists in DB it can be updated.
         $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($readOnlyFields as $fieldName) {
             $storedValue = null;
-            if ($accessor->isReadable($currentRecord, $fieldName)) {
+            if ($this->propertyExists($currentRecord, $fieldName) &&
+                $accessor->isReadable($currentRecord, $fieldName)) {
                 $storedValue = $accessor->getValue($currentRecord, $fieldName);
             }
 
@@ -78,16 +79,44 @@ class ReadOnlyFieldConstraint
             }
 
             $setValue = null;
-            if ($accessor->isReadable($data, $fieldName)) {
+            if ($this->propertyExists($data, $fieldName) &&
+                $accessor->isReadable($data, $fieldName)) {
                 $setValue = $accessor->getValue($data, $fieldName);
             }
 
-            if ($storedValue != $setValue) {
+            if ($storedValue && ($storedValue != $setValue)) {
                 $event->addError(
-                    sprintf('The value %s is read only.', json_encode($accessor->getValue($currentRecord, $fieldName))),
+                    sprintf('The value %s is read only.', json_encode($storedValue)),
                     $fieldName
                 );
             }
         }
+    }
+
+    /**
+     * To validate before accessor brakes with not found field
+     *
+     * @param object $object    To be parsed
+     * @param string $fieldName Field name, dot chained.
+     * @return bool
+     */
+    private function propertyExists($object, $fieldName)
+    {
+        if (property_exists($object, $fieldName)) {
+            return true;
+        }
+
+        foreach (explode('.', $fieldName) as $field) {
+            if (property_exists($object, $field)) {
+                $object = $object->{$field};
+                if (!is_object($object)) {
+                    break;
+                }
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 }
