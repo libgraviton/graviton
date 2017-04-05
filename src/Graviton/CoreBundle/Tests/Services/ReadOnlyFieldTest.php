@@ -92,4 +92,36 @@ class ReadOnlyFieldTest extends RestTestCase
         $client->put('/testcase/readonlyfield/101', $data);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
     }
+
+    /**
+     * Check for readonly property that should be updated only if it was not there.
+     *
+     * @return void
+     */
+    public function testUpdateEmptyReadOnlyField()
+    {
+        $client = static::createRestClient();
+        $data = new \stdClass();
+        $data->id = '101_2';
+        $data->allowed = 'can be edited';
+
+        $client->put('/testcase/readonlyfield/101_2', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // But should be able to add it, as it was never there.
+        $data->denied = 'can not be edited';
+
+        $client->put('/testcase/readonlyfield/101_2', $data);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        $client->request('GET', '/testcase/readonlyfield/101_2');
+        $savedData = $client->getResults();
+
+        $data = (array) $data;
+        $savedData = (array) $savedData;
+        ksort($data);
+        ksort($savedData);
+
+        $this->assertEquals(json_encode($data), json_encode($savedData));
+    }
 }
