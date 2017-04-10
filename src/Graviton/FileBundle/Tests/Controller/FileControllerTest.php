@@ -565,8 +565,72 @@ class FileControllerTest extends RestTestCase
         );
     }
 
+    /**
+     * test behavior when data sent was multipart/form-data
+     *
+     * @return void
+     */
+    public function testPutNewFileViaFormHashToLong()
+    {
+        copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
+        $file = sys_get_temp_dir() . '/test.txt';
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+
+        // Max 64 length, should not contain the extra bits
+        $correctHash = hash('sha256', 'somestring');
+        $toLongHashExtra = $correctHash . '-some-extra-bits ';
+
+        $jsonData = '{
+          "id": "myPersonalFile2",
+          "metadata": {
+            "hash": "'.$toLongHashExtra.'",
+            "action":[{"command":"archive"}],
+            "filename": "customFileName"
+          }
+        }';
+
+        $client = static::createRestClient();
+        $client->put(
+            '/file/myPersonalFile2',
+            [],
+            [
+                'metadata' => $jsonData,
+            ],
+            [
+                'upload' => $uploadedFile,
+            ],
+            [],
+            false
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertNotContains('location', $response->headers->all());
+
+        $response = $this->updateFileContent('myPersonalFile2', "This is a new text!!!");
+
+        $metaData = json_decode($jsonData, true);
+        $returnData = json_decode($response->getContent(), true);
+
+        $this->assertEquals($metaData['metadata']['filename'], $returnData['metadata']['filename']);
+
+        // Should NOT be equal as hash was to long and was chopped.
+        $this->assertNotEquals($metaData['metadata']['hash'], $returnData['metadata']['hash']);
+        // But it should be equal to to first part of the hash
+        $this->assertEquals($correctHash, $returnData['metadata']['hash']);
+
+        // clean up
+        $client = $this->createClient();
+        $client->request(
+            'DELETE',
+            '/file/myPersonalFile2'
+        );
+    }
 
 
+
+    /**
     /**
      * test behavior when data sent was multipart/form-data
      *
