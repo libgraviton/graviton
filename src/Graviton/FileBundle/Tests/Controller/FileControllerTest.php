@@ -576,8 +576,10 @@ class FileControllerTest extends RestTestCase
         $file = sys_get_temp_dir() . '/test.txt';
         $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
 
-        // Max 64 length, should not contain the extra bits
-        $correctHash = hash('sha256', 'somestring');
+        $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
+        $correctHash = hash('sha256', $fixtureData);
+
+        // Max 64 length, should not contain the extra bitsasd
         $toLongHashExtra = $correctHash . '-some-extra-bits ';
 
         $jsonData = '{
