@@ -77,6 +77,7 @@ class AppControllerTest extends RestTestCase
             $response->headers->get('Link')
         );
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
+        $this->assertEquals('DENY', $response->headers->get('X-Frame-Options'));
     }
 
     /**
