@@ -225,8 +225,12 @@ class FileManager
 
         // File related, if no file uploaded we keep original file info.
         if ($file) {
-            $hash = $metadata->getHash() ? $metadata->getHash() :
-                hash('sha256', file_get_contents($file->getRealPath()));
+            $hash = $metadata->getHash();
+            if (!$hash || strlen($hash)>64) {
+                $hash = hash('sha256', file_get_contents($file->getRealPath()));
+            } else {
+                $hash = preg_replace('/[^a-z0-9_-]/i', '-', $hash);
+            }
             $metadata->setHash($hash);
             $metadata->setMime($file->getMimeType());
             $metadata->setSize($file->getSize());
