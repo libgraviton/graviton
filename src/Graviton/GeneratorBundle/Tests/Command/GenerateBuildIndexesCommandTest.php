@@ -57,6 +57,6 @@ class GenerateBuildIndexesCommandTest extends GravitonTestCase
             ->getDocumentCollection("GravitonDyn\ModuleBundle\Document\Module")
             ->getIndexInfo();
 
-        $this->assertEquals('searchModuleIndex', $indexInfo[1]['name']);
+        $this->assertEquals('searchModuleindex', $indexInfo[1]['name']);
     }
 }

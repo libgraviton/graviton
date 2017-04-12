@@ -79,50 +79,55 @@ class GenerateBuildIndexesCommand extends Command
         /** @var ClassMetadata $metadata */
         foreach ($metadatas as $metadata) {
             $indexes = $metadata->getIndexes();
-            $searchName = 'search'.$metadata->getCollection().'Index';
+            $searchName = 'search_'.$metadata->getCollection().'_index';
             foreach ($indexes as $index) {
-                if (array_key_exists('keys', $index) && array_key_exists($searchName, $index['keys'])) {
-                    if (array_key_exists('options', $index) && !empty($index['options'])) {
-                        $collection = $this->documentManager->getDocumentCollection($metadata->getName());
-                        if (!$collection) {
-                            continue;
-                        }
-                        $newIndex = [];
-                        $weights = [];
-                        foreach ($index['options'] as $optionName => $optionsValue) {
-                            if (substr($optionName, 0, 6) == 'search') {
-                                $optionName = substr($optionName, 6);
-                                $newIndex[$optionName] = 'text';
-                                $weights[$optionName] = floatval($optionsValue);
-                            }
-                        }
-                        if (empty($weights)) {
-                            continue;
-                        }
-                        foreach ($collection->getIndexInfo() as $indexInfo) {
-                            // When using doctrine name may have a _1
-                            if (strpos($indexInfo['name'], $searchName) !== false) {
-                                $output->writeln("Deleting Custom Text index {$searchName}");
-                                $this->documentManager->getDocumentDatabase($metadata->getName())->command(
-                                    [
-                                        "deleteIndexes" => $collection->getName(),
-                                        "index" => $indexInfo['name']
-                                    ]
-                                );
-                                break;
-                            }
-                        }
-                        $output->writeln($metadata->getName().": created custom Text index {$searchName}");
-                        $collection->ensureIndex(
-                            $newIndex,
-                            [
-                                'weights' => $weights,
-                                'name'    => $searchName,
-                                'default_language'  => 'de',
-                                'language_override' => 'none'
-                            ]
-                        );
+                if (array_key_exists('keys', $index) &&
+                    array_key_exists('options', $index) &&
+                    array_key_exists('name', $index['options']) &&
+                    $searchName == $index['options']['name'] &&
+                    is_array($index['keys']) && !empty($index['keys'])
+                ) {
+                    $collection = $this->documentManager->getDocumentCollection($metadata->getName());
+                    if (!$collection) {
+                        continue;
                     }
+
+                    $newIndex = [];
+                    $weights = [];
+                    foreach (array_keys($index['keys']) as $optionKeyName) {
+                        if (substr($optionKeyName, 0, 7) == 'search_') {
+                            $options = explode('-', substr($optionKeyName, 7));
+                            $value = end($options);
+                            array_pop($options);
+                            $fieldName = implode('-', $options);
+                            $newIndex[$fieldName] = 'text';
+                            $weights[$fieldName] = floatval($value);
+                        }
+                    }
+                    if (empty($weights)) {
+                        $output->writeln("No Custom Text index for: {$searchName}");
+                        continue;
+                    }
+
+                    $output->writeln("Deleting Custom Text index {$searchName}");
+                    $this->documentManager->getDocumentDatabase($metadata->getName())->command(
+                        [
+                            "deleteIndexes" => $collection->getName(),
+                            "index" => $searchName
+                        ]
+                    );
+
+                    $newIndexName = str_replace('_', '', $searchName);
+                    $output->writeln($metadata->getName().": creating custom Text index {$newIndexName}");
+                    $collection->ensureIndex(
+                        $newIndex,
+                        [
+                            'weights' => $weights,
+                            'name'    => $newIndexName,
+                            'default_language'  => 'de',
+                            'language_override' => 'none'
+                        ]
+                    );
                 }
             }
         }
