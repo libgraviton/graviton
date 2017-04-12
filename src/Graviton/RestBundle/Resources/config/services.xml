@@ -217,6 +217,11 @@
             <call method="addAllowHeader">
                 <argument>X-AUTH-Token</argument>
             </call>
+            <!-- static headers -->
+            <call method="addStaticHeader">
+                <argument>X-Frame-Options</argument>
+                <argument>DENY</argument>
+            </call>
             <tag name="kernel.event_listener" event="graviton.rest.response" method="onKernelResponse"/>
         </service>
 

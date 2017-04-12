@@ -28,6 +28,11 @@ class CorsResponseListener
     private $allowHeaders = [];
 
     /**
+     * @var array
+     */
+    private $staticHeaders = [];
+
+    /**
      * add an allowed header
      *
      * @param string $header header to allow
@@ -52,6 +57,19 @@ class CorsResponseListener
     }
 
     /**
+     * add a static header
+     *
+     * @param string $name  header name
+     * @param string $value header value
+     *
+     * @return void
+     */
+    public function addStaticHeader($name, $value)
+    {
+        $this->staticHeaders[$name] = $value;
+    }
+
+    /**
      * add a rel=self Link header to the response
      *
      * @param FilterResponseEvent $event response listener event
@@ -71,5 +89,9 @@ class CorsResponseListener
         }
         $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->headers));
         $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->allowHeaders));
+
+        foreach ($this->staticHeaders as $headerName => $headerValue) {
+            $response->headers->set($headerName, $headerValue);
+        }
     }
 }
