@@ -303,7 +303,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param string $prefix the prefix for custom text search indexes
      * @return bool
      */
-    private function hasCustomSearchIndex($prefix = 'search')
+    private function hasCustomSearchIndex($prefix = 'search_')
     {
         $metadata = $this->repository->getClassMetadata();
         $indexes = $metadata->getIndexes();
@@ -311,10 +311,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
             return false;
         }
         $collectionsName = substr($metadata->getName(), strrpos($metadata->getName(), '\\') + 1);
-        $searchIndexName = $prefix.$collectionsName.'Index';
+        $searchIndexName = $prefix.$collectionsName.'_index';
         // We reverse as normally the search index is the last.
         foreach (array_reverse($indexes) as $index) {
-            if (array_key_exists('keys', $index) && array_key_exists($searchIndexName, $index['keys'])) {
+            if (array_key_exists('options', $index) &&
+                array_key_exists('name', $index['options']) &&
+                $searchIndexName == $index['options']['name']
+            ) {
                 return true;
             }
         }
