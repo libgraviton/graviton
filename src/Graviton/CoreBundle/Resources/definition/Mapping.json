@@ -1,0 +1,72 @@
+{
+    "id": "CoreMapping",
+    "description": "A mapping from a module to several account types",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/mapping/",
+        "fixtures": [
+            {
+                "from": {
+                    "$ref": "http://localhost/core/module/admin-AdminRef"
+                },
+                "to": [
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-1"
+                    },
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-2"
+                    },
+                    {
+                        "$ref": "http://localhost/entity/code/accountType-3"
+                    }
+                ]
+            },
+            {
+                "from": {
+                    "$ref": "http://localhost/core/product/1"
+                },
+                "to": [
+                    {
+                      "$ref": "http://localhost/core/module/tablet-payAndSave"
+                    },
+                    {
+                      "$ref": "http://localhost/core/module/tablet-realEstate"
+                    }
+                ]
+            },
+            {
+                "from": {
+                    "$ref": "http://localhost/i18n/language/de"
+                },
+                "to": [
+                    {
+                      "$ref": "http://localhost/person/customer/100"
+                    }
+                ]
+            }
+        ]
+    },
+    "target": {
+        "indexes": [],
+        "relations": [],
+        "fields": [
+            {
+                "name": "from.ref",
+                "type": "extref",
+                "title": "Module Link",
+                "description": "Link from a service",
+                "exposeAs": "$ref",
+                "required": true
+            },
+            {
+                "name": "to.0.ref",
+                "type": "extref",
+                "title": "Entity codes",
+                "description": "Array of service entries",
+                "exposeAs": "$ref",
+                "collection": ["Code"],
+                "required": true
+            }
+        ]
+    }
+}
