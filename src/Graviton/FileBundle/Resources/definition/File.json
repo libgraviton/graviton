@@ -104,7 +104,7 @@
         "type": "string",
         "title": "property name",
         "description": "additional property name",
-        "required": true,
+        "required": false,
         "translatable": false
       },
       {
@@ -112,7 +112,7 @@
         "type": "string",
         "title": "property value",
         "description": "additional property value",
-        "required": true,
+        "required": false,
         "translatable": false
       }
     ]
