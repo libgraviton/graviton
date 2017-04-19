@@ -1,0 +1,32 @@
+{
+  "collection": "App",
+  "route": "app",
+  "type": "object",
+  "aggregate": {
+    "match": {},
+    "group": {
+      "_id": "app-count",
+      "count": {
+        "$sum": 1
+      }
+    }
+  },
+  "schema": {
+    "title": "Application usage",
+    "description": "Data use for application access",
+    "type": "object",
+    "representation": "pie",
+    "properties": {
+      "id": {
+        "title": "ID",
+        "description": "Unique identifier",
+        "type": "string"
+      },
+      "count": {
+        "title": "count",
+        "description": "Sum of result",
+        "type": "integer"
+      }
+    }
+  }
+}

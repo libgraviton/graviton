@@ -1,0 +1,18 @@
+services:
+    graviton.analytics.analytics_manager:
+        class: Graviton\AnalyticsBundle\Manager\AnalyticsManager
+        arguments:
+            documentManager: "@doctrine_mongodb.odm.default_document_manager"
+
+    graviton.analytics.request_service_converter:
+        class: Graviton\AnalyticsBundle\Request\ParamConverter\ServiceConverter
+        arguments:
+            analyticsManager: "@graviton.analytics.analytics_manager"
+            cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
+            router: "@router"
+            definitionDirectory: "%kernel.root_dir%/config/analytics"
+        tags:
+            -
+              name: request.param_converter
+              priority: -2
+              converter: graviton.analytics.request_service_converter

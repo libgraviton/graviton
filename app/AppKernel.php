@@ -74,7 +74,8 @@ class AppKernel extends Kernel
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
-            new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle()
+            new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
+            new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {
