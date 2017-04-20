@@ -27,6 +27,7 @@ parameters:
 
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
+    graviton.rest.headerfields.to.remove: []
 
     graviton.router.host: null
     graviton.router.port_http: null
