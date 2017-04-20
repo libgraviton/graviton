@@ -77,6 +77,7 @@ class ServiceConverter implements ParamConverterInterface
         if (is_array($this->services)) {
             return;
         }
+        $this->services = [];
         if (strpos($this->directory, 'vendor/graviton/graviton')) {
             $this->directory = str_replace('vendor/graviton/graviton/', '', $this->directory);
         }
