@@ -42,11 +42,18 @@ class AnalyticsManager
         $db = $this->documentManager->getConfiguration()->getDefaultDB();
         $collection = $conn->selectCollection($db, $schema->getCollection());
 
-        $pipeline = $schema->getPipeline();
-        $data = $collection->aggregate($pipeline)->toArray();
-        if ('object' === $schema->getType()) {
-            return array_key_exists(0, $data) ? $data[0] : new \stdClass();
+        $pipeline = [];
+        // Json Definition object key -> value to array object.
+        foreach ($schema->getAggregate() as $op => $query) {
+            $pipeline[] = [
+                $op => (array) $query
+            ];
         }
-        return $data;
+
+        $iterator = $collection->aggregate($pipeline);
+        if ('object' === $schema->getType()) {
+            return $iterator->getSingleResult();
+        }
+        return $iterator->toArray();
     }
 }

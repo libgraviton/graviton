@@ -63,7 +63,7 @@ class AnalyticModel
      */
     public function getAggregate()
     {
-        return $this->aggregate;
+        return $this->aggregate ?: [];
     }
 
     /**
@@ -112,33 +112,5 @@ class AnalyticModel
     public function setType($type)
     {
         $this->type = $type;
-    }
-
-
-    /**
-     * Build query pipeline for aggregate mongo
-     * @return array
-     */
-    public function getPipeline()
-    {
-        $pipeline = [];
-        $aggregate = $this->getAggregate();
-        if (empty($aggregate)) {
-            return $pipeline;
-        }
-
-        if (property_exists($aggregate, 'match') && !empty((array) $aggregate->match)) {
-            $pipeline[] = [
-                '$match' => $this->aggregate->match
-            ];
-        }
-
-        if (property_exists($aggregate, 'group') && !empty((array) $aggregate->group)) {
-            $pipeline[] = [
-                '$group' => $this->aggregate->group
-            ];
-        }
-
-        return $pipeline;
     }
 }

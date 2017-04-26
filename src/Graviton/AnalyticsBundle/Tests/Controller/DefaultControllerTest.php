@@ -54,7 +54,7 @@ class DefaultControllerTest extends RestTestCase
         $content = $client->getResponse()->getContent();
         $service = json_decode($content);
 
-        $this->assertEquals(1, count($service->services));
+        $this->assertEquals(2, count($service->services));
 
         // Let's get information from the schema
         $client->request('GET', $service->services[0]->profile);
@@ -91,6 +91,31 @@ class DefaultControllerTest extends RestTestCase
 
         // Counter data result of aggregate
         $sampleData = json_decode('{"_id":"app-count","count":2}');
+        $this->assertEquals($sampleData, $data);
+    }
+
+    /**
+     * Testing basic functionality
+     * @return void
+     */
+    public function testApp2Index()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', $this->router->generate('graviton_analytics_homepage'));
+
+        $content = $client->getResponse()->getContent();
+        $service = json_decode($content);
+
+        $this->assertEquals(2, count($service->services));
+
+        // Let's get information from the count
+        $client->request('GET', $service->services[1]->{'$ref'});
+        $content = $client->getResponse()->getContent();
+        $data = json_decode($content);
+
+        // Counter data result of aggregate
+        $sampleData = json_decode('{"_id":"app-count-2","count":1}');
         $this->assertEquals($sampleData, $data);
     }
 }
