@@ -34,7 +34,8 @@ class DefaultControllerTest extends RestTestCase
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp',
+                'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
             ),
             null,
             'doctrine_mongodb'
@@ -54,7 +55,7 @@ class DefaultControllerTest extends RestTestCase
         $content = $client->getResponse()->getContent();
         $service = json_decode($content);
 
-        $this->assertEquals(2, count($service->services));
+        $this->assertEquals(3, count($service->services));
 
         // Let's get information from the schema
         $client->request('GET', $service->services[0]->profile);
@@ -107,8 +108,6 @@ class DefaultControllerTest extends RestTestCase
         $content = $client->getResponse()->getContent();
         $service = json_decode($content);
 
-        $this->assertEquals(2, count($service->services));
-
         // Let's get information from the count
         $client->request('GET', $service->services[1]->{'$ref'});
         $content = $client->getResponse()->getContent();
@@ -116,6 +115,39 @@ class DefaultControllerTest extends RestTestCase
 
         // Counter data result of aggregate
         $sampleData = json_decode('{"_id":"app-count-2","count":1}');
+        $this->assertEquals($sampleData, $data);
+    }
+
+    /**
+     * Testing basic functionality
+     * @return void
+     */
+    public function testCustomerCreateDateFilteringIndex()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', $this->router->generate('graviton_analytics_homepage'));
+
+        $content = $client->getResponse()->getContent();
+        $service = json_decode($content);
+
+        // Let's get information from the count
+        $client->request('GET', $service->services[2]->{'$ref'});
+        $content = $client->getResponse()->getContent();
+        $data = json_decode($content);
+
+        // Counter data result of aggregate
+        $sampleData = json_decode(
+            '[
+              {
+                "_id": "100",
+                "customerNumber": 1100,
+                "name": "Acme Corps.",
+                "created_year": 2014,
+                "created_month": 7
+              }
+            ]'
+        );
         $this->assertEquals($sampleData, $data);
     }
 }

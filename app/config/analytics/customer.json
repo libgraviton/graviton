@@ -1,0 +1,79 @@
+{
+  "collection": "Customer",
+  "route": "customer-created-by-date",
+  "type": "array",
+  "aggregate": {
+    "$project": {
+      "id": 1,
+      "name": 1,
+      "customerNumber": 1,
+      "created_year": {
+        "$cond": [
+          {
+            "$ifNull": [
+              "$createDate",
+              0
+            ]
+          },
+          {
+            "$year": "$createDate"
+          },
+          -1
+        ]
+      },
+      "created_month": {
+        "$cond": [
+          {
+            "$ifNull": [
+              "$createDate",
+              0
+            ]
+          },
+          {
+            "$month": "$createDate"
+          },
+          -1
+        ]
+      }
+    },
+    "$match": {
+      "created_year": {
+        "$gte": 2013,
+        "$lt": 2015
+      }
+    }
+  },
+  "schema": {
+    "title": "Customer by date range",
+    "description": "List customers by date range ",
+    "type": "object",
+    "representation": "pie",
+    "properties": {
+      "_id": {
+        "title": "ID",
+        "description": "Unique identifier",
+        "type": "string"
+      },
+      "customerNumber": {
+        "title": "Customer number",
+        "description": "Customer identification number",
+        "type": "integer"
+      },
+      "name": {
+        "title": "Name",
+        "description": "Customer name",
+        "type": "string"
+      },
+      "created_year": {
+        "title": "Creation year",
+        "description": "Creation year",
+        "type": "integer"
+      },
+      "created_month": {
+        "title": "Creation month",
+        "description": "Creation month",
+        "type": "integer"
+      }
+    }
+  }
+}
