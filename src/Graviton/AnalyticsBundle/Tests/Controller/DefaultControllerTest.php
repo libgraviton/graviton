@@ -149,5 +149,24 @@ class DefaultControllerTest extends RestTestCase
             ]'
         );
         $this->assertEquals($sampleData, $data);
+
+        // Let's get information from the count, but cached version
+        $client->request('GET', $service->services[2]->{'$ref'});
+        $content = $client->getResponse()->getContent();
+        $data = json_decode($content);
+
+        // Counter data result of aggregate
+        $sampleData = json_decode(
+            '[
+              {
+                "_id": "100",
+                "customerNumber": 1100,
+                "name": "Acme Corps.",
+                "created_year": 2014,
+                "created_month": 7
+              }
+            ]'
+        );
+        $this->assertEquals($sampleData, $data);
     }
 }

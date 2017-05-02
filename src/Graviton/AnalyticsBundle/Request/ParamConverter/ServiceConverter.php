@@ -31,6 +31,7 @@ class ServiceConverter implements ParamConverterInterface
     const CACHE_KEY_SERVICES_TIME = 10;
     const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
     const CACHE_KEY_SERVICES_URLS_TIME = 10;
+    const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
     /** @var AnalyticsManager */
     protected $analyticsManager;
@@ -153,8 +154,22 @@ class ServiceConverter implements ParamConverterInterface
     {
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
+        $cacheTime = $schema->getCacheTime();
 
-        return $this->analyticsManager->getData($schema);
+        //Cached data if configured
+        if ($cacheTime &&
+            $cache = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute())
+        ) {
+            return $cache;
+        }
+
+        $data = $this->analyticsManager->getData($schema);
+
+        if ($cacheTime) {
+            $this->cacheProvider->save(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute(), $data, $cacheTime);
+        }
+
+        return $data;
     }
 
     /**

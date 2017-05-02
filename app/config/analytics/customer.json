@@ -2,6 +2,7 @@
   "collection": "Customer",
   "route": "customer-created-by-date",
   "type": "array",
+  "cacheTime": 120,
   "aggregate": {
     "$project": {
       "id": 1,

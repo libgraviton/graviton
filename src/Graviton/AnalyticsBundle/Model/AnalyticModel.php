@@ -18,6 +18,7 @@ class AnalyticModel
     protected $aggregate;
     protected $schema;
     protected $type;
+    protected $cacheTime;
 
     /**
      * String collection
@@ -112,5 +113,24 @@ class AnalyticModel
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    /**
+     * Time for this route data to be cached
+     * @return mixed
+     */
+    public function getCacheTime()
+    {
+        return $this->cacheTime;
+    }
+
+    /**
+     * Time for this route data to be cached
+     * @param integer $cacheTime seconds to be cached
+     * @return void
+     */
+    public function setCacheTime($cacheTime)
+    {
+        $this->cacheTime = (int) $cacheTime;
     }
 }
