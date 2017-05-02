@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -130,6 +131,8 @@ class MainControllerTest extends RestTestCase
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
         $configuration = [
             'petstore' => [
@@ -140,7 +143,15 @@ class MainControllerTest extends RestTestCase
 
         $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
-                [$routerDouble, $responseDouble, $restUtilsDouble, $templateDouble, $apiLoaderDouble, $configuration]
+                [
+                    $routerDouble,
+                    $responseDouble,
+                    $restUtilsDouble,
+                    $templateDouble,
+                    $dispatcherDouble,
+                    $apiLoaderDouble,
+                    $configuration
+                ]
             )
             ->setMethods(array('prepareLinkHeader'))
             ->getProxy();
@@ -193,6 +204,8 @@ class MainControllerTest extends RestTestCase
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
         $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
         $configuration = [
             'petstore' => [
@@ -213,6 +226,7 @@ class MainControllerTest extends RestTestCase
                     $responseDouble,
                     $restUtilsDouble,
                     $templateDouble,
+                    $dispatcherDouble,
                     $apiLoaderDouble,
                     [],
                     [],
