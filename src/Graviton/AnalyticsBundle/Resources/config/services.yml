@@ -10,7 +10,7 @@ services:
             analyticsManager: "@graviton.analytics.analytics_manager"
             cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
             router: "@router"
-            definitionDirectory: "%kernel.root_dir%/config/analytics"
+            definitionBaseDirectory: "%kernel.root_dir%/.."
         tags:
             -
               name: request.param_converter

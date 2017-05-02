@@ -75,9 +75,11 @@ class ServiceConverter implements ParamConverterInterface
     private function init()
     {
         $this->services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES);
+
         if (is_array($this->services)) {
             return;
         }
+
         $this->services = [];
         if (strpos($this->directory, 'vendor/graviton/graviton')) {
             $this->directory = str_replace('vendor/graviton/graviton/', '', $this->directory);
@@ -85,10 +87,16 @@ class ServiceConverter implements ParamConverterInterface
         if (!is_dir($this->directory)) {
             return;
         }
+
         $finder = new Finder();
-        $finder->files()->in($this->directory)
+        $finder
+            ->files()
+            ->in($this->directory)
+            ->path('/\/analytics\//i')
             ->name('*.json')
-            ->notName('_*');
+            ->notName('_*')
+            ->sortByName();
+
         foreach ($finder as $file) {
             $key = $file->getFilename();
             $data = json_decode($file->getContents());
@@ -99,6 +107,7 @@ class ServiceConverter implements ParamConverterInterface
             }
             $this->services[$data->route] = $data;
         }
+
         $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $this->services, self::CACHE_KEY_SERVICES_TIME);
     }
 
