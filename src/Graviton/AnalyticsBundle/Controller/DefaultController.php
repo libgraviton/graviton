@@ -17,19 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DefaultController extends Controller
 {
-
-    /**
-     * @param ServiceConverter $manager Api Service to Find the Needed response data
-     * @ParamConverter("manager", converter="graviton.analytics.request_service_converter")
-     * @return JsonResponse
-     */
-    public function indexAction(ServiceConverter $manager)
-    {
-        $data = $manager->getServices();
-
-        return new JsonResponse($data);
-    }
-
     /**
      * @param ServiceConverter $manager Api Service to Find the Needed response data
      * @param Request          $request Sf Request data

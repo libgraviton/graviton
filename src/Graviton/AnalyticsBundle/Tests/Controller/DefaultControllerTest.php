@@ -50,15 +50,8 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', $this->router->generate('graviton_analytics_homepage'));
-
-        $content = $client->getResponse()->getContent();
-        $service = json_decode($content);
-
-        $this->assertEquals(3, count($service->services));
-
         // Let's get information from the schema
-        $client->request('GET', $service->services[0]->profile);
+        $client->request('GET', '/analytics/schema/app');
         $content = $client->getResponse()->getContent();
         $schema = json_decode($content);
 
@@ -86,7 +79,7 @@ class DefaultControllerTest extends RestTestCase
         $this->assertEquals($sampleSchema, $schema);
 
         // Let's get information from the count
-        $client->request('GET', $service->services[0]->{'$ref'});
+        $client->request('GET', '/analytics/app');
         $content = $client->getResponse()->getContent();
         $data = json_decode($content);
 
@@ -103,13 +96,8 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', $this->router->generate('graviton_analytics_homepage'));
-
-        $content = $client->getResponse()->getContent();
-        $service = json_decode($content);
-
         // Let's get information from the count
-        $client->request('GET', $service->services[1]->{'$ref'});
+        $client->request('GET', '/analytics/app2');
         $content = $client->getResponse()->getContent();
         $data = json_decode($content);
 
@@ -126,13 +114,8 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', $this->router->generate('graviton_analytics_homepage'));
-
-        $content = $client->getResponse()->getContent();
-        $service = json_decode($content);
-
         // Let's get information from the count
-        $client->request('GET', $service->services[2]->{'$ref'});
+        $client->request('GET', '/analytics/customer-created-by-date');
         $content = $client->getResponse()->getContent();
         $data = json_decode($content);
 
@@ -151,7 +134,7 @@ class DefaultControllerTest extends RestTestCase
         $this->assertEquals($sampleData, $data);
 
         // Let's get information from the count, but cached version
-        $client->request('GET', $service->services[2]->{'$ref'});
+        $client->request('GET', '/analytics/customer-created-by-date');
         $content = $client->getResponse()->getContent();
         $data = json_decode($content);
 
