@@ -189,6 +189,8 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
+
+            'rawData'      => (object) [],
         ];
 
         $client = static::createRestClient();
