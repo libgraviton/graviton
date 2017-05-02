@@ -17,3 +17,10 @@ services:
               name: request.param_converter
               priority: -2
               converter: graviton.analytics.request_service_converter
+
+    graviton.analytics.homepage_listener:
+        class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener
+        arguments:
+            serviceConverter: "@graviton.analytics.request_service_converter"
+        tags:
+            - { name: kernel.event_listener, event: homepage.render, method: onRender }

@@ -28,6 +28,7 @@
              <argument type="service" id="graviton.rest.response" strict="false"/>
              <argument type="service" id="graviton.rest.restutils"/>
              <argument type="service" id="templating"/>
+             <argument type="service" id="event_dispatcher"/>
              <argument type="service" id="graviton.proxy.service.apiloader"/>
              <argument>%graviton.core.links%</argument>
              <argument>%graviton.core.main.path.whitelist%</argument>
