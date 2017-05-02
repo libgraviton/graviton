@@ -46,7 +46,7 @@ class AnalyticsManager
         // Json Definition object key -> value to array object.
         foreach ($schema->getAggregate() as $op => $query) {
             $pipeline[] = [
-                $op => (array) $query
+                $op => $this->parseObjectDates($query)
             ];
         }
 
@@ -55,5 +55,28 @@ class AnalyticsManager
             return $iterator->getSingleResult();
         }
         return $iterator->toArray();
+    }
+
+    /**
+     * Enabling to possibility to create dtae queries
+     * Will replace PARSE_DATE(date|format)
+     * sample: PARSE_DATE(-4 years|Y) -> new DateTime(-4 years)->format(Y) -> 2013
+     *
+     * @param object $query Aggregation query
+     * @return object
+     */
+    private function parseObjectDates($query)
+    {
+        $string = json_encode($query);
+        preg_match_all('/PARSE_DATE\(([^\)]+)\)/', $string, $matches);
+        if ($matches && array_key_exists(1, $matches) && is_array($matches[1])) {
+            foreach ($matches[0] as $key => $value) {
+                $formatting = explode('|', $matches[1][$key]);
+                $date = new \DateTime($formatting[0]);
+                $string = str_replace('"'.$value.'"', $date->format($formatting[1]), $string);
+            }
+            $query = json_decode($string);
+        }
+        return $query;
     }
 }
