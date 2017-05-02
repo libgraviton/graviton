@@ -27,6 +27,6 @@ final class NotFoundException extends NotFoundHttpException implements RestExcep
      */
     public function __construct($message = "Not Found", $prev = null)
     {
-        parent::__construct($message, $prev);
+        parent::__construct($message, $prev, 404);
     }
 }

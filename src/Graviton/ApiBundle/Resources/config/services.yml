@@ -1,0 +1,36 @@
+services:
+
+    graviton_api.rest_controller:
+        class: Graviton\ApiBundle\Controller\RestController
+        arguments:
+            apiService: "@graviton_api.api_service"
+
+    graviton_api.api_service:
+        class: Graviton\ApiBundle\Service\ApiService
+        arguments:
+            requestStack: "@request_stack"
+            configService: "@graviton.api.config_service"
+            schemaService: "@graviton.api.schema_service"
+            mappingService: "@graviton.api.mapping_service"
+            dbManager: "@graviton.api.database_manager"
+
+    graviton.api.database_manager:
+        class: Graviton\ApiBundle\Manager\DatabaseManager
+        arguments:
+            dbUrl: "%graviton.api.mongodb.server.uri%"
+            dbName: "%graviton.api.mongodb.server.db%"
+
+    graviton.api.schema_service:
+        class: Graviton\ApiBundle\Service\SchemaService
+        arguments:
+            configService: "@graviton.api.config_service"
+
+    graviton.api.mapping_service:
+        class: Graviton\ApiBundle\Service\MappingService
+
+    graviton.api.config_service:
+        class: Graviton\ApiBundle\Service\ConfigService
+        arguments:
+            serviceDir: "%graviton.api.generated_service_directory%"
+            cacheDir: "%kernel.cache_dir%"
+

@@ -1,0 +1,4 @@
+services:
+#    graviton_generator_v2.example:
+#        class: Graviton\GeneratorV2Bundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
