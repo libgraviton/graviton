@@ -1,18 +1,18 @@
 graviton_analytics_homepage:
     path:     /
     methods: [GET]
-    defaults: { _controller: GravitonAnalyticsBundle:Default:index }
+    defaults: { _controller: graviton.analytics.defaut_controller:indexAction }
 
 graviton_analytics_service:
     path:     /{service}
     methods: [GET]
     requirements:
         service: "[A-Za-z0-9_-]+"
-    defaults: { _controller: GravitonAnalyticsBundle:Default:service }
+    defaults: { _controller: graviton.analytics.defaut_controller:serviceAction }
 
 graviton_analytics_service_schema:
     path:     /schema/{service}
     methods: [GET]
     requirements:
         service: "[A-Za-z0-9_-]+"
-    defaults: { _controller: GravitonAnalyticsBundle:Default:serviceSchema }
+    defaults: { _controller: graviton.analytics.defaut_controller:serviceSchemaAction }

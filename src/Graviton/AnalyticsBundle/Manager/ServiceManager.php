@@ -3,13 +3,10 @@
  * ParamConverter class for entry point to Analytics Bundle
  */
 
-namespace Graviton\AnalyticsBundle\Request\ParamConverter;
+namespace Graviton\AnalyticsBundle\Manager;
 
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
-use Graviton\AnalyticsBundle\Manager\AnalyticsManager;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Common\Cache\CacheProvider;
@@ -25,7 +22,7 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class ServiceConverter implements ParamConverterInterface
+class ServiceManager
 {
     /** Cache name for services */
     const CACHE_KEY_SERVICES = 'analytics_services';
@@ -204,37 +201,5 @@ class ServiceConverter implements ParamConverterInterface
         $schema =  $this->getServiceSchemaByRoute($serviceRoute);
 
         return $schema->getSchema();
-    }
-
-    /**
-     * Which service can load this Converter
-     *
-     * @param ParamConverter $configuration Configuration data
-     * @return bool
-     */
-    public function supports(ParamConverter $configuration)
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * Applies converting
-     *
-     * @param Request        $request       SF request bag
-     * @param ParamConverter $configuration Config data
-     *
-     * @throws \InvalidArgumentException When route attributes are missing
-     * @throws NotFoundHttpException     When object not found
-     * @return void
-     */
-    public function apply(Request $request, ParamConverter $configuration)
-    {
-        // we could use the request here if needed. $this->setRequest($request);
-        $manager = $this;
-
-        // Map found Service to the route's parameter
-        $request->attributes->set($configuration->getName(), $manager);
     }
 }

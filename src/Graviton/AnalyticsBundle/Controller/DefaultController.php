@@ -4,54 +4,55 @@
  */
 namespace Graviton\AnalyticsBundle\Controller;
 
-use Graviton\AnalyticsBundle\Request\ParamConverter\ServiceConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Graviton\AnalyticsBundle\Manager\ServiceManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class DefaultController extends Controller
+class DefaultController
 {
+    /** @var ServiceManager */
+    private $serviceManager;
 
     /**
-     * @param ServiceConverter $manager Api Service to Find the Needed response data
-     * @ParamConverter("manager", converter="graviton.analytics.request_service_converter")
+     * DefaultController constructor.
+     * @param ServiceManager $serviceManager Parsing the requested date
+     */
+    public function __construct(
+        ServiceManager $serviceManager
+    ) {
+        $this->serviceManager = $serviceManager;
+    }
+
+    /**
      * @return JsonResponse
      */
-    public function indexAction(ServiceConverter $manager)
+    public function indexAction()
     {
-        $data = $manager->getServices();
+        $data = $this->serviceManager->getServices();
 
         return new JsonResponse($data);
     }
 
     /**
-     * @param ServiceConverter $manager Api Service to Find the Needed response data
-     * @param Request          $request Sf Request data
-     * @ParamConverter("manager", converter="graviton.analytics.request_service_converter")
      * @return JsonResponse
      */
-    public function serviceAction(ServiceConverter $manager, Request $request)
+    public function serviceAction()
     {
-        $data = $manager->getData();
+        $data = $this->serviceManager->getData();
 
         return new JsonResponse($data);
     }
 
     /**
-     * @param ServiceConverter $manager Api Service to Find the Needed response data
-     * @param Request          $request Sf Request data
-     * @ParamConverter("manager", converter="graviton.analytics.request_service_converter")
      * @return JsonResponse
      */
-    public function serviceSchemaAction(ServiceConverter $manager, Request $request)
+    public function serviceSchemaAction()
     {
-        $data = $manager->getSchema();
+        $data = $this->serviceManager->getSchema();
 
         return new JsonResponse($data);
     }
