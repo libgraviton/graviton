@@ -26,7 +26,7 @@ class HashHandler
      * @param Hash                     $data    Data
      * @param array                    $type    Type
      * @param Context                  $context Context
-     * @return array
+     * @return Hash
      */
     public function serializeHashToJson(
         JsonSerializationVisitor $visitor,
@@ -34,7 +34,7 @@ class HashHandler
         array $type,
         Context $context
     ) {
-        return $data;
+        return new Hash($data);
     }
 
     /**

@@ -124,19 +124,18 @@ class ServiceManager
     {
         $services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES_URLS);
         if (is_array($services)) {
-            return ['services' => $services];
+            return $services;
         }
         $services = [];
         $r = $this->router;
-        $b = $r->getContext()->getScheme().'://'.$r->getContext()->getHost().':'.$r->getContext()->getHttpPort();
         foreach ($this->services as $name => $service) {
             $services[] = [
-                '$ref' => $b.$r->generate('graviton_analytics_service', ['service' => $service->route], false),
-                'profile' => $b.$r->generate('graviton_analytics_service_schema', ['service' => $service->route], true)
+                '$ref' => $r->generate('graviton_analytics_service', ['service' => $service->route], false),
+                'profile' => $r->generate('graviton_analytics_service_schema', ['service' => $service->route], true)
             ];
         }
         $this->cacheProvider->save(self::CACHE_KEY_SERVICES_URLS, $services, self::CACHE_KEY_SERVICES_URLS_TIME);
-        return ['services' => $services];
+        return $services;
     }
 
     /**

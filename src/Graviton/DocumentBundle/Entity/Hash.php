@@ -21,6 +21,25 @@ class Hash extends \ArrayObject implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return (object) $this->getArrayCopy();
+        return (object) $this->arrayFilterRecursive($this->getArrayCopy());
+    }
+
+    /**
+     * Clean up, remove empty positions of second level and above
+     *
+     * @param array $input to be cleaned up
+     * @return array
+     */
+    private function arrayFilterRecursive($input)
+    {
+        if (empty($input)) {
+            return [];
+        }
+        foreach ($input as &$value) {
+            if (is_array($value) || is_object($value)) {
+                $value = $this->arrayFilterRecursive($value);
+            }
+        }
+        return array_filter($input);
     }
 }
