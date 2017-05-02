@@ -82,6 +82,9 @@ class ServiceConverter implements ParamConverterInterface
         if (strpos($this->directory, 'vendor/graviton/graviton')) {
             $this->directory = str_replace('vendor/graviton/graviton/', '', $this->directory);
         }
+        if (!is_dir($this->directory)) {
+            return;
+        }
         $finder = new Finder();
         $finder->files()->in($this->directory)
             ->name('*.json')
