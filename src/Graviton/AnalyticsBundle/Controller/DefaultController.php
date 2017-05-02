@@ -38,7 +38,7 @@ class DefaultController extends Controller
      */
     public function serviceAction(ServiceConverter $manager, Request $request)
     {
-        $data = $manager->getData($request->get('service'));
+        $data = $manager->getData();
 
         return new JsonResponse($data);
     }
@@ -51,7 +51,7 @@ class DefaultController extends Controller
      */
     public function serviceSchemaAction(ServiceConverter $manager, Request $request)
     {
-        $data = $manager->getSchema($request->get('service'));
+        $data = $manager->getSchema();
 
         return new JsonResponse($data);
     }

@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Common\Cache\CacheProvider;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -33,6 +34,9 @@ class ServiceConverter implements ParamConverterInterface
     const CACHE_KEY_SERVICES_URLS_TIME = 10;
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
+    /** @var Request */
+    protected $request;
+
     /** @var AnalyticsManager */
     protected $analyticsManager;
 
@@ -50,17 +54,20 @@ class ServiceConverter implements ParamConverterInterface
 
     /**
      * ServiceConverter constructor.
+     * @param RequestStack     $requestStack        Sf Request information service
      * @param AnalyticsManager $analyticsManager    Db Manager and query control
      * @param CacheProvider    $cacheProvider       Cache service
      * @param Router           $router              To manage routing generation
      * @param string           $definitionDirectory Where definitions are stored
      */
     public function __construct(
+        RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
         Router $router,
         $definitionDirectory
     ) {
+        $this->request = $requestStack->getCurrentRequest();
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
@@ -159,11 +166,11 @@ class ServiceConverter implements ParamConverterInterface
     /**
      * Will map and find data for defined route
      *
-     * @param string $serviceRoute Route name for service
      * @return array
      */
-    public function getData($serviceRoute)
+    public function getData()
     {
+        $serviceRoute = $this->request->get('service');
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
         $cacheTime = $schema->getCacheTime();
@@ -185,13 +192,14 @@ class ServiceConverter implements ParamConverterInterface
     }
 
     /**
-     * Schema definition
+     * Locate and display service definition schema
      *
-     * @param string $serviceRoute Route name for service
      * @return mixed
      */
-    public function getSchema($serviceRoute)
+    public function getSchema()
     {
+        $serviceRoute = $this->request->get('service');
+
         // Locate the schema definition
         $schema =  $this->getServiceSchemaByRoute($serviceRoute);
 

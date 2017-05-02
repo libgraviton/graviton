@@ -7,6 +7,7 @@ services:
     graviton.analytics.request_service_converter:
         class: Graviton\AnalyticsBundle\Request\ParamConverter\ServiceConverter
         arguments:
+            requestStack: "@request_stack"
             analyticsManager: "@graviton.analytics.analytics_manager"
             cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
             router: "@router"
