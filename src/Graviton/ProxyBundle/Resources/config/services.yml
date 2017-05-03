@@ -1,0 +1,82 @@
+services:
+    # guzzle definitions -->
+    graviton.proxy.psrhttpmessage.httpfoundationfactory:
+        class: "%graviton.proxy.psrhttpmessage.httpfoundationfactory.class%"
+
+    graviton.proxy.psrhttpmessage.diactorosfactory:
+        class: "%graviton.proxy.psrhttpmessage.diactorosfactory.class%"
+
+    graviton.proxy.transformationhandler:
+        class: "%graviton.proxy.transformationhandler.class%"
+
+    graviton.proxy.guzzle.client:
+        class: GuzzleHttp\Client
+
+    graviton.proxy.adapter.guzzle:
+        class: "%graviton.proxy.adapter.guzzle.class%"
+        arguments:
+          - "@graviton.proxy.guzzle.client"
+        calls:
+          -
+            method: setCurlOptions
+            arguments:
+              - "%graviton.proxy.httploader.curloptions%"
+
+    graviton.proxy:
+        class: "Proxy\Proxy"
+        arguments:
+            - "@graviton.proxy.adapter.guzzle"
+
+    # controller definitions -->
+    graviton.proxy.controller.proxy:
+        class: "%graviton.proxy.controller.proxy.class%"
+        arguments:
+            - "@graviton.proxy"
+            - "@templating"
+            - "@graviton.proxy.service.apiloader"
+            - "@graviton.proxy.psrhttpmessage.diactorosfactory"
+            - "@graviton.proxy.psrhttpmessage.httpfoundationfactory"
+            - "@graviton.proxy.service.transformationhandler"
+            - "%graviton.proxy.sources%"
+
+    # swagger related definitions -->
+    graviton.proxy.swagger.document.dummy:
+        class: "stdClass"
+
+    graviton.proxy.swagger.document.parser:
+        class: "%graviton.proxy.swagger.document.parser.class%"
+        arguments:
+          - "@graviton.proxy.swagger.document.dummy"
+
+    graviton.proxy.dispersalstrategy.swagger:
+        class: "%graviton.proxy.dispersalstrategy.swagger.class%"
+        arguments:
+          - "@graviton.proxy.swagger.document.parser"
+
+    # definition loaders -->
+    graviton.proxy.definition.httploader:
+        class: "%graviton.proxy.definition.httploader.class%"
+        arguments:
+          - "@validator"
+          - "@graviton.proxy.adapter.guzzle"
+          - "@logger"
+        calls:
+          -
+            method: setCache
+            arguments:
+              - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+              - ProxyBundle<
+              - 86400
+
+    # api loaders -->
+    graviton.proxy.service.apiloader:
+        class: "%graviton.proxy.service.apidefinitionloader.class%"
+        arguments:
+          - "@graviton.proxy.service.loaderfactory"
+
+    graviton.proxy.service.loaderfactory:
+        class: "%graviton.proxy.definition.loader.factory.class%"
+
+    # transformation definitions -->
+    graviton.proxy.service.transformationhandler:
+        class: "%graviton.proxy.transformationhandler.class%"

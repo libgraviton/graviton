@@ -111,7 +111,7 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->assertEquals($resource->id, $results->id);
+        $this->assertEquals($resource->id, $results->id, json_encode($results));
         $this->assertEquals($resource->myString->en, $results->myString->en);
         $this->assertEquals($resource->myString->de, $results->myString->de);
         $this->assertEquals($resource->myString->fr, $results->myString->fr);

@@ -1,0 +1,11 @@
+parameters:
+    graviton.document.service.extrefconverter.class: Graviton\DocumentBundle\Service\ExtReferenceConverter
+    graviton.document.service.collectioncache.class: Graviton\DocumentBundle\Service\CollectionCache
+    graviton.document.listener.extreferencesearchlistener.class: Graviton\DocumentBundle\Listener\ExtReferenceSearchListener
+    graviton.document.listener.fieldnamesearchlistener.class: Graviton\DocumentBundle\Listener\FieldNameSearchListener
+    graviton.document.listener.documentversionlistener.class: Graviton\DocumentBundle\Listener\DocumentVersionListener
+    graviton.document.serializer.handler.hash.class: Graviton\DocumentBundle\Serializer\Handler\HashHandler
+    graviton.document.serializer.handler.extref.class: Graviton\DocumentBundle\Serializer\Handler\ExtReferenceHandler
+    graviton.document.serializer.handler.date.class: Graviton\DocumentBundle\Serializer\Handler\DateHandler
+    graviton.document.serializer.handler.empty.class: Graviton\DocumentBundle\Serializer\Handler\EmptyHandler
+    graviton.document.serializer.listener.emptyextref.class: Graviton\DocumentBundle\Serializer\Listener\EmptyExtRefListener

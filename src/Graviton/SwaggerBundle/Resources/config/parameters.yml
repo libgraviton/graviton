@@ -1,0 +1,2 @@
+parameters:
+    graviton.swagger.controller.swagger.class: Graviton\SwaggerBundle\Controller\SwaggerController

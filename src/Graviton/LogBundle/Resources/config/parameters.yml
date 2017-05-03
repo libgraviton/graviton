@@ -1,0 +1,7 @@
+parameters:
+    graviton.log.monolog.elasticsearch.class: Monolog\ElasticLogstashHandler
+    graviton.log.monolog.formatter.logstash.class: Monolog\Formatter\LogstashFormatter
+    graviton.log.elasticsearch.client.class: Elasticsearch\Client
+    graviton.log.elasticsearch.client.arguments:
+      - hosts:
+          - localhost

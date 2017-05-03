@@ -1,0 +1,103 @@
+services:
+    kernel.listener.graviton_exception_rest_exception:
+        class: "%kernel.listener.graviton_exception_rest_exception.class%"
+        abstract: true
+        arguments:
+            serializer: "@graviton.rest.serializer"
+            context: "@graviton.rest.serializer.serializercontext"
+
+    kernel.listener.graviton_exception_notfound_exception:
+        class: "%kernel.listener.graviton_exception_notfound_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+
+
+    kernel.listener.graviton_exception_validation_exception:
+        class: "%kernel.listener.graviton_exception_validation_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        calls:
+          -
+            method: setConstraintUtils
+            arguments:
+                utils: "@graviton.schema.constraint.utils"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+
+    kernel.listener.graviton_exception_serialization_exception:
+        class: "%kernel.listener.graviton_exception_serialization_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+            
+    kernel.listener.graviton_exception_deserialization_exception:
+        class: "%kernel.listener.graviton_exception_deserialization_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+    
+    kernel.listener.graviton_exception_noinput_exception:
+        class: "%kernel.listener.graviton_exception_noinput_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener 
+            event: kernel.exception
+            method: onKernelException
+            
+    kernel.listener.graviton_exception_rqlsyntaxerror:
+        class: "%kernel.listener.graviton_exception_rqlsyntaxerror.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+            
+    kernel.listener.graviton_exception_rqloperatornotallowed:
+        class: "%kernel.listener.graviton_exception_rqloperatornotallowed.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+
+    kernel.listener.graviton_exception_malformedinput_exception:
+        class: "%kernel.listener.graviton_exception_malformedinput_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+
+    kernel.listener.graviton_exception_invalidjsonpatch_exception:
+        class: "%kernel.listener.graviton_exception_invalidjsonpatch_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException
+
+    kernel.listener.graviton_exception_recordoriginmodified_exception:
+        class: "%kernel.listener.graviton_exception_recordoriginmodified_exception.class%"
+        parent: "kernel.listener.graviton_exception_rest_exception"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            method: onKernelException

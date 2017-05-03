@@ -1,0 +1,7 @@
+parameters:
+    graviton.person.controller.abstractcustomer.class: Graviton\PersonBundle\Controller\AbstractCustomerController
+    graviton.person.document.customerdiff.class: Graviton\PersonBundle\Document\CustomerDiff
+    graviton.person.repository.customerdiff.class: Graviton\PersonBundle\Repository\CustomerDiffRepository
+    graviton.person.repository.personcontact.class: Graviton\PersonBundle\Repository\PersonContactRepository
+    graviton.person.model.personcontact.class: Graviton\PersonBundle\Model\PersonContact
+    graviton.person.document.personcontact.class: Graviton\PersonBundle\Document\PersonContact

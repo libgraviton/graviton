@@ -1,0 +1,7 @@
+parameters:
+    graviton.test.rest.client.class: Graviton\TestBundle\Client
+    test.client.parameters: []
+    test.client.history.class: Symfony\Component\BrowserKit\History
+    test.client.cookiejar.class: Symfony\Component\BrowserKit\CookieJar
+    test.faker.factory.class: Faker\Factory
+    test.faker.faker.class: Faker\Generator

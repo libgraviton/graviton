@@ -1,0 +1,26 @@
+services:
+
+    graviton.person.controller.abstractcustomer:
+        abstract: true
+        parent: graviton.rest.controller
+        class: "%graviton.person.controller.abstractcustomer.class%"
+
+    graviton.person.repository.personcontact:
+        class: "%graviton.person.repository.personcontact.class%"
+        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        arguments:
+          - "GravitonPersonBundle:PersonContact"
+
+    graviton.person.model.personcontact:
+        class: "%graviton.person.model.personcontact.class%"
+        parent: graviton.rest.model
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: setRepository
+            arguments:
+              - "@graviton.person.repository.personcontact"
+
+    graviton.person.document.personcontact:
+        class: "%graviton.person.document.personcontact.class%"

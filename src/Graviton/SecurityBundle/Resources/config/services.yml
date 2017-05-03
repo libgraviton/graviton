@@ -1,0 +1,146 @@
+services:
+    graviton_security_authenticator:
+        class: Graviton\SecurityBundle\Authentication\SecurityAuthenticator
+        arguments:
+          - "%graviton.security.authentication.header_required%"
+          - "%graviton.security.authentication.test_username%"
+          - "%graviton.security.authentication.allow_anonymous%"
+          - "@graviton_security_user_provider"
+          # This service id is an alias defined in the parameters.yml -->
+          - "@graviton.security.authentication.strategy"
+          - "@logger"
+  
+    #
+    #    Strategies used by AuthenticationKeyAuthenticator
+    #    Value set in Dpc Injection
+    #    graviton.security.authentication.strategy.*
+    #
+    graviton.security.authentication.strategy.multi:
+        class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
+        arguments:            
+            - ["@graviton.security.authentication.strategy.subnet", "@graviton.security.authentication.strategy.cookie"]
+        tags:
+          - 
+            name: graviton.security.authenticationkey.finder
+            
+    graviton.security.authentication.strategy.subnet:
+        class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
+        arguments:
+          - "%graviton.security.authentication.strategy.subnet.key%"
+          - "%graviton.security.authentication.strategy.subnet.header_field%"
+        tags:
+          -
+            name: graviton.security.authenticationkey.finder
+
+    graviton.security.authentication.strategy.header:
+        class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+        arguments:
+          - "%graviton.security.authentication.strategy.header.key%"
+        tags:
+          -
+            name: graviton.security.authenticationkey.finder
+
+    graviton.security.authentication.strategy.cookie:
+      class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
+      arguments:
+        - "%graviton.security.authentication.strategy.cookie.key%"
+      tags:
+        - 
+          name: graviton.security.authenticationkey.finder
+
+    #
+    #    Services related to the AuthenticationUserProvider
+    #
+    graviton_security_user_provider:
+        class: Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider
+        arguments:
+          - "@graviton.security.authentication.dynamic.model"
+          - "%graviton.security.authentication.provider.model.query_field%"
+
+    graviton.security.authentication.provider.model.factory:
+        class: Graviton\SecurityBundle\User\Model\ModelFactory
+        arguments:
+          - "@service_container"
+
+    graviton.security.authentication.provider:
+        class: Graviton\RestBundle\Model\ModelInterface
+        factory: 'graviton.security.authentication.factory:create'
+
+    graviton.security.authentication.provider.model.noop:
+        class: Graviton\SecurityBundle\User\Model\NullModel
+        calls:
+          -
+            method: setRepository
+            arguments:
+              - "@graviton.core.repository.app"
+
+    #
+    #    Commands
+    #
+    graviton.security.authenticationkey.finder.command:
+        class: Graviton\SecurityBundle\Command\AuthenticationKeyFinderCommand
+        tags:
+          -
+            name: console.command
+
+    #
+    #    Authentication logger
+    #
+    graviton.security.authentication.listener:
+        class: Graviton\SecurityBundle\Listener\AuthenticationLogger
+        arguments:
+          - "@logger"
+        tags:
+          -
+            name: kernel.event_subscriber
+
+    #
+    #    Voter services
+    #
+    graviton.security.access.own_context_voter:
+        class: Graviton\SecurityBundle\Voter\OwnContextVoter
+        public: false
+        tags:
+          -
+            name: security.voter
+
+    graviton.security.access.service_allowed_voter:
+        class: Graviton\SecurityBundle\Voter\ServiceAllowedVoter
+        public: false
+        arguments:
+          - "%graviton.security.services.whitelist%"
+        tags:
+          -
+            name: security.voter
+
+    #
+    #    Whoami Services
+    #
+    graviton.security.model.whoami:
+        class: Graviton\SecurityBundle\Model\WhoAmI
+        parent: graviton.rest.model
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: setRepository
+            arguments:
+              - "@graviton.core.repository.app"
+
+    graviton.security.controller.whoami:
+        class: Graviton\SecurityBundle\Controller\WhoAmIController
+        parent: graviton.rest.controller
+        calls:
+          -
+            method: setModel
+            arguments:
+              - "@graviton.security.model.whoami"
+
+    #
+    #    Service Security Utils
+    #
+    graviton.security.service.utils:
+        class: Graviton\SecurityBundle\Service\SecurityUtils
+        arguments:
+          - "@security.token_storage"
+

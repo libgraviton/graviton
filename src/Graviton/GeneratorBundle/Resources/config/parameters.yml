@@ -1,0 +1,17 @@
+parameters:
+    graviton_generator.definition.loader.class: Graviton\GeneratorBundle\Definition\Loader\Loader
+    graviton_generator.definition.loader.strategy.file.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy
+    graviton_generator.definition.loader.strategy.dir.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy
+    graviton_generator.definition.loader.strategy.scan.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy
+    graviton_generator.definition.loader.strategy.json.class: Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy
+    graviton_generator.resourcegenerator.field_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper
+    graviton_generator.resourcegenerator.field_type_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTypeMapper
+    graviton_generator.resourcegenerator.field_name_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper
+    graviton_generator.resourcegenerator.field_title_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTitleMapper
+    graviton_generator.resourcegenerator.field_json_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper
+    graviton_generator.resourcegenerator.parameter_builder.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder
+    graviton_generator.generator.resourcegenerator.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
+    graviton_generator.command.generateresource.class: Graviton\GeneratorBundle\Command\GenerateResourceCommand
+    graviton_generator.manipulator.xml_file.class: Graviton\GeneratorBundle\Manipulator\File\XmlManipulator
+    graviton_generator.command_runner.class: Graviton\GeneratorBundle\CommandRunner
+    graviton.document.serializer.handler.arrayobject.class: Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler

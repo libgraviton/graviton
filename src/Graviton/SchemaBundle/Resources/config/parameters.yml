@@ -1,0 +1,19 @@
+parameters:
+    graviton.schema.listener.schematyperesponse.class: Graviton\SchemaBundle\Listener\SchemaContentTypeResponseListener
+    graviton.schema.listener.canonicalschemaresponse.class: Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener
+    graviton.schema.listener.schemacacheinvalidation.class: Graviton\SchemaBundle\Listener\SchemaCacheInvalidationResponseListener
+    graviton.schema.model.schemamodel.class: Graviton\SchemaBundle\Model\SchemaModel
+    graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
+    graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory
+    graviton.schema.constraint.builder.class: Graviton\SchemaBundle\Constraint\ConstraintBuilder
+    graviton.schema.constraint.utils.class: Graviton\SchemaBundle\Constraint\ConstraintUtils
+    graviton.schema.constraint.incrementaldate.class: Graviton\SchemaBundle\Constraint\IncrementalDateFieldConstraint
+    graviton.schema.constraint.readonlyfield.class: Graviton\SchemaBundle\Constraint\ReadOnlyFieldConstraint
+    graviton.schema.constraint.versionservice.class: Graviton\SchemaBundle\Constraint\VersionServiceConstraint
+    graviton.schema.constraint.recordorigin.class: Graviton\SchemaBundle\Constraint\RecordOriginConstraint
+    graviton.schema.serializer.handler.additionalproperties.class: Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler
+    graviton.schema.serializer.handler.type.class: Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler
+    graviton.schema.serializer.handler.enum.class: Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler
+
+    # non-class parameters -->
+    graviton.schema.cache.invalidateMapKey: _invMap

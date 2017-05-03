@@ -1,0 +1,49 @@
+services:
+    graviton.migrate.config_finder:
+        class: "%graviton.migrate.config_finder.class%"
+    
+    graviton.migrate.document_manager_helper:
+        class: "%graviton.migrate.document_manager_helper.class%"
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+
+    graviton.migrate.command.graviton_migrate:
+        class: "%graviton.migrate.command.graviton_migrate.class%"
+        arguments:
+          - "@service_container"
+          - "@graviton.migrate.config_finder"
+          - "@graviton.migrate.document_manager_helper"
+          - "%mongodb.default.server.db%"
+        tags:
+          -
+            name: console.command
+
+    graviton.migrate.command.execute:
+        class: "%graviton.migrate.command.execute.class%"
+        tags:
+          -
+            name: console.command
+
+    graviton.migrate.command.generate:
+        class: "%graviton.migrate.command.generate.class%"
+        tags:
+          -
+            name: console.command
+
+    graviton.migrate.command.migrate:
+        class: "%graviton.migrate.command.migrate.class%"
+        tags:
+          -
+            name: console.command
+
+    graviton.migrate.command.status:
+        class: "%graviton.migrate.command.status.class%"
+        tags:
+          -
+            name: console.command
+
+    graviton.migrate.command.version:
+        class: "%graviton.migrate.command.version.class%"
+        tags:
+          -
+            name: console.command
