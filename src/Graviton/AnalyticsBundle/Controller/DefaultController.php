@@ -6,6 +6,7 @@ namespace Graviton\AnalyticsBundle\Controller;
 
 use Graviton\AnalyticsBundle\Manager\ServiceManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -35,6 +36,17 @@ class DefaultController
         $data = $this->serviceManager->getServices();
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @return Response
+     */
+    public function optionsAction()
+    {
+        $resp = new Response();
+        $resp->setStatusCode(Response::HTTP_NO_CONTENT);
+        $resp->headers->set("Access-Control-Allow-Methods", "GET, OPTIONS");
+        return $resp;
     }
 
     /**

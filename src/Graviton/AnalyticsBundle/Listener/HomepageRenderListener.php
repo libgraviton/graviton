@@ -20,7 +20,7 @@ class HomepageRenderListener
     /**
      * @var ServiceConverter
      */
-    private $serviceConter;
+    private $serviceManager;
 
     /**
      * HomepageRenderListener constructor.
@@ -29,7 +29,7 @@ class HomepageRenderListener
      */
     public function __construct(ServiceManager $serviceManager)
     {
-        $this->serviceConter = $serviceManager;
+        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -41,7 +41,7 @@ class HomepageRenderListener
      */
     public function onRender(HomepageRenderEvent $event)
     {
-        $services = $this->serviceConter->getServices();
+        $services = $this->serviceManager->getServices();
         foreach ($services as $service) {
             $event->addRoute($service['$ref'], $service['profile']);
         }
