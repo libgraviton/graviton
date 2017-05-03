@@ -4,6 +4,7 @@
  */
 namespace Graviton\AnalyticsBundle\Tests\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
 
 use Graviton\TestBundle\Test\RestTestCase;
@@ -40,6 +41,19 @@ class DefaultControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+    }
+
+    /**
+     * test options request
+     * @return void
+     */
+    public function testOptions()
+    {
+        $client = static::createRestClient();
+        $client->request('OPTIONS', '/analytics/schema/app');
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertEquals('GET, OPTIONS', $client->getResponse()->headers->get('Access-Control-Allow-Methods'));
+        $this->assertEmpty($client->getResults());
     }
 
     /**
