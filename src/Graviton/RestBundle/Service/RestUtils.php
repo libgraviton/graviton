@@ -112,6 +112,9 @@ final class RestUtils implements RestUtilsInterface
         foreach ($optionRoutes as $routeName => $optionRoute) {
             // get base name from options action
             $routeParts = explode('.', $routeName);
+            if (count($routeParts) < 3) {
+                continue;
+            }
             array_pop($routeParts); // get rid of last part
             $baseName = implode('.', $routeParts);
 

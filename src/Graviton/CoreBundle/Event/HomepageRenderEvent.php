@@ -38,17 +38,25 @@ final class HomepageRenderEvent extends Event
      */
     public function addRoute($url, $schemaUrl)
     {
-        if (substr($url, 0, 1) == '/') {
-            $url = substr($url, 1);
-        }
-        if (substr($schemaUrl, 0, 1) == '/') {
-            $schemaUrl = substr($schemaUrl, 1);
-        }
-
         $this->addedRoutes[] = [
-            '$ref' => $url,
-            'profile' => $schemaUrl
+            '$ref' => $this->normalizeRelativeUrl($url),
+            'profile' => $this->normalizeRelativeUrl($schemaUrl)
         ];
+    }
+
+    /**
+     * remove possibly leading slash from url
+     *
+     * @param string $url url
+     *
+     * @return string url
+     */
+    private function normalizeRelativeUrl($url)
+    {
+        if (substr($url, 0, 1) == '/') {
+            return substr($url, 1);
+        }
+        return $url;
     }
 
     /**

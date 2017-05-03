@@ -165,14 +165,17 @@ class MainController
 
         $services = array_map(
             function ($routeName) use ($router) {
-                list($app, $bundle, $rest, $document) = explode('.', $routeName);
+                $routeParts = explode('.', $routeName);
+                if (count($routeParts) > 3) {
+                    list($app, $bundle, $rest, $document) = $routeParts;
 
-                $schemaRoute = implode('.', [$app, $bundle, $rest, $document, 'canonicalSchema']);
+                    $schemaRoute = implode('.', [$app, $bundle, $rest, $document, 'canonicalSchema']);
 
-                return [
-                    '$ref' => $router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'profile' => $router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
-                ];
+                    return [
+                        '$ref' => $router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                        'profile' => $router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    ];
+                }
             },
             array_keys($optionRoutes)
         );
@@ -251,8 +254,6 @@ class MainController
      */
     private function isRelevantForMainPage($val)
     {
-        return true;
-
         return (substr($val['$ref'], -1) === '/')
             || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
     }

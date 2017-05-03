@@ -3,6 +3,13 @@ graviton_analytics_homepage:
     methods: [GET]
     defaults: { _controller: graviton.analytics.defaut_controller:indexAction }
 
+graviton_analytics_options:
+    path:     /{req}
+    methods: [OPTIONS]
+    defaults: { _controller: graviton.analytics.defaut_controller:optionsAction }
+    requirements:
+        req: ".+"
+
 graviton_analytics_service:
     path:     /{service}
     methods: [GET]

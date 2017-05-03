@@ -4,7 +4,7 @@
  */
 namespace Graviton\AnalyticsBundle\Listener;
 
-use Graviton\AnalyticsBundle\Request\ParamConverter\ServiceConverter;
+use Graviton\AnalyticsBundle\Manager\ServiceManager;
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
 
 /**
@@ -20,16 +20,16 @@ class HomepageRenderListener
     /**
      * @var ServiceConverter
      */
-    private $serviceConter;
+    private $serviceManager;
 
     /**
      * HomepageRenderListener constructor.
      *
-     * @param ServiceConverter $serviceConverter service converter
+     * @param ServiceManager $serviceManager service manager
      */
-    public function __construct(ServiceConverter $serviceConverter)
+    public function __construct(ServiceManager $serviceManager)
     {
-        $this->serviceConter = $serviceConverter;
+        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -41,7 +41,7 @@ class HomepageRenderListener
      */
     public function onRender(HomepageRenderEvent $event)
     {
-        $services = $this->serviceConter->getServices();
+        $services = $this->serviceManager->getServices();
         foreach ($services as $service) {
             $event->addRoute($service['$ref'], $service['profile']);
         }
