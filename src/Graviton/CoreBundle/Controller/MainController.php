@@ -251,8 +251,6 @@ class MainController
      */
     private function isRelevantForMainPage($val)
     {
-        return true;
-
         return (substr($val['$ref'], -1) === '/')
             || in_array(parse_url($val['$ref'], PHP_URL_PATH), $this->pathWhitelist);
     }
