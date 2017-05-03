@@ -42,5 +42,6 @@ the various subsystems.
 - [I18nBundle](src/Graviton/I18nBundle/README.md)
 - [SecurityBundle](src/Graviton/SecurityBundle/README.md)
 - [TestBundle](src/Graviton/TestBundle/README.md)
+- [AnalyticsBundle](src/Graviton/AnalyticsBundle/README.md)
 
 And not to forget, the all important [CHANGELOG](https://github.com/libgraviton/graviton/releases).

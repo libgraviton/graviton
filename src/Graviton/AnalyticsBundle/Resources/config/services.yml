@@ -1,0 +1,19 @@
+services:
+    graviton.analytics.defaut_controller:
+        class:     Graviton\AnalyticsBundle\Controller\DefaultController
+        arguments:
+           serviceManager: "@graviton.analytics.service_manager"
+
+    graviton.analytics.analytics_manager:
+        class: Graviton\AnalyticsBundle\Manager\AnalyticsManager
+        arguments:
+            documentManager: "@doctrine_mongodb.odm.default_document_manager"
+
+    graviton.analytics.service_manager:
+        class: Graviton\AnalyticsBundle\Manager\ServiceManager
+        arguments:
+            requestStack: "@request_stack"
+            analyticsManager: "@graviton.analytics.analytics_manager"
+            cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
+            router: "@router"
+            definitionBaseDirectory: "%kernel.root_dir%/.."

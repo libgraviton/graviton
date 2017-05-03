@@ -1,3 +1,7 @@
+graviton_analytics:
+    resource: "@GravitonAnalyticsBundle/Resources/config/routing.yml"
+    prefix:   /analytics
+
 graviton_rest_routing:
     resource: "@GravitonRestBundle/Resources/config/routing.xml"
     prefix: /
