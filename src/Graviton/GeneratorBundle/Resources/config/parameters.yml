@@ -15,3 +15,14 @@ parameters:
     graviton_generator.manipulator.xml_file.class: Graviton\GeneratorBundle\Manipulator\File\XmlManipulator
     graviton_generator.command_runner.class: Graviton\GeneratorBundle\CommandRunner
     graviton.document.serializer.handler.arrayobject.class: Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler
+    
+    generator.dynamicbundles.mongocollection: ~
+    
+    #you can supply a custom json object in order to find specific documents -->
+    generator.dynamicbundles.mongocollection.criteria: {}
+
+    #additional bundles list in JSON format -->
+    generator.bundlebundle.additions: ~
+
+    #service whitelist in JSON format -->
+    generator.dynamicbundles.service.whitelist: ~

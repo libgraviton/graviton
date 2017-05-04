@@ -1,0 +1,5 @@
+doctrine_mongodb:
+    document_managers:
+        default:
+            mappings:
+                GravitonI18nBundle: ~
