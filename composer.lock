@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "445bd426b2efa0929868812adb09ef7e",
+    "content-hash": "3bad221c8d06bfe1ba35c7577f83a69e",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -4452,18 +4452,20 @@
         },
         {
             "name": "libgraviton/codesniffer",
-            "version": "v1.3.0",
-            "target-dir": "CodeSniffer/Standards/ENTB",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/codesniffer-ruleset-entb.git",
-                "reference": "6f10debdb3de17b241544e28c0e874bb85a948a8"
+                "reference": "b29170ede36cfbcf62ec2366c1b7ad15276057fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/6f10debdb3de17b241544e28c0e874bb85a948a8",
-                "reference": "6f10debdb3de17b241544e28c0e874bb85a948a8",
+                "url": "https://api.github.com/repos/libgraviton/codesniffer-ruleset-entb/zipball/b29170ede36cfbcf62ec2366c1b7ad15276057fa",
+                "reference": "b29170ede36cfbcf62ec2366c1b7ad15276057fa",
                 "shasum": ""
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": ">=3.0.0"
             },
             "type": "phpcs-standard",
             "notification-url": "https://packagist.org/downloads/",
@@ -4473,9 +4475,10 @@
             ],
             "keywords": [
                 "codesniffer",
+                "graviton",
                 "libgraviton"
             ],
-            "time": "2015-02-23T21:52:18+00:00"
+            "time": "2017-05-05T15:03:26+00:00"
         },
         {
             "name": "liip/functional-test-bundle",
