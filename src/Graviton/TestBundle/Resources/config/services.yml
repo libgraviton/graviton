@@ -1,0 +1,19 @@
+services:
+    graviton.test.rest.client:
+        class: "%graviton.test.rest.client.class%"
+        shared: false
+        arguments:
+          - "@kernel"
+          - "%test.client.parameters%"
+          - "@test.client.history"
+          - "@test.client.cookiejar"
+
+    test.client.history:
+        class: "%test.client.history.class%"
+        shared: false
+    test.client.cookiejar:
+        class: "%test.client.cookiejar.class%"
+        shared: false
+    test.faker:
+        class: "%test.faker.faker.class%"
+        factory: ["%test.faker.factory.class%", "create"]

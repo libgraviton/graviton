@@ -5,11 +5,13 @@
 
 namespace Graviton\CoreBundle\Controller;
 
+use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Router;
@@ -45,6 +47,11 @@ class MainController
     private $templating;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @var ApiDefinitionLoader
      */
     private $apiLoader;
@@ -65,29 +72,32 @@ class MainController
     private $proxySourceConfiguration;
 
     /**
-     * @param Router              $router                   router
-     * @param Response            $response                 prepared response
-     * @param RestUtilsInterface  $restUtils                rest-utils from GravitonRestBundle
-     * @param EngineInterface     $templating               templating-engine
-     * @param ApiDefinitionLoader $apiLoader                loader for third party api definition
-     * @param array               $additionalRoutes         custom routes
-     * @param array               $pathWhitelist            serviec path that always get aded to the main page
-     * @param array               $proxySourceConfiguration Set of sources to be recognized by the controller
+     * @param Router                   $router                   router
+     * @param Response                 $response                 prepared response
+     * @param RestUtilsInterface       $restUtils                rest-utils from GravitonRestBundle
+     * @param EngineInterface          $templating               templating-engine
+     * @param EventDispatcherInterface $eventDispatcher          event dispatcher
+     * @param ApiDefinitionLoader      $apiLoader                loader for third party api definition
+     * @param array                    $additionalRoutes         custom routes
+     * @param array                    $pathWhitelist            serviec path that always get aded to the main page
+     * @param array                    $proxySourceConfiguration Set of sources to be recognized by the controller
      */
     public function __construct(
         Router $router,
         Response $response,
         RestUtilsInterface $restUtils,
         EngineInterface $templating,
+        EventDispatcherInterface $eventDispatcher,
         ApiDefinitionLoader $apiLoader,
-        $additionalRoutes = array(),
+        $additionalRoutes = [],
         $pathWhitelist = [],
-        array $proxySourceConfiguration = array()
+        array $proxySourceConfiguration = []
     ) {
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->templating = $templating;
+        $this->eventDispatcher = $eventDispatcher;
         $this->apiLoader = $apiLoader;
         $this->addditionalRoutes = $additionalRoutes;
         $this->pathWhitelist = $pathWhitelist;
@@ -148,26 +158,29 @@ class MainController
      */
     protected function determineServices(array $optionRoutes)
     {
-        $sortArr = array();
         $router = $this->router;
         foreach ($this->addditionalRoutes as $route) {
-            // hack because only array keys are used
             $optionRoutes[$route] = null;
         }
 
         $services = array_map(
             function ($routeName) use ($router) {
-                list($app, $bundle, $rest, $document) = explode('.', $routeName);
-                $schemaRoute = implode('.', array($app, $bundle, $rest, $document, 'canonicalSchema'));
+                $routeParts = explode('.', $routeName);
+                if (count($routeParts) > 3) {
+                    list($app, $bundle, $rest, $document) = $routeParts;
 
-                return array(
-                    '$ref' => $router->generate($routeName, array(), UrlGeneratorInterface::ABSOLUTE_URL),
-                    'profile' => $router->generate($schemaRoute, array(), UrlGeneratorInterface::ABSOLUTE_URL),
-                );
+                    $schemaRoute = implode('.', [$app, $bundle, $rest, $document, 'canonicalSchema']);
+
+                    return [
+                        '$ref' => $router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                        'profile' => $router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    ];
+                }
             },
             array_keys($optionRoutes)
         );
 
+        $sortArr = [];
         foreach ($services as $key => $val) {
             if ($this->isRelevantForMainPage($val) && !in_array($val['$ref'], $sortArr)) {
                 $sortArr[$key] = $val['$ref'];
@@ -175,9 +188,43 @@ class MainController
                 unset($services[$key]);
             }
         }
-        array_multisort($sortArr, SORT_ASC, $services);
 
+        // get additional routes
+        $additionalRoutes = $this->getAdditionalRoutes($sortArr);
+
+        $services = array_merge($services, $additionalRoutes);
+
+        array_multisort($sortArr, SORT_ASC, $services);
         return $services;
+    }
+
+    /**
+     * gets the additional routes that can be injected by listeners/subscribers
+     *
+     * @param array $sortArr array needed for sorting
+     *
+     * @return array additional routes
+     */
+    private function getAdditionalRoutes(array &$sortArr)
+    {
+        $additionalRoutes = [];
+        $event = new HomepageRenderEvent();
+        $routes = $this->eventDispatcher->dispatch(HomepageRenderEvent::EVENT_NAME, $event)->getRoutes();
+
+        if (!empty($routes)) {
+            $baseRoute = $this->router->match("/");
+            $baseUrl = $this->router->generate($baseRoute['_route'], [], UrlGeneratorInterface::ABSOLUTE_URL);
+            foreach ($routes as $route) {
+                $thisUrl = $baseUrl.$route['$ref'];
+                $additionalRoutes[] = [
+                    '$ref' => $thisUrl,
+                    'profile' => $baseUrl.$route['profile']
+                ];
+                $sortArr[$thisUrl] = $thisUrl;
+            }
+        }
+
+        return $additionalRoutes;
     }
 
     /**

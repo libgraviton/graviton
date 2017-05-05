@@ -1,0 +1,229 @@
+services:
+    graviton.i18n.document.language: 
+        class: "%graviton.i18n.document.language.class%"
+        
+    graviton.i18n.repository.language:
+        class: "%graviton.i18n.repository.language.class%"
+        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        arguments:
+          - "GravitonI18nBundle:Language"
+
+    graviton.i18n.model.language:
+        class: "%graviton.i18n.model.language.class%"
+        parent: "graviton.rest.model"
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: "setRepository"
+            arguments:
+              - "@graviton.i18n.repository.language"
+
+    graviton.i18n.controller.language:
+        class: "%graviton.i18n.controller.language.class%"
+        parent: "graviton.rest.controller"
+        calls:
+          -
+            method: "setModel"
+            arguments:
+              - "@graviton.i18n.model.language"
+        tags:
+          -
+            name: "graviton.rest"
+
+    graviton.i18n.repository.translatable:
+        class: "%graviton.i18n.repository.translatable.class%"
+        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        arguments:
+          - "GravitonI18nBundle:Translatable"
+    
+    graviton.i18n.repository.translatablelanguage:
+        class: "%graviton.i18n.repository.translatablelanguage.class%"
+        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        arguments: 
+          - "GravitonI18nBundle:TranslatableLanguage"
+    
+    graviton.i18n.model.translatable:
+        class: "%graviton.i18n.model.translatable.class%"
+        parent: "graviton.rest.model"
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: "setRepository"
+            arguments: 
+              - "@graviton.i18n.repository.translatable"
+
+    graviton.i18n.model.translatablelanguage:
+        class: "%graviton.i18n.model.translatablelanguage.class%"
+        parent: "graviton.rest.model"
+        arguments: 
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: "setRepository"
+            arguments:
+              - "@graviton.i18n.repository.translatablelanguage"
+
+    graviton.i18n.document.translatable: 
+        class: "%graviton.i18n.document.translatable.class%"
+        
+    graviton.i18n.document.translatablelanguage: 
+        class: "%graviton.i18n.document.translatablelanguage.class%"
+        
+    graviton.i18n.controller.translatable:
+        class: "%graviton.i18n.controller.translatable.class%"
+        parent: "graviton.rest.controller"
+        calls:
+          - 
+            method: "setModel"
+            arguments: 
+              - "@graviton.i18n.model.translatable"
+        tags:
+          - 
+            name: "graviton.rest"
+
+    graviton.i18n.listener.contentlanguageresponse: 
+        class: "%graviton.i18n.listener.contentlanguageresponse.class%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "kernel.response"
+            method: "onkernelresponse"
+
+    graviton.i18n.listener.acceptlanguagerequest: 
+        class: "%graviton.i18n.listener.acceptlanguagerequest.class%"
+        arguments: 
+          - "@graviton.i18n.repository.language"
+          - "%graviton.translator.default.locale%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "kernel.request"
+            method: "onkernelrequest"
+
+    graviton.i18n.listener.i18ncaching: 
+        class: "%graviton.i18n.listener.i18ncachinglistener.class%"
+        arguments: 
+            - "@graviton.18n.cacheutils"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "translatable.persist"
+            method: "onPersist"
+          - 
+            name: "kernel.event_listener"
+            event: "kernel.terminate"
+            method: "onTerminate"
+
+    graviton.i18n.loader.doctrineodm: 
+        class: "%graviton.i18n.loader.doctrineodm.class%"
+        calls:
+          - 
+            method: setRepository
+            arguments: 
+              - "@graviton.i18n.repository.translatable"
+        tags:
+          - 
+            name: "translation.loader"
+            alias: "odm"
+
+    graviton.i18n.translator:
+        alias: "translator"
+      
+    graviton.i18n.request: 
+        class: "%graviton.i18n.request.class%"
+        factory: 'request_stack:getCurrentRequest'
+
+    graviton.i18n.listener.i18nserializer: 
+        class: "%graviton.i18n.listener.i18nserializer.class%"
+        calls:
+          -
+            method: "setUtils"
+            arguments: 
+              - "@graviton.18n.utils"
+          -
+            method: "setDocumentManager"
+            arguments: 
+              - "@doctrine_mongodb.odm.default_document_manager"
+        tags:
+          - 
+            name: "jms_serializer.event_listener"
+            event: "serializer.pre_serialize"
+            method: "onpreserialize"
+            direction: "serialization"
+          -
+            name: "jms_serializer.event_listener"
+            event: "serializer.post_serialize"
+            method: "onpostserialize"
+            direction: "serialization"
+
+    # done on the kernel.finish_request so we are sure it's done as client leaves - and to be before 'graviton.i18n.listener.i18ncaching' --"
+    graviton.i18n.listener.i18ndeserializer: 
+        class: "%graviton.i18n.listener.i18ndeserializer.class%"
+        calls:
+          -
+            method: "setUtils"
+            arguments: 
+              - "@graviton.18n.utils"
+        tags:
+          -
+            name: "jms_serializer.event_listener"
+            event: "serializer.pre_deserialize"
+            method: "onPreDeserialize"
+            direction: "deserialization"
+          -
+            name: "kernel.event_listener"
+            event: "kernel.finish_request"
+            method: "onKernelFinishRequest" 
+
+    graviton.i18n.listener.i18nrqlparsinglistener: 
+        class: "%graviton.i18n.listener.i18nrqlparsinglistener.class%"
+        arguments: 
+          - "@graviton.18n.utils"
+          - "%graviton.document.type.translatable.fields%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "rql.visit.node"
+            method: "onvisitnode"
+
+    # this here specifies the 'original' language --"
+    graviton.18n.utils:
+        class: "%graviton.i18n.utils.class%"
+        arguments:
+          - "%graviton.translator.default.locale%"
+          - "@graviton.i18n.translator"
+          - "@graviton.i18n.model.translatable"
+          - "@graviton.i18n.repository.language"
+          - "@graviton.i18n.request"
+
+
+    # I18nCacheUtils --"
+    graviton.18n.cacheutils:
+        class: "%graviton.i18n.cacheutils.class%"
+        arguments:
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+          - "%kernel.cache_dir%"
+          - "odm"
+
+    graviton.i18n.listener.postpersisttranslatable: 
+        class: "%graviton.i18n.listener.postpersisttranslatable.class%"
+        arguments:
+          - "@event_dispatcher"
+        tags:
+          -
+            name: "doctrine_mongodb.odm.event_listener"
+            event: "postPersist"
+            class: "stdClass"
+
+
+    graviton.i18n.command.createtranslationresources: 
+        class: "%graviton.i18n.command.createtranslationresources.class%"
+        arguments:
+          - "@graviton.i18n.repository.language"
+          - "@graviton.i18n.repository.translatable"
+          - "@filesystem"
+        tags:
+          -
+            name: "console.command"

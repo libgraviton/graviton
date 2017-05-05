@@ -1,0 +1,295 @@
+services:
+    #Serializer / Serializer context
+    graviton.rest.serializer:
+        alias: serializer
+        calls:
+          -
+            method: setSerializerContext
+            arguments:
+              - "@graviton.rest.serializer.serializercontext"
+
+          -
+            method: setDeserializerContext
+            arguments:
+              - "@graviton.rest.serializer.deserializercontext"
+
+    graviton.rest.serializer.serializercontext:
+        class: "%graviton.rest.serializer.serializercontext.class%"
+        calls:
+          -
+            method: setSerializeNull
+            arguments:
+              - false
+          -
+            method: addExclusionStrategy
+            arguments:
+              - "@graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy"
+
+    graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy:
+        class: "%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%"
+        arguments:
+          - "@request_stack"
+
+    graviton.rest.serializer.deserializercontext:
+        class: "%graviton.rest.serializer.deserializercontext.class%"
+        calls:
+          -
+            method: setSerializeNull
+            arguments:
+              - true
+
+    graviton.rest.doctrine:
+        alias: doctrine
+
+    graviton.rest.router:
+        alias: router
+
+    #Routing -->
+    #Routing collection -->
+    graviton.rest.routing.collection:
+        class: "%graviton.rest.routing.collection.class%"
+
+    #Routing loader -->
+    graviton.rest.routing.loader:
+        class: "%graviton.rest.routing.loader.class%"
+        arguments:
+          - "@graviton.rest.routing.collection"
+          - "%graviton.rest.services%"
+        tags:
+          -
+            name: routing.loader
+
+    #Service for validating JSON Patches -->
+    graviton.rest.service.jsonpatchvalidator:
+        class: Graviton\RestBundle\Service\JsonPatchValidator
+
+    #Controller -->
+    graviton.rest.controller:
+        abstract: true
+        arguments:
+          - "@graviton.rest.response"
+          - "@graviton.rest.restutils"
+          - "@graviton.rest.router"
+          - "@templating"
+          - "@service_container"
+          - "@graviton.schema.utils"
+          - "@graviton.document.service.collectioncache"
+          - "@graviton.rest.service.jsonpatchvalidator"
+          - "@graviton.security.service.utils"
+
+    #Model -->
+    graviton.rest.model:
+        abstract: true
+        class: "%graviton.rest.model.documentmodel.class%"
+        parent: "graviton.schema.model.schemamodel"
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+          - "@graviton.rest.restutils"
+          - "@event_dispatcher"
+          - "@graviton.document.service.collectioncache"
+          - "%graviton.rest.not_modifiable.origin.records%"
+          - "%graviton.rest.pagination.limit%"
+
+
+    #Response object wrapper with scope request (get a new one for each request) -->
+    graviton.rest.response:
+        class: "%graviton.rest.response.class%"
+
+    #Json Request listener -->
+    graviton.rest.listener.jsonrequestlistener:
+        class: Graviton\RestBundle\Listener\JsonRequestListener
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.request
+            method: onKernelRequest
+
+    #Special mimetypes Request listener -->
+    graviton.rest.listener.specialmimetypesrequestlistener:
+        class: Graviton\RestBundle\Listener\SpecialMimetypeRequestListener
+        arguments:
+          - "@service_container"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.request
+            method: onKernelRequest
+
+    #Allowed RQL operator listener -->
+    graviton.rest.listener.rqlallowedoperatorrequestlistener:
+        class: "%graviton.rest.listener.rqlallowedoperatorrequestlistener.class%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.request
+            method: onKernelRequest
+
+    #restUtils service - a service providing some helpers dealing with services -->
+    graviton.rest.restutils:
+        class: Graviton\RestBundle\Service\RestUtils
+        arguments:
+          - "@service_container"
+          - "@router"
+          - "@graviton.rest.serializer"
+          - "@logger"
+          - "@graviton.rest.serializer.serializercontext"
+          - "@graviton.schema.utils"
+          - "@graviton.jsonschema.validator"
+
+
+    #Graviton rest event stuff -->
+    #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
+    graviton.rest.event:
+        class: Graviton\RestBundle\Event\RestEvent
+        shared: false
+
+    graviton.rest.event.subscriber:
+        class: "%graviton.rest.event.subscriber.class%"
+        arguments:
+          - "@graviton.rest.response"
+          - "@graviton.rest.event"
+          - "@service_container"
+        tags:
+          -
+            name: kernel.event_subscriber
+
+    #Graviton rest event listeners -->
+    #Paging listener -->
+    graviton.rest.listener.paginglinkresponselistener:
+        class: "%graviton.rest.listener.paginglinkresponselistener.class%"
+        arguments:
+          - "@router"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.response
+            method: onKernelResponse
+
+    #Self link response listener -->
+    graviton.rest.listener.selflinkresponselistener:
+        class: "%graviton.rest.listener.selflinkresponselistener.class%"
+        arguments:
+          - "@router"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.response
+            method: onKernelResponse
+
+    #Cors listener (move the addHeader calls somewhere else... -->
+    graviton.rest.listener.corsresponselistener:
+        class: "%graviton.rest.listener.corsresponselistener.class%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.response
+            method: onKernelResponse
+        calls:
+          -
+            method: addHeader
+            arguments:
+              - Link
+          -
+            method: addHeader
+            arguments:
+              - Accept
+          -
+            method: addHeader
+            arguments:
+              - X-Requested-With
+          -
+            method: addHeader
+            arguments:
+              - Content-Type
+          -
+            method: addHeader
+            arguments:
+              - Origin
+          -
+            method: addHeader
+            arguments:
+              - Cache-Control
+          -
+            method: addHeader
+            arguments:
+              - ETag
+          -
+            method: addHeader
+            arguments:
+              - Date
+          -
+            method: addHeader
+            arguments:
+              - Access-Control-Allow-Methods
+          -
+            method: addHeader
+            arguments:
+              - Content-Language
+          -
+            method: addHeader
+            arguments:
+              - Location
+          -
+            method: addHeader
+            arguments:
+              - X-Total-Count
+          -
+            #clients need this to read the current version in case of a versioned service -->
+            method: addHeader
+            arguments:
+              - "%graviton.rest.headers.x-versioning%"
+          -
+            method: addAllowHeader
+            arguments:
+              - Cache-Control
+          -
+            method: addAllowHeader
+            arguments:
+              - Content-Type
+          -
+            method: addAllowHeader
+            arguments:
+              - Content-Language
+          -
+            method: addAllowHeader
+            arguments:
+              - If-None-Match
+          -
+            #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
+            method: addAllowHeader
+            arguments:
+              - X-REST-Token
+          -
+            #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
+            method: addAllowHeader
+            arguments:
+              - X-AUTH-Token
+          -
+            #static headers -->
+            method: addStaticHeader
+            arguments:
+              - X-Frame-Options
+              - DENY
+
+    #X-Version response listener -->
+    graviton.rest.listener.xversionresponselistener:
+        class: "%graviton.rest.listener.xversionresponselistener.class%"
+        arguments:
+          - "@graviton.core.utils"
+          - "@logger"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.response
+            method: onKernelResponse
+
+
+    #RQL query listener (see RqlQueryDecoratorCompilerPass) -->
+    graviton.rest.listener.rqlqueryrequestlistener:
+        class: "%graviton.rest.listener.rqlqueryrequestlistener.class%"
+        decorates: graviton.rql.listener.request
+        decoration-inner-name: graviton.rest.listener.rqlqueryrequestlistener.inner
+        arguments:
+          - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
+          - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
+

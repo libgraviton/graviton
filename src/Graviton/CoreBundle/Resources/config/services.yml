@@ -1,0 +1,125 @@
+services:
+    graviton.core.jms.cache.provider:
+        class: "%graviton.core.jms.cache.provider.class%"
+        arguments:
+          - "jms"
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+
+    graviton.core.controller.main:
+      class: "%graviton.core.controller.main.class%"
+      arguments:
+        - "@router"
+        - "@?graviton.rest.response"
+        - "@graviton.rest.restutils"
+        - "@templating"
+        - "@event_dispatcher"
+        - "@graviton.proxy.service.apiloader"
+        - "%graviton.core.links%"
+        - "%graviton.core.main.path.whitelist%"
+        - "%graviton.proxy.sources%"
+
+    graviton.core.controller.app:
+        class: "%graviton.core.controller.app.class%"
+        parent: "graviton.rest.controller"
+        calls:
+          -
+            method: setModel
+            arguments:
+              - "@graviton.core.model.app"
+        tags:
+          -
+            name: "graviton.rest"
+
+    graviton.core.repository.app:
+        class: "%graviton.core.repository.app.class%"
+        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        arguments:
+          - 'GravitonCoreBundle:App'
+
+    graviton.core.model.app:
+        class: "%graviton.core.model.app.class%"
+        parent: "graviton.rest.model"
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+        calls:
+          -
+            method: setRepository
+            arguments:
+              - "@graviton.core.repository.app"
+
+    graviton.core.document.app:
+        class: "%graviton.core.document.app.class%"
+
+    graviton.core.utils:
+        class: "%graviton.core.service.coreutils.class%"
+        arguments:
+          - "%graviton.core.version.data%"
+
+    graviton.core.model.version:
+        class: "%graviton.core.model.version.class%"
+        parent: "graviton.rest.model"
+
+    # Request host listener -->
+    graviton.core.listener.requesthost:
+        class: "%graviton.core.listener.requesthost.class%"
+        arguments:
+          - "@router"
+          - "%graviton.router.host%"
+          - "%graviton.router.port_http%"
+          - "%graviton.router.port_https%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "kernel.request"
+            method: "onKernelRequest"
+
+    graviton.core.controller.version:
+        class: Graviton\CoreBundle\Controller\VersionController
+        parent: "graviton.rest.controller"
+        calls:
+          -
+            method: "setCoreUtils"
+            arguments:
+              - "@graviton.core.utils"
+          -
+            method: "setModel"
+            arguments:
+              - "@graviton.core.model.version"
+
+    graviton.core.listener.json_exception:
+        class: "%graviton.core.listener.jsonexceptionlistener.class%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "kernel.exception"
+            method: "onKernelException"
+
+
+    #generateversions command -->
+    graviton.core.command.filesystem:
+        class: Symfony\Component\Filesystem\Filesystem
+
+    graviton.core.command.dumper:
+        class: Symfony\Component\Yaml\Dumper
+
+    graviton.core.command.parser:
+        class: Symfony\Component\Yaml\Parser
+
+    graviton.core.command.generateversions:
+        class: Graviton\CoreBundle\Command\GenerateVersionsCommand
+        tags:
+          -
+            name: "console.command"
+        calls:
+          -
+            method: "setFilesystem"
+            arguments:
+              - "@graviton.core.command.filesystem"
+          -
+            method: "setDumper"
+            arguments:
+              - "@graviton.core.command.dumper"
+          -
+            method: "setParser"
+            arguments:
+              - "@graviton.core.command.parser"

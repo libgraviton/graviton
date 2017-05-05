@@ -1,0 +1,99 @@
+services:
+    graviton.document.service.extrefconverter:
+        class: "%graviton.document.service.extrefconverter.class%"
+        arguments:
+            router: "@router"
+            mapping: "%graviton.document.type.extref.mapping%"
+
+    graviton.document.service.collectioncache:
+        class: "%graviton.document.service.collectioncache.class%"
+        arguments:
+            service: "@=service(parameter('graviton.cache.provider.service_id'))"
+            cache: "%graviton.cache.collections%"
+
+    graviton.document.serializer.listener.emptyextref:
+        class: "%graviton.document.serializer.listener.emptyextref.class%"
+        tags:
+          -
+            name: jms_serializer.event_listener
+            event: serializer.pre_serialize
+            method: onPreSerialize
+            direction: serialization
+
+    graviton.document.listener.documentversion:
+        class: "%graviton.document.listener.documentversionlistener.class%"
+        arguments:
+            manager: "@doctrine_mongodb.odm.default_document_manager"
+            versionService: "@graviton.schema.constraint.versionservice"
+        tags:
+          -
+            name: kernel.event_listener
+            event: document.model.event.insert
+            method: modelInsert
+          -
+            name: kernel.event_listener
+            event: document.model.event.update
+            method: modelUpdate
+
+    graviton.document.serializer.handler.empty:
+        class: "%graviton.document.serializer.handler.empty.class%"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Empty
+            format: json
+
+    graviton.document.listener.extreferencesearchlistener:
+        class: "%graviton.document.listener.extreferencesearchlistener.class%"
+        arguments:
+            converter: "@graviton.document.service.extrefconverter"
+            fields: "%graviton.document.extref.fields%"
+            requestStack: "@request_stack"
+        tags:
+          -
+            name: kernel.event_listener
+            event: rql.visit.node
+            method: onVisitNode
+            priority: 2
+
+    graviton.document.listener.fieldnamesearchlistener:
+        class: "%graviton.document.listener.fieldnamesearchlistener.class%"
+        arguments:
+            fields: "%graviton.document.rql.fields%"
+            requestStack: "@request_stack"
+        tags:
+          -
+            name: kernel.event_listener
+            event: rql.visit.node
+            method: onVisitNode
+            priority: 1
+
+    graviton.document.serializer.handler.hash:
+        class: "%graviton.document.serializer.handler.hash.class%"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Graviton\DocumentBundle\Entity\Hash
+            format: json
+
+    graviton.document.serializer.handler.extref:
+        class: "%graviton.document.serializer.handler.extref.class%"
+        arguments:
+            converter: "@graviton.document.service.extrefconverter"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Graviton\DocumentBundle\Entity\ExtReference
+            format: json
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.format
+            method: validateExtRef
+
+    graviton.document.serializer.handler.date:
+        class: "%graviton.document.serializer.handler.date.class%"
+        tags:
+          -
+            name: jms_serializer.subscribing_handler
+            type: DateTime
+            format: json

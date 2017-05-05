@@ -1,0 +1,5 @@
+graviton.swagger:
+    path: /swagger.json
+    methods: [GET]
+    defaults: { _controller: graviton.swagger.controller.swagger:swaggerAction }
+

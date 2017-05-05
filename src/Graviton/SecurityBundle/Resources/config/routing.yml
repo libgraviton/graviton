@@ -1,0 +1,20 @@
+graviton.security.static.whoami.get:
+    path: /person/whoami
+    methods: [GET]
+    defaults: { _controller: graviton.security.controller.whoami:whoAmIAction }
+
+graviton.security.static.whoami.options:
+    path: /person/whoami
+    methods: [OPTIONS]
+    defaults: { _controller: graviton.security.controller.whoami:optionsAction }
+
+graviton.security.static.whoami.canonicalSchema:
+    path: /schema/person/whoami
+    methods: [GET]
+    defaults: { _controller: graviton.security.controller.whoami:whoAmISchemaAction }
+
+graviton.security.static.whoami.canonicalSchema.options:
+    path: /schema/person/whoami
+    methods: [OPTIONS]
+    defaults: {  _controller: graviton.security.controller.whoami:optionsAction }
+

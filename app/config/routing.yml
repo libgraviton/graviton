@@ -1,19 +1,23 @@
+graviton_analytics:
+    resource: "@GravitonAnalyticsBundle/Resources/config/routing.yml"
+    prefix:   /analytics
+
 graviton_rest_routing:
-    resource: "@GravitonRestBundle/Resources/config/routing.xml"
+    resource: "@GravitonRestBundle/Resources/config/routing.yml"
     prefix: /
 
 graviton_core_routing:
-    resource: "@GravitonCoreBundle/Resources/config/routing.xml"
+    resource: "@GravitonCoreBundle/Resources/config/routing.yml"
     prefix: /
 
 graviton_swagger_routing:
-    resource: "@GravitonSwaggerBundle/Resources/config/routing.xml"
+    resource: "@GravitonSwaggerBundle/Resources/config/routing.yml"
     prefix: /
 
 graviton_proxy_routing:
-    resource: "@GravitonProxyBundle/Resources/config/routing.xml"
+    resource: "@GravitonProxyBundle/Resources/config/routing.yml"
     prefix: /
 
 graviton_security_routing:
-    resource: "@GravitonSecurityBundle/Resources/config/routing.xml"
+    resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /

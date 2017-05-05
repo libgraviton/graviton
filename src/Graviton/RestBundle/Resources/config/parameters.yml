@@ -1,0 +1,23 @@
+parameters:
+    graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
+    graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
+    graviton.rest.listener.selflinkresponselistener.class: Graviton\RestBundle\Listener\SelfLinkResponseListener
+    graviton.rest.serializer.serializercontext.class: JMS\Serializer\SerializationContext
+    graviton.rest.serializer.deserializercontext.class: JMS\Serializer\DeserializationContext
+    graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class: Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy
+    graviton.rest.listener.paginglinkresponselistener.class: Graviton\RestBundle\Listener\PagingLinkResponseListener
+    graviton.rest.response.class: Symfony\Component\HttpFoundation\Response
+    graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener
+    graviton.rest.request.class: Symfony\Component\HttpFoundation\Request
+    graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
+    graviton.rest.listener.rqlselectresponselistener.class: Graviton\RestBundle\Listener\RqlSelectResponseListener
+    graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
+    graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
+    graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
+    graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
+    graviton.rest.services: []
+    graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
+    graviton.rest.not_modifiable.origin.records:
+      - "core"
+
+    graviton.rest.headers.x-versioning: !php/const:Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME

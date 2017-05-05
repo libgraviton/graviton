@@ -1,0 +1,4 @@
+parameters:
+    graviton.file.controller.file.class: Graviton\FileBundle\Controller\FileController
+    graviton.file.file_manager.class: Graviton\FileBundle\Manager\FileManager
+    graviton.file.request_manager.class: Graviton\FileBundle\Manager\RequestManager

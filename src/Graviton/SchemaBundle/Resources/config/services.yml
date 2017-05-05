@@ -1,0 +1,189 @@
+services:
+    graviton.schema.listener.schematyperesponse:
+        class: "%graviton.schema.listener.schematyperesponse.class%"
+        arguments:
+          - "@router"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            method: onKernelResponse
+
+    graviton.schema.listener.canonicalschemaresponse:
+        class: "%graviton.schema.listener.canonicalschemaresponse.class%"
+        arguments:
+          - "@router"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            method: onKernelResponse
+
+    graviton.schema.listener.schemacacheinvalidation:
+        class: "%graviton.schema.listener.schemacacheinvalidation.class%"
+        arguments:
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+          - "%graviton.schema.cache.invalidateMapKey%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.rest.request
+            method: onRestRequest
+
+    graviton.schema.model.schemamodel:
+        class: "%graviton.schema.model.schemamodel.class%"
+        calls:
+          -
+            method: setContainer
+            arguments:
+              - "@service_container"
+
+    graviton.schema.service.repositoryfactory:
+        class: "%graviton.schema.service.repositoryfactory.class%"
+        arguments:
+          - "@doctrine_mongodb"
+
+    graviton.schema.serializer.handler.additionalproperties:
+        class: "%graviton.schema.serializer.handler.additionalproperties.class%"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Graviton\SchemaBundle\Document\SchemaAdditionalProperties
+            format: json
+
+    graviton.schema.serializer.handler.type:
+        class: "%graviton.schema.serializer.handler.type.class%"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Graviton\SchemaBundle\Document\SchemaType
+            format: json
+            
+    graviton.schema.serializer.handler.enum:
+        class: "%graviton.schema.serializer.handler.enum.class%"
+        tags:
+          -
+            name: jms_serializer.handler
+            type: Graviton\SchemaBundle\Document\SchemaEnum
+            format: json
+
+    # constraints
+    graviton.schema.constraint.choice:
+      class: Graviton\SchemaBundle\Constraint\Builder\ChoiceConstraintBuilder
+    graviton.schema.constraint.email:
+      class: Graviton\SchemaBundle\Constraint\Builder\EmailConstraintBuilder
+    graviton.schema.constraint.url:
+      class: Graviton\SchemaBundle\Constraint\Builder\UrlConstraintBuilder
+    graviton.schema.constraint.range:
+      class: Graviton\SchemaBundle\Constraint\Builder\RangeConstraintBuilder
+    graviton.schema.constraint.decimal:
+      class: Graviton\SchemaBundle\Constraint\Builder\DecimalConstraintBuilder
+    graviton.schema.constraint.count:
+      class: Graviton\SchemaBundle\Constraint\Builder\CountConstraintBuilder
+
+    # constraint builder -->
+    graviton.schema.constraint.builder:
+        class: "%graviton.schema.constraint.builder.class%"
+        calls: 
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.choice"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.email"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.url"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.range"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.decimal"
+          -
+            method: addConstraintBuilder
+            arguments:
+              - "@graviton.schema.constraint.count"
+
+    graviton.schema.constraint.utils:
+        class: "%graviton.schema.constraint.utils.class%"
+        arguments:
+          - "@doctrine_mongodb.odm.default_document_manager"
+          - "@graviton.rest.restutils"
+          - "@request_stack"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.schema
+            method: onSchemaValidation
+            priority: 999
+
+    graviton.schema.utils:
+        class: "%graviton.schema.service.schemautils.class%"
+        arguments:
+          - "@graviton.schema.service.repositoryfactory"
+          - "@jms_serializer.metadata_factory"
+          - "@graviton.i18n.repository.language"
+          - "@router"
+          - "@graviton.rest.serializer"
+          - "%graviton.document.type.extref.mapping%"
+          - "%graviton.document.eventmap%"
+          - "%graviton.document.field.names%"
+          - "%locale%"
+          - "@graviton.schema.constraint.builder"
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+          - "%graviton.schema.cache.invalidateMapKey%"
+
+    graviton.schema.constraint.incrementaldate:
+        class: "%graviton.schema.constraint.incrementaldate.class%"
+        arguments:
+          - "@graviton.schema.constraint.utils"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.format
+            method: checkIncrementalDate
+
+    graviton.schema.constraint.readonlyfield:
+        class: "%graviton.schema.constraint.readonlyfield.class%"
+        arguments:
+          - "@graviton.schema.constraint.utils"
+          - "%graviton.document.readonly.fields%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.schema
+            method: checkReadOnlyFields
+
+    graviton.schema.constraint.versionservice:
+        class: "%graviton.schema.constraint.versionservice.class%"
+        arguments:
+          - "@graviton.schema.constraint.utils"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.schema
+            method: checkVersionField
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            method: setCurrentVersionHeader
+
+    graviton.schema.constraint.recordorigin:
+        class: "%graviton.schema.constraint.recordorigin.class%"
+        arguments:
+          - "@graviton.schema.constraint.utils"
+          - recordOrigin
+          - "%graviton.rest.not_modifiable.origin.records%"
+          - "%graviton.document.recordoriginexception.fields%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: graviton.json_schema.constraint.schema
+            method: checkRecordOrigin
+

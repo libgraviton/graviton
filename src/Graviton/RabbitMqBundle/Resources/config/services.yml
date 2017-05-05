@@ -1,0 +1,38 @@
+services:
+    graviton.rabbitmq.consumer.dump:
+        class: "%graviton.rabbitmq.consumer.dump.class%"
+        
+    graviton.rabbitmq.document.queueevent:
+        class: "%graviton.rabbitmq.document.queueevent.class%"
+
+    graviton.rabbitmq.jobproducer:
+        class: "%graviton.rabbitmq.producer.job.class%"
+        parent: "old_sound_rabbit_mq.document_event_producer"
+        calls:
+          -
+            method: setContentType
+            arguments:
+              - "application/json"
+
+    # the event 'graviton.rest.response.selfaware' will be dispatched by the SelfLinkResponseListener -->
+    graviton.rabbitmq.listener.eventstatusresponselistener:
+        class: "%graviton.rabbitmq.listener.eventstatusresponselistener.class%"
+        tags:
+          -
+            name: "kernel.event_listener"
+            event: "graviton.rest.response.selfaware"
+            method: "onKernelResponse"
+        arguments:
+          - "@graviton.rabbitmq.jobproducer"
+          - "@router"
+          - "@request_stack"
+          - "@doctrine_mongodb.odm.default_document_manager"
+          - "@graviton.document.service.extrefconverter"
+          - "@graviton.rabbitmq.document.queueevent"
+          - "%graviton.document.eventmap%"
+          - "%graviton.rabbitmq.document.eventworker.class%"
+          - "%graviton.rabbitmq.document.eventstatus.class%"
+          - "%graviton.rabbitmq.document.eventstatusstatus.class%"
+          - "%graviton.rabbitmq.document.eventstatuseventresource.class%"
+          - "%graviton.rabbitmq.document.eventstatusstatus.route%"
+          - "@graviton.security.service.utils"

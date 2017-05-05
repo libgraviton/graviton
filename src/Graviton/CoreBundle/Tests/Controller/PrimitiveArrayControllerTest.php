@@ -130,6 +130,11 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
+
+            'rawData'      => (object) [
+                'hasharray' => [(object) ['x' => 'y'], (object) []],
+                'emptyhash' => (object) []
+            ],
         ];
 
         $client = static::createRestClient();
@@ -146,6 +151,8 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $result = $client->getResults();
         $this->assertNotNull($result->id);
         unset($result->id);
+        unset($data->rawData->hasharray[1]);
+        unset($data->rawData->emptyhash);
         $this->assertEquals($this->fixDateTimezone($data), $result);
     }
 
@@ -182,6 +189,8 @@ class PrimitiveArrayControllerTest extends RestTestCase
                     'datearray' => ['2015-09-30T23:59:59+0000', '2015-10-01T00:00:01+0300'],
                 ]
             ],
+
+            'rawData'      => (object) [],
         ];
 
         $client = static::createRestClient();
