@@ -1,0 +1,18 @@
+services:
+    graviton.cache.listener.etagresponselistener:
+        class: "%graviton.cache.listener.etagresponselistener.class%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            method: onKernelResponse
+            priority: 110
+
+    graviton.cache.listener.ifnonematchresponselistener:
+        class: "%graviton.cache.listener.ifnonematchresponselistener.class%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            method: onKernelResponse
+            priority: 100

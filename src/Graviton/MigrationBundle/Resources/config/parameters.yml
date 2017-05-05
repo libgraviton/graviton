@@ -1,0 +1,9 @@
+parameters:
+    graviton.migrate.command.graviton_migrate.class: Graviton\MigrationBundle\Command\MongodbMigrateCommand
+    graviton.migrate.config_finder.class: Symfony\Component\Finder\Finder
+    graviton.migrate.document_manager_helper.class: Graviton\MigrationBundle\Command\Helper\DocumentManager
+    graviton.migrate.command.execute.class: AntiMattr\MongoDB\Migrations\Tools\Console\Command\ExecuteCommand
+    graviton.migrate.command.generate.class: AntiMattr\MongoDB\Migrations\Tools\Console\Command\GenerateCommand
+    graviton.migrate.command.migrate.class: AntiMattr\MongoDB\Migrations\Tools\Console\Command\MigrateCommand
+    graviton.migrate.command.status.class: AntiMattr\MongoDB\Migrations\Tools\Console\Command\StatusCommand
+    graviton.migrate.command.version.class: AntiMattr\MongoDB\Migrations\Tools\Console\Command\VersionCommand

@@ -1,0 +1,14 @@
+doctrine_mongodb:
+    document_managers:
+        default:
+            mappings:
+                GravitonPersonBundle: ~
+
+jms_serializer:
+    metadata:
+        debug: "%kernel.debug%"
+        auto_detection: true
+        directory:
+            namespace_prefix: "Graviton\PersonBundle"
+            path: "@GravitonPersonBundle/Resources/config/serializer"
+

@@ -1,0 +1,12 @@
+parameters:
+    graviton.core.jms.cache.provider.class: Metadata\Cache\DoctrineCacheAdapter
+    graviton.core.controller.main.class: Graviton\CoreBundle\Controller\MainController
+    graviton.core.controller.app.class: Graviton\CoreBundle\Controller\AppController
+    graviton.core.repository.app.class: Graviton\CoreBundle\Repository\AppRepository
+    graviton.core.model.app.class: Graviton\CoreBundle\Model\App
+    graviton.core.model.version.class: Graviton\CoreBundle\Model\Version
+    graviton.core.document.app.class: Graviton\CoreBundle\Document\App
+    graviton.core.listener.requesthost.class: Graviton\CoreBundle\Listener\RequestHostListener
+    graviton.core.service.coreutils.class: Graviton\CoreBundle\Service\CoreUtils
+    graviton.core.service.coreversionutils.class: Graviton\CoreBundle\Service\CoreVersionUtils
+    graviton.core.listener.jsonexceptionlistener.class: Graviton\CoreBundle\Listener\JsonExceptionListener

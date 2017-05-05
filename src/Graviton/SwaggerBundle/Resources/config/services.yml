@@ -1,0 +1,45 @@
+services:
+
+    # swagger service - a service that generates swagger spec -->
+    graviton.rest.apidoc:
+        class: Graviton\SwaggerBundle\Service\Swagger
+        arguments:
+          - "@graviton.rest.restutils"
+          - "@graviton.schema.model.schemamodel"
+          - "@graviton.schema.utils"
+          - "@graviton.core.utils"
+
+    graviton.swagger.filesystem.command:
+        class: Symfony\Component\Filesystem\Filesystem
+
+    graviton.swagger.command.swaggergenerate:
+        class: Graviton\SwaggerBundle\Command\SwaggerGenerateCommand
+        tags:
+          -
+            name: console.command
+        calls:
+          -
+            method: setContainer
+            arguments:
+              - "@service_container"
+          -
+            method: setRootDir
+            arguments:
+              - "%kernel.root_dir%"
+          -
+            method: setFilesystem
+            arguments:
+              - "@graviton.swagger.filesystem.command"
+          -
+            method: setApidoc
+            arguments:
+              - "@graviton.rest.apidoc"
+
+    graviton.swagger.filesystem.finder:
+        class: Symfony\Component\Finder\Finder
+
+    graviton.swagger.controller.swagger:
+        class: Graviton\SwaggerBundle\Controller\SwaggerController
+        arguments:
+          - "@graviton.swagger.filesystem.finder"
+          - "%kernel.root_dir%"

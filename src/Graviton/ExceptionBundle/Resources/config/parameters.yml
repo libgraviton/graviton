@@ -1,0 +1,13 @@
+parameters:
+    kernel.listener.graviton_exception_kernel_exception.class: Graviton\ExceptionBundle\Listener\ExceptionListener
+    kernel.listener.graviton_exception_rest_exception.class: Graviton\ExceptionBundle\Listener\RestExceptionListener
+    kernel.listener.graviton_exception_validation_exception.class: Graviton\ExceptionBundle\Listener\ValidationExceptionListener
+    kernel.listener.graviton_exception_notfound_exception.class: Graviton\ExceptionBundle\Listener\NotFoundExceptionListener
+    kernel.listener.graviton_exception_serialization_exception.class: Graviton\ExceptionBundle\Listener\SerializationExceptionListener
+    kernel.listener.graviton_exception_deserialization_exception.class: Graviton\ExceptionBundle\Listener\DeserializationExceptionListener
+    kernel.listener.graviton_exception_noinput_exception.class: Graviton\ExceptionBundle\Listener\NoInputExceptionListener
+    kernel.listener.graviton_exception_rqlsyntaxerror.class: Graviton\ExceptionBundle\Listener\RqlSyntaxErrorListener
+    kernel.listener.graviton_exception_rqloperatornotallowed.class: Graviton\ExceptionBundle\Listener\RqlOperatorNotAllowedListener
+    kernel.listener.graviton_exception_malformedinput_exception.class: Graviton\ExceptionBundle\Listener\MalformedInputExceptionListener
+    kernel.listener.graviton_exception_invalidjsonpatch_exception.class: Graviton\ExceptionBundle\Listener\InvalidJsonPatchExceptionListener
+    kernel.listener.graviton_exception_recordoriginmodified_exception.class: Graviton\ExceptionBundle\Listener\RecordOriginExceptionListener

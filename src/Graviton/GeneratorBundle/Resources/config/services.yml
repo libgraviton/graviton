@@ -1,0 +1,169 @@
+services:
+    graviton_generator.resourcegenerator.field_mapper:
+      class: "%graviton_generator.resourcegenerator.field_mapper.class%"
+      calls:
+        -
+          method: addMapper
+          arguments:
+            - "@graviton_generator.resourcegenerator.field_type_mapper"
+        -
+          method: addMapper
+          arguments:
+            - "@graviton_generator.resourcegenerator.field_name_mapper"
+        -
+          method: addMapper
+          arguments:
+            - "@graviton_generator.resourcegenerator.field_json_mapper"
+        -
+          method: addMapper
+          arguments:
+            - "@graviton_generator.resourcegenerator.field_title_mapper"
+
+    graviton_generator.resourcegenerator.field_type_mapper:
+        class: "%graviton_generator.resourcegenerator.field_type_mapper.class%"
+
+    graviton_generator.resourcegenerator.field_name_mapper:
+        class: "%graviton_generator.resourcegenerator.field_name_mapper.class%"
+
+    graviton_generator.resourcegenerator.field_json_mapper:
+        class: "%graviton_generator.resourcegenerator.field_json_mapper.class%"
+
+    graviton_generator.resourcegenerator.field_title_mapper:
+        class: "%graviton_generator.resourcegenerator.field_title_mapper.class%"
+
+    #ArrayObject serializer handler
+    graviton.document.serializer.handler.arrayobject:
+        class: "%graviton.document.serializer.handler.arrayobject.class%"
+        tags:
+          -
+            name: "jms_serializer.handler"
+            type: "ArrayObject"
+            format: "json"
+
+    graviton_generator.definition.loader:
+        class: "%graviton_generator.definition.loader.class%"
+        arguments:
+            validator: "@graviton.jsonschema.validator"
+            serialiser: "@jms_serializer"
+        calls:
+          -
+            method: addStrategy
+            arguments:
+              - "@graviton_generator.definition.loader.strategy.file"
+          -
+            method: addStrategy
+            arguments:
+              - "@graviton_generator.definition.loader.strategy.dir"
+          -
+            method: addStrategy
+            arguments:
+              - "@graviton_generator.definition.loader.strategy.scan"
+          -
+            method: addStrategy
+            arguments:
+              - "@graviton_generator.definition.loader.strategy.json"
+
+    graviton_generator.definition.loader.strategy.abstract:
+         abstract: true
+
+    graviton_generator.definition.loader.strategy.file:
+        class: "%graviton_generator.definition.loader.strategy.file.class%"
+        parent: "graviton_generator.definition.loader.strategy.abstract"
+
+    graviton_generator.definition.loader.strategy.json:
+        class: "%graviton_generator.definition.loader.strategy.json.class%"
+        parent: "graviton_generator.definition.loader.strategy.abstract"
+
+    graviton_generator.definition.loader.strategy.dir:
+        class: "%graviton_generator.definition.loader.strategy.dir.class%"
+        parent: "graviton_generator.definition.loader.strategy.abstract"
+
+    graviton_generator.definition.loader.strategy.scan:
+        class: "%graviton_generator.definition.loader.strategy.scan.class%"
+        parent: "graviton_generator.definition.loader.strategy.abstract"
+        calls:
+          -
+            method: setScanDir
+            arguments:
+              - "%kernel.root_dir%/.."
+
+    graviton_generator.resourcegenerator.parameter_builder:
+        class: "%graviton_generator.resourcegenerator.parameter_builder.class%"
+
+    graviton_generator.generator.resourcegenerator:
+        class: "%graviton_generator.generator.resourcegenerator.class%"
+        arguments:
+          - "@filesystem"
+          - "@doctrine"
+          - "@kernel"
+          - "@graviton_generator.resourcegenerator.field_mapper"
+          - "@graviton_generator.resourcegenerator.parameter_builder"
+
+    graviton_generator.manipulator.xml_file:
+        class: "%graviton_generator.manipulator.xml_file.class%"
+
+    graviton_generator.command_runner:
+        class: "%graviton_generator.command_runner.class%"
+        arguments:
+          - "@graviton_generator.command.cleandynamicbundle.kernel"
+          - "@graviton_generator.command.generatedynamicbundle.process"
+
+    graviton_generator.command.generateresource:
+        class: "%graviton_generator.command.generateresource.class%"
+        arguments:
+          - "@graviton_generator.generator.resourcegenerator"
+          - "@graviton_generator.definition.loader"
+        tags:
+          -
+            name: console.command
+
+    #clean dynamic bundle command
+    graviton_generator.command.cleandynamicbundle.kernel:
+        alias: "kernel"
+
+    graviton_generator.command.cleandynamicbundle.filesystem:
+        class: "Symfony\\Component\\Filesystem\\Filesystem"
+
+    graviton_generator.command.cleandynamicbundle:
+        class: "Graviton\\GeneratorBundle\\Command\\CleanDynamicBundleCacheCommand"
+        calls:
+          -
+            method: setKernel
+            arguments:
+              - "@graviton_generator.command.cleandynamicbundle.kernel"
+          -
+            method: setFilesystem
+            arguments:
+              - "@graviton_generator.command.cleandynamicbundle.filesystem"
+        tags:
+          -
+            name: console.command
+
+    graviton_generator.command.generatedynamicbundle.container:
+        alias: "service_container"
+
+    graviton_generator.command.generatedynamicbundle.process:
+        class: "Symfony\\Component\\Process\\Process"
+        arguments:
+            null: "string"
+
+    graviton_generator.command.generatedynamicbundle:
+        class: "Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand"
+        arguments:
+          - "@graviton_generator.command_runner"
+          - "@graviton_generator.manipulator.xml_file"
+          - "@graviton_generator.definition.loader"
+          - "@jms_serializer"
+          - "%generator.bundlebundle.additions%"
+          - "%generator.dynamicbundles.service.whitelist%"
+        tags:
+          -
+            name: console.command
+
+    graviton_generator.command.generatebuildindexes:
+        class: "Graviton\\GeneratorBundle\\Command\\GenerateBuildIndexesCommand"
+        arguments:
+          - "@doctrine_mongodb.odm.default_document_manager"
+        tags:
+          -
+            name: console.command
