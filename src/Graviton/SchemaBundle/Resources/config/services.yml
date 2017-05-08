@@ -130,7 +130,7 @@ services:
           - "@jms_serializer.metadata_factory"
           - "@graviton.i18n.repository.language"
           - "@router"
-          - "@graviton.rest.serializer"
+          - "@serializer"
           - "%graviton.document.type.extref.mapping%"
           - "%graviton.document.eventmap%"
           - "%graviton.document.field.names%"
