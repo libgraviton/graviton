@@ -5,7 +5,7 @@ imports:
 parameters:
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     graviton.translator.default.locale: en
-    graviton.doctrine.cache.provider.service_id: %graviton.cache.provider.service_id%
+    graviton.doctrine.cache.provider.service_id: "%graviton.cache.provider.service_id%"
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
