@@ -69,6 +69,6 @@ script:
     if [ "$COMPOSER_CHECK" = "true" ]; then
         composer check;
     fi
-#cache:
-#    directories:
-#    - vendor/
+cache:
+  directories:
+  - vendor/
