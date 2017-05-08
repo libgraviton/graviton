@@ -3,7 +3,7 @@ services:
         class: "%kernel.listener.graviton_exception_rest_exception.class%"
         abstract: true
         arguments:
-            serializer: "@graviton.rest.serializer"
+            serializer: "@serializer"
             context: "@graviton.rest.serializer.serializercontext"
 
     kernel.listener.graviton_exception_notfound_exception:
