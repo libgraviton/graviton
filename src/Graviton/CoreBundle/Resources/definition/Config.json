@@ -39,7 +39,9 @@
     },
     "target": {
         "indexes": [
-            "key"
+          "key",
+          "default",
+          "value"    
         ],
         "relations": [],
         "fields": [
@@ -55,7 +57,7 @@
                 "type": "varchar",
                 "title": "Key",
                 "description": "A fixed string identifying this configuration value.",
-                "required": false
+                "required": true
             },
             {
                 "name": "app.ref",
@@ -71,7 +73,7 @@
                 "type": "varchar",
                 "title": "Default",
                 "description": "Default value of configuration value.",
-                "required": false
+                "required": true
             },
             {
                 "name": "value",
