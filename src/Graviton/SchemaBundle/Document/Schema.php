@@ -620,8 +620,8 @@ class Schema
      */
     public function removeProperty($name)
     {
-        if (!$this->properties->containsKey($name)) {
-            $this->properties->remove($this->properties->get($name));
+        if ($this->properties->containsKey($name)) {
+            $this->properties->remove($name);
         }
     }
 
