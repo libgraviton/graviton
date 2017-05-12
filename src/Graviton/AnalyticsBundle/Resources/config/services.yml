@@ -2,12 +2,13 @@ services:
     graviton.analytics.defaut_controller:
         class:     Graviton\AnalyticsBundle\Controller\DefaultController
         arguments:
-           serviceManager: "@graviton.analytics.service_manager"
+            serviceManager: "@graviton.analytics.service_manager"
 
     graviton.analytics.analytics_manager:
         class: Graviton\AnalyticsBundle\Manager\AnalyticsManager
         arguments:
             documentManager: "@doctrine_mongodb.odm.default_document_manager"
+            databaseName: "%graviton.mongodb.default.server.db%"
 
     graviton.analytics.service_manager:
         class: Graviton\AnalyticsBundle\Manager\ServiceManager
