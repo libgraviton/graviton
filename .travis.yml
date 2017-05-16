@@ -11,6 +11,7 @@ addons:
     - mongodb-org-server
 before_script:
 - free -m
+- ulimit -c unlimited -S
 - >
     if [ "$PHPUNIT_SUITE" != "integration" ]; then
         export MONGODB_URI=mongodb://does.not.exist.example.org:443
