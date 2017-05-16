@@ -7,23 +7,24 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\Query\Expr;
 use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
-use Graviton\SchemaBundle\Model\SchemaModel;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Graviton\SchemaBundle\Model\SchemaModel;
+use Graviton\RestBundle\Service\RestUtils;
+use MongoDB\Exception\InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Xiag\Rql\Parser\Node\LimitNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
+use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
 use Xiag\Rql\Parser\Query;
-use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
 use Xiag\Rql\Parser\Query as XiagQuery;
-use \Doctrine\ODM\MongoDB\Query\Builder as MongoBuilder;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
-use Graviton\RestBundle\Service\RestUtils;
+use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
 /**
  * Use doctrine odm as backend
@@ -167,18 +168,25 @@ class DocumentModel extends SchemaModel implements ModelInterface
         /** @var XiagQuery $xiagQuery */
         $xiagQuery = $request->attributes->get('rqlQuery');
 
-        /** @var MongoBuilder $queryBuilder */
+        /** @var Builder $queryBuilder */
         $queryBuilder = $this->repository
             ->createQueryBuilder();
 
         // Setting RQL Query
         if ($xiagQuery) {
-            // Clean up Search rql param and set it as Doctrine query
-            if ($xiagQuery->getQuery() && $this->hasCustomSearchIndex() && (float) $this->getMongoDBVersion() >= 2.6) {
-                $searchQueries = $this->buildSearchQuery($xiagQuery, $queryBuilder);
-                $xiagQuery = $searchQueries['xiagQuery'];
-                $queryBuilder = $searchQueries['queryBuilder'];
+            // Check if search and if this Repository have search indexes.
+            if ($query = $xiagQuery->getQuery()) {
+                if ($query instanceof AndNode) {
+                    foreach ($query->getQueries() as $xq) {
+                        if ($xq instanceof SearchNode && !$this->hasCustomSearchIndex()) {
+                            throw new InvalidArgumentException('Current api request have search index');
+                        }
+                    }
+                } elseif ($query instanceof SearchNode && !$this->hasCustomSearchIndex()) {
+                    throw new InvalidArgumentException('Current api request have search index');
+                }
             }
+            // Clean up Search rql param and set it as Doctrine query
             $queryBuilder = $this->doRqlQuery(
                 $queryBuilder,
                 $xiagQuery
@@ -241,63 +249,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param XiagQuery    $xiagQuery    Xiag Builder
-     * @param MongoBuilder $queryBuilder Mongo Doctrine query builder
-     * @return array
-     */
-    private function buildSearchQuery(XiagQuery $xiagQuery, MongoBuilder $queryBuilder)
-    {
-        $innerQuery = $xiagQuery->getQuery();
-        $hasSearch = false;
-        $nodes = [];
-        if ($innerQuery instanceof AbstractLogicOperatorNode) {
-            foreach ($innerQuery->getQueries() as $key => $innerRql) {
-                if ($innerRql instanceof SearchNode) {
-                    if (!$hasSearch) {
-                        $queryBuilder = $this->buildSearchTextQuery($queryBuilder, $innerRql);
-                        $hasSearch = true;
-                    }
-                } else {
-                    $nodes[] = $innerRql;
-                }
-            }
-        } elseif ($innerQuery instanceof SearchNode) {
-            $queryBuilder = $this->repository->createQueryBuilder();
-            $queryBuilder = $this->buildSearchTextQuery($queryBuilder, $innerQuery);
-            $hasSearch = true;
-        }
-        // Remove the Search from RQL xiag
-        if ($hasSearch && $nodes) {
-            $newXiagQuery = new XiagQuery();
-            if ($xiagQuery->getLimit()) {
-                $newXiagQuery->setLimit($xiagQuery->getLimit());
-            }
-            if ($xiagQuery->getSelect()) {
-                $newXiagQuery->setSelect($xiagQuery->getSelect());
-            }
-            if ($xiagQuery->getSort()) {
-                $newXiagQuery->setSort($xiagQuery->getSort());
-            }
-            $binderClass = get_class($innerQuery);
-            /** @var AbstractLogicOperatorNode $newBinder */
-            $newBinder = new $binderClass();
-            foreach ($nodes as $node) {
-                $newBinder->addQuery($node);
-            }
-            $newXiagQuery->setQuery($newBinder);
-            // Reset original query, so that there is no Search param
-            $xiagQuery = $newXiagQuery;
-        }
-        if ($hasSearch) {
-            $queryBuilder->sortMeta('score', 'textScore');
-        }
-        return [
-            'xiagQuery'     => $xiagQuery,
-            'queryBuilder'  => $queryBuilder
-        ];
-    }
-
-    /**
      * Check if collection has search indexes in DB
      *
      * @param string $prefix the prefix for custom text search indexes
@@ -322,42 +273,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             }
         }
         return false;
-    }
-
-    /**
-     * Build Search text index
-     *
-     * @param MongoBuilder $queryBuilder Doctrine mongo query builder object
-     * @param SearchNode   $searchNode   Graviton Search node
-     * @return MongoBuilder
-     */
-    private function buildSearchTextQuery(MongoBuilder $queryBuilder, SearchNode $searchNode)
-    {
-        $searchArr = [];
-        foreach ($searchNode->getSearchTerms() as $string) {
-            if (!empty(trim($string))) {
-                $searchArr[] = "\"{$string}\"";
-            }
-        }
-        if (!empty($searchArr)) {
-            $queryBuilder->addAnd($queryBuilder->expr()->text(implode(' ', $searchArr)));
-        }
-        return $queryBuilder;
-    }
-
-    /**
-     * @return string the version of the MongoDB as a string
-     */
-    private function getMongoDBVersion()
-    {
-        $buildInfo = $this->repository->getDocumentManager()->getDocumentDatabase(
-            $this->repository->getClassName()
-        )->command(['buildinfo'=>1]);
-        if (isset($buildInfo['version'])) {
-            return $buildInfo['version'];
-        } else {
-            return "unkown";
-        }
     }
 
     /**
@@ -417,7 +332,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
             ($query = $request->attributes->get('rqlQuery')) &&
             (($query instanceof XiagQuery))
         ) {
-            /** @var MongoBuilder $queryBuilder */
+            /** @var Builder $queryBuilder */
             $queryBuilder = $this->doRqlQuery($this->repository->createQueryBuilder(), $query);
             $queryBuilder->field('id')->equals($documentId);
             $result = $queryBuilder->getQuery()->getSingleResult();
@@ -616,7 +531,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param Builder $queryBuilder Doctrine ODM QueryBuilder
      * @param Query   $query        query from parser
      *
-     * @return array
+     * @return Builder|Expr
      */
     protected function doRqlQuery($queryBuilder, Query $query)
     {
