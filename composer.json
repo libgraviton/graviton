@@ -1,6 +1,6 @@
 {
     "name": "graviton/graviton",
-    "license": "GPL",
+    "license": "MIT",
     "type": "project",
     "description": "The base package for graviton",
     "authors": [
