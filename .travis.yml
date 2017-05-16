@@ -11,7 +11,6 @@ addons:
     - mongodb-org-server
 before_script:
 - free -m
-- ulimit -c unlimited -S
 - >
     if [ "$PHPUNIT_SUITE" != "integration" ]; then
         export MONGODB_URI=mongodb://does.not.exist.example.org:443
@@ -23,6 +22,7 @@ before_script:
 - >
     if [ $(phpenv version-name) = "5.6" ]; then
         echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
+        echo "memory_limit=2G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
     fi
 - >
     if [ $(phpenv version-name) = "7.0" ] || [ $(phpenv version-name) = "7.1" ]; then
