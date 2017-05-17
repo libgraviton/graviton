@@ -122,7 +122,7 @@ services:
           - "@graviton.rest.serializer.serializercontext"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
