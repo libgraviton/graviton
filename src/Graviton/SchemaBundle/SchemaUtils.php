@@ -269,33 +269,27 @@ class SchemaUtils
             $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
         }
 
-        $requiredFields = [];
-        $modelRequiredFields = $model->getRequiredFields();
-        if (is_array($modelRequiredFields)) {
-            foreach ($modelRequiredFields as $field) {
-                // don't describe hidden fields
-                if (!isset($documentFieldNames[$field])) {
-                    continue;
-                }
-
-                $requiredFields[] = $documentFieldNames[$field];
-            }
-        }
+        // don't describe hidden fields
+        $requiredFields = $model->getRequiredFields() ?: [];
+        $requiredFields = array_intersect_key($documentFieldNames, array_combine($requiredFields, $requiredFields));
 
         foreach ($meta->getFieldNames() as $field) {
             // don't describe hidden fields
             if (!isset($documentFieldNames[$field])) {
                 continue;
             }
-            // hide realId field (I was aiming at a cleaner solution than the macig realId string initially)
-            if ($meta->getTypeOfField($field) == 'id' && $field == 'realId') {
+            // hide realId field (I was aiming at a cleaner solution than the matching realId string initially)
+            // hide embedded ID field unless it's required or for internal validation need, back-compatibility.
+            // TODO remove !$internal once no clients use it for embedded objects as these id are done automatically
+            if (($meta->getTypeOfField($field) == 'id' && $field == 'realId') ||
+                ($field == 'id' && !$internal && $meta->isEmbeddedDocument && !in_array('id', $requiredFields))
+            ) {
                 continue;
             }
 
             $property = new Schema();
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
-
             $property->setType($meta->getTypeOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
 
@@ -333,22 +327,24 @@ class SchemaUtils
                         foreach ($dynamicProperties as $propertyName) {
                             $property->addProperty(
                                 $propertyName,
-                                $this->getModelSchema($field, $propertyModel, $online)
+                                $this->getModelSchema($field, $propertyModel, $online, $internal)
                             );
                         }
                     } else {
                         // swagger case
                         $property->setAdditionalProperties(
-                            new SchemaAdditionalProperties($this->getModelSchema($field, $propertyModel, $online))
+                            new SchemaAdditionalProperties(
+                                $this->getModelSchema($field, $propertyModel, $online, $internal)
+                            )
                         );
                     }
                 } else {
-                    $property->setItems($this->getModelSchema($field, $propertyModel, $online));
+                    $property->setItems($this->getModelSchema($field, $propertyModel, $online, $internal));
                     $property->setType('array');
                 }
             } elseif ($meta->getTypeOfField($field) === 'one') {
                 $propertyModel = $model->manyPropertyModelForTarget($meta->getAssociationTargetClass($field));
-                $property = $this->getModelSchema($field, $propertyModel, $online);
+                $property = $this->getModelSchema($field, $propertyModel, $online, $internal);
 
                 if ($property->getSearchable()) {
                     foreach ($property->getSearchable() as $searchableSubField) {
@@ -418,17 +414,13 @@ class SchemaUtils
             $schema->addProperty($documentFieldNames[$field], $property);
         }
 
-        if ($meta->isEmbeddedDocument && !in_array('id', $model->getRequiredFields())) {
-            $schema->removeProperty('id');
-        }
-
         /**
          * if we generate schema for internal use; don't have id in required array as
          * it's 'requiredness' depends on the method used (POST/PUT/PATCH) and is checked in checks
          * before validation.
          */
         $idPosition = array_search('id', $requiredFields);
-        if ($internal === true && $idPosition !== false) {
+        if ($internal === true && $idPosition !== false && !$meta->isEmbeddedDocument) {
             unset($requiredFields[$idPosition]);
         }
 
