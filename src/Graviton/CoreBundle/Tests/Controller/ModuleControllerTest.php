@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\Rql\Node\SearchNode;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,6 +44,7 @@ class ModuleControllerTest extends RestTestCase
             'doctrine_mongodb'
         );
 
+        SearchNode::getInstance()->resetSearchTerms();
         $this->setVerbosityLevel(1);
         $this->isDecorated(true);
         $this->runCommand('graviton:generate:build-indexes', [], true);
@@ -60,6 +62,9 @@ class ModuleControllerTest extends RestTestCase
 
         // should not find 'AdminRef'
         $this->assertEquals(5, count($client->getResults()));
+
+        // New query, let's reset the test node
+        SearchNode::getInstance()->resetSearchTerms();
 
         // the sixth
         $client = static::createRestClient();
@@ -82,6 +87,9 @@ class ModuleControllerTest extends RestTestCase
         // First is a very specific request
         $this->assertEquals('payAndSave', $results[0]->key);
         $this->assertEquals(1, count($results));
+
+        // New query, let's reset the test node
+        SearchNode::getInstance()->resetSearchTerms();
 
         // Now we search for a common name, module
         $client = static::createRestClient();
@@ -808,6 +816,9 @@ class ModuleControllerTest extends RestTestCase
         $results = $client->getResults();
         $this->assertEquals(1, count($results));
 
+        // New query, let's reset the test node
+        SearchNode::getInstance()->resetSearchTerms();
+
         $module = $results[0];
         $this->assertEquals('i.ban.haz.dot', $module->key);
 
@@ -817,6 +828,9 @@ class ModuleControllerTest extends RestTestCase
         $client->request('GET', '/core/module/?limit(2)&search(i.can)&gt(order,10)');
         $results = $client->getResults();
         $this->assertEquals(1, count($results));
+
+        // New query, let's reset the test node
+        SearchNode::getInstance()->resetSearchTerms();
 
         $module = $results[0];
         $this->assertEquals('i.can.haz.dot', $module->key);

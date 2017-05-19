@@ -65,18 +65,13 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
             $absoluteList = array_merge($absoluteList, $this->additions);
         }
 
-        // Sort bundle names, done here to include the additional
-        $bundleList = [];
-        foreach ($absoluteList as $bundle) {
-            $key = str_replace('\\', '', $bundle);
-            $bundleList[$key] = $bundle;
-        }
-        ksort($bundleList);
+        $absoluteList = array_unique($absoluteList);
+        sort($absoluteList);
 
         $parameters = array(
             'namespace' => str_replace('/', '\\', $bundleBundleNamespace),
             'bundleName' => $bundleName,
-            'bundleClassList' => $bundleList
+            'bundleClassList' => $absoluteList
         );
 
         $this->renderFile('bundle/DynamicBundleBundle.php.twig', $targetFilename, $parameters);

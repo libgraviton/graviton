@@ -18,7 +18,7 @@ class HomepageRenderListener
 {
 
     /**
-     * @var ServiceConverter
+     * @var ServiceManager
      */
     private $serviceManager;
 
