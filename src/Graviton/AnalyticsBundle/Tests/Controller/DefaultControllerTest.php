@@ -18,24 +18,15 @@ use Graviton\TestBundle\Test\RestTestCase;
  */
 class DefaultControllerTest extends RestTestCase
 {
-    /** @var Router */
-    private $router;
-
     /**
      * Initial setup
      * @return void
      */
     public function setUp()
     {
-        $this->router = $this->getContainer()->get('router');
-
         $this->loadFixtures(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp',
                 'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
             ),
             null,

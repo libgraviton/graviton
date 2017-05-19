@@ -1,18 +1,5 @@
 services:
     #Serializer / Serializer context
-    graviton.rest.serializer:
-        alias: serializer
-        calls:
-          -
-            method: setSerializerContext
-            arguments:
-              - "@graviton.rest.serializer.serializercontext"
-
-          -
-            method: setDeserializerContext
-            arguments:
-              - "@graviton.rest.serializer.deserializercontext"
-
     graviton.rest.serializer.serializercontext:
         class: "%graviton.rest.serializer.serializercontext.class%"
         calls:
@@ -130,12 +117,12 @@ services:
         arguments:
           - "@service_container"
           - "@router"
-          - "@graviton.rest.serializer"
+          - "@serializer"
           - "@logger"
           - "@graviton.rest.serializer.serializercontext"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-
+          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
@@ -288,7 +275,7 @@ services:
     graviton.rest.listener.rqlqueryrequestlistener:
         class: "%graviton.rest.listener.rqlqueryrequestlistener.class%"
         decorates: graviton.rql.listener.request
-        decoration-inner-name: graviton.rest.listener.rqlqueryrequestlistener.inner
+        decoration_inner_name: graviton.rest.listener.rqlqueryrequestlistener.inner
         arguments:
           - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
           - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"

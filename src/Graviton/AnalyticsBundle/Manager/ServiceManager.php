@@ -46,9 +46,6 @@ class ServiceManager
     /** @var string */
     protected $directory;
 
-    /** @var array  */
-    private $services = [];
-
     /**
      * ServiceConverter constructor.
      * @param RequestStack     $requestStack        Sf Request information service
@@ -69,27 +66,26 @@ class ServiceManager
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
         $this->directory = $definitionDirectory;
-        $this->init();
     }
 
     /**
      * Scan base root directory for analytic definitions
-     * @return void
+     * @return array
      */
-    private function init()
+    private function getDirectoryServices()
     {
-        $this->services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES);
+        $services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES);
 
-        if (is_array($this->services)) {
-            return;
+        if (is_array($services)) {
+            return $services;
         }
 
-        $this->services = [];
+        $services = [];
         if (strpos($this->directory, 'vendor/graviton/graviton')) {
             $this->directory = str_replace('vendor/graviton/graviton/', '', $this->directory);
         }
         if (!is_dir($this->directory)) {
-            return;
+            return $services;
         }
 
         $finder = new Finder();
@@ -109,10 +105,11 @@ class ServiceManager
                     sprintf('Analytics file: %s could not be loaded due to error: ', $key, json_last_error_msg())
                 );
             }
-            $this->services[$data->route] = $data;
+            $services[$data->route] = $data;
         }
 
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $this->services, self::CACHE_KEY_SERVICES_TIME);
+        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, self::CACHE_KEY_SERVICES_TIME);
+        return $services;
     }
 
     /**
@@ -126,9 +123,10 @@ class ServiceManager
         if (is_array($services)) {
             return $services;
         }
+        $this->getDirectoryServices();
         $services = [];
         $r = $this->router;
-        foreach ($this->services as $name => $service) {
+        foreach ($services as $name => $service) {
             $services[] = [
                 '$ref' => $r->generate('graviton_analytics_service', ['service' => $service->route], false),
                 'profile' => $r->generate('graviton_analytics_service_schema', ['service' => $service->route], true)
@@ -147,15 +145,16 @@ class ServiceManager
      */
     private function getServiceSchemaByRoute($name)
     {
+        $services = $this->getDirectoryServices();
         // Locate the schema definition
-        if (!array_key_exists($name, $this->services)) {
+        if (!array_key_exists($name, $services)) {
             throw new NotFoundHttpException(
                 sprintf('Service Analytics for %s was not found', $name)
             );
         }
         $mapper = new JsonMapper();
         /** @var AnalyticModel $schema */
-        $schema = $mapper->map($this->services[$name], new AnalyticModel());
+        $schema = $mapper->map($services[$name], new AnalyticModel());
         return $schema;
     }
 

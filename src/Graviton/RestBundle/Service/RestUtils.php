@@ -25,6 +25,7 @@ use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializationContext;
 use Graviton\RestBundle\Controller\RestController;
+use Doctrine\Common\Cache\CacheProvider;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -72,6 +73,11 @@ final class RestUtils implements RestUtilsInterface
     private $schemaValidator;
 
     /**
+     * @var CacheProvider
+     */
+    private $cacheProvider;
+
+    /**
      * @param ContainerInterface   $container         container
      * @param Router               $router            router
      * @param Serializer           $serializer        serializer
@@ -79,6 +85,7 @@ final class RestUtils implements RestUtilsInterface
      * @param SerializationContext $serializerContext context for serializer
      * @param SchemaUtils          $schemaUtils       schema utils
      * @param Validator            $schemaValidator   schema validator
+     * @param CacheProvider        $cacheProvider     Cache service
      */
     public function __construct(
         ContainerInterface $container,
@@ -87,7 +94,8 @@ final class RestUtils implements RestUtilsInterface
         LoggerInterface $logger,
         SerializationContext $serializerContext,
         SchemaUtils $schemaUtils,
-        Validator $schemaValidator
+        Validator $schemaValidator,
+        CacheProvider $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
@@ -96,6 +104,7 @@ final class RestUtils implements RestUtilsInterface
         $this->logger = $logger;
         $this->schemaUtils = $schemaUtils;
         $this->schemaValidator = $schemaValidator;
+        $this->cacheProvider = $cacheProvider;
     }
 
     /**
@@ -329,10 +338,12 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getOptionRoutes()
     {
-        $router = $this->router;
+        $cached = $this->cacheProvider->fetch('cached_restutils_route_options');
+        if ($cached) {
+            return $cached;
+        }
         $ret = array_filter(
-            $router->getRouteCollection()
-                   ->all(),
+            $this->router->getRouteCollection()->all(),
             function ($route) {
                 if (!in_array('OPTIONS', $route->getMethods())) {
                     return false;
@@ -348,7 +359,7 @@ final class RestUtils implements RestUtilsInterface
                 return is_null($route->getRequirement('id'));
             }
         );
-
+        $this->cacheProvider->save('cached_restutils_route_options', $ret);
         return $ret;
     }
 
@@ -363,15 +374,18 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getRoutesByBasename($baseName)
     {
+        $cached = $this->cacheProvider->fetch('cached_restutils_route_basename');
+        if ($cached) {
+            return $cached;
+        }
         $ret = array();
-        foreach ($this->router
-                      ->getRouteCollection()
-                      ->all() as $routeName => $route) {
+        $collections = $this->router->getRouteCollection()->all();
+        foreach ($collections as $routeName => $route) {
             if (preg_match('/^' . $baseName . '/', $routeName)) {
                 $ret[$routeName] = $route;
             }
         }
-
+        $this->cacheProvider->save('cached_restutils_route_basename', $ret);
         return $ret;
     }
 

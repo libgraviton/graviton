@@ -65,6 +65,9 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
             $absoluteList = array_merge($absoluteList, $this->additions);
         }
 
+        $absoluteList = array_unique($absoluteList);
+        sort($absoluteList);
+
         $parameters = array(
             'namespace' => str_replace('/', '\\', $bundleBundleNamespace),
             'bundleName' => $bundleName,
