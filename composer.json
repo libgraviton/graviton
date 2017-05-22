@@ -31,7 +31,7 @@
         "doctrine/mongodb-odm-bundle": "~3.1",
         "stof/doctrine-extensions-bundle": "~1.2",
         "doctrine/doctrine-fixtures-bundle": "~2.3",
-        "graviton/php-rql-parser": ">=2.3.0",
+        "graviton/php-rql-parser": ">=2.3.1",
         "graviton/rql-parser-bundle": "^0.12.0",
         "graviton/json-schema": "^1.7.0",
         "php-jsonpatch/php-jsonpatch": "~3.0",
