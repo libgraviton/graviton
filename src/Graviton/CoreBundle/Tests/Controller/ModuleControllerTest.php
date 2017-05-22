@@ -132,6 +132,32 @@ class ModuleControllerTest extends RestTestCase
     }
 
     /**
+     * Simple check that should return no error and no result for
+     * integers or float search. Text Indexes are string. But should find data having ints or floats.
+     *
+     * @return void
+     */
+    public function testSearchWithIntegerOrFloat()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(0)');
+        $response = $client->getResponse();
+        $this->assertEquals(200, (integer) $response->getStatusCode());
+
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(123)');
+        $response = $client->getResponse();
+        $this->assertEquals(200, (integer) $response->getStatusCode());
+
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/module/?search(123.456)');
+        $response = $client->getResponse();
+        $this->assertEquals(200, (integer) $response->getStatusCode());
+    }
+
+    /**
      * check if RQL select() works on collections as expected..
      *
      * @return void
