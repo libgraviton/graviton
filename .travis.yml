@@ -1,15 +1,12 @@
 language: php
 sudo: false
 services:
-- mongodb
-- rabbitmq
+  - mongodb
+  - rabbitmq
 addons:
-  apt:
-    sources:
-    - mongodb-3.2-precise
-    packages:
-    - mongodb-org-server
+  - mongodb: '3.4.4'
 before_script:
+- sleep 15
 - free -m
 - >
     if [ "$PHPUNIT_SUITE" != "integration" ]; then
