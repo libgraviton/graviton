@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
+use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
  * Class JsonExceptionListener
@@ -77,7 +78,22 @@ class JsonExceptionListener
                     'Did you pass a select() RQL statement and shaved off on the wrong level? Try to select a level '.
                     'higher.'
             ];
+        } elseif (
+            $exception instanceof SerializationException &&
+            strpos($exception->getMessage(), 'Cannot serialize content class') !== false
+        ) {
+            $error = $exception->getMessage();
+            $message = substr($error, 0, strpos($error, 'not be found.')).'not be found.';
+            preg_match('/\bwith id: (.*);.*?\bdocument\\\(.*)".*?\bidentifier "(.*)"/is', $message, $matches);
+            if (array_key_exists(3, $matches)) {
+                $sentence = 'Internal Database reference error as been discovered. '.
+                    'The object id: "%s" has a reference to document: "%s" with id: "%s" that could not be found.';
+                $message = sprintf($sentence, $matches[1], $matches[2], $matches[3]);
+            }
+            return [
+                'code' => $exception->getCode(),
+                'message' => $message
+            ];
         }
-
     }
 }
