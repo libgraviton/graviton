@@ -252,6 +252,11 @@ services:
             arguments:
               - X-AUTH-Token
           -
+            #we need to allow this header since new clients like E11 use it -->
+            method: addAllowHeader
+            arguments:
+              - Pragma
+          -
             #static headers -->
             method: addStaticHeader
             arguments:
