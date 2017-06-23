@@ -40,6 +40,25 @@ class Hash extends \ArrayObject implements \JsonSerializable
                 $value = $this->arrayFilterRecursive($value);
             }
         }
-        return array_filter($input);
+        return array_filter($input, [$this, 'cleanUpArray']);
+    }
+
+    /**
+     * Remove NULL values or Empty array object
+     * @param mixed $var object field value
+     * @return bool
+     */
+    private function cleanUpArray($var)
+    {
+        $empty = empty($var);
+        if ($empty && (
+                is_int($var) ||
+                is_bool($var) ||
+                is_float($var) ||
+                is_integer($var))
+        ) {
+            return true;
+        }
+        return !$empty;
     }
 }
