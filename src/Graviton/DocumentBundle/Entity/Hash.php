@@ -50,9 +50,15 @@ class Hash extends \ArrayObject implements \JsonSerializable
      */
     private function cleanUpArray($var)
     {
-        if ($var !== false) {
-            return !empty($var);
+        $empty = empty($var);
+        if ($empty && (
+                is_int($var) ||
+                is_bool($var) ||
+                is_float($var) ||
+                is_integer($var))
+        ) {
+            return true;
         }
-        return true;
+        return !$empty;
     }
 }
