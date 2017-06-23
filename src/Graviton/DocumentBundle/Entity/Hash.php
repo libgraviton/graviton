@@ -48,7 +48,8 @@ class Hash extends \ArrayObject implements \JsonSerializable
      * @param mixed $var object field value
      * @return bool
      */
-    private function cleanUpArray($var) {
+    private function cleanUpArray($var)
+    {
         if ($var !== false) {
             return !empty($var);
         }
