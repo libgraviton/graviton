@@ -6,7 +6,10 @@
     "routerBase": "/event/status/"
   },
   "target": {
-    "indexes": [],
+    "indexes": [
+      "createDate",
+      "eventName"
+    ],
     "relations": [],
     "fields": [
       {
