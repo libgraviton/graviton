@@ -2,12 +2,12 @@ graviton.proxy.static.proxy.canonicalIdSchema:
     path: /schema/3rdparty/{api}/item
     defaults:
         _controller: graviton.proxy.controller.proxy:schemaAction
-        requirement:
-            api: .{1,}
+    requirements:
+        api: '.+'
 
 graviton.proxy.static.proxy.all:
     path: /3rdparty/{api}
     defaults:
         _controller: graviton.proxy.controller.proxy:proxyAction
-        requirements:
-            api: .{1,}
+    requirements:
+        api: '.+'
