@@ -23,7 +23,7 @@ services:
               - "%graviton.proxy.httploader.curloptions%"
 
     graviton.proxy:
-        class: "Proxy\Proxy"
+        class: Proxy\Proxy
         arguments:
             - "@graviton.proxy.adapter.guzzle"
 
@@ -65,7 +65,7 @@ services:
             method: setCache
             arguments:
               - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
-              - ProxyBundle<
+              - ProxyBundle
               - 86400
 
     # api loaders -->
