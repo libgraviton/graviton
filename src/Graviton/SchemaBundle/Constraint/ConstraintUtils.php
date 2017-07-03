@@ -115,6 +115,32 @@ class ConstraintUtils
     }
 
     /**
+     * Returns the request method of the current request
+     *
+     * @return null|string the request method
+     */
+    public function getCurrentRequestMethod()
+    {
+        if ($this->requestStack->getCurrentRequest() instanceof Request) {
+            return $this->requestStack->getCurrentRequest()->getMethod();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the current request content
+     *
+     * @return bool|null|resource|string the content
+     */
+    public function getCurrentRequestContent()
+    {
+        if ($this->requestStack->getCurrentRequest() instanceof Request) {
+            return $this->requestStack->getCurrentRequest()->getContent();
+        }
+        return null;
+    }
+
+    /**
      * gets the current schema. helpful for field schema validators that need access to the whole schema in some way.
      *
      * @return \stdClass
