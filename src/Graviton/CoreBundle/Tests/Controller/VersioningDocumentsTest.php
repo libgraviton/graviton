@@ -144,4 +144,88 @@ class VersioningDocumentsTest extends RestTestCase
         $this->assertEquals($new->data, $original->data);
         $this->assertEquals(1, $original->version);
     }
+
+
+
+    /**
+     * Test Document as embedded
+     *
+     * @return void
+     */
+    public function testPatching()
+    {
+        // create a record, specify no version
+        $record = (object) [
+            'id' => 'patch-id-test',
+            'data' => 'mydata'
+        ];
+
+        $client = static::createRestClient();
+        $client->put('/testcase/versioning-entity/'.($record->id), $record);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+
+        // PATCH to fail, no version field
+        $client = static::createRestClient();
+        $patch = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/data',
+                    'value' => 'fail here'
+                ]
+            ]
+        );
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+
+        // PATCH to fail, wrong version number
+        $client = static::createRestClient();
+        $patch = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/data',
+                    'value' => 'should be KO'
+                ],
+                [
+                    'op' => 'replace',
+                    'path' => '/version',
+                    'value' => 7
+                ]
+            ]
+        );
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $response = $client->getResponse();
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(1, $response->headers->get(VersionServiceConstraint::HEADER_NAME));
+
+        // PATCH, checking header from failed and use it to patch version.
+        $patch = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/data',
+                    'value' => 'should be OK'
+                ],
+                [
+                    'op' => 'replace',
+                    'path' => '/version',
+                    'value' => $response->headers->get(VersionServiceConstraint::HEADER_NAME)
+                ]
+            ]
+        );
+
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Let's check that the patch updated counter version.
+        $client->request('GET', '/testcase/versioning-entity/' . ($record->id));
+        $response = $client->getResponse();
+        $current = json_decode($response->getContent());
+        $this->assertEquals(2, $current->version);
+        $this->assertEquals('should be OK', $current->data);
+    }
 }
