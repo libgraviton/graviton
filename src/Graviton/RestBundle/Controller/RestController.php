@@ -315,7 +315,7 @@ class RestController
      * @param Number  $id      ID of record
      * @param Request $request Current http request
      *
-     * @throws MalformedInputException
+     * @throws MalformedInputException | \Exception
      *
      * @return Response $response Result of action with data (if successful)
      */
@@ -325,20 +325,27 @@ class RestController
         $model = $this->getModel();
         $repository = $model->getRepository();
 
-        // Check JSON Patch request
-        $this->restUtils->checkJsonRequest($request, $response, $model);
-        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
-
         // Check and wait if another update is being processed
         $this->collectionCache->updateOperationCheck($repository, $id);
+        $this->collectionCache->addUpdateLock($repository, $id);
+
+        // Check JSON Patch request
+        // Validate received data. On failure release the lock.
+        try {
+            $this->restUtils->checkJsonRequest($request, $response, $model);
+            $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+        } catch (\Exception $e) {
+            $this->collectionCache->releaseUpdateLock($repository, $id);
+            throw $e;
+        }
 
         // Find record && apply $ref converter
         $jsonDocument = $model->getSerialised($id);
-        $this->collectionCache->addUpdateLock($repository, $id);
 
         try {
+            $schema = $this->schemaUtils->getModelSchema(null, $model, true, true, true);
             // Check if valid
-            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
+            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent(), $schema);
             // Apply JSON patches
             $patch = new Patch($jsonDocument, $request->getContent());
             $patchedDocument = $patch->apply();
