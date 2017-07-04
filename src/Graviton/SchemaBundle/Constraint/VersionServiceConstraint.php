@@ -59,7 +59,7 @@ class VersionServiceConstraint
 
         // get the current record
         if ($currentRecord = $this->utils->getCurrentEntity()) {
-            $userVersion = $this->getVersionFromObject($data);
+            $userVersion = $this->getUserVersion($data);
             $storedVersion = $this->getVersionFromObject($currentRecord);
             if ($userVersion !== $storedVersion) {
                 $event->addError(
@@ -106,6 +106,36 @@ class VersionServiceConstraint
             $version = $this->accessor->getValue($object, self::FIELD_NAME);
         }
         return $version;
+    }
+
+    /**
+     * Gets the user provided version, handling different scenarios
+     *
+     * @param object $object object
+     *
+     * @return int|null null or the specified version
+     */
+    private function getUserVersion($object)
+    {
+        if ($this->utils->getCurrentRequestMethod() == 'PATCH') {
+            $content = json_decode($this->utils->getCurrentRequestContent(), true);
+
+            $hasVersion = array_filter(
+                $content,
+                function ($val) {
+                    if ($val['path'] == '/'.self::FIELD_NAME) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            if (empty($hasVersion)) {
+                return -1;
+            }
+        }
+
+        return $this->getVersionFromObject($object);
     }
 
     /**
