@@ -6,25 +6,36 @@
 namespace Graviton\RestBundle\Service;
 
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
+use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
+use Graviton\SchemaBundle\Document\Schema;
 use Rs\Json\Pointer;
 use Rs\Json\Pointer\InvalidPointerException;
 use Rs\Json\Pointer\NonexistentValueReferencedException;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class JsonPatchValidator
 {
     /**
      * @param string $targetDocument JSON of target document
-     * @param string $jsonPatch
+     * @param string $jsonPatch      Patch string
+     * @param Object $schema         stdClass schema For Validation
      * @return boolean
      * @throws InvalidJsonPatchException
      */
-    public function validate($targetDocument, $jsonPatch)
+    public function validate($targetDocument, $jsonPatch, $schema = null)
     {
+        $schema = ($schema instanceof \stdClass) ? $schema : new \stdClass();
+        $versioning = property_exists($schema, 'x-versioning') ? (boolean) $schema->{'x-versioning'} : false;
+
         $operations = json_decode($jsonPatch, true);
         $pointer = new Pointer($targetDocument);
+
+        $paths = [];
+
         foreach ($operations as $op) {
             try {
                 $pointer->get($op['path']);
+                $paths[] = $op['path'];
             } catch (InvalidPointerException $e) {
                 throw new InvalidJsonPatchException($e);
             } catch (NonexistentValueReferencedException $e) {
@@ -51,6 +62,14 @@ class JsonPatchValidator
                     }
                 }
             }
+        }
+
+        if ($versioning &&!in_array('/'.VersionServiceConstraint::FIELD_NAME, $paths)) {
+            $msg = sprintf(
+                'Versioned documents require that the field \'%s\' is in each patch request. ',
+                VersionServiceConstraint::FIELD_NAME
+            );
+            throw new InvalidJsonPatchException($msg);
         }
 
         return true;
