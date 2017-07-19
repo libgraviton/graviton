@@ -59,7 +59,11 @@ class AuthenticationProvider implements UserProviderInterface
             return false;
         }
 
-        $user = $this->documentModel->getRepository()->findOneBy(array($this->queryField => $username));
+        $user = $this->documentModel->getRepository()->findOneBy(
+            [
+                $this->queryField => new \MongoRegex('/^'.preg_quote($username).'$/i')
+            ]
+        );
 
         return $user ? $user : false;
     }
