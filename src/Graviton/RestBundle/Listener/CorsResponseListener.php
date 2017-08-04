@@ -81,7 +81,9 @@ class CorsResponseListener
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        $response->headers->set('Access-Control-Allow-Origin', '*');
+        // Cors session do not allow in some browsers the *.
+        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin', '*'));
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
 
         $corsMethods = $request->attributes->get('corsMethods', '');
         if (!empty($corsMethods)) {
