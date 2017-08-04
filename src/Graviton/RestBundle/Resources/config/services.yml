@@ -257,6 +257,11 @@ services:
             arguments:
               - Pragma
           -
+            #we need to allow this header for basic auth environments -->
+            method: addAllowHeader
+            arguments:
+              - Authorization
+          -
             #static headers -->
             method: addStaticHeader
             arguments:
