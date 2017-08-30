@@ -94,6 +94,13 @@
         "description": "Additional information for this file."
       },
       {
+        "name": "metadata.order",
+        "type": "int",
+        "title": "order information if needed by client",
+        "description": "can be set by clients to persist a specific order to display files",
+        "required": false
+     },
+     {
         "name": "metadata.hash",
         "type": "string",
         "title": "Unique file content hash value",
