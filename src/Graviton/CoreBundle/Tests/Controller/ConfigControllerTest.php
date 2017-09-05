@@ -94,4 +94,22 @@ class ConfigControllerTest extends RestTestCase
             rawurlencode($value)
         );
     }
+    /**
+     * ensure we have nice parse error output in rql parse failure
+     *
+     * @return void
+     */
+    public function testRqlSyntaxForUrlError()
+    {
+        $client = static::createRestClient();
+
+        $client->request('GET', '/core/config/?eq(app.$ref,string:http://localhost:8000/core/app/admin)');
+
+        $response = $client->getResponse();
+        $results = $client->getResults();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertEquals(2, count($results));
+    }
 }
