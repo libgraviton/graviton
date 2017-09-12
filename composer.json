@@ -154,7 +154,8 @@
                     "doctrine.odm.cache.class": "ODM_CACHE_CLASS",
                     "doctrine.odm.cache.host": "ODM_CACHE_HOST",
                     "doctrine.odm.cache.port": "ODM_CACHE_PORT",
-                    "doctrine.odm.cache.instance_class": "ODM_CACHE_INSTANCE_CLASS"
+                    "doctrine.odm.cache.instance_class": "ODM_CACHE_INSTANCE_CLASS",
+                    "graviton.proxy_api.sources": "GRAVITON_PROXY_API_SOURCES"
                 }
             },
             {

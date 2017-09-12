@@ -1,0 +1,28 @@
+graviton_proxy_api_homepage:
+    path:     /
+    methods: [GET]
+    defaults: { _controller: graviton.proxy_api.defaut_controller:indexAction }
+
+graviton_proxy_api_options:
+    path:     /{client}/{service}
+    methods: [OPTIONS]
+    defaults: { _controller: graviton.proxy_api.defaut_controller:optionsAction }
+    requirements:
+        client: "[A-Za-z0-9_-]+"
+        service: ".+"
+
+graviton_proxy_api_service:
+    path:     /{client}/{service}
+    methods: [GET,POST,PATCH,HEAD,PUT]
+    defaults: { _controller: graviton.proxy_api.defaut_controller:proxyAction, service: false }
+    requirements:
+        client: "[A-Za-z0-9_-]+"
+        service: ".+"
+
+graviton_proxy_api_service_schema:
+    path:     /schema/{client}/{service}
+    methods: [GET]
+    defaults: { _controller: graviton.proxy_api.defaut_controller:schemaAction, service: false }
+    requirements:
+        client: "[A-Za-z0-9_-]+"
+        service: ".+"

@@ -1,0 +1,46 @@
+services:
+    graviton.proxy_api.defaut_controller:
+        class:     Graviton\ProxyApiBundle\Controller\DefaultController
+        arguments:
+            serviceManager: "@graviton.proxy_api.service_manager"
+
+    graviton.proxy_api.service_manager:
+        class: Graviton\ProxyApiBundle\Manager\ServiceManager
+        arguments:
+            requestStack: "@request_stack"
+            httpHelper: "@graviton.proxy_api.http.helper"
+            ProxyApiManager: "@graviton.proxy_api.proxy_manager"
+            cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
+
+    graviton.proxy_api.homepage_listener:
+        class: Graviton\ProxyApiBundle\Listener\HomepageRenderListener
+        arguments:
+            serviceConverter: "@graviton.proxy_api.service_manager"
+        tags:
+            - { name: kernel.event_listener, event: homepage.render, method: onRender }
+
+    # Service classes
+    graviton.proxy_api.proxy_manager:
+        class: Graviton\ProxyApiBundle\Manager\ProxyManager
+
+    graviton.proxy_api.http.client:
+        class: GuzzleHttp\Client
+
+    graviton.proxy_api.http.helper:
+        class: Graviton\ProxyApiBundle\Helper\HttpHelper
+        arguments:
+            httpsClient: "@graviton.proxy_api.http.client"
+
+    graviton.proxy_api.proxy_model:
+        class: Graviton\ProxyApiBundle\Model\ProxyModel
+
+    # Processing steps for proxy request handling
+    graviton.proxy_api.processor.pre:
+        class: Graviton\ProxyApiBundle\Processor\PreProcessor
+
+    graviton.proxy_api.processor.proxy:
+        class: Graviton\ProxyApiBundle\Processor\ProxyProcessor
+
+    graviton.proxy_api.processor.post:
+        class: Graviton\ProxyApiBundle\Processor\PostProcessor
+

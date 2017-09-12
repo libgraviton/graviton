@@ -1,0 +1,28 @@
+# Graviton Api Proxy Test Config
+parameters:
+    # Proxy Test endpoints. This is a Sample weather api, only London
+    graviton.proxy_api.sources:
+        # weather api and query params weather?q=London,uk and any additional is allowed
+        weather:
+            uri: 'http://samples.openweathermap.org'
+            serviceEndpoint: /data/2.5/
+            queryAdditionals:
+                appid: b1b15e88fa797225412429c1c50c122a1
+
+        # weather-by-city?city=Zurich&country=ch only city and country is allowed
+        weather-by-city:
+            uri: 'http://samples.openweathermap.org'
+            serviceEndpoint: /data/2.5/weather
+            queryAdditionals:
+                appid: b1b15e88fa797225412429c1c50c122a1
+            queryParams:
+                q: '{city},{country}'
+
+        # Test weather-swiss/ortswetter?city=Zurich a key value test
+        weather-swiss:
+            uri: 'https://meteotest.ch'
+            serviceEndpoint: /actions/mdxConnector/mdx
+            queryParams:
+                value: 3000
+                name: '{city}'
+                type: zip
