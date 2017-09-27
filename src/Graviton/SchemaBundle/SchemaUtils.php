@@ -228,6 +228,7 @@ class SchemaUtils
 
         // look for translatables in document class
         $documentReflection = new \ReflectionClass($repo->getClassName());
+        $documentClass = $documentReflection->newInstance();
         if ($documentReflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
             /** @var TranslatableDocumentInterface $documentInstance */
             $documentInstance = $documentReflection->newInstanceWithoutConstructor();
@@ -278,11 +279,20 @@ class SchemaUtils
             if (!isset($documentFieldNames[$field])) {
                 continue;
             }
+
+            $isEmptyExtref = false;
+            if (is_callable([$documentClass, 'isEmptyExtRefObject'])) {
+                $isEmptyExtref = $documentClass->isEmptyExtRefObject();
+            }
+
             // hide realId field (I was aiming at a cleaner solution than the matching realId string initially)
             // hide embedded ID field unless it's required or for internal validation need, back-compatibility.
             // TODO remove !$internal once no clients use it for embedded objects as these id are done automatically
             if (($meta->getTypeOfField($field) == 'id' && $field == 'realId') ||
-                ($field == 'id' && !$internal && $meta->isEmbeddedDocument && !in_array('id', $requiredFields))
+                (
+                    $field == 'id' &&
+                    !$internal && $meta->isEmbeddedDocument && !in_array('id', $requiredFields) && $isEmptyExtref
+                )
             ) {
                 continue;
             }
