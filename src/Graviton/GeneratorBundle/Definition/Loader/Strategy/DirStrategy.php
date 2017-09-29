@@ -55,6 +55,7 @@ class DirStrategy implements StrategyInterface
             ->in($input)
             ->name('*.json')
             ->notName('_*')
-            ->depth('== 0');
+            ->depth('== 0')
+            ->sortByName();
     }
 }
