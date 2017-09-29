@@ -1,35 +1,46 @@
 language: php
-sudo: false
+sudo: required
 services:
-  - mongodb
+  - docker
   - rabbitmq
-addons:
-  - mongodb: '3.4.4'
 before_script:
   - free -m
+  # disable mongodb connectivity for non integration testing
   - >
       if [ "$PHPUNIT_SUITE" != "integration" ]; then
           export MONGODB_URI=mongodb://does.not.exist.example.org:443
       fi
+  # disable xdebug for integration tests
   - >
       if [ "$PHPUNIT_SUITE" != "unit" ]; then
           phpenv config-rm xdebug.ini
       fi
+  # spin up local mongodb with the version we need
+  - >
+      if [ "$PHPUNIT_SUITE" = "integration" ]; then
+          MONGODB_VERSION=3.4.9
+          docker pull mongo:${MONGODB_VERSION}
+          docker run -d -p 127.0.0.1:27017:27017 mongo:${MONGODB_VERSION} --smallfiles
+      fi
+  # see what mongo module we need
   - >
       if [ $(phpenv version-name) = "5.6" ]; then
-          echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
-          echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
+          MONGO_MODULE=mongo-1.6.16
       fi
   - >
       if [ $(phpenv version-name) = "7.0" ] || [ $(phpenv version-name) = "7.1" ]; then
-          echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
-          echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
+          MONGO_MODULE=mongodb-1.2.11
       fi
+  # install the module
+  - pecl channel-update pecl.php.net
+  - sleep 5
+  - printf "\n" | pecl install -f ${MONGO_MODULE}
+  # memory_limit
+  - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
+  - php -i | grep -A 4 mongo
+  - php -i
+  # install our deps
   - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile
-  - >
-      if [ "$PHPUNIT" = "true" ]; then
-          wget https://scrutinizer-ci.com/ocular.phar
-      fi
 php:
   - 7.1
   - 7.0
@@ -59,6 +70,7 @@ script:
           fi && \
           vendor/bin/phpunit $COVERAGE --testsuite=$PHPUNIT_SUITE && \
           if [ $COVERAGE ]; then
+            wget https://scrutinizer-ci.com/ocular.phar
             php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
           fi
       fi

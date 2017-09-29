@@ -107,19 +107,12 @@ services:
 
     graviton.core.command.generateversions:
         class: Graviton\CoreBundle\Command\GenerateVersionsCommand
+        arguments:
+          - "@graviton.core.command.filesystem"
+          - "@graviton.core.command.dumper"
+          - "@graviton.core.command.parser"
+          - "%graviton.git.cmd%"
+          - "%kernel.root_dir%"
         tags:
           -
             name: "console.command"
-        calls:
-          -
-            method: "setFilesystem"
-            arguments:
-              - "@graviton.core.command.filesystem"
-          -
-            method: "setDumper"
-            arguments:
-              - "@graviton.core.command.dumper"
-          -
-            method: "setParser"
-            arguments:
-              - "@graviton.core.command.parser"
