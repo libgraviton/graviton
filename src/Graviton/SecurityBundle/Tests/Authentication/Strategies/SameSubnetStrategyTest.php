@@ -58,7 +58,7 @@ class SameSubnetStrategyTest extends WebTestCase
             array() //server
         );
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $this->strategy->apply($this->client->getRequest());
     }
 
@@ -97,7 +97,7 @@ class SameSubnetStrategyTest extends WebTestCase
 
         $strategy = new SameSubnetStrategy('10.2.0.2');
 
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException('\InvalidArgumentException');
         $strategy->apply($this->client->getRequest());
     }
 }

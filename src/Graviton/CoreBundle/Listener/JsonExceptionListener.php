@@ -83,7 +83,8 @@ class JsonExceptionListener
             strpos($exception->getMessage(), 'Cannot serialize content class') !== false
         ) {
             $error = $exception->getMessage();
-            $message = substr($error, 0, strpos($error, 'not be found.')).'not be found.';
+            $message =  strpos($error, 'not be found.') !== false ?
+                substr($error, 0, strpos($error, 'not be found.')).'not be found.' : $error;
             preg_match('/\bwith id: (.*);.*?\bdocument\\\(.*)".*?\bidentifier "(.*)"/is', $message, $matches);
             if (array_key_exists(3, $matches)) {
                 $sentence = 'Internal Database reference error as been discovered. '.
