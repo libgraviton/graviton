@@ -20,9 +20,9 @@
       <file>src/Graviton/CoreBundle/Tests/Services/CoreVersionUtilsTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</file>
-      <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</file>
       <file>src/Graviton/GeneratorBundle/Tests/Command/GenerateBuildIndexesCommandTest.php</file>
       <file>src/Graviton/AnalyticsBundle/Tests/Model/AnalyticModelTest.php</file>
+      <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</exclude>
     </testsuite>
     <testsuite name="unit">
       <directory>src/*/*Bundle/Tests</directory>
