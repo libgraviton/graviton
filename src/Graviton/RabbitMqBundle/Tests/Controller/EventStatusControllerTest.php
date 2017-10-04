@@ -200,7 +200,7 @@ class EventStatusControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/event/worker/' . $worker->id, $worker);
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
         $testApp = new \stdClass();
         $testApp->id = "test-event-app";
@@ -216,7 +216,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $client->put('/core/app/' . $testApp->id, $testApp);
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
@@ -241,7 +241,7 @@ class EventStatusControllerTest extends RestTestCase
         );
         $client->request('PATCH', '/core/app/' . $testApp->id, [], [], [], $patchObject);
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_NOT_MODIFIED, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_NOT_MODIFIED, $response->getStatusCode(), $response->getContent());
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
@@ -251,7 +251,7 @@ class EventStatusControllerTest extends RestTestCase
         $testApp->showInMenuS = false;
         $client->put('/core/app/' . $testApp->id, $testApp);
         $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();

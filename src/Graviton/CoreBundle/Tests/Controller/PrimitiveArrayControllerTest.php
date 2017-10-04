@@ -133,7 +133,8 @@ class PrimitiveArrayControllerTest extends RestTestCase
 
             'rawData'      => (object) [
                 'hasharray' => [(object) ['x' => 'y'], (object) []],
-                'emptyhash' => (object) []
+                'emptyhash' => (object) [],
+                'emptystring' => ""
             ],
         ];
 

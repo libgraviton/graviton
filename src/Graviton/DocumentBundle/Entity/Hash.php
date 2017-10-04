@@ -55,7 +55,8 @@ class Hash extends \ArrayObject implements \JsonSerializable
                 is_int($var) ||
                 is_bool($var) ||
                 is_float($var) ||
-                is_integer($var))
+                is_integer($var) ||
+                is_string($var))
         ) {
             return true;
         }
