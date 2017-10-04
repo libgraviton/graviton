@@ -53,7 +53,8 @@ class ReadOnlyFieldTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/testcase/readonlyfield/101', $data);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode(), $response->getContent());
 
         $this->assertEquals(
             $client->getResults(),
@@ -90,7 +91,8 @@ class ReadOnlyFieldTest extends RestTestCase
 
         $client = static::createRestClient();
         $client->put('/testcase/readonlyfield/101', $data);
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
     }
 
     /**
@@ -106,13 +108,15 @@ class ReadOnlyFieldTest extends RestTestCase
         $data->allowed = 'can be edited';
 
         $client->put('/testcase/readonlyfield/101_2', $data);
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
         // But should be able to add it, as it was never there.
         $data->denied = 'can not be edited';
 
         $client->put('/testcase/readonlyfield/101_2', $data);
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
 
         $client->request('GET', '/testcase/readonlyfield/101_2');
         $savedData = $client->getResults();
