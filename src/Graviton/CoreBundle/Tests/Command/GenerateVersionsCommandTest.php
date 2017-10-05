@@ -28,9 +28,8 @@ class GenerateVersionsCommandTest extends \PHPUnit_Framework_TestCase
         $kernel = GravitonTestCase::createKernel();
         $application = new Application($kernel);
 
-        $application->add(new GenerateVersionsCommand());
-
-        $command = $application->find('graviton:core:generateversions');
+        /** @var GenerateVersionsCommand $command */
+        $command = $application->getKernel()->getContainer()->get('graviton.core.command.generateversions');
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array());

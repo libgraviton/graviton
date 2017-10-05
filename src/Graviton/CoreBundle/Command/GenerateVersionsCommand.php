@@ -28,36 +28,36 @@ class GenerateVersionsCommand extends Command
     /**
      * @var string
      */
-    private $composerCmd;
+    private $gitCmd;
 
     /**
      * @var string
      */
-    private $gitCmd;
+    private $rootDir;
 
     /**
      * @var string
      */
     private $contextDir;
 
-    /*
-     * @var \Symfony\Component\Console\Output\OutputInterface
+    /**
+     * @var OutputInterface
      */
     private $output;
 
-    /*
-    * @var \Symfony\Component\Filesystem\Filesystem
-    */
+    /**
+     * @var Filesystem
+     */
     private $filesystem;
 
-    /*
-    * @var |Symfony\Component\Yaml\Dumper
-    */
+    /**
+     * @var Dumper
+     */
     private $dumper;
 
-    /*
-    * @var |Symfony\Component\Yaml\Parser
-    */
+    /**
+     * @var Parser
+     */
     private $parser;
 
     /**
@@ -75,41 +75,28 @@ class GenerateVersionsCommand extends Command
             );
     }
 
-
     /**
-     * set filesystem (in service-definition)
+     * GenerateVersionsCommand constructor.
      *
-     * @param \Symfony\Component\Filesystem\Filesystem $filesystem filesystem
-     *
-     * @return void
+     * @param Filesystem $filesystem Sf File and directory runner
+     * @param Dumper     $dumper     Sf YAML to string
+     * @param Parser     $parser     Sf YAML reader
+     * @param String     $gitCmd     Git command regex
+     * @param String     $rootDir    Kernel Root Directory
      */
-    public function setFilesystem(Filesystem  $filesystem)
-    {
+    public function __construct(
+        Filesystem  $filesystem,
+        Dumper $dumper,
+        Parser $parser,
+        $gitCmd,
+        $rootDir
+    ) {
         $this->filesystem = $filesystem;
-    }
-
-    /**
-     * set dumper (in service-definition)
-     *
-     * @param \Symfony\Component\Yaml\Dumper $dumper dumper
-     *
-     * @return void
-     */
-    public function setDumper(Dumper $dumper)
-    {
         $this->dumper = $dumper;
-    }
-
-    /**
-     * set parser (in service-definition)
-     *
-     * @param \Symfony\Component\Yaml\Parser $parser parser
-     *
-     * @return void
-     */
-    public function setParser(Parser $parser)
-    {
         $this->parser = $parser;
+        $this->gitCmd = $gitCmd;
+        $this->rootDir = $rootDir;
+        parent::__construct();
     }
 
     /**
@@ -122,17 +109,12 @@ class GenerateVersionsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container = $this->getApplication()->getKernel()->getContainer();
-        $rootDir = $container->getParameter('kernel.root_dir');
-        $this->composerCmd = $container->getParameter('graviton.composer.cmd');
-        $this->gitCmd = $container->getParameter('graviton.git.cmd');
-
-        $this->contextDir = $rootDir . ((strpos($rootDir, 'vendor'))? '/../../../../' : '/../');
+        $this->contextDir = $this->rootDir . ((strpos($this->rootDir, 'vendor'))? '/../../../../' : '/../');
 
         $this->output = $output;
 
         $this->filesystem->dumpFile(
-            $rootDir . '/../versions.yml',
+            $this->rootDir . '/../versions.yml',
             $this->getPackageVersions()
         );
     }
@@ -140,7 +122,7 @@ class GenerateVersionsCommand extends Command
     /**
      * gets all versions
      *
-     * @return array version numbers of packages
+     * @return string version numbers of packages
      */
     public function getPackageVersions()
     {
