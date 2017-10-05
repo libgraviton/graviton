@@ -26,12 +26,10 @@ class DirStrategyTest extends \PHPUnit_Framework_TestCase
         $sut = new DirStrategy();
         $this->assertTrue($sut->supports($dir));
 
-        $this->assertEquals(
-            [
-                file_get_contents($dir.'/test1.json'),
-                file_get_contents($dir.'/test2.json'),
-            ],
-            $sut->load($dir)
-        );
+        $loadedFiles = $sut->load($dir);
+
+        $this->assertCount(2, $loadedFiles);
+        $this->assertContains(file_get_contents($dir.'/test1.json'), $loadedFiles);
+        $this->assertContains(file_get_contents($dir.'/test2.json'), $loadedFiles);
     }
 }
