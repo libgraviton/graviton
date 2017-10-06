@@ -27,12 +27,14 @@ class ScanStrategyTest extends \PHPUnit_Framework_TestCase
         $sut->setScanDir($dir);
 
         $this->assertTrue($sut->supports(null));
-        $this->assertEquals(
-            [
-                file_get_contents($dir.'/resources/definition/test1.json'),
-                file_get_contents($dir.'/resources/definition/test2.json'),
-            ],
-            $sut->load($dir)
-        );
+
+        $loadedFiles = $sut->load($dir);
+
+        /**
+         * we want to know that we have 2 items and that it contains both the things we expect ;-)
+         */
+        $this->assertCount(2, $loadedFiles);
+        $this->assertContains(file_get_contents($dir.'/resources/definition/test1.json'), $loadedFiles);
+        $this->assertContains(file_get_contents($dir.'/resources/definition/test2.json'), $loadedFiles);
     }
 }

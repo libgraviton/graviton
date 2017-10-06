@@ -76,6 +76,12 @@ doctrine_mongodb:
                 softdeleteable:
                     class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
                     enabled: true
+            metadata_cache_driver:
+                type: array
+                class: null
+                host: null
+                port: 0
+                instance_class: null
         faulty:
             connection: faulty
             retry_connect: 3
