@@ -993,6 +993,33 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * Here we test the client expectation in "id" property exposing in the json schema.
+     *
+     * They want
+     * * "id" of an extref object should *not* be described/present in schema
+     * * "id" of others, including embedded objects, *should* be described/present in schema
+     *
+     * @return void
+     */
+    public function testCorrectIdExposingInSchema()
+    {
+        // get the schema
+        $client = static::createRestClient();
+        $client->request('GET', '/schema/hans/showcase/item');
+
+        $schema = $client->getResults();
+
+        // make sure we have an extref field here
+        $this->assertEquals('extref', $schema->properties->nestedApps->items->properties->{'$ref'}->format);
+        // and that 'id' is not there
+        $this->assertObjectNotHasAttribute('id', $schema->properties->nestedApps->items->properties);
+
+        // embed case - check the embedded 'contactCode'
+        $this->assertStringEndsWith('Embedded', $schema->properties->contactCode->{'x-documentClass'});
+        $this->assertObjectHasAttribute('id', $schema->properties->contactCode->properties);
+    }
+
+    /**
      * test finding of showcases by ref
      *
      * @dataProvider findByExtrefProvider
