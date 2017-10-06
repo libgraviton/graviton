@@ -136,7 +136,13 @@ class ProxyController
                 $newRequest
             );
             $psrRequest = $this->diactorosFactory->createRequest($newRequest);
-            $psrRequest = $psrRequest->withUri($psrRequest->getUri()->withPort(parse_url($url, PHP_URL_PORT)));
+            $psrRequest = $psrRequest->withUri($psrRequest->getUri());
+
+            $uriPort = parse_url($url, PHP_URL_PORT);
+            if (is_numeric($uriPort) || is_null($uriPort)) {
+                $psrRequest = $psrRequest->withPort($uriPort);
+            }
+
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->cleanResponseHeaders($response->headers);
