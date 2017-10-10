@@ -22,6 +22,4 @@ parameters:
     graviton.i18n.utils.class: Graviton\I18nBundle\Service\I18nUtils
     graviton.i18n.cacheutils.class: Graviton\I18nBundle\Service\I18nCacheUtils
     graviton.i18n.command.createtranslationresources.class: Graviton\I18nBundle\Command\CreateTranslationResourcesCommand
-
-    # should we move this to somewhere else? -->
-    translator.class: Graviton\I18nBundle\Translator\Translator
+    graviton.i18n.translator.factory.class: Graviton\I18nBundle\Translator\TranslatorFactory
