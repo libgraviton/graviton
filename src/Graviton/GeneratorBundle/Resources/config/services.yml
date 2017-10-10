@@ -43,8 +43,8 @@ services:
     graviton_generator.definition.loader:
         class: "%graviton_generator.definition.loader.class%"
         arguments:
-            validator: "@graviton.jsonschema.validator"
-            serialiser: "@jms_serializer"
+            - "@graviton.jsonschema.validator"
+            - "@jms_serializer"
         calls:
           -
             method: addStrategy
@@ -64,7 +64,7 @@ services:
               - "@graviton_generator.definition.loader.strategy.json"
 
     graviton_generator.definition.loader.strategy.abstract:
-         abstract: true
+        abstract: true
 
     graviton_generator.definition.loader.strategy.file:
         class: "%graviton_generator.definition.loader.strategy.file.class%"
@@ -145,7 +145,7 @@ services:
     graviton_generator.command.generatedynamicbundle.process:
         class: "Symfony\\Component\\Process\\Process"
         arguments:
-            null: "string"
+            - "string"
 
     graviton_generator.command.generatedynamicbundle:
         class: "Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand"

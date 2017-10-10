@@ -2,14 +2,14 @@ services:
     graviton.document.service.extrefconverter:
         class: "%graviton.document.service.extrefconverter.class%"
         arguments:
-            router: "@router"
-            mapping: "%graviton.document.type.extref.mapping%"
+            - "@router"
+            - "%graviton.document.type.extref.mapping%"
 
     graviton.document.service.collectioncache:
         class: "%graviton.document.service.collectioncache.class%"
         arguments:
-            service: "@=service(parameter('graviton.cache.provider.service_id'))"
-            cache: "%graviton.cache.collections%"
+            - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "%graviton.cache.collections%"
 
     graviton.document.serializer.listener.emptyextref:
         class: "%graviton.document.serializer.listener.emptyextref.class%"
@@ -23,8 +23,8 @@ services:
     graviton.document.listener.documentversion:
         class: "%graviton.document.listener.documentversionlistener.class%"
         arguments:
-            manager: "@doctrine_mongodb.odm.default_document_manager"
-            versionService: "@graviton.schema.constraint.versionservice"
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "@graviton.schema.constraint.versionservice"
         tags:
           -
             name: kernel.event_listener
@@ -46,9 +46,9 @@ services:
     graviton.document.listener.extreferencesearchlistener:
         class: "%graviton.document.listener.extreferencesearchlistener.class%"
         arguments:
-            converter: "@graviton.document.service.extrefconverter"
-            fields: "%graviton.document.extref.fields%"
-            requestStack: "@request_stack"
+            - "@graviton.document.service.extrefconverter"
+            - "%graviton.document.extref.fields%"
+            - "@request_stack"
         tags:
           -
             name: kernel.event_listener
@@ -59,8 +59,8 @@ services:
     graviton.document.listener.fieldnamesearchlistener:
         class: "%graviton.document.listener.fieldnamesearchlistener.class%"
         arguments:
-            fields: "%graviton.document.rql.fields%"
-            requestStack: "@request_stack"
+            - "%graviton.document.rql.fields%"
+            - "@request_stack"
         tags:
           -
             name: kernel.event_listener
@@ -79,7 +79,7 @@ services:
     graviton.document.serializer.handler.extref:
         class: "%graviton.document.serializer.handler.extref.class%"
         arguments:
-            converter: "@graviton.document.service.extrefconverter"
+            - "@graviton.document.service.extrefconverter"
         tags:
           -
             name: jms_serializer.handler

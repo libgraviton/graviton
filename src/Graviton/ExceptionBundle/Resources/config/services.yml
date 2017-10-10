@@ -3,8 +3,8 @@ services:
         class: "%kernel.listener.graviton_exception_rest_exception.class%"
         abstract: true
         arguments:
-            serializer: "@jms_serializer"
-            context: "@graviton.rest.serializer.serializercontext"
+            - "@jms_serializer"
+            - "@graviton.rest.serializer.serializercontext"
 
     kernel.listener.graviton_exception_notfound_exception:
         class: "%kernel.listener.graviton_exception_notfound_exception.class%"
@@ -23,7 +23,7 @@ services:
           -
             method: setConstraintUtils
             arguments:
-                utils: "@graviton.schema.constraint.utils"
+                - "@graviton.schema.constraint.utils"
         tags:
           -
             name: kernel.event_listener

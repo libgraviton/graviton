@@ -2,13 +2,13 @@ services:
     graviton.file.request_manager:
         class: "%graviton.file.request_manager.class%"
         arguments:
-            requestStack: "@?request_stack"
+            - "@?request_stack"
 
     graviton.file.file_manager:
         class: "%graviton.file.file_manager.class%"
         arguments:
-            fileSystem: "@oneup_flysystem.graviton_filesystem"
-            managerRegistry: "@doctrine_mongodb"
+            - "@oneup_flysystem.graviton_filesystem"
+            - "@doctrine_mongodb"
         calls:
           -
             method: setAllowedMimeTypes
@@ -22,13 +22,13 @@ services:
           -
             method: setModel
             arguments:
-                fileModel: "@?gravitondyn.file.model.file"
+                -  "@?gravitondyn.file.model.file"
           -
             method: setFileManager
             arguments:
-                fileManager: "@graviton.file.file_manager"
+                - "@graviton.file.file_manager"
           -
             method: setRequestManager
             arguments:
-                requestManager: "@graviton.file.request_manager"
+                - "@graviton.file.request_manager"
 

@@ -9,7 +9,7 @@ services:
           # This service id is an alias defined in the parameters.yml -->
           - "@graviton.security.authentication.strategy"
           - "@logger"
-  
+
     #
     #    Strategies used by AuthenticationKeyAuthenticator
     #    Value set in Dpc Injection
@@ -17,12 +17,12 @@ services:
     #
     graviton.security.authentication.strategy.multi:
         class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
-        arguments:            
+        arguments:
             - ["@graviton.security.authentication.strategy.subnet", "@graviton.security.authentication.strategy.cookie"]
         tags:
-          - 
+          -
             name: graviton.security.authenticationkey.finder
-            
+
     graviton.security.authentication.strategy.subnet:
         class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
         arguments:
@@ -45,7 +45,7 @@ services:
       arguments:
         - "%graviton.security.authentication.strategy.cookie.key%"
       tags:
-        - 
+        -
           name: graviton.security.authenticationkey.finder
 
     #
@@ -64,7 +64,7 @@ services:
 
     graviton.security.authentication.provider:
         class: Graviton\RestBundle\Model\ModelInterface
-        factory: 'graviton.security.authentication.factory:create'
+        factory: 'graviton.security.authentication.provider.model.factory:create'
 
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel
