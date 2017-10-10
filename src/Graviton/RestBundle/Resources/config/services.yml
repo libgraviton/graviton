@@ -117,7 +117,7 @@ services:
         arguments:
           - "@service_container"
           - "@router"
-          - "@serializer"
+          - "@jms_serializer"
           - "@logger"
           - "@graviton.rest.serializer.serializercontext"
           - "@graviton.schema.utils"
