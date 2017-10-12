@@ -58,7 +58,7 @@ class MultiStrategy implements StrategyInterface
             }
         }
 
-        throw new \InvalidArgumentException($exceptions[0]->getMessage(), $exceptions[0]);
+        return false;
     }
 
     /**
