@@ -43,22 +43,16 @@ class MultiStrategy implements StrategyInterface
      */
     public function apply(Request $request)
     {
-        $exceptions = [];
-
         foreach ($this->strategies as $strategy) {
-            try {
-                $name = $strategy->apply($request);
-                $this->roles = $strategy->getRoles();
+            $name = $strategy->apply($request);
+            $this->roles = $strategy->getRoles();
 
-                if ($name && $strategy->stopPropagation()) {
-                    return $name;
-                }
-            } catch (\InvalidArgumentException $e) {
-                $exceptions[] = $e;
+            if ($name && $strategy->stopPropagation()) {
+                return $name;
             }
         }
 
-        throw new \InvalidArgumentException($exceptions[0]->getMessage(), $exceptions[0]);
+        return false;
     }
 
     /**
