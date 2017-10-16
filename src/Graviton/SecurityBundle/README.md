@@ -82,14 +82,14 @@ parameters:
     graviton.security.authentication.provider.model.query_field: <false | string>
 ```
 
-RestBundle can use the authenticated user to filter certain values by direct relation. 
-Field used in DB to make the relationship. If field do not exist the filter will be ignored.
+MultiStrategy allows several strategies to be loaded. When first strategy maches a "username"
+it will return that to be used by provider. If configured to use Multi but no services is defined 
+by default all tagged services will be loaded (back-compatibility): `graviton.security.authenticationkey.finder`
 ```yml
 parameters:
-    graviton.security.query.filter_by_user: <BOLLEAN>
-    graviton.security.query.filter_by_field: <STRING>
+    graviton.security.authentication.strategy.multi.services: 
+      - <SERVICE_ID:strategy>
 ```
-
 
 **NOTE**:
 The service referenced in the parameter must implement the »\Graviton\RestBundle\Model\ModelInterface«.
@@ -117,6 +117,10 @@ if ( $securityUser ) {
 // Symfony is granted by role, 
 if ($this->isGranted('ROLE_ADMIN')) { ... }
 
+// Use SecurityUtils for a simpler more clean way to get user information. Injected example.
+if ($this->securityUtils->isSecurityUser()) {
+    return $this->securityUtils->getSecurityUsername();
+}
 
 ```
 

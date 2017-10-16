@@ -28,9 +28,6 @@ parameters:
     graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
     graviton.security.authentication.provider.model.query_field: false
 
-    graviton.security.query.filter_by_user: false
-    graviton.security.query.filter_by_field: 'consultant.$id'
-
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 
