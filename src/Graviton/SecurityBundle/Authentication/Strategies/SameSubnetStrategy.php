@@ -24,9 +24,6 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     /** @var String */
     protected $headerField;
 
-    /** @var bool pass through by default */
-    protected $stopPropagation = false;
-
     /**
      * @param String $subnet      Subnet to be checked (e.g. 10.2.0.0/24)
      * @param String $headerField Http header field to be searched for the 'username'
@@ -56,25 +53,15 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
+        $ip = $request->getClientIp();
         if (IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
-            $name = $this->determineName($request);
+            $name = $this->extractFieldInfo($request->headers, $this->headerField);
             if (!empty($name)) {
-                $this->stopPropagation = true;
                 return $name;
             }
         }
 
-        throw new \InvalidArgumentException('Provided request information are not valid.');
-    }
-
-    /**
-     * Decider to stop other strategies running after from being considered.
-     *
-     * @return boolean
-     */
-    public function stopPropagation()
-    {
-        return $this->stopPropagation;
+        return '';
     }
 
     /**
@@ -85,21 +72,5 @@ class SameSubnetStrategy extends AbstractHttpStrategy
     public function getRoles()
     {
         return [SecurityUser::ROLE_USER, SecurityUser::ROLE_SUBNET];
-    }
-
-    /**
-     * Finds the username either from a http header filed or returns a default.
-     *
-     * @param Request $request Current http request
-     *
-     * @return string
-     */
-    private function determineName(Request $request)
-    {
-        if ($request->headers->has($this->headerField)) {
-            return $request->headers->get($this->headerField);
-        }
-
-        return '';
     }
 }

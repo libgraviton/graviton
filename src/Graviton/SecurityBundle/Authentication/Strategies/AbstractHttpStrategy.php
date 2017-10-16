@@ -20,18 +20,24 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 abstract class AbstractHttpStrategy implements StrategyInterface
 {
     /**
+     * Will stop propagation if params exists
+     * @var bool
+     */
+    private $passed = false;
+
+    /**
      * Extracts information from the a request header field.
      *
      * @param ParameterBag|HeaderBag $header    object representation of the request header.
-     * @param string                 $fieldname Name of the field to be read.
+     * @param string                 $fieldName Name of the field to be read.
      *
      * @return string
      */
-    protected function extractFieldInfo($header, $fieldname)
+    protected function extractFieldInfo($header, $fieldName)
     {
         if ($header instanceof ParameterBag || $header instanceof HeaderBag) {
-            $this->validateField($header, $fieldname);
-            return $header->get($fieldname, '');
+            $this->validateField($header, $fieldName);
+            return $header->get($fieldName, '');
         }
 
         throw new \InvalidArgumentException('Provided request information are not valid.');
@@ -48,24 +54,24 @@ abstract class AbstractHttpStrategy implements StrategyInterface
      */
     protected function validateField($header, $fieldName)
     {
-        $passed = $header->has($fieldName);
+        $this->passed = $header->has($fieldName);
+        if (!$this->passed) {
+            return;
+        }
 
-        // return without exception so we can return a dummy user
-        if (true === $passed) {
-            // get rid of anything not a valid character
-            $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
+        // get rid of anything not a valid character
+        $authInfo = filter_var($header->get($fieldName), FILTER_SANITIZE_STRING);
 
-            // get rid of whitespaces
-            $patterns = array("\r\n", "\n", "\r", "\s", "\t");
-            $authInfo = str_replace($patterns, "", trim($authInfo));
+        // get rid of whitespaces
+        $patterns = array("\r\n", "\n", "\r", "\s", "\t");
+        $authInfo = str_replace($patterns, "", trim($authInfo));
 
-            // get rid of control characters
-            if (empty($authInfo) || $authInfo !== preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
-                throw new HttpException(
-                    Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED,
-                    'Mandatory header field (' . $fieldName . ') not provided or invalid.'
-                );
-            }
+        // get rid of control characters
+        if (empty($authInfo) || $authInfo !== preg_replace('#[[:cntrl:]]#i', '', $authInfo)) {
+            throw new HttpException(
+                Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED,
+                'Mandatory header field (' . $fieldName . ') not provided or invalid.'
+            );
         }
     }
 
@@ -76,6 +82,6 @@ abstract class AbstractHttpStrategy implements StrategyInterface
      */
     public function stopPropagation()
     {
-        return true;
+        return $this->passed;
     }
 }

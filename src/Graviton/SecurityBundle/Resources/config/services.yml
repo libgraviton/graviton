@@ -17,14 +17,6 @@ services:
     #
     graviton.security.authentication.strategy.multi:
         class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
-        arguments:
-            -
-              - "@graviton.security.authentication.strategy.subnet"
-              - "@graviton.security.authentication.strategy.cookie"
-              - "@graviton.security.authentication.strategy.header"
-        tags:
-          - 
-            name: graviton.security.authenticationkey.finder
             
     graviton.security.authentication.strategy.subnet:
         class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy

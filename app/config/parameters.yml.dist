@@ -19,6 +19,12 @@ parameters:
     graviton.security.authentication.strategy.subnet.header_field: x-graviton-authentication
     graviton.security.authentication.strategy.header.key: graviton_user
 
+    # If strategy multi then define which strategies to be used. Will be compiled
+    graviton.security.authentication.strategy.multi.services:
+      - graviton.security.authentication.strategy.subnet
+      - graviton.security.authentication.strategy.cookie
+      - graviton.security.authentication.strategy.header
+
     graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
     graviton.security.authentication.provider.model.query_field: false
 

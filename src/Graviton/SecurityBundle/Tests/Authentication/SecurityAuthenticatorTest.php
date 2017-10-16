@@ -5,10 +5,22 @@
 
 namespace Graviton\SecurityBundle\Authentication;
 
-use Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
-use Graviton\SecurityBundle\Entities\SecurityUser;
+use \Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
+use \Graviton\SecurityBundle\Authentication\Provider\AuthenticationProviderDummy;
+use \Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy;
+use \Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy;
+use \Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy;
+use \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy;
+use \Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface;
+use \Graviton\SecurityBundle\Entities\AnonymousUser;
+use \Graviton\SecurityBundle\Entities\SecurityUser;
+use \Graviton\SecurityBundle\Entities\SubnetUser;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Role\Role;
+use \Psr\Log\LoggerInterface as Logger;
 
 /**
  * Class AirlockAuthenticationKeyAuthenticatorTest
@@ -17,10 +29,15 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
+class SecurityAuthenticatorTest extends TestCase
 {
-    /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
+    /** @var Logger logger */
     private $logger;
+
+    /**
+     * @var AuthenticationProvider
+     */
+    private $userProvider;
 
     /**
      * @return void
@@ -31,228 +48,221 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
             ->setMethods(array('warning', 'info'))
             ->getMockForAbstractClass();
+
+        $this->userProvider = new AuthenticationProviderDummy();
     }
 
     /**
-     * @dataProvider stringProvider
+     * Test all auth methods for Multi Authentication
      *
-     * @param string $headerFieldValue value to check with
+     * @covers MultiStrategy::addStrategy()
+     * @covers SecurityAuthenticator::createToken()
+     * @covers SecurityAuthenticator::authenticateToken()
      *
      * @return void
      */
-    public function testCreateToken($headerFieldValue)
+    public function testMultiAccess()
     {
-        $userProviderMock = $this
-            ->getMockBuilder('Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider')
-            ->disableOriginalConstructor()
-            ->setMethods(array('loadUserByUsername'))
-            ->getMock();
+        $userName = 'testUsername';
 
-        $strategy = $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
-            ->setMethods(array('apply'))
-            ->getMockForAbstractClass();
-        $strategy
-            ->expects($this->once())
-            ->method('apply')
-            ->will($this->returnValue($headerFieldValue));
-        $strategy
-            ->expects($this->once())
-            ->method('getRoles')
-            ->will($this->returnValue([]));
+        /**
+         * First is Auth start and second once validated
+         * @var PreAuthenticatedToken $authenticated
+         * @var PreAuthenticatedToken $token
+         */
 
-        $authenticator = new SecurityAuthenticator(true, true, true, $userProviderMock, $strategy, $this->logger);
-
-        $server = array(
-            'HTTP_X_IDP_USERNAME' => $headerFieldValue, //"example-authentication-header",
-        );
-
-        $request = new Request(array(), array(), array(), array(), array(), $server);
-
-        $token = $authenticator->createToken($request, 'AirlockProviderKey');
-
-        $this->assertInstanceOf(
-            PreAuthenticatedToken::class,
-            $token
-        );
-
-        $this->assertFalse($token->isAuthenticated());
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function stringProvider()
-    {
-        return array(
-            'plain string, no special chars' => array('exampleAuthenticationHeader'),
-            'string with special chars' => array("$-_.+!*'(),{}|\\^~[]`<>#%;/?:@&=."),
-            'string with octal chars' => array("a: \141, A: \101"),
-            'string with hex chars' => array("a: \x61, A: \x41"),
-            'live example' => array("10N0000188"),
-        );
-    }
-
-    /**
-     * @return void
-     */
-    public function testAuthenticateToken()
-    {
-        $providerKey = 'some providerKey';
-        $apiKey = 'exampleAuthenticationHeader';
-
-        $securityUserMock =  $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')
-            ->setMethods(array('getRoles'))
-            ->getMockForAbstractClass();
-        $securityUserMock
-            ->expects($this->never())
-            ->method('getRoles')
-            ->will($this->returnValue(array(SecurityUser::ROLE_USER)));
-
-        $userProviderMock = $this->getProviderMock(array('loadUserByUsername'));
-        $userProviderMock
-            ->expects($this->once())
-            ->method('loadUserByUsername')
-            ->will($this->returnValue($securityUserMock));
-
-        $anonymousToken = new PreAuthenticatedToken(
-            'anon.',
-            $apiKey,
-            $providerKey
-        );
-
-        $authenticator = new SecurityAuthenticator(
-            true,
-            true,
-            true,
-            $userProviderMock,
-            $this->getStrategyMock(),
-            $this->logger
-        );
-
-        $token = $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
-
-        $this->assertInstanceOf(
-            PreAuthenticatedToken::class,
-            $token
-        );
-
-        $this->assertTrue($token->isAuthenticated());
-    }
-
-    /**
-     * @return void
-     */
-    public function testAuthenticateTokenExpectingException()
-    {
-        $providerKey = 'some providerKey';
-        $apiKey = 'exampleAuthenticationHeader';
-
-        $userProviderMock = $this->getProviderMock(array('loadUserByUsername'));
-        $userProviderMock
-            ->expects($this->once())
-            ->method('loadUserByUsername')
-            ->with($this->equalTo($apiKey))
-            ->will($this->returnValue(false));
-
-        $anonymousToken = new PreAuthenticatedToken(
-            'anon.',
-            $apiKey,
-            $providerKey
-        );
+        $multiStrategy = new MultiStrategy();
+        $multiStrategy->addStrategy($this->getStrategyByName('header'));
+        $multiStrategy->addStrategy($this->getStrategyByName('cookie'));
+        $multiStrategy->addStrategy($this->getStrategyByName('subnet'));
 
         $authenticator = new SecurityAuthenticator(
             true,
             false,
+            true,
+            $this->userProvider,
+            $multiStrategy,
+            $this->logger
+        );
+
+        // Test Header
+        $request = new Request();
+        $request->headers->set('x-rest-token', $userName);
+
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        // Getting the dummy user and not the real Document User.
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_CONSULTANT, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals($userName, $user->username);
+
+        // With header, but unknown and allowing Anonymous
+        $request = new Request();
+        $request->headers->set('x-rest-token', 'unknown');
+
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        /** @var AnonymousUser $user */
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_ANONYMOUS, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals('anonymous', $user->getUsername());
+
+        // With cookie
+        $request = new Request();
+        $request->cookies->set('graviton_user', $userName);
+
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        /** @var \stdClass $user */
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_CONSULTANT, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals($userName, $user->username);
+
+
+        // Test Header for Subnet
+        $request = new Request([], [], [], [], [], ['REMOTE_ADDR' => '0.0.0.0']);
+        $request->headers->set('graviton_subnet', $userName);
+
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        // Getting the dummy user and not the real Document User.
+        /** @var SubnetUser $user */
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_SUBNET, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals($userName, $user->getUsername());
+    }
+
+    /**
+     * Test all auth methods for Multi Authentication
+     *
+     * @return void
+     */
+    public function testHeaderAccess()
+    {
+        $userName = 'testUsername';
+
+        /**
+         * First is Auth start and second once validated
+         * @var PreAuthenticatedToken $authenticated
+         * @var PreAuthenticatedToken $token
+         */
+
+        $strategy = $this->getStrategyByName('header');
+
+        $authenticator = new SecurityAuthenticator(
             false,
-            $userProviderMock,
-            $this->getStrategyMock(),
+            false,
+            true,
+            $this->userProvider,
+            $strategy,
             $this->logger
         );
 
-        $this->expectException('\Symfony\Component\Security\Core\Exception\AuthenticationException');
+        // Test Header
+        $request = new Request();
+        $request->headers->set('x-rest-token', $userName);
 
-        $authenticator->authenticateToken($anonymousToken, $userProviderMock, $providerKey);
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        // Getting the dummy user and not the real Document User.
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_CONSULTANT, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals($userName, $user->username);
+
+        // With header, but unknown and allowing Anonymous
+        $request = new Request();
+        $request->headers->set('x-rest-token', 'unknown');
+
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticated = $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
+
+        $roles = $this->rolesToArray($authenticated->getRoles());
+        /** @var AnonymousUser $user */
+        $user = $authenticated->getUser()->getUser();
+        $this->assertEquals([SecurityUser::ROLE_ANONYMOUS, SecurityUser::ROLE_USER], $roles, json_encode($roles));
+        $this->assertEquals('anonymous', $user->getUsername());
     }
 
     /**
+     * Test without sending any auth
+     *
      * @return void
      */
-    public function testSupportsToken()
+    public function testHeaderRequiredAccess()
     {
-        $providerKey = 'some providerKey';
-        $apiKey = 'exampleAuthenticationHeader';
+        $this->expectException(AuthenticationException::class);
 
-        $anonymousToken = new PreAuthenticatedToken(
-            'anon.',
-            $apiKey,
-            $providerKey
-        );
+        /**
+         * First is Auth start and second once validated
+         * @var PreAuthenticatedToken $authenticated
+         * @var PreAuthenticatedToken $token
+         */
+
+        $strategy = $this->getStrategyByName('header');
 
         $authenticator = new SecurityAuthenticator(
             true,
+            false,
             true,
-            true,
-            $this->getProviderMock(),
-            $this->getStrategyMock(),
+            $this->userProvider,
+            $strategy,
             $this->logger
         );
 
-        $this->assertTrue($authenticator->supportsToken($anonymousToken, $providerKey));
+        // With header, but unknown and allowing Anonymous
+        $request = new Request();
+        $token = $authenticator->createToken($request, 'test-key');
+        $authenticator->authenticateToken($token, $this->userProvider, 'test-key');
     }
 
     /**
-     * @return void
+     * Flat out roles for easier comparison. Sorted.
+     * @param Role[] $roles Array list of Sf Roles
+     *
+     * @return array
      */
-    public function testOnAuthenticationFailure()
+    private function rolesToArray($roles)
     {
-        $exceptionDouble = $this->getMockBuilder('\Symfony\Component\Security\Core\Exception\AuthenticationException')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getMessageKey'))
-            ->getMock();
-        $exceptionDouble
-            ->expects($this->once())
-            ->method('getMessageKey')
-            ->will($this->returnValue('test_message'));
-
-        $authenticator = new SecurityAuthenticator(
-            true,
-            true,
-            true,
-            $this->getProviderMock(),
-            $this->getStrategyMock(),
-            $this->logger
+        $roles = array_map(
+            function ($role) {
+                /** @var Role $role */
+                return (string) $role->getRole();
+            },
+            $roles
         );
-
-        $response = $authenticator->onAuthenticationFailure(new Request(), $exceptionDouble);
-
-        $this->assertEquals('test_message', $response->getContent());
-        $this->assertEquals(511, $response->getStatusCode());
+        sort($roles);
+        return $roles;
     }
 
     /**
-     * @param string[] $methods methods to mock
+     * Simplified Strategy getter
      *
-     * @return SecurityAuthenticator|\PHPUnit_Framework_MockObject_MockObject
+     * @param string $strategy Name of requested strategy
+     * @return StrategyInterface|null
      */
-    private function getProviderMock(array $methods = array())
+    private function getStrategyByName($strategy)
     {
-        $userProviderMock = $this
-            ->getMockBuilder('Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider')
-            ->disableOriginalConstructor()
-            ->setMethods($methods)
-            ->getMock();
-        return $userProviderMock;
-    }
-
-    /**
-     * @param array $methods methods to mock
-     *
-     * @return StrategyInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getStrategyMock(array $methods = array('apply'))
-    {
-        return $this->getMockBuilder('\Graviton\SecurityBundle\Authentication\Strategies\StrategyInterface')
-            ->setMethods($methods)
-            ->getMockForAbstractClass();
+        switch ($strategy) {
+            case 'header':
+                return new HeaderFieldStrategy('x-rest-token');
+                break;
+            case 'cookie':
+                return new CookieFieldStrategy('graviton_user');
+                break;
+            case 'subnet':
+                return new SameSubnetStrategy('0.0.0.0', 'graviton_subnet');
+                break;
+        }
+        return null;
     }
 }

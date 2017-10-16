@@ -21,12 +21,7 @@ class AuthenticationKeyFinderPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess()
     {
-        $taggedServiceIds = array(
-            'myPersonalKeyFinderStrategy' => 'foo',
-            'aNotRegisteredStrategy'      => 'bar'
-        );
-
-        $message = 'The service (aNotRegisteredStrategy) is not registered in the application kernel.';
+        $message = 'The service (strategy.doesnotExists) is not registered in the application kernel.';
 
         $loggerMock = $this->getMockBuilder('\Psr\Log\LoggerInterface')
             ->setMethods(array('warning'))
@@ -38,37 +33,62 @@ class AuthenticationKeyFinderPassTest extends \PHPUnit_Framework_TestCase
 
         $definitionMock = $this->getMockBuilder('\Symfony\Component\DependencyInjection\Definition')
             ->disableOriginalConstructor()
-            ->setMethods(array('addMethodCall', 'getDefinition'))
             ->getMock();
-        $definitionMock
-            ->expects($this->once())
-            ->method('addMethodCall');
 
         $container = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerBuilder')
-            ->setMethods(array('findTaggedServiceIds', 'getDefinition', 'hasDefinition'))
+            ->setMethods(
+                [
+                    'findTaggedServiceIds',
+                    'getDefinition',
+                    'getParameter',
+                    'hasParameter',
+                    'findDefinition',
+                    'hasDefinition'
+                ]
+            )
             ->getMock();
         $container
-            ->expects($this->once())
-            ->method('findTaggedServiceIds')
-            ->with($this->equalTo('graviton.security.authenticationkey.finder'))
-            ->will($this->returnValue($taggedServiceIds));
+            ->expects($this->exactly(1))
+            ->method('findDefinition')
+            ->will($this->returnValue($definitionMock));
+        $container
+            ->expects($this->exactly(1))
+            ->method('hasParameter')
+            ->will($this->returnValue(true));
         $container
             ->expects($this->exactly(2))
+            ->method('getParameter')
+            ->will(
+                $this->onConsecutiveCalls(
+                    $this->returnValue('graviton.security.authentication.strategy.multi'),
+                    $this->returnValue(
+                        [
+                            'graviton.security.authentication.strategy.subnet',
+                            'graviton.security.authentication.strategy.header',
+                            'graviton.security.authentication.strategy.cookie',
+                            'strategy.doesnotExists'
+                        ]
+                    )
+                )
+            );
+        $container
+            ->expects($this->exactly(1))
             ->method('getDefinition')
             ->will(
                 $this->onConsecutiveCalls(
-                    $this->returnValue($definitionMock),
                     $this->returnValue($loggerMock)
                 )
             );
         $container
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(5))
             ->method('hasDefinition')
             ->will(
                 $this->onConsecutiveCalls(
-                    $this->returnValue(true),
-                    $this->returnValue(false),
-                    $this->returnValue(true)
+                    $this->returnValue(true), // service id
+                    $this->returnValue(true), // service id
+                    $this->returnValue(true), // service id
+                    $this->returnValue(false), // not exists service id
+                    $this->returnValue(true) // logger service id
                 )
             );
 

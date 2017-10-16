@@ -40,12 +40,9 @@ class MultiStrategyTest extends WebTestCase
             ->getParameter('graviton.security.authentication.strategy.cookie.key');
         $cookieFieldStrategy = new CookieFieldStrategy($this->propertyKey);
 
-        $this->strategy = new MultiStrategy(
-            [
-                $sameSubnetStrategy,
-                $cookieFieldStrategy,
-            ]
-        );
+        $this->strategy = new MultiStrategy();
+        $this->strategy->addStrategy($sameSubnetStrategy);
+        $this->strategy->addStrategy($cookieFieldStrategy);
     }
 
     /**

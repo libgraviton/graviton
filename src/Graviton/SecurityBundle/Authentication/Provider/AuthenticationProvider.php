@@ -22,12 +22,12 @@ class AuthenticationProvider implements UserProviderInterface
     /**
      * @var ModelInterface
      */
-    private $documentModel;
+    protected $documentModel;
 
     /**
      * @var String
      */
-    private $queryField;
+    protected $queryField;
 
     /**
      * @param ModelInterface $model      The documentModel
@@ -47,11 +47,7 @@ class AuthenticationProvider implements UserProviderInterface
      *
      * @param string $username the consultants username
      *
-     * @return \Symfony\Component\Security\Core\User\UserInterface
-     *
-     * @see \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
-     *
-     * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException if the user is not found
+     * @return false|UserInterface
      */
     public function loadUserByUsername($username)
     {
@@ -76,11 +72,11 @@ class AuthenticationProvider implements UserProviderInterface
      * object can just be merged into some internal array of users / identity
      * map.
      *
-     * @param \Symfony\Component\Security\Core\User\UserInterface $user user to refresh
+     * @param UserInterface $user user to refresh
      *
-     * @return \Symfony\Component\Security\Core\User\UserInterface
+     * @return UserInterface
      *
-     * @throws \Symfony\Component\Security\Core\Exception\UnsupportedUserException if the account is not supported
+     * @throws UnsupportedUserException if the account is not supported
      */
     public function refreshUser(UserInterface $user)
     {
@@ -100,6 +96,6 @@ class AuthenticationProvider implements UserProviderInterface
      */
     public function supportsClass($class)
     {
-        return $class instanceof \Symfony\Component\Security\Core\User\UserInterface;
+        return $class instanceof UserInterface;
     }
 }
