@@ -118,7 +118,14 @@ oneup_flysystem:
     adapters:
         local:
             local:
-                directory: '%kernel.root_dir%/files'
+                directory: "%graviton.file.local.storage_directory%"
+        s3:
+            awss3v3:
+                client: graviton.file.s3.client
+                bucket: "%graviton.file.s3.bucket%"
+                prefix: ~
+                options:
+                    override_visibility_on_copy: private
     filesystems:
         graviton:
             adapter: '%graviton.file.backend%'
