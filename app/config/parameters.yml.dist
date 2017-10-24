@@ -28,6 +28,22 @@ parameters:
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 
+    # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
+    graviton.file.backend: local
+
+    # Add full qualified type, application/pdf, image/jpeg...
+    graviton.file.allowed.mime_types: []
+    graviton.file.read_filesystem_mimetype: true
+
+    graviton.file.local.storage_directory: "%kernel.root_dir%/files"
+
+    graviton.file.s3.endpoint: null
+    graviton.file.s3.version: latest
+    graviton.file.s3.region: us-east-1
+    graviton.file.s3.bucket: graviton
+    graviton.file.s3.credentials.key: null
+    graviton.file.s3.credentials.secret: null
+
     graviton.router.host: null
     graviton.router.port_http: null
     graviton.router.port_https: null
@@ -44,9 +60,6 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
-
-    # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
-    graviton.file.backend: local
 
     # rabbitmq config
     graviton.rabbitmq.host: localhost
@@ -70,9 +83,6 @@ parameters:
     graviton.proxy.swagger.sources: {}
     graviton.proxy.custom.sources: {}
     graviton.proxy.redirect.sources: {}
-
-    # Add full qualified type, application/pdf, image/jpeg...
-    graviton.file.allowed.mime_types: []
 
     # List of collections to be saved in cache, in seconds
     graviton.cache.collections:
