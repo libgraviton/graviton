@@ -440,6 +440,7 @@ class RestController
 
         $response = $this->response;
         $response->setStatusCode(Response::HTTP_OK);
+        $response->setVary(['Origin', 'Accept-Encoding']);
         $response->setPublic();
 
         if (!$id && $schemaType != 'canonicalIdSchema') {

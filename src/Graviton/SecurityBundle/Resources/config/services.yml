@@ -18,7 +18,10 @@ services:
     graviton.security.authentication.strategy.multi:
         class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
         arguments:
-            - ["@graviton.security.authentication.strategy.subnet", "@graviton.security.authentication.strategy.cookie"]
+            -
+              - "@graviton.security.authentication.strategy.subnet"
+              - "@graviton.security.authentication.strategy.cookie"
+              - "@graviton.security.authentication.strategy.header"
         tags:
           -
             name: graviton.security.authenticationkey.finder
@@ -64,7 +67,7 @@ services:
 
     graviton.security.authentication.provider:
         class: Graviton\RestBundle\Model\ModelInterface
-        factory: 'graviton.security.authentication.provider.model.factory:create'
+        factory: 'graviton.security.authentication.factory:create'
 
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel

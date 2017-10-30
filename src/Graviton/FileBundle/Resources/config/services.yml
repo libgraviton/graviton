@@ -14,6 +14,23 @@ services:
             method: setAllowedMimeTypes
             arguments:
               - "%graviton.file.allowed.mime_types%"
+          -
+            method: setReadFileSystemMimeType
+            arguments:
+              - "%graviton.file.read_filesystem_mimetype%"
+
+    graviton.file.s3.client:
+        class: Aws\S3\S3Client
+        arguments:
+            -
+                endpoint: "%graviton.file.s3.endpoint%"
+                bucket: "%graviton.file.s3.bucket%"
+                version: "%graviton.file.s3.version%" # or 'latest'
+                region: "%graviton.file.s3.region%" # 'eu-central-1' for example
+                use_path_style_endpoint: true
+                credentials:
+                    key: "%graviton.file.s3.credentials.key%"
+                    secret: "%graviton.file.s3.credentials.secret%"
 
     graviton.file.controller.file:
         class: "%graviton.file.controller.file.class%"

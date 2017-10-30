@@ -50,7 +50,7 @@ class MultiStrategy implements StrategyInterface
                 $name = $strategy->apply($request);
                 $this->roles = $strategy->getRoles();
 
-                if ($strategy->stopPropagation()) {
+                if ($name && $strategy->stopPropagation()) {
                     return $name;
                 }
             } catch (\InvalidArgumentException $e) {
@@ -58,7 +58,7 @@ class MultiStrategy implements StrategyInterface
             }
         }
 
-        throw new \InvalidArgumentException($exceptions[0]->getMessage(), $exceptions[0]);
+        return false;
     }
 
     /**
