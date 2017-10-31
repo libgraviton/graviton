@@ -27,7 +27,7 @@
         "jms/serializer-bundle": "^2.2.0",
         "jms/serializer": "^1.9.0",
         "jms/di-extra-bundle": "^1.9.0",
-        "doctrine/mongodb-odm": "^1.1.6",
+        "doctrine/mongodb-odm": "^1.2.0",
         "doctrine/mongodb-odm-bundle": "^3.4.0",
         "stof/doctrine-extensions-bundle": "~1.2",
         "doctrine/doctrine-fixtures-bundle": "^2.4.0",
