@@ -65,9 +65,10 @@ services:
         arguments:
           - "@service_container"
 
-    graviton.security.authentication.provider:
-        class: Graviton\RestBundle\Model\ModelInterface
-        factory: 'graviton.security.authentication.factory:create'
+    # this doesn't seem to be used & the factory referenced does not exist! can it be completely removed?
+    #graviton.security.authentication.provider:
+    #    class: Graviton\RestBundle\Model\ModelInterface
+    #    factory: 'graviton.security.authentication.factory:create'
 
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel
