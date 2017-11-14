@@ -60,6 +60,7 @@ class HashType extends Type
     {
         $dbValue = null;
 
+
         if (is_array($value)) {
             $dbValue = (object) $value;
         } elseif ($value instanceof \ArrayObject) {
@@ -67,6 +68,8 @@ class HashType extends Type
         } elseif (is_object($value)) {
             $dbValue = (object) get_object_vars($value);
         }
+
+        var_dump($dbValue);
 
         if (!is_null($dbValue)) {
             $dbValue = (object) self::processDynamicParts($dbValue);
@@ -117,7 +120,7 @@ class HashType extends Type
                 } elseif (is_object($value) && empty((array)$value)) {
                     $input[$key] = $emptyObjectToPhpValue;
                 } else {
-                    if (is_array($value) || is_object($value)) {
+                    if (is_array($value)) {
                         $value = self::processDynamicParts($value);
                     }
                     $input[$key] = $value;

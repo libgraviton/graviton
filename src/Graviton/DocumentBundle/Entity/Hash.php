@@ -22,7 +22,12 @@ class Hash extends \ArrayObject implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->getArrayCopy();
+        $data = $this->getArrayCopy();
+        if (empty($data)) {
+            return (object) [];
+        }
+
+        return $data;
     }
 
 }

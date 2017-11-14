@@ -9,6 +9,7 @@ use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\DocumentBundle\Serializer\Handler\HashHandler;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Test HashHandler
@@ -37,7 +38,7 @@ class HashHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $hash,
-            (new HashHandler())->serializeHashToJson(
+            (new HashHandler(new RequestStack()))->serializeHashToJson(
                 $serializationVisitor,
                 $hash,
                 $type,
@@ -71,7 +72,7 @@ class HashHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $hash,
-            (new HashHandler())->deserializeHashFromJson(
+            (new HashHandler(new RequestStack()))->deserializeHashFromJson(
                 $deserializationVisitor,
                 $array,
                 $type,

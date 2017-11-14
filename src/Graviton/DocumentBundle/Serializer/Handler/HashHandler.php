@@ -65,20 +65,35 @@ class HashHandler
         Context $context
     ) {
         $currentPath = $context->getCurrentPath();
+        $currentRequest = $this->requestStack->getCurrentRequest();
         $dataObj = null;
 
-        $currentRequest = $this->requestStack->getCurrentRequest();
+        var_dump($data);
+        var_dump($type);
+        var_dump($currentPath);
+        var_dump($context->attributes);
+        echo "-----------";
+
         if (!is_null($currentRequest)) {
             $dataObj = json_decode($currentRequest->getContent());
             foreach ($currentPath as $pathElement) {
-                $dataObj = $dataObj->{$pathElement};
+                if (isset($dataObj->{$pathElement})) {
+                    $dataObj = $dataObj->{$pathElement};
+                } else {
+                    $dataObj = null;
+                    break;
+                }
+
             }
         }
 
         if (!is_null($dataObj)) {
-            return new Hash($dataObj);
+            $data = $dataObj;
         }
 
-        return new Hash($visitor->visitArray($data, $type, $context));
+        //return new Hash($data);
+
+
+        return new Hash($visitor->visitArray((array) $data, $type, $context));
     }
 }
