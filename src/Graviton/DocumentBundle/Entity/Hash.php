@@ -29,5 +29,4 @@ class Hash extends \ArrayObject implements \JsonSerializable
 
         return $data;
     }
-
 }
