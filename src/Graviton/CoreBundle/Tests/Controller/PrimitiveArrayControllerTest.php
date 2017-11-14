@@ -150,7 +150,9 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'rawData'      => (object) [
                 'hasharray' => [(object) ['x' => 'y'], (object) []],
                 'emptyhash' => (object) [],
-                'emptystring' => ""
+                'emptystring' => "",
+                'emptyarray' => [],
+                'emptyarrayhash' => [ (object) [] ]
             ],
         ];
 
@@ -168,8 +170,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $result = $client->getResults();
         $this->assertNotNull($result->id);
         unset($result->id);
-        unset($data->rawData->hasharray[1]);
-        unset($data->rawData->emptyhash);
         $this->assertEquals($this->fixDateTimezone($data), $result);
     }
 
@@ -215,16 +215,9 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResults());
 
-        var_dump(json_encode($this->fixDateTimezone($data), JSON_PRETTY_PRINT));
-        die;
-
         $client = static::createRestClient();
         $client->request('GET', '/testcase/primitivearray/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-
-        var_dump($client->getResults()->hasharray);
-
-        die;
 
         $this->assertEquals($this->fixDateTimezone($data), $client->getResults());
     }
