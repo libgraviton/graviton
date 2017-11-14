@@ -9,6 +9,7 @@ use JMS\Serializer\Context;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 use Graviton\DocumentBundle\Entity\Hash;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Hash handler for JMS serializer
@@ -19,6 +20,17 @@ use Graviton\DocumentBundle\Entity\Hash;
  */
 class HashHandler
 {
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
     /**
      * Serialize Hash object
      *
@@ -52,6 +64,21 @@ class HashHandler
         array $type,
         Context $context
     ) {
+        $currentPath = $context->getCurrentPath();
+        $dataObj = null;
+
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        if (!is_null($currentRequest)) {
+            $dataObj = json_decode($currentRequest->getContent());
+            foreach ($currentPath as $pathElement) {
+                $dataObj = $dataObj->{$pathElement};
+            }
+        }
+
+        if (!is_null($dataObj)) {
+            return new Hash($dataObj);
+        }
+
         return new Hash($visitor->visitArray($data, $type, $context));
     }
 }

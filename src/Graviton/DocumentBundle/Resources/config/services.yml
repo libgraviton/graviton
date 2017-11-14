@@ -70,6 +70,8 @@ services:
 
     graviton.document.serializer.handler.hash:
         class: "%graviton.document.serializer.handler.hash.class%"
+        arguments:
+            - "@request_stack"
         tags:
           -
             name: jms_serializer.handler
@@ -79,7 +81,7 @@ services:
     graviton.document.serializer.handler.extref:
         class: "%graviton.document.serializer.handler.extref.class%"
         arguments:
-            converter: "@graviton.document.service.extrefconverter"
+            - "@graviton.document.service.extrefconverter"
         tags:
           -
             name: jms_serializer.handler

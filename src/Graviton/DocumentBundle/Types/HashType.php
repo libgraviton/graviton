@@ -47,7 +47,7 @@ class HashType extends Type
      */
     public static function convertToPhp($value)
     {
-        return is_array($value) ? new Hash(self::processDynExtRefs($value)) : null;
+        return is_array($value) ? new Hash(self::processDynamicParts($value)) : null;
     }
 
     /**
@@ -69,31 +69,36 @@ class HashType extends Type
         }
 
         if (!is_null($dbValue)) {
-            $dbValue = (object) self::processDynExtRefs($dbValue);
+            $dbValue = (object) self::processDynamicParts($dbValue);
         }
 
         return $dbValue;
     }
 
     /**
-     * loops our structure recursively to find all $ref objects that need to be converted
-     * either from that or to that..
+     * loops our structure recursively to
+     * - find all $ref objects that need to be converted either from that or to that..
+     * - empty objects that need to be marked accordingly
      *
      * @param mixed $input input structure
      *
      * @return array altered structure with replaced $ref objects
      */
-    public static function processDynExtRefs($input)
+    public static function processDynamicParts($input)
     {
         if ($input instanceof \stdClass) {
             if (!empty(get_object_vars($input))) {
-                $input = self::processDynExtRefs(get_object_vars($input));
+                $input = self::processDynamicParts(get_object_vars($input));
             }
             return $input;
         }
 
+        // extrefs
         $externalRefFieldName = '$ref';
         $internalRefFieldName = 'ref';
+
+        // empty objects
+        $emptyObjectToPhpValue = '_____EMPTY_PHP_OBJECT_____';
 
         if (is_array($input)) {
             foreach ($input as $key => $value) {
@@ -107,9 +112,13 @@ class HashType extends Type
                     $extRef = self::$extRefConverter->getExtReference($value);
                     $input[$internalRefFieldName] = $extRef->jsonSerialize();
                     unset($input[$externalRefFieldName]);
+                } elseif ($value === $emptyObjectToPhpValue) {
+                    $input[$key] = new \stdClass();
+                } elseif (is_object($value) && empty((array)$value)) {
+                    $input[$key] = $emptyObjectToPhpValue;
                 } else {
-                    if (is_array($value)) {
-                        $value = self::processDynExtRefs($value);
+                    if (is_array($value) || is_object($value)) {
+                        $value = self::processDynamicParts($value);
                     }
                     $input[$key] = $value;
                 }
