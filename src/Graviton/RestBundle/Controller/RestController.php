@@ -306,8 +306,6 @@ class RestController
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
 
-        die;
-
         return $response;
     }
 
