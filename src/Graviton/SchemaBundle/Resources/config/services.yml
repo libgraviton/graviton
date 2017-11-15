@@ -58,7 +58,7 @@ services:
             name: jms_serializer.handler
             type: Graviton\SchemaBundle\Document\SchemaType
             format: json
-            
+
     graviton.schema.serializer.handler.enum:
         class: "%graviton.schema.serializer.handler.enum.class%"
         tags:
@@ -84,7 +84,7 @@ services:
     # constraint builder -->
     graviton.schema.constraint.builder:
         class: "%graviton.schema.constraint.builder.class%"
-        calls: 
+        calls:
           -
             method: addConstraintBuilder
             arguments:
@@ -130,7 +130,7 @@ services:
           - "@jms_serializer.metadata_factory"
           - "@graviton.i18n.repository.language"
           - "@router"
-          - "@serializer"
+          - "@jms_serializer"
           - "%graviton.document.type.extref.mapping%"
           - "%graviton.document.eventmap%"
           - "%graviton.document.field.names%"

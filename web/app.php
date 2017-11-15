@@ -6,6 +6,11 @@
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
+// @codingStandardsIgnoreStart
+/** @var \Composer\Autoload\ClassLoader $loader */
+$loader = require __DIR__.'/../app/autoload.php';
+include_once __DIR__.'/../app/bootstrap.php.cache';
+// @codingStandardsIgnoreEnd
 
 use Graviton\AppKernel;
 use Graviton\AppCache;
@@ -13,12 +18,6 @@ use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
-
-// @codingStandardsIgnoreStart
-/** @var \Composer\Autoload\ClassLoader $loader */
-$loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../app/bootstrap.php.cache';
-// @codingStandardsIgnoreEnd
 
 // check for env
 $env = getenv('SYMFONY_ENV');

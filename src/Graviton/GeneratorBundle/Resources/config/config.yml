@@ -3,5 +3,6 @@ jms_serializer:
         debug: "%kernel.debug%"
         auto_detection: true
         directory:
+            name: GeneratorBundle
             namespace_prefix: Graviton\GeneratorBundle
             path: "@GravitonGeneratorBundle/Resources/config/serializer"
