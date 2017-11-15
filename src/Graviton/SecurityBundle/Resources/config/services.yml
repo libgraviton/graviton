@@ -9,7 +9,7 @@ services:
           # This service id is an alias defined in the parameters.yml -->
           - "@graviton.security.authentication.strategy"
           - "@logger"
-  
+
     #
     #    Strategies used by AuthenticationKeyAuthenticator
     #    Value set in Dpc Injection
@@ -23,9 +23,9 @@ services:
               - "@graviton.security.authentication.strategy.cookie"
               - "@graviton.security.authentication.strategy.header"
         tags:
-          - 
+          -
             name: graviton.security.authenticationkey.finder
-            
+
     graviton.security.authentication.strategy.subnet:
         class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
         arguments:
@@ -48,7 +48,7 @@ services:
       arguments:
         - "%graviton.security.authentication.strategy.cookie.key%"
       tags:
-        - 
+        -
           name: graviton.security.authenticationkey.finder
 
     #
@@ -65,9 +65,10 @@ services:
         arguments:
           - "@service_container"
 
-    graviton.security.authentication.provider:
-        class: Graviton\RestBundle\Model\ModelInterface
-        factory: 'graviton.security.authentication.factory:create'
+    # this doesn't seem to be used & the factory referenced does not exist! can it be completely removed?
+    #graviton.security.authentication.provider:
+    #    class: Graviton\RestBundle\Model\ModelInterface
+    #    factory: 'graviton.security.authentication.factory:create'
 
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel

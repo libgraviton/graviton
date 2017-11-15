@@ -9,6 +9,7 @@ jms_serializer:
         debug: "%kernel.debug%"
         auto_detection: true
         directory:
+            name: PersonBundle
             namespace_prefix: "Graviton\PersonBundle"
             path: "@GravitonPersonBundle/Resources/config/serializer"
 
