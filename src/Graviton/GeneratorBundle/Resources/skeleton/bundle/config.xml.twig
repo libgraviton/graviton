@@ -11,7 +11,7 @@
   </doctrine_mongodb:config>
   <jms-serializer:config>
     <jms-serializer:metadata debug="%kernel.debug%" auto-detection="true">
-      <jms-serializer:directory namespace_prefix="{{ namespace }}" path="@{{ bundle }}/Resources/config/serializer"/>
+      <jms-serializer:directory name="{{ bundle }}" namespace_prefix="{{ namespace }}" path="@{{ bundle }}/Resources/config/serializer"/>
     </jms-serializer:metadata>
   </jms-serializer:config>
 </container>
