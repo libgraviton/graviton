@@ -40,7 +40,7 @@ before_script:
   - php -i | grep -A 4 mongo
   - php -i
   # install our deps
-  - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile
+  - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
 php:
   - 7.1
   - 7.0
