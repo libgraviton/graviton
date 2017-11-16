@@ -154,8 +154,8 @@ class GenerateDynamicBundleCommand extends Command
             )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
-                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
-                    to a single JSON file or a directory path containing multiple files.'
+                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
+                'to a single JSON file or a directory path containing multiple files.'
             );
     }
 
@@ -541,7 +541,6 @@ class GenerateDynamicBundleCommand extends Command
             '--bundle-name' => $bundleName,
             '--dir' => $input->getOption('srcDir'),
             '--format' => $input->getOption('bundleFormat'),
-            '--doUpdateKernel' => 'false',
             '--loaderBundleName' => $input->getOption('bundleBundleName'),
         );
 

@@ -10,10 +10,6 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerP
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
-use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
-use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
-use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
@@ -29,7 +25,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompi
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
+class GravitonDocumentBundle extends Bundle
 {
     /**
      * initialize bundle
@@ -41,21 +37,6 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         Type::registerType('hash', Types\HashType::class);
         Type::registerType('hasharray', Types\HashArrayType::class);
         Type::registerType('datearray', Types\DateArrayType::class);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return array(
-            new DoctrineMongoDBBundle(),
-            new StofDoctrineExtensionsBundle(),
-            new DoctrineFixturesBundle(),
-        );
     }
 
     /**
