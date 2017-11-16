@@ -54,11 +54,6 @@ doctrine_cache:
                 host: "%graviton.cache.redis.host%"
                 port: "%graviton.cache.redis.port%"
 
-# Doctrine Configuration
-doctrine:
-    dbal:
-        connections:
-            default:
 # DoctrineMongoDB Configuration
 # see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
 doctrine_mongodb:
