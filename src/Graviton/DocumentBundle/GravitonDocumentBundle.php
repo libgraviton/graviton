@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
@@ -25,7 +26,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompi
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GravitonDocumentBundle extends Bundle
+class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 {
     /**
      * initialize bundle
@@ -37,6 +38,17 @@ class GravitonDocumentBundle extends Bundle
         Type::registerType('hash', Types\HashType::class);
         Type::registerType('hasharray', Types\HashArrayType::class);
         Type::registerType('datearray', Types\DateArrayType::class);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
+     */
+    public function getBundles()
+    {
+        return [];
     }
 
     /**
