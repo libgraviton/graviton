@@ -70,24 +70,12 @@ doctrine_mongodb:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
                 GravitonI18nBundle: ~
-            filters:
-                softdeleteable:
-                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
-                    enabled: true
             metadata_cache_driver:
                 type: "%doctrine.odm.cache.type%"
                 class: "%doctrine.odm.cache.class%"
                 host: "%doctrine.odm.cache.host%"
                 port: "%doctrine.odm.cache.port%"
                 instance_class: "%doctrine.odm.cache.instance_class%"
-
-# StofDoctrineExtensions Configuration
-# see: https://github.com/stof/StofDoctrineExtensionsBundle/blob/master/Resources/doc/index.rst
-stof_doctrine_extensions:
-    default-locale: "en_US"
-    mongodb:
-        default:
-            softdeleteable: true
 
 # SensionFrameworkExtraBundle Configuration
 # see: http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
