@@ -48,11 +48,6 @@ final class RestUtils implements RestUtilsInterface
     private $serializer;
 
     /**
-     * @var null|SerializationContext
-     */
-    private $serializerContext;
-
-    /**
      * @var Router
      */
     private $router;
@@ -82,7 +77,6 @@ final class RestUtils implements RestUtilsInterface
      * @param Router               $router            router
      * @param Serializer           $serializer        serializer
      * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
-     * @param SerializationContext $serializerContext context for serializer
      * @param SchemaUtils          $schemaUtils       schema utils
      * @param Validator            $schemaValidator   schema validator
      * @param CacheProvider        $cacheProvider     Cache service
@@ -92,14 +86,12 @@ final class RestUtils implements RestUtilsInterface
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
         CacheProvider $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
-        $this->serializerContext = $serializerContext;
         $this->router = $router;
         $this->logger = $logger;
         $this->schemaUtils = $schemaUtils;
@@ -154,8 +146,7 @@ final class RestUtils implements RestUtilsInterface
         try {
             return $this->getSerializer()->serialize(
                 $content,
-                $format,
-                $this->getSerializerContext()
+                $format
             );
         } catch (\Exception $e) {
             $msg = sprintf(
@@ -318,16 +309,6 @@ final class RestUtils implements RestUtilsInterface
     public function getSerializer()
     {
         return $this->serializer;
-    }
-
-    /**
-     * Get the serializer context
-     *
-     * @return SerializationContext
-     */
-    public function getSerializerContext()
-    {
-        return clone $this->serializerContext;
     }
 
     /**

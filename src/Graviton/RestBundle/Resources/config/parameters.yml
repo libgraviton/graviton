@@ -15,6 +15,9 @@ parameters:
     graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
     graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
     graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
+    graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract
+    graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
+    graviton.rest.serializer.deserializercontext.factory.class: Graviton\RestBundle\Serializer\DeserializationContextFactory
     graviton.rest.services: []
     graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
     graviton.rest.not_modifiable.origin.records:
