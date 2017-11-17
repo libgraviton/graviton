@@ -13,7 +13,6 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Doctrine\Bundle\DoctrineBundle\Registry as DoctrineRegistry;
 
 /**
  * bundle containing various code generators
@@ -32,11 +31,6 @@ class ResourceGenerator extends AbstractGenerator
      * @private Filesystem
      */
     private $filesystem;
-
-    /**
-     * @private DoctrineRegistry
-     */
-    private $doctrine;
 
     /**
      * @private HttpKernelInterface
@@ -79,20 +73,17 @@ class ResourceGenerator extends AbstractGenerator
      * Instantiates generator object
      *
      * @param Filesystem          $filesystem       fs abstraction layer
-     * @param DoctrineRegistry    $doctrine         odm registry
      * @param HttpKernelInterface $kernel           app kernel
      * @param FieldMapper         $mapper           field type mapper
      * @param ParameterBuilder    $parameterBuilder param builder
      */
     public function __construct(
         Filesystem $filesystem,
-        DoctrineRegistry $doctrine,
         HttpKernelInterface $kernel,
         FieldMapper $mapper,
         ParameterBuilder $parameterBuilder
     ) {
         $this->filesystem = $filesystem;
-        $this->doctrine = $doctrine;
         $this->kernel = $kernel;
         $this->mapper = $mapper;
         $this->parameterBuilder = $parameterBuilder;

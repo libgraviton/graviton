@@ -25,9 +25,6 @@ services:
             arguments:
               - true
 
-    graviton.rest.doctrine:
-        alias: doctrine
-
     graviton.rest.router:
         alias: router
 
