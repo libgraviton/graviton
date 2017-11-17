@@ -99,9 +99,6 @@ services:
           - "@graviton_generator.resourcegenerator.field_mapper"
           - "@graviton_generator.resourcegenerator.parameter_builder"
 
-    graviton_generator.manipulator.xml_file:
-        class: "%graviton_generator.manipulator.xml_file.class%"
-
     graviton_generator.command_runner:
         class: "%graviton_generator.command_runner.class%"
         arguments:
@@ -151,7 +148,6 @@ services:
         class: "Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand"
         arguments:
           - "@graviton_generator.command_runner"
-          - "@graviton_generator.manipulator.xml_file"
           - "@graviton_generator.definition.loader"
           - "@jms_serializer"
           - "%generator.bundlebundle.additions%"
