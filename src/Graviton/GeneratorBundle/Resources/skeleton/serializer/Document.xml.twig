@@ -35,14 +35,14 @@
     {% endif %}
 
     {% set groups = "" %}
-    {% if attribute(field, "groups") is defined %}
-        {% set groups = field.groups|join(',') %}
+    {% if attribute(field, "groups") is defined and field.groups %}
+        {% set groups = 'groups="' ~ field.groups|join(',') ~ '"' %}
     {% endif %}
 
     <property
         name="{{ field.fieldName }}"
         max-depth="5"
-        groups="{{ groups }}"
+        {{ groups }}
         serialized-name="{{ field.exposedName }}"
         accessor-getter="{{ getterMethod }}"
         accessor-setter="set{{ field.fieldName|capitalize }}">
