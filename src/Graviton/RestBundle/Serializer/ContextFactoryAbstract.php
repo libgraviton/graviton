@@ -7,6 +7,7 @@ namespace Graviton\RestBundle\Serializer;
 
 use JMS\Serializer\Context;
 use JMS\Serializer\Exclusion\GroupsExclusionStrategy;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -114,7 +115,10 @@ abstract class ContextFactoryAbstract
         $context = $context->setSerializeNull($this->setSerializeNull);
 
         // group override?
-        if (true === $this->overrideHeaderAllowed && $this->requestStack instanceof RequestStack) {
+        if (true === $this->overrideHeaderAllowed &&
+            $this->requestStack instanceof RequestStack &&
+            $this->requestStack->getCurrentRequest() instanceof Request
+        ) {
             $headerValue = $this->requestStack->getCurrentRequest()->headers->get($this->overrideHeaderName);
             if (!is_null($headerValue)) {
                 $this->groups = array_map('trim', explode(',', $headerValue));
