@@ -53,9 +53,6 @@ services:
             arguments:
               - "%graviton.rest.serializer.allow_group_override_header%"
 
-    graviton.rest.doctrine:
-        alias: doctrine
-
     graviton.rest.router:
         alias: router
 

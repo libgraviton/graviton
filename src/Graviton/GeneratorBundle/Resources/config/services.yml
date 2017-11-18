@@ -94,7 +94,6 @@ services:
         class: "%graviton_generator.generator.resourcegenerator.class%"
         arguments:
           - "@filesystem"
-          - "@doctrine"
           - "@kernel"
           - "@graviton_generator.resourcegenerator.field_mapper"
           - "@graviton_generator.resourcegenerator.parameter_builder"
