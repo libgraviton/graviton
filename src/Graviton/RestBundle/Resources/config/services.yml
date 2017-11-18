@@ -17,14 +17,6 @@ services:
         arguments:
           - "@request_stack"
 
-    graviton.rest.serializer.deserializercontext:
-        class: "%graviton.rest.serializer.deserializercontext.class%"
-        calls:
-          -
-            method: setSerializeNull
-            arguments:
-              - true
-
     graviton.rest.serializer:
         parent: "jms_serializer"
         calls:
@@ -32,18 +24,10 @@ services:
             method: setSerializationContextFactory
             arguments:
               - "@graviton.rest.serializer.serializercontext.factory"
-          -
-            method: setDeserializationContextFactory
-            arguments:
-              - "@graviton.rest.serializer.deserializercontext.factory"
 
     graviton.rest.serializer.serializercontext.factory:
         parent: "graviton.rest.serializer.context.abstract"
         class: "%graviton.rest.serializer.serializercontext.factory.class%"
-
-    graviton.rest.serializer.deserializercontext.factory:
-        parent: "graviton.rest.serializer.context.abstract"
-        class: "%graviton.rest.serializer.deserializercontext.factory.class%"
 
     graviton.rest.serializer.context.abstract:
         class: "%graviton.rest.serializer.context.abstract.class%"
@@ -53,9 +37,21 @@ services:
             arguments:
               - false
           -
-            method: setSetSerializeNull
+            method: setRequestStack
             arguments:
-              - false
+              - "@request_stack"
+          -
+            method: setGroups
+            arguments:
+              - "%graviton.rest.serializer.groups%"
+          -
+            method: setOverrideHeaderName
+            arguments:
+              - "%graviton.rest.serializer.override_header_name%"
+          -
+            method: setOverrideHeaderAllowed
+            arguments:
+              - "%graviton.rest.serializer.allow_group_override_header%"
 
     graviton.rest.doctrine:
         alias: doctrine
