@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Serializer;
 
 use JMS\Serializer\Context;
+use JMS\Serializer\Exclusion\ExclusionStrategyInterface;
 use JMS\Serializer\Exclusion\GroupsExclusionStrategy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -42,6 +43,11 @@ abstract class ContextFactoryAbstract
      * @var bool
      */
     private $overrideHeaderAllowed = false;
+
+    /**
+     * @var array
+     */
+    private $exclusionStrategies = [];
 
     /**
      * set RequestStack
@@ -104,6 +110,18 @@ abstract class ContextFactoryAbstract
     }
 
     /**
+     * set ExclusionStrategies
+     *
+     * @param ExclusionStrategyInterface $exclusionStrategy exclusionStrategy
+     *
+     * @return void
+     */
+    public function addExclusionStrategy(ExclusionStrategyInterface $exclusionStrategy)
+    {
+        $this->exclusionStrategies[] = $exclusionStrategy;
+    }
+
+    /**
      * sets the necessary properties on the context
      *
      * @param Context $context context
@@ -128,6 +146,10 @@ abstract class ContextFactoryAbstract
         $serializerGroups = [GroupsExclusionStrategy::DEFAULT_GROUP];
         if (is_array($this->groups) && !empty($this->groups)) {
             $serializerGroups = array_merge($serializerGroups, $this->groups);
+        }
+
+        foreach ($this->exclusionStrategies as $strategy) {
+            $context->addExclusionStrategy($strategy);
         }
 
         return $context->setGroups($serializerGroups);

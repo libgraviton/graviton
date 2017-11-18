@@ -84,6 +84,11 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
             '/testcase/nullextref/testdata?select(requiredExtref,requiredExtrefDeep.deep.deep,optionalExtrefDeep)'
         );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        /* expect empty arrays */
+        $expectedResult->optionalExtrefArray = [];
+        $expectedResult->requiredExtrefArray = [];
+
         $this->assertEquals($expectedResult, $client->getResults());
     }
 
