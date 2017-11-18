@@ -23,7 +23,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializationContext;
 use Graviton\RestBundle\Controller\RestController;
 use Doctrine\Common\Cache\CacheProvider;
 
@@ -73,13 +72,13 @@ final class RestUtils implements RestUtilsInterface
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface   $container         container
-     * @param Router               $router            router
-     * @param Serializer           $serializer        serializer
-     * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
-     * @param SchemaUtils          $schemaUtils       schema utils
-     * @param Validator            $schemaValidator   schema validator
-     * @param CacheProvider        $cacheProvider     Cache service
+     * @param ContainerInterface $container       container
+     * @param Router             $router          router
+     * @param Serializer         $serializer      serializer
+     * @param LoggerInterface    $logger          PSR logger (e.g. Monolog)
+     * @param SchemaUtils        $schemaUtils     schema utils
+     * @param Validator          $schemaValidator schema validator
+     * @param CacheProvider      $cacheProvider   Cache service
      */
     public function __construct(
         ContainerInterface $container,

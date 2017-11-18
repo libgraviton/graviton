@@ -114,6 +114,7 @@ class Field
     public function setGroups($groups)
     {
         $this->groups = $groups;
+        return $this;
     }
 
     /**
