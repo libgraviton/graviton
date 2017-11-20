@@ -191,7 +191,7 @@ class SchemaUtils
         );
 
         if ($this->cache->contains($cacheKey)) {
-            //return $this->cache->fetch($cacheKey);
+            return $this->cache->fetch($cacheKey);
         }
 
         $invalidateCacheMap = [];
