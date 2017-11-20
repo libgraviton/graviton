@@ -49,11 +49,9 @@ class GenerateDynamicBundleCommandTest extends BaseTest
         $runnerDouble = $this->getMockBuilder('\Graviton\GeneratorBundle\CommandRunner')
             ->setConstructorArgs(array($kernelDouble, $processDouble))
             ->getMock();
-        $xmlManipulatorDouble = $this->createMock('\Graviton\GeneratorBundle\Manipulator\File\XmlManipulator');
 
         $commando = new GenerateDynamicBundleCommand(
             $runnerDouble,
-            $xmlManipulatorDouble,
             $loaderDouble,
             $serializerDouble
         );
