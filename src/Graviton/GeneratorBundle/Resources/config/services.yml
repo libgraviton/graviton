@@ -107,6 +107,7 @@ services:
     graviton_generator.command.generateresource:
         class: "%graviton_generator.command.generateresource.class%"
         arguments:
+          - "@kernel"
           - "@graviton_generator.generator.resourcegenerator"
           - "@graviton_generator.definition.loader"
         tags:

@@ -140,7 +140,7 @@ class ResourceGenerator extends AbstractGenerator
             function ($field) use ($mapper) {
                 return $mapper->map($field, $this->json);
             },
-            $fields
+            $this->mapper->buildFields($this->json)
         );
 
         $parameters = $this->parameterBuilder
