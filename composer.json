@@ -54,8 +54,7 @@
         "graviton/test-services-bundle": "~0.24",
         "symfony/phpunit-bridge": "^3.0",
         "graviton/deploy-scripts": "~0.4",
-        "doctrine/data-fixtures": "^1.2",
-        "doctrine/doctrine-bundle": "^1.8"
+        "doctrine/data-fixtures": "^1.2"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",

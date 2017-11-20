@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9cbca1a05ec374260977bc9e0791c1b0",
+    "content-hash": "5688e4d6b97735149bf7edd13b5b85c1",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -72,16 +72,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.38.4",
+            "version": "3.38.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f572a05d43e4aa1c33f3c06a78cd78b6b8edb67d"
+                "reference": "13ffa481127c08e04244f116ae85a64b4172479c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f572a05d43e4aa1c33f3c06a78cd78b6b8edb67d",
-                "reference": "f572a05d43e4aa1c33f3c06a78cd78b6b8edb67d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/13ffa481127c08e04244f116ae85a64b4172479c",
+                "reference": "13ffa481127c08e04244f116ae85a64b4172479c",
                 "shasum": ""
             },
             "require": {
@@ -148,7 +148,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2017-11-16T23:45:00+00:00"
+            "time": "2017-11-17T22:08:25+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -984,16 +984,16 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "3.4.0",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "78469df83b198d3fa0215027e2c9d396dfc4980c"
+                "reference": "a18b75b6e48a13c070df14364349d9920fbfee72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/78469df83b198d3fa0215027e2c9d396dfc4980c",
-                "reference": "78469df83b198d3fa0215027e2c9d396dfc4980c",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/a18b75b6e48a13c070df14364349d9920fbfee72",
+                "reference": "a18b75b6e48a13c070df14364349d9920fbfee72",
                 "shasum": ""
             },
             "require": {
@@ -1010,7 +1010,7 @@
             },
             "require-dev": {
                 "doctrine/data-fixtures": "@dev",
-                "phpunit/phpunit": "^5.6",
+                "phpunit/phpunit": "^5.7",
                 "symfony/form": "^2.7 || ^3.0 || ^4.0",
                 "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0",
                 "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
@@ -1054,7 +1054,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-09-24T11:19:19+00:00"
+            "time": "2017-11-18T08:21:36+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -1199,16 +1199,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.8.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "8413959ec9a52466dcd7b36b7ea08e6b082cb0ea"
+                "reference": "89bfc1475a20a24b5d6752746e088fced4910407"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/8413959ec9a52466dcd7b36b7ea08e6b082cb0ea",
-                "reference": "8413959ec9a52466dcd7b36b7ea08e6b082cb0ea",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/89bfc1475a20a24b5d6752746e088fced4910407",
+                "reference": "89bfc1475a20a24b5d6752746e088fced4910407",
                 "shasum": ""
             },
             "require": {
@@ -1242,7 +1242,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2017-07-19T06:43:32+00:00"
+            "time": "2017-11-17T14:39:36+00:00"
         },
         {
             "name": "graviton/php-rql-parser",
@@ -4232,87 +4232,6 @@
             "time": "2016-09-20T10:07:57+00:00"
         },
         {
-            "name": "doctrine/doctrine-bundle",
-            "version": "1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "8b462d952fbd386637a85d642d242a16891e0d32"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/8b462d952fbd386637a85d642d242a16891e0d32",
-                "reference": "8b462d952fbd386637a85d642d242a16891e0d32",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^2.5.12",
-                "doctrine/doctrine-cache-bundle": "~1.2",
-                "jdorn/sql-formatter": "~1.1",
-                "php": "^5.5.9|^7.0",
-                "symfony/console": "~2.7|~3.0|~4.0",
-                "symfony/dependency-injection": "~2.7|~3.0|~4.0",
-                "symfony/doctrine-bridge": "~2.7|~3.0|~4.0",
-                "symfony/framework-bundle": "~2.7|~3.0|~4.0"
-            },
-            "require-dev": {
-                "doctrine/orm": "~2.3",
-                "phpunit/phpunit": "^4.8.36|^5.7|^6.4",
-                "satooshi/php-coveralls": "^1.0",
-                "symfony/phpunit-bridge": "~2.7|~3.0|~4.0",
-                "symfony/property-info": "~2.8|~3.0|~4.0",
-                "symfony/validator": "~2.7|~3.0|~4.0",
-                "symfony/yaml": "~2.7|~3.0|~4.0",
-                "twig/twig": "~1.12|~2.0"
-            },
-            "suggest": {
-                "doctrine/orm": "The Doctrine ORM integration is optional in the bundle.",
-                "symfony/web-profiler-bundle": "To use the data collector."
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.8.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Doctrine\\Bundle\\DoctrineBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Doctrine Project",
-                    "homepage": "http://www.doctrine-project.org/"
-                },
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "Symfony DoctrineBundle",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "dbal",
-                "orm",
-                "persistence"
-            ],
-            "time": "2017-11-05T23:21:03+00:00"
-        },
-        {
             "name": "graviton/deploy-scripts",
             "version": "v0.5.0",
             "source": {
@@ -4379,16 +4298,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.27.0",
+            "version": "v0.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "df9113db00d3a3c789bf16e1791ace31140a7517"
+                "reference": "e30db7eea0b82ee0c4747d25549a7a5a0dd1a608"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/df9113db00d3a3c789bf16e1791ace31140a7517",
-                "reference": "df9113db00d3a3c789bf16e1791ace31140a7517",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/e30db7eea0b82ee0c4747d25549a7a5a0dd1a608",
+                "reference": "e30db7eea0b82ee0c4747d25549a7a5a0dd1a608",
                 "shasum": ""
             },
             "type": "library",
@@ -4408,57 +4327,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2017-05-02T12:25:50+00:00"
-        },
-        {
-            "name": "jdorn/sql-formatter",
-            "version": "v1.2.17",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jdorn/sql-formatter.git",
-                "reference": "64990d96e0959dff8e059dfcdc1af130728d92bc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/64990d96e0959dff8e059dfcdc1af130728d92bc",
-                "reference": "64990d96e0959dff8e059dfcdc1af130728d92bc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.3.x-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "lib"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jeremy Dorn",
-                    "email": "jeremy@jeremydorn.com",
-                    "homepage": "http://jeremydorn.com/"
-                }
-            ],
-            "description": "a PHP SQL highlighting library",
-            "homepage": "https://github.com/jdorn/sql-formatter/",
-            "keywords": [
-                "highlight",
-                "sql"
-            ],
-            "time": "2014-01-12T16:20:24+00:00"
+            "time": "2017-11-18T10:32:16+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
