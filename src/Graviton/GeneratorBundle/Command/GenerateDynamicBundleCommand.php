@@ -403,9 +403,7 @@ class GenerateDynamicBundleCommand extends Command
                 'graviton:generate:resource',
                 '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $subRecource->getId(),
-                '--format' => 'xml',
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
-                '--fields' => $this->getFieldString($subRecource),
                 '--no-controller' => 'true',
             ];
             $this->generateResource($arguments, $output, $jsonDef);
@@ -423,15 +421,12 @@ class GenerateDynamicBundleCommand extends Command
      */
     protected function generateMainResource(OutputInterface $output, JsonDefinition $jsonDef, $bundleName)
     {
-        $fields = $jsonDef->getFields();
-        if (!empty($fields)) {
+        if (!empty($jsonDef->getFields())) {
             $arguments = array(
                 'graviton:generate:resource',
                 '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
-                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
-                '--format' => 'xml',
-                '--fields' => $this->getFieldString($jsonDef)
+                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json')
             );
 
             $this->generateResource($arguments, $output, $jsonDef);
@@ -548,30 +543,6 @@ class GenerateDynamicBundleCommand extends Command
             $this->bundleBundleNamespace,
             $this->bundleBundleClassname,
             $this->bundleBundleClassfile
-        );
-    }
-
-    /**
-     * Returns the field string as described in the json file
-     *
-     * @param JsonDefinition $jsonDef The json def
-     *
-     * @return string CommandLine string for the generator command
-     */
-    private function getFieldString(JsonDefinition $jsonDef)
-    {
-        $ret = array();
-
-        foreach ($jsonDef->getFields() as $field) {
-            // don't add 'id' field it seems..
-            if ($field->getName() != 'id') {
-                $ret[] = $field->getName() . ':' . $field->getTypeDoctrine();
-            }
-        }
-
-        return implode(
-            ' ',
-            $ret
         );
     }
 
