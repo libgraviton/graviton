@@ -18,6 +18,9 @@
     <property name="numericMinimum" serialized-name="minimum" type="double" accessor-getter="getNumericMinimum" accessor-setter="setNumericMinimum" expose="true"/>
     <property name="numericMaximum" serialized-name="maximum" type="double" accessor-getter="getNumericMaximum" accessor-setter="setNumericMaximum" expose="true"/>
     <property name="items" type="Graviton\SchemaBundle\Document\Schema" accessor-getter="getItems" accessor-setter="setItems" expose="true"/>
+    <property name="groups" serialized-name="x-groups" accessor-getter="getGroups" accessor-setter="setGroups" expose="true">
+      <type><![CDATA[array<string>]]></type>
+    </property>
     <property name="constraints" serialized-name="x-constraints" accessor-getter="getConstraints" accessor-setter="setConstraints" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>

@@ -55,6 +55,12 @@
       },
 {% endif %}
 
+{% if attribute(field, "groups") is defined and field.groups %}
+      "x-groups": {{ field.groups|json_encode() }},
+{% else %}
+      "x-groups": [],
+{% endif %}
+
 {% if field.constraints is defined and field.constraints != null %}
       "x-constraints": {{ field.constraints|json_encode() }},
 {% endif %}
