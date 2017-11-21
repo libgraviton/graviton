@@ -146,6 +146,11 @@ class Schema
     /**
      * @var array<string>
      */
+    protected $groups;
+
+    /**
+     * @var array<string>
+     */
     protected $constraints;
 
     /**
@@ -540,6 +545,28 @@ class Schema
     public function setDocumentClass($documentClass)
     {
         $this->documentClass = $documentClass;
+    }
+
+    /**
+     * get Groups
+     *
+     * @return array Groups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * set Groups
+     *
+     * @param array $groups groups
+     *
+     * @return void
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
     }
 
     /**

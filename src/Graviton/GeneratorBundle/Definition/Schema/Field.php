@@ -18,6 +18,10 @@ class Field
      */
     private $name;
     /**
+     * @var array
+     */
+    private $groups;
+    /**
      * @var string
      */
     private $type;
@@ -87,6 +91,29 @@ class Field
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * get Groups
+     *
+     * @return array Groups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * set Groups
+     *
+     * @param array $groups groups
+     *
+     * @return void
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
         return $this;
     }
 

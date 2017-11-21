@@ -11,7 +11,6 @@ use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
  * a bundle.
  *
  * @todo     if this json format serves in more places; move this class
- * @todo     validate json
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License

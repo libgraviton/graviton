@@ -12,12 +12,11 @@ parameters:
     graviton_generator.resourcegenerator.parameter_builder.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder
     graviton_generator.generator.resourcegenerator.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
     graviton_generator.command.generateresource.class: Graviton\GeneratorBundle\Command\GenerateResourceCommand
-    graviton_generator.manipulator.xml_file.class: Graviton\GeneratorBundle\Manipulator\File\XmlManipulator
     graviton_generator.command_runner.class: Graviton\GeneratorBundle\CommandRunner
     graviton.document.serializer.handler.arrayobject.class: Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler
-    
+
     generator.dynamicbundles.mongocollection: ~
-    
+
     #you can supply a custom json object in order to find specific documents -->
     generator.dynamicbundles.mongocollection.criteria: {}
 

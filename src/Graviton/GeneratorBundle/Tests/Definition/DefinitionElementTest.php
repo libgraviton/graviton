@@ -101,6 +101,7 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         $def = array(
             'name' => 'testField',
             'type' => 'varchar',
+            'groups' => null,
             'length' => 200,
             'title' => 'A testing title',
             'description' => 'A lengthy and detailed description.',

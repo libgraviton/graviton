@@ -155,6 +155,18 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * get groups for a given field
+     *
+     * @param string $field field name
+     *
+     * @return array<string> group names
+     */
+    public function getGroupsOfField($field)
+    {
+        return $this->getSchemaField($field, 'x-groups', []);
+    }
+
+    /**
      * get property model for embedded field
      *
      * @param string $mapping name of mapping class
