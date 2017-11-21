@@ -23,7 +23,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializationContext;
 use Graviton\RestBundle\Controller\RestController;
 use Doctrine\Common\Cache\CacheProvider;
 
@@ -46,11 +45,6 @@ final class RestUtils implements RestUtilsInterface
      * @var Serializer
      */
     private $serializer;
-
-    /**
-     * @var null|SerializationContext
-     */
-    private $serializerContext;
 
     /**
      * @var Router
@@ -78,28 +72,25 @@ final class RestUtils implements RestUtilsInterface
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface   $container         container
-     * @param Router               $router            router
-     * @param Serializer           $serializer        serializer
-     * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
-     * @param SerializationContext $serializerContext context for serializer
-     * @param SchemaUtils          $schemaUtils       schema utils
-     * @param Validator            $schemaValidator   schema validator
-     * @param CacheProvider        $cacheProvider     Cache service
+     * @param ContainerInterface $container       container
+     * @param Router             $router          router
+     * @param Serializer         $serializer      serializer
+     * @param LoggerInterface    $logger          PSR logger (e.g. Monolog)
+     * @param SchemaUtils        $schemaUtils     schema utils
+     * @param Validator          $schemaValidator schema validator
+     * @param CacheProvider      $cacheProvider   Cache service
      */
     public function __construct(
         ContainerInterface $container,
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
         CacheProvider $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
-        $this->serializerContext = $serializerContext;
         $this->router = $router;
         $this->logger = $logger;
         $this->schemaUtils = $schemaUtils;
@@ -154,8 +145,7 @@ final class RestUtils implements RestUtilsInterface
         try {
             return $this->getSerializer()->serialize(
                 $content,
-                $format,
-                $this->getSerializerContext()
+                $format
             );
         } catch (\Exception $e) {
             $msg = sprintf(
@@ -318,16 +308,6 @@ final class RestUtils implements RestUtilsInterface
     public function getSerializer()
     {
         return $this->serializer;
-    }
-
-    /**
-     * Get the serializer context
-     *
-     * @return SerializationContext
-     */
-    public function getSerializerContext()
-    {
-        return clone $this->serializerContext;
     }
 
     /**

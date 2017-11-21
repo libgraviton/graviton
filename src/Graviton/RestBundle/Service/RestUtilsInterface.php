@@ -9,9 +9,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializationContext;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -59,13 +57,6 @@ interface RestUtilsInterface
      * @return Serializer
      */
     public function getSerializer();
-
-    /**
-     * Get the serializer context
-     *
-     * @return SerializationContext
-     */
-    public function getSerializerContext();
 
     /**
      * It has been deemed that we search for OPTION routes in order to detect our

@@ -5,15 +5,12 @@
 
 namespace Graviton\DocumentBundle;
 
+use Graviton\BundleBundle\GravitonBundleInterface;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\BundleBundle\GravitonBundleInterface;
-use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
-use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
-use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPass;
@@ -51,11 +48,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array(
-            new DoctrineMongoDBBundle(),
-            new StofDoctrineExtensionsBundle(),
-            new DoctrineFixturesBundle(),
-        );
+        return [];
     }
 
     /**

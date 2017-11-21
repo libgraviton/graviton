@@ -6,9 +6,7 @@
 namespace Graviton\GeneratorBundle\Command;
 
 use Graviton\GeneratorBundle\Generator\BundleGenerator;
-use Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateBundleCommand as SymfonyGenerateBundleCommand;
-use Sensio\Bundle\GeneratorBundle\Command\Helper\QuestionHelper;
 use Sensio\Bundle\GeneratorBundle\Model\Bundle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -31,11 +29,6 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
     private $loaderBundleName;
 
     /**
-     * @var boolean
-     */
-    private $doUpdate;
-
-    /**
      * {@inheritDoc}
      *
      * @return void
@@ -51,13 +44,6 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
             'Name of the bundle to manipulate, defaults to GravitonCoreBundle',
             'GravitonCoreBundle'
         )
-             ->addOption(
-                 'doUpdateKernel',
-                 'dak',
-                 InputOption::VALUE_OPTIONAL,
-                 'If "true", update the kernel, "false" if we should skip that.',
-                 'true'
-             )
              ->addOption(
                  'deleteBefore',
                  'delbef',
@@ -80,7 +66,6 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->loaderBundleName = $input->getOption('loaderBundleName');
-        $this->doUpdate = $input->getOption('doUpdateKernel');
 
         $deleteBefore = $input->getOption('deleteBefore');
         $fs = new Filesystem();
@@ -106,53 +91,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      */
     protected function updateKernel(OutputInterface $output, KernelInterface $kernel, Bundle $bundle)
     {
-        // skip if kernel manipulation disabled by options (defaults to true)
-        if ($this->doUpdate == 'false') {
-            return;
-        }
-
-        $output->write('Enabling the bundle inside the core bundle: ');
-        $coreBundle = $kernel->getBundle($this->loaderBundleName);
-        if (!is_a(
-            $coreBundle,
-            '\Graviton\BundleBundle\GravitonBundleInterface'
-        )
-        ) {
-            throw new \LogicException(
-                'GravitonCoreBundle does not implement GravitonBundleInterface'
-            );
-        }
-        $manip = new BundleBundleManipulator($coreBundle);
-        try {
-            $ret = $auto ? $manip->addBundle($namespace . '\\' . $bundle) : false;
-
-            if (!$ret) {
-                $reflected = new \ReflectionObject($kernel);
-
-                return array(
-                    sprintf(
-                        '- Edit <comment>%s</comment>',
-                        $reflected->getFilename()
-                    ),
-                    '  and add the following bundle in the <comment>GravitonCoreBundle::getBundles()</comment> method:',
-                    '',
-                    sprintf(
-                        '    <comment>new %s(),</comment>',
-                        $namespace . '\\' . $bundle
-                    ),
-                    ''
-                );
-            }
-        } catch (\RuntimeException $e) {
-            return array(
-                sprintf(
-                    'Bundle <comment>%s</comment> is already defined in <comment>%s)</comment>.',
-                    $namespace . '\\' . $bundle,
-                    'sGravitonCoreBundle::getBundles()'
-                ),
-                ''
-            );
-        }
+        return;
     }
 
     /**
@@ -166,7 +105,7 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
      */
     protected function updateRouting(OutputInterface $output, Bundle $bundle)
     {
-        return array();
+        return [];
     }
 
     /**

@@ -94,13 +94,9 @@ services:
         class: "%graviton_generator.generator.resourcegenerator.class%"
         arguments:
           - "@filesystem"
-          - "@doctrine"
           - "@kernel"
           - "@graviton_generator.resourcegenerator.field_mapper"
           - "@graviton_generator.resourcegenerator.parameter_builder"
-
-    graviton_generator.manipulator.xml_file:
-        class: "%graviton_generator.manipulator.xml_file.class%"
 
     graviton_generator.command_runner:
         class: "%graviton_generator.command_runner.class%"
@@ -111,6 +107,7 @@ services:
     graviton_generator.command.generateresource:
         class: "%graviton_generator.command.generateresource.class%"
         arguments:
+          - "@kernel"
           - "@graviton_generator.generator.resourcegenerator"
           - "@graviton_generator.definition.loader"
         tags:
@@ -151,7 +148,6 @@ services:
         class: "Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand"
         arguments:
           - "@graviton_generator.command_runner"
-          - "@graviton_generator.manipulator.xml_file"
           - "@graviton_generator.definition.loader"
           - "@jms_serializer"
           - "%generator.bundlebundle.additions%"
