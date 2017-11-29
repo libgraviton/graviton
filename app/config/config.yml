@@ -40,6 +40,20 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
+fos_http_cache:
+    tags:
+        enabled: true
+    proxy_client:
+        varnish:
+            tags_header: X-Cache-Tags
+            header_length: 1234
+            #default_ban_headers:
+            #    Foo: Bar
+            http:
+                servers:
+                    - 127.0.0.1:80
+                #base_url: yourwebsite.com
+
 # doctrine cache configuration
 doctrine_cache:
     providers:
