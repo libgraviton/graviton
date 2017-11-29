@@ -1,18 +1,18 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: dn
- * Date: 24.11.17
- * Time: 16:37
+ * listener that invalidates a server cache in front of graviton, if so configured
  */
-
 namespace Graviton\CacheBundle\Listener;
-
 
 use FOS\HttpCacheBundle\CacheManager;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @link     http://swisscom.ch
+ */
 class ProxyCacheListener
 {
 
@@ -26,12 +26,22 @@ class ProxyCacheListener
      */
     private $cacheManager;
 
+    /**
+     * which methods should be tagged
+     *
+     * @var array
+     */
     private $tagOnMethodes = [
         'GET',
         'OPTIONS',
         'HEAD'
     ];
 
+    /**
+     * tag that every item should receive
+     *
+     * @var array
+     */
     private $baseTags = [
         'all'
     ];
