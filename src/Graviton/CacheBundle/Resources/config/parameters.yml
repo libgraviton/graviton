@@ -1,3 +1,4 @@
 parameters:
     graviton.cache.listener.etagresponselistener.class: Graviton\CacheBundle\Listener\ETagResponseListener
     graviton.cache.listener.ifnonematchresponselistener.class: Graviton\CacheBundle\Listener\IfNoneMatchResponseListener
+    graviton.cache.listener.proxycache.class: Graviton\CacheBundle\Listener\ProxyCacheListener

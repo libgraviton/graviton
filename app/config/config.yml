@@ -40,6 +40,19 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
+fos_http_cache:
+    tags:
+        enabled: true
+    proxy_client:
+        default: "%graviton.server.proxy.client%"
+        noop: ~
+        varnish:
+            tags_header: X-Cache-Tags
+            header_length: 1234
+            http:
+                servers:
+                    - "%graviton.server.proxy.varnish.hostname%"
+
 # doctrine cache configuration
 doctrine_cache:
     providers:
