@@ -176,7 +176,9 @@
                     "graviton.file.s3.credentials.secret": "FILE_S3_SECRET",
                     "graviton.rest.serializer.groups": "SERIALIZER_GROUPS",
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
-                    "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME"
+                    "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
+                    "graviton.server.proxy.client": "PROXY_SERVER_CLIENT",
+                    "graviton.server.proxy.varnish.hostname": "PROXY_SERVER_VARNISH_HOSTNAME"
                 }
             },
             {
