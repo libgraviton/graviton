@@ -44,15 +44,14 @@ fos_http_cache:
     tags:
         enabled: true
     proxy_client:
+        default: "%graviton.server.proxy.client%"
+        noop: ~
         varnish:
             tags_header: X-Cache-Tags
             header_length: 1234
-            #default_ban_headers:
-            #    Foo: Bar
             http:
                 servers:
-                    - 127.0.0.1:80
-                #base_url: yourwebsite.com
+                    - "%graviton.server.proxy.varnish.hostname%"
 
 # doctrine cache configuration
 doctrine_cache:

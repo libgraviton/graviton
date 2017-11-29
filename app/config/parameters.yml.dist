@@ -90,6 +90,10 @@ parameters:
     graviton.proxy.custom.sources: {}
     graviton.proxy.redirect.sources: {}
 
+    # settings for graviton server proxy (a proxy in front of graviton)
+    graviton.server.proxy.client: noop
+    graviton.server.proxy.varnish.hostname: "127.0.0.1:8090"
+
     # List of collections to be saved in cache, in seconds
     graviton.cache.collections:
         EventStatus: 60
