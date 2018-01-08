@@ -17,16 +17,41 @@ services:
         arguments:
           - "@request_stack"
 
-    graviton.rest.serializer.deserializercontext:
-        class: "%graviton.rest.serializer.deserializercontext.class%"
+    graviton.rest.serializer:
+        parent: "jms_serializer"
         calls:
           -
-            method: setSerializeNull
+            method: setSerializationContextFactory
             arguments:
-              - true
+              - "@graviton.rest.serializer.serializercontext.factory"
 
-    graviton.rest.doctrine:
-        alias: doctrine
+    graviton.rest.serializer.serializercontext.factory:
+        parent: "graviton.rest.serializer.context.abstract"
+        class: "%graviton.rest.serializer.serializercontext.factory.class%"
+
+    graviton.rest.serializer.context.abstract:
+        class: "%graviton.rest.serializer.context.abstract.class%"
+        calls:
+          -
+            method: setSetSerializeNull
+            arguments:
+              - false
+          -
+            method: setRequestStack
+            arguments:
+              - "@request_stack"
+          -
+            method: setGroups
+            arguments:
+              - "%graviton.rest.serializer.groups%"
+          -
+            method: setOverrideHeaderName
+            arguments:
+              - "%graviton.rest.serializer.override_header_name%"
+          -
+            method: setOverrideHeaderAllowed
+            arguments:
+              - "%graviton.rest.serializer.allow_group_override_header%"
 
     graviton.rest.router:
         alias: router
@@ -117,9 +142,8 @@ services:
         arguments:
           - "@service_container"
           - "@router"
-          - "@jms_serializer"
+          - "@graviton.rest.serializer"
           - "@logger"
-          - "@graviton.rest.serializer.serializercontext"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
           - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"

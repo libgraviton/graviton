@@ -34,6 +34,22 @@ class PrimitiveArrayControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+
+
+        /*********
+         * FIXES IN FIXTURES
+         * Sadly - for this new approach to work, we need to fix our fixtures..
+         * they get generated wrong ({} converted to []), which leads to wrong data in db)
+         */
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/primitivearray/testdata');
+        $object = $client->getResults();
+        $object->hasharray[2] = new \stdClass();
+        $object->arrayhash[0]->hasharray[2] = new \stdClass();
+        $object->hash->hasharray[2] = new \stdClass();
+        $client = static::createRestClient();
+        $client->put('/testcase/primitivearray/testdata', $object);
+        $this->assertEmpty($client->getResponse()->getContent());
     }
 
     /**
@@ -134,7 +150,9 @@ class PrimitiveArrayControllerTest extends RestTestCase
             'rawData'      => (object) [
                 'hasharray' => [(object) ['x' => 'y'], (object) []],
                 'emptyhash' => (object) [],
-                'emptystring' => ""
+                'emptystring' => "",
+                'emptyarray' => [],
+                'emptyarrayhash' => [ (object) [] ]
             ],
         ];
 
@@ -152,8 +170,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $result = $client->getResults();
         $this->assertNotNull($result->id);
         unset($result->id);
-        unset($data->rawData->hasharray[1]);
-        unset($data->rawData->emptyhash);
         $this->assertEquals($this->fixDateTimezone($data), $result);
     }
 
@@ -202,6 +218,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/primitivearray/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
         $this->assertEquals($this->fixDateTimezone($data), $client->getResults());
     }
 

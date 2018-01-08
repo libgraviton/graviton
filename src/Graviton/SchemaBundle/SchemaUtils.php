@@ -301,6 +301,7 @@ class SchemaUtils
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
             $property->setType($meta->getTypeOfField($field));
+            $property->setGroups($model->getGroupsOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
 
             // we only want to render if it's true

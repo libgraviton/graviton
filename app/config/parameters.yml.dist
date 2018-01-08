@@ -9,6 +9,12 @@ parameters:
     # important: this should best be a path relative to the graviton root dir! (./app/../)
     graviton.generator.dynamicbundle.dir: null
 
+    # which serializer groups should be (de)serialized on this instance
+    graviton.rest.serializer.groups: null
+    # if true, then the 'x-groups' header can override the serialized groups
+    graviton.rest.serializer.allow_group_override_header: false
+    graviton.rest.serializer.override_header_name: x-groups
+
     # Dependency injection in Security Bundle
     graviton.security.authentication.header_required: false
     graviton.security.authentication.test_username: false

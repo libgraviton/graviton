@@ -9,6 +9,10 @@ parameters:
     # in tests, we always use the array cache provider
     graviton.doctrine.cache.provider.service_id: doctrine_cache.providers.local
     #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
+    # for testing group serialization
+    graviton.rest.serializer.groups: {  }
+    graviton.rest.serializer.allow_group_override_header: true
+    graviton.rest.serializer.override_header_name: x-groups
 
 framework:
     test: ~
@@ -56,32 +60,11 @@ graviton_proxy:
 # DoctrineMongoDB Configuration
 # see: http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/config.html
 doctrine_mongodb:
-    default_database: "%mongodb.default.server.db%"
     connections:
-        default:
-            server: "%mongodb.default.server.uri%"
-            options: { connect: true }
         faulty:
             server: failServer
             options: { connect: true }
     document_managers:
-        default:
-            retry_connect: 3
-            retry_query: 1
-            mappings:
-                GravitonCoreBundle: ~
-                GravitonRabbitMqBundle: ~
-                GravitonI18nBundle: ~
-            filters:
-                softdeleteable:
-                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
-                    enabled: true
-            metadata_cache_driver:
-                type: array
-                class: null
-                host: null
-                port: 0
-                instance_class: null
         faulty:
             connection: faulty
             retry_connect: 3
@@ -90,7 +73,3 @@ doctrine_mongodb:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
                 GravitonI18nBundle: ~
-            filters:
-                softdeleteable:
-                    class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
-                    enabled: true
