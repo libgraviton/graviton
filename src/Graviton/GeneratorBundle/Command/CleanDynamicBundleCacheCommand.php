@@ -46,9 +46,9 @@ class CleanDynamicBundleCacheCommand extends Command
         parent::configure();
 
         $this->setName('graviton:clean:dynamicbundles')
-             ->setDescription(
-                 'Removes the folder with the generated dynamic bundles'
-             );
+            ->setDescription(
+                'Removes the folder with the generated dynamic bundles'
+            );
     }
 
     /**
