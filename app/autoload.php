@@ -8,7 +8,6 @@
  */
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Composer\Autoload\ClassLoader;
 
 /**
  * don't touch this unless you know what you're doing..
