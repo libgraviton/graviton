@@ -36,7 +36,7 @@
         "thefrozenfire/swagger": "=2.0.7",
         "symfony/psr-http-message-bridge": "^1.0.0",
         "php-amqplib/rabbitmq-bundle": "^1.13.0",
-        "justinrainbow/json-schema": "~5.1.0",
+        "justinrainbow/json-schema": "~5.2.0",
         "guzzlehttp/guzzle": "^6.3.0",
         "riverline/multipart-parser": "^1.1.0",
         "oneup/flysystem-bundle": "^1.11",
