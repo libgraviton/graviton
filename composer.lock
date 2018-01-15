@@ -1250,16 +1250,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.10.0",
+            "version": "v1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "88a941bbe323e7a6e24e1e0df59eeaea43c9739e"
+                "reference": "cb75ec00abb435cd8ffb94fc2edf1e284ffabc88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/88a941bbe323e7a6e24e1e0df59eeaea43c9739e",
-                "reference": "88a941bbe323e7a6e24e1e0df59eeaea43c9739e",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/cb75ec00abb435cd8ffb94fc2edf1e284ffabc88",
+                "reference": "cb75ec00abb435cd8ffb94fc2edf1e284ffabc88",
                 "shasum": ""
             },
             "require": {
@@ -1293,7 +1293,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2018-01-10T15:09:19+00:00"
+            "time": "2018-01-15T12:41:54+00:00"
         },
         {
             "name": "graviton/php-rql-parser",
