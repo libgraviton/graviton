@@ -118,6 +118,12 @@ services:
     graviton_generator.command.cleandynamicbundle.kernel:
         alias: "kernel"
 
+    graviton_generator.command.generatebundle:
+        class: "Graviton\\GeneratorBundle\\Command\\GenerateBundleCommand"
+        tags:
+          -
+            name: console.command
+
     graviton_generator.command.cleandynamicbundle.filesystem:
         class: "Symfony\\Component\\Filesystem\\Filesystem"
 

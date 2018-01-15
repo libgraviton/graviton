@@ -1,9 +1,15 @@
 services:
     graviton.rabbitmq.consumer.dump:
         class: "%graviton.rabbitmq.consumer.dump.class%"
-        
+
     graviton.rabbitmq.document.queueevent:
         class: "%graviton.rabbitmq.document.queueevent.class%"
+
+    graviton.rabbitmq.command.produce:
+        class: "%graviton.rabbitmq.command.produce.class%"
+        tags:
+          -
+            name: console.command
 
     graviton.rabbitmq.jobproducer:
         class: "%graviton.rabbitmq.producer.job.class%"
