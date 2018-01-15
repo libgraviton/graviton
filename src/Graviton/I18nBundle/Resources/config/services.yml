@@ -231,3 +231,6 @@ services:
           - "@graviton.i18n.repository.language"
           - "@graviton.i18n.repository.translatable"
           - "@filesystem"
+        tags:
+          -
+            name: console.command
