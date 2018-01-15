@@ -44,15 +44,15 @@ class GenerateBundleCommand extends SymfonyGenerateBundleCommand
             'Name of the bundle to manipulate, defaults to GravitonCoreBundle',
             'GravitonCoreBundle'
         )
-             ->addOption(
-                 'deleteBefore',
-                 'delbef',
-                 InputOption::VALUE_OPTIONAL,
-                 'If a string, that directory will be deleted prior to generation',
-                 null
-             )
-             ->setName('graviton:generate:bundle')
-             ->setDescription('Generates a graviton bundle');
+            ->addOption(
+                'deleteBefore',
+                'delbef',
+                InputOption::VALUE_OPTIONAL,
+                'If a string, that directory will be deleted prior to generation',
+                null
+            )
+            ->setName('graviton:generate:bundle')
+            ->setDescription('Generates a graviton bundle');
     }
 
     /**
