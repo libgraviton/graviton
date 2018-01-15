@@ -27,7 +27,6 @@ framework:
         #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_hosts:   ~
-    trusted_proxies: ~
     session:
         name: graviton
         # handler_id set to null will use default session handler from php.ini

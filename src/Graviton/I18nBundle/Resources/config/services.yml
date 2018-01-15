@@ -129,7 +129,14 @@ services:
             alias: "odm"
 
     graviton.i18n.translator:
-        alias: "translator"
+        class: Symfony\Component\Translation\TranslatorInterface
+        factory: 'graviton.i18n.translator.factory:createTranslator'
+        arguments:
+            - "@translator"
+            - "@graviton.18n.cacheutils"
+
+    graviton.i18n.translator.factory:
+        class: "%graviton.i18n.translator.factory.class%"
 
     graviton.i18n.request:
         class: "%graviton.i18n.request.class%"

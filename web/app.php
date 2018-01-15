@@ -42,12 +42,7 @@ if (!$activateDebug) {
     $kernel = new AppCache($kernel);
 }
 
-// When using the HttpCache, you need to call the method in your front controller
-// instead of relying on the configuration parameter
-// Request::enableHttpMethodParameterOverride();
-
-// don't trust Forwarded header; trust X-Forwarded-*
-Request::setTrustedHeaderName(Request::HEADER_FORWARDED, null);
+Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_X_FORWARDED_ALL);
 
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

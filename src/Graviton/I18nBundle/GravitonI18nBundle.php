@@ -41,7 +41,5 @@ class GravitonI18nBundle extends Bundle implements GravitonBundleInterface
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-
-        $container->addCompilerPass(new ReplaceTranslatorCompilerPass());
     }
 }
