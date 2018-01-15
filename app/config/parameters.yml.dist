@@ -97,8 +97,8 @@ parameters:
     # caching related settings
     # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
     # for redis use:
-    #    graviton.cache.provider.service_id: doctrine_cache.providers.redis
-    graviton.cache.provider.service_id: doctrine_cache.providers.local
+    #    graviton.cache.provider.service_id: graviton.cache.provider.redis
+    graviton.cache.provider.service_id: graviton.cache.provider.local
     graviton.cache.redis.host: localhost
     graviton.cache.redis.port: 6379
 

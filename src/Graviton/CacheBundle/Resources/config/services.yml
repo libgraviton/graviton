@@ -16,3 +16,14 @@ services:
             event: kernel.response
             method: onKernelResponse
             priority: 100
+
+    ## public aliases for doctrine cache bundle providers
+    graviton.cache.provider.local:
+        alias: doctrine_cache.providers.local
+        public: true
+    graviton.cache.provider.array:
+        alias: doctrine_cache.providers.array
+        public: true
+    graviton.cache.provider.redis:
+        alias: doctrine_cache.providers.redis
+        public: true
