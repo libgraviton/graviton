@@ -1,6 +1,7 @@
 services:
     graviton.document.service.extrefconverter:
         class: "%graviton.document.service.extrefconverter.class%"
+        public: true
         arguments:
             - "@router"
             - "%graviton.document.type.extref.mapping%"

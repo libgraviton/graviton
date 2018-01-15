@@ -233,4 +233,4 @@ services:
           - "@filesystem"
         tags:
           -
-            name: "console.command"
+            name: console.command
