@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e54913c1c8d1c12bd921fc78c5470662",
+    "content-hash": "d20db71dfe6605eedf35bea87b6346b3",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -72,16 +72,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.48.13",
+            "version": "3.50.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "e083a4dae6f460df1d02dcd827cf547592f5dc29"
+                "reference": "ed3308588d5d8d8f7a96dc93ff297988cefa7b4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e083a4dae6f460df1d02dcd827cf547592f5dc29",
-                "reference": "e083a4dae6f460df1d02dcd827cf547592f5dc29",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ed3308588d5d8d8f7a96dc93ff297988cefa7b4a",
+                "reference": "ed3308588d5d8d8f7a96dc93ff297988cefa7b4a",
                 "shasum": ""
             },
             "require": {
@@ -148,7 +148,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-01-12T21:20:32+00:00"
+            "time": "2018-01-18T01:08:26+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -1296,6 +1296,52 @@
             "time": "2018-01-15T12:41:54+00:00"
         },
         {
+            "name": "graviton/php-proxy",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/php-proxy.git",
+                "reference": "f64eb1dc0f4511866f838a1b79916d1d7e5b31ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/php-proxy/zipball/f64eb1dc0f4511866f838a1b79916d1d7e5b31ce",
+                "reference": "f64eb1dc0f4511866f838a1b79916d1d7e5b31ce",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "psr/http-message": "^1.0",
+                "zendframework/zend-diactoros": "~1.0"
+            },
+            "require-dev": {
+                "libgraviton/codesniffer": "~2",
+                "phpunit/phpunit": "^5.7.0",
+                "squizlabs/php_codesniffer": "~3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Graviton\\PhpProxy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/php-proxy/graphs/contributors"
+                }
+            ],
+            "description": "A very simple guzzle based php-proxy using PSR interfaces.",
+            "keywords": [
+                "proxy"
+            ],
+            "time": "2018-01-18T09:50:34+00:00"
+        },
+        {
             "name": "graviton/php-rql-parser",
             "version": "v2.4.0",
             "source": {
@@ -1630,79 +1676,27 @@
             "time": "2015-11-10T17:04:01+00:00"
         },
         {
-            "name": "jenssegers/proxy",
-            "version": "v3.0.0-beta2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jenssegers/php-proxy.git",
-                "reference": "e29cbee6cbd35df012eb854016dbd0460974ec92"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jenssegers/php-proxy/zipball/e29cbee6cbd35df012eb854016dbd0460974ec92",
-                "reference": "e29cbee6cbd35df012eb854016dbd0460974ec92",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "~6.0",
-                "psr/http-message": "^1.0",
-                "relay/relay": "^0.2.0",
-                "zendframework/zend-diactoros": "~1.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "~0.9",
-                "phpunit/phpunit": "~4.4",
-                "satooshi/php-coveralls": "~0.6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Proxy\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jens Segers",
-                    "homepage": "http://jenssegers.be"
-                },
-                {
-                    "name": "Ota Mares",
-                    "email": "o.mares@rebuy.de",
-                    "homepage": "http://www.rebuy.de"
-                }
-            ],
-            "description": "Proxy library that forwards requests to the desired url and returns the response.",
-            "homepage": "https://github.com/jenssegers/php-proxy",
-            "keywords": [
-                "proxy"
-            ],
-            "time": "2015-10-30T18:45:42+00:00"
-        },
-        {
             "name": "jms/aop-bundle",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSAopBundle.git",
-                "reference": "78000d007e74283cc564a58e184d7f62548ad394"
+                "reference": "4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSAopBundle/zipball/78000d007e74283cc564a58e184d7f62548ad394",
-                "reference": "78000d007e74283cc564a58e184d7f62548ad394",
+                "url": "https://api.github.com/repos/schmittjoh/JMSAopBundle/zipball/4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0",
+                "reference": "4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0",
                 "shasum": ""
             },
             "require": {
                 "jms/cg": "^1.1",
                 "php": ">=5.3.9",
-                "symfony/framework-bundle": "^2.3|^3.0"
+                "symfony/framework-bundle": "^2.3 || ^3.0 || ^4.0"
             },
             "require-dev": {
-                "symfony/phpunit-bridge": "^2.7"
+                "phpunit/phpunit": "^4.8.36 | ^5.0",
+                "symfony/phpunit-bridge": "^2.7 || ^4.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -1730,7 +1724,7 @@
                 "annotations",
                 "aop"
             ],
-            "time": "2015-12-09T16:30:46+00:00"
+            "time": "2018-01-16T10:22:28+00:00"
         },
         {
             "name": "jms/cg",
@@ -3251,66 +3245,24 @@
             "time": "2017-01-02T13:31:39+00:00"
         },
         {
-            "name": "relay/relay",
-            "version": "0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/relayphp/Relay.Relay.git",
-                "reference": "6f1f1e2392ea690d8d4402495d1104017bfa9062"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/relayphp/Relay.Relay/zipball/6f1f1e2392ea690d8d4402495d1104017bfa9062",
-                "reference": "6f1f1e2392ea690d8d4402495d1104017bfa9062",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5.0",
-                "psr/http-message": "~1.0"
-            },
-            "require-dev": {
-                "zendframework/zend-diactoros": "~1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Relay\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Relay.Relay Contributors",
-                    "homepage": "https://github.com/relayphp/Relay.Relay/contributors"
-                }
-            ],
-            "description": "A PSR-7 middleware dispatcher.",
-            "homepage": "https://github.com/relayphp/Relay.Relay",
-            "keywords": [
-                "middleware",
-                "psr-7"
-            ],
-            "time": "2015-06-25T14:27:22+00:00"
-        },
-        {
             "name": "riverline/multipart-parser",
-            "version": "1.1.8",
+            "version": "1.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Riverline/multipart-parser.git",
-                "reference": "a25de1a3b01886a6cf25203d7623aa908895ebfb"
+                "reference": "8692fc3109dffa1c2188329da1b09f556f46844c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/a25de1a3b01886a6cf25203d7623aa908895ebfb",
-                "reference": "a25de1a3b01886a6cf25203d7623aa908895ebfb",
+                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/8692fc3109dffa1c2188329da1b09f556f46844c",
+                "reference": "8692fc3109dffa1c2188329da1b09f556f46844c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.7 || ^5.2"
             },
             "type": "library",
             "autoload": {
@@ -3338,7 +3290,7 @@
                 "multipart",
                 "parser"
             ],
-            "time": "2015-12-17T14:31:51+00:00"
+            "time": "2018-01-16T08:23:56+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
