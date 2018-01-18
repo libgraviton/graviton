@@ -6,7 +6,6 @@
 namespace Graviton\ProxyBundle\Adapter\Guzzle;
 
 use GuzzleHttp\Client;
-use Proxy\Adapter\AdapterInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -17,14 +16,8 @@ use Psr\Http\Message\ResponseInterface;
  * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link     http://swisscom.ch
  */
-class GuzzleAdapter implements AdapterInterface
+class GuzzleAdapter extends Client
 {
-    /**
-     * Guzzle client
-     *
-     * @var Client
-     */
-    private $client;
 
     /**
      * curl options
@@ -32,32 +25,23 @@ class GuzzleAdapter implements AdapterInterface
      * @var array
      */
     private $curlOptions;
-    /**
-     * constructor
-     *
-     * @param Client $client guzzle client
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
 
     /**
      * @inheritDoc
      *
      * @param RequestInterface $request request
+     * @param array            $options options
      *
      * @return ResponseInterface
      */
-    public function send(RequestInterface $request)
+    public function send(RequestInterface $request, array $options = [])
     {
-        $options = array('curl' => []);
+        $opt = array('curl' => []);
         foreach ($this->curlOptions as $option => $value) {
-            $options['curl'][constant('CURLOPT_'.strtoupper($option))] = $value;
+            $opt['curl'][constant('CURLOPT_'.strtoupper($option))] = $value;
         }
-        $options['verify'] = __DIR__.'/../../Resources/cert/cacert.pem';
-
-        return $this->client->send($request, $options);
+        $opt['verify'] = __DIR__.'/../../Resources/cert/cacert.pem';
+        return parent::send($request, array_merge($options, $opt));
     }
 
     /**

@@ -10,7 +10,7 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyIn
 use Doctrine\Common\Cache\CacheProvider;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Proxy\Adapter\AdapterInterface;
+use GuzzleHttp\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints\Url;
@@ -31,7 +31,7 @@ class HttpLoader implements LoaderInterface
     private $validator;
 
     /**
-     * @var AdapterInterface
+     * @var Client
      */
     private $client;
 
@@ -70,10 +70,10 @@ class HttpLoader implements LoaderInterface
      * constructor
      *
      * @param ValidatorInterface $validator validator
-     * @param AdapterInterface   $client    http client
+     * @param Client             $client    http client
      * @param LoggerInterface    $logger    Logger
      */
-    public function __construct(ValidatorInterface $validator, AdapterInterface $client, LoggerInterface $logger)
+    public function __construct(ValidatorInterface $validator, Client $client, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->client = $client;

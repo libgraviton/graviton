@@ -9,10 +9,10 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
+use Graviton\PhpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
-use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -126,8 +126,6 @@ class ProxyController
             );
             $newRequest->headers->add($request->headers->all());
             $newRequest->query->add($request->query->all());
-            $queryString = $request->server->get('QUERY_STRING');
-            $newRequest->server->set('QUERY_STRING', $queryString);
 
             $newRequest = $this->transformationHandler->transformRequest(
                 $api['apiName'],

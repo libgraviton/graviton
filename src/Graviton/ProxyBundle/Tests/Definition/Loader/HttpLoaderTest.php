@@ -41,7 +41,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->method("getBody")
             ->willReturn("{ 'test': 'bablaba' }");
 
-        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
+        $client = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
         $client->expects($this->any())
                 ->method("send")
                 ->withAnyParameters()
@@ -60,7 +60,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testSupports()
     {
-        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
+        $client = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
         $validator = $this->getMockBuilder('Symfony\Component\Validator\Validator\ValidatorInterface')
                           ->getMockForAbstractClass();
         $validator
