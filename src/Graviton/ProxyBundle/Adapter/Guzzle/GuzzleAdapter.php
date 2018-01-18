@@ -41,7 +41,7 @@ class GuzzleAdapter extends Client
             $opt['curl'][constant('CURLOPT_'.strtoupper($option))] = $value;
         }
         $opt['verify'] = __DIR__.'/../../Resources/cert/cacert.pem';
-        return $this->send($request, array_merge($options, $opt));
+        return parent::send($request, array_merge($options, $opt));
     }
 
     /**
