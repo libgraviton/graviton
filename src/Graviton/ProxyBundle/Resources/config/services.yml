@@ -9,13 +9,8 @@ services:
     graviton.proxy.transformationhandler:
         class: "%graviton.proxy.transformationhandler.class%"
 
-    graviton.proxy.guzzle.client:
-        class: GuzzleHttp\Client
-
     graviton.proxy.adapter.guzzle:
         class: "%graviton.proxy.adapter.guzzle.class%"
-        arguments:
-          - "@graviton.proxy.guzzle.client"
         calls:
           -
             method: setCurlOptions
@@ -23,7 +18,7 @@ services:
               - "%graviton.proxy.httploader.curloptions%"
 
     graviton.proxy:
-        class: Proxy\Proxy
+        class: "%graviton.proxy.proxy.class%"
         arguments:
             - "@graviton.proxy.adapter.guzzle"
 
