@@ -271,7 +271,10 @@ class SchemaUtils
         }
 
         // don't describe hidden fields
-        $requiredFields = $model->getRequiredFields() ?: [];
+        $requiredFields = $model->getRequiredFields();
+        if (empty($requiredFields) || !is_array($requiredFields)) {
+            $requiredFields = [];
+        }
         $requiredFields = array_intersect_key($documentFieldNames, array_combine($requiredFields, $requiredFields));
 
         foreach ($meta->getFieldNames() as $field) {
