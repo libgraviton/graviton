@@ -167,7 +167,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded',
             'gravitondyn.eventstatus.rest.eventstatus.get',
-            $securityMock
+            $securityMock,
+            null
         );
 
         $listener->onKernelResponse($filterResponseEventMock);
