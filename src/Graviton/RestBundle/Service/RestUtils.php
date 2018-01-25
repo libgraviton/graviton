@@ -354,7 +354,8 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getRoutesByBasename($baseName)
     {
-        $cached = $this->cacheProvider->fetch('cached_restutils_route_basename');
+        $cacheId = 'cached_restutils_route_'.$baseName;
+        $cached = $this->cacheProvider->fetch($cacheId);
         if ($cached) {
             return $cached;
         }
@@ -365,7 +366,7 @@ final class RestUtils implements RestUtilsInterface
                 $ret[$routeName] = $route;
             }
         }
-        $this->cacheProvider->save('cached_restutils_route_basename', $ret);
+        $this->cacheProvider->save($cacheId, $ret);
         return $ret;
     }
 
