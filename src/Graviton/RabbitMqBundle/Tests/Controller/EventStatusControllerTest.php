@@ -208,7 +208,6 @@ class EventStatusControllerTest extends RestTestCase
         $testApp->name->en = "test-event-app";
         $testApp->showInMenu = false;
 
-
         $client = static::createRestClient();
         /** @var Dummy $dbProducer */
         $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
@@ -217,16 +216,20 @@ class EventStatusControllerTest extends RestTestCase
         $client->put('/core/app/' . $testApp->id, $testApp);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
+        // the worker relative our cannot be in the Link header
+        $this->assertNotContains('backendalias:9443', $response->headers->get('link'));
+        $this->assertContains('eventStatus', $response->headers->get('link'));
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
 
         $this->assertCount(1, $events);
         $data = json_decode($events[0], true);
+
         $this->assertEquals('document.core.app.update', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
-        $this->assertEquals('http://localhost/core/app/test-event-app', $data['document']['$ref']);
-
+        $this->assertEquals('https://backendalias:9443/core/app/test-event-app', $data['document']['$ref']);
+        $this->assertContains('https://backendalias:9443/event/status/', $data['status']['$ref']);
 
         // A failing event should not be published
         // using patch

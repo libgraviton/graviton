@@ -42,3 +42,4 @@ services:
           - "%graviton.rabbitmq.document.eventstatuseventresource.class%"
           - "%graviton.rabbitmq.document.eventstatusstatus.route%"
           - "@graviton.security.service.utils"
+          - "%graviton.worker.relativeUrl%"

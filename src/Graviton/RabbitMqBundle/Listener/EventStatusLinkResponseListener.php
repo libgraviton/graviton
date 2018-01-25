@@ -20,6 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use GravitonDyn\EventStatusBundle\Document\EventStatus;
+use Zend\Diactoros\Uri;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -95,6 +96,11 @@ class EventStatusLinkResponseListener
     protected $securityUtils;
 
     /**
+     * @var Uri
+     */
+    protected $workerRelativeUrl;
+
+    /**
      * @param ProducerInterface     $rabbitMqProducer                  RabbitMQ dependency
      * @param RouterInterface       $router                            Router dependency
      * @param RequestStack          $requestStack                      Request stack
@@ -108,6 +114,7 @@ class EventStatusLinkResponseListener
      * @param string                $eventStatusEventResourceClassname classname of the E*S*E*Resource document
      * @param string                $eventStatusRouteName              name of the route to EventStatus
      * @param SecurityUtils         $securityUtils                     Security utils service
+     * @param string                $workerRelativeUrl                 backend url relative from the workers
      */
     public function __construct(
         ProducerInterface $rabbitMqProducer,
@@ -122,7 +129,8 @@ class EventStatusLinkResponseListener
         $eventStatusStatusClassname,
         $eventStatusEventResourceClassname,
         $eventStatusRouteName,
-        SecurityUtils $securityUtils
+        SecurityUtils $securityUtils,
+        $workerRelativeUrl
     ) {
         $this->rabbitMqProducer = $rabbitMqProducer;
         $this->router = $router;
@@ -137,6 +145,9 @@ class EventStatusLinkResponseListener
         $this->eventStatusEventResourceClassname = $eventStatusEventResourceClassname;
         $this->eventStatusRouteName = $eventStatusRouteName;
         $this->securityUtils = $securityUtils;
+        if (!is_null($workerRelativeUrl)) {
+            $this->workerRelativeUrl = new Uri($workerRelativeUrl);
+        }
     }
 
     /**
@@ -180,6 +191,12 @@ class EventStatusLinkResponseListener
         // let's send it to the queue(s) if appropriate
         if (!empty($queueEvent->getEvent())) {
             $queuesForEvent = $this->getSubscribedWorkerIds($queueEvent);
+
+            // if needed and activated, change urls relative to workers
+            if (!empty($queuesForEvent) && $this->workerRelativeUrl instanceof Uri) {
+                $queueEvent = $this->getWorkerQueueEvent($queueEvent);
+            }
+
             foreach ($queuesForEvent as $queueForEvent) {
                 // declare the Queue for the Event if its not there already declared
                 $this->rabbitMqProducer->getChannel()->queue_declare($queueForEvent, false, true, false, false);
@@ -348,5 +365,36 @@ class EventStatusLinkResponseListener
         }
 
         return '';
+    }
+
+    /**
+     * Changes the urls in the QueueEvent for the workers
+     *
+     * @param QueueEvent $queueEvent queue event
+     *
+     * @return QueueEvent altered queue event
+     */
+    private function getWorkerQueueEvent(QueueEvent $queueEvent)
+    {
+        $queueEvent->setDocumenturl($this->getWorkerRelativeUrl($queueEvent->getDocumenturl()));
+        $queueEvent->setStatusurl($this->getWorkerRelativeUrl($queueEvent->getStatusurl()));
+        return $queueEvent;
+    }
+
+    /**
+     * changes an uri for the workers
+     *
+     * @param string $uri uri
+     *
+     * @return string changed uri
+     */
+    private function getWorkerRelativeUrl($uri)
+    {
+        $uri = new Uri($uri);
+        $uri = $uri
+            ->withHost($this->workerRelativeUrl->getHost())
+            ->withScheme($this->workerRelativeUrl->getScheme())
+            ->withPort($this->workerRelativeUrl->getPort());
+        return (string) $uri;
     }
 }

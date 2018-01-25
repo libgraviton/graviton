@@ -4,6 +4,7 @@ parameters:
     graviton.mongodb.default.server.uri: ~
 
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
+    graviton.log.level: "info"
 
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
@@ -75,6 +76,9 @@ parameters:
     graviton.rabbitmq.vhost: /
     graviton.rabbitmq.consumer.dump.routingkeys:
         - 'document.#'
+
+    graviton.worker.relativeUrl: null
+
     # pagination defaults
     graviton.rest.pagination.limit: 10
 
