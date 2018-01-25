@@ -74,6 +74,9 @@ parameters:
     graviton.rabbitmq.password: guest
     graviton.rabbitmq.vhost: /
     graviton.rabbitmq.consumer.dump.routingkeys:
+
+    graviton.worker.relativeUrl: null
+
         - 'document.#'
     # pagination defaults
     graviton.rest.pagination.limit: 10
