@@ -132,6 +132,7 @@
                 "file": "app/config/parameters.yml",
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
+                    "graviton.log.level": "LOG_LEVEL",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
@@ -173,7 +174,8 @@
                     "graviton.file.s3.credentials.secret": "FILE_S3_SECRET",
                     "graviton.rest.serializer.groups": "SERIALIZER_GROUPS",
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
-                    "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME"
+                    "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
+                    "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL"
                 }
             },
             {
