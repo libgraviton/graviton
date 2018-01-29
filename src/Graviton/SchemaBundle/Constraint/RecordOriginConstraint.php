@@ -129,6 +129,7 @@ class RecordOriginConstraint
 
             // convert all datetimes to UTC so we compare eggs with eggs
             $userObject = $this->convertDatetimeToUTC($userObject, $schema, new \DateTimeZone('UTC'));
+            $storedObject = $this->convertDatetimeToUTC($storedObject, $schema, new \DateTimeZone('UTC'));
 
             foreach ($exceptions as $fieldName) {
                 if ($accessor->isWritable($storedObject, $fieldName)) {
