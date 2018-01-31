@@ -176,7 +176,8 @@
                     "graviton.rest.serializer.groups": "SERIALIZER_GROUPS",
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
                     "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
-                    "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL"
+                    "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
+                    "graviton.sentry.dsn": "SENTRY_DSN"
                 }
             },
             {

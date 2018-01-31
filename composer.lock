@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8e48290a8018248a747a022621c0c7f",
+    "content-hash": "74eccbfaf78c98e4ab52ceefbec58e31",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
