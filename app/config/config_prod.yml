@@ -9,3 +9,8 @@ monolog:
             path: "%graviton.log.path%"
             level: "%graviton.log.level%"
             channels: [!event, !doctrine]
+        sentry:
+            type: raven
+            dsn: "%graviton.sentry.dsn%"
+            client_id: 'graviton.core.sentry_client'
+            level: warning
