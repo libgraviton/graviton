@@ -1,4 +1,14 @@
 services:
+
+    graviton.core.sentry_client:
+        class: Raven_Client
+        arguments:
+            - "%graviton.sentry.dsn%"
+            -
+                logger: "graviton"
+                tags:
+                    application: graviton
+
     graviton.core.jms.cache.provider:
         class: "%graviton.core.jms.cache.provider.class%"
         arguments:
@@ -88,6 +98,11 @@ services:
 
     graviton.core.listener.json_exception:
         class: "%graviton.core.listener.jsonexceptionlistener.class%"
+        calls:
+          -
+            method: "setLogger"
+            arguments:
+              - "@logger"
         tags:
           -
             name: "kernel.event_listener"
