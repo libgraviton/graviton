@@ -76,12 +76,6 @@ doctrine_mongodb:
                 port: "%doctrine.odm.cache.port%"
                 instance_class: "%doctrine.odm.cache.instance_class%"
 
-# SensionFrameworkExtraBundle Configuration
-# see: http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
-sensio_framework_extra:
-    router:   { annotations: true }
-    view:     { annotations: true }
-
 # JmsSerializerBundle Configuration
 # see: http://jmsyst.com/bundles/JMSSerializerBundle/master/configuration
 jms_serializer:
