@@ -200,7 +200,6 @@ class HttpLoader implements LoaderInterface
                 $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
             }
         } catch (RequestException $e) {
-
             $this->logger->info(
                 "Unable to fetch File!",
                 [
