@@ -27,6 +27,4 @@ if (file_exists($primaryLoader)) {
 }
 // @codingStandardsIgnoreEnd
 
-AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
-
 return $loader;

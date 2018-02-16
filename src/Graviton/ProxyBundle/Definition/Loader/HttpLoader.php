@@ -149,6 +149,11 @@ class HttpLoader implements LoaderInterface
     public function load($input)
     {
         $retVal = new ApiDefinition();
+        if (is_null($input)) {
+            // if no thirdparty defined; abort now..
+            return $retVal;
+        }
+
         if (isset($this->strategy)) {
             if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
                 $content = $this->cache->fetch($this->options['storeKey']);
