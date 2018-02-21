@@ -153,9 +153,9 @@ class ProxyController
                 clone $response
             );
         } catch (ClientException $e) {
-            $response = $e->getResponse();
+            $response = (new HttpFoundationFactory())->createResponse($e->getResponse());
         } catch (ServerException $serverException) {
-            $response = $serverException->getResponse();
+            $response = (new HttpFoundationFactory())->createResponse($serverException->getResponse());
         } catch (TransformationException $e) {
             $message = json_encode(
                 ['code' => 404, 'message' => 'HTTP 404 Not found']
