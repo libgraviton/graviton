@@ -325,29 +325,35 @@ class RestController
         $model = $this->getModel();
         $repository = $model->getRepository();
 
-        // Check JSON Patch request
-        $this->restUtils->checkJsonRequest($request, $response, $model);
-        $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
-
         // Check and wait if another update is being processed
         $this->collectionCache->updateOperationCheck($repository, $id);
-
-        // Find record && apply $ref converter
-        $jsonDocument = $model->getSerialised($id);
         $this->collectionCache->addUpdateLock($repository, $id);
 
+        // Validate received data. On failure release the lock.
         try {
-            // Check if valid
-            $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
-            // Apply JSON patches
-            $patch = new Patch($jsonDocument, $request->getContent());
-            $patchedDocument = $patch->apply();
+            // Check JSON Patch request
+            $this->restUtils->checkJsonRequest($request, $response, $model);
+            $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
+
+            // Find record && apply $ref converter
+            $jsonDocument = $model->getSerialised($id, null, true);
+
+            try {
+                // Check if valid
+                $this->jsonPatchValidator->validate($jsonDocument, $request->getContent());
+                // Apply JSON patches
+                $patch = new Patch($jsonDocument, $request->getContent());
+                $patchedDocument = $patch->apply();
+            } catch (\Exception $e) {
+                throw new InvalidJsonPatchException($e->getMessage());
+            }
         } catch (\Exception $e) {
+            throw $e;
+        } finally {
             $this->collectionCache->releaseUpdateLock($repository, $id);
-            throw new InvalidJsonPatchException($e->getMessage());
         }
 
-        // Validation don't check for not valid path HTTP_NOT_MODIFIED, so if no change done, notify.
+        // if document hasn't changed, pass HTTP_NOT_MODIFIED and exit
         if ($jsonDocument == $patchedDocument) {
             $this->collectionCache->releaseUpdateLock($repository, $id);
             $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
