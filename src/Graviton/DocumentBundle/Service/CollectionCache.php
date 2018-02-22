@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\Service;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ODM\MongoDB\DocumentRepository as Repository;
+use Monolog\Logger;
 
 /**
  * graviton.cache.collections
@@ -34,15 +35,23 @@ class CollectionCache
     private $cache;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * CollectionCache constructor.
      * @param CacheProvider $cache         Cache provider
+     * @param Logger        $logger        Logger
      * @param array         $configuration Collections to be saved
      */
     public function __construct(
         CacheProvider $cache,
+        Logger $logger,
         $configuration
     ) {
         $this->cache = $cache;
+        $this->logger = $logger;
         $this->config = $configuration;
     }
 
@@ -123,11 +132,15 @@ class CollectionCache
     public function updateOperationCheck(Repository $repository, $id)
     {
         $collection = $repository->getClassMetadata()->collection;
+
         $key = self::BASE_UPDATE_KEY.'-'.$this->buildCacheKey($collection, $id);
+        $this->logger->info("LOCK CHECK START = ".$collection.", id = ".$id. ", key=".$key);
 
         while ($this->cache->fetch($key)) {
             usleep(250000);
         }
+
+        $this->logger->info("LOCK CHECK FINISHED = ".$collection.", id = ".$id. ", key=".$key);
     }
 
     /**
@@ -144,7 +157,9 @@ class CollectionCache
         $collection = $repository->getClassMetadata()->collection;
         $key = self::BASE_UPDATE_KEY.'-'.$this->buildCacheKey($collection, $id);
 
-        return  $this->cache->save($key, true, $maxTime);
+        $this->logger->info("LOCK ADD = ".$collection.", id = ".$id. ", key=".$key);
+
+        return $this->cache->save($key, true, $maxTime);
     }
 
     /**
@@ -162,6 +177,8 @@ class CollectionCache
         $key = self::BASE_UPDATE_KEY.'-'.$baseKey;
 
         $this->cache->delete($key);
+
+        $this->logger->info("LOCK RELEASE = ".$collection.", id = ".$id. ", key=".$key);
 
         if ($this->getCollectionCacheTime($collection)) {
             $this->cache->delete($baseKey);
