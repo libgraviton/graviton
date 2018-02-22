@@ -6,8 +6,6 @@
 namespace Graviton\RestBundle\Tests\Controller;
 
 use Graviton\TestBundle\Test\RestTestCase;
-use GravitonDyn\TestCaseGroupSerializationBundle\DataFixtures\MongoDB\LoadTestCaseGroupSerializationData;
-use React\Promise\Deferred;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,13 +16,13 @@ use Symfony\Component\HttpFoundation\Response;
 class AsyncLockingTest extends RestTestCase
 {
 
+    /**
+     * try to send 30 async requests to /event/status and see if the result is consistent
+     *
+     * @return void
+     */
     public function testAsyncLock()
     {
-
-        //$i = 0;
-        $loop = \React\EventLoop\Factory::create();
-        //$deferred = new \React\Promise\Deferred();
-
         /**
          * create test entry
          */
@@ -40,18 +38,9 @@ class AsyncLockingTest extends RestTestCase
         $client->put('/event/status/locktest', $statusEntry);
         $this->assertSame(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
-        $deferred = new \React\Promise\Deferred();
-        $promise = $deferred->promise();
-        /*
-        $promise->done(function($data) use ($statusEntry, $client) {
-            $client->put('/event/status/locktest', $statusEntry);
-            var_dump($client->getResponse()->getStatusCode());
-            echo 'Done: ' . $data . PHP_EOL;
-        });
-        */
-
-        // [{"op":"replace","path":"/status/0/status","value":"ignored"},{"op":"add","path":"/status/0/action","value":{"$ref":"http://localhost:8000/event/action/filemover-print-default"}}]
-
+        /**
+         * the patch we will send
+         */
         $patchJson = json_encode(
             [
                 [
@@ -78,125 +67,38 @@ class AsyncLockingTest extends RestTestCase
             ]
         );
 
-        $client = static::createRestClient();
+        $promiseStack = [];
+        $deferred = new \React\Promise\Deferred();
 
-        $promise->then(
-            null,
-            null,
-            function($data) use ($client, $patchJson) {
+        $i = 0;
+        while ($i < 30) {
+            $promise = $deferred->promise();
+
+            $promise->then(
+                function () use ($patchJson) {
+                    $client = static::createRestClient();
+                    $client->request('PATCH', '/event/status/locktest', [], [], [], $patchJson);
+                    $this->assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+                }
+            );
+
+            $promiseStack[] = $promise;
+            $i++;
+        }
+
+        \React\Promise\all($promiseStack)->then(
+            function () {
+                // after all is done; check entry
                 $client = static::createRestClient();
+                $client->request('GET', '/event/status/locktest');
+                $result = $client->getResults();
 
-                $client->request('PATCH', '/event/status/locktest', [], [], [], $patchJson);
-
-                //$client->put('/event/status/locktest', $statusEntry);
-                var_dump($client->getResults());
-                $this->assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-                var_dump($client->getResponse()->getStatusCode());
-                echo 'Done: ' . $data . PHP_EOL;
+                $this->assertSame(30, count($result->information));
+                $this->assertSame(1, count($result->status));
             }
         );
 
-
-        /*
-        $promise->done(function($data) use ($statusEntry, $client) {
-            $client->put('/event/status/locktest', $statusEntry);
-            var_dump($client->getResponse()->getStatusCode());
-            echo 'Done: ' . $data . PHP_EOL;
-        });
-        */
-        //$deferred->resolve('hello world');
-
-        //$loop->
-
-        $i = 0;
-        $loop->addPeriodicTimer(0.01, function(\React\EventLoop\Timer\Timer $timer) use ($deferred, &$i) {
-            if ($i < 50) {
-                $deferred->notify('hello world');
-            } else {
-                $deferred->resolve();
-                $timer->cancel();
-            }
-            $i++;
-
-            ob_flush();
-        });
-
-        $loop->run();
-
-        // get the item
-
-        var_dump($i);
-
-        $client = static::createRestClient();
-        $client->request('GET', '/event/status/locktest');
-        $result = $client->getResults();
-
-        var_dump($result);
-
-        //$this->assertSame(50, count($result->status));
-        $this->assertSame(50, count($result->information));
-
-        /*
-        $timer = $loop->addPeriodicTimer(0.01, function(\React\EventLoop\Timer\Timer $timer) use (&$i, $deferred, $client) {
-            $deferred->notify($i++, $client);
-            if ($i >= 15) {
-                $timer->cancel();
-                $deferred->resolve();
-            }
-        });
-
-        $deferred->promise()->then(function($i, $client) {
-            echo 'Done!', PHP_EOL;
-        }, null, function($i, $client) {
-
-            $statusEntry = [
-                'id' => 'locktest'
-            ];
-
-            echo "dude";
-
-
-            $client->put('/event/status/locktest', $statusEntry);
-            var_dump($client->getResponse()->getStatusCode());
-
-        });
-
-        $loop->run();
-
-        */
-        /*
-
-
-        $promise = \Amp\coroutine(function () use ($statusEntry) {
-
-            try {
-                $client = static::createRestClient();
-
-                $client->put('/event/status/locktest', $statusEntry);
-
-                return $client;
-
-
-            } catch (\Exception $e) {
-            }
-        });
-
-        echo 33; die;
-
-
-
-
-
-
-
-
-        var_dump($promise);
-        die;
-
-        $dude = yield $promise;
-        */
-        //var_dump($dude);
-
+        // start the whole thing
+        $deferred->resolve();
     }
-
 }
