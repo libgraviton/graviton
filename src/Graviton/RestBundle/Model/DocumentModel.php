@@ -322,11 +322,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @param string  $documentId id of entity to find
      * @param Request $request    request
+     * @param bool    $skipLock   if true, we don't check for the lock
      *
      * @throws NotFoundException
      * @return string Serialised object
      */
-    public function getSerialised($documentId, Request $request = null)
+    public function getSerialised($documentId, Request $request = null, $skipLock = false)
     {
         if (($request instanceof Request)  &&
             ($query = $request->attributes->get('rqlQuery')) &&
@@ -343,7 +344,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
         } elseif ($cached = $this->cache->getByRepository($this->repository, $documentId)) {
             $document = $cached;
         } else {
-            $this->cache->updateOperationCheck($this->repository, $documentId);
+            if (!$skipLock) {
+                $this->cache->updateOperationCheck($this->repository, $documentId);
+            }
             $document = $this->restUtils->serialize($this->find($documentId));
             $this->cache->setByRepository($this->repository, $document, $documentId);
         }
@@ -600,7 +603,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event->setCollectionName($this->repository->getClassMetadata()->getCollection());
         $event->setCollectionClass($this->repository->getClassName());
         $event->setCollection($collection);
-        
+
         $this->eventDispatcher->dispatch($action, $event);
     }
 }
