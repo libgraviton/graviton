@@ -10,6 +10,7 @@ services:
         class: "%graviton.document.service.collectioncache.class%"
         arguments:
             - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "@logger"
             - "%graviton.cache.collections%"
 
     graviton.document.serializer.listener.emptyextref:
