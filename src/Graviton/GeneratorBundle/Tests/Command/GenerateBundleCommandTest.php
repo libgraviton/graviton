@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Command\GenerateBundleCommand;
  * functional tests for graviton:generate:bundle
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  *
  * @todo fix that updateKernel is not getting tested

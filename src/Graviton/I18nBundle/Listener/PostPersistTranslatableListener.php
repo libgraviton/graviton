@@ -18,7 +18,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * trigger update of translation loader cache when translatables are updated
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class PostPersistTranslatableListener implements EventSubscriber

@@ -14,7 +14,7 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
  * Hash type
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/MIT MIT License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class HashType extends Type

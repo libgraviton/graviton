@@ -16,7 +16,7 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
  * tries to alter rql queries in a way the user can search translatables in all languages
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class I18nRqlParsingListener

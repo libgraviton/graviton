@@ -20,7 +20,7 @@ use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
  * {{ base }}Document\{{ document }}Base
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
-* @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license  https://opensource.org/licenses/MIT MIT License
 * @link     http://swisscom.ch
 */
 abstract class {{ document }}Base implements TranslatableDocumentInterface, ExtRefHoldingDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}

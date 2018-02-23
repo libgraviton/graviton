@@ -9,7 +9,7 @@ namespace Graviton\SecurityBundle\User\Model;
  * Class ModelFactoryTest
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ModelFactoryTest extends \PHPUnit_Framework_TestCase
