@@ -29,7 +29,7 @@ use Graviton\RestBundle\Service\JsonPatchValidator;
  * You can also extend the model class to add some extra logic before save
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class RestController

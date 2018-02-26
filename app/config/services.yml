@@ -3,6 +3,11 @@
 parameters:
 
 services:
+    log_formatter:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            - "[%%datetime%%] [%%extra.requestId%%] %%channel%%.%%level_name%%: %%message%% %%context%% %%extra%%\n"
+            - "Y-m-d H:i:s,u"
     test_consumer:
         class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 

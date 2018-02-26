@@ -13,7 +13,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator;
  * Needed to make the generateDocument method public
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/MIT MIT License (c) 2015 Swisscom
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ResourceGeneratorProxy extends ResourceGenerator

@@ -5,12 +5,14 @@ imports:
 monolog:
     handlers:
         main:
-            type: stream
+            type: "stream"
             path: "%graviton.log.path%"
             level: "%graviton.log.level%"
-            channels: [!event, !doctrine]
+            channels: ["!event", "!doctrine"]
+            formatter: "log_formatter"
         sentry:
-            type: raven
+            type: "raven"
             dsn: "%graviton.sentry.dsn%"
             client_id: 'graviton.core.sentry_client'
-            level: warning
+            level: "warning"
+            formatter: "log_formatter"

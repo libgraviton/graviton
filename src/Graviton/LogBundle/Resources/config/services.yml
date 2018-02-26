@@ -1,20 +1,5 @@
 services:
-    graviton.log.elasticsearch.client:
-        class: "%graviton.log.elasticsearch.client.class%"
-        arguments:
-          - "%graviton.log.elasticsearch.client.arguments%"
-
-    graviton.log.monolog.formatter.logstash:
-        class: "%graviton.log.monolog.formatter.logstash.class%"
-        arguments:
-            - "graviton"
-
-    graviton.log.monolog.elasticsearch:
-        class: "%graviton.log.monolog.elasticsearch.class%"
-        arguments:
-            - "@graviton.log.elasticsearch.client"
-        calls:
-          -
-            method: setFormatter
-            arguments:
-              - "@graviton.log.monolog.formatter.logstash"
+    graviton.log.monolog.processor.requestId:
+        class: "%graviton.log.monolog.processor.requestId.class%"
+        tags:
+            - { name: monolog.processor, method: processRecord }
