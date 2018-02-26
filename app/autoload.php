@@ -7,8 +7,6 @@
  * @link     http://swisscom.ch
  */
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
 /**
  * don't touch this unless you know what you're doing..
  * basically we have two autoloaders provided by Composer.
