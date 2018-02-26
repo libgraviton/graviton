@@ -17,7 +17,7 @@ use JMS\Serializer\SerializationContext;
  * Test ExtReferenceHandler
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/GPL GPL
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ExtReferenceHandlerTest extends \PHPUnit_Framework_TestCase

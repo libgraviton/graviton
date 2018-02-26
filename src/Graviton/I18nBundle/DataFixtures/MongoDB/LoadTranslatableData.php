@@ -15,7 +15,7 @@ use Graviton\I18nBundle\Document\TranslatableLanguage;
  * Load Translatable data fixtures into mongodb
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class LoadTranslatableData implements FixtureInterface

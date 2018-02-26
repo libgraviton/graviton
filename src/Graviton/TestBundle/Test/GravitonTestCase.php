@@ -17,7 +17,7 @@ use Liip\FunctionalTestBundle\Test\WebTestCase;
  * Override creating a kernel with our custom bundle-bundle routine.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class GravitonTestCase extends WebTestCase

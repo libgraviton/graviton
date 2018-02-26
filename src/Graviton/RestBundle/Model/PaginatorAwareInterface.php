@@ -11,7 +11,7 @@ use Knp\Component\Pager\Paginator;
  * PaginatorAwareInterface
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 interface PaginatorAwareInterface

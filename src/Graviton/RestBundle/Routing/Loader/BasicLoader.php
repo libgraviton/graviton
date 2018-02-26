@@ -12,7 +12,7 @@ use Symfony\Component\Routing\RouteCollection;
  * Load routes for all rest services
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class BasicLoader extends Loader

@@ -32,7 +32,6 @@ monolog:
         name: main
         type: "test"
 
-
 old_sound_rabbit_mq:
     connections:
         default:

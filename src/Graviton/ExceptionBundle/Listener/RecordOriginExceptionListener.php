@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
  * Listener for recordOriginModified exceptions
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class RecordOriginExceptionListener extends RestExceptionListener

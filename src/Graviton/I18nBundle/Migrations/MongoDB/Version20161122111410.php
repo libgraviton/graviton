@@ -15,7 +15,7 @@ use MongoCollection;
  * Migrate domain_1_locale_1_original_1 index
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/MIT MIT License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class Version20161122111410 extends AbstractMigration

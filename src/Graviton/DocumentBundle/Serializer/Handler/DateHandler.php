@@ -17,7 +17,7 @@ use JsonSchema\Rfc3339;
  * Note that the main logic from JMS DateHandler is still used..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class DateHandler extends BaseDateHandler

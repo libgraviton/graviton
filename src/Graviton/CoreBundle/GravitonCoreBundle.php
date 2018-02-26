@@ -32,7 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * WARNING: Don't change me without changing Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  *
  * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
