@@ -108,6 +108,24 @@ services:
         class: "%graviton.rest.response.class%"
 
     #Json Request listener -->
+    graviton.rest.listener.writelocklistener:
+        class: Graviton\RestBundle\Listener\WriteLockListener
+        arguments:
+          - "@logger"
+          - "@request_stack"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.controller
+            priority: 9999
+            method: onKernelController
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            priority: 9999
+            method: onKernelResponse
+
+    #Json Request listener -->
     graviton.rest.listener.jsonrequestlistener:
         class: Graviton\RestBundle\Listener\JsonRequestListener
         tags:
