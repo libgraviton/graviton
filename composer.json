@@ -42,7 +42,8 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "doctrine/doctrine-cache-bundle": "^1.3",
         "graviton/php-proxy": "^0.1.0",
-        "sentry/sentry": "^1.8"
+        "sentry/sentry": "^1.8",
+        "symfony/lock": "^3.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7.0",
