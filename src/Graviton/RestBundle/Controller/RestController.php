@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Controller;
 
-use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\ExceptionBundle\Exception\InvalidJsonPatchException;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
@@ -79,9 +78,6 @@ class RestController
      */
     protected $securityUtils;
 
-    /** @var CollectionCache */
-    protected $collectionCache;
-
     /**
      * @param Response           $response    Response
      * @param RestUtils          $restUtils   Rest Utils
@@ -89,7 +85,6 @@ class RestController
      * @param EngineInterface    $templating  Templating
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
-     * @param CollectionCache    $cache       Cache service
      * @param JsonPatchValidator $jsonPatch   Service for validation json patch
      * @param SecurityUtils      $security    The securityUtils service
      */
@@ -100,7 +95,6 @@ class RestController
         EngineInterface $templating,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
-        CollectionCache $cache,
         JsonPatchValidator $jsonPatch,
         SecurityUtils $security
     ) {
@@ -110,7 +104,6 @@ class RestController
         $this->templating = $templating;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
-        $this->collectionCache = $cache;
         $this->jsonPatchValidator = $jsonPatch;
         $this->securityUtils = $security;
     }
@@ -266,18 +259,8 @@ class RestController
         $model = $this->getModel();
         $repository = $model->getRepository();
 
-        // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($repository, $id);
-        $this->collectionCache->addUpdateLock($repository, $id);
-
-        // Validate received data. On failure release the lock.
-        try {
-            $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
-            $record = $this->restUtils->validateRequest($request->getContent(), $model);
-        } catch (\Exception $e) {
-            $this->collectionCache->releaseUpdateLock($repository, $id);
-            throw $e;
-        }
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+        $record = $this->restUtils->validateRequest($request->getContent(), $model);
 
         // handle missing 'id' field in input to a PUT operation
         // if it is settable on the document, let's set it and move on.. if not, inform the user..
@@ -286,7 +269,6 @@ class RestController
             if (is_callable(array($record, 'setId'))) {
                 $record->setId($id);
             } else {
-                $this->collectionCache->releaseUpdateLock($repository, $id);
                 throw new MalformedInputException('No ID was supplied in the request payload.');
             }
         }
@@ -297,8 +279,6 @@ class RestController
         } else {
             $this->getModel()->updateRecord($id, $record, false);
         }
-
-        $this->collectionCache->releaseUpdateLock($repository, $id);
 
         // Set status code
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -325,10 +305,6 @@ class RestController
         $model = $this->getModel();
         $repository = $model->getRepository();
 
-        // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($repository, $id);
-        $this->collectionCache->addUpdateLock($repository, $id);
-
         // Validate received data. On failure release the lock.
         try {
             // Check JSON Patch request
@@ -336,7 +312,7 @@ class RestController
             $this->restUtils->checkJsonPatchRequest(json_decode($request->getContent(), 1));
 
             // Find record && apply $ref converter
-            $jsonDocument = $model->getSerialised($id, null, true);
+            $jsonDocument = $model->getSerialised($id, null);
 
             try {
                 // Check if valid
@@ -349,28 +325,19 @@ class RestController
             }
         } catch (\Exception $e) {
             throw $e;
-        } finally {
-            $this->collectionCache->releaseUpdateLock($repository, $id);
         }
 
         // if document hasn't changed, pass HTTP_NOT_MODIFIED and exit
         if ($jsonDocument == $patchedDocument) {
-            $this->collectionCache->releaseUpdateLock($repository, $id);
             $response->setStatusCode(Response::HTTP_NOT_MODIFIED);
             return $response;
         }
 
         // Validate result object
-        try {
-            $record = $this->restUtils->validateRequest($patchedDocument, $model);
-        } catch (\Exception $e) {
-            $this->collectionCache->releaseUpdateLock($repository, $id);
-            throw $e;
-        }
+        $record = $this->restUtils->validateRequest($patchedDocument, $model);
 
         // Update object
         $this->getModel()->updateRecord($id, $record);
-        $this->collectionCache->releaseUpdateLock($repository, $id);
 
         // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
