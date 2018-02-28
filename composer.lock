@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f482dd4ad0b50c25db66e64a352ca981",
+    "content-hash": "c9b4b2a739be1285c1548456736c5f42",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -4587,52 +4587,6 @@
             "time": "2017-03-25T17:14:26+00:00"
         },
         {
-            "name": "lapistano/proxy-object",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lapistano/proxy-object.git",
-                "reference": "d7184a479f502d5a0f96d0bae73566dbb498da8f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lapistano/proxy-object/zipball/d7184a479f502d5a0f96d0bae73566dbb498da8f",
-                "reference": "d7184a479f502d5a0f96d0bae73566dbb498da8f",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "@stable"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "lapistano\\ProxyObject": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache 2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Bastian Feder",
-                    "email": "lapis@bastian-feder.de",
-                    "homepage": "http://blog.bastian-feder.de"
-                }
-            ],
-            "description": "A library that makes it much easier to generate a proxy of your system under test (SUT)",
-            "homepage": "http://www.github.com/lapistano/proxy-object",
-            "keywords": [
-                "phpunit",
-                "proxy-object",
-                "testing"
-            ],
-            "time": "2015-06-24T09:27:33+00:00"
-        },
-        {
             "name": "libgraviton/codesniffer",
             "version": "v2.1.0",
             "source": {
@@ -6155,9 +6109,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "lapistano/proxy-object": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
