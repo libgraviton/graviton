@@ -99,25 +99,6 @@ services:
             name: kernel.event_subscriber
 
     #
-    #    Voter services
-    #
-    graviton.security.access.own_context_voter:
-        class: Graviton\SecurityBundle\Voter\OwnContextVoter
-        public: false
-        tags:
-          -
-            name: security.voter
-
-    graviton.security.access.service_allowed_voter:
-        class: Graviton\SecurityBundle\Voter\ServiceAllowedVoter
-        public: false
-        arguments:
-          - "%graviton.security.services.whitelist%"
-        tags:
-          -
-            name: security.voter
-
-    #
     #    Whoami Services
     #
     graviton.security.model.whoami:
