@@ -24,7 +24,7 @@ class LinkHeaderItem
     /**
      * @var array
      */
-    private $attributes = array();
+    private $attributes = [];
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ class LinkHeaderItem
     {
         $bits = preg_split('/(".+?"|[^;]+)(?:;|$)/', $itemValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $value = array_shift($bits);
-        $attributes = array();
+        $attributes = [];
 
         foreach ($bits as $bit) {
             list($bitName, $bitValue) = explode('=', trim($bit));

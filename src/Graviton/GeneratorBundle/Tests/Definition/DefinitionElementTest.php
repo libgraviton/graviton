@@ -113,8 +113,8 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
             'serializerType' => 'string',
             'relType' => null,
             'isClassType' => false,
-            'constraints' => array(),
-            'collection' => array(),
+            'constraints' => [],
+            'collection' => [],
             'xDynamicKey' => null,
             'searchable' => 1,
             'recordOriginException' => false

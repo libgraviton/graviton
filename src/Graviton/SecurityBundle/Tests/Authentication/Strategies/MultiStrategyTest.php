@@ -72,9 +72,9 @@ class MultiStrategyTest extends RestTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $this->assertSame($fieldValue, $this->strategy->apply($this->client->getRequest()));

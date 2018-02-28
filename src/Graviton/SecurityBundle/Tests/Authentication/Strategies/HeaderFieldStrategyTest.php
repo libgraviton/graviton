@@ -40,8 +40,8 @@ class HeaderFieldStrategyTest extends RestTestCase
         $client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
+            [], //parameters
+            [], //files
             $server
         );
 

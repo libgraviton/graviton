@@ -106,7 +106,7 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getServiceRoutingMap()
     {
-        $ret = array();
+        $ret = [];
         $optionRoutes = $this->getOptionRoutes();
 
         foreach ($optionRoutes as $routeName => $optionRoute) {
@@ -359,7 +359,7 @@ final class RestUtils implements RestUtilsInterface
         if ($cached) {
             return $cached;
         }
-        $ret = array();
+        $ret = [];
         $collections = $this->router->getRouteCollection()->all();
         foreach ($collections as $routeName => $route) {
             if (preg_match('/^' . $baseName . '/', $routeName)) {

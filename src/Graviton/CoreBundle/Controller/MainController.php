@@ -243,7 +243,7 @@ class MainController
         $definition = $this->apiLoader;
         $mainRoute = $this->router->generate(
             'graviton.core.static.main.all',
-            array(),
+            [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
         $services = array_map(

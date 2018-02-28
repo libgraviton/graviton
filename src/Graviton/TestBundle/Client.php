@@ -55,9 +55,9 @@ class Client extends FrameworkClient
     public function post(
         $uri,
         $content,
-        array $parameters = array(),
-        array $files = array(),
-        array $server = array(),
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
         $jsonEncode = true
     ) {
         $this->jsonRequest = $jsonEncode;
@@ -93,9 +93,9 @@ class Client extends FrameworkClient
     public function put(
         $uri,
         $content,
-        array $parameters = array(),
-        array $files = array(),
-        array $server = array(),
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
         $jsonEncode = true
     ) {
         $this->jsonRequest = $jsonEncode;

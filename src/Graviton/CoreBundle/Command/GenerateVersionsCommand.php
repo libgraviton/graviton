@@ -131,7 +131,7 @@ class GenerateVersionsCommand extends Command
                 $this->getContextVersion(),
             ];
         } else {
-            $versions = array();
+            $versions = [];
         }
         $versions = $this->getInstalledPackagesVersion($versions);
 

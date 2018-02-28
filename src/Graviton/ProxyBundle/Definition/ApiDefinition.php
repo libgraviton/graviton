@@ -32,12 +32,12 @@ class ApiDefinition
     /**
      * @var array
      */
-    private $endpoints = array();
+    private $endpoints = [];
 
     /**
      * @var array
      */
-    private $schemes = array();
+    private $schemes = [];
 
     /**
      * sets the base path of the api
@@ -146,7 +146,7 @@ class ApiDefinition
      */
     public function getEndpoints($withHost = true, $prefix = null, $host = '', $withBasePath = true)
     {
-        $endpoints = array();
+        $endpoints = [];
         $basePath = "";
         if ($withHost) {
             $basePath = (empty($host)) ? $this->getHost() : $host;

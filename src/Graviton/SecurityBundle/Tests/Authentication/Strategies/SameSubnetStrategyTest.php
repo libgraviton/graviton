@@ -53,9 +53,9 @@ class SameSubnetStrategyTest extends RestTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $this->expectException('\InvalidArgumentException');
@@ -90,9 +90,9 @@ class SameSubnetStrategyTest extends RestTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $strategy = new SameSubnetStrategy('10.2.0.2');

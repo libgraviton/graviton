@@ -19,7 +19,7 @@ class LinkHeader
     /**
      * @var LinkHeaderItem[]
      */
-    private $items = array();
+    private $items = [];
 
     /**
      * Constructor

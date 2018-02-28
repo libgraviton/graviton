@@ -165,7 +165,7 @@ class I18nRqlParsingListener
      */
     private function getAllPossibleTranslatableStrings()
     {
-        $matchingTranslations = array();
+        $matchingTranslations = [];
 
         // is it a glob?
         if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {

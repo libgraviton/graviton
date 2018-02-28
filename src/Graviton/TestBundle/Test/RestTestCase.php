@@ -33,7 +33,7 @@ class RestTestCase extends GravitonTestCase
      *
      * @return \Graviton\TestBundle\Client A Client instance
      */
-    protected static function createRestClient(array $options = array(), array $server = array())
+    protected static function createRestClient(array $options = [], array $server = array())
     {
         parent::createClient($options, $server);
 

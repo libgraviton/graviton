@@ -55,7 +55,7 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
 
         // compose absolute classnames
         // array contains DynNamespace/NameBundle -> convert
-        $absoluteList = array();
+        $absoluteList = [];
         foreach ($bundleList as $namespace) {
             $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .
                 '\\' . str_replace('/', '', $namespace);
