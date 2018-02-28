@@ -39,7 +39,7 @@ class ServiceAllowedVoterTest extends GravitonTestCase
             ->method('getPathInfo')
             ->willReturn('/app/core');
 
-        $voter = $this->getMockBuilder()
+        $voter = $this->getMockBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
             ->setConstructorArgs([$this->whitelist])
             ->getMock();
         $protectedMethod = $this->getPrivateClassMethod($voter, 'voteOnAttribute');

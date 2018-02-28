@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\BrowserKit\Cookie;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CookieFieldStrategyTest extends WebTestCase
+class CookieFieldStrategyTest extends RestTestCase
 {
     protected $strategy;
     protected $client;

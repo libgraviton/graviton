@@ -8,7 +8,6 @@ namespace Graviton\TestBundle\Test;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use lapistano\ProxyObject\ProxyBuilder;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 /**

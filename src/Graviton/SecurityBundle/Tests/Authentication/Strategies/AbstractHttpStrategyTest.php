@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 
 /**
  * Class AbstractHttpStrategyTest
@@ -15,7 +15,7 @@ use Graviton\TestBundle\Test\WebTestCase;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AbstractHttpStrategyTest extends WebTestCase
+class AbstractHttpStrategyTest extends RestTestCase
 {
     /**
      * check that arguments are required
