@@ -85,7 +85,6 @@ services:
           - "@templating"
           - "@service_container"
           - "@graviton.schema.utils"
-          - "@graviton.document.service.collectioncache"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
 
@@ -98,10 +97,8 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restutils"
           - "@event_dispatcher"
-          - "@graviton.document.service.collectioncache"
           - "%graviton.rest.not_modifiable.origin.records%"
           - "%graviton.rest.pagination.limit%"
-
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
@@ -113,6 +110,8 @@ services:
         arguments:
           - "@logger"
           - "@request_stack"
+          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "%graviton.writelock.randomwaiturls%"
         tags:
           -
             name: kernel.event_listener
