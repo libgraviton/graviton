@@ -7,13 +7,7 @@ namespace Graviton\CoreBundle\Controller;
 
 use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\RestBundle\Controller\RestController;
-use Graviton\RestBundle\Service\RestUtilsInterface;
-use Graviton\SchemaBundle\SchemaUtils;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -44,16 +38,15 @@ class VersionController extends RestController
      */
     public function versionsAction()
     {
-        $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
-        $response->headers->set('Content-Type', 'application/json');
-        $versions = array();
+        $versions = [];
         $versions['versions'] = $this->coreUtils->getVersion();
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($versions)],
-            $response
-        );
+
+        $response = $this->getResponse()
+                         ->setStatusCode(Response::HTTP_OK)
+                         ->setContent(json_encode($versions));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 
     /**
@@ -64,13 +57,10 @@ class VersionController extends RestController
     public function versionsSchemaAction()
     {
         $response = $this->getResponse()
-            ->setStatusCode(Response::HTTP_OK);
+                         ->setStatusCode(Response::HTTP_OK)
+                         ->setContent(json_encode($this->getModel()->getSchema()));
         $response->headers->set('Content-Type', 'application/json');
-        $schema = $this->getModel()->getSchema();
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($schema)],
-            $response
-        );
+
+        return $response;
     }
 }
