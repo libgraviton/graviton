@@ -21,7 +21,6 @@ services:
         - "@router"
         - "@?graviton.rest.response"
         - "@graviton.rest.restutils"
-        - "@templating"
         - "@event_dispatcher"
         - "@graviton.proxy.service.apiloader"
         - "%graviton.core.links%"
