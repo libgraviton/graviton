@@ -141,7 +141,7 @@ class MainControllerTest extends RestTestCase
             ]
         ];
 
-        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
                 [
                     $routerDouble,
@@ -153,12 +153,13 @@ class MainControllerTest extends RestTestCase
                     $configuration
                 ]
             )
-            ->setMethods(array('prepareLinkHeader'))
-            ->getProxy();
+            ->getMock();
+
+        $prepareLinkHeader = $this->getPrivateClassMethod($controller, 'prepareLinkHeader');
 
         $this->assertEquals(
             '<http://localhost/core/app>; rel="apps"; type="application/json"',
-            $controller->prepareLinkHeader()
+            $prepareLinkHeader->invokeArgs($controller, [])
         );
     }
 
@@ -219,7 +220,7 @@ class MainControllerTest extends RestTestCase
             "graviton.core.rest.product.options" => $routerDouble,
         ];
 
-        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
                 [
                     $routerDouble,
@@ -230,11 +231,11 @@ class MainControllerTest extends RestTestCase
                     $apiLoaderDouble,
                     [],
                     [],
-                    $configuration,
+                    $configuration
                 ]
-            )
-            ->setMethods(array('determineServices'))
-            ->getProxy();
+            )->getMock();
+
+        $determineServices = $this->getPrivateClassMethod($controller, 'determineServices');
 
         $this->assertEquals(
             [
@@ -247,7 +248,7 @@ class MainControllerTest extends RestTestCase
                     'profile' => 'http://localhost/schema/core/product/collection'
                 ],
             ],
-            $controller->determineServices($optionRoutes)
+            $determineServices->invokeArgs($controller, [$optionRoutes])
         );
     }
 

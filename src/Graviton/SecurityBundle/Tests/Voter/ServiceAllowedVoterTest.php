@@ -39,15 +39,15 @@ class ServiceAllowedVoterTest extends GravitonTestCase
             ->method('getPathInfo')
             ->willReturn('/app/core');
 
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\ServiceAllowedVoter')
-            ->setConstructorArgs(array($this->whitelist))
-            ->setMethods(array('voteOnAttribute'))
-            ->getProxy();
+        $voter = $this->getMockBuilder()
+            ->setConstructorArgs([$this->whitelist])
+            ->getMock();
+        $protectedMethod = $this->getPrivateClassMethod($voter, 'voteOnAttribute');
 
         $token = $this
             ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
             ->getMock();
 
-        $this->assertTrue($voter->voteOnAttribute('VIEW', $request, $token));
+        $this->assertTrue($protectedMethod->invokeArgs($voter, ['VIEW', $request, $token]));
     }
 }

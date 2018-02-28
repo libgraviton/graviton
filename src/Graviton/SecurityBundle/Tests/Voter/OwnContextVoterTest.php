@@ -27,13 +27,14 @@ class OwnContextVoterTest extends GravitonTestCase
         $attribute = 'VIEW';
         $object = new \stdClass();
 
-        $voter = $this->getVoterProxy(array('voteOnAttribute'));
-
         $token = $this
             ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')
             ->getMock();
 
-        $this->assertFalse($voter->voteOnAttribute($attribute, $object, $token));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('voteOnAttribute');
+
+        $this->assertFalse($voterMethod->invokeArgs($voter, [$attribute, $object, $token]));
     }
 
     /**
@@ -71,9 +72,10 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getUser')
             ->willReturn($userDouble);
 
-        $voter = $this->getVoterProxy(array('voteOnAttribute'));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('voteOnAttribute');
 
-        $this->assertFalse($voter->voteOnAttribute('VIEW', $object, $token));
+        $this->assertFalse($voterMethod->invokeArgs($voter, ['VIEW', $object, $token]));
     }
 
     /**
@@ -89,9 +91,10 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getAccount')
             ->willReturn(new ArrayCollection([new \stdClass]));
 
-        $voter = $this->getVoterProxy(array('grantByAccount'));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('grantByAccount');
 
-        $this->assertFalse($voter->grantByAccount($contractDouble, new \stdClass));
+        $this->assertFalse($voterMethod->invokeArgs($voter, [$contractDouble, new \stdClass]));
     }
 
     /**
@@ -111,9 +114,10 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getAccount')
             ->willReturn(new ArrayCollection([$accountDouble]));
 
-        $voter = $this->getVoterProxy(array('grantByAccount'));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('grantByAccount');
 
-        $this->assertTrue($voter->grantByAccount($contractDouble, $accountDouble));
+        $this->assertTrue($voterMethod->invokeArgs($voter, [$contractDouble, $accountDouble]));
     }
 
     /**
@@ -129,9 +133,10 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getCustomer')
             ->willReturn(new \stdClass);
 
-        $voter = $this->getVoterProxy(array('grantByCustomer'));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('grantByCustomer');
 
-        $this->assertFalse($voter->grantByCustomer($contractDouble, new \stdClass));
+        $this->assertFalse($voterMethod->invokeArgs($voter, [$contractDouble, new \stdClass]));
     }
 
     /**
@@ -151,9 +156,10 @@ class OwnContextVoterTest extends GravitonTestCase
             ->method('getCustomer')
             ->willReturn($customerDouble);
 
-        $voter = $this->getVoterProxy(array('grantByCustomer'));
+        $voter = $this->createMock('\Graviton\SecurityBundle\Voter\OwnContextVoter');
+        $voterMethod = $this->getVoterProxyMethod('grantByCustomer');
 
-        $this->assertTrue($voter->grantByCustomer($contractDouble, $customerDouble));
+        $this->assertTrue($voterMethod->invokeArgs($voter, [$contractDouble, $customerDouble]));
     }
 
     /**
@@ -169,17 +175,14 @@ class OwnContextVoterTest extends GravitonTestCase
     }
 
     /**
-     * Provides a proxy instance of the OwnContextVoter.
+     * Provides a protected function.
      *
-     * @param array $methods Set of methods to be doubled.
+     * @param string $method method
      *
      * @return object
      */
-    private function getVoterProxy(array $methods = array())
+    private function getVoterProxyMethod($method)
     {
-        $voter = $this->getProxyBuilder('\Graviton\SecurityBundle\Voter\OwnContextVoter')
-            ->setMethods($methods)
-            ->getProxy();
-        return $voter;
+        return $this->getPrivateClassMethod('\Graviton\SecurityBundle\Voter\OwnContextVoter', $method);
     }
 }
