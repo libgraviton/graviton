@@ -69,14 +69,14 @@ class AsyncLockingTest extends RestTestCase
 
         $promiseStack = [];
         $deferred = new \React\Promise\Deferred();
+        $client = static::createRestClient();
 
         $i = 0;
         while ($i < 30) {
             $promise = $deferred->promise();
 
             $promise->then(
-                function () use ($patchJson) {
-                    $client = static::createRestClient();
+                function () use ($patchJson, $client) {
                     $client->request('PATCH', '/event/status/locktest', [], [], [], $patchJson);
                     $this->assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
                 }
