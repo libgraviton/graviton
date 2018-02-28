@@ -1,5 +1,8 @@
 language: php
 sudo: required
+cache:
+  directories:
+    - $HOME/.composer
 services:
   - docker
   - rabbitmq
@@ -83,6 +86,3 @@ script:
       if [ "$COMPOSER_CHECK" = "true" ]; then
           composer check;
       fi
-cache:
-  directories:
-    - vendor/

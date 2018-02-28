@@ -6,13 +6,6 @@ services:
             - "@router"
             - "%graviton.document.type.extref.mapping%"
 
-    graviton.document.service.collectioncache:
-        class: "%graviton.document.service.collectioncache.class%"
-        arguments:
-            - "@=service(parameter('graviton.cache.provider.service_id'))"
-            - "@logger"
-            - "%graviton.cache.collections%"
-
     graviton.document.serializer.listener.emptyextref:
         class: "%graviton.document.serializer.listener.emptyextref.class%"
         tags:
