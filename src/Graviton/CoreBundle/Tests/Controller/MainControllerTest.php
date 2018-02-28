@@ -130,7 +130,6 @@ class MainControllerTest extends RestTestCase
 
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
@@ -147,7 +146,6 @@ class MainControllerTest extends RestTestCase
                     $routerDouble,
                     $responseDouble,
                     $restUtilsDouble,
-                    $templateDouble,
                     $dispatcherDouble,
                     $apiLoaderDouble,
                     $configuration
@@ -204,7 +202,6 @@ class MainControllerTest extends RestTestCase
 
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
@@ -226,7 +223,6 @@ class MainControllerTest extends RestTestCase
                     $routerDouble,
                     $responseDouble,
                     $restUtilsDouble,
-                    $templateDouble,
                     $dispatcherDouble,
                     $apiLoaderDouble,
                     [],
