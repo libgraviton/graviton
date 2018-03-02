@@ -50,7 +50,7 @@
         "libgraviton/codesniffer": "~2",
         "johnkary/phpunit-speedtrap": "~1.0",
         "graviton/test-services-bundle": "~0.24",
-        "symfony/phpunit-bridge": "^3.0",
+        "symfony/phpunit-bridge": "^4.0",
         "graviton/deploy-scripts": "~0.4",
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
