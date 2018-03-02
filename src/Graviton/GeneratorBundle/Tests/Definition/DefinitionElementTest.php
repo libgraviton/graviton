@@ -144,7 +144,10 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $arrayField);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionRel', $arrayField->getElement());
         $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact[]', $arrayField->getType());
-        $this->assertEquals('array<GravitonDyn\PersonContactBundle\Document\PersonContact>', $arrayField->getTypeSerializer());
+        $this->assertEquals(
+            'array<GravitonDyn\PersonContactBundle\Document\PersonContact>',
+            $arrayField->getTypeSerializer()
+        );
         $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact[]', $arrayField->getTypeDoctrine());
     }
 
