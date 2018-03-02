@@ -9,7 +9,11 @@
 // @codingStandardsIgnoreStart
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../app/bootstrap.php.cache';
+
+if (PHP_VERSION_ID < 70000) {
+    // include bootstrap only on <php7
+    include_once __DIR__ . '/../app/bootstrap.php.cache';
+}
 // @codingStandardsIgnoreEnd
 
 use Graviton\AppKernel;

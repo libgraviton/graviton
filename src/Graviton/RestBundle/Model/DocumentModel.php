@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
@@ -106,7 +105,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param Visitor         $visitor                    rql query visitor
      * @param RestUtils       $restUtils                  Rest utils
      * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
-     * @param CollectionCache $collectionCache            Cache Service
      * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer         $paginationDefaultLimit     amount of data records to be returned when in pagination cnt
      */
@@ -114,7 +112,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         Visitor $visitor,
         RestUtils $restUtils,
         $eventDispatcher,
-        CollectionCache $collectionCache,
         $notModifiableOriginRecords,
         $paginationDefaultLimit
     ) {
@@ -123,7 +120,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
-        $this->cache = $collectionCache;
         $this->restUtils = $restUtils;
     }
 
@@ -341,14 +337,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 throw new NotFoundException("Entry with id " . $documentId . " not found!");
             }
             $document = $this->restUtils->serialize($result);
-        } elseif ($cached = $this->cache->getByRepository($this->repository, $documentId)) {
-            $document = $cached;
         } else {
-            if (!$skipLock) {
-                $this->cache->updateOperationCheck($this->repository, $documentId);
-            }
             $document = $this->restUtils->serialize($this->find($documentId));
-            $this->cache->setByRepository($this->repository, $document, $documentId);
         }
 
         return $document;
@@ -395,10 +385,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function deleteRecord($id)
     {
-        // Check and wait if another update is being processed, avoid double delete
-        $this->cache->updateOperationCheck($this->repository, $id);
-        $this->cache->addUpdateLock($this->repository, $id, 1);
-
         if (is_object($id)) {
             $entity = $id;
         } else {
@@ -417,8 +403,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;
         }
-
-        $this->cache->releaseUpdateLock($this->repository, $id);
 
         return $return;
     }

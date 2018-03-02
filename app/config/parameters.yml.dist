@@ -95,9 +95,8 @@ parameters:
     graviton.proxy.custom.sources: {}
     graviton.proxy.redirect.sources: {}
 
-    # List of collections to be saved in cache, in seconds
-    graviton.cache.collections:
-        EventStatus: 60
+    graviton.writelock.randomwaiturls:
+      - /event/status
 
     # caching related settings
     # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
