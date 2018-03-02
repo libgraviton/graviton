@@ -2,6 +2,15 @@ imports:
     - { resource: security.yml }
     - { resource: config.yml }
 
+# sentry is active on prod
+sentry:
+    dsn: "%graviton.sentry.dsn%"
+    skip_capture: "%graviton.sentry.dontReport%"
+    options:
+        environment: "%kernel.environment%"
+        tags:
+            application: graviton
+
 monolog:
     handlers:
         main:
@@ -9,10 +18,4 @@ monolog:
             path: "%graviton.log.path%"
             level: "%graviton.log.level%"
             channels: ["!event", "!doctrine"]
-            formatter: "log_formatter"
-        sentry:
-            type: "raven"
-            dsn: "%graviton.sentry.dsn%"
-            client_id: 'graviton.core.sentry_client'
-            level: "warning"
             formatter: "log_formatter"
