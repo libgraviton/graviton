@@ -25,6 +25,7 @@ services:
     # controller definitions -->
     graviton.proxy.controller.proxy:
         class: "%graviton.proxy.controller.proxy.class%"
+        public: true
         arguments:
             - "@graviton.proxy"
             - "@templating"

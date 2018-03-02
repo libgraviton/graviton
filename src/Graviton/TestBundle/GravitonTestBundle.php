@@ -26,6 +26,6 @@ class GravitonTestBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array();
+        return [];
     }
 }

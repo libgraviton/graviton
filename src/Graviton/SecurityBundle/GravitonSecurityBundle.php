@@ -27,7 +27,7 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        return array();
+        return [];
     }
 
     /**

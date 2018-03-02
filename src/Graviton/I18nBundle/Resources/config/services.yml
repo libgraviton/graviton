@@ -22,6 +22,7 @@ services:
     graviton.i18n.controller.language:
         class: "%graviton.i18n.controller.language.class%"
         parent: "graviton.rest.controller"
+        public: true
         calls:
           -
             method: "setModel"
@@ -74,6 +75,7 @@ services:
     graviton.i18n.controller.translatable:
         class: "%graviton.i18n.controller.translatable.class%"
         parent: "graviton.rest.controller"
+        public: true
         calls:
           -
             method: "setModel"

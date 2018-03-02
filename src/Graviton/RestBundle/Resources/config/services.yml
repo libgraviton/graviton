@@ -14,11 +14,13 @@ services:
 
     graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy:
         class: "%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%"
+        public: true
         arguments:
           - "@request_stack"
 
     graviton.rest.serializer:
         parent: "jms_serializer"
+        public: true
         calls:
           -
             method: setSerializationContextFactory
@@ -78,6 +80,7 @@ services:
     #Controller -->
     graviton.rest.controller:
         abstract: true
+        public: true
         arguments:
           - "@graviton.rest.response"
           - "@graviton.rest.restutils"
@@ -156,6 +159,7 @@ services:
     #restUtils service - a service providing some helpers dealing with services -->
     graviton.rest.restutils:
         class: Graviton\RestBundle\Service\RestUtils
+        public: true
         arguments:
           - "@service_container"
           - "@router"

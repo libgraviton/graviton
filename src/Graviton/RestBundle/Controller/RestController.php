@@ -257,7 +257,6 @@ class RestController
     {
         $response = $this->getResponse();
         $model = $this->getModel();
-        $repository = $model->getRepository();
 
         $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
         $record = $this->restUtils->validateRequest($request->getContent(), $model);
@@ -303,7 +302,6 @@ class RestController
     {
         $response = $this->getResponse();
         $model = $this->getModel();
-        $repository = $model->getRepository();
 
         // Validate received data. On failure release the lock.
         try {
@@ -432,14 +430,11 @@ class RestController
             // only allow read methods
             $corsMethods = 'GET, OPTIONS';
         }
+
         $request->attributes->set('corsMethods', $corsMethods);
+        $response->setContent($this->restUtils->serialize($schema));
 
-
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->restUtils->serialize($schema)],
-            $response
-        );
+        return $response;
     }
 
     /**
@@ -451,7 +446,7 @@ class RestController
      *
      * @return Response A Response instance
      */
-    public function render($view, array $parameters = array(), Response $response = null)
+    public function render($view, array $parameters = [], Response $response = null)
     {
         return $this->templating->renderResponse($view, $parameters, $response);
     }

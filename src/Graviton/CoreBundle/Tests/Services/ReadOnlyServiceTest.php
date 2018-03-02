@@ -64,7 +64,7 @@ class ReadOnlyServiceTest extends RestTestCase
     public function testNotAllowedMethod($method, $url, $entry)
     {
         $client = static::createRestClient();
-        $client->request($method, $url, array(), array(), array(), $entry);
+        $client->request($method, $url, [], [], [], $entry);
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
         $content = $client->getResults();
         $this->assertContains('No route found for "'.$method.' '.$url .'": Method Not Allowed', $content->message);

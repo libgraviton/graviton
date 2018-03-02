@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RestTestCase extends GravitonTestCase
 {
+
     /**
      * Create a REST Client.
      *
@@ -32,7 +33,7 @@ class RestTestCase extends GravitonTestCase
      *
      * @return \Graviton\TestBundle\Client A Client instance
      */
-    protected static function createRestClient(array $options = array(), array $server = array())
+    protected static function createRestClient(array $options = [], array $server = array())
     {
         parent::createClient($options, $server);
 
@@ -40,23 +41,6 @@ class RestTestCase extends GravitonTestCase
         $client->setServerParameters($server);
 
         return $client;
-    }
-
-    /**
-     * load fixtures
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $this->loadFixtures(
-            array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
-            ),
-            null,
-            'doctrine_mongodb'
-        );
     }
 
     /**
@@ -106,24 +90,5 @@ class RestTestCase extends GravitonTestCase
         $response = $client->getResponse();
         $this->assertEquals(405, $response->getStatusCode());
         $this->assertEquals('GET, HEAD, OPTIONS', $response->headers->get('Allow'));
-    }
-
-    /**
-     * Testing private methods for a class.
-     *
-     * $class = new YourClass(); or service...
-     * $method = $this->getPrivateClassMethod(get_class($class), 'getPrivateFunction');
-     * $result = $method->invokeArgs( $this->activityManager, [argument1, argument2, ...]);
-     *
-     * @param string $className  String name for class, full namespace.
-     * @param string $methodName Method name to be used
-     * @return \ReflectionMethod
-     */
-    public function getPrivateClassMethod($className, $methodName)
-    {
-        $reflector = new \ReflectionClass($className);
-        $method = $reflector->getMethod($methodName);
-        $method->setAccessible(true);
-        return $method;
     }
 }

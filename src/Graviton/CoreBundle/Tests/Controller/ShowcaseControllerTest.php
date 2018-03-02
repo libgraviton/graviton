@@ -531,7 +531,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Get changed showcase
@@ -570,7 +570,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         $this->assertEquals(
@@ -603,7 +603,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
@@ -632,7 +632,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Get changed showcase
@@ -676,7 +676,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Check patched result
@@ -714,7 +714,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         // Check that Showcase has not been changed
@@ -749,7 +749,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Check patched result
@@ -787,7 +787,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Check patched result
@@ -829,7 +829,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Check patched result
@@ -871,7 +871,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Check patched result
@@ -913,7 +913,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
@@ -944,7 +944,7 @@ class ShowcaseControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/hans/showcase/500', array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/hans/showcase/500', [], [], [], $patchJson);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
         // Check that patched document not changed

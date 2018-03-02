@@ -52,7 +52,7 @@ class FileControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $this->loadFixtures([], null, 'doctrine_mongodb');
         $client = static::createRestClient();
         $client->request('GET', '/file/');
 
@@ -61,7 +61,7 @@ class FileControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(array(), $results);
+        $this->assertEquals([], $results);
     }
 
     /**

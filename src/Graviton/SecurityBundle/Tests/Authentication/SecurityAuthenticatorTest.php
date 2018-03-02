@@ -66,7 +66,7 @@ class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
             'HTTP_X_IDP_USERNAME' => $headerFieldValue, //"example-authentication-header",
         );
 
-        $request = new Request(array(), array(), array(), array(), array(), $server);
+        $request = new Request([], [], [], [], [], $server);
 
         $token = $authenticator->createToken($request, 'AirlockProviderKey');
 

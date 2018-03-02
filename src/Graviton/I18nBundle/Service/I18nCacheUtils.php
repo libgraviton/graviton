@@ -70,14 +70,14 @@ class I18nCacheUtils
      *
      * @var array
      */
-    private $addedResources = array();
+    private $addedResources = [];
 
     /**
      * if the postpersistListener invalidates something, it will be put here
      *
      * @var array
      */
-    private $invalidations = array();
+    private $invalidations = [];
 
     /**
      * a boolean flag telling us if a new map persist is necessary

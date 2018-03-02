@@ -175,7 +175,7 @@ class VersioningDocumentsTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
@@ -195,7 +195,7 @@ class VersioningDocumentsTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
@@ -217,7 +217,7 @@ class VersioningDocumentsTest extends RestTestCase
             ]
         );
 
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
 

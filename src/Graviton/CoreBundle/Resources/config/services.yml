@@ -1,14 +1,5 @@
 services:
 
-    graviton.core.sentry_client:
-        class: Raven_Client
-        arguments:
-            - "%graviton.sentry.dsn%"
-            -
-                logger: "graviton"
-                tags:
-                    application: graviton
-
     graviton.core.jms.cache.provider:
         class: "%graviton.core.jms.cache.provider.class%"
         arguments:
@@ -17,11 +8,11 @@ services:
 
     graviton.core.controller.main:
       class: "%graviton.core.controller.main.class%"
+      public: true
       arguments:
         - "@router"
         - "@?graviton.rest.response"
         - "@graviton.rest.restutils"
-        - "@templating"
         - "@event_dispatcher"
         - "@graviton.proxy.service.apiloader"
         - "%graviton.core.links%"
@@ -30,6 +21,7 @@ services:
 
     graviton.core.controller.app:
         class: "%graviton.core.controller.app.class%"
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -
@@ -49,6 +41,7 @@ services:
     graviton.core.model.app:
         class: "%graviton.core.model.app.class%"
         parent: "graviton.rest.model"
+        public: true
         arguments:
           - "@graviton.rql.visitor.mongodb"
         calls:
@@ -85,6 +78,7 @@ services:
 
     graviton.core.controller.version:
         class: Graviton\CoreBundle\Controller\VersionController
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -

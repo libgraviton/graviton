@@ -1,6 +1,7 @@
 services:
     graviton.analytics.defaut_controller:
-        class:     Graviton\AnalyticsBundle\Controller\DefaultController
+        class: Graviton\AnalyticsBundle\Controller\DefaultController
+        public: true
         arguments:
             - "@graviton.analytics.service_manager"
 

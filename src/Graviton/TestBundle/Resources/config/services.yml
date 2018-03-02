@@ -1,7 +1,7 @@
 services:
     graviton.test.rest.client:
         class: "%graviton.test.rest.client.class%"
-        shared: false
+        public: true
         arguments:
           - "@kernel"
           - "%test.client.parameters%"

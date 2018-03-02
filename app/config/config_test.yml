@@ -7,7 +7,7 @@ parameters:
     # we shall not produce queue messages in tests
     graviton.rabbitmq.producer.job.class: Graviton\RabbitMqBundle\Producer\Dummy
     # in tests, we always use the array cache provider
-    graviton.doctrine.cache.provider.service_id: doctrine_cache.providers.local
+    graviton.doctrine.cache.provider.service_id: graviton.cache.provider.local
     #graviton.rabbitmq.listener.eventstatusresponselistener.class: Graviton\RabbitMqBundle\Listener\DummyResponseListener
     # for testing group serialization
     graviton.rest.serializer.groups: {  }

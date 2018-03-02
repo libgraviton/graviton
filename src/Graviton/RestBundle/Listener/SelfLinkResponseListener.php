@@ -122,7 +122,7 @@ class SelfLinkResponseListener
     {
         // for now we assume that everything except collections has an id
         // this is also flawed since it does not handle search actions
-        $parameters = array();
+        $parameters = [];
 
         if ($routeType == 'post' || $routeType == 'postNoSlash') {
             // handle post request by rewriting self link to newly created resource

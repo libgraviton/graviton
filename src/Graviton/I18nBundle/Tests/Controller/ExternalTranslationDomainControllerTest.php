@@ -93,8 +93,8 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
         $client->put(
             '/external/translatable/test',
             $resource,
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en,de,fr')
         );
 
@@ -104,8 +104,8 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
         $client->request(
             'GET',
             '/external/translatable/test',
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en,de,fr')
         );
 

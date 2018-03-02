@@ -66,7 +66,7 @@ class NullModel implements ModelInterface
      */
     public function findAll(Request $request)
     {
-        return array();
+        return [];
     }
 
     /**

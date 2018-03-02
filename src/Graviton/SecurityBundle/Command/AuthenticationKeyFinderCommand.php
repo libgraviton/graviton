@@ -22,7 +22,7 @@ class AuthenticationKeyFinderCommand extends Command
     /**
      * @var array
      */
-    private $strategies = array();
+    private $strategies = [];
 
     /**
      * @param string $service add strategy services to show

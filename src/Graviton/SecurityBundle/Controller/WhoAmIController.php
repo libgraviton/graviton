@@ -7,11 +7,7 @@ namespace Graviton\SecurityBundle\Controller;
 
 use Graviton\RestBundle\Controller\RestController;
 use Graviton\SecurityBundle\Entities\SecurityUser;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -39,18 +35,15 @@ class WhoAmIController extends RestController
         $response->headers->set('Content-Type', 'application/json');
 
         if (!$securityUser) {
-            return $this->render(
-                'GravitonRestBundle:Main:index.json.twig',
-                ['response' => json_encode(['Security is not enabled'])],
-                $response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED)
-            );
+            $response->setContent(json_encode(['Security is not enabled']));
+            $response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
+            return $response;
         }
 
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => $this->restUtils->serialize($securityUser->getUser())],
-            $response
-        );
+        $response->setContent($this->restUtils->serialize($securityUser->getUser()));
+        $response->setStatusCode(Response::HTTP_OK);
+
+        return $response;
     }
 
     /**
@@ -64,11 +57,8 @@ class WhoAmIController extends RestController
         $response = $this->getResponse();
         $response->headers->set('Content-Type', 'application/json');
 
-        $schema = $this->getModel()->getSchema();
-        return $this->render(
-            'GravitonRestBundle:Main:index.json.twig',
-            ['response' => json_encode($schema)],
-            $response
-        );
+        $response->setContent(json_encode($this->getModel()->getSchema()));
+
+        return $response;
     }
 }
