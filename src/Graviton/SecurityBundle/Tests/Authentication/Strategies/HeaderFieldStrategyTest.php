@@ -5,8 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\TestBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Graviton\TestBundle\Test\RestTestCase;
 
 /**
  * Class HeaderFieldStrategyTest
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class HeaderFieldStrategyTest extends WebTestCase
+class HeaderFieldStrategyTest extends RestTestCase
 {
     /**
      * @covers       \Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy::apply
@@ -41,8 +40,8 @@ class HeaderFieldStrategyTest extends WebTestCase
         $client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
+            [], //parameters
+            [], //files
             $server
         );
 

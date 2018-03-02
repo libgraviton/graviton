@@ -22,6 +22,23 @@ class LanguageControllerTest extends RestTestCase
     const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/language/';
 
     /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+            ),
+            null,
+            'doctrine_mongodb'
+        );
+    }
+
+    /**
      * check if a list of all languages can be optained
      *
      * @return void
@@ -110,11 +127,11 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('en', $response->headers->get('Content-Language'));
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/language/', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/i18n/language/', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
         $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
 
         $client = static::createRestClient();
-        $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/i18n/language/en', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
         $results = $client->getResults();
 
         $this->assertEquals('English', $results->name->en);
@@ -170,14 +187,14 @@ class LanguageControllerTest extends RestTestCase
         $putLang->name->es = 'Español';
 
         $client = static::createRestClient();
-        $client->put('/i18n/language/es', $putLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $client->put('/i18n/language/es', $putLang, [], [], array('HTTP_ACCEPT_LANGUAGE' => 'es'));
 
         $client = static::createRestClient();
         $client->request(
             'GET',
             '/i18n/language/es',
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'es')
         );
         $response = $client->getResponse();
@@ -193,14 +210,14 @@ class LanguageControllerTest extends RestTestCase
         $newPutLang->name->es = 'Espanyol'; // this is a catalan way to spell 'Spanish'
 
         $client = static::createRestClient();
-        $client->put('/i18n/language/es', $newPutLang, array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'es'));
+        $client->put('/i18n/language/es', $newPutLang, [], [], array('HTTP_ACCEPT_LANGUAGE' => 'es'));
 
         $client = static::createRestClient();
         $client->request(
             'GET',
             '/i18n/language/es',
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'es')
         );
         $response = $client->getResponse();
@@ -221,7 +238,7 @@ class LanguageControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
 
-        $client->request('GET', '/i18n/language/en', array(), array(), array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
+        $client->request('GET', '/i18n/language/en', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
 
         $response = $client->getResponse();
         $results = $client->getResults();

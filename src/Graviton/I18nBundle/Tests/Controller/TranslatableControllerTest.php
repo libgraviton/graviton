@@ -16,6 +16,24 @@ use Graviton\TestBundle\Test\RestTestCase;
  */
 class TranslatableControllerTest extends RestTestCase
 {
+
+    /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+            ),
+            null,
+            'doctrine_mongodb'
+        );
+    }
+
     /**
      * check that translatable record return correct CORS headers
      *

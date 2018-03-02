@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SameSubnetStrategyTest extends WebTestCase
+class SameSubnetStrategyTest extends RestTestCase
 {
     protected $strategy;
     /** @var Client */
@@ -53,9 +53,9 @@ class SameSubnetStrategyTest extends WebTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $this->expectException('\InvalidArgumentException');
@@ -90,9 +90,9 @@ class SameSubnetStrategyTest extends WebTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $strategy = new SameSubnetStrategy('10.2.0.2');

@@ -6,6 +6,7 @@ services:
 
     graviton.file.file_manager:
         class: "%graviton.file.file_manager.class%"
+        public: true
         arguments:
             - "@oneup_flysystem.graviton_filesystem"
             - "@doctrine_mongodb"
@@ -34,6 +35,7 @@ services:
 
     graviton.file.controller.file:
         class: "%graviton.file.controller.file.class%"
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -

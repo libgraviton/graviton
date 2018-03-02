@@ -21,7 +21,7 @@ class SpecialMimetypeRequestListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelRequest()
     {
         $server = array('HTTP_ACCEPT' => 'application/vnd.com.swisscom.translation+json');
-        $request = new Request(array(), array(), array(), array(), array(), $server);
+        $request = new Request([], [], [], [], [], $server);
         $request->setFormat('json', 'application/json');
 
         $eventDouble = $this->getMockBuilder('\Graviton\RestBundle\Event\RestEvent')

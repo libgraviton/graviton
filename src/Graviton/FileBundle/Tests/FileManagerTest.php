@@ -227,7 +227,7 @@ class FileManagerTest extends RestTestCase
         );
         sleep(1);
         $client = $this->createClient();
-        $client->request('PATCH', $location, array(), array(), array(), $patchJson);
+        $client->request('PATCH', $location, [], [], [], $patchJson);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
 

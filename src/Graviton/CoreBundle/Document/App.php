@@ -53,7 +53,7 @@ class App implements TranslatableDocumentInterface
      */
     public function getPreTranslatedFields()
     {
-        return array();
+        return [];
     }
 
     /**

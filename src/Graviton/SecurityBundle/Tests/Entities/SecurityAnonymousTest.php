@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\Entities;
 
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 
 /**
  * Class SecurityContractTest
@@ -14,7 +14,7 @@ use Graviton\TestBundle\Test\WebTestCase;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SecurityAnonymousTest extends WebTestCase
+class SecurityAnonymousTest extends RestTestCase
 {
     /**
      * @param string[] $methods methods to mock

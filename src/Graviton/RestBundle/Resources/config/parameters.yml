@@ -23,4 +23,4 @@ parameters:
     graviton.rest.not_modifiable.origin.records:
       - "core"
 
-    graviton.rest.headers.x-versioning: !php/const:Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME
+    graviton.rest.headers.x-versioning: !php/const Graviton\SchemaBundle\Constraint\VersionServiceConstraint::HEADER_NAME

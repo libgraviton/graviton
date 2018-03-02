@@ -13,7 +13,6 @@ use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
-use Graviton\PersonBundle\GravitonPersonBundle;
 use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RestBundle\GravitonRestBundle;
@@ -29,13 +28,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * GravitonCoreBundle
  *
- * WARNING: Don't change me without changing Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
- *
- * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  */
 class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
 {
@@ -55,7 +50,6 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonRestBundle(),
             new GravitonI18nBundle(),
             new GravitonGeneratorBundle(),
-            new GravitonPersonBundle(),
             new GravitonCacheBundle(),
             new GravitonLogBundle(),
             new GravitonSecurityBundle(),

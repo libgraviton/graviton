@@ -27,14 +27,14 @@ class BundleLoader
      *
      * @var \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
-    protected $bundleStack = array();
+    protected $bundleStack = [];
 
     /**
      * final compilation of bundles
      *
      * @var \Symfony\Component\HttpKernel\Bundle\Bundle[]
      */
-    protected $finalBundles = array();
+    protected $finalBundles = [];
 
     /**
      * create and kickstart BundleLoader

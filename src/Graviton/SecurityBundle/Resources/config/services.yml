@@ -99,25 +99,6 @@ services:
             name: kernel.event_subscriber
 
     #
-    #    Voter services
-    #
-    graviton.security.access.own_context_voter:
-        class: Graviton\SecurityBundle\Voter\OwnContextVoter
-        public: false
-        tags:
-          -
-            name: security.voter
-
-    graviton.security.access.service_allowed_voter:
-        class: Graviton\SecurityBundle\Voter\ServiceAllowedVoter
-        public: false
-        arguments:
-          - "%graviton.security.services.whitelist%"
-        tags:
-          -
-            name: security.voter
-
-    #
     #    Whoami Services
     #
     graviton.security.model.whoami:
@@ -134,6 +115,7 @@ services:
     graviton.security.controller.whoami:
         class: Graviton\SecurityBundle\Controller\WhoAmIController
         parent: graviton.rest.controller
+        public: true
         calls:
           -
             method: setModel
@@ -145,6 +127,7 @@ services:
     #
     graviton.security.service.utils:
         class: Graviton\SecurityBundle\Service\SecurityUtils
+        public: true
         arguments:
           - "@security.token_storage"
 

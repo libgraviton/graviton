@@ -72,7 +72,7 @@ class Swagger
     {
         $ret = $this->getBasicStructure();
         $routingMap = $this->restUtils->getServiceRoutingMap();
-        $paths = array();
+        $paths = [];
 
         foreach ($routingMap as $contName => $routes) {
             list(, $bundle,, $document) = explode('.', $contName);
@@ -188,7 +188,7 @@ class Swagger
      */
     private function getBasicStructure()
     {
-        $ret = array();
+        $ret = [];
         $ret['swagger'] = '2.0';
 
         $ret['info'] = array(
@@ -265,7 +265,7 @@ class Swagger
      */
     protected function getPathTags(Route $route, $part = 1)
     {
-        $ret = array();
+        $ret = [];
         $routeParts = explode('/', $route->getPath());
         if (isset($routeParts[$part])) {
             $ret[] = ucfirst($routeParts[$part]);

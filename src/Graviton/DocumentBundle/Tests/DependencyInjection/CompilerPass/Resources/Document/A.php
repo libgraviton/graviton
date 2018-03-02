@@ -32,6 +32,6 @@ class A implements TranslatableDocumentInterface
      */
     public function getPreTranslatedFields()
     {
-        return array();
+        return [];
     }
 }

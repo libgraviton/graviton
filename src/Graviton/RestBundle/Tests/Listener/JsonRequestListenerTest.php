@@ -18,7 +18,7 @@ class JsonRequestListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelRequest()
     {
         $server = array('HTTP_ACCEPT' => 'application/json');
-        $request = new Request(array(), array(), array(), array(), array(), $server);
+        $request = new Request([], [], [], [], [], $server);
 
         $eventDouble = $this->getMockBuilder('\Graviton\RestBundle\Event\RestEvent')
             ->disableOriginalConstructor()

@@ -64,7 +64,7 @@ protected $deletedDate;
     {% endif %}
     */
     {% if field.type == 'array' %}
-        protected ${{ field.fieldName }} = array();
+        protected ${{ field.fieldName }} = [];
     {% else %}
         protected ${{ field.fieldName }};
     {% endif %}

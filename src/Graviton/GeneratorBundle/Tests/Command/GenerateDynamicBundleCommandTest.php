@@ -7,7 +7,7 @@ namespace Graviton\GeneratorBundle\Tests\Command;
 
 use Graviton\GeneratorBundle\Command\GenerateDynamicBundleCommand;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use lapistano\ProxyObject\ProxyBuilder;
+use Graviton\TestBundle\Test\PrivateClassMethodTrait;
 use Sensio\Bundle\GeneratorBundle\Tests\Command\GenerateBundleCommandTest as BaseTest;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -19,6 +19,9 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class GenerateDynamicBundleCommandTest extends BaseTest
 {
+
+    use PrivateClassMethodTrait;
+
     /**
      * @return void
      */
@@ -174,19 +177,16 @@ class GenerateDynamicBundleCommandTest extends BaseTest
                 $arrayHashField
             );
 
-        $command = $this->getProxyBuilder('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand')
-            ->disableOriginalConstructor()
-            ->setMethods(['getSubResources'])
-            ->getProxy();
+        $command = $this->createMock('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand');
+        $subResourceFunction = $this->getPrivateClassMethod($command, 'getSubResources');
+
         $this->assertEquals(
             [
                 $subHashFieldB->getJsonDefinition(),
                 $hashField->getJsonDefinition(),
                 $arrayHashField->getJsonDefinition(),
             ],
-            $command->getSubResources(
-                $this->getJsonDefDouble([$arrayField, $hashField])
-            )
+            $subResourceFunction->invokeArgs($command, [$this->getJsonDefDouble([$arrayField, $hashField])])
         );
     }
 
@@ -198,32 +198,22 @@ class GenerateDynamicBundleCommandTest extends BaseTest
     {
         $outputDouble = $this->createMock('Symfony\\Component\\Console\\Output\\OutputInterface');
 
-        $command = $this->getProxyBuilder('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand')
-            ->disableOriginalConstructor()
-            ->setMethods(['generateSubResources'])
-            ->getProxy();
-
-        $command->generateSubResources(
-            $outputDouble,
-            $jsonDefDouble,
-            'MyTestBundle'
+        $command = $this->createMock('\\Graviton\\GeneratorBundle\\Command\\GenerateDynamicBundleCommand');
+        $subResourceFunction = $this->getPrivateClassMethod($command, 'generateSubResources');
+        $subResourceFunction->invokeArgs(
+            $command,
+            [
+                $outputDouble,
+                $jsonDefDouble,
+                'MyTestBundle'
+            ]
         );
-    }
-
-    /**
-     * @param string $classname Name of class to be extended.
-     *
-     * @return ProxyBuilder
-     */
-    public function getProxyBuilder($classname)
-    {
-        return new ProxyBuilder($classname);
     }
 
     /**
      * @param array $fields set of field to be configured
      *
-     * @return JsonDefinition
+     * @return JsonDefinition definition
      */
     public function getJsonDefDouble(array $fields)
     {

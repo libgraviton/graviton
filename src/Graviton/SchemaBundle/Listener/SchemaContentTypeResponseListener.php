@@ -60,7 +60,7 @@ class SchemaContentTypeResponseListener
                 $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
                 $contentType .= sprintf(
                     '; profile=%s',
-                    $this->router->generate($schemaRoute, array(), UrlGeneratorInterface::ABSOLUTE_URL)
+                    $this->router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL)
                 );
             } catch (\Exception $e) {
                 return true;

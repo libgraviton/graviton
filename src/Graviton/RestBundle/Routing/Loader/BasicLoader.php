@@ -108,7 +108,7 @@ class BasicLoader extends Loader
         $actionHead = ActionUtils::getRouteHead($service, $serviceConfig);
         $this->routes->add($resource . '.head', $actionHead);
 
-        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, array(), true);
+        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, [], true);
         $this->routes->add($resource . '.idHead', $actionHead);
 
         $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
@@ -129,7 +129,7 @@ class BasicLoader extends Loader
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'item', true);
         $this->routes->add($resource . '.canonicalIdSchemaOptions', $actionOptions);
 
-        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array(), true);
+        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, [], true);
         $this->routes->add($resource . '.idOptions', $actionOptions);
     }
 

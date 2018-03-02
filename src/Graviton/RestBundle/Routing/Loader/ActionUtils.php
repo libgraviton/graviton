@@ -165,7 +165,7 @@ class ActionUtils
      *
      * @return Route
      */
-    public static function getRouteOptions($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
+    public static function getRouteOptions($service, $serviceConfig, array $parameters = [], $useIdPattern = false)
     {
         if ($useIdPattern) {
             $parameters['id'] = self::ID_PATTERN;
@@ -183,7 +183,7 @@ class ActionUtils
      *
      * @return Route
      */
-    public static function getRouteHead($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
+    public static function getRouteHead($service, $serviceConfig, array $parameters = [], $useIdPattern = false)
     {
         if ($useIdPattern) {
             $parameters['id'] = self::ID_PATTERN;

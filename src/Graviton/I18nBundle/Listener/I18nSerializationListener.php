@@ -24,7 +24,7 @@ class I18nSerializationListener
     /**
      * @var mixed[]
      */
-    protected $localizedFields = array();
+    protected $localizedFields = [];
 
     /**
      * @var I18nUtils

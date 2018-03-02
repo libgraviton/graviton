@@ -308,7 +308,7 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $repoName,
             null,
-            array(),
+            [],
             null,
             array(
                 array(
@@ -331,7 +331,7 @@ class ResourceGenerator extends AbstractGenerator
             $services,
             $repoName . 'embedded',
             null,
-            array(),
+            [],
             null,
             array(
                 array(
@@ -579,9 +579,9 @@ class ResourceGenerator extends AbstractGenerator
         $dom,
         $id,
         $parent = null,
-        array $calls = array(),
+        array $calls = [],
         $tag = null,
-        array $arguments = array(),
+        array $arguments = [],
         $factoryService = null,
         $factoryMethod = null
     ) {
@@ -595,6 +595,7 @@ class ResourceGenerator extends AbstractGenerator
             $attrNode = $dom->createElement('service');
 
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
+            $this->addAttributeToNode('public', 'true', $dom, $attrNode);
             $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
             if ($factoryService && $factoryMethod) {

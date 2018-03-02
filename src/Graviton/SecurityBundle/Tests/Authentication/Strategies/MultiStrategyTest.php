@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\BrowserKit\Cookie;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class MultiStrategyTest extends WebTestCase
+class MultiStrategyTest extends RestTestCase
 {
     protected $strategy;
     protected $client;
@@ -72,9 +72,9 @@ class MultiStrategyTest extends WebTestCase
         $this->client->request(
             'GET', //method
             '/', //uri
-            array(), //parameters
-            array(), //files
-            array() //server
+            [], //parameters
+            [], //files
+            [] //server
         );
 
         $this->assertSame($fieldValue, $this->strategy->apply($this->client->getRequest()));

@@ -362,7 +362,7 @@ class AppControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $this->loadFixtures([], null, 'doctrine_mongodb');
         $client = static::createRestClient();
         $client->request('GET', '/core/app/');
 
@@ -371,7 +371,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(array(), $results);
+        $this->assertEquals([], $results);
     }
 
     /**
@@ -444,7 +444,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // send nothing really..
-        $client->post('/core/app/', "", array(), array(), array(), false);
+        $client->post('/core/app/', "", [], [], [], false);
 
         $response = $client->getResponse();
 
@@ -489,7 +489,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // make sure this is sent as 'raw' input (not json_encoded again)
-        $client->post('/core/app/', $input, array(), array(), array(), false);
+        $client->post('/core/app/', $input, [], [], [], false);
 
         $response = $client->getResponse();
 
@@ -587,7 +587,7 @@ class AppControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/core/app/' . $helloApp->id, [], [], [], $patchJson);
         $response = $client->getResponse();
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -628,7 +628,7 @@ class AppControllerTest extends RestTestCase
                 'path' => '/title/en'
             )
         );
-        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/core/app/' . $helloApp->id, [], [], [], $patchJson);
         $response = $client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -861,8 +861,8 @@ class AppControllerTest extends RestTestCase
         $client->request(
             'GET',
             '/core/app/?'.$expr,
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
         );
 

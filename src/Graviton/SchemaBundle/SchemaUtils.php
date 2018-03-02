@@ -224,7 +224,7 @@ class SchemaUtils
         $meta = $repo->getClassMetadata();
 
         // Init sub searchable fields
-        $subSearchableFields = array();
+        $subSearchableFields = [];
 
         // look for translatables in document class
         $documentReflection = new \ReflectionClass($repo->getClassName());
@@ -370,7 +370,7 @@ class SchemaUtils
             } elseif (in_array($field.'[]', $translatableFields, true)) {
                 $property = $this->makeArrayTranslatable($property, $languages);
             } elseif ($meta->getTypeOfField($field) === 'extref') {
-                $urls = array();
+                $urls = [];
                 $refCollections = $model->getRefCollectionOfField($field);
                 foreach ($refCollections as $collection) {
                     if (isset($this->extrefServiceMapping[$collection])) {

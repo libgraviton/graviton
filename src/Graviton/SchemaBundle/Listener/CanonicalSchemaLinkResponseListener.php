@@ -49,7 +49,7 @@ class CanonicalSchemaLinkResponseListener
             $linkHeader = LinkHeader::fromResponse($response);
 
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $url = $this->router->generate($routeName, array(), UrlGeneratorInterface::ABSOLUTE_URL);
+            $url = $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
             // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));
