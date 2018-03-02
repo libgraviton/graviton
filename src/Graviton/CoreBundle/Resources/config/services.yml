@@ -1,14 +1,5 @@
 services:
 
-    graviton.core.sentry_client:
-        class: Raven_Client
-        arguments:
-            - "%graviton.sentry.dsn%"
-            -
-                logger: "graviton"
-                tags:
-                    application: graviton
-
     graviton.core.jms.cache.provider:
         class: "%graviton.core.jms.cache.provider.class%"
         arguments:
