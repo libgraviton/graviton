@@ -17,6 +17,7 @@ services:
 
     graviton.core.controller.main:
       class: "%graviton.core.controller.main.class%"
+      public: true
       arguments:
         - "@router"
         - "@?graviton.rest.response"
@@ -29,6 +30,7 @@ services:
 
     graviton.core.controller.app:
         class: "%graviton.core.controller.app.class%"
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -
@@ -84,6 +86,7 @@ services:
 
     graviton.core.controller.version:
         class: Graviton\CoreBundle\Controller\VersionController
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -

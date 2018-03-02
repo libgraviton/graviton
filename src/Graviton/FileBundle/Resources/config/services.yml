@@ -34,6 +34,7 @@ services:
 
     graviton.file.controller.file:
         class: "%graviton.file.controller.file.class%"
+        public: true
         parent: "graviton.rest.controller"
         calls:
           -

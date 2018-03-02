@@ -115,6 +115,7 @@ services:
     graviton.security.controller.whoami:
         class: Graviton\SecurityBundle\Controller\WhoAmIController
         parent: graviton.rest.controller
+        public: true
         calls:
           -
             method: setModel

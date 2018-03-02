@@ -40,6 +40,7 @@ services:
 
     graviton.swagger.controller.swagger:
         class: Graviton\SwaggerBundle\Controller\SwaggerController
+        public: true
         arguments:
           - "@graviton.swagger.filesystem.finder"
           - "%kernel.root_dir%"
