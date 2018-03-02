@@ -6,6 +6,10 @@ parameters:
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
     graviton.log.level: "info"
     graviton.sentry.dsn: null
+    graviton.sentry.dontReport:
+        - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
+        - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
+        - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
 
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
