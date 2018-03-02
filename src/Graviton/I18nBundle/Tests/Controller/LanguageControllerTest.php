@@ -22,6 +22,23 @@ class LanguageControllerTest extends RestTestCase
     const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/language/';
 
     /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loadFixtures(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+            ),
+            null,
+            'doctrine_mongodb'
+        );
+    }
+
+    /**
      * check if a list of all languages can be optained
      *
      * @return void

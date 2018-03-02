@@ -44,23 +44,6 @@ class RestTestCase extends GravitonTestCase
     }
 
     /**
-     * load fixtures
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $this->loadFixtures(
-            array(
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
-            ),
-            null,
-            'doctrine_mongodb'
-        );
-    }
-
-    /**
      * test for content type based on classname based mapping
      *
      * @param string   $contentType Expected Content-Type
