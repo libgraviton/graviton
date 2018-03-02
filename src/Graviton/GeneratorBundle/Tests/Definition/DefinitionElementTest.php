@@ -135,17 +135,17 @@ class DefinitionElementTest extends \PHPUnit_Framework_TestCase
         /** @var JsonDefinitionRel $embedField */
         $embedField = $jsonDef->getField('contact');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionRel', $embedField);
-        $this->assertEquals('Graviton\PersonBundle\Document\PersonContact', $embedField->getType());
-        $this->assertEquals('Graviton\PersonBundle\Document\PersonContact', $embedField->getTypeSerializer());
-        $this->assertEquals('Graviton\PersonBundle\Document\PersonContact', $embedField->getTypeDoctrine());
+        $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact', $embedField->getType());
+        $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact', $embedField->getTypeSerializer());
+        $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact', $embedField->getTypeDoctrine());
 
         /** @var JsonDefinitionArray $arrayField */
         $arrayField = $jsonDef->getField('contacts');
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionArray', $arrayField);
         $this->assertInstanceOf('Graviton\GeneratorBundle\Definition\JsonDefinitionRel', $arrayField->getElement());
-        $this->assertEquals('Graviton\PersonBundle\Document\PersonContact[]', $arrayField->getType());
-        $this->assertEquals('array<Graviton\PersonBundle\Document\PersonContact>', $arrayField->getTypeSerializer());
-        $this->assertEquals('Graviton\PersonBundle\Document\PersonContact[]', $arrayField->getTypeDoctrine());
+        $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact[]', $arrayField->getType());
+        $this->assertEquals('array<GravitonDyn\PersonContactBundle\Document\PersonContact>', $arrayField->getTypeSerializer());
+        $this->assertEquals('GravitonDyn\PersonContactBundle\Document\PersonContact[]', $arrayField->getTypeDoctrine());
     }
 
     /**
