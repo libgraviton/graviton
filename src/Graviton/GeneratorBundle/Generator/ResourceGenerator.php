@@ -595,6 +595,7 @@ class ResourceGenerator extends AbstractGenerator
             $attrNode = $dom->createElement('service');
 
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
+            $this->addAttributeToNode('public', 'true', $dom, $attrNode);
             $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
             if ($factoryService && $factoryMethod) {
