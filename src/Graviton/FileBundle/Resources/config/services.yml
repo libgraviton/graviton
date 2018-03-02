@@ -6,6 +6,7 @@ services:
 
     graviton.file.file_manager:
         class: "%graviton.file.file_manager.class%"
+        public: true
         arguments:
             - "@oneup_flysystem.graviton_filesystem"
             - "@doctrine_mongodb"

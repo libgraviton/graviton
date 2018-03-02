@@ -127,6 +127,7 @@ services:
     #
     graviton.security.service.utils:
         class: Graviton\SecurityBundle\Service\SecurityUtils
+        public: true
         arguments:
           - "@security.token_storage"
 

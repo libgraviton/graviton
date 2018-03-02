@@ -50,6 +50,7 @@ services:
     graviton.core.model.app:
         class: "%graviton.core.model.app.class%"
         parent: "graviton.rest.model"
+        public: true
         arguments:
           - "@graviton.rql.visitor.mongodb"
         calls:
