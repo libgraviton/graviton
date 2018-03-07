@@ -32,6 +32,7 @@ class DefaultControllerTest extends RestTestCase
             null,
             'doctrine_mongodb'
         );
+        die;
     }
 
     /**

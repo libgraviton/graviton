@@ -31,8 +31,8 @@ class ServiceManager
     const CACHE_KEY_SERVICES_URLS_TIME = 10;
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
-    /** @var Request */
-    protected $request;
+    /** @var RequestStack */
+    protected $requestStack;
 
     /** @var AnalyticsManager */
     protected $analyticsManager;
@@ -61,7 +61,7 @@ class ServiceManager
         Router $router,
         $definitionDirectory
     ) {
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
@@ -179,10 +179,13 @@ class ServiceManager
      */
     public function getData()
     {
-        $serviceRoute = $this->request->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
         $cacheTime = $schema->getCacheTime();
+
+        // check parameters
 
         //Cached data if configured
         if ($cacheTime &&
@@ -191,7 +194,7 @@ class ServiceManager
             return $cache;
         }
 
-        $data = $this->analyticsManager->getData($schema);
+        $data = $this->analyticsManager->getData($schema, $this->getServiceParameters($schema));
 
         if ($cacheTime) {
             $this->cacheProvider->save(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute(), $data, $cacheTime);
@@ -207,11 +210,53 @@ class ServiceManager
      */
     public function getSchema()
     {
-        $serviceRoute = $this->request->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
 
         // Locate the schema definition
         $schema =  $this->getServiceSchemaByRoute($serviceRoute);
 
         return $schema->getSchema();
+    }
+
+    private function getServiceParameters(AnalyticModel $model)
+    {
+        $params = [];
+        if (!is_array($model->getParams())) {
+            return $params;
+        }
+
+        foreach ($model->getParams() as $param) {
+            if (!isset($param->name)) {
+                throw new \LogicException("Incorrect spec (no name) of param in analytics route " . $model->getRoute());
+            }
+
+            $paramValue = $this->requestStack->getCurrentRequest()->query->get($param->name, null);
+
+            // required missing?
+            if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
+                throw new \LogicException(
+                    sprintf(
+                        "Missing parameter '%s' in analytics route '%s'",
+                        $param->name,
+                        $model->getRoute()
+                    )
+                );
+            }
+
+            if (!is_null($param->type)) {
+                switch ($param->type) {
+                    case "integer":
+                        $paramValue = intval($paramValue);
+                        break;
+                    case "boolean":
+                        $paramValue = boolval($paramValue);
+                        break;
+                }
+            }
+
+            $params[$param->name] = $paramValue;
+        }
+
+        return $params;
     }
 }

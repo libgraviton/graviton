@@ -54,7 +54,7 @@ class AnalyticModelTest extends RestTestCase
 
         /** @var AnalyticModel $modelA */
         $modelA = $mapper->map($definitionA, new AnalyticModel());
-        $resultA = json_encode($modelA->getPipeline());
+        $resultA = json_encode($modelA->getAggregate());
         $this->assertEquals($expect, $resultA);
 
         // Pipeline
@@ -87,7 +87,7 @@ class AnalyticModelTest extends RestTestCase
 
         /** @var AnalyticModel $modelB */
         $modelB = $mapper->map($definitionB, new AnalyticModel());
-        $resultB = json_encode($modelB->getPipeline());
+        $resultB = json_encode($modelB->getAggregate());
         $this->assertEquals($expect, $resultB);
 
         $this->assertEquals($definitionB->collection, $modelB->getCollection());

@@ -76,8 +76,8 @@ class JsonExceptionListener
             $this->logger->critical($exception);
         }
 
-        $response = new JsonResponse($data);
-        $event->setResponse($response);
+        //$response = new JsonResponse($data);
+        //$event->setResponse($response);
     }
 
     /**
