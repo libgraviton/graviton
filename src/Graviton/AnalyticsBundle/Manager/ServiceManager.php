@@ -123,16 +123,30 @@ class ServiceManager
         if (is_array($services)) {
             return $services;
         }
-        $this->getDirectoryServices();
         $services = [];
-        $r = $this->router;
-        foreach ($services as $name => $service) {
+        foreach ($this->getDirectoryServices() as $name => $service) {
             $services[] = [
-                '$ref' => $r->generate('graviton_analytics_service', ['service' => $service->route], false),
-                'profile' => $r->generate('graviton_analytics_service_schema', ['service' => $service->route], true)
+                '$ref' => $this->router->generate(
+                    'graviton_analytics_service',
+                    [
+                        'service' => $service->route
+                    ],
+                    false
+                ),
+                'profile' => $this->router->generate(
+                    'graviton_analytics_service_schema',
+                    [
+                        'service' => $service->route
+                    ],
+                    true
+                )
             ];
         }
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES_URLS, $services, self::CACHE_KEY_SERVICES_URLS_TIME);
+        $this->cacheProvider->save(
+            self::CACHE_KEY_SERVICES_URLS,
+            $services,
+            self::CACHE_KEY_SERVICES_URLS_TIME
+        );
         return $services;
     }
 
