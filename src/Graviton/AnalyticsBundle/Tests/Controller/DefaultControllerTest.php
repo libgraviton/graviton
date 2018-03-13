@@ -265,6 +265,8 @@ class DefaultControllerTest extends RestTestCase
 
     /**
      * test to see if the params are mentioned in the schema
+     *
+     * @return void
      */
     public function testParamsInSchema()
     {

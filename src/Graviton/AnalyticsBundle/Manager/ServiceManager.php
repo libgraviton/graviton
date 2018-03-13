@@ -7,7 +7,6 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -166,6 +165,7 @@ class ServiceManager
                 sprintf('Service Analytics for %s was not found', $name)
             );
         }
+
         $mapper = new JsonMapper();
         /** @var AnalyticModel $schema */
         $schema = $mapper->map($services[$name], new AnalyticModel());
@@ -218,6 +218,13 @@ class ServiceManager
         return $schema->getSchema();
     }
 
+    /**
+     * returns the params as passed from the user
+     *
+     * @param AnalyticModel $model model
+     *
+     * @return array the params, converted as specified
+     */
     private function getServiceParameters(AnalyticModel $model)
     {
         $params = [];
