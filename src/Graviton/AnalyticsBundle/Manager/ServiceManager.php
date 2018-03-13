@@ -258,6 +258,15 @@ class ServiceManager
                     case "boolean":
                         $paramValue = boolval($paramValue);
                         break;
+                    case "array":
+                        $paramValue = explode(',', $paramValue);
+                        break;
+                    case "array<integer>":
+                        $paramValue = array_map('intval', explode(',', $paramValue));
+                        break;
+                    case "array<boolean>":
+                        $paramValue = array_map('boolval', explode(',', $paramValue));
+                        break;
                 }
             }
 
