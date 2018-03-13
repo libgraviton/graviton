@@ -5,8 +5,6 @@
 namespace Graviton\AnalyticsBundle\Tests\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Router;
-
 use Graviton\TestBundle\Test\RestTestCase;
 
 /**
@@ -66,7 +64,6 @@ class DefaultControllerTest extends RestTestCase
                     "title": "Application usage",
                     "description": "Data use for application access",
                     "type": "object",
-                    "representation": "pie",
                     "properties": {
                       "id": {
                         "title": "ID",
@@ -78,7 +75,8 @@ class DefaultControllerTest extends RestTestCase
                         "description": "Sum of result",
                         "type": "integer"
                       }
-                    }
+                    },
+                    "x-params": []
                   }'
         );
         $this->assertEquals($sampleSchema, $schema);
@@ -156,5 +154,175 @@ class DefaultControllerTest extends RestTestCase
             ]'
         );
         $this->assertEquals($sampleData, $data);
+    }
+
+    /**
+     * test to see if required params are required
+     *
+     * @return void
+     */
+    public function testMissingParamExceptions()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/analytics/customer-date-with-param');
+        $this->assertEquals(500, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * test to see application of param
+     *
+     * @dataProvider paramHandlingWithIntDataProvider
+     *
+     * @param int $yearFrom   year from
+     * @param int $yearTo     year to
+     * @param int $numRecords number of records
+     *
+     * @return void
+     */
+    public function testParamHandlingWithInt($yearFrom, $yearTo, $numRecords)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/analytics/customer-date-with-param?yearFrom='.$yearFrom.'&yearTo='.$yearTo);
+
+        $this->assertEquals($numRecords, count($client->getResults()));
+    }
+
+    /**
+     * data provider
+     *
+     * @return array data
+     */
+    public function paramHandlingWithIntDataProvider()
+    {
+        return [
+            [
+                1999,
+                9999,
+                4
+            ],
+            [
+                2014,
+                2014,
+                1
+            ],
+            [
+                2014,
+                2015,
+                2
+            ],
+            [
+                2014,
+                2016,
+                3
+            ]
+        ];
+    }
+
+    /**
+     * test to see application of param with int on string field, if the correct records are returned
+     *
+     * @dataProvider paramHandlingWithIntOnStringFieldDataProvider
+     *
+     * @param string $groupId    group id
+     * @param int    $numRecords number of records
+     * @param array  $idList     list of ids
+     *
+     * @return void
+     */
+    public function testParamHandlingWithIntOnStringField($groupId, $numRecords, $idList)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/analytics/customer-with-int-param-string-field?groupId='.$groupId);
+
+        $this->assertEquals($numRecords, count($client->getResults()));
+
+        foreach ($client->getResults() as $result) {
+            $this->assertContains($result->{'_id'}, $idList);
+        }
+    }
+
+    /**
+     * data provider
+     *
+     * @return array data
+     */
+    public function paramHandlingWithIntOnStringFieldDataProvider()
+    {
+        return [
+            [
+                100,
+                3,
+                ['100', '101', '102']
+            ],
+            [
+                200,
+                3,
+                ['100', '101', '103']
+            ]
+        ];
+    }
+
+    /**
+     * see if array properties are properly handled
+     *
+     * @dataProvider paramHandlingArrayWithIntOnStringFieldDataProvider
+     *
+     * @param string $groupId group id
+     * @param array  $idList  list of ids
+     *
+     * @return void
+     */
+    public function testParamArrayHandlingWithIntOnStringField($groupId, $idList)
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/customer-with-int-param-array-field?groupId='.implode(',', $groupId)
+        );
+
+        $this->assertEquals(count($idList), count($client->getResults()));
+
+        foreach ($client->getResults() as $result) {
+            $this->assertContains($result->{'_id'}, $idList);
+        }
+    }
+
+    /**
+     * data provider
+     *
+     * @return array data
+     */
+    public function paramHandlingArrayWithIntOnStringFieldDataProvider()
+    {
+        return [
+            [
+                [100],
+                ['100', '101', '102']
+            ],
+            [
+                [200],
+                ['100', '101', '103']
+            ],
+            [
+                [100,200],
+                ['100', '101', '102', '103']
+            ]
+        ];
+    }
+
+    /**
+     * test to see if the params are mentioned in the schema
+     *
+     * @return void
+     */
+    public function testParamsInSchema()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/analytics/schema/customer-date-with-param');
+
+        $this->assertEquals(2, count($client->getResults()->{'x-params'}));
+        $this->assertEquals(true, count($client->getResults()->{'x-params'}[0]->required));
+        $this->assertEquals(true, count($client->getResults()->{'x-params'}[1]->required));
     }
 }

@@ -17,11 +17,11 @@ class AnalyticModel
 {
     protected $collection;
     protected $route;
-    protected $aggregate;
-    protected $pipeline;
+    protected $aggregate = [];
     protected $schema;
     protected $type;
     protected $cacheTime;
+    protected $params = [];
 
     /**
      * String collection
@@ -62,15 +62,6 @@ class AnalyticModel
     }
 
     /**
-     * Mongodb Aggregates
-     * @return mixed
-     */
-    public function getAggregate()
-    {
-        return $this->aggregate ?: [];
-    }
-
-    /**
      * Set mongodb query
      * @param mixed $aggregate object type for query data
      * @return void
@@ -81,21 +72,14 @@ class AnalyticModel
     }
 
     /**
-     * @param mixed $pipeline Data array for query
-     * @return void
-     */
-    public function setPipeline($pipeline)
-    {
-        $this->pipeline = $pipeline;
-    }
-
-    /**
      * Schema for response
      * @return mixed
      */
     public function getSchema()
     {
-        return $this->schema;
+        $schema = $this->schema;
+        $schema->{'x-params'} = $this->getParams();
+        return $schema;
     }
 
     /**
@@ -118,7 +102,7 @@ class AnalyticModel
     }
 
     /**
-     * Type for representation
+     * Type (array or object)
      * @param mixed $type string view
      * @return void
      */
@@ -146,38 +130,54 @@ class AnalyticModel
         $this->cacheTime = (int) $cacheTime;
     }
 
-
-
     /**
      * Build a output Db Model aggregation pipeline array.
      *
-     * @return array
+     * @param array $params params
+     *
+     * @return array the pipeline
      */
-    public function getPipeline()
+    public function getAggregate($params = [])
     {
-        $rtnPipeline = [];
+        $aggregate = $this->getParameterizedAggregate($params);
 
-        if ($pipeline = $this->pipeline) {
-            foreach ($pipeline as $pipe) {
-                foreach ($pipe as $op => $query) {
-                    $rtnPipeline[] = [
-                        $op => $this->parseObjectDates($query)
-                    ];
-                }
-            }
-        } elseif ($aggregate = $this->getAggregate()) {
-            foreach ($aggregate as $op => $query) {
-                $rtnPipeline[] = [
-                    $op => $this->parseObjectDates($query)
-                ];
-            }
+        /*
+        $pipeline = [];
+
+        foreach ($aggregate as $op => $query) {
+            $pipeline[] = [
+                $op => $this->parseObjectDates($query)
+            ];
         }
+        */
 
-        if (empty($rtnPipeline)) {
+        if (empty($aggregate)) {
             throw new  InvalidArgumentException('Wrong configuration for Aggregation pipeline');
         }
 
-        return $rtnPipeline;
+        return $aggregate;
+    }
+
+    /**
+     * get Params
+     *
+     * @return mixed Params
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * set Params
+     *
+     * @param mixed $params params
+     *
+     * @return void
+     */
+    public function setParams($params)
+    {
+        $this->params = $params;
     }
 
     /**
@@ -201,5 +201,35 @@ class AnalyticModel
             $query = json_decode($string);
         }
         return $query;
+    }
+
+    /**
+     * returns the pipeline with param values replaced
+     *
+     * @param array $params the params
+     *
+     * @return array the pipeline with values filled in
+     */
+    private function getParameterizedAggregate(array $params)
+    {
+        $encoded = json_encode($this->aggregate);
+
+        // are there any params?
+        if (is_array($params) && !empty($params)) {
+            foreach ($params as $name => $value) {
+                if (!is_array($value)) {
+                    // replace single standalone values in json
+                    if (is_int($value) || is_bool($value)) {
+                        $encoded = preg_replace('/"\$\{'.$name.'\}"/', $value, $encoded);
+                    }
+                    // the balance
+                    $encoded = preg_replace('/\$\{'.$name.'\}/', $value, $encoded);
+                } else {
+                    $encoded = preg_replace('/"\$\{'.$name.'\}"/', json_encode($value), $encoded);
+                }
+            }
+        }
+
+        return json_decode($encoded, true);
     }
 }

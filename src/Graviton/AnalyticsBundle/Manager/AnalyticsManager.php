@@ -40,18 +40,20 @@ class AnalyticsManager
      * Query db based on definition
      * Another option is to use: $collection->createAggregationBuilder();
      *
-     * @param AnalyticModel $model Definition
+     * @param AnalyticModel $model  Definition
+     * @param array         $params data params
+     *
      * @return array|object
      */
-    public function getData(AnalyticModel $model)
+    public function getData(AnalyticModel $model, $params = [])
     {
         $conn = $this->documentManager->getConnection();
         $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
 
         // Build aggregation pipeline
-        $pipeline = $model->getPipeline();
+        $pipeline = $model->getAggregate($params);
 
-        $iterator = $collection->aggregate($pipeline);
+        $iterator = $collection->aggregate($pipeline, ['cursor' => true]);
         if ('object' === $model->getType()) {
             return $iterator->getSingleResult();
         }

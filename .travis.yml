@@ -21,7 +21,6 @@ before_script:
   # spin up local mongodb with the version we need
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
-          MONGODB_VERSION=3.4.9
           docker pull mongo:${MONGODB_VERSION}
           docker run -d -p 127.0.0.1:27017:27017 mongo:${MONGODB_VERSION} --smallfiles
       fi
@@ -47,23 +46,28 @@ before_script:
 php:
   - 7.2
   - 7.1
-  - 7.0
   - 5.6
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.4
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 matrix:
   allow_failures:
     - php: 7.2
   exclude:
+    # skip composer checks on all others than 7.1
     - php: 7.2
-      env: COMPOSER_CHECK=true PHPUNIT=false
-    - php: 7.0
       env: COMPOSER_CHECK=true PHPUNIT=false
     - php: 5.6
       env: COMPOSER_CHECK=true PHPUNIT=false
+    # no need to check on php72 with old mongo
+    - php: 7.2
+      env: COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.4
+    # no need to check on php 5.6 with new mongo
+    - php: 5.6
+      env: COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
 script:
   - >
       if [ "$PHPUNIT" = "true" ]; then
