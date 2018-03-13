@@ -7,7 +7,6 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -31,8 +30,8 @@ class ServiceManager
     const CACHE_KEY_SERVICES_URLS_TIME = 10;
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
-    /** @var Request */
-    protected $request;
+    /** @var RequestStack */
+    protected $requestStack;
 
     /** @var AnalyticsManager */
     protected $analyticsManager;
@@ -61,7 +60,7 @@ class ServiceManager
         Router $router,
         $definitionDirectory
     ) {
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
@@ -123,16 +122,30 @@ class ServiceManager
         if (is_array($services)) {
             return $services;
         }
-        $this->getDirectoryServices();
         $services = [];
-        $r = $this->router;
-        foreach ($services as $name => $service) {
+        foreach ($this->getDirectoryServices() as $name => $service) {
             $services[] = [
-                '$ref' => $r->generate('graviton_analytics_service', ['service' => $service->route], false),
-                'profile' => $r->generate('graviton_analytics_service_schema', ['service' => $service->route], true)
+                '$ref' => $this->router->generate(
+                    'graviton_analytics_service',
+                    [
+                        'service' => $service->route
+                    ],
+                    false
+                ),
+                'profile' => $this->router->generate(
+                    'graviton_analytics_service_schema',
+                    [
+                        'service' => $service->route
+                    ],
+                    true
+                )
             ];
         }
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES_URLS, $services, self::CACHE_KEY_SERVICES_URLS_TIME);
+        $this->cacheProvider->save(
+            self::CACHE_KEY_SERVICES_URLS,
+            $services,
+            self::CACHE_KEY_SERVICES_URLS_TIME
+        );
         return $services;
     }
 
@@ -152,6 +165,7 @@ class ServiceManager
                 sprintf('Service Analytics for %s was not found', $name)
             );
         }
+
         $mapper = new JsonMapper();
         /** @var AnalyticModel $schema */
         $schema = $mapper->map($services[$name], new AnalyticModel());
@@ -165,10 +179,13 @@ class ServiceManager
      */
     public function getData()
     {
-        $serviceRoute = $this->request->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
         $cacheTime = $schema->getCacheTime();
+
+        // check parameters
 
         //Cached data if configured
         if ($cacheTime &&
@@ -177,7 +194,7 @@ class ServiceManager
             return $cache;
         }
 
-        $data = $this->analyticsManager->getData($schema);
+        $data = $this->analyticsManager->getData($schema, $this->getServiceParameters($schema));
 
         if ($cacheTime) {
             $this->cacheProvider->save(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute(), $data, $cacheTime);
@@ -193,11 +210,69 @@ class ServiceManager
      */
     public function getSchema()
     {
-        $serviceRoute = $this->request->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
 
         // Locate the schema definition
         $schema =  $this->getServiceSchemaByRoute($serviceRoute);
 
         return $schema->getSchema();
+    }
+
+    /**
+     * returns the params as passed from the user
+     *
+     * @param AnalyticModel $model model
+     *
+     * @return array the params, converted as specified
+     */
+    private function getServiceParameters(AnalyticModel $model)
+    {
+        $params = [];
+        if (!is_array($model->getParams())) {
+            return $params;
+        }
+
+        foreach ($model->getParams() as $param) {
+            if (!isset($param->name)) {
+                throw new \LogicException("Incorrect spec (no name) of param in analytics route " . $model->getRoute());
+            }
+
+            $paramValue = $this->requestStack->getCurrentRequest()->query->get($param->name, null);
+
+            // required missing?
+            if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
+                throw new \LogicException(
+                    sprintf(
+                        "Missing parameter '%s' in analytics route '%s'",
+                        $param->name,
+                        $model->getRoute()
+                    )
+                );
+            }
+
+            if (!is_null($param->type)) {
+                switch ($param->type) {
+                    case "integer":
+                        $paramValue = intval($paramValue);
+                        break;
+                    case "boolean":
+                        $paramValue = boolval($paramValue);
+                        break;
+                    case "array":
+                        $paramValue = explode(',', $paramValue);
+                        break;
+                    case "array<integer>":
+                        $paramValue = array_map('intval', explode(',', $paramValue));
+                        break;
+                    case "array<boolean>":
+                        $paramValue = array_map('boolval', explode(',', $paramValue));
+                        break;
+                }
+            }
+
+            $params[$param->name] = $paramValue;
+        }
+
+        return $params;
     }
 }
