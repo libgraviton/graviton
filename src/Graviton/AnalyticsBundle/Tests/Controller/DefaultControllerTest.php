@@ -264,6 +264,54 @@ class DefaultControllerTest extends RestTestCase
     }
 
     /**
+     * see if array properties are properly handled
+     *
+     * @dataProvider paramHandlingArrayWithIntOnStringFieldDataProvider
+     *
+     * @param string $groupId group id
+     * @param array  $idList  list of ids
+     *
+     * @return void
+     */
+    public function testParamArrayHandlingWithIntOnStringField($groupId, $idList)
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/customer-with-int-param-array-field?groupId='.implode(',', $groupId)
+        );
+
+        $this->assertEquals(count($idList), count($client->getResults()));
+
+        foreach ($client->getResults() as $result) {
+            $this->assertContains($result->{'_id'}, $idList);
+        }
+    }
+
+    /**
+     * data provider
+     *
+     * @return array data
+     */
+    public function paramHandlingArrayWithIntOnStringFieldDataProvider()
+    {
+        return [
+            [
+                [100],
+                ['100', '101', '102']
+            ],
+            [
+                [200],
+                ['100', '101', '103']
+            ],
+            [
+                [100,200],
+                ['100', '101', '102', '103']
+            ]
+        ];
+    }
+
+    /**
      * test to see if the params are mentioned in the schema
      *
      * @return void
