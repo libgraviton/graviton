@@ -53,7 +53,7 @@ class AnalyticsManager
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
-        $iterator = $collection->aggregate($pipeline);
+        $iterator = $collection->aggregate($pipeline, ['cursor' => true]);
         if ('object' === $model->getType()) {
             return $iterator->getSingleResult();
         }
