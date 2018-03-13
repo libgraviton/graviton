@@ -217,13 +217,16 @@ class AnalyticModel
         // are there any params?
         if (is_array($params) && !empty($params)) {
             foreach ($params as $name => $value) {
-                // replace single standalone values in json
-                if (is_int($value) || is_bool($value)) {
-                    $encoded = preg_replace('/"\$\{'.$name.'\}"/', $value, $encoded);
+                if (!is_array($value)) {
+                    // replace single standalone values in json
+                    if (is_int($value) || is_bool($value)) {
+                        $encoded = preg_replace('/"\$\{'.$name.'\}"/', $value, $encoded);
+                    }
+                    // the balance
+                    $encoded = preg_replace('/\$\{'.$name.'\}/', $value, $encoded);
+                } else {
+                    $encoded = preg_replace('/"\$\{'.$name.'\}"/', json_encode($value), $encoded);
                 }
-
-                // the balance
-                $encoded = preg_replace('/\$\{'.$name.'\}/', $value, $encoded);
             }
         }
 
