@@ -77,7 +77,9 @@ class AnalyticModel
      */
     public function getSchema()
     {
-        return $this->schema;
+        $schema = $this->schema;
+        $schema->{'x-params'} = $this->getParams();
+        return $schema;
     }
 
     /**
@@ -100,7 +102,7 @@ class AnalyticModel
     }
 
     /**
-     * Type for representation
+     * Type (array or object)
      * @param mixed $type string view
      * @return void
      */
@@ -131,7 +133,9 @@ class AnalyticModel
     /**
      * Build a output Db Model aggregation pipeline array.
      *
-     * @return array
+     * @param array $params params
+     *
+     * @return array the pipeline
      */
     public function getAggregate($params = [])
     {
@@ -199,7 +203,14 @@ class AnalyticModel
         return $query;
     }
 
-    private function getParameterizedAggregate($params)
+    /**
+     * returns the pipeline with param values replaced
+     *
+     * @param array $params the params
+     *
+     * @return array the pipeline with values filled in
+     */
+    private function getParameterizedAggregate(array $params)
     {
         $encoded = json_encode($this->aggregate);
 
@@ -215,8 +226,6 @@ class AnalyticModel
                 $encoded = preg_replace('/\$\{'.$name.'\}/', $value, $encoded);
             }
         }
-
-        //var_dump($encoded); die;
 
         return json_decode($encoded, true);
     }
