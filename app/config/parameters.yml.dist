@@ -10,6 +10,7 @@ parameters:
         - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
         - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
         - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
+        - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
