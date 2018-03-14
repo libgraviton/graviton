@@ -12,6 +12,7 @@ use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
@@ -184,12 +185,11 @@ class ServiceManager
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
         $cacheTime = $schema->getCacheTime();
-
-        // check parameters
+        $cacheKey = $this->getCacheKey($schema);
 
         //Cached data if configured
         if ($cacheTime &&
-            $cache = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute())
+            $cache = $this->cacheProvider->fetch($cacheKey)
         ) {
             return $cache;
         }
@@ -197,10 +197,24 @@ class ServiceManager
         $data = $this->analyticsManager->getData($schema, $this->getServiceParameters($schema));
 
         if ($cacheTime) {
-            $this->cacheProvider->save(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute(), $data, $cacheTime);
+            $this->cacheProvider->save($cacheKey, $data, $cacheTime);
         }
 
         return $data;
+    }
+
+    /**
+     * generate a cache key also based on query
+     *
+     * @param AnalyticModel $schema schema
+     *
+     * @return string cache key
+     */
+    private function getCacheKey($schema)
+    {
+        return self::CACHE_KEY_SERVICES_PREFIX
+            .$schema->getRoute()
+            .sha1(serialize($this->requestStack->getCurrentRequest()->query->all()));
     }
 
     /**
@@ -241,7 +255,7 @@ class ServiceManager
 
             // required missing?
             if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
-                throw new \LogicException(
+                throw new AnalyticUsageException(
                     sprintf(
                         "Missing parameter '%s' in analytics route '%s'",
                         $param->name,
