@@ -9,7 +9,6 @@
 namespace Graviton\CoreBundle\Listener;
 
 use Monolog\Logger;
-use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -68,6 +67,7 @@ class JsonExceptionListener
         if (!is_array($data)) {
             $data = [
                 'code' => $exception->getCode(),
+                'exceptionClass' => get_class($exception),
                 'message' => $exception->getMessage()
             ];
         }
@@ -92,7 +92,7 @@ class JsonExceptionListener
     private function decorateKnownCases($exception)
     {
         if (
-            $exception instanceof ContextErrorException &&
+            $exception instanceof \ErrorException &&
             strpos($exception->getMessage(), 'Undefined index: $id') !== false
         ) {
             return [
