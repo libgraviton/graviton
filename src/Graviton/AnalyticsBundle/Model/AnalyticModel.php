@@ -141,18 +141,8 @@ class AnalyticModel
     {
         $aggregate = $this->getParameterizedAggregate($params);
 
-        /*
-        $pipeline = [];
-
-        foreach ($aggregate as $op => $query) {
-            $pipeline[] = [
-                $op => $this->parseObjectDates($query)
-            ];
-        }
-        */
-
         if (empty($aggregate)) {
-            throw new  InvalidArgumentException('Wrong configuration for Aggregation pipeline');
+            throw new InvalidArgumentException('Wrong configuration for Aggregation pipeline - it is empty!');
         }
 
         return $aggregate;
@@ -178,29 +168,6 @@ class AnalyticModel
     public function setParams($params)
     {
         $this->params = $params;
-    }
-
-    /**
-     * Enabling to possibility to create dtae queries
-     * Will replace PARSE_DATE(date|format)
-     * sample: PARSE_DATE(-4 years|Y) -> new DateTime(-4 years)->format(Y) -> 2013
-     *
-     * @param object $query Aggregation query
-     * @return object
-     */
-    private function parseObjectDates($query)
-    {
-        $string = json_encode($query);
-        preg_match_all('/PARSE_DATE\(([^\)]+)\)/', $string, $matches);
-        if ($matches && array_key_exists(1, $matches) && is_array($matches[1])) {
-            foreach ($matches[0] as $key => $value) {
-                $formatting = explode('|', $matches[1][$key]);
-                $date = new \DateTime($formatting[0]);
-                $string = str_replace('"'.$value.'"', $date->format($formatting[1]), $string);
-            }
-            $query = json_decode($string);
-        }
-        return $query;
     }
 
     /**
@@ -230,6 +197,19 @@ class AnalyticModel
             }
         }
 
-        return json_decode($encoded, true);
+        return $this->parseObjectInstances(json_decode($encoded, true));
+    }
+
+    private function parseObjectInstances(array $struct)
+    {
+        foreach ($struct as $key => $prop) {
+            if (is_array($prop)) {
+                $struct[$key] = $this->parseObjectInstances($prop);
+            }
+            if (is_string($prop) && $prop == '#newDate#') {
+                $struct[$key] = new \MongoDate();
+            }
+        }
+        return $struct;
     }
 }
