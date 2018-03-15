@@ -8,6 +8,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
@@ -46,6 +47,9 @@ class ServiceManager
     /** @var string */
     protected $directory;
 
+    /** @var Filesystem */
+    protected $fs;
+
     /**
      * ServiceConverter constructor.
      * @param RequestStack     $requestStack        Sf Request information service
@@ -66,6 +70,7 @@ class ServiceManager
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
         $this->directory = $definitionDirectory;
+        $this->fs = new Filesystem();
     }
 
     /**
@@ -97,14 +102,31 @@ class ServiceManager
             ->notName('_*')
             ->sortByName();
 
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($this->directory)
+            ->path('/\/analytics\//i')
+            ->name('*.json')
+            ->notName('_*')
+            ->notName('*pipeline.json')
+            ->sortByName();
+
         foreach ($finder as $file) {
             $key = $file->getFilename();
             $data = json_decode($file->getContents());
             if (json_last_error()) {
                 throw new InvalidConfigurationException(
-                    sprintf('Analytics file: %s could not be loaded due to error: ', $key, json_last_error_msg())
+                    sprintf('Analytics file: %s could not be loaded due to error: %s', $key, json_last_error_msg())
                 );
             }
+
+            // is there a pipeline file?
+            $pipelineFile = substr($file->getPathname(), 0, -4).'pipeline.json';
+            if ($this->fs->exists($pipelineFile)) {
+                $data->aggregate = json_decode(file_get_contents($pipelineFile));
+            }
+
             $services[$data->route] = $data;
         }
 
@@ -252,6 +274,11 @@ class ServiceManager
             }
 
             $paramValue = $this->requestStack->getCurrentRequest()->query->get($param->name, null);
+
+            // default set?
+            if (is_null($paramValue) && isset($param->default)) {
+                $paramValue = $param->default;
+            }
 
             // required missing?
             if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
