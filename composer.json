@@ -174,6 +174,7 @@
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
                     "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
                     "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
+                    "graviton.analytics.cache_time.metadata": "ANALYTICS_CACHE_TIME_METADATA",
                     "graviton.sentry.dsn": "SENTRY_DSN"
                 }
             },
