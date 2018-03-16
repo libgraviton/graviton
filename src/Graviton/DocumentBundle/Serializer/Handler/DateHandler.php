@@ -5,9 +5,9 @@
 
 namespace Graviton\DocumentBundle\Serializer\Handler;
 
+use Graviton\DocumentBundle\Service\DateConverter;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\Handler\DateHandler as BaseDateHandler;
-use JsonSchema\Rfc3339;
 
 /**
  * Date handler for JMS serializer
@@ -24,27 +24,19 @@ class DateHandler extends BaseDateHandler
 {
 
     /**
-     * @var string
+     * @var DateConverter
      */
-    private $defaultFormat;
-
-    /**
-     * @var string
-     */
-    private $defaultTimezone;
+    private $dateConverter;
 
     /**
      * DateHandler constructor.
      *
-     * @param string $defaultFormat   configured default format
-     * @param string $defaultTimezone default timezone
-     * @param bool   $xmlCData        xml data
+     * @param DateConverter $dateConverter date converter
      */
-    public function __construct($defaultFormat = \DateTime::ISO8601, $defaultTimezone = 'UTC', $xmlCData = true)
+    public function __construct(DateConverter $dateConverter)
     {
-        $this->defaultFormat = $defaultFormat;
-        $this->defaultTimezone = $defaultTimezone;
-        parent::__construct($defaultFormat, $defaultTimezone, $xmlCData);
+        $this->dateConverter = $dateConverter;
+        parent::__construct($dateConverter->getDateFormat(), $dateConverter->getTimezone(), true);
     }
 
     /**
@@ -62,8 +54,10 @@ class DateHandler extends BaseDateHandler
             return null;
         }
 
-        $dt = Rfc3339::createFromString($data);
-
-        return parent::deserializeDateTimeFromJson($visitor, $dt->format($this->defaultFormat), $type);
+        return parent::deserializeDateTimeFromJson(
+            $visitor,
+            $this->dateConverter->getDateTimeStringInFormat($data),
+            $type
+        );
     }
 }

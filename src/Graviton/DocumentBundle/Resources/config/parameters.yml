@@ -1,5 +1,6 @@
 parameters:
     graviton.document.service.extrefconverter.class: Graviton\DocumentBundle\Service\ExtReferenceConverter
+    graviton.document.service.dateconverter.class: Graviton\DocumentBundle\Service\DateConverter
     graviton.document.service.collectioncache.class: Graviton\DocumentBundle\Service\CollectionCache
     graviton.document.listener.extreferencesearchlistener.class: Graviton\DocumentBundle\Listener\ExtReferenceSearchListener
     graviton.document.listener.fieldnamesearchlistener.class: Graviton\DocumentBundle\Listener\FieldNameSearchListener

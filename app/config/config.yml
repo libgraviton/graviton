@@ -77,10 +77,6 @@ doctrine_mongodb:
 # JmsSerializerBundle Configuration
 # see: http://jmsyst.com/bundles/JMSSerializerBundle/master/configuration
 jms_serializer:
-    handlers:
-        datetime:
-            default_format: Y-m-d\TH:i:sO
-            default_timezone: UTC # defaults to whatever timezone set in php.ini or via date_default_timezone_set
     metadata:
         cache: graviton.core.jms.cache.provider
         debug: "%kernel.debug%"
