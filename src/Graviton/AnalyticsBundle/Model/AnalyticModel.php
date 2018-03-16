@@ -200,6 +200,13 @@ class AnalyticModel
         return $this->parseObjectInstances(json_decode($encoded, true));
     }
 
+    /**
+     * parse object structures that need to be injected in order to execute the query (like MongoDates or Ids)
+     *
+     * @param array $struct the pipeline
+     *
+     * @return array changed pipeline
+     */
     private function parseObjectInstances(array $struct)
     {
         foreach ($struct as $key => $prop) {

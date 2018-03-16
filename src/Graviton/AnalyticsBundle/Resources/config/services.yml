@@ -19,6 +19,7 @@ services:
             - "@=service(parameter('graviton.cache.provider.service_id'))"
             - "@router"
             - "%kernel.root_dir%/.."
+            - "%graviton.analytics.cache_time.metadata%"
 
     graviton.analytics.homepage_listener:
         class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener
