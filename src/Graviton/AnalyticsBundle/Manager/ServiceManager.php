@@ -27,9 +27,7 @@ class ServiceManager
 {
     /** Cache name for services */
     const CACHE_KEY_SERVICES = 'analytics_services';
-    const CACHE_KEY_SERVICES_TIME = 10;
     const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
-    const CACHE_KEY_SERVICES_URLS_TIME = 10;
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
     /** @var RequestStack */
@@ -47,6 +45,9 @@ class ServiceManager
     /** @var string */
     protected $directory;
 
+    /** @var int */
+    protected $cacheTimeMetadata;
+
     /** @var Filesystem */
     protected $fs;
 
@@ -57,19 +58,22 @@ class ServiceManager
      * @param CacheProvider    $cacheProvider       Cache service
      * @param Router           $router              To manage routing generation
      * @param string           $definitionDirectory Where definitions are stored
+     * @param int              $cacheTimeMetadata   How long to cache metadata
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
         Router $router,
-        $definitionDirectory
+        $definitionDirectory,
+        $cacheTimeMetadata
     ) {
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
         $this->directory = $definitionDirectory;
+        $this->cacheTimeMetadata = $cacheTimeMetadata;
         $this->fs = new Filesystem();
     }
 
@@ -130,7 +134,7 @@ class ServiceManager
             $services[$data->route] = $data;
         }
 
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, self::CACHE_KEY_SERVICES_TIME);
+        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, $this->cacheTimeMetadata);
         return $services;
     }
 
@@ -145,6 +149,7 @@ class ServiceManager
         if (is_array($services)) {
             return $services;
         }
+
         $services = [];
         foreach ($this->getDirectoryServices() as $name => $service) {
             $services[] = [
@@ -167,7 +172,7 @@ class ServiceManager
         $this->cacheProvider->save(
             self::CACHE_KEY_SERVICES_URLS,
             $services,
-            self::CACHE_KEY_SERVICES_URLS_TIME
+            $this->cacheTimeMetadata
         );
         return $services;
     }
@@ -260,6 +265,7 @@ class ServiceManager
      * @param AnalyticModel $model model
      *
      * @return array the params, converted as specified
+     * @throws AnalyticUsageException
      */
     private function getServiceParameters(AnalyticModel $model)
     {
