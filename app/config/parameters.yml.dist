@@ -3,6 +3,9 @@ parameters:
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
+    graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
+    graviton.document.timezone: 'UTC'
+
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
     graviton.log.level: "info"
     graviton.sentry.dsn: null
