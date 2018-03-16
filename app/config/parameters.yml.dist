@@ -3,6 +3,9 @@ parameters:
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
+    graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
+    graviton.document.timezone: 'UTC'
+
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
     graviton.log.level: "info"
     graviton.sentry.dsn: null
@@ -10,6 +13,7 @@ parameters:
         - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
         - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
         - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
+        - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
@@ -39,6 +43,8 @@ parameters:
 
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
+
+    graviton.analytics.cache_time.metadata: 10
 
     # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
     graviton.file.backend: local

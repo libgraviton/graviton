@@ -10,6 +10,7 @@ services:
         arguments:
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%graviton.mongodb.default.server.db%"
+            - "@graviton.document.service.dateconverter"
 
     graviton.analytics.service_manager:
         class: Graviton\AnalyticsBundle\Manager\ServiceManager
@@ -19,6 +20,7 @@ services:
             - "@=service(parameter('graviton.cache.provider.service_id'))"
             - "@router"
             - "%kernel.root_dir%/.."
+            - "%graviton.analytics.cache_time.metadata%"
 
     graviton.analytics.homepage_listener:
         class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener

@@ -233,7 +233,13 @@ class DefaultControllerTest extends RestTestCase
     public function testParamHandlingWithIntOnStringField($groupId, $numRecords, $idList)
     {
         $client = static::createRestClient();
-        $client->request('GET', '/analytics/customer-with-int-param-string-field?groupId='.$groupId);
+
+        $url = '/analytics/customer-with-int-param-string-field';
+        if (!is_null($groupId)) {
+            $url .= '?groupId='.$groupId;
+        }
+
+        $client->request('GET', $url);
 
         $this->assertEquals($numRecords, count($client->getResults()));
 
@@ -252,6 +258,11 @@ class DefaultControllerTest extends RestTestCase
         return [
             [
                 100,
+                3,
+                ['100', '101', '102']
+            ],
+            [
+                null, // testing default value of 100 as defined in params!
                 3,
                 ['100', '101', '102']
             ],
@@ -324,5 +335,60 @@ class DefaultControllerTest extends RestTestCase
         $this->assertEquals(2, count($client->getResults()->{'x-params'}));
         $this->assertEquals(true, count($client->getResults()->{'x-params'}[0]->required));
         $this->assertEquals(true, count($client->getResults()->{'x-params'}[1]->required));
+    }
+
+    /**
+     * tests conversion of MongoDates in output as well as replacement of Date instances (and maybe others)
+     * in the pipeline script
+     *
+     * @return void
+     */
+    public function testDateHandlingInOutput()
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/customer-datehandling'
+        );
+
+        $expectedResult = [
+            [
+                '_id' => '100',
+                'createDate' => '2014-07-15T10:23:31+0000',
+                'age' => date('Y') - 2014,
+                'sub' => [
+                    'createDate' => '2014-07-15T10:23:31+0000'
+                ]
+            ],
+            [
+                '_id' => '101',
+                'createDate' => '2015-07-15T10:23:31+0000',
+                'age' => date('Y') - 2015,
+                'sub' => [
+                    'createDate' => '2015-07-15T10:23:31+0000'
+                ]
+            ],
+            [
+                '_id' => '102',
+                'createDate' => '2016-07-15T10:23:31+0000',
+                'age' => date('Y') - 2016,
+                'sub' => [
+                    'createDate' => '2016-07-15T10:23:31+0000'
+                ]
+            ],
+            [
+                '_id' => '103',
+                'createDate' => '2017-07-15T10:23:31+0000',
+                'age' => date('Y') - 2017,
+                'sub' => [
+                    'createDate' => '2017-07-15T10:23:31+0000'
+                ]
+            ],
+        ];
+
+        $this->assertEquals(
+            json_decode(json_encode($expectedResult)), // make objects
+            $client->getResults()
+        );
     }
 }

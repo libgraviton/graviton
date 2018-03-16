@@ -8,10 +8,12 @@ namespace Graviton\AnalyticsBundle\Manager;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
@@ -25,9 +27,7 @@ class ServiceManager
 {
     /** Cache name for services */
     const CACHE_KEY_SERVICES = 'analytics_services';
-    const CACHE_KEY_SERVICES_TIME = 10;
     const CACHE_KEY_SERVICES_URLS = 'analytics_services_urls';
-    const CACHE_KEY_SERVICES_URLS_TIME = 10;
     const CACHE_KEY_SERVICES_PREFIX = 'analytics_';
 
     /** @var RequestStack */
@@ -45,6 +45,12 @@ class ServiceManager
     /** @var string */
     protected $directory;
 
+    /** @var int */
+    protected $cacheTimeMetadata;
+
+    /** @var Filesystem */
+    protected $fs;
+
     /**
      * ServiceConverter constructor.
      * @param RequestStack     $requestStack        Sf Request information service
@@ -52,19 +58,23 @@ class ServiceManager
      * @param CacheProvider    $cacheProvider       Cache service
      * @param Router           $router              To manage routing generation
      * @param string           $definitionDirectory Where definitions are stored
+     * @param int              $cacheTimeMetadata   How long to cache metadata
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
         Router $router,
-        $definitionDirectory
+        $definitionDirectory,
+        $cacheTimeMetadata
     ) {
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
         $this->router = $router;
         $this->directory = $definitionDirectory;
+        $this->cacheTimeMetadata = $cacheTimeMetadata;
+        $this->fs = new Filesystem();
     }
 
     /**
@@ -96,18 +106,35 @@ class ServiceManager
             ->notName('_*')
             ->sortByName();
 
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($this->directory)
+            ->path('/\/analytics\//i')
+            ->name('*.json')
+            ->notName('_*')
+            ->notName('*pipeline.json')
+            ->sortByName();
+
         foreach ($finder as $file) {
             $key = $file->getFilename();
             $data = json_decode($file->getContents());
             if (json_last_error()) {
                 throw new InvalidConfigurationException(
-                    sprintf('Analytics file: %s could not be loaded due to error: ', $key, json_last_error_msg())
+                    sprintf('Analytics file: %s could not be loaded due to error: %s', $key, json_last_error_msg())
                 );
             }
+
+            // is there a pipeline file?
+            $pipelineFile = substr($file->getPathname(), 0, -4).'pipeline.json';
+            if ($this->fs->exists($pipelineFile)) {
+                $data->aggregate = json_decode(file_get_contents($pipelineFile));
+            }
+
             $services[$data->route] = $data;
         }
 
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, self::CACHE_KEY_SERVICES_TIME);
+        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, $this->cacheTimeMetadata);
         return $services;
     }
 
@@ -122,6 +149,7 @@ class ServiceManager
         if (is_array($services)) {
             return $services;
         }
+
         $services = [];
         foreach ($this->getDirectoryServices() as $name => $service) {
             $services[] = [
@@ -144,7 +172,7 @@ class ServiceManager
         $this->cacheProvider->save(
             self::CACHE_KEY_SERVICES_URLS,
             $services,
-            self::CACHE_KEY_SERVICES_URLS_TIME
+            $this->cacheTimeMetadata
         );
         return $services;
     }
@@ -184,12 +212,11 @@ class ServiceManager
         // Locate the schema definition
         $schema = $this->getServiceSchemaByRoute($serviceRoute);
         $cacheTime = $schema->getCacheTime();
-
-        // check parameters
+        $cacheKey = $this->getCacheKey($schema);
 
         //Cached data if configured
         if ($cacheTime &&
-            $cache = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute())
+            $cache = $this->cacheProvider->fetch($cacheKey)
         ) {
             return $cache;
         }
@@ -197,10 +224,24 @@ class ServiceManager
         $data = $this->analyticsManager->getData($schema, $this->getServiceParameters($schema));
 
         if ($cacheTime) {
-            $this->cacheProvider->save(self::CACHE_KEY_SERVICES_PREFIX.$schema->getRoute(), $data, $cacheTime);
+            $this->cacheProvider->save($cacheKey, $data, $cacheTime);
         }
 
         return $data;
+    }
+
+    /**
+     * generate a cache key also based on query
+     *
+     * @param AnalyticModel $schema schema
+     *
+     * @return string cache key
+     */
+    private function getCacheKey($schema)
+    {
+        return self::CACHE_KEY_SERVICES_PREFIX
+            .$schema->getRoute()
+            .sha1(serialize($this->requestStack->getCurrentRequest()->query->all()));
     }
 
     /**
@@ -224,6 +265,7 @@ class ServiceManager
      * @param AnalyticModel $model model
      *
      * @return array the params, converted as specified
+     * @throws AnalyticUsageException
      */
     private function getServiceParameters(AnalyticModel $model)
     {
@@ -239,9 +281,14 @@ class ServiceManager
 
             $paramValue = $this->requestStack->getCurrentRequest()->query->get($param->name, null);
 
+            // default set?
+            if (is_null($paramValue) && isset($param->default)) {
+                $paramValue = $param->default;
+            }
+
             // required missing?
             if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
-                throw new \LogicException(
+                throw new AnalyticUsageException(
                     sprintf(
                         "Missing parameter '%s' in analytics route '%s'",
                         $param->name,
