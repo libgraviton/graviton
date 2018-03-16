@@ -41,6 +41,8 @@ parameters:
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 
+    graviton.analytics.cache_time.metadata: 10
+
     # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
     graviton.file.backend: local
 
