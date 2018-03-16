@@ -6,6 +6,13 @@ services:
             - "@router"
             - "%graviton.document.type.extref.mapping%"
 
+    graviton.document.service.dateconverter:
+        class: "%graviton.document.service.dateconverter.class%"
+        public: true
+        arguments:
+            - "%graviton.document.dateFormat%"
+            - "%graviton.document.timezone%"
+
     graviton.document.serializer.listener.emptyextref:
         class: "%graviton.document.serializer.listener.emptyextref.class%"
         tags:
@@ -89,6 +96,8 @@ services:
 
     graviton.document.serializer.handler.date:
         class: "%graviton.document.serializer.handler.date.class%"
+        arguments:
+          - "@graviton.document.service.dateconverter"
         tags:
           -
             name: jms_serializer.subscribing_handler
