@@ -10,6 +10,7 @@ services:
         arguments:
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%graviton.mongodb.default.server.db%"
+            - "@graviton.document.service.dateconverter"
 
     graviton.analytics.service_manager:
         class: Graviton\AnalyticsBundle\Manager\ServiceManager
