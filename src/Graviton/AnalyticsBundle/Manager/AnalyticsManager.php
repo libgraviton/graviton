@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\DocumentBundle\Service\DateConverter;
 
 /**
  * Manager for data layer single responsibility
@@ -17,23 +18,35 @@ use Graviton\AnalyticsBundle\Model\AnalyticModel;
  */
 class AnalyticsManager
 {
-    /** @var DocumentManager */
-    protected $documentManager;
+    /**
+     * @var DocumentManager
+     */
+    private $documentManager;
 
-    /** @var string */
-    protected $databaseName;
+    /**
+     * @var string
+     */
+    private $databaseName;
+
+    /**
+     * @var DateConverter
+     */
+    private $dateConverter;
 
     /**
      * AnalyticsManager constructor.
      * @param DocumentManager $documentManager Db manager and query control
      * @param string          $databaseName    Db string name
+     * @param DateConverter   $dateConverter   date converter
      */
     public function __construct(
         DocumentManager $documentManager,
-        $databaseName
+        $databaseName,
+        DateConverter $dateConverter
     ) {
         $this->documentManager = $documentManager;
         $this->databaseName = $databaseName;
+        $this->dateConverter = $dateConverter;
     }
 
     /**
@@ -54,9 +67,32 @@ class AnalyticsManager
         $pipeline = $model->getAggregate($params);
 
         $iterator = $collection->aggregate($pipeline, ['cursor' => true]);
+
         if ('object' === $model->getType()) {
-            return $iterator->getSingleResult();
+            return $this->convertDates($iterator->getSingleResult());
         }
-        return $iterator->toArray();
+
+        return array_map([$this, 'convertDates'], $iterator->toArray());
+    }
+
+    /**
+     * convert date representations in the returned output.. as we are not typed here, we don't
+     * know what to expect..
+     *
+     * @param array $data data
+     *
+     * @return array data with formatted dates
+     */
+    private function convertDates(array $data)
+    {
+        foreach ($data as $key => $val) {
+            if (is_array($val)) {
+                $data[$key] = $this->convertDates($val);
+            }
+            if ($val instanceof \MongoDate) {
+                $data[$key] = $this->dateConverter->formatDateTime($val->toDateTime());
+            }
+        }
+        return $data;
     }
 }
