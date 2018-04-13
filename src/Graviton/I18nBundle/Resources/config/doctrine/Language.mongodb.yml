@@ -1,0 +1,9 @@
+Graviton\I18nBundle\Document\Language:
+  fields:
+    id:
+      type: string
+      id: true
+      type: string
+      strategy: UUID
+    name:
+      type: string

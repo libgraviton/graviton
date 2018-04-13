@@ -1,0 +1,29 @@
+Graviton\I18nBundle\Document\Translatable:
+  fields:
+    id:
+      id: true
+      type: string
+      strategy: UUID
+    domain:
+      type: string
+    locale:
+      type: string
+    original:
+      type: string
+    translated:
+      type: string
+    isLocalized:
+      type: boolean
+
+  embedOne:
+    language:
+      targetDocument: Graviton\I18nBundle\Document\TranslatableLanguage
+      cascade: all
+
+  indexes:
+    langIdx:
+      keys:
+        domain: asc
+        locale: asc
+      options:
+        background: true
