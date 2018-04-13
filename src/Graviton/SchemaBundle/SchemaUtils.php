@@ -6,9 +6,9 @@
 namespace Graviton\SchemaBundle;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
@@ -33,7 +33,7 @@ class SchemaUtils
     /**
      * language repository
      *
-     * @var LanguageRepository repository
+     * @var DocumentRepository repository
      */
     private $languageRepository;
 
@@ -105,7 +105,7 @@ class SchemaUtils
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
      * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
-     * @param LanguageRepository                 $languageRepository        repository
+     * @param DocumentRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
      * @param Serializer                         $serializer                serializer
      * @param array                              $extrefServiceMapping      Extref service mapping
@@ -119,7 +119,7 @@ class SchemaUtils
     public function __construct(
         RepositoryFactory $repositoryFactory,
         SerializerMetadataFactoryInterface $serializerMetadataFactory,
-        LanguageRepository $languageRepository,
+        DocumentRepository $languageRepository,
         RouterInterface $router,
         Serializer $serializer,
         array $extrefServiceMapping,

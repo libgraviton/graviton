@@ -5,13 +5,12 @@
 
 namespace Graviton\I18nBundle\Command;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MongoDB\Driver\Exception\ConnectionTimeoutException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Graviton\I18nBundle\Repository\LanguageRepository;
-use Graviton\I18nBundle\Repository\TranslatableRepository;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -21,12 +20,12 @@ use Graviton\I18nBundle\Repository\TranslatableRepository;
 class CreateTranslationResourcesCommand extends Command
 {
     /**
-     * @var LanguageRepository
+     * @var DocumentRepository
      */
     private $languageRepo;
 
     /**
-     * @var TranslatableRepository
+     * @var DocumentRepository
      */
     private $translatableRepo;
 
@@ -41,13 +40,13 @@ class CreateTranslationResourcesCommand extends Command
     private $resourceDir;
 
     /**
-     * @param LanguageRepository     $languageRepo     Language Repository
-     * @param TranslatableRepository $translatableRepo Translatable Repository
+     * @param DocumentRepository     $languageRepo     Language Repository
+     * @param DocumentRepository     $translatableRepo Translatable Repository
      * @param Filesystem             $filesystem       symfony/filesystem tooling
      */
     public function __construct(
-        LanguageRepository $languageRepo,
-        TranslatableRepository $translatableRepo,
+        DocumentRepository $languageRepo,
+        DocumentRepository $translatableRepo,
         Filesystem $filesystem
     ) {
         $this->languageRepo = $languageRepo;
