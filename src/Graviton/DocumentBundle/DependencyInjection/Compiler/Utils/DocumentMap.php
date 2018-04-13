@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Document map
@@ -86,13 +87,14 @@ class DocumentMap
     public function getDocuments()
     {
         return array_map([$this, 'getDocument'], array_keys($this->mappings));
+
     }
 
     /**
      * Process document
      *
      * @param string      $className         Class name
-     * @param \DOMElement $doctrineMapping   Doctrine XML mapping
+     * @param array       $doctrineMapping   Doctrine mapping
      * @param \DOMElement $serializerMapping Serializer XML mapping
      * @param \DOMElement $validationMapping Validation XML mapping
      * @param array       $schemaMapping     Schema mapping
@@ -101,7 +103,7 @@ class DocumentMap
      */
     private function processDocument(
         $className,
-        \DOMElement $doctrineMapping,
+        array $doctrineMapping,
         \DOMElement $serializerMapping = null,
         \DOMElement $validationMapping = null,
         array $schemaMapping = null
@@ -227,21 +229,19 @@ class DocumentMap
     {
         $classMap = [];
         foreach ($finder as $file) {
-            $document = new \DOMDocument();
-            $document->load($file);
-
-            $xpath = new \DOMXPath($document);
-            $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-
-            $classMap = array_reduce(
-                iterator_to_array($xpath->query('//*[self::doctrine:document or self::doctrine:embedded-document]')),
-                function (array $classMap, \DOMElement $element) {
-                    $classMap[$element->getAttribute('name')] = $element;
-                    return $classMap;
-                },
-                $classMap
+            $classMap = array_merge(
+                $classMap,
+                Yaml::parseFile($file)
             );
         }
+
+        // filter out superclasses
+        $classMap = array_filter(
+            $classMap,
+            function ($classEntry) {
+                return (!isset($classEntry['type']) || $classEntry['type'] != 'mappedSuperclass');
+            }
+        );
 
         return $classMap;
     }
@@ -410,33 +410,41 @@ class DocumentMap
     /**
      * Get doctrine document fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineFields(\DOMElement $mapping)
+    private function getDoctrineFields(array $mapping)
     {
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+        if (!isset($mapping['fields'])) {
+            return [];
+        }
 
         return array_map(
-            function (\DOMElement $element) {
+            function ($key, $value) {
+                if (!isset($value['type'])) $value['type'] = '';
+
                 return [
-                    'name' => $element->getAttribute('fieldName'),
-                    'type' => $element->getAttribute('type'),
+                    'name' => $key,
+                    'type' => $value['type']
                 ];
             },
-            iterator_to_array($xpath->query('doctrine:field', $mapping))
+            array_keys($mapping['fields']),
+            $mapping['fields']
         );
     }
 
     /**
      * Get doctrine document embed-one fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineEmbedOneFields(\DOMElement $mapping)
+    private function getDoctrineEmbedOneFields(array $mapping)
     {
+
+        return [];
+        var_dump($mapping); die;
+
         $xpath = new \DOMXPath($mapping->ownerDocument);
         $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
 
@@ -454,11 +462,13 @@ class DocumentMap
     /**
      * Get doctrine document embed-many fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineEmbedManyFields(\DOMElement $mapping)
+    private function getDoctrineEmbedManyFields(array $mapping)
     {
+        return [];
+
         $xpath = new \DOMXPath($mapping->ownerDocument);
         $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
 
