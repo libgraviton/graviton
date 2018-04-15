@@ -84,21 +84,9 @@
         {%- else %}
             {%- set currentRels = attribute(relations, relType) %}
             {%- set currentRels = currentRels|merge(newRelation) %}
-            {%- set relations = relations|merge({ (relType) : newRelation }) %}
+            {%- set relations = relations|merge({ (relType) : currentRels }) %}
         {%- endif %}
 
-{#
-        {%- if '[]' in field.type %}
-            {%- set target = field.type[0:-2] %}
-            {%- if relType == 'embed' %}{%- set target = target ~ 'Embedded' %}{% endif %}
-
-            {%- set oneToMany = oneToMany|merge([{'relType': relType, 'name': field.fieldName, 'target': target}]) %}
-        {%- else %}
-            {%- set target = field.type %}
-            {%- if relType == 'embed' %}{%- set target = target ~ 'Embedded' %}{% endif %}
-
-            {%- set oneToOne = oneToOne|merge([{'relType': relType, 'name': field.fieldName, 'target': target}]) %}
-        {%- endif %} #}
     {%- else %}
 
 {# our own types #}
@@ -147,20 +135,14 @@
 {% endfor %}
 {% endif %}
 
-{#
-WE WILL TRY WITHOUT REPOSITORY CLASSES
-
-<{{ docType }} name="{{ base }}Document\{{ document }}" repository-class="{{ base }}Repository\{{ document}}Repository"  inheritance-type="COLLECTION_PER_CLASS">
-
-#}
-
 {# indexes #}
 
 {% if not isEmbeddedDocument %}
-{% if (indexes is defined and indexes is not empty) or (textIndexes is defined and textIndexes is not empty) %}
-    {%- if indexes is defined and indexes is not empty %}
+
   indexes:
 
+{#{% if (indexes is defined and indexes is not empty) or (textIndexes is defined and textIndexes is not empty) %} #}
+{%- if indexes is defined and indexes is not empty %}
     {%- for index in indexes %}
 
     {{ index }}:
@@ -171,17 +153,21 @@ WE WILL TRY WITHOUT REPOSITORY CLASSES
     {%- endfor %}
 {%- endif %}
 
-{#
-    {% if textIndexes is defined and textIndexes is not empty %}
-            <index background="true" name="search_{{ document }}_index">
-                {% for index, value in textIndexes %}
-                    <key name="search_{{ index }}-{{ value }}"/>
-                {% endfor %}
-            </index>
-    {% endif %}
+{% if textIndexes is defined and textIndexes is not empty %}
 
-    </indexes>
-#}
-
+    TextIndex:
+      keys:
+{% for index, value in textIndexes %}
+        '{{ index }}': text
+{% endfor %}
+      options:
+        background: true
+        default_language: de
+        language_override: none
+        weights:
+{% for index, value in textIndexes %}
+          '{{ index }}': {{ value }}
+{% endfor %}
 {% endif %}
+
 {% endif %}
