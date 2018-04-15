@@ -21,7 +21,6 @@
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</file>
-      <file>src/Graviton/GeneratorBundle/Tests/Command/GenerateBuildIndexesCommandTest.php</file>
       <file>src/Graviton/AnalyticsBundle/Tests/Model/AnalyticModelTest.php</file>
     </testsuite>
     <testsuite name="unit">
@@ -35,7 +34,6 @@
       <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</exclude>
-      <exclude>src/Graviton/GeneratorBundle/Tests/Command/GenerateBuildIndexesCommandTest.php</exclude>
       <exclude>src/Graviton/AnalyticsBundle/Tests/Model/AnalyticModelTest.php</exclude>
     </testsuite>
   </testsuites>
