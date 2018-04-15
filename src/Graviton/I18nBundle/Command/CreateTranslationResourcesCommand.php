@@ -40,9 +40,9 @@ class CreateTranslationResourcesCommand extends Command
     private $resourceDir;
 
     /**
-     * @param DocumentRepository     $languageRepo     Language Repository
-     * @param DocumentRepository     $translatableRepo Translatable Repository
-     * @param Filesystem             $filesystem       symfony/filesystem tooling
+     * @param DocumentRepository $languageRepo     Language Repository
+     * @param DocumentRepository $translatableRepo Translatable Repository
+     * @param Filesystem         $filesystem       symfony/filesystem tooling
      */
     public function __construct(
         DocumentRepository $languageRepo,

@@ -87,7 +87,6 @@ class DocumentMap
     public function getDocuments()
     {
         return array_map([$this, 'getDocument'], array_keys($this->mappings));
-
     }
 
     /**
@@ -421,7 +420,9 @@ class DocumentMap
 
         return array_map(
             function ($key, $value) {
-                if (!isset($value['type'])) $value['type'] = '';
+                if (!isset($value['type'])) {
+                    $value['type'] = '';
+                }
 
                 return [
                     'name' => $key,
@@ -455,6 +456,14 @@ class DocumentMap
         return $this->getRelationList($mapping, 'Many');
     }
 
+    /**
+     * gets list of relations
+     *
+     * @param array  $mapping mapping
+     * @param string $suffix  suffix
+     *
+     * @return array relations
+     */
     private function getRelationList($mapping, $suffix)
     {
         if (!isset($mapping['embed'.$suffix]) && !isset($mapping['reference'.$suffix])) {
