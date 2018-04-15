@@ -441,22 +441,7 @@ class DocumentMap
      */
     private function getDoctrineEmbedOneFields(array $mapping)
     {
-
-        return [];
-        var_dump($mapping); die;
-
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-
-        return array_map(
-            function (\DOMElement $element) {
-                return [
-                    'name' => $element->getAttribute('field'),
-                    'type' => $element->getAttribute('target-document'),
-                ];
-            },
-            iterator_to_array($xpath->query('*[self::doctrine:embed-one or self::doctrine:reference-one]', $mapping))
-        );
+        return $this->getRelationList($mapping, 'One');
     }
 
     /**
@@ -467,19 +452,32 @@ class DocumentMap
      */
     private function getDoctrineEmbedManyFields(array $mapping)
     {
-        return [];
+        return $this->getRelationList($mapping, 'Many');
+    }
 
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+    private function getRelationList($mapping, $suffix)
+    {
+        if (!isset($mapping['embed'.$suffix]) && !isset($mapping['reference'.$suffix])) {
+            return [];
+        }
+
+        $relations = [];
+        if (isset($mapping['embed'.$suffix])) {
+            $relations = array_merge($relations, $mapping['embed'.$suffix]);
+        }
+        if (isset($mapping['reference'.$suffix])) {
+            $relations = array_merge($relations, $mapping['reference'.$suffix]);
+        }
 
         return array_map(
-            function (\DOMElement $element) {
+            function ($key, $value) {
                 return [
-                    'name' => $element->getAttribute('field'),
-                    'type' => $element->getAttribute('target-document'),
+                    'name' => $key,
+                    'type' => $value['targetDocument']
                 ];
             },
-            iterator_to_array($xpath->query('*[self::doctrine:embed-many or self::doctrine:reference-many]', $mapping))
+            array_keys($relations),
+            $relations
         );
     }
 
