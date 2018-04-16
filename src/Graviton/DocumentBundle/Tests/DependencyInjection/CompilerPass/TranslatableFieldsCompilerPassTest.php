@@ -24,7 +24,7 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
         $documentMap = new DocumentMap(
             (new Finder())
                 ->in(__DIR__.'/Resources/doctrine/translatable')
-                ->name('*.mongodb.xml'),
+                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/translatable')
                 ->name('*.xml'),

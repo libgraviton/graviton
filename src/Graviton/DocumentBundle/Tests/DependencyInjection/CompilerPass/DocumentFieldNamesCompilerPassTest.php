@@ -26,7 +26,7 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit_Framework_TestCase
         $documentMap = new DocumentMap(
             (new Finder())
                 ->in(__DIR__.'/Resources/doctrine/form')
-                ->name('*.mongodb.xml'),
+                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/form')
                 ->name('*.xml'),
