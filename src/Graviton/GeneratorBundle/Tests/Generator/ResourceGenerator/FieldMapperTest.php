@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldMapperTest extends \PHPUnit_Framework_TestCase
+class FieldMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

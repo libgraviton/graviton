@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
+class EventStatusLinkResponseListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Verifies the correct workflow of the ResponseListener

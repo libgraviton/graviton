@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonRequestListenerTest extends \PHPUnit_Framework_TestCase
+class JsonRequestListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

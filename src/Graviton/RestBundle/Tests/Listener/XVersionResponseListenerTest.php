@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class XVersionResponseListenerTest extends \PHPUnit_Framework_TestCase
+class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * verifies the correct behavior of the onKernelResponse()

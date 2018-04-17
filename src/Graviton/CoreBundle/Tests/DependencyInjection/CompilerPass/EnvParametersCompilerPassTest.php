@@ -12,7 +12,7 @@ use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class EnvParametersCompilerPassTest extends \PHPUnit_Framework_TestCase
+class EnvParametersCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider parameterSettingDataProvider

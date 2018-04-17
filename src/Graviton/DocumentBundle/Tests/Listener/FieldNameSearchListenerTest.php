@@ -21,7 +21,7 @@ use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldNameSearchListenerTest extends \PHPUnit_Framework_TestCase
+class FieldNameSearchListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Request

@@ -28,7 +28,7 @@ class ResourceGeneratorTest extends GravitonTestCase
     /**
      * (non-PHPdoc)
      *
-     * @see PHPUnit_Framework_TestCase::setUp()
+     * @see PHPUnit\Framework\TestCase::setUp()
      *
      * @return void
      */
@@ -45,7 +45,7 @@ class ResourceGeneratorTest extends GravitonTestCase
     /**
      * (non-PHPdoc)
      *
-     * @see PHPUnit_Framework_TestCase::tearDown()
+     * @see PHPUnit\Framework\TestCase::tearDown()
      *
      * @return void
      */

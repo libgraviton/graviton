@@ -15,7 +15,7 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class SwaggerStrategyTest extends \PHPUnit_Framework_TestCase
+class SwaggerStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var SwaggerStrategy

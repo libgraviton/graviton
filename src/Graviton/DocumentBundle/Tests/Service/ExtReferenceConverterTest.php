@@ -18,7 +18,7 @@ use Symfony\Component\Routing\RouterInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceConverterTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceConverterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject

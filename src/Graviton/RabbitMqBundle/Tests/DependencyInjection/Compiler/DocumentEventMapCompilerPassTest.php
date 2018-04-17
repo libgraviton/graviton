@@ -12,7 +12,7 @@ use Graviton\RabbitMqBundle\DependencyInjection\Compiler\DocumentEventMapCompile
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DocumentEventMapCompilerPassTest extends \PHPUnit_Framework_TestCase
+class DocumentEventMapCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test DocumentEventMapCompilerPass::process()

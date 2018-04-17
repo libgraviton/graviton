@@ -14,7 +14,7 @@ use Symfony\Component\Finder\Finder;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class TranslatableFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
+class TranslatableFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

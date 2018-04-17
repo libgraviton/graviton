@@ -11,7 +11,7 @@ use Graviton\SecurityBundle\Listener\AuthenticationLogger;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AuthenticationLoggerTest extends \PHPUnit_Framework_TestCase
+class AuthenticationLoggerTest extends \PHPUnit\Framework\TestCase
 {
     /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
     private $logger;

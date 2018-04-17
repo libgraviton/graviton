@@ -16,7 +16,7 @@ use Symfony\Component\Yaml\Parser;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GenerateVersionsCommandTest extends \PHPUnit_Framework_TestCase
+class GenerateVersionsCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests the execution of the command

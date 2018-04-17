@@ -12,7 +12,7 @@ namespace Graviton\CoreBundle\Service;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CoreUtilsTest extends \PHPUnit_Framework_TestCase
+class CoreUtilsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array

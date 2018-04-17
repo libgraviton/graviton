@@ -13,7 +13,7 @@ use Graviton\I18nBundle\Command\CreateTranslationResourcesCommand;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
+class CreateTranslationResourcesCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * test graviton:i118n:create:resources command

@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class HashHandlerTest extends \PHPUnit_Framework_TestCase
+class HashHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test HashHandler::serializeHashToJson()

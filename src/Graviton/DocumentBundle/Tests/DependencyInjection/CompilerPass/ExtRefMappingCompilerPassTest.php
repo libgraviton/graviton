@@ -14,7 +14,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefMappingCompilerPa
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtRefMappingCompilerPassTest extends \PHPUnit_Framework_TestCase
+class ExtRefMappingCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @param string $serviceId      Service ID

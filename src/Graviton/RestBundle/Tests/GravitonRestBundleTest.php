@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonRestBundleTest extends \PHPUnit_Framework_TestCase
+class GravitonRestBundleTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check for implemented interfaces

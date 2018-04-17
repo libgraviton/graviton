@@ -12,7 +12,7 @@ namespace Graviton\SecurityBundle;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonSecurityBundleTest extends \PHPUnit_Framework_TestCase
+class GravitonSecurityBundleTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Verifies the correct behavior of getBundles()

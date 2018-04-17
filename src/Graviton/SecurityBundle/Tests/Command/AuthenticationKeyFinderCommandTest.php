@@ -13,7 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AuthenticationKeyFinderCommandTest extends \PHPUnit_Framework_TestCase
+class AuthenticationKeyFinderCommandTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

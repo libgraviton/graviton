@@ -9,7 +9,7 @@ namespace Graviton\RestBundle\Service;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonPatchValidatorTest extends \PHPUnit_Framework_TestCase
+class JsonPatchValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider invalidJsonPatchesProvider

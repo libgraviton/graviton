@@ -21,7 +21,7 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceSearchListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject

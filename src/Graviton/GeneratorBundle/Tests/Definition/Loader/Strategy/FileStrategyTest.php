@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileStrategyTest extends \PHPUnit_Framework_TestCase
+class FileStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check if loading from a single file works
