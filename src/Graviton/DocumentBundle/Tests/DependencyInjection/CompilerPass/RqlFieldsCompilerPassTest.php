@@ -75,9 +75,6 @@ class RqlFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
                 ->in(__DIR__.'/Resources/serializer/extref')
                 ->name('*.xml'),
             (new Finder())
-                ->in(__DIR__.'/Resources/validation/extref')
-                ->name('*.xml'),
-            (new Finder())
                 ->in(__DIR__.'/Resources/schema')
                 ->name('*.json')
         );
