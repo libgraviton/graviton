@@ -5,9 +5,9 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\AcceptHeader;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
@@ -19,7 +19,7 @@ use Graviton\I18nBundle\Repository\LanguageRepository;
 class AcceptLanguageRequestListener
 {
     /**
-     * @var LanguageRepository
+     * @var DocumentRepository
      */
     private $repository;
 
@@ -31,10 +31,10 @@ class AcceptLanguageRequestListener
     /**
      * set language repository used for getting available languages
      *
-     * @param LanguageRepository $repository    repo
+     * @param DocumentRepository $repository    repo
      * @param string             $defaultLocale default locale to return if no language given in request
      */
-    public function __construct(LanguageRepository $repository, $defaultLocale)
+    public function __construct(DocumentRepository $repository, $defaultLocale)
     {
         $this->repository = $repository;
         $this->defaultLocale = $defaultLocale;

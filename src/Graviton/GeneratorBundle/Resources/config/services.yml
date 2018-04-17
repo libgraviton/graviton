@@ -161,11 +161,3 @@ services:
         tags:
           -
             name: console.command
-
-    graviton_generator.command.generatebuildindexes:
-        class: "Graviton\\GeneratorBundle\\Command\\GenerateBuildIndexesCommand"
-        arguments:
-          - "@doctrine_mongodb.odm.default_document_manager"
-        tags:
-          -
-            name: console.command

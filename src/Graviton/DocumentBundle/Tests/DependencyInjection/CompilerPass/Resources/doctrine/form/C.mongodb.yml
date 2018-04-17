@@ -1,0 +1,8 @@
+Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C:
+  fields:
+    id:
+      id: true
+      type: string
+      strategy: UUID
+    field:
+      type: string

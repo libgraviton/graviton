@@ -47,7 +47,7 @@ class ModuleControllerTest extends RestTestCase
         SearchNode::getInstance()->resetSearchTerms();
         $this->setVerbosityLevel(1);
         $this->isDecorated(true);
-        $this->runCommand('graviton:generate:build-indexes', [], true);
+        $this->runCommand('doctrine:mongodb:schema:update', [], true);
     }
 
     /**

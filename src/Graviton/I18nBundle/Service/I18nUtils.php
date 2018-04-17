@@ -5,11 +5,11 @@
 
 namespace Graviton\I18nBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\I18nBundle\Model\Translatable;
 use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
 use Graviton\I18nBundle\Document\TranslatableLanguage;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -45,7 +45,7 @@ class I18nUtils
     protected $translatable;
 
     /**
-     * @var \Graviton\I18nBundle\Repository\LanguageRepository
+     * @var DocumentRepository
      */
     protected $languageRepository;
 
@@ -60,14 +60,14 @@ class I18nUtils
      * @param string              $defaultLanguage    default language
      * @param TranslatorInterface $translator         Translator
      * @param Translatable        $translatable       translatable
-     * @param LanguageRepository  $languageRepository lang repo
+     * @param DocumentRepository  $languageRepository lang repo
      * @param Request             $request            request
      */
     public function __construct(
         $defaultLanguage,
         TranslatorInterface $translator,
         Translatable $translatable,
-        LanguageRepository $languageRepository,
+        DocumentRepository $languageRepository,
         Request $request = null
     ) {
         $this->defaultLanguage = $defaultLanguage;

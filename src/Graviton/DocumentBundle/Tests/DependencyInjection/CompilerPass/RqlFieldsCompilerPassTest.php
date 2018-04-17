@@ -70,12 +70,9 @@ class RqlFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
         $documentMap = new DocumentMap(
             (new Finder())
                 ->in(__DIR__.'/Resources/doctrine/extref')
-                ->name('*.mongodb.xml'),
+                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/extref')
-                ->name('*.xml'),
-            (new Finder())
-                ->in(__DIR__.'/Resources/validation/extref')
                 ->name('*.xml'),
             (new Finder())
                 ->in(__DIR__.'/Resources/schema')

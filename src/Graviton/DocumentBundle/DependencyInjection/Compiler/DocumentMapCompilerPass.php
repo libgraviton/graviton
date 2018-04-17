@@ -63,15 +63,11 @@ class DocumentMapCompilerPass implements CompilerPassInterface
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/doctrine')
-                ->name('*.mongodb.xml'),
+                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/serializer')
                 ->name('*.xml'),
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config')
-                ->name('validation.xml'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/schema')
