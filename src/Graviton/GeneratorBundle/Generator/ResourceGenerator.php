@@ -175,8 +175,8 @@ class ResourceGenerator extends AbstractGenerator
 
         return new EntityGeneratorResult(
             $dir . '/Document/' . $document . '.php',
-            $dir . '/Repository/' . $document . 'Repository.php',
-            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml'
+            '',
+            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml'
         );
     }
 
@@ -206,6 +206,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateDocument($parameters, $dir, $document)
     {
         // doctrine mapping normal class
+        /**
         $this->renderFile(
             'document/Document.mongodb.xml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
@@ -221,6 +222,27 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'document' => $document.'Embedded',
                     'docType' => 'embedded-document'
+                ]
+            )
+        );
+         * **/
+
+        // doctrine mapping normal class
+        $this->renderFile(
+            'document/Document.mongodb.yml.twig',
+            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml',
+            $parameters
+        );
+
+        // doctrine mapping embedded
+        $this->renderFile(
+            'document/Document.mongodb.yml.twig',
+            $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.yml',
+            array_merge(
+                $parameters,
+                [
+                    'document' => $document.'Embedded',
+                    'docType' => 'embeddedDocument'
                 ]
             )
         );
@@ -297,13 +319,6 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
-        // normal repo service
-        $services = $this->addParam(
-            $services,
-            $repoName . '.class',
-            $parameters['base'] . 'Repository\\' . $parameters['document']
-        );
-
         $this->addService(
             $services,
             $repoName,
@@ -317,14 +332,8 @@ class ResourceGenerator extends AbstractGenerator
                 )
             ),
             'doctrine_mongodb.odm.default_document_manager',
-            'getRepository'
-        );
-
-        // embedded repo service
-        $services = $this->addParam(
-            $services,
-            $repoName . 'embedded.class',
-            $parameters['base'] . 'Repository\\' . $parameters['document'] . 'Embedded'
+            'getRepository',
+            'Doctrine\ODM\MongoDB\DocumentRepository'
         );
 
         $this->addService(
@@ -340,24 +349,10 @@ class ResourceGenerator extends AbstractGenerator
                 )
             ),
             'doctrine_mongodb.odm.default_document_manager',
-            'getRepository'
+            'getRepository',
+            'Doctrine\ODM\MongoDB\DocumentRepository'
         );
 
-        $this->renderFile(
-            'document/DocumentRepository.php.twig',
-            $dir . '/Repository/' . $document . 'Repository.php',
-            $parameters
-        );
-        $this->renderFile(
-            'document/DocumentRepository.php.twig',
-            $dir . '/Repository/' . $document . 'EmbeddedRepository.php',
-            array_merge(
-                $parameters,
-                [
-                    'document' => $document.'Embedded',
-                ]
-            )
-        );
 
         $this->persistServicesXML($dir);
     }
@@ -572,6 +567,7 @@ class ResourceGenerator extends AbstractGenerator
      * @param array        $arguments      service arguments
      * @param string       $factoryService factory service id
      * @param string       $factoryMethod  factory method name
+     * @param string       $className      class name to override
      *
      * @return \DOMDocument
      */
@@ -583,7 +579,8 @@ class ResourceGenerator extends AbstractGenerator
         $tag = null,
         array $arguments = [],
         $factoryService = null,
-        $factoryMethod = null
+        $factoryMethod = null,
+        $className = null
     ) {
         $servicesNode = $this->addNodeIfMissing($dom, 'services');
 
@@ -596,7 +593,11 @@ class ResourceGenerator extends AbstractGenerator
 
             $this->addAttributeToNode('id', $id, $dom, $attrNode);
             $this->addAttributeToNode('public', 'true', $dom, $attrNode);
-            $this->addAttributeToNode('class', '%' . $id . '.class%', $dom, $attrNode);
+
+            if (is_null($className)) {
+                $className = '%' . $id . '.class%';
+            }
+            $this->addAttributeToNode('class', $className, $dom, $attrNode);
             $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
             if ($factoryService && $factoryMethod) {
                 $factoryNode = $dom->createElement('factory');

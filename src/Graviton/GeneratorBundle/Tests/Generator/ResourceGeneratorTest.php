@@ -265,7 +265,7 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->getMock();
 
         $generator
-            ->expects($this->exactly(7))
+            ->expects($this->exactly(5))
             ->method('renderFile');
 
         $generator
@@ -287,18 +287,12 @@ class ResourceGeneratorTest extends GravitonTestCase
             ->willReturn($containerNodeMock);
 
         $containerNodeMock->length = 0;
-        $containerNodeMock
-            ->expects($this->exactly(2))
-            ->method('item')
-            ->with(0)
-            ->willReturn($containerNodeMock);
 
         $generator
             ->expects($this->exactly(3))
             ->method('addService')
             ->with(
-                $this->equalTo($servicesMock)//,
-                //$this->equalTo($docName)
+                $this->equalTo($servicesMock)
             )
             ->will($this->returnValue($servicesMock));
 

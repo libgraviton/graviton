@@ -65,7 +65,7 @@ script:
           touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm && \
           touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm && \
           if [ "$PHPUNIT_SUITE" == "integration" ]; then
-              php app/console graviton:generate:build-indexes
+              php app/console doctrine:mongodb:schema:update
           fi && \
           if [ "$PHPUNIT_SUITE" == "unit" ]; then
             COVERAGE=" --coverage-clover=coverage.clover "

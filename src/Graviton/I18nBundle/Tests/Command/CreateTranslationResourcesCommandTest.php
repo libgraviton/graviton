@@ -22,7 +22,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateResourcesCommand()
     {
-        $languageMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\LanguageRepository')
+        $languageMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -52,7 +52,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('getDocumentManager')
             ->willReturn($documentManager);
 
-        $translatableMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\TranslatableRepository')
+        $translatableMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentRepository')
             ->disableOriginalConstructor()
             ->getMock();
 

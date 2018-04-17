@@ -1,0 +1,19 @@
+GravitonTest\DocumentBundle\Document\B:
+  fields:
+    id:
+      id: true
+      type: string
+      strategy: UUID
+    key:
+      type: string
+    ref:
+      type: extref
+
+  embedOne:
+    bchild:
+      targetDocument: GravitonTest\DocumentBundle\Document\C
+
+  embedMany:
+    bchildren:
+      targetDocument: GravitonTest\DocumentBundle\Document\C
+      strategy: set

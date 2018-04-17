@@ -254,21 +254,26 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $metadata = $this->repository->getClassMetadata();
         $indexes = $metadata->getIndexes();
-        if (count($indexes) < 1) {
+        if (empty($indexes)) {
             return false;
         }
-        $collectionsName = substr($metadata->getName(), strrpos($metadata->getName(), '\\') + 1);
-        $searchIndexName = $prefix.$collectionsName.'_index';
-        // We reverse as normally the search index is the last.
-        foreach (array_reverse($indexes) as $index) {
-            if (array_key_exists('options', $index) &&
-                array_key_exists('name', $index['options']) &&
-                $searchIndexName == $index['options']['name']
-            ) {
-                return true;
+
+        $text = array_filter(
+            $indexes,
+            function ($index) {
+                if (isset($index['keys'])) {
+                    $hasText = false;
+                    foreach ($index['keys'] as $name => $direction) {
+                        if ($direction == 'text') {
+                            $hasText = true;
+                        }
+                    }
+                    return $hasText;
+                }
             }
-        }
-        return false;
+        );
+
+        return !empty($text);
     }
 
     /**
