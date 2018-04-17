@@ -70,10 +70,6 @@ class DocumentMapCompilerPass implements CompilerPassInterface
                 ->name('*.xml'),
             (new Finder())
                 ->in($dirs)
-                ->path('Resources/config')
-                ->name('validation.xml'),
-            (new Finder())
-                ->in($dirs)
                 ->path('Resources/config/schema')
                 ->name('*.json')
         );
