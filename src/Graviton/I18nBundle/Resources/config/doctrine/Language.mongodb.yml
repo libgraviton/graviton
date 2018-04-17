@@ -3,7 +3,6 @@ Graviton\I18nBundle\Document\Language:
     id:
       type: string
       id: true
-      type: string
       strategy: UUID
     name:
       type: string
