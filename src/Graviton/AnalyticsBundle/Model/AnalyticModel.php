@@ -22,14 +22,36 @@ class AnalyticModel
     protected $type;
     protected $cacheTime;
     protected $params = [];
+    protected $multiPipeline = false;
 
     /**
      * String collection
-     * @return mixed
+     *
+     * @param string $pipelineName which pipeline you want the collection for
+     *
+     * @return string collection name
      */
-    public function getCollection()
+    public function getCollection($pipelineName = null)
     {
-        return $this->collection;
+        if (!is_object($this->collection)) {
+            return $this->collection;
+        }
+
+        if ($pipelineName == null) {
+            throw new \LogicException(
+                'If you specify multiple collections in your analytics definition, '.
+                'you must define multiple pipelines and vice versa and name them the same.'
+            );
+        }
+
+        if (!property_exists($this->collection, $pipelineName)) {
+            throw new \LogicException(
+                'No collection defined for pipeline '.$pipelineName.'. '.
+                'If all pipelines share the same collection, define "collection" attribute as string.'
+            );
+        }
+
+        return $this->collection->$pipelineName;
     }
 
     /**
@@ -40,6 +62,28 @@ class AnalyticModel
     public function setCollection($collection)
     {
         $this->collection = $collection;
+    }
+
+    /**
+     * if this is a multipipeline
+     *
+     * @return boolean
+     */
+    public function getMultipipeline()
+    {
+        return $this->multiPipeline;
+    }
+
+    /**
+     * set if this is a multipipeline
+     *
+     * @param boolean $multiPipeline multi pipeline
+     *
+     * @return boolean
+     */
+    public function setMultipipeline($multiPipeline)
+    {
+        $this->multiPipeline = $multiPipeline;
     }
 
     /**
