@@ -52,6 +52,11 @@ class ServiceManager
     protected $fs;
 
     /**
+     * @var string
+     */
+    private $skipCacheHeaderName = 'x-analytics-no-cache';
+
+    /**
      * ServiceConverter constructor.
      * @param RequestStack     $requestStack        Sf Request information service
      * @param AnalyticsManager $analyticsManager    Db Manager and query control
@@ -247,6 +252,7 @@ class ServiceManager
 
         //Cached data if configured
         if ($cacheTime &&
+            !$this->requestStack->getCurrentRequest()->headers->has($this->skipCacheHeaderName) &&
             $cache = $this->cacheProvider->fetch($cacheKey)
         ) {
             return $cache;
