@@ -60,19 +60,41 @@ class AnalyticsManager
      */
     public function getData(AnalyticModel $model, $params = [])
     {
-        $conn = $this->documentManager->getConnection();
-        $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
-
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
-        $iterator = $collection->aggregate($pipeline, ['cursor' => true]);
+        $conn = $this->documentManager->getConnection();
+        // all data will be here first..
+        $data = [];
 
-        if ('object' === $model->getType()) {
-            return $this->convertDates($iterator->getSingleResult());
+        if (!$model->getMultipipeline()) {
+            $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
+            $data[] = $collection->aggregate($pipeline, ['cursor' => true])->toArray();
+        } else {
+            foreach ($pipeline as $pipelineName => $definition) {
+                $collection = $conn->selectCollection($this->databaseName, $model->getCollection($pipelineName));
+                $data[$pipelineName] = $collection->aggregate($definition, ['cursor' => true])->toArray();
+            }
         }
 
-        return array_map([$this, 'convertDates'], $iterator->toArray());
+        /*** PROCESSING HERE ***/
+
+        $output = [];
+        if (!$model->getMultipipeline()) {
+            $singleIterator = reset($data);
+
+            if ('object' === $model->getType()) {
+                $output = $this->convertDates($singleIterator[0]);
+            } else {
+                $output = array_map([$this, 'convertDates'], $singleIterator);
+            }
+        } else {
+            $output = array_map(function ($iterator) {
+                return $this->convertDates($iterator);
+            }, $data);
+        }
+
+        return $output;
     }
 
     /**
