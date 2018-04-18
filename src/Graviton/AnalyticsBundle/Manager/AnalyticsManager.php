@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\AnalyticsBundle\ProcessorInterface;
 use Graviton\DocumentBundle\Service\DateConverter;
 
 /**
@@ -78,23 +79,31 @@ class AnalyticsManager
         }
 
         /*** PROCESSING HERE ***/
-
-        $output = [];
-        if (!$model->getMultipipeline()) {
-            $singleIterator = reset($data);
-
-            if ('object' === $model->getType()) {
-                $output = $this->convertDates($singleIterator[0]);
-            } else {
-                $output = array_map([$this, 'convertDates'], $singleIterator);
+        $processor = $model->getProcessor();
+        if (!is_null($processor)) {
+            if (!class_exists($processor)) {
+                throw new \LogicException('Defined processor class '.$processor.' does not exist');
             }
-        } else {
-            $output = array_map(function ($iterator) {
-                return $this->convertDates($iterator);
-            }, $data);
+
+            $processorClass = new $processor();
+            if (!$processorClass instanceof ProcessorInterface) {
+                throw new \LogicException('Processor class '.$processor.' does not implement ProcessorInterface.');
+            }
+
+            $data = $processorClass->process($data);
         }
 
-        return $output;
+        // process dates
+        $data = $this->convertDates($data);
+
+        if (!$model->getMultipipeline()) {
+            $data = reset($data);
+            if ('object' === $model->getType()) {
+                $data = $data[0];
+            }
+        }
+
+        return $data;
     }
 
     /**

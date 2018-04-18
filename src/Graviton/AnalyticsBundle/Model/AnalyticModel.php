@@ -23,6 +23,7 @@ class AnalyticModel
     protected $cacheTime;
     protected $params = [];
     protected $multiPipeline = false;
+    protected $processor;
 
     /**
      * String collection
@@ -62,6 +63,28 @@ class AnalyticModel
     public function setCollection($collection)
     {
         $this->collection = $collection;
+    }
+
+    /**
+     * get Processor
+     *
+     * @return mixed Processor
+     */
+    public function getProcessor()
+    {
+        return $this->processor;
+    }
+
+    /**
+     * set Processor
+     *
+     * @param mixed $processor processor
+     *
+     * @return void
+     */
+    public function setProcessor($processor)
+    {
+        $this->processor = $processor;
     }
 
     /**
