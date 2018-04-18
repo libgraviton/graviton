@@ -391,4 +391,29 @@ class DefaultControllerTest extends RestTestCase
             $client->getResults()
         );
     }
+
+    /**
+     * test handling of the multipipeline spec
+     *
+     * @return void
+     */
+    public function testMultiPipelineHandling()
+    {
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/multipipeline'
+        );
+
+        $results = $client->getResults();
+        $this->assertEquals(6, count($results));
+
+        // control sorting as this has to be done by our processor
+        $this->assertEquals(6, $results[0]->sorter);
+        $this->assertEquals(8, $results[1]->sorter);
+        $this->assertEquals(11, $results[2]->sorter);
+        $this->assertEquals(12, $results[3]->sorter);
+        $this->assertEquals(14, $results[4]->sorter);
+        $this->assertEquals(14, $results[5]->sorter);
+    }
 }
