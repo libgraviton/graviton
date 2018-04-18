@@ -83,8 +83,12 @@ class AnalyticsManager
      *
      * @return array data with formatted dates
      */
-    private function convertDates(array $data)
+    private function convertDates(array $data = null)
     {
+        if (!is_array($data)) {
+            return $data;
+        }
+
         foreach ($data as $key => $val) {
             if (is_array($val)) {
                 $data[$key] = $this->convertDates($val);
