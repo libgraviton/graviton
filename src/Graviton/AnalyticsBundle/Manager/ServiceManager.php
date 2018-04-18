@@ -104,15 +104,6 @@ class ServiceManager
             ->path('/\/analytics\//i')
             ->name('*.json')
             ->notName('_*')
-            ->sortByName();
-
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($this->directory)
-            ->path('/\/analytics\//i')
-            ->name('*.json')
-            ->notName('_*')
             ->notName('*pipeline.json')
             ->sortByName();
 
