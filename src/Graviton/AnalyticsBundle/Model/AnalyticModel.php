@@ -279,6 +279,11 @@ class AnalyticModel
                     if (is_int($value) || is_bool($value)) {
                         $encoded = preg_replace('/"\$\{'.$name.'\}"/', $value, $encoded);
                     }
+
+                    // for security (escaping from aggregate), we have to encode this as well, but remove
+                    // wrapping quotes
+                    $value = substr(json_encode($value), 1, -1);
+
                     // the balance
                     $encoded = preg_replace('/\$\{'.$name.'\}/', $value, $encoded);
                 } else {
