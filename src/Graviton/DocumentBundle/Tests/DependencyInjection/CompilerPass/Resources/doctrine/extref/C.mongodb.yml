@@ -1,0 +1,10 @@
+GravitonTest\DocumentBundle\Document\C:
+  fields:
+    id:
+      id: true
+      type: string
+      strategy: UUID
+    key:
+      type: string
+    ref:
+      type: extref

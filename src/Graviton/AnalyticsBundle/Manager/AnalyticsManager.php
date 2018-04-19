@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\AnalyticsBundle\ProcessorInterface;
 use Graviton\DocumentBundle\Service\DateConverter;
 
 /**
@@ -60,19 +61,49 @@ class AnalyticsManager
      */
     public function getData(AnalyticModel $model, $params = [])
     {
-        $conn = $this->documentManager->getConnection();
-        $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
-
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
-        $iterator = $collection->aggregate($pipeline, ['cursor' => true]);
+        $conn = $this->documentManager->getConnection();
+        // all data will be here first..
+        $data = [];
 
-        if ('object' === $model->getType()) {
-            return $this->convertDates($iterator->getSingleResult());
+        if (!$model->getMultipipeline()) {
+            $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
+            $data[] = $collection->aggregate($pipeline, ['cursor' => true])->toArray();
+        } else {
+            foreach ($pipeline as $pipelineName => $definition) {
+                $collection = $conn->selectCollection($this->databaseName, $model->getCollection($pipelineName));
+                $data[$pipelineName] = $collection->aggregate($definition, ['cursor' => true])->toArray();
+            }
         }
 
-        return array_map([$this, 'convertDates'], $iterator->toArray());
+        /*** PROCESSING HERE ***/
+        $processor = $model->getProcessor();
+        if (!is_null($processor)) {
+            if (!class_exists($processor)) {
+                throw new \LogicException('Defined processor class '.$processor.' does not exist');
+            }
+
+            $processorClass = new $processor();
+            if (!$processorClass instanceof ProcessorInterface) {
+                throw new \LogicException('Processor class '.$processor.' does not implement ProcessorInterface.');
+            }
+
+            $data = $processorClass->process($data, $params);
+        }
+
+        // process dates
+        $data = $this->convertDates($data);
+
+        if (!$model->getMultipipeline()) {
+            $data = reset($data);
+            if ('object' === $model->getType()) {
+                $data = $data[0];
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -83,8 +114,12 @@ class AnalyticsManager
      *
      * @return array data with formatted dates
      */
-    private function convertDates(array $data)
+    private function convertDates(array $data = null)
     {
+        if (!is_array($data)) {
+            return $data;
+        }
+
         foreach ($data as $key => $val) {
             if (is_array($val)) {
                 $data[$key] = $this->convertDates($val);

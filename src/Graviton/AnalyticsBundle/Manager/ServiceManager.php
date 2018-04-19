@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\DocumentBundle\Service\DateConverter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Cache\CacheProvider;
@@ -39,6 +40,9 @@ class ServiceManager
     /** @var CacheProvider */
     protected $cacheProvider;
 
+    /** @var DateConverter */
+    protected $dateConverter;
+
     /** @var Router */
     protected $router;
 
@@ -52,10 +56,16 @@ class ServiceManager
     protected $fs;
 
     /**
+     * @var string
+     */
+    private $skipCacheHeaderName = 'x-analytics-no-cache';
+
+    /**
      * ServiceConverter constructor.
      * @param RequestStack     $requestStack        Sf Request information service
      * @param AnalyticsManager $analyticsManager    Db Manager and query control
      * @param CacheProvider    $cacheProvider       Cache service
+     * @param DateConverter    $dateConverter       date converter
      * @param Router           $router              To manage routing generation
      * @param string           $definitionDirectory Where definitions are stored
      * @param int              $cacheTimeMetadata   How long to cache metadata
@@ -64,6 +74,7 @@ class ServiceManager
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
+        DateConverter $dateConverter,
         Router $router,
         $definitionDirectory,
         $cacheTimeMetadata
@@ -71,6 +82,7 @@ class ServiceManager
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
+        $this->dateConverter = $dateConverter;
         $this->router = $router;
         $this->directory = $definitionDirectory;
         $this->cacheTimeMetadata = $cacheTimeMetadata;
@@ -97,23 +109,14 @@ class ServiceManager
             return $services;
         }
 
-        $finder = new Finder();
-        $finder
+        $finder = Finder::create()
             ->files()
             ->in($this->directory)
             ->path('/\/analytics\//i')
             ->name('*.json')
             ->notName('_*')
-            ->sortByName();
-
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($this->directory)
-            ->path('/\/analytics\//i')
-            ->name('*.json')
-            ->notName('_*')
-            ->notName('*pipeline.json')
+            ->notName('*.pipeline.json')
+            ->notName('*.pipeline.*.json')
             ->sortByName();
 
         foreach ($finder as $file) {
@@ -125,16 +128,55 @@ class ServiceManager
                 );
             }
 
-            // is there a pipeline file?
-            $pipelineFile = substr($file->getPathname(), 0, -4).'pipeline.json';
-            if ($this->fs->exists($pipelineFile)) {
-                $data->aggregate = json_decode(file_get_contents($pipelineFile));
+            $data->multiPipeline = false;
+
+            // filename without extension
+            $searchBaseName = substr($file->getFilename(), 0, -5);
+
+            // is/are there a pipeline files?
+            $pipelineFinder = Finder::create()
+                ->files()
+                ->in(dirname($file->getPathname()))
+                ->depth(0)
+                ->name($searchBaseName.'.pipeline.json')
+                ->name($searchBaseName.'.pipeline.*.json');
+
+            $pipelineFiles = iterator_to_array($pipelineFinder);
+
+            if (count($pipelineFiles) == 1) {
+                // only 1 -> standard
+                $data->aggregate = json_decode(reset($pipelineFiles)->getContents());
+            }
+
+            if (count($pipelineFiles) > 1) {
+                // multipipeline!
+                foreach ($pipelineFiles as $singlePipeline) {
+                    // get key name
+                    preg_match(
+                        '/\.pipeline\.([a-z]*)\.json/',
+                        $singlePipeline->getFilename(),
+                        $matches
+                    );
+
+                    if (!isset($matches[1])) {
+                        throw new \LogicException(
+                            'Could not infer pipeline name from filename for '.
+                            $singlePipeline->getPathname()
+                        );
+                    }
+
+                    $pipeName = $matches[1];
+
+                    $data->aggregate[$pipeName] = json_decode($singlePipeline->getContents());
+                    $data->multiPipeline = true;
+                }
             }
 
             $services[$data->route] = $data;
         }
 
         $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, $this->cacheTimeMetadata);
+
         return $services;
     }
 
@@ -184,20 +226,23 @@ class ServiceManager
      * @throws NotFoundHttpException
      * @return AnalyticModel
      */
-    private function getServiceSchemaByRoute($name)
+    private function getAnalyticModel($name)
     {
         $services = $this->getDirectoryServices();
         // Locate the schema definition
         if (!array_key_exists($name, $services)) {
             throw new NotFoundHttpException(
-                sprintf('Service Analytics for %s was not found', $name)
+                sprintf('Analytic definition "%s" was not found', $name)
             );
         }
 
         $mapper = new JsonMapper();
-        /** @var AnalyticModel $schema */
-        $schema = $mapper->map($services[$name], new AnalyticModel());
-        return $schema;
+
+        /** @var AnalyticModel $model */
+        $model = $mapper->map($services[$name], new AnalyticModel());
+        $model->setDateConverter($this->dateConverter);
+
+        return $model;
     }
 
     /**
@@ -209,19 +254,21 @@ class ServiceManager
     {
         $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
 
-        // Locate the schema definition
-        $schema = $this->getServiceSchemaByRoute($serviceRoute);
-        $cacheTime = $schema->getCacheTime();
-        $cacheKey = $this->getCacheKey($schema);
+        // Locate the model definition
+        $model = $this->getAnalyticModel($serviceRoute);
+
+        $cacheTime = $model->getCacheTime();
+        $cacheKey = $this->getCacheKey($model);
 
         //Cached data if configured
         if ($cacheTime &&
+            !$this->requestStack->getCurrentRequest()->headers->has($this->skipCacheHeaderName) &&
             $cache = $this->cacheProvider->fetch($cacheKey)
         ) {
             return $cache;
         }
 
-        $data = $this->analyticsManager->getData($schema, $this->getServiceParameters($schema));
+        $data = $this->analyticsManager->getData($model, $this->getServiceParameters($model));
 
         if ($cacheTime) {
             $this->cacheProvider->save($cacheKey, $data, $cacheTime);
@@ -254,9 +301,9 @@ class ServiceManager
         $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
 
         // Locate the schema definition
-        $schema =  $this->getServiceSchemaByRoute($serviceRoute);
+        $model = $this->getAnalyticModel($serviceRoute);
 
-        return $schema->getSchema();
+        return $model->getSchema();
     }
 
     /**

@@ -1,0 +1,12 @@
+Graviton\CoreBundle\Document\App:
+  fields:
+    id:
+      type: string
+      id: true
+      strategy: UUID
+    name:
+      type: string
+    showInMenu:
+      type: boolean
+    order:
+      type: int
