@@ -331,6 +331,12 @@ class AnalyticModel
 
                 $dateTime = $this->dateConverter->getDateTimeFromString($matches[1]);
 
+                if (!$dateTime instanceof \DateTime) {
+                    throw new \LogicException(
+                        'Unable to parse value "'.$matches[1].'" into a DateTime instance'
+                    );
+                }
+
                 $struct[$key] = new \MongoDate($dateTime->format('U'));
             }
         }
