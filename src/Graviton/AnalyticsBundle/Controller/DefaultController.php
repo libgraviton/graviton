@@ -33,9 +33,9 @@ class DefaultController
      */
     public function indexAction()
     {
-        $data = $this->serviceManager->getServices();
-
-        return new JsonResponse($data);
+        return new JsonResponse(
+            $this->serviceManager->getServices()
+        );
     }
 
     /**
@@ -54,9 +54,9 @@ class DefaultController
      */
     public function serviceAction()
     {
-        $data = $this->serviceManager->getData();
-
-        return new JsonResponse($data);
+        return new JsonResponse(
+            $this->serviceManager->getData()
+        );
     }
 
     /**
@@ -64,8 +64,8 @@ class DefaultController
      */
     public function serviceSchemaAction()
     {
-        $data = $this->serviceManager->getSchema();
-
-        return new JsonResponse($data);
+        return new JsonResponse(
+            $this->serviceManager->getSchema()
+        );
     }
 }

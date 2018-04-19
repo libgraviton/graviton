@@ -18,6 +18,7 @@ services:
             - "@request_stack"
             - "@graviton.analytics.analytics_manager"
             - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "@graviton.document.service.dateconverter"
             - "@router"
             - "%kernel.root_dir%/.."
             - "%graviton.analytics.cache_time.metadata%"
