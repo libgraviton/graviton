@@ -406,12 +406,16 @@ class AnalyticModel
 
         // remove paths
         $ops = [];
+        $sortArr = [];
         foreach ($pathsToRemove as $path) {
-            $op = new \stdClass();
-            $op->op = 'remove';
-            $op->path = $path;
-            $ops[] = $op;
+            $ops[] = [
+                'op' => 'remove',
+                'path' => $path
+            ];
+            $sortArr[] = $path;
         }
+
+        array_multisort($sortArr, SORT_DESC, SORT_NATURAL, $ops);
 
         try {
             $patcher = new Patch($encodedPipeline, json_encode($ops));
