@@ -17,11 +17,12 @@ class AnalyticsTestProcessor implements ProcessorInterface
     /**
      * merges and sorts
      *
-     * @param array $data data
+     * @param array $data   data
+     * @param array $params user supplied params
      *
      * @return array
      */
-    public function process(array $data)
+    public function process(array $data, array $params = [])
     {
         // first, combine the data
         $workData = [];

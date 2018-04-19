@@ -14,9 +14,10 @@ interface ProcessorInterface
     /**
      * processes the data
      *
-     * @param array $data data
+     * @param array $data   data
+     * @param array $params user supplied params
      *
      * @return array new data
      */
-    public function process(array $data);
+    public function process(array $data, array $params = []);
 }

@@ -90,7 +90,7 @@ class AnalyticsManager
                 throw new \LogicException('Processor class '.$processor.' does not implement ProcessorInterface.');
             }
 
-            $data = $processorClass->process($data);
+            $data = $processorClass->process($data, $params);
         }
 
         // process dates
