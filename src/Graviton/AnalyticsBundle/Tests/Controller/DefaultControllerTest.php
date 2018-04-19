@@ -390,6 +390,17 @@ class DefaultControllerTest extends RestTestCase
             json_decode(json_encode($expectedResult)), // make objects
             $client->getResults()
         );
+
+        // test to see if optional date param (gt) can be used..
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/customer-datehandling?dateFrom='.urlencode('2017-01-01T00:00:00+0000')
+        );
+
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+        $this->assertEquals('103', $results[0]->{'_id'});
     }
 
     /**
@@ -415,5 +426,16 @@ class DefaultControllerTest extends RestTestCase
         $this->assertEquals(12, $results[3]->sorter);
         $this->assertEquals(14, $results[4]->sorter);
         $this->assertEquals(14, $results[5]->sorter);
+
+        // the same with the optional search param
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/multipipeline?search=admin'
+        );
+
+        $results = $client->getResults();
+        $this->assertEquals(1, count($results));
+        $this->assertEquals('admin', $results[0]->{'_id'});
     }
 }
