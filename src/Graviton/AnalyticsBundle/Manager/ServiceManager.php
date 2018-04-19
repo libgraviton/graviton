@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\DocumentBundle\Service\DateConverter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Cache\CacheProvider;
@@ -39,6 +40,9 @@ class ServiceManager
     /** @var CacheProvider */
     protected $cacheProvider;
 
+    /** @var DateConverter */
+    protected $dateConverter;
+
     /** @var Router */
     protected $router;
 
@@ -61,6 +65,7 @@ class ServiceManager
      * @param RequestStack     $requestStack        Sf Request information service
      * @param AnalyticsManager $analyticsManager    Db Manager and query control
      * @param CacheProvider    $cacheProvider       Cache service
+     * @param DateConverter    $dateConverter       date converter
      * @param Router           $router              To manage routing generation
      * @param string           $definitionDirectory Where definitions are stored
      * @param int              $cacheTimeMetadata   How long to cache metadata
@@ -69,6 +74,7 @@ class ServiceManager
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
+        DateConverter $dateConverter,
         Router $router,
         $definitionDirectory,
         $cacheTimeMetadata
@@ -76,6 +82,7 @@ class ServiceManager
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
+        $this->dateConverter = $dateConverter;
         $this->router = $router;
         $this->directory = $definitionDirectory;
         $this->cacheTimeMetadata = $cacheTimeMetadata;
@@ -230,8 +237,11 @@ class ServiceManager
         }
 
         $mapper = new JsonMapper();
-        /** @var AnalyticModel $schema */
+
+        /** @var AnalyticModel $model */
         $model = $mapper->map($services[$name], new AnalyticModel());
+        $model->setDateConverter($this->dateConverter);
+
         return $model;
     }
 
