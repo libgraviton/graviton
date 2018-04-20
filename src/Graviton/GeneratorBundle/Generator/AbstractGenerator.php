@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Sensio\Bundle\GeneratorBundle\Generator\Generator;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * shared stuff for generators
@@ -16,28 +17,29 @@ use Sensio\Bundle\GeneratorBundle\Generator\Generator;
  */
 abstract class AbstractGenerator extends Generator
 {
-    /**
-     * @private string[]
-     */
-    private $gravitonSkeletons;
 
     /**
-     * Sets an array of directories to look for templates.
-     *
-     * The directories must be sorted from the most specific to the most generic
-     * directory.
-     *
-     * @param array $gravitonSkeletons An array of skeleton dirs
-     *
-     * @return void
+     * @var \Twig_Environment
      */
-    public function setSkeletonDirs($gravitonSkeletons)
+    protected $twig;
+
+    /**
+     * @var Filesystem
+     */
+    protected $fs;
+
+    public function __construct()
     {
-        $gravitonSkeletons = array_merge(
-            array(__DIR__ . '/../Resources/skeleton'),
-            $gravitonSkeletons
+        $this->twig = new \Twig_Environment(
+            new \Twig_Loader_Filesystem(__DIR__ . '/../Resources/skeleton'),
+            [
+                'debug' => true,
+                'cache' => false,
+                'strict_variables' => true,
+                'autoescape' => false
+            ]
         );
-        $this->gravitonSkeletons = is_array($gravitonSkeletons) ? $gravitonSkeletons : array($gravitonSkeletons);
+        $this->fs = new Filesystem();
     }
 
     /**
@@ -68,16 +70,14 @@ abstract class AbstractGenerator extends Generator
      */
     protected function render($template, $parameters)
     {
-        $twig = new \Twig_Environment(
-            new \Twig_Loader_Filesystem($this->gravitonSkeletons),
-            array(
-                'debug' => true,
-                'cache' => false,
-                'strict_variables' => true,
-                'autoescape' => false,
-            )
-        );
+        return $this->twig->render($template, $parameters);
+    }
 
-        return $twig->render($template, $parameters);
+    protected function renderFile($template, $target, $parameters)
+    {
+        $this->fs->dumpFile(
+            $target,
+            $this->render($template, $parameters)
+        );
     }
 }
