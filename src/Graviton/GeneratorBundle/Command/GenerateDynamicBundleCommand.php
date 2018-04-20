@@ -9,8 +9,10 @@ use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
+use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,7 +61,6 @@ class GenerateDynamicBundleCommand extends Command
 
     /** @var array|null */
     private $serviceWhitelist = null;
-
     /**
      * @var CommandRunner
      */
@@ -72,7 +73,22 @@ class GenerateDynamicBundleCommand extends Command
      * @var SerializerInterface
      */
     private $serializer;
-
+    /**
+     * @var Filesystem
+     */
+    private $fs;
+    /**
+     * @var BundleGenerator
+     */
+    private $bundleGenerator;
+    /**
+     * @var ResourceGenerator
+     */
+    private $resourceGenerator;
+    /**
+     * @var DynamicBundleBundleGenerator
+     */
+    private $bundleBundleGenerator;
 
     /**
      * @param CommandRunner       $runner           Runs a console command.
@@ -84,8 +100,10 @@ class GenerateDynamicBundleCommand extends Command
      *                                              configure()
      */
     public function __construct(
-        CommandRunner       $runner,
         LoaderInterface     $definitionLoader,
+        BundleGenerator $bundleGenerator,
+        ResourceGenerator $resourceGenerator,
+        DynamicBundleBundleGenerator $bundleBundleGenerator,
         SerializerInterface $serializer,
         $bundleAdditions = null,
         $serviceWhitelist = null,
@@ -93,9 +111,12 @@ class GenerateDynamicBundleCommand extends Command
     ) {
         parent::__construct($name);
 
-        $this->runner = $runner;
         $this->definitionLoader = $definitionLoader;
+        $this->bundleGenerator = $bundleGenerator;
+        $this->resourceGenerator = $resourceGenerator;
+        $this->bundleBundleGenerator = $bundleBundleGenerator;
         $this->serializer = $serializer;
+        $this->fs = new Filesystem();
 
         if ($bundleAdditions !== null && $bundleAdditions !== '') {
             $this->bundleAdditions = $bundleAdditions;
@@ -134,13 +155,6 @@ class GenerateDynamicBundleCommand extends Command
                 'Which BundleBundle to manipulate to add our stuff',
                 'GravitonDynBundleBundle'
             )
-            ->addOption(
-                'bundleFormat',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Which format',
-                'xml'
-            )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
@@ -161,14 +175,14 @@ class GenerateDynamicBundleCommand extends Command
         /**
          * GENERATE THE BUNDLEBUNDLE
          */
-        $namespace = sprintf(self::BUNDLE_NAME_MASK, 'Bundle');
+        $bundleBundleDir = sprintf(self::BUNDLE_NAME_MASK, 'Bundle');
 
         // GravitonDynBundleBundle
-        $bundleName = str_replace('/', '', $namespace);
+        $bundleName = str_replace('/', '', $bundleBundleDir);
 
         // bundlebundle stuff..
-        $this->bundleBundleNamespace = $namespace;
-        $this->bundleBundleDir = $input->getOption('srcDir') . $namespace;
+        $this->bundleBundleNamespace = $bundleBundleDir;
+        $this->bundleBundleDir = $input->getOption('srcDir') . $bundleBundleDir;
         $this->bundleBundleClassname = $bundleName;
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/' . $this->bundleBundleClassname . '.php';
 
@@ -178,9 +192,7 @@ class GenerateDynamicBundleCommand extends Command
             throw new \LogicException("Could not find any usable JSON files.");
         }
 
-        $fs = new Filesystem();
-
-        $this->createInitialBundleBundle($input->getOption('srcDir'));
+        //$this->createInitialBundleBundle($input->getOption('srcDir'));
 
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
@@ -192,13 +204,16 @@ class GenerateDynamicBundleCommand extends Command
             $thisIdName = $jsonDef->getId();
             $namespace = sprintf(self::BUNDLE_NAME_MASK, $thisIdName);
 
+            // make sure bundle is in bundlebundle
+            $this->bundleBundleList[] = $namespace;
+
             $jsonDef->setNamespace($namespace);
 
             $bundleName = str_replace('/', '', $namespace);
-            $this->bundleBundleList[] = $namespace;
+            $bundleDir = $input->getOption('srcDir').$namespace;
+            $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
 
             try {
-                $bundleDir = $input->getOption('srcDir').$namespace;
                 $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
 
                 $needsGeneration = true;
@@ -210,15 +225,31 @@ class GenerateDynamicBundleCommand extends Command
                 }
 
                 if ($needsGeneration) {
-                    $this->generateBundle($namespace, $bundleName, $input, $output, $bundleDir);
+                    $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
 
-                $this->generateBundleBundleClass();
+                /**
+                 *
+                 *             $bundleDir,
+                $bundleNamespace,
+                $bundleName,
+                $document,
+                $format
+                 */
 
                 if ($needsGeneration) {
+                    $this->generateResources(
+                        $jsonDef,
+                        $bundleName,
+                        $bundleDir,
+                        $bundleNamespace
+                    );
+
+                    /*
                     $this->generateSubResources($output, $jsonDef, $bundleName);
                     $this->generateMainResource($output, $jsonDef, $bundleName);
+                    */
 
                     $output->write(
                         PHP_EOL.
@@ -250,7 +281,7 @@ class GenerateDynamicBundleCommand extends Command
             // remove from bundlebundle list
             unset($this->bundleBundleList[array_search($bundleClassName, $this->bundleBundleList)]);
 
-            $fs->remove($dirName);
+            $this->fs->remove($dirName);
 
             $output->write(
                 PHP_EOL.
@@ -259,6 +290,7 @@ class GenerateDynamicBundleCommand extends Command
             );
         }
 
+        // generate bundlebundle
         $this->generateBundleBundleClass();
     }
 
@@ -396,17 +428,52 @@ class GenerateDynamicBundleCommand extends Command
     protected function generateSubResources(
         OutputInterface $output,
         JsonDefinition $jsonDef,
-        $bundleName
+        $bundleName,
+        $bundleClassName
     ) {
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $arguments = [
                 'graviton:generate:resource',
                 '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $subRecource->getId(),
+                '--bundleClassName' => $bundleClassName,
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
                 '--no-controller' => 'true',
             ];
             $this->generateResource($arguments, $output, $jsonDef);
+        }
+    }
+
+    protected function generateResources(
+        JsonDefinition $jsonDef,
+        $bundleName,
+        $bundleDir,
+        $bundleNamespace
+    ) {
+
+        /** @var ResourceGenerator $generator */
+        $generator = $this->resourceGenerator;
+        $generator->setGenerateController(false);
+        $generator->setJson($jsonDef);
+
+        foreach ($this->getSubResources($jsonDef) as $subRecource) {
+            $generator->generate(
+                $bundleDir,
+                $bundleNamespace,
+                $bundleName,
+                $subRecource->getId()
+            );
+        }
+
+        // main resources
+        if (!empty($jsonDef->getFields())) {
+            $generator->setGenerateController(true);
+            $generator->generate(
+                $bundleDir,
+                $bundleNamespace,
+                $bundleName,
+                $jsonDef->getId()
+            );
         }
     }
 
@@ -419,13 +486,18 @@ class GenerateDynamicBundleCommand extends Command
      *
      * @return void
      */
-    protected function generateMainResource(OutputInterface $output, JsonDefinition $jsonDef, $bundleName)
-    {
+    protected function generateMainResource(
+        OutputInterface $output,
+        JsonDefinition $jsonDef,
+        $bundleName,
+        $bundleClassName
+    ) {
         if (!empty($jsonDef->getFields())) {
             $arguments = array(
                 'graviton:generate:resource',
                 '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $jsonDef->getId(),
+                '--bundleClassName' => $bundleClassName,
                 '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json')
             );
 
@@ -496,29 +568,13 @@ class GenerateDynamicBundleCommand extends Command
     private function generateBundle(
         $namespace,
         $bundleName,
-        InputInterface $input,
-        OutputInterface $output,
-        $deleteBefore = null
+        $targetDir
     ) {
-        // first, create the bundle
-        $arguments = array(
-            'graviton:generate:bundle',
-            '--no-debug' => null,
-            '--namespace' => $namespace,
-            '--bundle-name' => $bundleName,
-            '--dir' => $input->getOption('srcDir'),
-            '--format' => $input->getOption('bundleFormat'),
-            '--loaderBundleName' => $input->getOption('bundleBundleName'),
-        );
-
-        if (!is_null($deleteBefore)) {
-            $arguments['--deleteBefore'] = $deleteBefore;
-        }
-
-        $this->runner->executeCommand(
-            $arguments,
-            $output,
-            'Create bundle call failed, see above. Exiting.'
+        $this->bundleGenerator->generate(
+            $namespace,
+            $bundleName,
+            $targetDir,
+            'yml'
         );
     }
 
@@ -531,14 +587,14 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function generateBundleBundleClass()
     {
-        $dbbGenerator = new DynamicBundleBundleGenerator();
-
         // add optional bundles if defined by parameter.
         if ($this->bundleAdditions !== null) {
-            $dbbGenerator->setAdditions($this->bundleAdditions);
+            $this->bundleBundleGenerator->setAdditions($this->bundleAdditions);
+        } else {
+            $this->bundleBundleGenerator->setAdditions([]);
         }
 
-        $dbbGenerator->generate(
+        $this->bundleBundleGenerator->generate(
             $this->bundleBundleList,
             $this->bundleBundleNamespace,
             $this->bundleBundleClassname,
