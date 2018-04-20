@@ -146,8 +146,9 @@
 
     {{ index }}:
       keys:
-        '{{ index }}': asc
+        {{ index }}: asc
       options:
+        name: {{ index }}
         background: true
     {%- endfor %}
 {%- endif %}
@@ -157,15 +158,16 @@
     TextIndex:
       keys:
 {% for index, value in textIndexes %}
-        '{{ index }}': text
+        {{ index }}: text
 {% endfor %}
       options:
+        name: {{ collection }}Text
         background: true
         default_language: de
         language_override: none
         weights:
 {% for index, value in textIndexes %}
-          '{{ index }}': {{ value }}
+          {{ index }}: {{ value }}
 {% endfor %}
 {% endif %}
 
