@@ -32,21 +32,4 @@ class ScriptHandler extends ScriptHandlerBase
 
         self::executeCommand($event, $consolePath, $cmd);
     }
-
-    /**
-     * Cleans existing dynamic bundles
-     *
-     * @param CommandEvent $event Event
-     *
-     * @return void
-     */
-    public static function cleanDynamicBundles(Event $event)
-    {
-        $options = self::getOptions($event);
-
-        $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:clean:dynamicbundles');
-
-        self::executeCommand($event, $consolePath, $cmd);
-    }
 }
