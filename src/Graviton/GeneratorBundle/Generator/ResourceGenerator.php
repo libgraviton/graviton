@@ -13,6 +13,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * bundle containing various code generators
@@ -33,11 +34,6 @@ class ResourceGenerator extends AbstractGenerator
     private $filesystem;
 
     /**
-     * @private HttpKernelInterface
-     */
-    private $kernel;
-
-    /**
      * our json file definition
      *
      * @var JsonDefinition|null
@@ -45,14 +41,24 @@ class ResourceGenerator extends AbstractGenerator
     private $json = null;
 
     /**
-     * @var ArrayCollection
+     * @var array
      */
-    protected $xmlParameters;
+    protected $parameters = [];
 
     /**
-     * @var \DomDocument
+     * @var string
      */
-    private $serviceDOM;
+    protected $parametersFile;
+
+    /**
+     * @var array
+     */
+    protected $services = [];
+
+    /**
+     * @var string
+     */
+    protected $servicesFile;
 
     /**
      * @var FieldMapper
@@ -73,21 +79,17 @@ class ResourceGenerator extends AbstractGenerator
      * Instantiates generator object
      *
      * @param Filesystem          $filesystem       fs abstraction layer
-     * @param HttpKernelInterface $kernel           app kernel
      * @param FieldMapper         $mapper           field type mapper
-     * @param ParameterBuilder    $parameterBuilder param builder
      */
     public function __construct(
         Filesystem $filesystem,
-        HttpKernelInterface $kernel,
         FieldMapper $mapper,
         ParameterBuilder $parameterBuilder
     ) {
+        parent::__construct();
         $this->filesystem = $filesystem;
-        $this->kernel = $kernel;
         $this->mapper = $mapper;
         $this->parameterBuilder = $parameterBuilder;
-        $this->xmlParameters = new ArrayCollection();
     }
 
     /**
@@ -121,14 +123,15 @@ class ResourceGenerator extends AbstractGenerator
      * @return EntityGeneratorResult
      */
     public function generate(
-        BundleInterface $bundle,
-        $document,
-        $format,
-        array $fields
+        $bundleDir,
+        $bundleNamespace,
+        $bundleName,
+        $document
+        //$format
     ) {
-        $dir = $bundle->getPath();
+        $this->readServicesAndParams($bundleDir);
+
         $basename = $this->getBundleBaseName($document);
-        $bundleNamespace = substr(get_class($bundle), 0, 0 - strlen($bundle->getName()));
 
         if (!is_null($this->json)) {
             $this->json->setNamespace($bundleNamespace);
@@ -146,8 +149,8 @@ class ResourceGenerator extends AbstractGenerator
         $parameters = $this->parameterBuilder
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
-            ->setParameter('bundle', $bundle->getName())
-            ->setParameter('format', $format)
+            ->setParameter('bundle', $bundleName)
+            //->setParameter('format', $format)
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
@@ -159,39 +162,57 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->getParameters();
 
-        $this->generateDocument($parameters, $dir, $document);
-        $this->generateSerializer($parameters, $dir, $document);
-        $this->generateModel($parameters, $dir, $document);
+        $this->generateDocument($parameters, $bundleDir, $document);
+        $this->generateSerializer($parameters, $bundleDir, $document);
+        $this->generateModel($parameters, $bundleDir, $document);
 
         if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
-            $this->generateFixtures($parameters, $dir, $document);
+            $this->generateFixtures($parameters, $bundleDir, $document);
         }
 
         if ($this->generateController) {
-            $this->generateController($parameters, $dir, $document);
+            $this->generateController($parameters, $bundleDir, $document);
         }
 
-        $this->generateParameters($dir);
+        $this->persistServicesAndParams();
 
         return new EntityGeneratorResult(
-            $dir . '/Document/' . $document . '.php',
+            $bundleDir . '/Document/' . $document . '.php',
             '',
-            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml'
+            $bundleDir . '/Resources/config/doctrine/' . $document . '.mongodb.yml'
         );
     }
 
-    /**
-     * Writes the current services definition to a file.
-     *
-     * @param string $dir base bundle dir
-     *
-     * @return void
-     */
-    protected function persistServicesXML($dir)
+    protected function readServicesAndParams($bundleDir)
     {
-        $services = $this->loadServices($dir);
+        $this->servicesFile = $bundleDir.'/Resources/config/services.yml';
+        if ($this->fs->exists($this->servicesFile)) {
+            $this->services = Yaml::parseFile($this->servicesFile);
+        }
 
-        file_put_contents($dir . '/Resources/config/services.xml', $services->saveXML());
+        if (!isset($this->services['services'])) {
+            $this->services['services'] = [];
+        }
+
+        if (isset($this->services['parameters'])) {
+            $this->parameters['parameters'] = $this->services['parameters'];
+            unset($this->services['parameters']);
+        } else {
+            $this->parameters['parameters'] = [];
+        }
+    }
+
+    protected function persistServicesAndParams() {
+        $this->filesystem->dumpFile(
+            $this->servicesFile,
+            Yaml::dump(array_merge($this->parameters, $this->services))
+        );
+        /*
+        $this->filesystem->dumpFile(
+            $this->parametersFile,
+            Yaml::dump($this->parameters)
+        );
+        */
     }
 
     /**
@@ -205,28 +226,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateDocument($parameters, $dir, $document)
     {
-        // doctrine mapping normal class
-        /**
-        $this->renderFile(
-            'document/Document.mongodb.xml.twig',
-            $dir . '/Resources/config/doctrine/' . $document . '.mongodb.xml',
-            $parameters
-        );
-
-        // doctrine mapping embedded
-        $this->renderFile(
-            'document/Document.mongodb.xml.twig',
-            $dir . '/Resources/config/doctrine/' . $document . 'Embedded.mongodb.xml',
-            array_merge(
-                $parameters,
-                [
-                    'document' => $document.'Embedded',
-                    'docType' => 'embedded-document'
-                ]
-            )
-        );
-         * **/
-
         // doctrine mapping normal class
         $this->renderFile(
             'document/Document.mongodb.yml.twig',
@@ -277,8 +276,6 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateServices($parameters, $dir, $document)
     {
-        $services = $this->loadServices($dir);
-
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = $bundleParts[0];
         $shortBundle = $this->getBundleBaseName($bundleParts[1]);
@@ -293,20 +290,14 @@ class ResourceGenerator extends AbstractGenerator
             )
         );
 
-        $this->addXMLParameter(
+        $this->addParameter(
             $parameters['base'] . 'Document\\' . $parameters['document'],
             $docName . '.class'
         );
 
-        $this->addXMLParameter(
-            $parameters['json']->getRoles(),
-            $docName . '.roles',
-            'collection'
-        );
-
-        $services = $this->addService(
-            $services,
-            $docName
+        $this->addParameter(
+            (array) $parameters['json']->getRoles(),
+            $docName . '.roles'
         );
 
         $repoName = implode(
@@ -320,7 +311,6 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         $this->addService(
-            $services,
             $repoName,
             null,
             [],
@@ -337,7 +327,6 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         $this->addService(
-            $services,
             $repoName . 'embedded',
             null,
             [],
@@ -352,36 +341,6 @@ class ResourceGenerator extends AbstractGenerator
             'getRepository',
             'Doctrine\ODM\MongoDB\DocumentRepository'
         );
-
-
-        $this->persistServicesXML($dir);
-    }
-
-    /**
-     * Generates the parameters section of the services.xml file.
-     *
-     * @param string $dir base bundle dir
-     *
-     * @return void
-     */
-    protected function generateParameters($dir)
-    {
-        if ($this->xmlParameters->count() > 0) {
-            $services = $this->loadServices($dir);
-
-            foreach ($this->xmlParameters as $parameter) {
-                switch ($parameter['type']) {
-                    case 'collection':
-                        $this->addCollectionParam($services, $parameter['key'], $parameter['content']);
-                        break;
-                    case 'string':
-                    default:
-                        $this->addParam($services, $parameter['key'], $parameter['content']);
-                }
-            }
-        }
-
-        $this->persistServicesXML($dir);
     }
 
     /**
@@ -389,179 +348,19 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @param mixed  $value Content of the tag
      * @param string $key   Content of the key attribute
-     * @param string $type  Type of the tag
      *
      * @return void
      */
-    protected function addXmlParameter($value, $key, $type = 'string')
+    protected function addParameter($value, $key)
     {
-        $element = array(
-            'content' => $value,
-            'key' => $key,
-            'type' => strtolower($type),
-        );
-
-        if (!isset($this->xmlParameters)) {
-            $this->xmlParameters = new ArrayCollection();
-        }
-
-        if (!$this->xmlParameters->contains($element)) {
-            $this->xmlParameters->add($element);
-        }
+        $this->parameters['parameters'][$key] = $value;
     }
 
     /**
-     * load services.xml
+     * add service to services.yml
      *
-     * @param string $dir base dir
-     *
-     * @return \DOMDocument
-     */
-    protected function loadServices($dir)
-    {
-        if (empty($this->serviceDOM)) {
-            $this->serviceDOM = new \DOMDocument;
-            $this->serviceDOM->formatOutput = true;
-            $this->serviceDOM->preserveWhiteSpace = false;
-            $this->serviceDOM->load($dir . '/Resources/config/services.xml');
-        }
-
-        return $this->serviceDOM;
-    }
-
-    /**
-     * add param to services.xml
-     *
-     * @param \DOMDocument $dom   services.xml document
-     * @param string       $key   parameter key
-     * @param string       $value parameter value
-     *
-     * @return \DOMDocument
-     */
-    protected function addParam(\DOMDocument $dom, $key, $value)
-    {
-        $paramNode = $this->addNodeIfMissing($dom, 'parameters', '//services');
-
-        if (!$this->parameterNodeExists($dom, $key)) {
-            $attrNode = $dom->createElement('parameter', $value);
-
-            $this->addAttributeToNode('key', $key, $dom, $attrNode);
-
-            $paramNode->appendChild($attrNode);
-        }
-
-        return $dom;
-    }
-
-    /**
-     * Adds a new parameter tag to parameters section reflecting the defined roles.
-     *
-     * @param \DOMDocument $dom    services.xml document
-     * @param string       $key    parameter key
-     * @param array        $values parameter value
-     *
-     * @return void
-     *
-     * @link http://symfony.com/doc/current/book/service_container.html#array-parameters
-     */
-    protected function addCollectionParam(\DomDocument $dom, $key, array $values)
-    {
-        $paramNode = $this->addNodeIfMissing($dom, 'parameters', '//services');
-
-        if (!$this->parameterNodeExists($dom, $key)) {
-            if (!empty($values)) {
-                $rolesNode = $dom->createElement('parameter');
-                $this->addAttributeToNode('key', $key, $dom, $rolesNode);
-                $this->addAttributeToNode('type', 'collection', $dom, $rolesNode);
-
-                foreach ($values as $item) {
-                    $roleNode = $dom->createElement('parameter', $item);
-                    $rolesNode->appendChild($roleNode);
-                }
-
-                $paramNode->appendChild($rolesNode);
-            }
-        }
-    }
-
-    /**
-     * Determines, if the provided key attribute was already claimed by a parameter node.
-     *
-     * @param \DomDocument $dom Current document
-     * @param string       $key Key to be found in document
-     *
-     * @return bool
-     */
-    private function parameterNodeExists(\DomDocument $dom, $key)
-    {
-        $xpath = new \DomXpath($dom);
-        $nodes = $xpath->query('//parameters/parameter[@key="' . $key . '"]');
-
-        return $nodes->length > 0;
-    }
-
-    /**
-     * add node if missing
-     *
-     * @param \DOMDocument $dom          document
-     * @param string       $element      name for new node element
-     * @param string       $insertBefore xPath query of the new node shall be added before
-     * @param string       $container    name of container tag
-     *
-     * @return \DOMNode new element node
-     */
-    private function addNodeIfMissing(&$dom, $element, $insertBefore = '', $container = 'container')
-    {
-        $container = $dom->getElementsByTagName($container)
-            ->item(0);
-        $nodes = $dom->getElementsByTagName($element);
-        if ($nodes->length < 1) {
-            $newNode = $dom->createElement($element);
-
-            if (!empty($insertBefore)) {
-                $xpath = new \DomXpath($dom);
-                $found = $xpath->query($insertBefore);
-
-                if ($found->length > 0) {
-                    $container->insertBefore($newNode, $found->item(0));
-                } else {
-                    $container->appendChild($newNode);
-                }
-            } else {
-                $container->appendChild($newNode);
-            }
-        } else {
-            $newNode = $nodes->item(0);
-        }
-
-        return $newNode;
-    }
-
-    /**
-     * add attribute to node if needed
-     *
-     * @param string       $name  attribute name
-     * @param string       $value attribute value
-     * @param \DOMDocument $dom   document
-     * @param \DOMElement  $node  parent node
-     *
-     * @return void
-     */
-    private function addAttributeToNode($name, $value, $dom, $node)
-    {
-        if ($value) {
-            $attr = $dom->createAttribute($name);
-            $attr->value = $value;
-            $node->appendChild($attr);
-        }
-    }
-
-    /**
-     * add service to services.xml
-     *
-     * @param \DOMDocument $dom            services.xml dom
-     * @param string       $id             id of new service
-     * @param string       $parent         parent for service
+     * @param string $id             id of new service
+     * @param string $parent         parent for service
      * @param array        $calls          methodCalls to add
      * @param string       $tag            tag name or empty if no tag needed
      * @param array        $arguments      service arguments
@@ -572,7 +371,6 @@ class ResourceGenerator extends AbstractGenerator
      * @return \DOMDocument
      */
     protected function addService(
-        $dom,
         $id,
         $parent = null,
         array $calls = [],
@@ -582,156 +380,69 @@ class ResourceGenerator extends AbstractGenerator
         $factoryMethod = null,
         $className = null
     ) {
-        $servicesNode = $this->addNodeIfMissing($dom, 'services');
+        $service = [];
+        $service['public'] = true;
 
-        $xpath = new \DomXpath($dom);
+        // classname
+        if (is_null($className)) {
+            $className = '%' . $id . '.class%';
+        }
+        $service['class'] = $className;
 
-        // add controller to services
-        $nodes = $xpath->query('//services/service[@id="' . $id . '"]');
-        if ($nodes->length < 1) {
-            $attrNode = $dom->createElement('service');
+        // parent
+        if (!is_null($parent)) {
+            $service['parent'] = '@'.$parent;
+        }
 
-            $this->addAttributeToNode('id', $id, $dom, $attrNode);
-            $this->addAttributeToNode('public', 'true', $dom, $attrNode);
+        // factory
+        if ($factoryService && $factoryMethod) {
+            $service['factory'] = [
+                '@'.$factoryService,
+                $factoryMethod
+            ];
+        }
 
-            if (is_null($className)) {
-                $className = '%' . $id . '.class%';
+        foreach ($arguments as $argument) {
+            if ($argument['type'] == 'service') {
+                $service['arguments'][] = '@'.$argument['id'];
+            } else {
+                $service['arguments'][] = $argument['value'];
             }
-            $this->addAttributeToNode('class', $className, $dom, $attrNode);
-            $this->addAttributeToNode('parent', $parent, $dom, $attrNode);
-            if ($factoryService && $factoryMethod) {
-                $factoryNode = $dom->createElement('factory');
-                $this->addAttributeToNode('service', $factoryService, $dom, $factoryNode);
-                $this->addAttributeToNode('method', $factoryMethod, $dom, $factoryNode);
-                $attrNode->appendChild($factoryNode);
-            }
-            $this->addCallsToService($calls, $dom, $attrNode);
+        }
 
-            if ($tag) {
-                $tagNode = $dom->createElement('tag');
+        // calls
+        foreach ($calls as $call) {
+            $service['calls'][] = [
+                $call['method'],
+                ['@'.$call['service']]
+            ];
+        }
 
-                $this->addAttributeToNode('name', $tag, $dom, $tagNode);
+        // tags
+        if ($tag) {
+            $thisTag = [
+                'name' => $tag
+            ];
 
-                // get stuff from json definition
-                if ($this->json instanceof JsonDefinition) {
-                    // id is also name of collection in mongodb
-                    $this->addAttributeToNode('collection', $this->json->getId(), $dom, $tagNode);
+            if ($this->json instanceof JsonDefinition) {
+                $thisTag['collection'] = $this->json->getId();
 
-                    // is this read only?
-                    if ($this->json->isReadOnlyService()) {
-                        $this->addAttributeToNode('read-only', 'true', $dom, $tagNode);
-                    }
-
-                    // router base defined?
-                    $routerBase = $this->json->getRouterBase();
-                    if ($routerBase !== false) {
-                        $this->addAttributeToNode('router-base', $routerBase, $dom, $tagNode);
-                    }
+                // is this read only?
+                if ($this->json->isReadOnlyService()) {
+                    $thisTag['read-only'] = true;
                 }
 
-                $attrNode->appendChild($tagNode);
+                // router base defined?
+                $routerBase = $this->json->getRouterBase();
+                if ($routerBase !== false) {
+                    $thisTag['router-base'] = $routerBase;
+                }
             }
 
-            $this->addArgumentsToService($arguments, $dom, $attrNode);
-
-            $servicesNode->appendChild($attrNode);
+            $service['tags'][] = $thisTag;
         }
 
-        return $dom;
-    }
-
-    /**
-     * add calls to service
-     *
-     * @param array        $calls info on calls to create
-     * @param \DOMDocument $dom   current domdocument
-     * @param \DOMElement  $node  node to add call to
-     *
-     * @return void
-     */
-    private function addCallsToService($calls, $dom, $node)
-    {
-        foreach ($calls as $call) {
-            $this->addCallToService($call, $dom, $node);
-        }
-    }
-
-    /**
-     * add call to service
-     *
-     * @param array        $call info on call node to create
-     * @param \DOMDocument $dom  current domdocument
-     * @param \DOMElement  $node node to add call to
-     *
-     * @return void
-     */
-    private function addCallToService($call, $dom, $node)
-    {
-        $callNode = $dom->createElement('call');
-
-        $attr = $dom->createAttribute('method');
-        $attr->value = $call['method'];
-        $callNode->appendChild($attr);
-
-        $argNode = $dom->createElement('argument');
-
-        $attr = $dom->createAttribute('type');
-        $attr->value = 'service';
-        $argNode->appendChild($attr);
-
-        $attr = $dom->createAttribute('id');
-        $attr->value = $call['service'];
-        $argNode->appendChild($attr);
-
-        $callNode->appendChild($argNode);
-
-        $node->appendChild($callNode);
-    }
-
-    /**
-     * add arguments to servie
-     *
-     * @param array        $arguments arguments to create
-     * @param \DOMDocument $dom       dom document to add to
-     * @param \DOMElement  $node      node to use as parent
-     *
-     * @return void
-     */
-    private function addArgumentsToService($arguments, $dom, $node)
-    {
-        foreach ($arguments as $argument) {
-            $this->addArgumentToService($argument, $dom, $node);
-        }
-    }
-
-    /**
-     * add argument to service
-     *
-     * @param array        $argument info on argument to create
-     * @param \DOMDocument $dom      dom document to add to
-     * @param \DOMElement  $node     node to use as parent
-     *
-     * @return void
-     */
-    private function addArgumentToService($argument, $dom, $node)
-    {
-        $isService = $argument['type'] == 'service';
-
-        if ($isService) {
-            $argNode = $dom->createElement('argument');
-
-            $idArg = $dom->createAttribute('id');
-            $idArg->value = $argument['id'];
-            $argNode->appendChild($idArg);
-        } else {
-            $argNode = $dom->createElement('argument', $argument['value']);
-        }
-
-        $argType = $dom->createAttribute('type');
-        $argType->value = $argument['type'];
-        $argNode->appendChild($argType);
-
-        $node->appendChild($argNode);
+        $this->services['services'][$id] = $service;
     }
 
     /**
@@ -829,19 +540,16 @@ class ResourceGenerator extends AbstractGenerator
             array_merge($parameters, ['document' => $document.'Embedded'])
         );
 
-        $services = $this->loadServices($dir);
-
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'model', strtolower($parameters['document'])));
         $repoName = implode('.', array($shortName, $shortBundle, 'repository', strtolower($parameters['document'])));
 
-        $this->addXmlParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
+        $this->addParameter($parameters['base'] . 'Model\\' . $parameters['document'], $paramName . '.class');
 
         // normal service
         $this->addService(
-            $services,
             $paramName,
             'graviton.rest.model',
             array(
@@ -854,13 +562,12 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         // embedded service
-        $this->addXmlParameter(
+        $this->addParameter(
             $parameters['base'] . 'Model\\' . $parameters['document'] . 'Embedded',
             $paramName . 'embedded.class'
         );
 
         $this->addService(
-            $services,
             $paramName . 'embedded',
             'graviton.rest.model',
             array(
@@ -871,8 +578,6 @@ class ResourceGenerator extends AbstractGenerator
             ),
             null
         );
-
-        $this->persistServicesXML($dir);
     }
 
     /**
@@ -892,20 +597,17 @@ class ResourceGenerator extends AbstractGenerator
             $parameters
         );
 
-        $services = $this->loadServices($dir);
-
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
         $shortBundle = strtolower(substr($bundleParts[1], 0, -6));
         $paramName = implode('.', array($shortName, $shortBundle, 'controller', strtolower($parameters['document'])));
 
-        $this->addXmlParameter(
+        $this->addParameter(
             $parameters['base'] . 'Controller\\' . $parameters['document'] . 'Controller',
             $paramName . '.class'
         );
 
         $this->addService(
-            $services,
             $paramName,
             $parameters['parent'],
             array(
@@ -919,8 +621,6 @@ class ResourceGenerator extends AbstractGenerator
             ),
             'graviton.rest'
         );
-
-        $this->persistServicesXML($dir);
     }
 
     /**
