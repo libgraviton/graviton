@@ -6,13 +6,11 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Sensio\Bundle\GeneratorBundle\Model\EntityGeneratorResult;
-use Doctrine\Common\Collections\ArrayCollection;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -391,7 +389,7 @@ class ResourceGenerator extends AbstractGenerator
 
         // parent
         if (!is_null($parent)) {
-            $service['parent'] = '@'.$parent;
+            $service['parent'] = $parent;
         }
 
         // factory

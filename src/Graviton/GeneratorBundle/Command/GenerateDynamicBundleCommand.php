@@ -454,9 +454,9 @@ class GenerateDynamicBundleCommand extends Command
         /** @var ResourceGenerator $generator */
         $generator = $this->resourceGenerator;
         $generator->setGenerateController(false);
-        $generator->setJson($jsonDef);
 
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
+            $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
             $generator->generate(
                 $bundleDir,
                 $bundleNamespace,
@@ -468,6 +468,7 @@ class GenerateDynamicBundleCommand extends Command
         // main resources
         if (!empty($jsonDef->getFields())) {
             $generator->setGenerateController(true);
+            $generator->setJson(new JsonDefinition($jsonDef->getDef()));
             $generator->generate(
                 $bundleDir,
                 $bundleNamespace,
