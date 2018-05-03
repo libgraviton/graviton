@@ -26,10 +26,8 @@ class NullExtrefControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseNullExtref definition is not loaded');
         }
 
-        $this->loadFixtures(
-            ['GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData'],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            ['GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData']
         );
     }
 

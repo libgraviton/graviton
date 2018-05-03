@@ -26,10 +26,8 @@ class RequiredHashControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseRequiredHashData definition is not loaded');
         }
 
-        $this->loadFixtures(
-            ['GravitonDyn\TestCaseRequiredHashBundle\DataFixtures\MongoDB\LoadTestCaseRequiredHashData'],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            ['GravitonDyn\TestCaseRequiredHashBundle\DataFixtures\MongoDB\LoadTestCaseRequiredHashData']
         );
     }
 

@@ -24,12 +24,10 @@ class ReadOnlyServiceTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\TestCaseReadOnlyBundle\DataFixtures\MongoDB\LoadTestCaseReadOnlyData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

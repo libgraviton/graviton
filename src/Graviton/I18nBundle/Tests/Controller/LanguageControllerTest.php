@@ -28,13 +28,11 @@ class LanguageControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 
@@ -70,13 +68,11 @@ class LanguageControllerTest extends RestTestCase
      */
     public function testMultiLangFinding()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
 
         $client = static::createRestClient();

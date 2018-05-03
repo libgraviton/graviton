@@ -34,14 +34,12 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
             $this->markTestSkipped('TestCaseNullExtref definition is not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadTestCasePrimitiveArrayData::class,
                 LoadTestCaseNullExtrefData::class,
                 LoadTestCaseDeepEqualNamingData::class
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

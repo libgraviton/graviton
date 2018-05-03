@@ -5,6 +5,7 @@
 
 namespace Graviton\TestBundle\Test;
 
+use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
@@ -70,4 +71,22 @@ class GravitonTestCase extends WebTestCase
             ->setMethods($methods)
             ->getMock();
     }
+
+    /**
+     * small wrapper for fixture loading
+     *
+     * @param array $classNames
+     *
+     * @return AbstractExecutor|null
+     */
+    public function loadFixturesLocal(array $classNames = [])
+    {
+        return $this->loadFixtures(
+            $classNames,
+            false,
+            null,
+            'doctrine_mongodb'
+        );
+    }
+
 }

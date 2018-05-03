@@ -33,14 +33,13 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit\Framework\TestCase
             ->will(
                 $this->returnCallback(
                     function ($message, $routingKey) {
-                        \PHPUnit_Framework_Assert::assertSame(
+                        $this->assertSame(
                             '{"event":"document.core.product.create","coreUserId":"",'.
                             '"document":{"$ref":"graviton-api-test\/core\/product'.
                             '"},"status":{"$ref":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}}',
                             $message
                         );
-
-                        \PHPUnit_Framework_Assert::assertSame(
+                        $this->assertSame(
                             'someWorkerId',
                             $routingKey
                         );

@@ -26,10 +26,8 @@ class EmptyObjectControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseEmptyObject definition is not loaded');
         }
 
-        $this->loadFixtures(
-            ['GravitonDyn\TestCaseEmptyObjectBundle\DataFixtures\MongoDB\LoadTestCaseEmptyObjectData'],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            ['GravitonDyn\TestCaseEmptyObjectBundle\DataFixtures\MongoDB\LoadTestCaseEmptyObjectData']
         );
     }
 

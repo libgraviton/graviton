@@ -25,13 +25,11 @@ class XDynamicKeyControllerTest extends RestTestCase
             $this->markTestSkipped('LoadTestCaseXDynamicKeyData definition is not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 'GravitonDyn\TestCaseXDynamicKeyAppBundle\DataFixtures\MongoDB\LoadTestCaseXDynamicKeyAppData',
                 'GravitonDyn\TestCaseXDynamicKeyBundle\DataFixtures\MongoDB\LoadTestCaseXDynamicKeyData'
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 
