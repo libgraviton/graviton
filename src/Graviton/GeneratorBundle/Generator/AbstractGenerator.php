@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
-use Sensio\Bundle\GeneratorBundle\Generator\Generator;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -15,7 +14,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-abstract class AbstractGenerator extends Generator
+abstract class AbstractGenerator
 {
 
     /**
@@ -28,8 +27,12 @@ abstract class AbstractGenerator extends Generator
      */
     protected $fs;
 
+    /**
+     * AbstractGenerator constructor.
+     */
     public function __construct()
     {
+        $this->fs = new Filesystem();
         $this->twig = new \Twig_Environment(
             new \Twig_Loader_Filesystem(__DIR__ . '/../Resources/skeleton'),
             [
@@ -39,7 +42,6 @@ abstract class AbstractGenerator extends Generator
                 'autoescape' => false
             ]
         );
-        $this->fs = new Filesystem();
     }
 
     /**
@@ -73,6 +75,15 @@ abstract class AbstractGenerator extends Generator
         return $this->twig->render($template, $parameters);
     }
 
+    /**
+     * renders a file form a twig template
+     *
+     * @param string $template   template filename
+     * @param string $target     where to generate to
+     * @param array  $parameters template params
+     *
+     * @return void
+     */
     protected function renderFile($template, $target, $parameters)
     {
         $this->fs->dumpFile(

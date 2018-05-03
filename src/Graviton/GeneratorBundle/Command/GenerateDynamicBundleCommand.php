@@ -91,13 +91,14 @@ class GenerateDynamicBundleCommand extends Command
     private $bundleBundleGenerator;
 
     /**
-     * @param CommandRunner       $runner           Runs a console command.
-     * @param LoaderInterface     $definitionLoader JSON definition loader
-     * @param SerializerInterface $serializer       Serializer
-     * @param string|null         $bundleAdditions  Additional bundles list in JSON format
-     * @param string|null         $serviceWhitelist Service whitelist in JSON format
-     * @param string|null         $name             The name of the command; passing null means it must be set in
-     *                                              configure()
+     * @param LoaderInterface              $definitionLoader      JSON definition loader
+     * @param BundleGenerator              $bundleGenerator       bundle generator
+     * @param ResourceGenerator            $resourceGenerator     resource generator
+     * @param DynamicBundleBundleGenerator $bundleBundleGenerator bundlebundle generator
+     * @param SerializerInterface          $serializer            Serializer
+     * @param string|null                  $bundleAdditions       Additional bundles list in JSON format
+     * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
+     * @param string|null                  $name                  name
      */
     public function __construct(
         LoaderInterface     $definitionLoader,
@@ -418,9 +419,10 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generate Bundle entities
      *
-     * @param OutputInterface $output     Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
-     * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     * @param OutputInterface $output          Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef         Configuration to be generated the entity from.
+     * @param string          $bundleName      Name of the bundle the entity shall be generated for.
+     * @param string          $bundleClassName class name
      *
      * @return void
      * @throws \Exception
@@ -444,6 +446,16 @@ class GenerateDynamicBundleCommand extends Command
         }
     }
 
+    /**
+     * generates the resources of a bundle
+     *
+     * @param JsonDefinition $jsonDef         definition
+     * @param string         $bundleName      name
+     * @param string         $bundleDir       dir
+     * @param string         $bundleNamespace namespace
+     *
+     * @return void
+     */
     protected function generateResources(
         JsonDefinition $jsonDef,
         $bundleName,
@@ -481,9 +493,10 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generate the actual Bundle
      *
-     * @param OutputInterface $output     Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
-     * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     * @param OutputInterface $output          Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef         Configuration to be generated the entity from.
+     * @param string          $bundleName      Name of the bundle the entity shall be generated for.
+     * @param string          $bundleClassName class name for bundle
      *
      * @return void
      */
@@ -554,13 +567,11 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * Generates a Bundle via command line (wrapping graviton:generate:bundle)
+     * generates the basic bundle structure
      *
-     * @param string          $namespace    Namespace
-     * @param string          $bundleName   Name of bundle
-     * @param InputInterface  $input        Input
-     * @param OutputInterface $output       Output
-     * @param string          $deleteBefore Delete before directory
+     * @param string $namespace  Namespace
+     * @param string $bundleName Name of bundle
+     * @param string $targetDir  target directory
      *
      * @return void
      *
