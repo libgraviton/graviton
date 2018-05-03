@@ -292,6 +292,17 @@ class ResourceGenerator extends AbstractGenerator
             $docName . '.class'
         );
 
+        $this->addService(
+            $docName,
+            null,
+            [],
+            null,
+            [],
+            null,
+            null,
+            '%'. $docName . '.class%'
+        );
+
         $this->addParameter(
             (array) $parameters['json']->getRoles(),
             $docName . '.roles'
