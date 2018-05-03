@@ -344,7 +344,7 @@ class ServiceManager
                 );
             }
 
-            if (!is_null($param->type)) {
+            if (!is_null($param->type) && !is_null($paramValue)) {
                 switch ($param->type) {
                     case "integer":
                         $paramValue = intval($paramValue);
