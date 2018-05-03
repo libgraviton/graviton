@@ -351,6 +351,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function addParameter($value, $key)
     {
         $this->parameters['parameters'][$key] = $value;
+        return $this->parameters['parameters'];
     }
 
     /**

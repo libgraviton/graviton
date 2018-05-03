@@ -230,15 +230,6 @@ class GenerateDynamicBundleCommand extends Command
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
 
-                /**
-                 *
-                 *             $bundleDir,
-                $bundleNamespace,
-                $bundleName,
-                $document,
-                $format
-                 */
-
                 if ($needsGeneration) {
                     $this->generateResources(
                         $jsonDef,
@@ -246,11 +237,6 @@ class GenerateDynamicBundleCommand extends Command
                         $bundleDir,
                         $bundleNamespace
                     );
-
-                    /*
-                    $this->generateSubResources($output, $jsonDef, $bundleName);
-                    $this->generateMainResource($output, $jsonDef, $bundleName);
-                    */
 
                     $output->write(
                         PHP_EOL.
@@ -336,29 +322,6 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $existingBundles;
-    }
-
-    /**
-     * we cannot just delete the BundleBundle at the beginning, we need to prefill
-     * it with all existing dynamic bundles..
-     *
-     * @param string $baseDir base dir
-     *
-     * @return void
-     */
-    private function createInitialBundleBundle($baseDir)
-    {
-        $bundleFinder = $this->getBundleFinder($baseDir);
-
-        if (!$bundleFinder) {
-            return;
-        }
-
-        foreach ($bundleFinder as $bundleDir) {
-            $this->bundleBundleList[] = $this->getBundleClassnameFromFolder($bundleDir->getFilename());
-        }
-
-        $this->generateBundleBundleClass();
     }
 
     /**
