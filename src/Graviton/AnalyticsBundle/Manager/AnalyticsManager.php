@@ -99,7 +99,11 @@ class AnalyticsManager
         if (!$model->getMultipipeline()) {
             $data = reset($data);
             if ('object' === $model->getType()) {
-                $data = $data[0];
+                if (isset($data[0])) {
+                    $data = $data[0];
+                } else {
+                    $data = new \stdClass();
+                }
             }
         }
 

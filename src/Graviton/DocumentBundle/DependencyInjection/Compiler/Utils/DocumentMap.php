@@ -63,7 +63,7 @@ class DocumentMap
             return $this->documents[$className];
         }
         if (!isset($this->mappings[$className])) {
-            throw new \InvalidArgumentException(sprintf('No XML mapping found for document "%s"', $className));
+            throw new \InvalidArgumentException(sprintf('No mapping found for document "%s"', $className));
         }
 
         return $this->documents[$className] = $this->processDocument(

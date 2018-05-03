@@ -1,0 +1,22 @@
+{
+    "id": "TestB",
+    "description": "TestB",
+    "service": {
+        "routerBase": "/testb/"
+    },
+    "target": {
+        "relations": [],
+        "fields": [
+            {
+                "name": "abool",
+                "type": "boolean",
+                "required": true
+            },
+            {
+                "name": "afield",
+                "type": "varchar",
+                "exposeAs": "$c"
+            }
+        ]
+    }
+}

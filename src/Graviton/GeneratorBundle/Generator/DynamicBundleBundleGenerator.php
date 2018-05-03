@@ -14,10 +14,6 @@ namespace Graviton\GeneratorBundle\Generator;
  */
 class DynamicBundleBundleGenerator extends AbstractGenerator
 {
-    /**
-     * @private string[]
-     */
-    protected $gravitonSkeletons;
 
     /**
      * Optional additions to add
@@ -50,11 +46,6 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
      */
     public function generate(array $bundleList, $bundleBundleNamespace, $bundleName, $targetFilename)
     {
-        // hm, where should that be called?
-        $this->setSkeletonDirs(array('.'));
-
-        // compose absolute classnames
-        // array contains DynNamespace/NameBundle -> convert
         $absoluteList = [];
         foreach ($bundleList as $namespace) {
             $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .
