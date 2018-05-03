@@ -5,11 +5,9 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
-use Sensio\Bundle\GeneratorBundle\Model\EntityGeneratorResult;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
@@ -76,8 +74,9 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * Instantiates generator object
      *
-     * @param Filesystem          $filesystem       fs abstraction layer
-     * @param FieldMapper         $mapper           field type mapper
+     * @param Filesystem       $filesystem       fs abstraction layer
+     * @param FieldMapper      $mapper           field type mapper
+     * @param ParameterBuilder $parameterBuilder parameter builder
      */
     public function __construct(
         Filesystem $filesystem,
@@ -113,19 +112,18 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * generate the resource with all its bits and parts
      *
-     * @param BundleInterface $bundle   bundle
-     * @param string          $document document name
-     * @param string          $format   format of config files (please use xml)
-     * @param array           $fields   fields to add
+     * @param string $bundleDir       bundle dir
+     * @param string $bundleNamespace bundle namespace
+     * @param string $bundleName      bundle name
+     * @param string $document        document name
      *
-     * @return EntityGeneratorResult
+     * @return void
      */
     public function generate(
         $bundleDir,
         $bundleNamespace,
         $bundleName,
         $document
-        //$format
     ) {
         $this->readServicesAndParams($bundleDir);
 
@@ -145,10 +143,10 @@ class ResourceGenerator extends AbstractGenerator
         );
 
         $parameters = $this->parameterBuilder
+            ->reset()
             ->setParameter('document', $document)
             ->setParameter('base', $bundleNamespace)
             ->setParameter('bundle', $bundleName)
-            //->setParameter('format', $format)
             ->setParameter('json', $this->json)
             ->setParameter('fields', $fields)
             ->setParameter('basename', $basename)
@@ -173,14 +171,15 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         $this->persistServicesAndParams();
-
-        return new EntityGeneratorResult(
-            $bundleDir . '/Document/' . $document . '.php',
-            '',
-            $bundleDir . '/Resources/config/doctrine/' . $document . '.mongodb.yml'
-        );
     }
 
+    /**
+     * reads the services.yml file
+     *
+     * @param string $bundleDir bundle dir
+     *
+     * @return void
+     */
     protected function readServicesAndParams($bundleDir)
     {
         $this->servicesFile = $bundleDir.'/Resources/config/services.yml';
@@ -200,17 +199,17 @@ class ResourceGenerator extends AbstractGenerator
         }
     }
 
-    protected function persistServicesAndParams() {
+    /**
+     * writes the services.yml file which includes the params
+     *
+     * @return void
+     */
+    protected function persistServicesAndParams()
+    {
         $this->filesystem->dumpFile(
             $this->servicesFile,
             Yaml::dump(array_merge($this->parameters, $this->services))
         );
-        /*
-        $this->filesystem->dumpFile(
-            $this->parametersFile,
-            Yaml::dump($this->parameters)
-        );
-        */
     }
 
     /**
@@ -359,14 +358,14 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @param string $id             id of new service
      * @param string $parent         parent for service
-     * @param array        $calls          methodCalls to add
-     * @param string       $tag            tag name or empty if no tag needed
-     * @param array        $arguments      service arguments
-     * @param string       $factoryService factory service id
-     * @param string       $factoryMethod  factory method name
-     * @param string       $className      class name to override
+     * @param array  $calls          methodCalls to add
+     * @param string $tag            tag name or empty if no tag needed
+     * @param array  $arguments      service arguments
+     * @param string $factoryService factory service id
+     * @param string $factoryMethod  factory method name
+     * @param string $className      class name to override
      *
-     * @return \DOMDocument
+     * @return void
      */
     protected function addService(
         $id,
