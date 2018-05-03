@@ -21,18 +21,13 @@ before_script:
   # spin up local mongodb with the version we need
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
-          docker pull mongo:${MONGODB_VERSION}
-          docker run -d -p 127.0.0.1:27017:27017 mongo:${MONGODB_VERSION} --smallfiles
-      fi
-  # see what mongo module we need
-  - >
-      if [ [ $(phpenv version-name) = "7.1" ] || [ $(phpenv version-name) = "7.2" ] ; then
-          MONGO_MODULE=mongodb
+          docker pull mongo:3.6
+          docker run -d -p 127.0.0.1:27017:27017 mongo:3.6 --smallfiles
       fi
   # install the module
   - pecl channel-update pecl.php.net
   - sleep 5
-  - printf "\n" | pecl install -f ${MONGO_MODULE}
+  - printf "\n" | pecl install -f mongodb-1.4.3
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
@@ -44,8 +39,7 @@ php:
   - 7.1
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.4
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 matrix:
@@ -55,9 +49,6 @@ matrix:
     # skip composer checks on all others than 7.1
     - php: 7.2
       env: COMPOSER_CHECK=true PHPUNIT=false
-    # no need to check on php72 with old mongo
-    - php: 7.2
-      env: COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.4
 script:
   - >
       if [ "$PHPUNIT" = "true" ]; then
