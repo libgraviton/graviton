@@ -75,7 +75,7 @@ class GravitonTestCase extends WebTestCase
     /**
      * small wrapper for fixture loading
      *
-     * @param array $classNames
+     * @param array $classNames class names to load
      *
      * @return AbstractExecutor|null
      */
@@ -88,5 +88,4 @@ class GravitonTestCase extends WebTestCase
             'doctrine_mongodb'
         );
     }
-
 }
