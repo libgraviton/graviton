@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
-use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -50,11 +49,11 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $composer = new CoreUtils($this->getContainer()->getParameter('graviton.core.version.data'));
-
         $response = $client->getResponse();
-
-        $this->assertEquals($composer->getVersionInHeaderFormat(), $response->headers->get('X-Version'));
+        $this->assertEquals(
+            $this->getContainer()->getParameter('graviton.core.version.header'),
+            $response->headers->get('X-Version')
+        );
     }
 
     /**
