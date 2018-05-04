@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc602676a2bc71f8b92e988229712807",
+    "content-hash": "b72153ac465f52dc80a1e68bab032819",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -73,16 +73,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.55.5",
+            "version": "3.55.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "12152498f9c6f5595ebdeb4ec3d8b45379843bf4"
+                "reference": "fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/12152498f9c6f5595ebdeb4ec3d8b45379843bf4",
-                "reference": "12152498f9c6f5595ebdeb4ec3d8b45379843bf4",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9",
+                "reference": "fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9",
                 "shasum": ""
             },
             "require": {
@@ -149,7 +149,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-05-02T19:55:35+00:00"
+            "time": "2018-05-03T22:24:42+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1202,16 +1202,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "dev-develop",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "530db766cf00ca2e542e70fb69e06e502c0a1866"
+                "reference": "2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/530db766cf00ca2e542e70fb69e06e502c0a1866",
-                "reference": "530db766cf00ca2e542e70fb69e06e502c0a1866",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3",
+                "reference": "2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3",
                 "shasum": ""
             },
             "require": {
@@ -1219,9 +1219,9 @@
                 "symfony/http-kernel": "^3.0 || ^4.0"
             },
             "require-dev": {
-                "doctrine/mongodb-odm": "~1.0@beta",
-                "libgraviton/codesniffer": "~1.3",
-                "phpunit/phpunit": "*",
+                "doctrine/mongodb-odm": "@stable",
+                "libgraviton/codesniffer": "~2",
+                "phpunit/phpunit": "^7.1.3",
                 "squizlabs/php_codesniffer": "~3",
                 "symfony/framework-bundle": "^3.0 || ^4.0"
             },
@@ -1242,7 +1242,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony",
-            "time": "2018-04-15T08:41:59+00:00"
+            "time": "2018-05-04T12:20:15+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -3987,26 +3987,29 @@
     "packages-dev": [
         {
             "name": "doctrine/data-fixtures",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/data-fixtures.git",
-                "reference": "7b76ccc8e648c4502aad7f61347326c8a072bd3b"
+                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/7b76ccc8e648c4502aad7f61347326c8a072bd3b",
-                "reference": "7b76ccc8e648c4502aad7f61347326c8a072bd3b",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
+                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "~2.2",
                 "php": "^7.1"
             },
+            "conflict": {
+                "doctrine/phpcr-odm": "<1.3.0"
+            },
             "require-dev": {
                 "doctrine/dbal": "^2.5.4",
                 "doctrine/orm": "^2.5.4",
-                "phpunit/phpunit": "^6.3"
+                "phpunit/phpunit": "^7.0"
             },
             "suggest": {
                 "alcaeus/mongo-php-adapter": "For using MongoDB ODM with PHP 7",
@@ -4040,7 +4043,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2017-11-27T18:48:06+00:00"
+            "time": "2018-03-20T09:06:36+00:00"
         },
         {
             "name": "graviton/deploy-scripts",
@@ -5898,7 +5901,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "graviton/rql-parser-bundle": 20,
         "liip/functional-test-bundle": 20
     },
     "prefer-stable": true,
