@@ -317,8 +317,7 @@ services:
     graviton.rest.listener.xversionresponselistener:
         class: "%graviton.rest.listener.xversionresponselistener.class%"
         arguments:
-          - "@graviton.core.utils"
-          - "@logger"
+          - "%graviton.core.version.header%"
         tags:
           -
             name: kernel.event_listener

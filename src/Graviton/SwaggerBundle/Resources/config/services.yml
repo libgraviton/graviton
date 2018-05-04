@@ -7,7 +7,7 @@ services:
           - "@graviton.rest.restutils"
           - "@graviton.schema.model.schemamodel"
           - "@graviton.schema.utils"
-          - "@graviton.core.utils"
+          - "%graviton.core.version.data%"
 
     graviton.swagger.filesystem.command:
         class: Symfony\Component\Filesystem\Filesystem

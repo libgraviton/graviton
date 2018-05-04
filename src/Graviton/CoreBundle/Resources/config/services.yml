@@ -53,11 +53,6 @@ services:
     graviton.core.document.app:
         class: "%graviton.core.document.app.class%"
 
-    graviton.core.utils:
-        class: "%graviton.core.service.coreutils.class%"
-        arguments:
-          - "%graviton.core.version.data%"
-
     graviton.core.model.version:
         class: "%graviton.core.model.version.class%"
         parent: "graviton.rest.model"
@@ -82,9 +77,9 @@ services:
         parent: "graviton.rest.controller"
         calls:
           -
-            method: "setCoreUtils"
+            method: "setVersionInformation"
             arguments:
-              - "@graviton.core.utils"
+              - "%graviton.core.version.data%"
           -
             method: "setModel"
             arguments:
@@ -102,26 +97,3 @@ services:
             name: "kernel.event_listener"
             event: "kernel.exception"
             method: "onKernelException"
-
-
-    #generateversions command -->
-    graviton.core.command.filesystem:
-        class: Symfony\Component\Filesystem\Filesystem
-
-    graviton.core.command.dumper:
-        class: Symfony\Component\Yaml\Dumper
-
-    graviton.core.command.parser:
-        class: Symfony\Component\Yaml\Parser
-
-    graviton.core.command.generateversions:
-        class: Graviton\CoreBundle\Command\GenerateVersionsCommand
-        arguments:
-          - "@graviton.core.command.filesystem"
-          - "@graviton.core.command.dumper"
-          - "@graviton.core.command.parser"
-          - "%graviton.git.cmd%"
-          - "%kernel.root_dir%"
-        tags:
-          -
-            name: "console.command"
