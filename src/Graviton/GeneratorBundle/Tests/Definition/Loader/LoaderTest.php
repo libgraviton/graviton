@@ -16,7 +16,7 @@ use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class LoaderTest extends \PHPUnit_Framework_TestCase
+class LoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check if strategies are called

@@ -11,7 +11,7 @@ use Graviton\GeneratorBundle\CommandRunner;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CommandRunnerTest extends \PHPUnit_Framework_TestCase
+class CommandRunnerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

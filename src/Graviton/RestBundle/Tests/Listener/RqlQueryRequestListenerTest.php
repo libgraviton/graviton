@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlQueryRequestListenerTest extends \PHPUnit_Framework_TestCase
+class RqlQueryRequestListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test RqlQueryRequestListener::onKernelRequest()

@@ -16,7 +16,7 @@ use Symfony\Component\Finder\Finder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class I18nCacheUtilsTest extends \PHPUnit_Framework_TestCase
+class I18nCacheUtilsTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

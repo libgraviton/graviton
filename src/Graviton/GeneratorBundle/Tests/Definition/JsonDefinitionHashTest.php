@@ -16,7 +16,7 @@ use Graviton\GeneratorBundle\Definition\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonDefinitionHashTest extends \PHPUnit_Framework_TestCase
+class JsonDefinitionHashTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test JsonDefinitionHash::getName()

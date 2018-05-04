@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ScanStrategyTest extends \PHPUnit_Framework_TestCase
+class ScanStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check loading with null input

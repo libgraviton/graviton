@@ -11,7 +11,7 @@ use Graviton\SecurityBundle\DependencyInjection\GravitonSecurityExtension;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonSecurityExtensionTest extends \PHPUnit_Framework_TestCase
+class GravitonSecurityExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Verifies the correct behavior of getConfigDir()

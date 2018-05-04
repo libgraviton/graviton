@@ -19,7 +19,7 @@ use JMS\Serializer\SerializerBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefinitionTest extends \PHPUnit_Framework_TestCase
+class DefinitionTest extends \PHPUnit\Framework\TestCase
 {
     private $fullDefPath;
     private $minimalPath;

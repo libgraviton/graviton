@@ -14,7 +14,7 @@ use Graviton\ProxyBundle\Definition\ApiDefinition;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class ApiDefinitionTest extends \PHPUnit_Framework_TestCase
+class ApiDefinitionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * test add endpoint

@@ -14,7 +14,7 @@ use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class LinkHeaderItemTest extends \PHPUnit_Framework_TestCase
+class LinkHeaderItemTest extends \PHPUnit\Framework\TestCase
 {
     const URI = 'http://localhost/test/resource';
 

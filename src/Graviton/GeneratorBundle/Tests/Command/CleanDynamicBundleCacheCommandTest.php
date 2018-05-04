@@ -16,7 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CleanDynamicBundleCacheCommandTest extends \PHPUnit_Framework_TestCase
+class CleanDynamicBundleCacheCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests the execution of the command

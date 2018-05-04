@@ -12,7 +12,7 @@ use \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldNameMapperTest extends \PHPUnit_Framework_TestCase
+class FieldNameMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider mapData

@@ -5,7 +5,7 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\JsonStrategy;
 
 /**
  */
-class JsonStrategyTest extends \PHPUnit_Framework_TestCase
+class JsonStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void
