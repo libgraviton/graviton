@@ -193,8 +193,6 @@ class GenerateDynamicBundleCommand extends Command
             throw new \LogicException("Could not find any usable JSON files.");
         }
 
-        //$this->createInitialBundleBundle($input->getOption('srcDir'));
-
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
 
@@ -443,6 +441,12 @@ class GenerateDynamicBundleCommand extends Command
         // main resources
         if (!empty($jsonDef->getFields())) {
             $generator->setGenerateController(true);
+
+            $routerBase = $jsonDef->getRouterBase();
+            if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
+                $generator->setGenerateController(false);
+            }
+
             $generator->setJson(new JsonDefinition($jsonDef->getDef()));
             $generator->generate(
                 $bundleDir,
@@ -450,35 +454,6 @@ class GenerateDynamicBundleCommand extends Command
                 $bundleName,
                 $jsonDef->getId()
             );
-        }
-    }
-
-    /**
-     * Generate the actual Bundle
-     *
-     * @param OutputInterface $output          Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef         Configuration to be generated the entity from.
-     * @param string          $bundleName      Name of the bundle the entity shall be generated for.
-     * @param string          $bundleClassName class name for bundle
-     *
-     * @return void
-     */
-    protected function generateMainResource(
-        OutputInterface $output,
-        JsonDefinition $jsonDef,
-        $bundleName,
-        $bundleClassName
-    ) {
-        if (!empty($jsonDef->getFields())) {
-            $arguments = array(
-                'graviton:generate:resource',
-                '--no-debug' => null,
-                '--entity' => $bundleName . ':' . $jsonDef->getId(),
-                '--bundleClassName' => $bundleClassName,
-                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json')
-            );
-
-            $this->generateResource($arguments, $output, $jsonDef);
         }
     }
 
