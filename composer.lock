@@ -73,16 +73,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.55.6",
+            "version": "3.55.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9"
+                "reference": "6cda2e7c4b2e7e61feea2e8b4d950c8e6ab6b82e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9",
-                "reference": "fcafbbdaa58ca2b1db62fd6dc626c01125f8eee9",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6cda2e7c4b2e7e61feea2e8b4d950c8e6ab6b82e",
+                "reference": "6cda2e7c4b2e7e61feea2e8b4d950c8e6ab6b82e",
                 "shasum": ""
             },
             "require": {
@@ -149,7 +149,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-05-03T22:24:42+00:00"
+            "time": "2018-05-04T20:11:35+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1839,16 +1839,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.44",
+            "version": "1.0.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "168dbe519737221dc87d17385cde33073881fd02"
+                "reference": "a99f94e63b512d75f851b181afcdf0ee9ebef7e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/168dbe519737221dc87d17385cde33073881fd02",
-                "reference": "168dbe519737221dc87d17385cde33073881fd02",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a99f94e63b512d75f851b181afcdf0ee9ebef7e6",
+                "reference": "a99f94e63b512d75f851b181afcdf0ee9ebef7e6",
                 "shasum": ""
             },
             "require": {
@@ -1919,7 +1919,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2018-04-06T09:58:14+00:00"
+            "time": "2018-05-07T08:44:23+00:00"
         },
         {
             "name": "league/flysystem-aws-s3-v3",
