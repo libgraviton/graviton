@@ -62,6 +62,32 @@ class LanguageControllerTest extends RestTestCase
     }
 
     /**
+     * see if our accept-language header cache works as expected
+     *
+     * @return void
+     */
+    public function testLanguageHeaderCaching()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/i18n/language/', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en'));
+        $this->assertEquals('en', $client->getResponse()->headers->get('Content-Language'));
+
+        // add a new language
+        $newLang = new \stdClass;
+        $newLang->id = 'zh';
+        $newLang->name = new \stdClass;
+        $newLang->name->en = 'Chinese';
+
+        $client = static::createRestClient();
+        $client->post('/i18n/language/', $newLang);
+
+        // see if it is in the header
+        $client = static::createRestClient();
+        $client->request('GET', '/i18n/language/', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de,zh'));
+        $this->assertEquals('en, zh', $client->getResponse()->headers->get('Content-Language'));
+    }
+
+    /**
      * validate that multiple languages work as advertised
      *
      * @return void
