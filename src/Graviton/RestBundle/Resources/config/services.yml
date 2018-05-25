@@ -287,6 +287,10 @@ services:
             arguments:
               - If-None-Match
           -
+            method: addAllowHeader
+            arguments:
+              - X-Analytics-No-Cache
+          -
             #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
             method: addAllowHeader
             arguments:
