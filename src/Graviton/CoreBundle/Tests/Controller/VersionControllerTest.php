@@ -33,7 +33,8 @@ class VersionControllerTest extends RestTestCase
 
         $tagRegExp = '^([v]?[0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z.]+)?(\+[0-9a-zA-Z.]+)?$';
         $branchRegExp = '^((dev\-){1}[0-9a-zA-Z\.\/\-\_]+)';
-        $regExp = sprintf('/%s|%s/', $tagRegExp, $branchRegExp);
+        $secondDevRegExp = '^(.*)-dev@(.*)';
+        $regExp = sprintf('/%s|%s|%s/', $tagRegExp, $branchRegExp, $secondDevRegExp);
 
         $content = json_decode($response->getContent());
         foreach ($content->versions as $packageId => $packageVersion) {
