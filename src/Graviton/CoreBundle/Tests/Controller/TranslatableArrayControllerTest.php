@@ -31,14 +31,12 @@ class TranslatableArrayControllerTest extends RestTestCase
             $this->markTestSkipped(sprintf('%s definition is not loaded', TestCaseTranslatableArray::class));
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadLanguageData::class,
                 LoadMultiLanguageData::class,
                 LoadTestCaseTranslatableArrayData::class,
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

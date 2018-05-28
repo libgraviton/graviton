@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Controller;
 
-use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,18 +16,18 @@ use Symfony\Component\HttpFoundation\Response;
 class VersionController extends RestController
 {
     /**
-     * @var CoreUtils
+     * @var array
      */
-    private $coreUtils;
+    private $versionInformation;
 
     /**
      * Build core utils
-     * @param CoreUtils $coreUtils coreUtils
+     * @param array $versionInformation version information
      * @return void
      */
-    public function setCoreUtils(CoreUtils $coreUtils)
+    public function setVersionInformation(array $versionInformation)
     {
-        $this->coreUtils = $coreUtils;
+        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -38,12 +37,14 @@ class VersionController extends RestController
      */
     public function versionsAction()
     {
-        $versions = [];
-        $versions['versions'] = $this->coreUtils->getVersion();
+        $versions = [
+            'versions' => $this->versionInformation
+        ];
 
         $response = $this->getResponse()
                          ->setStatusCode(Response::HTTP_OK)
                          ->setContent(json_encode($versions));
+
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;

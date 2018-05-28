@@ -20,7 +20,7 @@ use Xiag\Rql\Parser\QueryBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlAllowedOperatorRequestListenerTest extends \PHPUnit_Framework_TestCase
+class RqlAllowedOperatorRequestListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test RqlAllowedOperatorRequestListener::onKernelRequest() without RQL

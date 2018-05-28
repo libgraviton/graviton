@@ -12,7 +12,7 @@ namespace Graviton\SecurityBundle\User\Model;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ModelFactoryTest extends \PHPUnit_Framework_TestCase
+class ModelFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider modelServiceIdProvider

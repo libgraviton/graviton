@@ -5,8 +5,6 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Graviton\CoreBundle\Service\CoreUtils;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
@@ -18,23 +16,18 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  */
 class XVersionResponseListener
 {
-    /** @var LoggerInterface */
-    private $logger;
 
-    /** @var \Graviton\CoreBundle\Service\CoreUtils */
-    private $coreUtils;
-
+    /** @var string */
+    private $versionHeader;
 
     /**
      * Constructor
      *
-     * @param CoreUtils       $coreUtils Instance of the CoreUtils class
-     * @param LoggerInterface $logger    Instance of the logger class
+     * @param string $versionHeader version header
      */
-    public function __construct(CoreUtils $coreUtils, LoggerInterface $logger)
+    public function __construct($versionHeader)
     {
-        $this->logger = $logger;
-        $this->coreUtils = $coreUtils;
+        $this->versionHeader = $versionHeader;
     }
 
     /**
@@ -51,12 +44,9 @@ class XVersionResponseListener
             return;
         }
 
-        /** @var \Symfony\Component\HttpFoundation\Response $response */
-        $response = $event->getResponse();
-        
-        $response->headers->set(
+        $event->getResponse()->headers->set(
             'X-Version',
-            $this->coreUtils->getVersionInHeaderFormat()
+            $this->versionHeader
         );
     }
 }

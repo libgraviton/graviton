@@ -29,12 +29,10 @@ class VersioningDocumentsTest extends RestTestCase
             $this->markTestSkipped('Test definitions are not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadTestCaseVersioningEntityData::class
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

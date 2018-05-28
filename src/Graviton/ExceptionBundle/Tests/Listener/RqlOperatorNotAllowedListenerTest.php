@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlOperatorNotAllowedListenerTest extends \PHPUnit_Framework_TestCase
+class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject

@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SecurityAuthenticatorTest extends \PHPUnit_Framework_TestCase
+class SecurityAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
     /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
     private $logger;

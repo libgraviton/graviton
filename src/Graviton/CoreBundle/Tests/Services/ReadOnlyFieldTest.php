@@ -24,12 +24,10 @@ class ReadOnlyFieldTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\TestCaseReadOnlyFieldBundle\DataFixtures\MongoDB\LoadTestCaseReadOnlyFieldData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

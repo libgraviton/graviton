@@ -35,12 +35,10 @@ class FileControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 
@@ -52,7 +50,7 @@ class FileControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures([], null, 'doctrine_mongodb');
+        $this->loadFixturesLocal([]);
         $client = static::createRestClient();
         $client->request('GET', '/file/');
 

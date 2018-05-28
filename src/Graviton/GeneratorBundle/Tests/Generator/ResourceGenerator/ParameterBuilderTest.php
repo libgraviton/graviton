@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ParameterBuilderTest extends \PHPUnit_Framework_TestCase
+class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider buildBasicParamData

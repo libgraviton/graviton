@@ -35,7 +35,7 @@ class EmbeddingDocumentsTest extends RestTestCase
             $this->markTestSkipped('Test definitions are not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadEmbedTestEntityData::class,
                 LoadEmbedTestDocumentAsEmbeddedData::class,
@@ -43,9 +43,7 @@ class EmbeddingDocumentsTest extends RestTestCase
                 LoadEmbedTestDocumentAsDeepEmbeddedData::class,
                 LoadEmbedTestDocumentAsDeepReferenceData::class,
                 LoadEmbedTestHashAsEmbeddedData::class,
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

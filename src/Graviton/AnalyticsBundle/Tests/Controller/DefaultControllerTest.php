@@ -22,13 +22,11 @@ class DefaultControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
                 'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

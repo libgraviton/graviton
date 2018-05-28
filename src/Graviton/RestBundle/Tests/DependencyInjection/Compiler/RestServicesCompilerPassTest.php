@@ -14,7 +14,7 @@ use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestServicesCompilerPassTest extends \PHPUnit_Framework_TestCase
+class RestServicesCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * validate that process creates an array parameter

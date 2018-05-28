@@ -12,7 +12,7 @@ use \Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldJsonMapperTest extends \PHPUnit_Framework_TestCase
+class FieldJsonMapperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider mapData

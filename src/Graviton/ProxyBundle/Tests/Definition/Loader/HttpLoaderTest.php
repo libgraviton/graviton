@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class HttpLoaderTest extends \PHPUnit_Framework_TestCase
+class HttpLoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var HttpLoader

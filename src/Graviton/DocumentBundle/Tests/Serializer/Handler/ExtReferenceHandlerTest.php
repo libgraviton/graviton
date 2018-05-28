@@ -20,7 +20,7 @@ use JMS\Serializer\SerializationContext;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceHandlerTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject

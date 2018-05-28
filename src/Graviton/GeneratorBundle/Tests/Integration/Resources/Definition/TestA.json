@@ -1,0 +1,55 @@
+{
+    "id": "TestA",
+    "description": "TestA",
+    "service": {
+        "routerBase": "/testa/"
+    },
+    "target": {
+        "relations": [
+            {
+                "type": "embed",
+                "localProperty": "testEmbed"
+            }
+        ],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "description": "Unique identifier for an item."
+            },
+            {
+                "name": "anotherInt",
+                "type": "INT",
+                "description": "Just a nice integer",
+                "required": true
+            },
+            {
+                "name": "testField",
+                "type": "varchar",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "embed.fieldA",
+                "type": "varchar"
+            },
+            {
+                "name": "embed.fieldB",
+                "type": "varchar"
+            },
+            {
+                "name": "testbRef",
+                "type": "class:GravitonDyn\\TestBBundle\\Document\\TestB"
+            },
+            {
+                "name": "testEmbed",
+                "type": "class:GravitonDyn\\TestBBundle\\Document\\TestB"
+            },
+            {
+                "name": "extref.ref",
+                "exposeAs": "$ref",
+                "type": "extref"
+            }
+        ]
+    }
+}
