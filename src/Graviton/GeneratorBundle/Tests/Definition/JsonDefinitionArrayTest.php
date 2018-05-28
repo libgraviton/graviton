@@ -15,7 +15,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonDefinitionArrayTest extends \PHPUnit_Framework_TestCase
+class JsonDefinitionArrayTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var DefinitionElementInterface|\PHPUnit_Framework_MockObject_MockObject

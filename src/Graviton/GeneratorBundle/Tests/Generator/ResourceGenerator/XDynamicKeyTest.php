@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class XDynamicKeyTest extends \PHPUnit_Framework_TestCase
+class XDynamicKeyTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

@@ -29,10 +29,8 @@ class PrimitiveArrayControllerTest extends RestTestCase
             $this->markTestSkipped('TestCasePrimitiveArray definition is not loaded');
         }
 
-        $this->loadFixtures(
-            [LoadTestCasePrimitiveArrayData::class],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            [LoadTestCasePrimitiveArrayData::class]
         );
 
 

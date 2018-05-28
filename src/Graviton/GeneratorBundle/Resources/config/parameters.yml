@@ -10,9 +10,10 @@ parameters:
     graviton_generator.resourcegenerator.field_title_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTitleMapper
     graviton_generator.resourcegenerator.field_json_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper
     graviton_generator.resourcegenerator.parameter_builder.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder
-    graviton_generator.generator.resourcegenerator.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
+    graviton_generator.generator.bundle.class: Graviton\GeneratorBundle\Generator\BundleGenerator
+    graviton_generator.generator.resource.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
+    graviton_generator.generator.dynamicbundlebundle.class: Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator
     graviton_generator.command.generateresource.class: Graviton\GeneratorBundle\Command\GenerateResourceCommand
-    graviton_generator.command_runner.class: Graviton\GeneratorBundle\CommandRunner
     graviton.document.serializer.handler.arrayobject.class: Graviton\GeneratorBundle\Serializer\Handler\ArrayObjectHandler
 
     generator.dynamicbundles.mongocollection: ~

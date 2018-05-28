@@ -7,6 +7,4 @@ parameters:
     graviton.core.model.version.class: Graviton\CoreBundle\Model\Version
     graviton.core.document.app.class: Graviton\CoreBundle\Document\App
     graviton.core.listener.requesthost.class: Graviton\CoreBundle\Listener\RequestHostListener
-    graviton.core.service.coreutils.class: Graviton\CoreBundle\Service\CoreUtils
-    graviton.core.service.coreversionutils.class: Graviton\CoreBundle\Service\CoreVersionUtils
     graviton.core.listener.jsonexceptionlistener.class: Graviton\CoreBundle\Listener\JsonExceptionListener

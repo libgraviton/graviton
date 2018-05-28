@@ -12,7 +12,7 @@ use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlQueryRoutesCompilerPassTest extends \PHPUnit_Framework_TestCase
+class RqlQueryRoutesCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test RqlQueryRoutesCompilerPass::process()

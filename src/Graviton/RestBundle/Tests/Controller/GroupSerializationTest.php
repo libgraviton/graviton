@@ -23,12 +23,10 @@ class GroupSerializationTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadTestCaseGroupSerializationData::class
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

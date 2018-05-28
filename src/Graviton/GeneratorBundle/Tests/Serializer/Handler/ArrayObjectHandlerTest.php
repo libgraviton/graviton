@@ -19,7 +19,7 @@ use JMS\Serializer\SerializerBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ArrayObjectHandlerTest extends \PHPUnit_Framework_TestCase
+class ArrayObjectHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test ArrayObjectHandler::serializeArrayObjectToJson()

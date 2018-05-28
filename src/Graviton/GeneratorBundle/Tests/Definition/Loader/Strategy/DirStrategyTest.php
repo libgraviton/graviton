@@ -12,7 +12,7 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DirStrategyTest extends \PHPUnit_Framework_TestCase
+class DirStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * test loading multiple files from dir

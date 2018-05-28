@@ -24,12 +24,10 @@ class ConfigControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\ConfigBundle\DataFixtures\MongoDB\LoadConfigData'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

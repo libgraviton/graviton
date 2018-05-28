@@ -52,6 +52,17 @@ class ParameterBuilder
     }
 
     /**
+     * resets/clears all parameters
+     *
+     * @return self
+     */
+    public function reset()
+    {
+        $this->parameters = [];
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getParameters()

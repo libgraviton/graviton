@@ -14,7 +14,7 @@ use Graviton\GeneratorBundle\Definition\Schema;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-abstract class BaseJsonDefinitionFieldTest extends \PHPUnit_Framework_TestCase
+abstract class BaseJsonDefinitionFieldTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return Schema\Field

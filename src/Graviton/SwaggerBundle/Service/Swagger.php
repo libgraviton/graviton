@@ -5,12 +5,9 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
-use Graviton\CoreBundle\Service\CoreUtils;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -39,28 +36,28 @@ class Swagger
     private $schemaUtils;
 
     /**
-     * @var CoreUtils
+     * @var array
      */
-    private $coreUtils;
+    private $versionInformation;
 
     /**
      * Constructor
      *
-     * @param RestUtils   $restUtils   rest utils
-     * @param SchemaModel $schemaModel schema model instance
-     * @param SchemaUtils $schemaUtils schema utils
-     * @param CoreUtils   $coreUtils   coreUtils
+     * @param RestUtils   $restUtils          rest utils
+     * @param SchemaModel $schemaModel        schema model instance
+     * @param SchemaUtils $schemaUtils        schema utils
+     * @param array       $versionInformation version information
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
         SchemaUtils $schemaUtils,
-        CoreUtils $coreUtils
+        array $versionInformation
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
-        $this->coreUtils = $coreUtils;
+        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -192,7 +189,7 @@ class Swagger
         $ret['swagger'] = '2.0';
 
         $ret['info'] = array(
-            'version' => $this->coreUtils->getWrapperVersion()['version'],
+            'version' => $this->versionInformation['self'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
         );

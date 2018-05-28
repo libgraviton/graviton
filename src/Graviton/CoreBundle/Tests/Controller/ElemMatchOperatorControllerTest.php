@@ -29,10 +29,8 @@ class ElemMatchOperatorControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseElemMatchOperator definition is not loaded');
         }
 
-        $this->loadFixtures(
-            [LoadTestCaseElemMatchOperatorData::class],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            [LoadTestCaseElemMatchOperatorData::class]
         );
     }
 

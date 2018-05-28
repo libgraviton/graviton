@@ -25,12 +25,10 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

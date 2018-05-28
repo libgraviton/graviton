@@ -12,7 +12,7 @@ use Graviton\SchemaBundle\Service\RepositoryFactory;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RepositoryFactoryTest extends \PHPUnit_Framework_TestCase
+class RepositoryFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

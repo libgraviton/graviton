@@ -35,13 +35,11 @@ class ModuleControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'GravitonDyn\ModuleBundle\DataFixtures\MongoDB\LoadModuleData'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
 
         SearchNode::getInstance()->resetSearchTerms();
@@ -212,7 +210,7 @@ class ModuleControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures([], null, 'doctrine_mongodb');
+        $this->loadFixturesLocal([]);
         $client = static::createRestClient();
         $client->request('GET', '/core/module/');
 

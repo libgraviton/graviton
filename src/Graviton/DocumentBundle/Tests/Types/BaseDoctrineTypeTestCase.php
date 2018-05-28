@@ -12,7 +12,7 @@ namespace Graviton\DocumentBundle\Tests\Types;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class BaseDoctrineTypeTestCase extends \PHPUnit_Framework_TestCase
+class BaseDoctrineTypeTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Assert that expected result is equal to closure return value

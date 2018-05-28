@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SpecialMimetypeRequestListenerTest extends \PHPUnit_Framework_TestCase
+class SpecialMimetypeRequestListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

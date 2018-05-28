@@ -14,7 +14,7 @@ use Symfony\Component\Finder\Finder;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class RqlFieldsCompilerPassTest extends \PHPUnit_Framework_TestCase
+class RqlFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void

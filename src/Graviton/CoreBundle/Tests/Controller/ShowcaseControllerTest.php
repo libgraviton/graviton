@@ -7,6 +7,7 @@ namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData;
 use Graviton\TestBundle\Test\RestTestCase;
+use GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -35,12 +36,11 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
-                LoadLanguageData::class
-            ],
-            null,
-            'doctrine_mongodb'
+                LoadLanguageData::class,
+                LoadShowCaseData::class
+            ]
         );
     }
 
@@ -430,12 +430,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testRqlSelect()
     {
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         $filtred = json_decode(
             file_get_contents(dirname(__FILE__).'/../resources/showcase-rql-select-filtred.json'),
             false
@@ -486,13 +480,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testLikeSearchOnIdentifierField()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?like(id,5*)');
 
@@ -513,13 +500,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchDeepNestedProperty()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -552,13 +532,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchSuccessResponseHeaderContainsResourceLink()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -586,13 +559,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchRemoveAndChangeIdNotAllowed()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -614,13 +580,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchAddPropertyToFreeObject()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -654,15 +613,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testApplyPatchForRefAttribute()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            [
-                'GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'
-            ],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -697,13 +647,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchToInvalidShowcase()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, remove required field
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -732,13 +675,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testRemoveFromArrayPatch()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, remove nested app, initially there are 2 apps
         $client = static::createRestClient();
         $patchJson = json_encode(
@@ -768,13 +704,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testAddElementToSpecificIndexInArrayPatch()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, add new element
         $client = static::createRestClient();
         $newElement = ['name' => 'element three'];
@@ -810,13 +739,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchAddComplexObjectToSpecificIndexInArray()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, add new element
         $client = static::createRestClient();
         $newApp = ['$ref' => 'http://localhost/core/app/admin'];
@@ -852,13 +774,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchAddComplexObjectToTheEndOfArray()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, add new element
         $client = static::createRestClient();
         $newApp = ['$ref' => 'http://localhost/core/app/test'];
@@ -894,13 +809,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchTestOperationToUndefinedIndexThrowsException()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, add new element
         $client = static::createRestClient();
         $newApp = ['ref' => 'http://localhost/core/app/test'];
@@ -925,13 +833,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testPatchAddElementToUndefinedIndexResponseAsBadRequest()
     {
-        // Load fixtures
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         // Apply PATCH request, add new element
         $client = static::createRestClient();
         $newApp = ['ref' => 'http://localhost/core/app/admin'];
@@ -1043,12 +944,6 @@ class ShowcaseControllerTest extends RestTestCase
      */
     public function testFindByExtref($field, $url, $count)
     {
-        $this->loadFixtures(
-            ['GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'],
-            null,
-            'doctrine_mongodb'
-        );
-
         $url = sprintf(
             '/hans/showcase/?%s=%s',
             $this->encodeRqlString($field),

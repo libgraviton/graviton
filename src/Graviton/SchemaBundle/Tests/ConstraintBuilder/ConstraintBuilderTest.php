@@ -14,7 +14,7 @@ use Graviton\SchemaBundle\Tests\ConstraintBuilder\Builder\DummyBuilderA;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ConstraintBuilderTest extends \PHPUnit_Framework_TestCase
+class ConstraintBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

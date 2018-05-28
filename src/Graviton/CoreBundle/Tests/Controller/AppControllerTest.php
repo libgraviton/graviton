@@ -34,16 +34,14 @@ class AppControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
     /**
@@ -88,12 +86,10 @@ class AppControllerTest extends RestTestCase
      */
     public function testGeneratedPagingHeadersNoRql()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit'
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
 
         $client = static::createRestClient();
@@ -362,7 +358,7 @@ class AppControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures([], null, 'doctrine_mongodb');
+        $this->loadFixturesLocal([]);
         $client = static::createRestClient();
         $client->request('GET', '/core/app/');
 

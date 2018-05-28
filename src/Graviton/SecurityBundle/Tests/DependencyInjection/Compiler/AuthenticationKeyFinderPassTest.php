@@ -12,7 +12,7 @@ use Graviton\SecurityBundle\DependencyInjection\Compiler\AuthenticationKeyFinder
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AuthenticationKeyFinderPassTest extends \PHPUnit_Framework_TestCase
+class AuthenticationKeyFinderPassTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * test process method
