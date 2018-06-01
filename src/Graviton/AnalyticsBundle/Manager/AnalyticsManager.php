@@ -5,6 +5,7 @@
 
 namespace Graviton\AnalyticsBundle\Manager;
 
+use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\AnalyticsBundle\ProcessorInterface;
@@ -23,6 +24,11 @@ class AnalyticsManager
      * @var DocumentManager
      */
     private $documentManager;
+
+    /**
+     * @var Connection
+     */
+    private $connection;
 
     /**
      * @var string
@@ -46,6 +52,7 @@ class AnalyticsManager
         DateConverter $dateConverter
     ) {
         $this->documentManager = $documentManager;
+        $this->connection = $documentManager->getConnection();
         $this->databaseName = $databaseName;
         $this->dateConverter = $dateConverter;
     }
@@ -64,16 +71,18 @@ class AnalyticsManager
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
-        $conn = $this->documentManager->getConnection();
         // all data will be here first..
         $data = [];
 
         if (!$model->getMultipipeline()) {
-            $collection = $conn->selectCollection($this->databaseName, $model->getCollection());
+            $collection = $this->connection->selectCollection($this->databaseName, $model->getCollection());
             $data[] = $collection->aggregate($pipeline, ['cursor' => true])->toArray();
         } else {
             foreach ($pipeline as $pipelineName => $definition) {
-                $collection = $conn->selectCollection($this->databaseName, $model->getCollection($pipelineName));
+                $collection = $this->connection->selectCollection(
+                    $this->databaseName,
+                    $model->getCollection($pipelineName)
+                );
                 $data[$pipelineName] = $collection->aggregate($definition, ['cursor' => true])->toArray();
             }
         }
@@ -94,7 +103,7 @@ class AnalyticsManager
         }
 
         // process dates
-        $data = $this->convertDates($data);
+        $data = $this->convertData($data);
 
         if (!$model->getMultipipeline()) {
             $data = reset($data);
@@ -111,27 +120,46 @@ class AnalyticsManager
     }
 
     /**
-     * convert date representations in the returned output.. as we are not typed here, we don't
-     * know what to expect..
+     * convert various things in the data that should be rendered differently
      *
      * @param array $data data
      *
-     * @return array data with formatted dates
+     * @return array data with changed things
      */
-    private function convertDates(array $data = null)
+    private function convertData(array $data = null)
     {
         if (!is_array($data)) {
             return $data;
         }
 
         foreach ($data as $key => $val) {
-            if (is_array($val)) {
-                $data[$key] = $this->convertDates($val);
+            /** convert dbrefs */
+            if (is_array($val) && isset($val['$ref']) && isset($val['$id'])) {
+                $data[$key] = $this->convertData(
+                    $this->resolveObject($val['$ref'], $val['$id'])
+                );
+            } elseif (is_array($val)) {
+                $data[$key] = $this->convertData($val);
             }
+            /** convert mongodate to text dates **/
             if ($val instanceof \MongoDate) {
                 $data[$key] = $this->dateConverter->formatDateTime($val->toDateTime());
             }
         }
+
         return $data;
+    }
+
+    /**
+     * resolves a dbref array into the actual object
+     *
+     * @param string $collection collection name
+     * @param string $id         record id
+     *
+     * @return array|null record as array or null
+     */
+    private function resolveObject($collection, $id)
+    {
+        return $this->connection->selectCollection($this->databaseName, $collection)->findOne(['_id' => $id]);
     }
 }
