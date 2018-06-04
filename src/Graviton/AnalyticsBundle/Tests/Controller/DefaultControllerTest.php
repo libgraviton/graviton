@@ -458,8 +458,6 @@ class DefaultControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        var_dump($results);
-
         // make sure it has been resolved
         $this->assertTrue(isset($results[0]->contact->type));
         $this->assertTrue(isset($results[0]->contacts[0]->type));
