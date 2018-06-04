@@ -329,10 +329,11 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $client->request('GET', '/analytics/schema/customer-date-with-param');
+        $results = $client->getResults();
 
-        $this->assertEquals(2, count($client->getResults()->{'x-params'}));
-        $this->assertEquals(true, count($client->getResults()->{'x-params'}[0]->required));
-        $this->assertEquals(true, count($client->getResults()->{'x-params'}[1]->required));
+        $this->assertEquals(2, count($results->{'x-params'}));
+        $this->assertEquals(true, $results->{'x-params'}[0]->required);
+        $this->assertEquals(true, $results->{'x-params'}[1]->required);
     }
 
     /**

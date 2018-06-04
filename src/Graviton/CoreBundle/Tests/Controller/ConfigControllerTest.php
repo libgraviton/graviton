@@ -35,14 +35,15 @@ class ConfigControllerTest extends RestTestCase
      * We need to make sure that our Link headers are properly encoded for our RQL parser.
      * This test tries to ensure that as we have resources named-like-this in /core/config.
      *
-     * @param string $expression  expression
-     * @param int    $resultCount expected res count
+     * @param string $expression        expression
+     * @param string $encodedExpression encoded expression
+     * @param int    $resultCount       expected res count
      *
      * @dataProvider rqlCheckDataProvider
      *
      * @return void
      */
-    public function testLinkHeaderEncodingDash($expression, $resultCount)
+    public function testLinkHeaderEncodingDash($expression, $encodedExpression, $resultCount)
     {
         $client = static::createRestClient();
         $_SERVER['QUERY_STRING'] = $expression;
@@ -50,7 +51,7 @@ class ConfigControllerTest extends RestTestCase
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
-        $this->assertContains($expression, $response->headers->get('Link'));
+        $this->assertContains($encodedExpression, $response->headers->get('Link'));
         $this->assertEquals($resultCount, count($client->getResults()));
     }
 
@@ -63,15 +64,18 @@ class ConfigControllerTest extends RestTestCase
     {
         return array(
             array(
-                'eq(id'.$this->encodeString(',tablet-hello-message').')',
+                'eq(id,'.$this->encodeString('tablet-hello-message').')',
+                'eq(id%2C'.$this->encodeString('tablet-hello-message').')',
                 1
             ),
             array(
-                'eq(id'.$this->encodeString(',admin-additional+setting').')',
+                'eq(id,'.$this->encodeString('admin-additional+setting').')',
+                'eq(id%2C'.$this->encodeString('admin-additional+setting').')',
                 1
             ),
             array(
-                'like(key'.$this->encodeString(',hello-').'*)',
+                'like(key,'.$this->encodeString('hello-').'*)',
+                'like(key%2C'.$this->encodeString('hello-').'*)',
                 1
             )
         );
