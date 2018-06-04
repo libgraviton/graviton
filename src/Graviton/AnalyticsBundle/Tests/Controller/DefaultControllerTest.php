@@ -329,10 +329,11 @@ class DefaultControllerTest extends RestTestCase
     {
         $client = static::createRestClient();
         $client->request('GET', '/analytics/schema/customer-date-with-param');
+        $results = $client->getResults();
 
-        $this->assertEquals(2, count($client->getResults()->{'x-params'}));
-        $this->assertEquals(true, count($client->getResults()->{'x-params'}[0]->required));
-        $this->assertEquals(true, count($client->getResults()->{'x-params'}[1]->required));
+        $this->assertEquals(2, count($results->{'x-params'}));
+        $this->assertEquals(true, $results->{'x-params'}[0]->required);
+        $this->assertEquals(true, $results->{'x-params'}[1]->required);
     }
 
     /**
@@ -435,5 +436,38 @@ class DefaultControllerTest extends RestTestCase
         $results = $client->getResults();
         $this->assertEquals(1, count($results));
         $this->assertEquals('admin', $results[0]->{'_id'});
+    }
+
+    /**
+     * see if dbrefs as arrays get resolved in the analytics..
+     *
+     * @return void
+     */
+    public function testDbRefSolving()
+    {
+        $this->loadFixturesLocal(
+            array(
+                'GravitonDyn\ShowCaseBundle\DataFixtures\MongoDB\LoadShowCaseData'
+            )
+        );
+
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/analytics/customer-showcase-refasembed'
+        );
+
+        $results = $client->getResults();
+
+        // make sure it has been resolved
+        $this->assertTrue(isset($results[0]->contact->type));
+        $this->assertTrue(isset($results[0]->contacts[0]->type));
+        $this->assertTrue(isset($results[0]->contacts[1]->type));
+        $this->assertTrue(isset($results[0]->contacts[2]->type));
+
+        $this->assertTrue(isset($results[1]->contact->type));
+        $this->assertTrue(isset($results[1]->contacts[0]->type));
+        $this->assertTrue(isset($results[1]->contacts[1]->type));
+        $this->assertTrue(isset($results[1]->contacts[2]->type));
     }
 }
