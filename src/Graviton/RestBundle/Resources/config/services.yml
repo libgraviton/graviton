@@ -97,11 +97,18 @@ services:
         class: "%graviton.rest.model.documentmodel.class%"
         parent: "graviton.schema.model.schemamodel"
         arguments:
-          - "@graviton.rql.visitor.mongodb"
+          - '@graviton.rest.service.query'
           - "@graviton.rest.restutils"
           - "@event_dispatcher"
           - "%graviton.rest.not_modifiable.origin.records%"
+
+    # query service -->
+    graviton.rest.service.query:
+        class: Graviton\RestBundle\Service\QueryService
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
           - "%graviton.rest.pagination.limit%"
+
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
