@@ -144,7 +144,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $this->repository = $repository;
         $this->manager = $repository->getDocumentManager();
-
         return $this;
     }
 
@@ -157,12 +156,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function findAll(Request $request)
     {
+        return $this->getQueryRecords($request);
+    }
+
+    private function getQueryRecords(Request &$request)
+    {
         $pageNumber = $request->query->get('page', 1);
         $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
         $startAt = ($pageNumber - 1) * $numberPerPage;
 
         /** @var XiagQuery $xiagQuery */
         $xiagQuery = $request->attributes->get('rqlQuery');
+
+        //$this->manager->flush();
 
         /** @var Builder $queryBuilder */
         $queryBuilder = $this->repository
@@ -187,10 +193,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 $queryBuilder,
                 $xiagQuery
             );
-        } else {
-            // @todo [lapistano]: seems the offset is missing for this query.
-            /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-            $queryBuilder->find($this->repository->getDocumentName());
         }
 
         /** @var LimitNode $rqlLimit */
@@ -226,19 +228,28 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         // run query
-        $query = $queryBuilder->getQuery();
-        $records = array_values($query->execute()->toArray());
+        //$query = $queryBuilder->getQuery();
 
-        $totalCount = $query->count();
-        $numPages = (int) ceil($totalCount / $numberPerPage);
-        $page = (int) ceil($startAt / $numberPerPage) + 1;
-        if ($numPages > 1) {
-            $request->attributes->set('paging', true);
-            $request->attributes->set('page', $page);
-            $request->attributes->set('numPages', $numPages);
-            $request->attributes->set('startAt', $startAt);
-            $request->attributes->set('perPage', $numberPerPage);
-            $request->attributes->set('totalCount', $totalCount);
+        // single record request?
+        $singleRecord = $request->attributes->get('singleDocument');
+        if (!is_null($singleRecord)) {
+            $queryBuilder->field('id')->equals($singleRecord);
+            $records = $queryBuilder->getQuery()->getSingleResult();
+        } else {
+            $query = $queryBuilder->getQuery();
+
+            $records = array_values($query->execute()->toArray());
+            $totalCount = $query->count();
+            $numPages = (int) ceil($totalCount / $numberPerPage);
+            $page = (int) ceil($startAt / $numberPerPage) + 1;
+            if ($numPages > 1) {
+                $request->attributes->set('paging', true);
+                $request->attributes->set('page', $page);
+                $request->attributes->set('numPages', $numPages);
+                $request->attributes->set('startAt', $startAt);
+                $request->attributes->set('perPage', $numberPerPage);
+                $request->attributes->set('totalCount', $totalCount);
+            }
         }
 
         return $records;
@@ -247,10 +258,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * Check if collection has search indexes in DB
      *
-     * @param string $prefix the prefix for custom text search indexes
      * @return bool
      */
-    private function hasCustomSearchIndex($prefix = 'search_')
+    private function hasCustomSearchIndex()
     {
         $metadata = $this->repository->getClassMetadata();
         $indexes = $metadata->getIndexes();
@@ -323,30 +333,24 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @param string  $documentId id of entity to find
      * @param Request $request    request
-     * @param bool    $skipLock   if true, we don't check for the lock
      *
      * @throws NotFoundException
      * @return string Serialised object
      */
-    public function getSerialised($documentId, Request $request = null, $skipLock = false)
+    public function getSerialised($documentId, Request $request = null)
     {
-        if (($request instanceof Request)  &&
-            ($query = $request->attributes->get('rqlQuery')) &&
-            (($query instanceof XiagQuery))
-        ) {
-            /** @var Builder $queryBuilder */
-            $queryBuilder = $this->doRqlQuery($this->repository->createQueryBuilder(), $query);
-            $queryBuilder->field('id')->equals($documentId);
-            $result = $queryBuilder->getQuery()->getSingleResult();
-            if (empty($result)) {
-                throw new NotFoundException("Entry with id " . $documentId . " not found!");
-            }
-            $document = $this->restUtils->serialize($result);
-        } else {
-            $document = $this->restUtils->serialize($this->find($documentId));
+        if (is_null($request)) {
+            $request = Request::create('');
         }
 
-        return $document;
+        $request->attributes->set('singleDocument', $documentId);
+
+        $document = $this->getQueryRecords($request);
+        if (empty($document)) {
+            throw new NotFoundException("Entry with id " . $documentId . " not found!");
+        }
+
+        return $this->restUtils->serialize($document);
     }
 
     /**
