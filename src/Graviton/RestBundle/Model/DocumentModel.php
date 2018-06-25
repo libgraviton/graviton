@@ -7,20 +7,11 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\Query\Builder;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Graviton\RestBundle\Event\ModelEvent;
-use Graviton\Rql\Node\SearchNode;
-use Graviton\Rql\Visitor\MongoOdm as Visitor;
+use Graviton\RestBundle\Service\QueryService;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
-use MongoDB\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
-use Xiag\Rql\Parser\Node\LimitNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Query;
-use Xiag\Rql\Parser\Exception\SyntaxErrorException as RqlSyntaxErrorException;
-use Xiag\Rql\Parser\Query as XiagQuery;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
@@ -63,63 +54,42 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     private $repository;
     /**
-     * @var Visitor
+     * @var QueryService
      */
-    private $visitor;
+    private $queryService;
     /**
      * @var array
      */
     protected $notModifiableOriginRecords;
     /**
-     * @var  integer
-     */
-    private $paginationDefaultLimit;
-
-    /**
-     * @var boolean
-     */
-    protected $filterByAuthUser;
-
-    /**
-     * @var string
-     */
-    protected $filterByAuthField;
-
-    /**
      * @var DocumentManager
      */
     protected $manager;
-
-    /** @var EventDispatcher */
+    /**
+     * @var EventDispatcher
+     */
     protected $eventDispatcher;
-
-    /** @var $collectionCache */
-    protected $cache;
-
     /**
      * @var RestUtils
      */
     private $restUtils;
 
     /**
-     * @param Visitor         $visitor                    rql query visitor
+     * @param QueryService    $queryService               query service
      * @param RestUtils       $restUtils                  Rest utils
      * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
      * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
-     * @param integer         $paginationDefaultLimit     amount of data records to be returned when in pagination cnt
      */
     public function __construct(
-        Visitor $visitor,
+        QueryService $queryService,
         RestUtils $restUtils,
         $eventDispatcher,
-        $notModifiableOriginRecords,
-        $paginationDefaultLimit
+        $notModifiableOriginRecords
     ) {
         parent::__construct();
-        $this->visitor = $visitor;
+        $this->queryService = $queryService;
         $this->eventDispatcher = $eventDispatcher;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
-        $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->restUtils = $restUtils;
     }
 
@@ -156,134 +126,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function findAll(Request $request)
     {
-        return $this->getQueryRecords($request);
-    }
-
-    private function getQueryRecords(Request &$request)
-    {
-        $pageNumber = $request->query->get('page', 1);
-        $numberPerPage = (int) $request->query->get('perPage', $this->getDefaultLimit());
-        $startAt = ($pageNumber - 1) * $numberPerPage;
-
-        /** @var XiagQuery $xiagQuery */
-        $xiagQuery = $request->attributes->get('rqlQuery');
-
-        //$this->manager->flush();
-
-        /** @var Builder $queryBuilder */
-        $queryBuilder = $this->repository
-            ->createQueryBuilder();
-
-        // Setting RQL Query
-        if ($xiagQuery) {
-            // Check if search and if this Repository have search indexes.
-            if ($query = $xiagQuery->getQuery()) {
-                if ($query instanceof AndNode) {
-                    foreach ($query->getQueries() as $xq) {
-                        if ($xq instanceof SearchNode && !$this->hasCustomSearchIndex()) {
-                            throw new InvalidArgumentException('Current api request have search index');
-                        }
-                    }
-                } elseif ($query instanceof SearchNode && !$this->hasCustomSearchIndex()) {
-                    throw new InvalidArgumentException('Current api request have search index');
-                }
-            }
-            // Clean up Search rql param and set it as Doctrine query
-            $queryBuilder = $this->doRqlQuery(
-                $queryBuilder,
-                $xiagQuery
-            );
-        }
-
-        /** @var LimitNode $rqlLimit */
-        $rqlLimit = $xiagQuery instanceof XiagQuery ? $xiagQuery->getLimit() : false;
-
-        // define offset and limit
-        if (!$rqlLimit || !$rqlLimit->getOffset()) {
-            $queryBuilder->skip($startAt);
-        } else {
-            $startAt = (int) $rqlLimit->getOffset();
-            $queryBuilder->skip($startAt);
-        }
-
-        if (!$rqlLimit || is_null($rqlLimit->getLimit())) {
-            $queryBuilder->limit($numberPerPage);
-        } else {
-            $numberPerPage = (int) $rqlLimit->getLimit();
-            $queryBuilder->limit($numberPerPage);
-        }
-
-        // Limit can not be negative nor null.
-        if ($numberPerPage < 1) {
-            throw new RqlSyntaxErrorException('negative or null limit in rql');
-        }
-
-        /**
-         * add a default sort on id if none was specified earlier
-         *
-         * not specifying something to sort on leads to very weird cases when fetching references.
-         */
-        if (!array_key_exists('sort', $queryBuilder->getQuery()->getQuery())) {
-            $queryBuilder->sort('_id');
-        }
-
-        // run query
-        //$query = $queryBuilder->getQuery();
-
-        // single record request?
-        $singleRecord = $request->attributes->get('singleDocument');
-        if (!is_null($singleRecord)) {
-            $queryBuilder->field('id')->equals($singleRecord);
-            $records = $queryBuilder->getQuery()->getSingleResult();
-        } else {
-            $query = $queryBuilder->getQuery();
-
-            $records = array_values($query->execute()->toArray());
-            $totalCount = $query->count();
-            $numPages = (int) ceil($totalCount / $numberPerPage);
-            $page = (int) ceil($startAt / $numberPerPage) + 1;
-            if ($numPages > 1) {
-                $request->attributes->set('paging', true);
-                $request->attributes->set('page', $page);
-                $request->attributes->set('numPages', $numPages);
-                $request->attributes->set('startAt', $startAt);
-                $request->attributes->set('perPage', $numberPerPage);
-                $request->attributes->set('totalCount', $totalCount);
-            }
-        }
-
-        return $records;
-    }
-
-    /**
-     * Check if collection has search indexes in DB
-     *
-     * @return bool
-     */
-    private function hasCustomSearchIndex()
-    {
-        $metadata = $this->repository->getClassMetadata();
-        $indexes = $metadata->getIndexes();
-        if (empty($indexes)) {
-            return false;
-        }
-
-        $text = array_filter(
-            $indexes,
-            function ($index) {
-                if (isset($index['keys'])) {
-                    $hasText = false;
-                    foreach ($index['keys'] as $name => $direction) {
-                        if ($direction == 'text') {
-                            $hasText = true;
-                        }
-                    }
-                    return $hasText;
-                }
-            }
-        );
-
-        return !empty($text);
+        return $this->queryService->getWithRequest($request, $this->repository);
     }
 
     /**
@@ -345,7 +188,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $request->attributes->set('singleDocument', $documentId);
 
-        $document = $this->getQueryRecords($request);
+        $document = $this->queryService->getWithRequest($request, $this->repository);
         if (empty($document)) {
             throw new NotFoundException("Entry with id " . $documentId . " not found!");
         }
@@ -522,21 +365,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * Does the actual query using the RQL Bundle.
-     *
-     * @param Builder $queryBuilder Doctrine ODM QueryBuilder
-     * @param Query   $query        query from parser
-     *
-     * @return Builder|Expr
-     */
-    protected function doRqlQuery($queryBuilder, Query $query)
-    {
-        $this->visitor->setBuilder($queryBuilder);
-
-        return $this->visitor->visit($query);
-    }
-
-    /**
      * Checks the recordOrigin attribute of a record and will throw an exception if value is not allowed
      *
      * @param Object $record record
@@ -559,19 +387,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
     }
 
-    /**
-     * Determines the configured amount fo data records to be returned in pagination context.
-     *
-     * @return int
-     */
-    private function getDefaultLimit()
-    {
-        if (0 < $this->paginationDefaultLimit) {
-            return $this->paginationDefaultLimit;
-        }
 
-        return 10;
-    }
 
     /**
      * Will fire a ModelEvent
