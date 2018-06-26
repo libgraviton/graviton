@@ -70,6 +70,10 @@ class JsonExceptionListener
                 'exceptionClass' => get_class($exception),
                 'message' => $exception->getMessage()
             ];
+
+            if ($exception->getPrevious() instanceof \Exception) {
+                $data['innerMessage'] = $exception->getPrevious()->getMessage();
+            }
         }
 
         if ($this->logger instanceof Logger) {
