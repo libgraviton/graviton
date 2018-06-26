@@ -39,6 +39,7 @@ services:
 
     graviton.document.serializer.handler.empty:
         class: "%graviton.document.serializer.handler.empty.class%"
+        public: true
         tags:
           -
             name: jms_serializer.handler
@@ -60,6 +61,7 @@ services:
 
     graviton.document.listener.fieldnamesearchlistener:
         class: "%graviton.document.listener.fieldnamesearchlistener.class%"
+        public: true
         arguments:
             - "%graviton.document.rql.fields%"
             - "@request_stack"
@@ -72,6 +74,7 @@ services:
 
     graviton.document.serializer.handler.hash:
         class: "%graviton.document.serializer.handler.hash.class%"
+        public: true
         arguments:
             - "@request_stack"
         tags:
@@ -82,6 +85,7 @@ services:
 
     graviton.document.serializer.handler.extref:
         class: "%graviton.document.serializer.handler.extref.class%"
+        public: true
         arguments:
             - "@graviton.document.service.extrefconverter"
         tags:
@@ -96,10 +100,9 @@ services:
 
     graviton.document.serializer.handler.date:
         class: "%graviton.document.serializer.handler.date.class%"
+        public: true
         arguments:
           - "@graviton.document.service.dateconverter"
         tags:
           -
             name: jms_serializer.subscribing_handler
-            type: DateTime
-            format: json
