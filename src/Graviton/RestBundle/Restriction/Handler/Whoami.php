@@ -1,10 +1,11 @@
 <?php
 /**
- * handler interface
+ * whoami restriction handler
  */
 namespace Graviton\RestBundle\Restriction\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\SecurityBundle\Service\SecurityUtils;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -13,6 +14,21 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class Whoami implements HandlerInterface
 {
+
+    /**
+     * @var SecurityUtils
+     */
+    private $securityUtils;
+
+    /**
+     * Whoami constructor.
+     *
+     * @param SecurityUtils $securityUtils security utils
+     */
+    public function __construct(SecurityUtils $securityUtils)
+    {
+        $this->securityUtils = $securityUtils;
+    }
 
     /**
      * returns the name of this handler, string based id. this is referenced in the service definition.
@@ -34,6 +50,7 @@ class Whoami implements HandlerInterface
      */
     public function getValue(DocumentRepository $repository, $fieldPath)
     {
+        var_dump($this->securityUtils->getSecurityUser());
         return 'anonymous';
     }
 }

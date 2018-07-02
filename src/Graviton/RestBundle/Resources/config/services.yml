@@ -362,3 +362,5 @@ services:
 
     graviton.rest.restriction.handler.whoami:
         class: "%graviton.rest.restriction.handler.whoami.class%"
+        arguments:
+          - "@graviton.security.service.utils"
