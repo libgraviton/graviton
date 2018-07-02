@@ -107,6 +107,7 @@ services:
         class: Graviton\RestBundle\Service\QueryService
         arguments:
           - "@graviton.rql.visitor.mongodb"
+          - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
 
 
@@ -345,3 +346,15 @@ services:
           - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
           - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
 
+    graviton.rest.restriction.manager:
+        class: "%graviton.rest.restriction.manager.class%"
+        arguments:
+          - "%graviton.document.restriction.fields%"
+        calls:
+          -
+            method: registerHandler
+            arguments:
+              - "@graviton.rest.restriction.handler.whoami"
+
+    graviton.rest.restriction.handler.whoami:
+        class: "%graviton.rest.restriction.handler.whoami.class%"

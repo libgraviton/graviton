@@ -6,6 +6,7 @@ namespace Graviton\RestBundle\Service;
 
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,11 @@ class QueryService
     private $visitor;
 
     /**
+     * @var Manager
+     */
+    private $restrictionManager;
+
+    /**
      * @var integer
      */
     private $paginationDefaultLimit;
@@ -52,13 +58,16 @@ class QueryService
 
     /**
      * @param VisitorInterface $visitor                visitor
+     * @param Manager          $restrictionManager     restriction manager
      * @param integer          $paginationDefaultLimit default pagination limit
      */
     public function __construct(
         VisitorInterface $visitor,
+        Manager $restrictionManager,
         $paginationDefaultLimit
     ) {
         $this->visitor = $visitor;
+        $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
     }
 
@@ -127,8 +136,7 @@ class QueryService
      */
     private function applyRqlQuery()
     {
-        /** @var Query $rqlQuery */
-        $rqlQuery = $this->request->attributes->get('rqlQuery');
+        $rqlQuery = $this->getRqlQuery();
 
         // Setting RQL Query
         if ($rqlQuery) {
@@ -159,6 +167,44 @@ class QueryService
             $this->queryBuilder->skip($this->getPaginationSkip());
             $this->queryBuilder->limit($this->getPaginationPageSize());
         }
+    }
+
+    /**
+     * returns the correct rql query for the request, including optional specified restrictions
+     * in the service definition (via restrictionManager)
+     *
+     * @return Query the query
+     */
+    private function getRqlQuery()
+    {
+        /** @var Query $rqlQuery */
+        $rqlQuery = $this->request->attributes->get('rqlQuery', false);
+
+        // apply field restrictions as specified in service definition
+        $restrictionNode = $this->restrictionManager->handle($this->repository);
+        if ($restrictionNode) {
+            if (!$rqlQuery instanceof Query) {
+                $rqlQuery = new Query();
+            }
+
+            $query = $rqlQuery->getQuery();
+            if (is_null($query)) {
+                // only our query
+                $query = $restrictionNode;
+            } else {
+                // we have an existing query
+                $query = new AndNode(
+                    [
+                        $query,
+                        $restrictionNode
+                    ]
+                );
+            }
+
+            $rqlQuery->setQuery($query);
+        }
+
+        return $rqlQuery;
     }
 
     /**
