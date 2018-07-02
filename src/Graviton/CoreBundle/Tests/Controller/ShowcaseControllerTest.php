@@ -179,6 +179,18 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * check that hiddenField is not rendered as it's marked as hidden.. it's filled via fixtures
+     *
+     * @return void
+     */
+    public function testHiddenFieldNotExposed()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/500');
+        $this->assertObjectNotHasAttribute('hiddenField', $client->getResults());
+    }
+
+    /**
      * see how our empty fields are explained to us
      *
      * @return void
