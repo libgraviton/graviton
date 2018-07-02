@@ -54,8 +54,15 @@ class AbstractField
      * @param bool   $recordOriginException Is an exception to record origin
      * @param array  $restrictions          restrictions
      */
-    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable, $recordOriginException, $restrictions)
-    {
+    public function __construct(
+        $fieldName,
+        $exposedName,
+        $readOnly,
+        $required,
+        $searchable,
+        $recordOriginException,
+        $restrictions
+    ) {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;

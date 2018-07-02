@@ -40,7 +40,15 @@ class ArrayField extends AbstractField
         $restrictions
     ) {
         $this->serializerType = $serializerType;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required, false, $recordOriginException, $restrictions);
+        parent::__construct(
+            $fieldName,
+            $exposedName,
+            $readOnly,
+            $required,
+            false,
+            $recordOriginException,
+            $restrictions
+        );
     }
 
     /**

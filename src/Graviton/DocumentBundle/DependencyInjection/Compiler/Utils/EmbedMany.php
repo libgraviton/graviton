@@ -40,7 +40,15 @@ class EmbedMany extends AbstractField
         $restrictions
     ) {
         $this->document = $document;
-        parent::__construct($fieldName, $exposedName, $readOnly, $required, false, $recordOriginException, $restrictions);
+        parent::__construct(
+            $fieldName,
+            $exposedName,
+            $readOnly,
+            $required,
+            false,
+            $recordOriginException,
+            $restrictions
+        );
     }
 
     /**
