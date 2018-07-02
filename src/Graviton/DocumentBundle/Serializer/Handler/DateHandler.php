@@ -6,8 +6,10 @@
 namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use Graviton\DocumentBundle\Service\DateConverter;
+use JMS\Serializer\Context;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\Handler\DateHandler as BaseDateHandler;
+use JMS\Serializer\VisitorInterface;
 
 /**
  * Date handler for JMS serializer
@@ -40,6 +42,24 @@ class DateHandler extends BaseDateHandler
     }
 
     /**
+     * make sure serializer uses us by setting a lower priority
+     *
+     * @return array methods
+     */
+    public static function getSubscribingMethods()
+    {
+        $methods = array_map(
+            function ($item) {
+                $item['priority'] = -100;
+                return $item;
+            },
+            parent::getSubscribingMethods()
+        );
+
+        return $methods;
+    }
+
+    /**
      * serialize datetime from json
      *
      * @param JsonDeserializationVisitor $visitor visitor
@@ -59,5 +79,20 @@ class DateHandler extends BaseDateHandler
             $this->dateConverter->getDateTimeStringInFormat($data),
             $type
         );
+    }
+
+    /**
+     * serialize datetime to json
+     *
+     * @param VisitorInterface $visitor visitor
+     * @param \DateTime        $date    data
+     * @param array            $type    type
+     * @param Context          $context context
+     *
+     * @return string serialized date
+     */
+    public function serializeDateTime(VisitorInterface $visitor, \DateTime $date, array $type, Context $context)
+    {
+        return $visitor->visitString($this->dateConverter->formatDateTime($date), $type, $context);
     }
 }
