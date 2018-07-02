@@ -9,6 +9,7 @@ parameters:
     graviton_generator.resourcegenerator.field_name_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldNameMapper
     graviton_generator.resourcegenerator.field_title_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldTitleMapper
     graviton_generator.resourcegenerator.field_json_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldJsonMapper
+    graviton_generator.resourcegenerator.field_hiddenrestriction_mapper.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldHiddenRestrictionMapper
     graviton_generator.resourcegenerator.parameter_builder.class: Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder
     graviton_generator.generator.bundle.class: Graviton\GeneratorBundle\Generator\BundleGenerator
     graviton_generator.generator.resource.class: Graviton\GeneratorBundle\Generator\ResourceGenerator
