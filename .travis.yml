@@ -43,11 +43,9 @@ env:
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 matrix:
-  allow_failures:
-    - php: 7.2
   exclude:
-    # skip composer checks on all others than 7.1
-    - php: 7.2
+    # skip composer checks on all others than 7.2
+    - php: 7.1
       env: COMPOSER_CHECK=true PHPUNIT=false
 script:
   - >
