@@ -274,6 +274,10 @@ services:
             arguments:
               - X-Total-Count
           -
+            method: addHeader
+            arguments:
+              - X-Record-Count
+          -
             #clients need this to read the current version in case of a versioned service -->
             method: addHeader
             arguments:

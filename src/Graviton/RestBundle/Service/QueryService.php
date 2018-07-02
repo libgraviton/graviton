@@ -106,8 +106,10 @@ class QueryService
                 $request->attributes->set('numPages', $numPages);
                 $request->attributes->set('startAt', $this->getPaginationSkip());
                 $request->attributes->set('perPage', $this->getPaginationPageSize());
-                $request->attributes->set('totalCount', $totalCount);
             }
+
+            $request->attributes->set('totalCount', $totalCount);
+            $request->attributes->set('recordCount', count($records));
 
             return $records;
         } else {
