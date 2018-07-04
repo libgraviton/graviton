@@ -18,6 +18,10 @@ services:
           method: addMapper
           arguments:
             - "@graviton_generator.resourcegenerator.field_title_mapper"
+        -
+          method: addMapper
+          arguments:
+            - "@graviton_generator.resourcegenerator.field_hiddenrestriction_mapper"
 
     graviton_generator.resourcegenerator.field_type_mapper:
         class: "%graviton_generator.resourcegenerator.field_type_mapper.class%"
@@ -30,6 +34,9 @@ services:
 
     graviton_generator.resourcegenerator.field_title_mapper:
         class: "%graviton_generator.resourcegenerator.field_title_mapper.class%"
+
+    graviton_generator.resourcegenerator.field_hiddenrestriction_mapper:
+        class: "%graviton_generator.resourcegenerator.field_hiddenrestriction_mapper.class%"
 
     #ArrayObject serializer handler
     graviton.document.serializer.handler.arrayobject:

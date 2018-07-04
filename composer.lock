@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ddabdc52167fc6cdd7fc34365d551c0e",
+    "content-hash": "9c6e26895e9721ef25d20985d12bc00c",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1052,16 +1052,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.13.0",
+            "version": "v1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "38a937f3a7f55a91c4b87b33806ddc5516f2b58a"
+                "reference": "22a248540eea6f30d40f248032336ce25c7263aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/38a937f3a7f55a91c4b87b33806ddc5516f2b58a",
-                "reference": "38a937f3a7f55a91c4b87b33806ddc5516f2b58a",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/22a248540eea6f30d40f248032336ce25c7263aa",
+                "reference": "22a248540eea6f30d40f248032336ce25c7263aa",
                 "shasum": ""
             },
             "require": {
@@ -1095,7 +1095,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2018-06-04T06:42:40+00:00"
+            "time": "2018-07-03T08:02:02+00:00"
         },
         {
             "name": "graviton/php-proxy",
@@ -4175,16 +4175,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v0.40.0",
+            "version": "v0.41.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "5fbb076a8e33a60d369420e0a1472f22bf175822"
+                "reference": "9e2fc3ece896348f35a55ad2730e5a0266bcf71e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/5fbb076a8e33a60d369420e0a1472f22bf175822",
-                "reference": "5fbb076a8e33a60d369420e0a1472f22bf175822",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/9e2fc3ece896348f35a55ad2730e5a0266bcf71e",
+                "reference": "9e2fc3ece896348f35a55ad2730e5a0266bcf71e",
                 "shasum": ""
             },
             "type": "library",
@@ -4204,7 +4204,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2018-07-04T10:44:26+00:00"
+            "time": "2018-07-04T11:44:04+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -4290,12 +4290,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipFunctionalTestBundle.git",
-                "reference": "ad749cd3470e4b2d640d16b3b664ff2f0bb153f5"
+                "reference": "4da806fea8de421118a3e70a40a740f7c8dd9f6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipFunctionalTestBundle/zipball/ad749cd3470e4b2d640d16b3b664ff2f0bb153f5",
-                "reference": "ad749cd3470e4b2d640d16b3b664ff2f0bb153f5",
+                "url": "https://api.github.com/repos/liip/LiipFunctionalTestBundle/zipball/4da806fea8de421118a3e70a40a740f7c8dd9f6a",
+                "reference": "4da806fea8de421118a3e70a40a740f7c8dd9f6a",
                 "shasum": ""
             },
             "require": {
@@ -4308,7 +4308,7 @@
                 "doctrine/data-fixtures": "^1.3",
                 "doctrine/doctrine-bundle": "^1.8",
                 "doctrine/doctrine-fixtures-bundle": "^3.0",
-                "doctrine/orm": "^2.5",
+                "doctrine/orm": "^2.6",
                 "jackalope/jackalope-doctrine-dbal": "^1.3",
                 "phpunit/phpunit": "^6.1|^7.0",
                 "symfony/monolog-bundle": "^3.1",
@@ -4354,7 +4354,7 @@
             "keywords": [
                 "Symfony2"
             ],
-            "time": "2018-05-15T07:39:40+00:00"
+            "time": "2018-06-22T12:48:21+00:00"
         },
         {
             "name": "myclabs/deep-copy",

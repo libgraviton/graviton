@@ -25,6 +25,9 @@
         <property name="readOnly"
                   type="boolean"
                   serialized-name="readOnly"/>
+        <property name="hidden"
+                  type="boolean"
+                  serialized-name="hidden"/>
         <property name="recordOriginException"
                   type="boolean"
                   serialized-name="recordOriginException"/>
@@ -40,6 +43,9 @@
         <property name="constraints"
                   type="array&lt;Graviton\GeneratorBundle\Definition\Schema\Constraint&gt;"
                   serialized-name="constraints"/>
+        <property name="restrictions"
+                  type="array&lt;string&gt;"
+                  serialized-name="restrictions"/>
         <property name="collection"
                   type="array&lt;string&gt;"
                   serialized-name="collection"/>

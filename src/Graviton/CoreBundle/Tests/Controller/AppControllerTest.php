@@ -172,6 +172,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
 
         /*** pagination tests **/
         $client = static::createRestClient();
@@ -197,6 +198,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
 
         /*** pagination with different rql test **/
         $client = static::createRestClient();
@@ -226,6 +228,7 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertSame('2', $response->headers->get('X-Total-Count'));
+        $this->assertSame('1', $response->headers->get('X-Record-Count'));
     }
 
     /**
@@ -242,7 +245,7 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', sprintf('/core/app/?limit(%s)', $limit));
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertContains('negative or null limit in rql', $client->getResults()->message);
+        $this->assertContains('invalid limit in rql', $client->getResults()->message);
     }
 
     /**

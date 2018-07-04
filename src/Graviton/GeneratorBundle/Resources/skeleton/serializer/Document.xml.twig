@@ -42,6 +42,7 @@
     <property
         name="{{ field.fieldName }}"
         max-depth="5"
+        {% if field.hidden == true %}exclude="true"{% else %}exclude="false"{% endif %}
         {{ groups }}
         serialized-name="{{ field.exposedName }}"
         accessor-getter="{{ getterMethod }}"

@@ -58,6 +58,14 @@ class PagingLinkResponseListener
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
+        // always set recordcount header
+        if ($request->attributes->has('recordCount')) {
+            $response->headers->set(
+                'X-Record-Count',
+                (string) $request->attributes->get('recordCount')
+            );
+        }
+
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
             $rql = '';

@@ -97,11 +97,19 @@ services:
         class: "%graviton.rest.model.documentmodel.class%"
         parent: "graviton.schema.model.schemamodel"
         arguments:
-          - "@graviton.rql.visitor.mongodb"
+          - '@graviton.rest.service.query'
           - "@graviton.rest.restutils"
           - "@event_dispatcher"
           - "%graviton.rest.not_modifiable.origin.records%"
+
+    # query service -->
+    graviton.rest.service.query:
+        class: Graviton\RestBundle\Service\QueryService
+        arguments:
+          - "@graviton.rql.visitor.mongodb"
+          - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
+
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
@@ -266,6 +274,10 @@ services:
             arguments:
               - X-Total-Count
           -
+            method: addHeader
+            arguments:
+              - X-Record-Count
+          -
             #clients need this to read the current version in case of a versioned service -->
             method: addHeader
             arguments:
@@ -338,3 +350,17 @@ services:
           - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
           - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
 
+    graviton.rest.restriction.manager:
+        class: "%graviton.rest.restriction.manager.class%"
+        arguments:
+          - "%graviton.document.restriction.fields%"
+        calls:
+          -
+            method: registerHandler
+            arguments:
+              - "@graviton.rest.restriction.handler.whoami"
+
+    graviton.rest.restriction.handler.whoami:
+        class: "%graviton.rest.restriction.handler.whoami.class%"
+        arguments:
+          - "@graviton.security.service.utils"

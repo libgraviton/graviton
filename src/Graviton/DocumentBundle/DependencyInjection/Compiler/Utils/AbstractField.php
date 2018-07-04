@@ -38,6 +38,10 @@ class AbstractField
      * @var bool
      */
     private $recordOriginException;
+    /**
+     * @var array
+     */
+    private $restrictions = [];
 
     /**
      * Constructor
@@ -48,15 +52,24 @@ class AbstractField
      * @param bool   $required              Is required
      * @param bool   $searchable            Is searchable
      * @param bool   $recordOriginException Is an exception to record origin
+     * @param array  $restrictions          restrictions
      */
-    public function __construct($fieldName, $exposedName, $readOnly, $required, $searchable, $recordOriginException)
-    {
+    public function __construct(
+        $fieldName,
+        $exposedName,
+        $readOnly,
+        $required,
+        $searchable,
+        $recordOriginException,
+        $restrictions
+    ) {
         $this->fieldName = $fieldName;
         $this->exposedName = $exposedName;
         $this->readOnly = $readOnly;
         $this->required = $required;
         $this->searchable = $searchable;
         $this->recordOriginException = $recordOriginException;
+        $this->restrictions = $restrictions;
     }
 
     /**
@@ -139,5 +152,27 @@ class AbstractField
     public function setRecordOriginException($recordOriginException)
     {
         $this->recordOriginException = $recordOriginException;
+    }
+
+    /**
+     * get Restrictions
+     *
+     * @return array Restrictions
+     */
+    public function getRestrictions()
+    {
+        return $this->restrictions;
+    }
+
+    /**
+     * set Restrictions
+     *
+     * @param array $restrictions restrictions
+     *
+     * @return void
+     */
+    public function setRestrictions($restrictions)
+    {
+        $this->restrictions = $restrictions;
     }
 }

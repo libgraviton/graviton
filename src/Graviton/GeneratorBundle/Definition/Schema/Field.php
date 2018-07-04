@@ -48,6 +48,10 @@ class Field
     /**
      * @var bool
      */
+    private $hidden = false;
+    /**
+     * @var bool
+     */
     private $recordOriginException = false;
     /**
      * @var bool
@@ -65,7 +69,10 @@ class Field
      * @var Constraint[]
      */
     private $constraints = [];
-
+    /**
+     * @var array
+     */
+    private $restrictions = [];
     /**
      * @var array
      */
@@ -226,6 +233,28 @@ class Field
     }
 
     /**
+     * get Hidden
+     *
+     * @return bool Hidden
+     */
+    public function getHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * set Hidden
+     *
+     * @param bool $hidden hidden
+     *
+     * @return void
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
+    }
+
+    /**
      * get RecordOriginException
      *
      * @return boolean RecordOriginException
@@ -299,6 +328,28 @@ class Field
     {
         $this->constraints = $constraints;
         return $this;
+    }
+
+    /**
+     * get Restrictions
+     *
+     * @return array Restrictions
+     */
+    public function getRestrictions()
+    {
+        return $this->restrictions;
+    }
+
+    /**
+     * set Restrictions
+     *
+     * @param array $restrictions restrictions
+     *
+     * @return void
+     */
+    public function setRestrictions($restrictions)
+    {
+        $this->restrictions = $restrictions;
     }
 
     /**
