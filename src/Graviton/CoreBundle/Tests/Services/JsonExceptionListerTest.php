@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  * Functional test
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class JsonExceptionListerTest extends RestTestCase
@@ -25,12 +25,10 @@ class JsonExceptionListerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\TestCaseReadOnlyBundle\DataFixtures\MongoDB\LoadTestCaseReadOnlyData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 
@@ -46,9 +44,9 @@ class JsonExceptionListerTest extends RestTestCase
 
         /** @var Response $response */
         $response = $client->getResponse();
-        
+
         $this->assertEquals($response::HTTP_OK, $response->getStatusCode());
-      
+
     }
 
     /**

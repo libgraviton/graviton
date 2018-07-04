@@ -64,12 +64,8 @@ class AppKernel extends Kernel
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Symfony\Bundle\MonologBundle\MonologBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-            new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \Graviton\RqlParserBundle\GravitonRqlParserBundle(),
             new \Oneup\FlysystemBundle\OneupFlysystemBundle(),
@@ -78,12 +74,19 @@ class AppKernel extends Kernel
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
         );
 
-        if (in_array($this->getEnvironment(), array('dev', 'test', 'oauth_dev'))) {
+        if (in_array($this->getEnvironment(), ['dev', 'test', 'oauth_dev'])) {
+            $bundles[] = new \Symfony\Bundle\WebServerBundle\WebServerBundle();
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-            $bundles[] = new \Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
-            $bundles[] = new \Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
+        }
+
+        if ('test' === $this->getEnvironment()) {
+            $bundles[] = new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+        }
+
+        if ('prod' === $this->getEnvironment()) {
+            $bundles[] = new \Sentry\SentryBundle\SentryBundle();
         }
 
         // autoload of Graviton specific bundles.

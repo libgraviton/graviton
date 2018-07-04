@@ -9,9 +9,10 @@ use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
+use Graviton\GeneratorBundle\Generator\BundleGenerator;
 use Graviton\GeneratorBundle\Generator\DynamicBundleBundleGenerator;
-use Graviton\GeneratorBundle\Manipulator\File\XmlManipulator;
 use Graviton\GeneratorBundle\Definition\Loader\LoaderInterface;
+use Graviton\GeneratorBundle\Generator\ResourceGenerator;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +25,8 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Here, we generate all "dynamic" Graviton bundles..
  *
- * @todo     create a new Application in-situ
- * @todo     see if we can get rid of container dependency..
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class GenerateDynamicBundleCommand extends Command
@@ -63,7 +61,6 @@ class GenerateDynamicBundleCommand extends Command
 
     /** @var array|null */
     private $serviceWhitelist = null;
-
     /**
      * @var CommandRunner
      */
@@ -73,29 +70,41 @@ class GenerateDynamicBundleCommand extends Command
      */
     private $definitionLoader;
     /**
-     * @var XmlManipulator
-     */
-    private $xmlManipulator;
-    /**
      * @var SerializerInterface
      */
     private $serializer;
-
+    /**
+     * @var Filesystem
+     */
+    private $fs;
+    /**
+     * @var BundleGenerator
+     */
+    private $bundleGenerator;
+    /**
+     * @var ResourceGenerator
+     */
+    private $resourceGenerator;
+    /**
+     * @var DynamicBundleBundleGenerator
+     */
+    private $bundleBundleGenerator;
 
     /**
-     * @param CommandRunner       $runner           Runs a console command.
-     * @param XmlManipulator      $xmlManipulator   Helper to change the content of a xml file.
-     * @param LoaderInterface     $definitionLoader JSON definition loader
-     * @param SerializerInterface $serializer       Serializer
-     * @param string|null         $bundleAdditions  Additional bundles list in JSON format
-     * @param string|null         $serviceWhitelist Service whitelist in JSON format
-     * @param string|null         $name             The name of the command; passing null means it must be set in
-     *                                              configure()
+     * @param LoaderInterface              $definitionLoader      JSON definition loader
+     * @param BundleGenerator              $bundleGenerator       bundle generator
+     * @param ResourceGenerator            $resourceGenerator     resource generator
+     * @param DynamicBundleBundleGenerator $bundleBundleGenerator bundlebundle generator
+     * @param SerializerInterface          $serializer            Serializer
+     * @param string|null                  $bundleAdditions       Additional bundles list in JSON format
+     * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
+     * @param string|null                  $name                  name
      */
     public function __construct(
-        CommandRunner       $runner,
-        XmlManipulator      $xmlManipulator,
         LoaderInterface     $definitionLoader,
+        BundleGenerator $bundleGenerator,
+        ResourceGenerator $resourceGenerator,
+        DynamicBundleBundleGenerator $bundleBundleGenerator,
         SerializerInterface $serializer,
         $bundleAdditions = null,
         $serviceWhitelist = null,
@@ -103,10 +112,12 @@ class GenerateDynamicBundleCommand extends Command
     ) {
         parent::__construct($name);
 
-        $this->runner = $runner;
-        $this->xmlManipulator = $xmlManipulator;
         $this->definitionLoader = $definitionLoader;
+        $this->bundleGenerator = $bundleGenerator;
+        $this->resourceGenerator = $resourceGenerator;
+        $this->bundleBundleGenerator = $bundleBundleGenerator;
         $this->serializer = $serializer;
+        $this->fs = new Filesystem();
 
         if ($bundleAdditions !== null && $bundleAdditions !== '') {
             $this->bundleAdditions = $bundleAdditions;
@@ -145,17 +156,10 @@ class GenerateDynamicBundleCommand extends Command
                 'Which BundleBundle to manipulate to add our stuff',
                 'GravitonDynBundleBundle'
             )
-            ->addOption(
-                'bundleFormat',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Which format',
-                'xml'
-            )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
-                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path
-                    to a single JSON file or a directory path containing multiple files.'
+                'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
+                'to a single JSON file or a directory path containing multiple files.'
             );
     }
 
@@ -172,14 +176,14 @@ class GenerateDynamicBundleCommand extends Command
         /**
          * GENERATE THE BUNDLEBUNDLE
          */
-        $namespace = sprintf(self::BUNDLE_NAME_MASK, 'Bundle');
+        $bundleBundleDir = sprintf(self::BUNDLE_NAME_MASK, 'Bundle');
 
         // GravitonDynBundleBundle
-        $bundleName = str_replace('/', '', $namespace);
+        $bundleName = str_replace('/', '', $bundleBundleDir);
 
         // bundlebundle stuff..
-        $this->bundleBundleNamespace = $namespace;
-        $this->bundleBundleDir = $input->getOption('srcDir') . $namespace;
+        $this->bundleBundleNamespace = $bundleBundleDir;
+        $this->bundleBundleDir = $input->getOption('srcDir') . $bundleBundleDir;
         $this->bundleBundleClassname = $bundleName;
         $this->bundleBundleClassfile = $this->bundleBundleDir . '/' . $this->bundleBundleClassname . '.php';
 
@@ -188,10 +192,6 @@ class GenerateDynamicBundleCommand extends Command
         if (count($filesToWorkOn) < 1) {
             throw new \LogicException("Could not find any usable JSON files.");
         }
-
-        $fs = new Filesystem();
-
-        $this->createInitialBundleBundle($input->getOption('srcDir'));
 
         $templateHash = $this->getTemplateHash();
         $existingBundles = $this->getExistingBundleHashes($input->getOption('srcDir'));
@@ -203,13 +203,16 @@ class GenerateDynamicBundleCommand extends Command
             $thisIdName = $jsonDef->getId();
             $namespace = sprintf(self::BUNDLE_NAME_MASK, $thisIdName);
 
+            // make sure bundle is in bundlebundle
+            $this->bundleBundleList[] = $namespace;
+
             $jsonDef->setNamespace($namespace);
 
             $bundleName = str_replace('/', '', $namespace);
-            $this->bundleBundleList[] = $namespace;
+            $bundleDir = $input->getOption('srcDir').$namespace;
+            $bundleNamespace = str_replace('/', '\\', $namespace).'\\';
 
             try {
-                $bundleDir = $input->getOption('srcDir').$namespace;
                 $thisHash = sha1($templateHash.PATH_SEPARATOR.serialize($jsonDef));
 
                 $needsGeneration = true;
@@ -221,18 +224,16 @@ class GenerateDynamicBundleCommand extends Command
                 }
 
                 if ($needsGeneration) {
-                    $this->generateBundle($namespace, $bundleName, $input, $output, $bundleDir);
+                    $this->generateBundle($bundleNamespace, $bundleName, $input->getOption('srcDir'));
                     $this->generateGenerationHashFile($bundleDir, $thisHash);
                 }
 
-                $this->generateBundleBundleClass();
-
                 if ($needsGeneration) {
-                    $this->generateSubResources($output, $jsonDef, $this->xmlManipulator, $bundleName, $namespace);
-                    $this->generateMainResource($output, $jsonDef, $bundleName);
-                    $this->generateValidationXml(
-                        $this->xmlManipulator,
-                        $this->getGeneratedValidationXmlPath($namespace)
+                    $this->generateResources(
+                        $jsonDef,
+                        $bundleName,
+                        $bundleDir,
+                        $bundleNamespace
                     );
 
                     $output->write(
@@ -255,8 +256,6 @@ class GenerateDynamicBundleCommand extends Command
                 // remove failed bundle from list
                 array_pop($this->bundleBundleList);
             }
-
-            $this->xmlManipulator->reset();
         }
 
         // whatever is left in $existingBundles is not defined anymore and needs to be deleted..
@@ -267,7 +266,7 @@ class GenerateDynamicBundleCommand extends Command
             // remove from bundlebundle list
             unset($this->bundleBundleList[array_search($bundleClassName, $this->bundleBundleList)]);
 
-            $fs->remove($dirName);
+            $this->fs->remove($dirName);
 
             $output->write(
                 PHP_EOL.
@@ -276,6 +275,7 @@ class GenerateDynamicBundleCommand extends Command
             );
         }
 
+        // generate bundlebundle
         $this->generateBundleBundleClass();
     }
 
@@ -320,29 +320,6 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $existingBundles;
-    }
-
-    /**
-     * we cannot just delete the BundleBundle at the beginning, we need to prefill
-     * it with all existing dynamic bundles..
-     *
-     * @param string $baseDir base dir
-     *
-     * @return void
-     */
-    private function createInitialBundleBundle($baseDir)
-    {
-        $bundleFinder = $this->getBundleFinder($baseDir);
-
-        if (!$bundleFinder) {
-            return;
-        }
-
-        foreach ($bundleFinder as $bundleDir) {
-            $this->bundleBundleList[] = $this->getBundleClassnameFromFolder($bundleDir->getFilename());
-        }
-
-        $this->generateBundleBundleClass();
     }
 
     /**
@@ -403,11 +380,10 @@ class GenerateDynamicBundleCommand extends Command
     /**
      * Generate Bundle entities
      *
-     * @param OutputInterface $output         Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef        Configuration to be generated the entity from.
-     * @param XmlManipulator  $xmlManipulator Helper to safe the validation xml file.
-     * @param string          $bundleName     Name of the bundle the entity shall be generated for.
-     * @param string          $namespace      Absolute path to the bundle root dir.
+     * @param OutputInterface $output          Instance to sent text to be displayed on stout.
+     * @param JsonDefinition  $jsonDef         Configuration to be generated the entity from.
+     * @param string          $bundleName      Name of the bundle the entity shall be generated for.
+     * @param string          $bundleClassName class name
      *
      * @return void
      * @throws \Exception
@@ -415,54 +391,69 @@ class GenerateDynamicBundleCommand extends Command
     protected function generateSubResources(
         OutputInterface $output,
         JsonDefinition $jsonDef,
-        XmlManipulator $xmlManipulator,
         $bundleName,
-        $namespace
+        $bundleClassName
     ) {
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $arguments = [
                 'graviton:generate:resource',
                 '--no-debug' => null,
                 '--entity' => $bundleName . ':' . $subRecource->getId(),
-                '--format' => 'xml',
+                '--bundleClassName' => $bundleClassName,
                 '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
-                '--fields' => $this->getFieldString($subRecource),
                 '--no-controller' => 'true',
             ];
             $this->generateResource($arguments, $output, $jsonDef);
-
-            // look for validation.xml and save it from over-writing ;-)
-            // we basically get the xml content that was generated in order to save them later..
-            $validationXml = $this->getGeneratedValidationXmlPath($namespace);
-            if (file_exists($validationXml)) {
-                $xmlManipulator->addNodes(file_get_contents($validationXml));
-            }
         }
     }
 
     /**
-     * Generate the actual Bundle
+     * generates the resources of a bundle
      *
-     * @param OutputInterface $output     Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef    Configuration to be generated the entity from.
-     * @param string          $bundleName Name of the bundle the entity shall be generated for.
+     * @param JsonDefinition $jsonDef         definition
+     * @param string         $bundleName      name
+     * @param string         $bundleDir       dir
+     * @param string         $bundleNamespace namespace
      *
      * @return void
      */
-    protected function generateMainResource(OutputInterface $output, JsonDefinition $jsonDef, $bundleName)
-    {
-        $fields = $jsonDef->getFields();
-        if (!empty($fields)) {
-            $arguments = array(
-                'graviton:generate:resource',
-                '--no-debug' => null,
-                '--entity' => $bundleName . ':' . $jsonDef->getId(),
-                '--json' => $this->serializer->serialize($jsonDef->getDef(), 'json'),
-                '--format' => 'xml',
-                '--fields' => $this->getFieldString($jsonDef)
-            );
+    protected function generateResources(
+        JsonDefinition $jsonDef,
+        $bundleName,
+        $bundleDir,
+        $bundleNamespace
+    ) {
 
-            $this->generateResource($arguments, $output, $jsonDef);
+        /** @var ResourceGenerator $generator */
+        $generator = $this->resourceGenerator;
+        $generator->setGenerateController(false);
+
+        foreach ($this->getSubResources($jsonDef) as $subRecource) {
+            $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
+            $generator->generate(
+                $bundleDir,
+                $bundleNamespace,
+                $bundleName,
+                $subRecource->getId()
+            );
+        }
+
+        // main resources
+        if (!empty($jsonDef->getFields())) {
+            $generator->setGenerateController(true);
+
+            $routerBase = $jsonDef->getRouterBase();
+            if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
+                $generator->setGenerateController(false);
+            }
+
+            $generator->setJson(new JsonDefinition($jsonDef->getDef()));
+            $generator->generate(
+                $bundleDir,
+                $bundleNamespace,
+                $bundleName,
+                $jsonDef->getId()
+            );
         }
     }
 
@@ -514,13 +505,11 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * Generates a Bundle via command line (wrapping graviton:generate:bundle)
+     * generates the basic bundle structure
      *
-     * @param string          $namespace    Namespace
-     * @param string          $bundleName   Name of bundle
-     * @param InputInterface  $input        Input
-     * @param OutputInterface $output       Output
-     * @param string          $deleteBefore Delete before directory
+     * @param string $namespace  Namespace
+     * @param string $bundleName Name of bundle
+     * @param string $targetDir  target directory
      *
      * @return void
      *
@@ -529,30 +518,13 @@ class GenerateDynamicBundleCommand extends Command
     private function generateBundle(
         $namespace,
         $bundleName,
-        InputInterface $input,
-        OutputInterface $output,
-        $deleteBefore = null
+        $targetDir
     ) {
-        // first, create the bundle
-        $arguments = array(
-            'graviton:generate:bundle',
-            '--no-debug' => null,
-            '--namespace' => $namespace,
-            '--bundle-name' => $bundleName,
-            '--dir' => $input->getOption('srcDir'),
-            '--format' => $input->getOption('bundleFormat'),
-            '--doUpdateKernel' => 'false',
-            '--loaderBundleName' => $input->getOption('bundleBundleName'),
-        );
-
-        if (!is_null($deleteBefore)) {
-            $arguments['--deleteBefore'] = $deleteBefore;
-        }
-
-        $this->runner->executeCommand(
-            $arguments,
-            $output,
-            'Create bundle call failed, see above. Exiting.'
+        $this->bundleGenerator->generate(
+            $namespace,
+            $bundleName,
+            $targetDir,
+            'yml'
         );
     }
 
@@ -565,54 +537,18 @@ class GenerateDynamicBundleCommand extends Command
      */
     private function generateBundleBundleClass()
     {
-        $dbbGenerator = new DynamicBundleBundleGenerator();
-
         // add optional bundles if defined by parameter.
         if ($this->bundleAdditions !== null) {
-            $dbbGenerator->setAdditions($this->bundleAdditions);
+            $this->bundleBundleGenerator->setAdditions($this->bundleAdditions);
+        } else {
+            $this->bundleBundleGenerator->setAdditions([]);
         }
 
-        $dbbGenerator->generate(
+        $this->bundleBundleGenerator->generate(
             $this->bundleBundleList,
             $this->bundleBundleNamespace,
             $this->bundleBundleClassname,
             $this->bundleBundleClassfile
-        );
-    }
-
-    /**
-     * Returns the path to the generated validation.xml
-     *
-     * @param string $namespace Namespace
-     *
-     * @return string path
-     */
-    private function getGeneratedValidationXmlPath($namespace)
-    {
-        return dirname(__FILE__) . '/../../../' . $namespace . '/Resources/config/validation.xml';
-    }
-
-    /**
-     * Returns the field string as described in the json file
-     *
-     * @param JsonDefinition $jsonDef The json def
-     *
-     * @return string CommandLine string for the generator command
-     */
-    private function getFieldString(JsonDefinition $jsonDef)
-    {
-        $ret = array();
-
-        foreach ($jsonDef->getFields() as $field) {
-            // don't add 'id' field it seems..
-            if ($field->getName() != 'id') {
-                $ret[] = $field->getName() . ':' . $field->getTypeDoctrine();
-            }
-        }
-
-        return implode(
-            ' ',
-            $ret
         );
     }
 
@@ -636,33 +572,6 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * renders and stores the validation.xml file of a bundle.
-     *
-     * what are we doing here?
-     * well, when we started to generate our subclasses (hashes in our own service) as own
-     * Document classes, i had the problem that the validation.xml always got overwritten by the
-     * console task. sadly, validation.xml is one file for all classes in the bundle.
-     * so here we merge the generated validation.xml we saved in the loop before back into the
-     * final validation.xml again. the final result should be one validation.xml including all
-     * the validation rules for all the documents in this bundle.
-     *
-     * @todo we might just make this an option to the resource generator, i need to grok why this was an issue
-     *
-     * @param XmlManipulator $xmlManipulator Helper to safe the validation xml file.
-     * @param string         $location       Location where to store the file.
-     *
-     * @return void
-     */
-    private function generateValidationXml(XmlManipulator $xmlManipulator, $location)
-    {
-        if (file_exists($location)) {
-            $xmlManipulator
-                ->renderDocument(file_get_contents($location))
-                ->saveDocument($location);
-        }
-    }
-
-    /**
      * Generates the file containing the hash to determine if this bundle needs regeneration
      *
      * @param string $bundleDir directory of the bundle
@@ -676,27 +585,5 @@ class GenerateDynamicBundleCommand extends Command
         if ($fs->exists($bundleDir)) {
             $fs->dumpFile($bundleDir.DIRECTORY_SEPARATOR.self::GENERATION_HASHFILE_FILENAME, $hash);
         }
-    }
-
-    /**
-     * Returns an XMLElement from a generated validation.xml that was generated during Resources generation.
-     *
-     * @param string $namespace Namespace, ie GravitonDyn\ShowcaseBundle
-     *
-     * @return \SimpleXMLElement The element
-     *
-     * @deprecated is this really used?
-     */
-    public function getGeneratedValidationXml($namespace)
-    {
-        $validationXmlPath = $this->getGeneratedValidationXmlPath($namespace);
-        if (file_exists($validationXmlPath)) {
-            $validationXml = new \SimpleXMLElement(file_get_contents($validationXmlPath));
-            $validationXml->registerXPathNamespace('sy', 'http://symfony.com/schema/dic/constraint-mapping');
-        } else {
-            throw new \LogicException('Could not find ' . $validationXmlPath . ' that should be generated.');
-        }
-
-        return $validationXml;
     }
 }

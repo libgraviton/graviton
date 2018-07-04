@@ -13,7 +13,6 @@ use Graviton\ExceptionBundle\GravitonExceptionBundle;
 use Graviton\GeneratorBundle\GravitonGeneratorBundle;
 use Graviton\I18nBundle\GravitonI18nBundle;
 use Graviton\LogBundle\GravitonLogBundle;
-use Graviton\PersonBundle\GravitonPersonBundle;
 use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
 use Graviton\ProxyBundle\GravitonProxyBundle;
 use Graviton\RestBundle\GravitonRestBundle;
@@ -22,6 +21,7 @@ use Graviton\SecurityBundle\GravitonSecurityBundle;
 use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Graviton\FileBundle\GravitonFileBundle;
 use Graviton\MigrationBundle\GravitonMigrationBundle;
+use Jean85\PrettyVersions;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,13 +29,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * GravitonCoreBundle
  *
- * WARNING: Don't change me without changing Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
- *
- * @see \Graviton\GeneratorBundle\Manipulator\BundleBundleManipulator
  */
 class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
 {
@@ -55,7 +51,6 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
             new GravitonRestBundle(),
             new GravitonI18nBundle(),
             new GravitonGeneratorBundle(),
-            new GravitonPersonBundle(),
             new GravitonCacheBundle(),
             new GravitonLogBundle(),
             new GravitonSecurityBundle(),
@@ -78,7 +73,7 @@ class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
     {
         parent::build($container);
 
-        $container->addCompilerPass(new VersionCompilerPass());
+        $container->addCompilerPass(new VersionCompilerPass(new PrettyVersions()));
         $container->addCompilerPass(new EnvParametersCompilerPass());
     }
 }

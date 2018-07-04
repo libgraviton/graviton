@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Functional test
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ReadOnlyFieldTest extends RestTestCase
@@ -24,12 +24,10 @@ class ReadOnlyFieldTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\TestCaseReadOnlyFieldBundle\DataFixtures\MongoDB\LoadTestCaseReadOnlyFieldData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 

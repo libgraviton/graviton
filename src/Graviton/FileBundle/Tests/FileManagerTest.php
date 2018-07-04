@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\File\File as SfFile;
  * Basic functional test for /file
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class FileManagerTest extends RestTestCase
@@ -227,7 +227,7 @@ class FileManagerTest extends RestTestCase
         );
         sleep(1);
         $client = $this->createClient();
-        $client->request('PATCH', $location, array(), array(), array(), $patchJson);
+        $client->request('PATCH', $location, [], [], [], $patchJson);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
 

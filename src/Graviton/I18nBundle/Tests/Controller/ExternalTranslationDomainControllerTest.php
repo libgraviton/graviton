@@ -18,7 +18,7 @@ use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ExternalTranslationDomainControllerTest extends RestTestCase
@@ -31,14 +31,12 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
 
         // make sure we have no resource files for domain 'external'
@@ -93,8 +91,8 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
         $client->put(
             '/external/translatable/test',
             $resource,
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en,de,fr')
         );
 
@@ -104,8 +102,8 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
         $client->request(
             'GET',
             '/external/translatable/test',
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en,de,fr')
         );
 

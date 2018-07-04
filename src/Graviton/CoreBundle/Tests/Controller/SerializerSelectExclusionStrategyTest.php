@@ -14,7 +14,7 @@ use GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullEx
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class SerializerSelectExclusionStrategyTest extends RestTestCase
@@ -34,14 +34,12 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
             $this->markTestSkipped('TestCaseNullExtref definition is not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadTestCasePrimitiveArrayData::class,
                 LoadTestCaseNullExtrefData::class,
                 LoadTestCaseDeepEqualNamingData::class
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 
@@ -84,6 +82,11 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
             '/testcase/nullextref/testdata?select(requiredExtref,requiredExtrefDeep.deep.deep,optionalExtrefDeep)'
         );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        /* expect empty arrays */
+        $expectedResult->optionalExtrefArray = [];
+        $expectedResult->requiredExtrefArray = [];
+
         $this->assertEquals($expectedResult, $client->getResults());
     }
 

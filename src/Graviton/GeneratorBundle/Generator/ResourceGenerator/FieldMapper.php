@@ -5,9 +5,11 @@
 
 namespace Graviton\GeneratorBundle\Generator\ResourceGenerator;
 
+use Graviton\GeneratorBundle\Definition\JsonDefinition;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class FieldMapper implements FieldMapperInterface
@@ -25,6 +27,28 @@ class FieldMapper implements FieldMapperInterface
     public function addMapper(FieldMapperInterface $mapper)
     {
         $this->mappers[] = $mapper;
+    }
+
+    /**
+     * builds the initial fields array with a json definition
+     *
+     * @param JsonDefinition $jsonDefinition definition
+     *
+     * @return array fields
+     */
+    public function buildFields(JsonDefinition $jsonDefinition)
+    {
+        $fields = [];
+        foreach ($jsonDefinition->getFields() as $field) {
+            if ($field->getName() != 'id') {
+                $fields[] = [
+                    'fieldName' => $field->getName(),
+                    'type' => $field->getTypeDoctrine()
+                ];
+            }
+        }
+
+        return $fields;
     }
 
     /**

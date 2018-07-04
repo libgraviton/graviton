@@ -12,7 +12,7 @@ use Graviton\TestBundle\Test\RestTestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class VersioningDocumentsTest extends RestTestCase
@@ -29,12 +29,10 @@ class VersioningDocumentsTest extends RestTestCase
             $this->markTestSkipped('Test definitions are not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadTestCaseVersioningEntityData::class
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 
@@ -175,7 +173,7 @@ class VersioningDocumentsTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
 
@@ -195,7 +193,7 @@ class VersioningDocumentsTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
@@ -217,7 +215,7 @@ class VersioningDocumentsTest extends RestTestCase
             ]
         );
 
-        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), array(), array(), array(), $patch);
+        $client->request('PATCH', '/testcase/versioning-entity/' . ($record->id), [], [], [], $patch);
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
 

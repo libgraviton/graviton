@@ -6,12 +6,13 @@
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Document map
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class DocumentMap
@@ -30,25 +31,21 @@ class DocumentMap
      *
      * @param Finder $doctrineFinder   Doctrine mapping finder
      * @param Finder $serializerFinder Serializer mapping finder
-     * @param Finder $validationFinder Validation mapping finder
      * @param Finder $schemaFinder     Schema finder
      */
     public function __construct(
         Finder $doctrineFinder,
         Finder $serializerFinder,
-        Finder $validationFinder,
         Finder $schemaFinder
     ) {
         $doctrineMap = $this->loadDoctrineClassMap($doctrineFinder);
         $serializerMap = $this->loadSerializerClassMap($serializerFinder);
-        $validationMap = $this->loadValidationClassMap($validationFinder);
         $schemaMap = $this->loadSchemaClassMap($schemaFinder);
 
         foreach ($doctrineMap as $className => $doctrineMapping) {
             $this->mappings[$className] = [
-                'doctrine'   => $doctrineMap[$className],
+                'doctrine' => $doctrineMap[$className],
                 'serializer' => isset($serializerMap[$className]) ? $serializerMap[$className] : null,
-                'validation' => isset($validationMap[$className]) ? $validationMap[$className] : null,
                 'schema' => isset($schemaMap[$className]) ? $schemaMap[$className] : null,
             ];
         }
@@ -66,14 +63,13 @@ class DocumentMap
             return $this->documents[$className];
         }
         if (!isset($this->mappings[$className])) {
-            throw new \InvalidArgumentException(sprintf('No XML mapping found for document "%s"', $className));
+            throw new \InvalidArgumentException(sprintf('No mapping found for document "%s"', $className));
         }
 
         return $this->documents[$className] = $this->processDocument(
             $className,
             $this->mappings[$className]['doctrine'],
             $this->mappings[$className]['serializer'],
-            $this->mappings[$className]['validation'],
             $this->mappings[$className]['schema']
         );
     }
@@ -92,18 +88,16 @@ class DocumentMap
      * Process document
      *
      * @param string      $className         Class name
-     * @param \DOMElement $doctrineMapping   Doctrine XML mapping
+     * @param array       $doctrineMapping   Doctrine mapping
      * @param \DOMElement $serializerMapping Serializer XML mapping
-     * @param \DOMElement $validationMapping Validation XML mapping
      * @param array       $schemaMapping     Schema mapping
      *
      * @return Document
      */
     private function processDocument(
         $className,
-        \DOMElement $doctrineMapping,
+        array $doctrineMapping,
         \DOMElement $serializerMapping = null,
-        \DOMElement $validationMapping = null,
         array $schemaMapping = null
     ) {
         if ($serializerMapping === null) {
@@ -111,19 +105,6 @@ class DocumentMap
         } else {
             $serializerFields = array_reduce(
                 $this->getSerializerFields($serializerMapping),
-                function (array $fields, array $field) {
-                    $fields[$field['fieldName']] = $field;
-                    return $fields;
-                },
-                []
-            );
-        }
-
-        if ($validationMapping === null) {
-            $validationFields = [];
-        } else {
-            $validationFields = array_reduce(
-                $this->getValidationFields($validationMapping),
                 function (array $fields, array $field) {
                     $fields[$field['fieldName']] = $field;
                     return $fields;
@@ -143,9 +124,6 @@ class DocumentMap
             $serializerField = isset($serializerFields[$doctrineField['name']]) ?
                 $serializerFields[$doctrineField['name']] :
                 null;
-            $validationField = isset($validationFields[$doctrineField['name']]) ?
-                $validationFields[$doctrineField['name']] :
-                null;
             $schemaField = isset($schemaFields[$doctrineField['name']]) ?
                 $schemaFields[$doctrineField['name']] :
                 null;
@@ -156,7 +134,7 @@ class DocumentMap
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
-                    $validationField === null ? false : $validationField['required'],
+                    ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     $serializerField === null ? false : $serializerField['searchable'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
                 );
@@ -166,7 +144,7 @@ class DocumentMap
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
-                    $validationField === null ? false : $validationField['required'],
+                    ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     $serializerField === null ? false : $serializerField['searchable'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
                 );
@@ -175,9 +153,6 @@ class DocumentMap
         foreach ($this->getDoctrineEmbedOneFields($doctrineMapping) as $doctrineField) {
             $serializerField = isset($serializerFields[$doctrineField['name']]) ?
                 $serializerFields[$doctrineField['name']] :
-                null;
-            $validationField = isset($validationFields[$doctrineField['name']]) ?
-                $validationFields[$doctrineField['name']] :
                 null;
             $schemaField = isset($schemaFields[$doctrineField['name']]) ?
                 $schemaFields[$doctrineField['name']] :
@@ -188,7 +163,7 @@ class DocumentMap
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
-                $validationField === null ? false : $validationField['required'],
+                ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 $serializerField === null ? false : $serializerField['searchable'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
             );
@@ -196,9 +171,6 @@ class DocumentMap
         foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
             $serializerField = isset($serializerFields[$doctrineField['name']]) ?
                 $serializerFields[$doctrineField['name']] :
-                null;
-            $validationField = isset($validationFields[$doctrineField['name']]) ?
-                $validationFields[$doctrineField['name']] :
                 null;
             $schemaField = isset($schemaFields[$doctrineField['name']]) ?
                 $schemaFields[$doctrineField['name']] :
@@ -209,7 +181,7 @@ class DocumentMap
                 $doctrineField['name'],
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
-                $validationField === null ? false : $validationField['required'],
+                ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
             );
         }
@@ -227,21 +199,19 @@ class DocumentMap
     {
         $classMap = [];
         foreach ($finder as $file) {
-            $document = new \DOMDocument();
-            $document->load($file);
-
-            $xpath = new \DOMXPath($document);
-            $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-
-            $classMap = array_reduce(
-                iterator_to_array($xpath->query('//*[self::doctrine:document or self::doctrine:embedded-document]')),
-                function (array $classMap, \DOMElement $element) {
-                    $classMap[$element->getAttribute('name')] = $element;
-                    return $classMap;
-                },
-                $classMap
+            $classMap = array_merge(
+                $classMap,
+                Yaml::parseFile($file)
             );
         }
+
+        // filter out superclasses
+        $classMap = array_filter(
+            $classMap,
+            function ($classEntry) {
+                return (!isset($classEntry['type']) || $classEntry['type'] != 'mappedSuperclass');
+            }
+        );
 
         return $classMap;
     }
@@ -314,35 +284,6 @@ class DocumentMap
     }
 
     /**
-     * Load validation class map
-     *
-     * @param Finder $finder Mapping finder
-     * @return array
-     */
-    private function loadValidationClassMap(Finder $finder)
-    {
-        $classMap = [];
-        foreach ($finder as $file) {
-            $document = new \DOMDocument();
-            $document->load($file);
-
-            $xpath = new \DOMXPath($document);
-            $xpath->registerNamespace('constraint', 'http://symfony.com/schema/dic/constraint-mapping');
-
-            $classMap = array_reduce(
-                iterator_to_array($xpath->query('//constraint:class')),
-                function (array $classMap, \DOMElement $element) {
-                    $classMap[$element->getAttribute('name')] = $element;
-                    return $classMap;
-                },
-                $classMap
-            );
-        }
-
-        return $classMap;
-    }
-
-    /**
      * Get serializer fields
      *
      * @param \DOMElement $mapping Serializer XML mapping
@@ -385,91 +326,86 @@ class DocumentMap
     }
 
     /**
-     * Get validation fields
-     *
-     * @param \DOMElement $mapping Validation XML mapping
-     * @return array
-     */
-    private function getValidationFields(\DOMElement $mapping)
-    {
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('constraint', 'http://symfony.com/schema/dic/constraint-mapping');
-
-        return array_map(
-            function (\DOMElement $element) use ($xpath) {
-                $constraints = $xpath->query('constraint:constraint[@name="NotBlank" or @name="NotNull"]', $element);
-                return [
-                    'fieldName' => $element->getAttribute('name'),
-                    'required'  => $constraints->length > 0,
-                ];
-            },
-            iterator_to_array($xpath->query('constraint:property', $mapping))
-        );
-    }
-
-    /**
      * Get doctrine document fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineFields(\DOMElement $mapping)
+    private function getDoctrineFields(array $mapping)
     {
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+        if (!isset($mapping['fields'])) {
+            return [];
+        }
 
         return array_map(
-            function (\DOMElement $element) {
+            function ($key, $value) {
+                if (!isset($value['type'])) {
+                    $value['type'] = '';
+                }
+
                 return [
-                    'name' => $element->getAttribute('fieldName'),
-                    'type' => $element->getAttribute('type'),
+                    'name' => $key,
+                    'type' => $value['type']
                 ];
             },
-            iterator_to_array($xpath->query('doctrine:field', $mapping))
+            array_keys($mapping['fields']),
+            $mapping['fields']
         );
     }
 
     /**
      * Get doctrine document embed-one fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineEmbedOneFields(\DOMElement $mapping)
+    private function getDoctrineEmbedOneFields(array $mapping)
     {
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
-
-        return array_map(
-            function (\DOMElement $element) {
-                return [
-                    'name' => $element->getAttribute('field'),
-                    'type' => $element->getAttribute('target-document'),
-                ];
-            },
-            iterator_to_array($xpath->query('*[self::doctrine:embed-one or self::doctrine:reference-one]', $mapping))
-        );
+        return $this->getRelationList($mapping, 'One');
     }
 
     /**
      * Get doctrine document embed-many fields
      *
-     * @param \DOMElement $mapping Doctrine XML mapping
+     * @param array $mapping Doctrine mapping
      * @return array
      */
-    private function getDoctrineEmbedManyFields(\DOMElement $mapping)
+    private function getDoctrineEmbedManyFields(array $mapping)
     {
-        $xpath = new \DOMXPath($mapping->ownerDocument);
-        $xpath->registerNamespace('doctrine', 'http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping');
+        return $this->getRelationList($mapping, 'Many');
+    }
+
+    /**
+     * gets list of relations
+     *
+     * @param array  $mapping mapping
+     * @param string $suffix  suffix
+     *
+     * @return array relations
+     */
+    private function getRelationList($mapping, $suffix)
+    {
+        if (!isset($mapping['embed'.$suffix]) && !isset($mapping['reference'.$suffix])) {
+            return [];
+        }
+
+        $relations = [];
+        if (isset($mapping['embed'.$suffix])) {
+            $relations = array_merge($relations, $mapping['embed'.$suffix]);
+        }
+        if (isset($mapping['reference'.$suffix])) {
+            $relations = array_merge($relations, $mapping['reference'.$suffix]);
+        }
 
         return array_map(
-            function (\DOMElement $element) {
+            function ($key, $value) {
                 return [
-                    'name' => $element->getAttribute('field'),
-                    'type' => $element->getAttribute('target-document'),
+                    'name' => $key,
+                    'type' => $value['targetDocument']
                 ];
             },
-            iterator_to_array($xpath->query('*[self::doctrine:embed-many or self::doctrine:reference-many]', $mapping))
+            array_keys($relations),
+            $relations
         );
     }
 

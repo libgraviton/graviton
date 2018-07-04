@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Basic functional test for /core/app.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class AppControllerTest extends RestTestCase
@@ -34,16 +34,14 @@ class AppControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
     /**
@@ -88,12 +86,10 @@ class AppControllerTest extends RestTestCase
      */
     public function testGeneratedPagingHeadersNoRql()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit'
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
 
         $client = static::createRestClient();
@@ -362,7 +358,7 @@ class AppControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $this->loadFixturesLocal([]);
         $client = static::createRestClient();
         $client->request('GET', '/core/app/');
 
@@ -371,7 +367,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(array(), $results);
+        $this->assertEquals([], $results);
     }
 
     /**
@@ -444,7 +440,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // send nothing really..
-        $client->post('/core/app/', "", array(), array(), array(), false);
+        $client->post('/core/app/', "", [], [], [], false);
 
         $response = $client->getResponse();
 
@@ -489,7 +485,7 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
 
         // make sure this is sent as 'raw' input (not json_encoded again)
-        $client->post('/core/app/', $input, array(), array(), array(), false);
+        $client->post('/core/app/', $input, [], [], [], false);
 
         $response = $client->getResponse();
 
@@ -587,7 +583,7 @@ class AppControllerTest extends RestTestCase
                 ]
             ]
         );
-        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/core/app/' . $helloApp->id, [], [], [], $patchJson);
         $response = $client->getResponse();
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -628,7 +624,7 @@ class AppControllerTest extends RestTestCase
                 'path' => '/title/en'
             )
         );
-        $client->request('PATCH', '/core/app/' . $helloApp->id, array(), array(), array(), $patchJson);
+        $client->request('PATCH', '/core/app/' . $helloApp->id, [], [], [], $patchJson);
         $response = $client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -861,8 +857,8 @@ class AppControllerTest extends RestTestCase
         $client->request(
             'GET',
             '/core/app/?'.$expr,
-            array(),
-            array(),
+            [],
+            [],
             array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
         );
 

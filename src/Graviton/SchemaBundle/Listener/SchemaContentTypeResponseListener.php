@@ -15,7 +15,7 @@ use Graviton\SchemaBundle\SchemaUtils;
  * Add a Link header to a schema endpoint to a response
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class SchemaContentTypeResponseListener
@@ -60,7 +60,7 @@ class SchemaContentTypeResponseListener
                 $schemaRoute = SchemaUtils::getSchemaRouteName($request->get('_route'));
                 $contentType .= sprintf(
                     '; profile=%s',
-                    $this->router->generate($schemaRoute, array(), UrlGeneratorInterface::ABSOLUTE_URL)
+                    $this->router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL)
                 );
             } catch (\Exception $e) {
                 return true;

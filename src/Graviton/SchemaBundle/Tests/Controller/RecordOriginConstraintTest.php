@@ -12,7 +12,7 @@ use JsonSchema\Rfc3339;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class RecordOriginConstraintTest extends RestTestCase
@@ -25,12 +25,10 @@ class RecordOriginConstraintTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\CustomerBundle\DataFixtures\MongoDB\LoadCustomerData',
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 
@@ -72,7 +70,7 @@ class RecordOriginConstraintTest extends RestTestCase
         $client = static::createRestClient();
         $client->put('/person/customer/100', $record);
 
-        $fields = 'customerNumber, name, recordOrigin, someObject.oneField, createDate, id';
+        $fields = 'customerNumber, name, recordOrigin, groups, someObject.oneField, createDate, id';
 
         $this->assertEquals(
             $this->getExpectedErrorMessage($fields)[0],
@@ -143,6 +141,9 @@ class RecordOriginConstraintTest extends RestTestCase
         $expectedStatus,
         $expectedResponse
     ) {
+        $original = ini_get('date.timezone');
+        ini_set('date.timezone', 'Asia/Kuala_Lumpur');
+
         $client = static::createRestClient();
 
         $client->request('PATCH', '/person/customer/100', [], [], [], json_encode($ops));
@@ -150,6 +151,8 @@ class RecordOriginConstraintTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals($expectedStatus, $response->getStatusCode());
         $this->assertEquals($expectedResponse, $client->getResults());
+
+        ini_set('date.timezone', $original);
     }
 
     /**

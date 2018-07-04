@@ -16,27 +16,11 @@ use Sensio\Bundle\GeneratorBundle\Model\Bundle;
  * got a working version.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class BundleGenerator extends AbstractGenerator
 {
-    /**
-     * generate a bundle from a Bundle model
-     *
-     * @param Bundle $bundle bundle model
-     *
-     * @return void
-     */
-    public function generateBundle(Bundle $bundle)
-    {
-        return $this->generate(
-            $bundle->getNamespace(),
-            $bundle->getName(),
-            $bundle->getTargetDirectory().'/../../',
-            $bundle->getConfigurationFormat()
-        );
-    }
 
     /**
      * generate bundle code
@@ -51,32 +35,10 @@ class BundleGenerator extends AbstractGenerator
     public function generate($namespace, $bundle, $dir, $format)
     {
         $dir .= '/' . strtr($namespace, '\\', '/');
-        if (file_exists($dir)) {
-            if (!is_dir($dir)) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" exists but is a file.',
-                        realpath($dir)
-                    )
-                );
-            }
-            $files = scandir($dir);
-            if ($files != array('.', '..')) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" is not empty.',
-                        realpath($dir)
-                    )
-                );
-            }
-            if (!is_writable($dir)) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Unable to generate the bundle as the target directory "%s" is not writable.',
-                        realpath($dir)
-                    )
-                );
-            }
+
+        // make sure we have no trailing \ in namespace
+        if (substr($namespace, -1) == '\\') {
+            $namespace = substr($namespace, 0, -1);
         }
 
         $basename = $this->getBundleBaseName($bundle);
@@ -95,21 +57,14 @@ class BundleGenerator extends AbstractGenerator
             $parameters
         );
 
+        $this->renderFile('bundle/config.xml.twig', $dir . '/Resources/config/config.xml', $parameters);
+
         if ('xml' === $format || 'annotation' === $format) {
-            // @todo make this leave doctrine alone and move doctrine to a Manipulator in generate:resource
             $this->renderFile('bundle/services.xml.twig', $dir . '/Resources/config/services.xml', $parameters);
-            mkdir($dir . '/Resources/config/doctrine');
-            $this->renderFile('bundle/config.xml.twig', $dir . '/Resources/config/config.xml', $parameters);
         } else {
             $this->renderFile(
                 'bundle/services.' . $format . '.twig',
                 $dir . '/Resources/config/services.' . $format,
-                $parameters
-            );
-            mkdir($dir . '/Resources/config/doctrine');
-            $this->renderFile(
-                'bundle/config.' . $format . '.twig',
-                $dir . '/Resources/config/config.' . $format,
                 $parameters
             );
         }

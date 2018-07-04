@@ -18,10 +18,10 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceSearchListenerTest extends \PHPUnit_Framework_TestCase
+class ExtReferenceSearchListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject

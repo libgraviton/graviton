@@ -11,7 +11,7 @@ use JsonSchema\Rfc3339;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class RecordOriginConstraint
@@ -129,6 +129,7 @@ class RecordOriginConstraint
 
             // convert all datetimes to UTC so we compare eggs with eggs
             $userObject = $this->convertDatetimeToUTC($userObject, $schema, new \DateTimeZone('UTC'));
+            $storedObject = $this->convertDatetimeToUTC($storedObject, $schema, new \DateTimeZone('UTC'));
 
             foreach ($exceptions as $fieldName) {
                 if ($accessor->isWritable($storedObject, $fieldName)) {

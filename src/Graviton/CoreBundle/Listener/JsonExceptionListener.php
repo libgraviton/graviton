@@ -8,7 +8,7 @@
 
 namespace Graviton\CoreBundle\Listener;
 
-use Symfony\Component\Debug\Exception\ContextErrorException;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -21,6 +21,24 @@ use Graviton\ExceptionBundle\Exception\SerializationException;
  */
 class JsonExceptionListener
 {
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * set Logger
+     *
+     * @param Logger $logger logger
+     *
+     * @return void
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * Should not handle Validation Exceptions and only service exceptions
      *
@@ -49,8 +67,17 @@ class JsonExceptionListener
         if (!is_array($data)) {
             $data = [
                 'code' => $exception->getCode(),
+                'exceptionClass' => get_class($exception),
                 'message' => $exception->getMessage()
             ];
+
+            if ($exception->getPrevious() instanceof \Exception) {
+                $data['innerMessage'] = $exception->getPrevious()->getMessage();
+            }
+        }
+
+        if ($this->logger instanceof Logger) {
+            $this->logger->critical($exception);
         }
 
         $response = new JsonResponse($data);
@@ -69,7 +96,7 @@ class JsonExceptionListener
     private function decorateKnownCases($exception)
     {
         if (
-            $exception instanceof ContextErrorException &&
+            $exception instanceof \ErrorException &&
             strpos($exception->getMessage(), 'Undefined index: $id') !== false
         ) {
             return [

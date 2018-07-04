@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class I18nCacheUtils
@@ -52,6 +52,13 @@ class I18nCacheUtils
     private $cacheKeyFinalResource;
 
     /**
+     * cache key for languages list
+     *
+     * @var string
+     */
+    private $cacheKeyLanguages;
+
+    /**
      * the loader id suffix (like 'odm')
      *
      * @var string
@@ -70,14 +77,14 @@ class I18nCacheUtils
      *
      * @var array
      */
-    private $addedResources = array();
+    private $addedResources = [];
 
     /**
      * if the postpersistListener invalidates something, it will be put here
      *
      * @var array
      */
-    private $invalidations = array();
+    private $invalidations = [];
 
     /**
      * a boolean flag telling us if a new map persist is necessary
@@ -86,6 +93,11 @@ class I18nCacheUtils
      * @var boolean
      */
     private $isDirty = false;
+
+    /**
+     * @var I18nUtils
+     */
+    private $utils;
 
     /**
      * Constructor
@@ -105,6 +117,7 @@ class I18nCacheUtils
         // cache keys
         $this->cacheKey = 'i18n.addedTranslations';
         $this->cacheKeyFinalResource = 'i18n.finalResources';
+        $this->cacheKeyLanguages = 'i18n.languages';
 
         $this->loaderId = $loaderId;
         $this->resourceDir = __DIR__.'/../Resources/translations/';
@@ -113,6 +126,48 @@ class I18nCacheUtils
         if ($this->cache->contains($this->cacheKey)) {
             $this->addedResources = $this->cache->fetch($this->cacheKey);
         }
+    }
+
+    /**
+     * sets I18nUtils
+     *
+     * @param I18nUtils $utils I18nUtils
+     *
+     * @return void
+     */
+    public function setUtils(I18nUtils $utils)
+    {
+        $this->utils = $utils;
+    }
+
+    /**
+     * gets language list
+     *
+     * @return array languages
+     */
+    public function getLanguages()
+    {
+        $cachedLanguages = $this->cache->fetch($this->cacheKeyLanguages);
+
+        if (!$cachedLanguages) {
+            if (!$this->utils instanceof I18nUtils) {
+                throw new \LogicException('No I18nUtils available in '.__CLASS__);
+            }
+            $cachedLanguages = $this->utils->getLanguages();
+            $this->cache->save($this->cacheKeyLanguages, $cachedLanguages);
+        }
+
+        return $cachedLanguages;
+    }
+
+    /**
+     * clear language cache
+     *
+     * @return void
+     */
+    public function clearLanguages()
+    {
+        $this->cache->delete($this->cacheKeyLanguages);
     }
 
     /**

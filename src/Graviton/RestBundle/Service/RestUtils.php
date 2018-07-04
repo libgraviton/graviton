@@ -23,7 +23,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializationContext;
 use Graviton\RestBundle\Controller\RestController;
 use Doctrine\Common\Cache\CacheProvider;
 
@@ -32,7 +31,7 @@ use Doctrine\Common\Cache\CacheProvider;
  * based services (meaning rest services).
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 final class RestUtils implements RestUtilsInterface
@@ -46,11 +45,6 @@ final class RestUtils implements RestUtilsInterface
      * @var Serializer
      */
     private $serializer;
-
-    /**
-     * @var null|SerializationContext
-     */
-    private $serializerContext;
 
     /**
      * @var Router
@@ -78,28 +72,25 @@ final class RestUtils implements RestUtilsInterface
     private $cacheProvider;
 
     /**
-     * @param ContainerInterface   $container         container
-     * @param Router               $router            router
-     * @param Serializer           $serializer        serializer
-     * @param LoggerInterface      $logger            PSR logger (e.g. Monolog)
-     * @param SerializationContext $serializerContext context for serializer
-     * @param SchemaUtils          $schemaUtils       schema utils
-     * @param Validator            $schemaValidator   schema validator
-     * @param CacheProvider        $cacheProvider     Cache service
+     * @param ContainerInterface $container       container
+     * @param Router             $router          router
+     * @param Serializer         $serializer      serializer
+     * @param LoggerInterface    $logger          PSR logger (e.g. Monolog)
+     * @param SchemaUtils        $schemaUtils     schema utils
+     * @param Validator          $schemaValidator schema validator
+     * @param CacheProvider      $cacheProvider   Cache service
      */
     public function __construct(
         ContainerInterface $container,
         Router $router,
         Serializer $serializer,
         LoggerInterface $logger,
-        SerializationContext $serializerContext,
         SchemaUtils $schemaUtils,
         Validator $schemaValidator,
         CacheProvider $cacheProvider
     ) {
         $this->container = $container;
         $this->serializer = $serializer;
-        $this->serializerContext = $serializerContext;
         $this->router = $router;
         $this->logger = $logger;
         $this->schemaUtils = $schemaUtils;
@@ -115,7 +106,7 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getServiceRoutingMap()
     {
-        $ret = array();
+        $ret = [];
         $optionRoutes = $this->getOptionRoutes();
 
         foreach ($optionRoutes as $routeName => $optionRoute) {
@@ -154,8 +145,7 @@ final class RestUtils implements RestUtilsInterface
         try {
             return $this->getSerializer()->serialize(
                 $content,
-                $format,
-                $this->getSerializerContext()
+                $format
             );
         } catch (\Exception $e) {
             $msg = sprintf(
@@ -321,16 +311,6 @@ final class RestUtils implements RestUtilsInterface
     }
 
     /**
-     * Get the serializer context
-     *
-     * @return SerializationContext
-     */
-    public function getSerializerContext()
-    {
-        return clone $this->serializerContext;
-    }
-
-    /**
      * It has been deemed that we search for OPTION routes in order to detect our
      * service routes and then derive the rest from them.
      *
@@ -374,18 +354,19 @@ final class RestUtils implements RestUtilsInterface
      */
     public function getRoutesByBasename($baseName)
     {
-        $cached = $this->cacheProvider->fetch('cached_restutils_route_basename');
+        $cacheId = 'cached_restutils_route_'.$baseName;
+        $cached = $this->cacheProvider->fetch($cacheId);
         if ($cached) {
             return $cached;
         }
-        $ret = array();
+        $ret = [];
         $collections = $this->router->getRouteCollection()->all();
         foreach ($collections as $routeName => $route) {
             if (preg_match('/^' . $baseName . '/', $routeName)) {
                 $ret[$routeName] = $route;
             }
         }
-        $this->cacheProvider->save('cached_restutils_route_basename', $ret);
+        $this->cacheProvider->save($cacheId, $ret);
         return $ret;
     }
 

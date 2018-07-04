@@ -26,10 +26,10 @@ use \Psr\Log\LoggerInterface as Logger;
  * Class AirlockAuthenticationKeyAuthenticatorTest
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SecurityAuthenticatorTest extends TestCase
+class SecurityAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Logger logger */
     private $logger;
@@ -46,8 +46,8 @@ class SecurityAuthenticatorTest extends TestCase
     {
         /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-            ->setMethods(array('warning', 'info'))
-            ->getMockForAbstractClass();
+                             ->setMethods(array('warning', 'info'))
+                             ->getMockForAbstractClass();
 
         $this->userProvider = new AuthenticationProviderDummy();
     }

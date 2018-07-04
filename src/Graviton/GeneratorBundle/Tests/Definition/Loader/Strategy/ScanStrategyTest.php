@@ -9,10 +9,10 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ScanStrategyTest extends \PHPUnit_Framework_TestCase
+class ScanStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check loading with null input

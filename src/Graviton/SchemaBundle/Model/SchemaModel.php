@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Model based on Graviton\RestBundle\Model\DocumentModel.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class SchemaModel implements ContainerAwareInterface
@@ -152,6 +152,18 @@ class SchemaModel implements ContainerAwareInterface
     public function getDescriptionOfField($field)
     {
         return $this->getSchemaField($field, 'description');
+    }
+
+    /**
+     * get groups for a given field
+     *
+     * @param string $field field name
+     *
+     * @return array<string> group names
+     */
+    public function getGroupsOfField($field)
+    {
+        return $this->getSchemaField($field, 'x-groups', []);
     }
 
     /**

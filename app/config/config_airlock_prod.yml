@@ -1,3 +1,0 @@
-imports:
-    - { resource: security_airlock.yml }
-    - { resource: config_prod.yml }

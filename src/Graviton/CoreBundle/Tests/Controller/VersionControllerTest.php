@@ -11,7 +11,7 @@ use Graviton\TestBundle\Test\RestTestCase;
  * Basic functional test for /core/config.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class VersionControllerTest extends RestTestCase
@@ -32,8 +32,9 @@ class VersionControllerTest extends RestTestCase
         $this->assertInternalType('string', $response->getContent());
 
         $tagRegExp = '^([v]?[0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z.]+)?(\+[0-9a-zA-Z.]+)?$';
-        $branchRegExp = '^((dev\-){1}[0-9a-zA-Z\.\/\-\_]+)$';
-        $regExp = sprintf('/%s|%s/', $tagRegExp, $branchRegExp);
+        $branchRegExp = '^((dev\-){1}[0-9a-zA-Z\.\/\-\_]+)';
+        $secondDevRegExp = '^(.*)-dev@(.*)';
+        $regExp = sprintf('/%s|%s|%s/', $tagRegExp, $branchRegExp, $secondDevRegExp);
 
         $content = json_decode($response->getContent());
         foreach ($content->versions as $packageId => $packageVersion) {

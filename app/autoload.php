@@ -7,9 +7,6 @@
  * @link     http://swisscom.ch
  */
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Composer\Autoload\ClassLoader;
-
 /**
  * don't touch this unless you know what you're doing..
  * basically we have two autoloaders provided by Composer.
@@ -27,7 +24,5 @@ if (file_exists($primaryLoader)) {
     $loader = require $secondaryLoader;
 }
 // @codingStandardsIgnoreEnd
-
-AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 
 return $loader;

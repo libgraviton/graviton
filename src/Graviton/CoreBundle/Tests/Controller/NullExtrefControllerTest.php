@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class NullExtrefControllerTest extends RestTestCase
@@ -26,10 +26,8 @@ class NullExtrefControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseNullExtref definition is not loaded');
         }
 
-        $this->loadFixtures(
-            ['GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData'],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            ['GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData']
         );
     }
 

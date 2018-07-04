@@ -12,7 +12,7 @@ use Composer\Script\Event;
  * ScriptHandler for Composer, wrapping our symfony console commands..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ScriptHandler extends ScriptHandlerBase
@@ -29,23 +29,6 @@ class ScriptHandler extends ScriptHandlerBase
         $options = self::getOptions($event);
         $consolePath = $options['symfony-app-dir'];
         $cmd = escapeshellarg('graviton:generate:dynamicbundles').' --json';
-
-        self::executeCommand($event, $consolePath, $cmd);
-    }
-
-    /**
-     * Cleans existing dynamic bundles
-     *
-     * @param CommandEvent $event Event
-     *
-     * @return void
-     */
-    public static function cleanDynamicBundles(Event $event)
-    {
-        $options = self::getOptions($event);
-
-        $consolePath = $options['symfony-app-dir'];
-        $cmd = escapeshellarg('graviton:clean:dynamicbundles');
 
         self::executeCommand($event, $consolePath, $cmd);
     }

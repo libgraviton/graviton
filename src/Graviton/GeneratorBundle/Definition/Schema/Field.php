@@ -8,7 +8,7 @@ namespace Graviton\GeneratorBundle\Definition\Schema;
  * JSON definition "target.fields"
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class Field
@@ -17,6 +17,10 @@ class Field
      * @var string
      */
     private $name;
+    /**
+     * @var array
+     */
+    private $groups;
     /**
      * @var string
      */
@@ -87,6 +91,29 @@ class Field
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * get Groups
+     *
+     * @return array Groups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * set Groups
+     *
+     * @param array $groups groups
+     *
+     * @return void
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
         return $this;
     }
 

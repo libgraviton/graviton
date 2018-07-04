@@ -9,7 +9,7 @@ use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
  * A single field as specified in the json definition
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class JsonDefinitionField implements DefinitionElementInterface
@@ -107,6 +107,7 @@ class JsonDefinitionField implements DefinitionElementInterface
             'searchable'            => $this->definition->getSearchable(),
             'translatable'          => $this->definition->getTranslatable(),
             'collection'            => $this->definition->getCollection(),
+            'groups'                => $this->definition->getGroups(),
 
             'name'                  => $this->getName(),
             'type'                  => $this->getType(),

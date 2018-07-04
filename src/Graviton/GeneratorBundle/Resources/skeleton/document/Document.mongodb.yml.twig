@@ -1,0 +1,174 @@
+{% if docType is defined and docType == "embeddedDocument" %}
+    {% set isEmbeddedDocument = true %}
+{% else %}
+    {% set isEmbeddedDocument = false %}
+{% endif %}
+
+
+{% if docType is not defined %}
+    {% set docType = "document" %}
+{% endif %}
+
+{# ######## START YAML #}
+
+{{ base }}Document\{{ document }}Base:
+  type: mappedSuperclass
+
+{{ base }}Document\{{ document }}:
+  type: {{ docType }}
+  collection: "{{ collection }}"
+  inheritanceType: COLLECTION_PER_CLASS
+
+{# FIELDS #}
+  fields:
+
+  {%- if idField is defined %}
+      {%- if isEmbeddedDocument == true %}
+
+    id:
+      id: false
+      type: {{ idField.doctrineType }}
+    realId:
+      id: true
+      type: {{ idField.doctrineType }}
+      strategy: AUTO
+      {%- else %}
+
+    id:
+      id: true
+      strategy: UUID
+
+      {%- endif %}
+  {%- else %}
+
+    id:
+      id: true
+      type: string
+      strategy: UUID
+  {%- endif %}
+
+{% if isrecordOriginFlagSet %}
+    recordOrigin:
+      type: string
+{% endif %}
+
+{# RELATION ARRAYS #}
+{% set relations = [] %}
+
+{% for field in fields %}
+    {%- if 'Graviton' in field.type %}
+        {%- if field.relType is defined %}
+            {%- set relType = {"embed": "embed", "ref": "reference"}[field.relType] %}
+        {%- else %}
+            {%- set relType = "reference" %}
+        {%- endif %}
+
+        {%- if '[]' in field.type %}
+            {%- set relType = relType ~ "Many" %}
+            {%- set target = field.type[0:-2] %}
+        {%- else %}
+            {%- set relType = relType ~ "One" %}
+            {%- set target = field.type %}
+        {%- endif %}
+
+        {%- if relType starts with 'embed' %}
+            {%- set target = target ~ 'Embedded' %}
+        {%- endif %}
+
+        {%- set newRelation = [{'relType': relType, 'name': field.fieldName, 'target': target}] %}
+
+        {# does the relation exist? #}
+        {%- if not attribute(relations, relType) is defined %}
+            {%- set relations = relations|merge({ (relType) : newRelation }) %}
+        {%- else %}
+            {%- set currentRels = attribute(relations, relType) %}
+            {%- set currentRels = currentRels|merge(newRelation) %}
+            {%- set relations = relations|merge({ (relType) : currentRels }) %}
+        {%- endif %}
+
+    {%- else %}
+
+{# our own types #}
+        {%- if field.type == 'hash' %}
+    {{ field.fieldName }}:
+      type: hash
+        {%- elseif field.type == 'hash[]' %}
+    {{ field.fieldName }}:
+      type: hasharray
+        {%- elseif field.type == 'date[]' %}
+    {{ field.fieldName }}:
+      type: datearray
+        {%- elseif '[]' in field.type or field.type == 'array' %}
+    {{ field.fieldName }}:
+      type: collection
+        {%- else %}
+
+{# normal field #}
+    {{ field.fieldName }}:
+      type: {{ field.type }}
+        {%- endif %}
+    {%- endif %}
+{% endfor %}
+
+{# relations #}
+{% if relations is not empty %}
+{% for relationType,rels in relations %}
+  {{ relationType }}:
+
+  {%- for singleRelation in rels %}
+
+    {{ singleRelation.name }}:
+      targetDocument: {{ singleRelation.target }}
+
+    {%- if singleRelation.relType starts with "reference" %}
+
+      cascade: all
+    {%- endif %}
+
+    {%- if singleRelation.relType ends with "Many" %}
+
+      strategy: set
+    {%- endif %}
+  {%- endfor %}
+
+{% endfor %}
+{% endif %}
+
+{# indexes #}
+
+{% if not isEmbeddedDocument %}
+
+  indexes:
+
+{#{% if (indexes is defined and indexes is not empty) or (textIndexes is defined and textIndexes is not empty) %} #}
+{%- if indexes is defined and indexes is not empty %}
+    {%- for index in indexes %}
+
+    {{ index }}:
+      keys:
+        {{ index }}: asc
+      options:
+        name: {{ index }}
+        background: true
+    {%- endfor %}
+{%- endif %}
+
+{% if textIndexes is defined and textIndexes is not empty %}
+
+    TextIndex:
+      keys:
+{% for index, value in textIndexes %}
+        {{ index }}: text
+{% endfor %}
+      options:
+        name: {{ collection }}Text
+        background: true
+        default_language: de
+        language_override: none
+        weights:
+{% for index, value in textIndexes %}
+          {{ index }}: {{ value }}
+{% endfor %}
+{% endif %}
+
+{% endif %}

@@ -1,26 +1,21 @@
 imports:
-    - { resource: security_prod.yml }
+    - { resource: security.yml }
     - { resource: config.yml }
 
-#framework:
-#    validation:
-#        cache: apc
-
-#doctrine:
-#    orm:
-#        metadata_cache_driver: apc
-#        result_cache_driver: apc
-#        query_cache_driver: apc
+# sentry is active on prod
+sentry:
+    dsn: "%graviton.sentry.dsn%"
+    skip_capture: "%graviton.sentry.dontReport%"
+    options:
+        environment: "%kernel.environment%"
+        tags:
+            application: graviton
 
 monolog:
     handlers:
         main:
-            type:         fingers_crossed
-            action_level: error
-            handler:      nested
-        nested:
-            type:  stream
-            path:  "%graviton.log.path%"
-            level: debug
-        console:
-            type:  console
+            type: "stream"
+            path: "%graviton.log.path%"
+            level: "%graviton.log.level%"
+            channels: ["!event", "!doctrine"]
+            formatter: "log_formatter"

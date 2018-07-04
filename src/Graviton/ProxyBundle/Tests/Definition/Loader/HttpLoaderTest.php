@@ -12,10 +12,10 @@ use Psr\Log\LoggerInterface;
  * tests for the HttpLoader class
  *
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class HttpLoaderTest extends \PHPUnit_Framework_TestCase
+class HttpLoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var HttpLoader
@@ -41,7 +41,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
             ->method("getBody")
             ->willReturn("{ 'test': 'bablaba' }");
 
-        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
+        $client = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
         $client->expects($this->any())
                 ->method("send")
                 ->withAnyParameters()
@@ -60,7 +60,7 @@ class HttpLoaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testSupports()
     {
-        $client = $this->getMockForAbstractClass('Proxy\Adapter\AdapterInterface');
+        $client = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
         $validator = $this->getMockBuilder('Symfony\Component\Validator\Validator\ValidatorInterface')
                           ->getMockForAbstractClass();
         $validator

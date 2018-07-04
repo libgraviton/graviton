@@ -1,27 +1,31 @@
 services:
     graviton.analytics.defaut_controller:
-        class:     Graviton\AnalyticsBundle\Controller\DefaultController
+        class: Graviton\AnalyticsBundle\Controller\DefaultController
+        public: true
         arguments:
-            serviceManager: "@graviton.analytics.service_manager"
+            - "@graviton.analytics.service_manager"
 
     graviton.analytics.analytics_manager:
         class: Graviton\AnalyticsBundle\Manager\AnalyticsManager
         arguments:
-            documentManager: "@doctrine_mongodb.odm.default_document_manager"
-            databaseName: "%graviton.mongodb.default.server.db%"
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "%graviton.mongodb.default.server.db%"
+            - "@graviton.document.service.dateconverter"
 
     graviton.analytics.service_manager:
         class: Graviton\AnalyticsBundle\Manager\ServiceManager
         arguments:
-            requestStack: "@request_stack"
-            analyticsManager: "@graviton.analytics.analytics_manager"
-            cacheProvider: "@=service(parameter('graviton.cache.provider.service_id'))"
-            router: "@router"
-            definitionBaseDirectory: "%kernel.root_dir%/.."
+            - "@request_stack"
+            - "@graviton.analytics.analytics_manager"
+            - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "@graviton.document.service.dateconverter"
+            - "@router"
+            - "%kernel.root_dir%/.."
+            - "%graviton.analytics.cache_time.metadata%"
 
     graviton.analytics.homepage_listener:
         class: Graviton\AnalyticsBundle\Listener\HomepageRenderListener
         arguments:
-            serviceConverter: "@graviton.analytics.service_manager"
+            - "@graviton.analytics.service_manager"
         tags:
             - { name: kernel.event_listener, event: homepage.render, method: onRender }

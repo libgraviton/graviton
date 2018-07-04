@@ -9,15 +9,16 @@ use Graviton\DocumentBundle\Entity\Hash;
 use Graviton\DocumentBundle\Serializer\Handler\HashHandler;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Test HashHandler
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/GPL GPL
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class HashHandlerTest extends \PHPUnit_Framework_TestCase
+class HashHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test HashHandler::serializeHashToJson()
@@ -37,7 +38,7 @@ class HashHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $hash,
-            (new HashHandler())->serializeHashToJson(
+            (new HashHandler(new RequestStack()))->serializeHashToJson(
                 $serializationVisitor,
                 $hash,
                 $type,
@@ -71,7 +72,7 @@ class HashHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $hash,
-            (new HashHandler())->deserializeHashFromJson(
+            (new HashHandler(new RequestStack()))->deserializeHashFromJson(
                 $deserializationVisitor,
                 $array,
                 $type,

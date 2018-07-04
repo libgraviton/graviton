@@ -25,7 +25,7 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class FileManager
@@ -40,8 +40,15 @@ class FileManager
      */
     private $documentManager;
 
-    /** @var array allowedMimeTypes Control files to be saved and returned */
+    /**
+     * @var array allowedMimeTypes Control files to be saved and returned
+     */
     private $allowedMimeTypes = [];
+
+    /**
+     * @var bool whether or not we should read the files mimetype or trust the database (depending on storage)
+     */
+    private $readFileSystemMimeType = false;
 
     /**
      * FileManager constructor.
@@ -70,6 +77,18 @@ class FileManager
     }
 
     /**
+     * set ReadFileSystemMimeType
+     *
+     * @param bool $readFileSystemMimeType readFileSystemMimeType
+     *
+     * @return void
+     */
+    public function setReadFileSystemMimeType($readFileSystemMimeType)
+    {
+        $this->readFileSystemMimeType = $readFileSystemMimeType;
+    }
+
+    /**
      * Will update the response object with provided file data
      *
      * @param Response     $response response
@@ -87,7 +106,11 @@ class FileManager
         }
 
         // We use file's mimeType, just in case none we use DB's.
-        $mimeType = $this->fileSystem->getMimetype($file->getId());
+        $mimeType = null;
+
+        if ($this->readFileSystemMimeType) {
+            $mimeType = $this->fileSystem->getMimetype($file->getId());
+        }
         if (!$mimeType) {
             $mimeType = $metadata->getMime();
         }

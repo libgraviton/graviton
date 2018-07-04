@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class RequiredHashControllerTest extends RestTestCase
@@ -26,10 +26,8 @@ class RequiredHashControllerTest extends RestTestCase
             $this->markTestSkipped('TestCaseRequiredHashData definition is not loaded');
         }
 
-        $this->loadFixtures(
-            ['GravitonDyn\TestCaseRequiredHashBundle\DataFixtures\MongoDB\LoadTestCaseRequiredHashData'],
-            null,
-            'doctrine_mongodb'
+        $this->loadFixturesLocal(
+            ['GravitonDyn\TestCaseRequiredHashBundle\DataFixtures\MongoDB\LoadTestCaseRequiredHashData']
         );
     }
 

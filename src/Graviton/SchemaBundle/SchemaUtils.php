@@ -6,9 +6,9 @@
 namespace Graviton\SchemaBundle;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Utils for generating schemas.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class SchemaUtils
@@ -33,7 +33,7 @@ class SchemaUtils
     /**
      * language repository
      *
-     * @var LanguageRepository repository
+     * @var DocumentRepository repository
      */
     private $languageRepository;
 
@@ -105,7 +105,7 @@ class SchemaUtils
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
      * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
-     * @param LanguageRepository                 $languageRepository        repository
+     * @param DocumentRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
      * @param Serializer                         $serializer                serializer
      * @param array                              $extrefServiceMapping      Extref service mapping
@@ -119,7 +119,7 @@ class SchemaUtils
     public function __construct(
         RepositoryFactory $repositoryFactory,
         SerializerMetadataFactoryInterface $serializerMetadataFactory,
-        LanguageRepository $languageRepository,
+        DocumentRepository $languageRepository,
         RouterInterface $router,
         Serializer $serializer,
         array $extrefServiceMapping,
@@ -224,7 +224,7 @@ class SchemaUtils
         $meta = $repo->getClassMetadata();
 
         // Init sub searchable fields
-        $subSearchableFields = array();
+        $subSearchableFields = [];
 
         // look for translatables in document class
         $documentReflection = new \ReflectionClass($repo->getClassName());
@@ -271,7 +271,10 @@ class SchemaUtils
         }
 
         // don't describe hidden fields
-        $requiredFields = $model->getRequiredFields() ?: [];
+        $requiredFields = $model->getRequiredFields();
+        if (empty($requiredFields) || !is_array($requiredFields)) {
+            $requiredFields = [];
+        }
         $requiredFields = array_intersect_key($documentFieldNames, array_combine($requiredFields, $requiredFields));
 
         foreach ($meta->getFieldNames() as $field) {
@@ -301,6 +304,7 @@ class SchemaUtils
             $property->setTitle($model->getTitleOfField($field));
             $property->setDescription($model->getDescriptionOfField($field));
             $property->setType($meta->getTypeOfField($field));
+            $property->setGroups($model->getGroupsOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
 
             // we only want to render if it's true
@@ -366,7 +370,7 @@ class SchemaUtils
             } elseif (in_array($field.'[]', $translatableFields, true)) {
                 $property = $this->makeArrayTranslatable($property, $languages);
             } elseif ($meta->getTypeOfField($field) === 'extref') {
-                $urls = array();
+                $urls = [];
                 $refCollections = $model->getRefCollectionOfField($field);
                 foreach ($refCollections as $collection) {
                     if (isset($this->extrefServiceMapping[$collection])) {

@@ -10,7 +10,7 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\DispersalStrategyIn
 use Doctrine\Common\Cache\CacheProvider;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Proxy\Adapter\AdapterInterface;
+use GuzzleHttp\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints\Url;
@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * load a file over http and process the data
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class HttpLoader implements LoaderInterface
@@ -31,7 +31,7 @@ class HttpLoader implements LoaderInterface
     private $validator;
 
     /**
-     * @var AdapterInterface
+     * @var Client
      */
     private $client;
 
@@ -70,10 +70,10 @@ class HttpLoader implements LoaderInterface
      * constructor
      *
      * @param ValidatorInterface $validator validator
-     * @param AdapterInterface   $client    http client
+     * @param Client             $client    http client
      * @param LoggerInterface    $logger    Logger
      */
-    public function __construct(ValidatorInterface $validator, AdapterInterface $client, LoggerInterface $logger)
+    public function __construct(ValidatorInterface $validator, Client $client, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->client = $client;
@@ -149,6 +149,11 @@ class HttpLoader implements LoaderInterface
     public function load($input)
     {
         $retVal = new ApiDefinition();
+        if (is_null($input)) {
+            // if no thirdparty defined; abort now..
+            return $retVal;
+        }
+
         if (isset($this->strategy)) {
             if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
                 $content = $this->cache->fetch($this->options['storeKey']);
@@ -162,7 +167,7 @@ class HttpLoader implements LoaderInterface
             // store current host (name or ip) serving the API. This MUST be the host only and does not include the
             // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
             // documentation is to be used (including the port)
-            $fallbackHost = array();
+            $fallbackHost = [];
             $fallbackHost['host'] = sprintf(
                 '%s://%s:%d',
                 $request->getUri()->getScheme(),

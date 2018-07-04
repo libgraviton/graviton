@@ -9,10 +9,10 @@ use Graviton\GeneratorBundle\Definition\Loader\Strategy\FileStrategy;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FileStrategyTest extends \PHPUnit_Framework_TestCase
+class FileStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * check if loading from a single file works

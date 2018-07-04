@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * the extension of generated bundles..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ShowcaseExtensionController extends RestController
@@ -50,10 +50,6 @@ class ShowcaseExtensionController extends RestController
             ->setStatusCode(Response::HTTP_OK)
             ->setContent($this->restUtils->serialize($data));
 
-        return $this->render(
-            'GravitonCoreBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
+        return $response;
     }
 }

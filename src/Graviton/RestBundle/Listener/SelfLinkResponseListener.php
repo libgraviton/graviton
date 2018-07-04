@@ -18,7 +18,7 @@ use Graviton\RestBundle\Event\RestEvent;
  * FilterResponseListener for adding a rel=self Link header to a response.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class SelfLinkResponseListener
@@ -122,7 +122,7 @@ class SelfLinkResponseListener
     {
         // for now we assume that everything except collections has an id
         // this is also flawed since it does not handle search actions
-        $parameters = array();
+        $parameters = [];
 
         if ($routeType == 'post' || $routeType == 'postNoSlash') {
             // handle post request by rewriting self link to newly created resource

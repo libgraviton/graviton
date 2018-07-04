@@ -13,7 +13,7 @@ use Graviton\BundleBundle\DependencyInjection\GravitonBundleExtension;
  * To learn more see {@link http://scm.to/004w}
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class GravitonExceptionExtension extends GravitonBundleExtension

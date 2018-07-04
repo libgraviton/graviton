@@ -9,10 +9,10 @@ use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ProxyBundle\Exception\TransformationException;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\ProxyBundle\Service\TransformationHandler;
+use Graviton\PhpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
-use Proxy\Proxy;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @package Graviton\ProxyBundle\Controller
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
 class ProxyController
@@ -126,8 +126,6 @@ class ProxyController
             );
             $newRequest->headers->add($request->headers->all());
             $newRequest->query->add($request->query->all());
-            $queryString = $request->server->get('QUERY_STRING');
-            $newRequest->server->set('QUERY_STRING', $queryString);
 
             $newRequest = $this->transformationHandler->transformRequest(
                 $api['apiName'],
@@ -155,9 +153,9 @@ class ProxyController
                 clone $response
             );
         } catch (ClientException $e) {
-            $response = $e->getResponse();
+            $response = (new HttpFoundationFactory())->createResponse($e->getResponse());
         } catch (ServerException $serverException) {
-            $response = $serverException->getResponse();
+            $response = (new HttpFoundationFactory())->createResponse($serverException->getResponse());
         } catch (TransformationException $e) {
             $message = json_encode(
                 ['code' => 404, 'message' => 'HTTP 404 Not found']

@@ -10,7 +10,6 @@ use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
 use Graviton\RestBundle\HttpFoundation\LinkHeader;
 use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * MainController
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class MainController
@@ -40,11 +39,6 @@ class MainController
      * @var RestUtilsInterface
      */
     private $restUtils;
-
-    /**
-     * @var EngineInterface
-     */
-    private $templating;
 
     /**
      * @var EventDispatcherInterface
@@ -75,7 +69,6 @@ class MainController
      * @param Router                   $router                   router
      * @param Response                 $response                 prepared response
      * @param RestUtilsInterface       $restUtils                rest-utils from GravitonRestBundle
-     * @param EngineInterface          $templating               templating-engine
      * @param EventDispatcherInterface $eventDispatcher          event dispatcher
      * @param ApiDefinitionLoader      $apiLoader                loader for third party api definition
      * @param array                    $additionalRoutes         custom routes
@@ -86,7 +79,6 @@ class MainController
         Router $router,
         Response $response,
         RestUtilsInterface $restUtils,
-        EngineInterface $templating,
         EventDispatcherInterface $eventDispatcher,
         ApiDefinitionLoader $apiLoader,
         $additionalRoutes = [],
@@ -96,7 +88,6 @@ class MainController
         $this->router = $router;
         $this->response = $response;
         $this->restUtils = $restUtils;
-        $this->templating = $templating;
         $this->eventDispatcher = $eventDispatcher;
         $this->apiLoader = $apiLoader;
         $this->addditionalRoutes = $additionalRoutes;
@@ -128,25 +119,7 @@ class MainController
         // todo: this should be covered by a kernel.response event listener?
         $response->headers->set('Content-Type', 'application/json');
 
-        return $this->render(
-            'GravitonCoreBundle:Main:index.json.twig',
-            array('response' => $response->getContent()),
-            $response
-        );
-    }
-
-    /**
-     * Renders a view.
-     *
-     * @param string   $view       The view name
-     * @param array    $parameters An array of parameters to pass to the view
-     * @param Response $response   A response instance
-     *
-     * @return Response A Response instance
-     */
-    public function render($view, array $parameters = array(), Response $response = null)
-    {
-        return $this->templating->renderResponse($view, $parameters, $response);
+        return $response;
     }
 
     /**
@@ -270,7 +243,7 @@ class MainController
         $definition = $this->apiLoader;
         $mainRoute = $this->router->generate(
             'graviton.core.static.main.all',
-            array(),
+            [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
         $services = array_map(

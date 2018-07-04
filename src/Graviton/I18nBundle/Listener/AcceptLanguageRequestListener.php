@@ -5,23 +5,19 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Graviton\I18nBundle\Service\I18nCacheUtils;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\AcceptHeader;
-use Graviton\I18nBundle\Repository\LanguageRepository;
 
 /**
  * GetResponseListener for parsing Accept-Language headers
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class AcceptLanguageRequestListener
 {
-    /**
-     * @var LanguageRepository
-     */
-    private $repository;
 
     /**
      * @var string
@@ -29,15 +25,22 @@ class AcceptLanguageRequestListener
     private $defaultLocale;
 
     /**
+     * @var I18nCacheUtils
+     */
+    private $cacheUtils;
+
+    /**
      * set language repository used for getting available languages
      *
-     * @param LanguageRepository $repository    repo
-     * @param string             $defaultLocale default locale to return if no language given in request
+     * @param string         $defaultLocale default locale to return if no language given in request
+     * @param I18nCacheUtils $cacheUtils    i18n cache utils
      */
-    public function __construct(LanguageRepository $repository, $defaultLocale)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        $defaultLocale,
+        I18nCacheUtils $cacheUtils
+    ) {
         $this->defaultLocale = $defaultLocale;
+        $this->cacheUtils = $cacheUtils;
     }
 
     /**
@@ -49,9 +52,7 @@ class AcceptLanguageRequestListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $request = $event->getRequest();
-        $headers = AcceptHeader::fromString($request->headers->get('Accept-Language'));
-
+        $headers = AcceptHeader::fromString($event->getRequest()->headers->get('Accept-Language'));
         $defaultLanguage = [$this->defaultLocale => $this->defaultLocale];
 
         $languages = array_intersect(
@@ -61,18 +62,13 @@ class AcceptLanguageRequestListener
                 },
                 $headers->all()
             ),
-            array_map(
-                function ($language) {
-                    return $language->getId();
-                },
-                $this->repository->findAll()
-            )
+            $this->cacheUtils->getLanguages()
         );
 
         $languages = array_unique(
             array_merge($defaultLanguage, $languages)
         );
 
-        $request->attributes->set('languages', $languages);
+        $event->getRequest()->attributes->set('languages', $languages);
     }
 }

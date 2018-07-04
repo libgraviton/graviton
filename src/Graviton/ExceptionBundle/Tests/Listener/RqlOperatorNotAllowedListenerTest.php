@@ -15,10 +15,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlOperatorNotAllowedListenerTest extends \PHPUnit_Framework_TestCase
+class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject

@@ -16,7 +16,7 @@ use Graviton\SchemaBundle\SchemaUtils;
  * FilterResponseListener for adding a rel=self Link header to a response.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class CanonicalSchemaLinkResponseListener
@@ -49,7 +49,7 @@ class CanonicalSchemaLinkResponseListener
             $linkHeader = LinkHeader::fromResponse($response);
 
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
-            $url = $this->router->generate($routeName, array(), UrlGeneratorInterface::ABSOLUTE_URL);
+            $url = $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
             // append rel=canonical link to link headers
             $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));

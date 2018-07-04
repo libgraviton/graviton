@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class TranslatableArrayControllerTest extends RestTestCase
@@ -31,14 +31,12 @@ class TranslatableArrayControllerTest extends RestTestCase
             $this->markTestSkipped(sprintf('%s definition is not loaded', TestCaseTranslatableArray::class));
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadLanguageData::class,
                 LoadMultiLanguageData::class,
                 LoadTestCaseTranslatableArrayData::class,
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

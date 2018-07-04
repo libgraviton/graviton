@@ -9,11 +9,11 @@
     convertWarningsToExceptions = "true"
     processIsolation            = "false"
     stopOnFailure               = "false"
-    syntaxCheck                 = "false"
-    bootstrap                   = "app/bootstrap.tests.php" >
+    bootstrap                   = "app/bootstrap.tests.php">
   <testsuites>
     <testsuite name="integration">
       <directory>src/*/*Bundle/Tests/Controller</directory>
+      <directory>src/*/*Bundle/Tests/Integration</directory>
       <directory>src/*/Bundle/*Bundle/Tests/Controller</directory>
       <directory>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</directory>
       <file>src/Graviton/FileBundle/Tests/FileManagerTest.php</file>
@@ -21,13 +21,12 @@
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</file>
       <file>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</file>
-      <file>src/Graviton/GeneratorBundle/Tests/Command/GenerateBuildIndexesCommandTest.php</file>
       <file>src/Graviton/AnalyticsBundle/Tests/Model/AnalyticModelTest.php</file>
     </testsuite>
     <testsuite name="unit">
       <directory>src/*/*Bundle/Tests</directory>
       <directory>src/*/Bundle/*Bundle/Tests</directory>
-      <exclude>src/*/*Bundle/Tests/Controller</exclude>>
+      <exclude>src/*/*Bundle/Tests/Controller</exclude>
       <exclude>src/*/Bundle/*Bundle/Tests/Controller</exclude>
       <exclude>src/Graviton/SecurityBundle/Tests/Authentication/Strategies</exclude>
       <exclude>src/Graviton/FileBundle/Tests/FileManagerTest.php</exclude>
@@ -35,7 +34,6 @@
       <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyServiceTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/JsonExceptionListerTest.php</exclude>
       <exclude>src/Graviton/CoreBundle/Tests/Services/ReadOnlyFieldTest.php</exclude>
-      <exclude>src/Graviton/GeneratorBundle/Tests/Command/GenerateBuildIndexesCommandTest.php</exclude>
       <exclude>src/Graviton/AnalyticsBundle/Tests/Model/AnalyticModelTest.php</exclude>
     </testsuite>
   </testsuites>
@@ -62,5 +60,6 @@
   </php>
   <listeners>
     <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
+    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
   </listeners>
 </phpunit>

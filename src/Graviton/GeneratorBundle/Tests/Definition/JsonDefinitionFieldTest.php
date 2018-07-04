@@ -14,7 +14,7 @@ use Graviton\GeneratorBundle\Definition\Schema;
  * JsonDefinitionField test
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
@@ -160,6 +160,7 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                 $this->getBaseDefAsArray($definition),
                 [
                     'name'                 => $field->getName(),
+                    'groups'               => $definition->getGroups(),
                     'type'                 => $field->getType(),
                     'exposedName'          => $definition->getExposeAs(),
                     'doctrineType'         => $field->getTypeDoctrine(),

@@ -9,15 +9,11 @@ namespace Graviton\GeneratorBundle\Generator;
  * Generates the dynamic BundleBundle
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class DynamicBundleBundleGenerator extends AbstractGenerator
 {
-    /**
-     * @private string[]
-     */
-    protected $gravitonSkeletons;
 
     /**
      * Optional additions to add
@@ -50,12 +46,7 @@ class DynamicBundleBundleGenerator extends AbstractGenerator
      */
     public function generate(array $bundleList, $bundleBundleNamespace, $bundleName, $targetFilename)
     {
-        // hm, where should that be called?
-        $this->setSkeletonDirs(array('.'));
-
-        // compose absolute classnames
-        // array contains DynNamespace/NameBundle -> convert
-        $absoluteList = array();
+        $absoluteList = [];
         foreach ($bundleList as $namespace) {
             $absoluteList[] = '\\' . str_replace('/', '\\', $namespace) .
                 '\\' . str_replace('/', '', $namespace);

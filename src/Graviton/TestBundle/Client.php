@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
  * This is mainly used during acceptance testing.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class Client extends FrameworkClient
@@ -55,9 +55,9 @@ class Client extends FrameworkClient
     public function post(
         $uri,
         $content,
-        array $parameters = array(),
-        array $files = array(),
-        array $server = array(),
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
         $jsonEncode = true
     ) {
         $this->jsonRequest = $jsonEncode;
@@ -93,9 +93,9 @@ class Client extends FrameworkClient
     public function put(
         $uri,
         $content,
-        array $parameters = array(),
-        array $files = array(),
-        array $server = array(),
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
         $jsonEncode = true
     ) {
         $this->jsonRequest = $jsonEncode;

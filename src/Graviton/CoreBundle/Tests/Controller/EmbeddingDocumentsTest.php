@@ -16,7 +16,7 @@ use GravitonDyn\EmbedTestHashAsEmbeddedBundle\DataFixtures\MongoDB\LoadEmbedTest
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class EmbeddingDocumentsTest extends RestTestCase
@@ -35,7 +35,7 @@ class EmbeddingDocumentsTest extends RestTestCase
             $this->markTestSkipped('Test definitions are not loaded');
         }
 
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             [
                 LoadEmbedTestEntityData::class,
                 LoadEmbedTestDocumentAsEmbeddedData::class,
@@ -43,9 +43,7 @@ class EmbeddingDocumentsTest extends RestTestCase
                 LoadEmbedTestDocumentAsDeepEmbeddedData::class,
                 LoadEmbedTestDocumentAsDeepReferenceData::class,
                 LoadEmbedTestHashAsEmbeddedData::class,
-            ],
-            null,
-            'doctrine_mongodb'
+            ]
         );
     }
 

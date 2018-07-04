@@ -10,10 +10,10 @@ use Graviton\I18nBundle\Command\CreateTranslationResourcesCommand;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
+class CreateTranslationResourcesCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * test graviton:i118n:create:resources command
@@ -22,7 +22,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateResourcesCommand()
     {
-        $languageMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\LanguageRepository')
+        $languageMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentRepository')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -52,7 +52,7 @@ class CreateTranslationResourcesCommandTest extends \PHPUnit_Framework_TestCase
             ->method('getDocumentManager')
             ->willReturn($documentManager);
 
-        $translatableMock = $this->getMockBuilder('\Graviton\I18nBundle\Repository\TranslatableRepository')
+        $translatableMock = $this->getMockBuilder('\Doctrine\ODM\MongoDB\DocumentRepository')
             ->disableOriginalConstructor()
             ->getMock();
 

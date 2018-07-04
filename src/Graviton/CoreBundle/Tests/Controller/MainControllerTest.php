@@ -6,7 +6,6 @@
 namespace Graviton\CoreBundle\Tests\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
-use Graviton\CoreBundle\Service\CoreUtils;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Basic functional test for /.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class MainControllerTest extends RestTestCase
@@ -50,11 +49,11 @@ class MainControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/');
 
-        $composer = new CoreUtils($this->getContainer()->getParameter('graviton.core.version.data'));
-
         $response = $client->getResponse();
-
-        $this->assertEquals($composer->getVersionInHeaderFormat(), $response->headers->get('X-Version'));
+        $this->assertEquals(
+            $this->getContainer()->getParameter('graviton.core.version.header'),
+            $response->headers->get('X-Version')
+        );
     }
 
     /**
@@ -130,7 +129,6 @@ class MainControllerTest extends RestTestCase
 
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
@@ -141,24 +139,24 @@ class MainControllerTest extends RestTestCase
             ]
         ];
 
-        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
                 [
                     $routerDouble,
                     $responseDouble,
                     $restUtilsDouble,
-                    $templateDouble,
                     $dispatcherDouble,
                     $apiLoaderDouble,
                     $configuration
                 ]
             )
-            ->setMethods(array('prepareLinkHeader'))
-            ->getProxy();
+            ->getMock();
+
+        $prepareLinkHeader = $this->getPrivateClassMethod($controller, 'prepareLinkHeader');
 
         $this->assertEquals(
             '<http://localhost/core/app>; rel="apps"; type="application/json"',
-            $controller->prepareLinkHeader()
+            $prepareLinkHeader->invokeArgs($controller, [])
         );
     }
 
@@ -203,7 +201,6 @@ class MainControllerTest extends RestTestCase
 
         $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $templateDouble = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
         $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
         $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
@@ -219,22 +216,21 @@ class MainControllerTest extends RestTestCase
             "graviton.core.rest.product.options" => $routerDouble,
         ];
 
-        $controller = $this->getProxyBuilder('\Graviton\CoreBundle\Controller\MainController')
+        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
             ->setConstructorArgs(
                 [
                     $routerDouble,
                     $responseDouble,
                     $restUtilsDouble,
-                    $templateDouble,
                     $dispatcherDouble,
                     $apiLoaderDouble,
                     [],
                     [],
-                    $configuration,
+                    $configuration
                 ]
-            )
-            ->setMethods(array('determineServices'))
-            ->getProxy();
+            )->getMock();
+
+        $determineServices = $this->getPrivateClassMethod($controller, 'determineServices');
 
         $this->assertEquals(
             [
@@ -247,7 +243,7 @@ class MainControllerTest extends RestTestCase
                     'profile' => 'http://localhost/schema/core/product/collection'
                 ],
             ],
-            $controller->determineServices($optionRoutes)
+            $determineServices->invokeArgs($controller, [$optionRoutes])
         );
     }
 

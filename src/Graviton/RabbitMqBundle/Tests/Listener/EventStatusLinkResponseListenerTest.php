@@ -13,10 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
  * Class EventStatusLinkResponseListenerTest
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
+class EventStatusLinkResponseListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Verifies the correct workflow of the ResponseListener
@@ -33,14 +33,13 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             ->will(
                 $this->returnCallback(
                     function ($message, $routingKey) {
-                        \PHPUnit_Framework_Assert::assertSame(
+                        $this->assertSame(
                             '{"event":"document.core.product.create","coreUserId":"",'.
                             '"document":{"$ref":"graviton-api-test\/core\/product'.
                             '"},"status":{"$ref":"http:\/\/graviton-test.lo\/worker\/123jkl890yui567mkl"}}',
                             $message
                         );
-
-                        \PHPUnit_Framework_Assert::assertSame(
+                        $this->assertSame(
                             'someWorkerId',
                             $routingKey
                         );
@@ -167,7 +166,8 @@ class EventStatusLinkResponseListenerTest extends \PHPUnit_Framework_TestCase
             '\GravitonDyn\EventStatusBundle\Document\EventStatusStatus',
             '\GravitonDyn\EventStatusBundle\Document\EventStatusEventResourceEmbedded',
             'gravitondyn.eventstatus.rest.eventstatus.get',
-            $securityMock
+            $securityMock,
+            null
         );
 
         $listener->onKernelResponse($filterResponseEventMock);

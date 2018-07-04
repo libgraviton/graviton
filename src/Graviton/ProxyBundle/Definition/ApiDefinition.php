@@ -9,7 +9,7 @@ namespace Graviton\ProxyBundle\Definition;
  * ApiDefinition
  *
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
 class ApiDefinition
@@ -32,12 +32,12 @@ class ApiDefinition
     /**
      * @var array
      */
-    private $endpoints = array();
+    private $endpoints = [];
 
     /**
      * @var array
      */
-    private $schemes = array();
+    private $schemes = [];
 
     /**
      * sets the base path of the api
@@ -146,7 +146,7 @@ class ApiDefinition
      */
     public function getEndpoints($withHost = true, $prefix = null, $host = '', $withBasePath = true)
     {
-        $endpoints = array();
+        $endpoints = [];
         $basePath = "";
         if ($withHost) {
             $basePath = (empty($host)) ? $this->getHost() : $host;

@@ -5,17 +5,17 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
 
 /**
  * Class SameSubnetStrategyTest
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SameSubnetStrategyTest extends WebTestCase
+class SameSubnetStrategyTest extends RestTestCase
 {
     protected $strategy;
     /** @var Client */
@@ -40,6 +40,29 @@ class SameSubnetStrategyTest extends WebTestCase
     }
 
     /**
+     * x header shall be sent in order to gain the roles for the subnet user.
+     *
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     *
+     * @return void
+     */
+    public function testApply()
+    {
+        $this->client->request(
+            'GET', //method
+            '/', //uri
+            [], //parameters
+            [], //files
+            [] //server
+        );
+
+        $this->expectException('\InvalidArgumentException');
+        $this->strategy->apply($this->client->getRequest());
+    }
+
+    /**
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
      * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
@@ -53,6 +76,29 @@ class SameSubnetStrategyTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertSame('test-user-name', $this->strategy->apply($client->getRequest()));
+    }
+
+    /**
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
+     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
+     *
+     * @return void
+     */
+    public function testApplyExpectingInvalidArgumentException()
+    {
+        $this->client->request(
+            'GET', //method
+            '/', //uri
+            [], //parameters
+            [], //files
+            [] //server
+        );
+
+        $strategy = new SameSubnetStrategy('10.2.0.2');
+
+        $this->expectException('\InvalidArgumentException');
+        $strategy->apply($this->client->getRequest());
     }
 
     /**

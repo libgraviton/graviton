@@ -5,19 +5,16 @@
 
 namespace Graviton\SwaggerBundle\Service;
 
-use Graviton\CoreBundle\Service\CoreUtils;
-use Graviton\ExceptionBundle\Exception\MalformedInputException;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\SchemaBundle\SchemaUtils;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Route;
 
 /**
  * A service that generates a swagger conform service spec dynamically.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class Swagger
@@ -39,28 +36,28 @@ class Swagger
     private $schemaUtils;
 
     /**
-     * @var CoreUtils
+     * @var array
      */
-    private $coreUtils;
+    private $versionInformation;
 
     /**
      * Constructor
      *
-     * @param RestUtils   $restUtils   rest utils
-     * @param SchemaModel $schemaModel schema model instance
-     * @param SchemaUtils $schemaUtils schema utils
-     * @param CoreUtils   $coreUtils   coreUtils
+     * @param RestUtils   $restUtils          rest utils
+     * @param SchemaModel $schemaModel        schema model instance
+     * @param SchemaUtils $schemaUtils        schema utils
+     * @param array       $versionInformation version information
      */
     public function __construct(
         RestUtils $restUtils,
         SchemaModel $schemaModel,
         SchemaUtils $schemaUtils,
-        CoreUtils $coreUtils
+        array $versionInformation
     ) {
         $this->restUtils = $restUtils;
         $this->schemaModel = $schemaModel;
         $this->schemaUtils = $schemaUtils;
-        $this->coreUtils = $coreUtils;
+        $this->versionInformation = $versionInformation;
     }
 
     /**
@@ -72,7 +69,7 @@ class Swagger
     {
         $ret = $this->getBasicStructure();
         $routingMap = $this->restUtils->getServiceRoutingMap();
-        $paths = array();
+        $paths = [];
 
         foreach ($routingMap as $contName => $routes) {
             list(, $bundle,, $document) = explode('.', $contName);
@@ -188,11 +185,11 @@ class Swagger
      */
     private function getBasicStructure()
     {
-        $ret = array();
+        $ret = [];
         $ret['swagger'] = '2.0';
 
         $ret['info'] = array(
-            'version' => $this->coreUtils->getWrapperVersion()['version'],
+            'version' => $this->versionInformation['self'],
             'title' => 'Graviton REST Services',
             'description' => 'Testable API Documentation of this Graviton instance.',
         );
@@ -265,7 +262,7 @@ class Swagger
      */
     protected function getPathTags(Route $route, $part = 1)
     {
-        $ret = array();
+        $ret = [];
         $routeParts = explode('/', $route->getPath());
         if (isset($routeParts[$part])) {
             $ret[] = ucfirst($routeParts[$part]);

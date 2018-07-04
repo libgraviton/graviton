@@ -14,19 +14,46 @@ services:
 
     graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy:
         class: "%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%"
+        public: true
         arguments:
           - "@request_stack"
 
-    graviton.rest.serializer.deserializercontext:
-        class: "%graviton.rest.serializer.deserializercontext.class%"
+    graviton.rest.serializer:
+        parent: "jms_serializer"
+        public: true
         calls:
           -
-            method: setSerializeNull
+            method: setSerializationContextFactory
             arguments:
-              - true
+              - "@graviton.rest.serializer.serializercontext.factory"
 
-    graviton.rest.doctrine:
-        alias: doctrine
+    graviton.rest.serializer.serializercontext.factory:
+        parent: "graviton.rest.serializer.context.abstract"
+        class: "%graviton.rest.serializer.serializercontext.factory.class%"
+
+    graviton.rest.serializer.context.abstract:
+        class: "%graviton.rest.serializer.context.abstract.class%"
+        calls:
+          -
+            method: setSetSerializeNull
+            arguments:
+              - false
+          -
+            method: setRequestStack
+            arguments:
+              - "@request_stack"
+          -
+            method: setGroups
+            arguments:
+              - "%graviton.rest.serializer.groups%"
+          -
+            method: setOverrideHeaderName
+            arguments:
+              - "%graviton.rest.serializer.override_header_name%"
+          -
+            method: setOverrideHeaderAllowed
+            arguments:
+              - "%graviton.rest.serializer.allow_group_override_header%"
 
     graviton.rest.router:
         alias: router
@@ -53,6 +80,7 @@ services:
     #Controller -->
     graviton.rest.controller:
         abstract: true
+        public: true
         arguments:
           - "@graviton.rest.response"
           - "@graviton.rest.restutils"
@@ -60,7 +88,6 @@ services:
           - "@templating"
           - "@service_container"
           - "@graviton.schema.utils"
-          - "@graviton.document.service.collectioncache"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
 
@@ -73,14 +100,32 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restutils"
           - "@event_dispatcher"
-          - "@graviton.document.service.collectioncache"
           - "%graviton.rest.not_modifiable.origin.records%"
           - "%graviton.rest.pagination.limit%"
-
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
         class: "%graviton.rest.response.class%"
+
+    #Json Request listener -->
+    graviton.rest.listener.writelocklistener:
+        class: Graviton\RestBundle\Listener\WriteLockListener
+        arguments:
+          - "@logger"
+          - "@request_stack"
+          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "%graviton.writelock.randomwaiturls%"
+        tags:
+          -
+            name: kernel.event_listener
+            event: kernel.controller
+            priority: 9999
+            method: onKernelController
+          -
+            name: kernel.event_listener
+            event: kernel.response
+            priority: 9999
+            method: onKernelResponse
 
     #Json Request listener -->
     graviton.rest.listener.jsonrequestlistener:
@@ -114,12 +159,12 @@ services:
     #restUtils service - a service providing some helpers dealing with services -->
     graviton.rest.restutils:
         class: Graviton\RestBundle\Service\RestUtils
+        public: true
         arguments:
           - "@service_container"
           - "@router"
-          - "@serializer"
+          - "@graviton.rest.serializer"
           - "@logger"
-          - "@graviton.rest.serializer.serializercontext"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
           - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
@@ -242,6 +287,10 @@ services:
             arguments:
               - If-None-Match
           -
+            method: addAllowHeader
+            arguments:
+              - X-Analytics-No-Cache
+          -
             #we need to allow this header since clients routinely send it even though we want to replace it with something sane like OAuth2 -->
             method: addAllowHeader
             arguments:
@@ -272,8 +321,7 @@ services:
     graviton.rest.listener.xversionresponselistener:
         class: "%graviton.rest.listener.xversionresponselistener.class%"
         arguments:
-          - "@graviton.core.utils"
-          - "@logger"
+          - "%graviton.core.version.header%"
         tags:
           -
             name: kernel.event_listener

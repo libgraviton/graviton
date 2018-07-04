@@ -7,10 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonRequestListenerTest extends \PHPUnit_Framework_TestCase
+class JsonRequestListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void
@@ -18,7 +18,7 @@ class JsonRequestListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelRequest()
     {
         $server = array('HTTP_ACCEPT' => 'application/json');
-        $request = new Request(array(), array(), array(), array(), array(), $server);
+        $request = new Request([], [], [], [], [], $server);
 
         $eventDouble = $this->getMockBuilder('\Graviton\RestBundle\Event\RestEvent')
             ->disableOriginalConstructor()

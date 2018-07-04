@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Route;
  * Generate routes for individual actions
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ActionUtils
@@ -165,7 +165,7 @@ class ActionUtils
      *
      * @return Route
      */
-    public static function getRouteOptions($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
+    public static function getRouteOptions($service, $serviceConfig, array $parameters = [], $useIdPattern = false)
     {
         if ($useIdPattern) {
             $parameters['id'] = self::ID_PATTERN;
@@ -183,7 +183,7 @@ class ActionUtils
      *
      * @return Route
      */
-    public static function getRouteHead($service, $serviceConfig, array $parameters = array(), $useIdPattern = false)
+    public static function getRouteHead($service, $serviceConfig, array $parameters = [], $useIdPattern = false)
     {
         if ($useIdPattern) {
             $parameters['id'] = self::ID_PATTERN;

@@ -3,11 +3,27 @@ parameters:
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 
+    graviton.document.dateFormat: 'Y-m-d\TH:i:sO'
+    graviton.document.timezone: 'UTC'
+
     graviton.log.path: "%kernel.logs_dir%/%kernel.environment%.log"
+    graviton.log.level: "info"
+    graviton.sentry.dsn: null
+    graviton.sentry.dontReport:
+        - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
+        - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
+        - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
+        - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
     graviton.generator.dynamicbundle.dir: null
+
+    # which serializer groups should be (de)serialized on this instance
+    graviton.rest.serializer.groups: null
+    # if true, then the 'x-groups' header can override the serialized groups
+    graviton.rest.serializer.allow_group_override_header: false
+    graviton.rest.serializer.override_header_name: x-groups
 
     # Dependency injection in Security Bundle
     graviton.security.authentication.header_required: false
@@ -31,6 +47,24 @@ parameters:
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
 
+    graviton.analytics.cache_time.metadata: 10
+
+    # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
+    graviton.file.backend: local
+
+    # Add full qualified type, application/pdf, image/jpeg...
+    graviton.file.allowed.mime_types: []
+    graviton.file.read_filesystem_mimetype: true
+
+    graviton.file.local.storage_directory: "%kernel.root_dir%/files"
+
+    graviton.file.s3.endpoint: null
+    graviton.file.s3.version: latest
+    graviton.file.s3.region: us-east-1
+    graviton.file.s3.bucket: graviton
+    graviton.file.s3.credentials.key: null
+    graviton.file.s3.credentials.secret: null
+
     graviton.router.host: null
     graviton.router.port_http: null
     graviton.router.port_https: null
@@ -48,9 +82,6 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    # may be either 'local' or any oher defined in oneup_flysystem.adapters.* in config.yml
-    graviton.file.backend: local
-
     # rabbitmq config
     graviton.rabbitmq.host: localhost
     graviton.rabbitmq.port: 5672
@@ -59,6 +90,9 @@ parameters:
     graviton.rabbitmq.vhost: /
     graviton.rabbitmq.consumer.dump.routingkeys:
         - 'document.#'
+
+    graviton.worker.relativeUrl: null
+
     # pagination defaults
     graviton.rest.pagination.limit: 10
 
@@ -74,18 +108,14 @@ parameters:
     graviton.proxy.custom.sources: {}
     graviton.proxy.redirect.sources: {}
 
-    # Add full qualified type, application/pdf, image/jpeg...
-    graviton.file.allowed.mime_types: []
-
-    # List of collections to be saved in cache, in seconds
-    graviton.cache.collections:
-        EventStatus: 60
+    graviton.writelock.randomwaiturls:
+      - /event/status
 
     # caching related settings
     # doctrine_cache (*not* odm) caching service that should be used - used by our own components!
     # for redis use:
-    #    graviton.cache.provider.service_id: doctrine_cache.providers.redis
-    graviton.cache.provider.service_id: doctrine_cache.providers.local
+    #    graviton.cache.provider.service_id: graviton.cache.provider.redis
+    graviton.cache.provider.service_id: graviton.cache.provider.local
     graviton.cache.redis.host: localhost
     graviton.cache.redis.port: 6379
 

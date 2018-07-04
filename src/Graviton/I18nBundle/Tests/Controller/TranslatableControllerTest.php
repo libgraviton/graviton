@@ -11,11 +11,27 @@ use Graviton\TestBundle\Test\RestTestCase;
  * Basic functional test for /i18n/translatable
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class TranslatableControllerTest extends RestTestCase
 {
+
+    /**
+     * load fixtures
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loadFixturesLocal(
+            array(
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+            )
+        );
+    }
+
     /**
      * check that translatable record return correct CORS headers
      *

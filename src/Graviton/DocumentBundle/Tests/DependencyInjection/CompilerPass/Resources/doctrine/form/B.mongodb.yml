@@ -1,0 +1,17 @@
+Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B:
+  fields:
+    id:
+      id: true
+      type: string
+      strategy: UUID
+    field:
+      type: string
+
+  embedOne:
+    bchild:
+      targetDocument: Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C
+
+  embedMany:
+    bchildren:
+      targetDocument: Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\C
+      strategy: set

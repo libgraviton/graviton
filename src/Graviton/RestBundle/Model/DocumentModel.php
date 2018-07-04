@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Graviton\DocumentBundle\Service\CollectionCache;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\MongoOdm as Visitor;
@@ -30,7 +29,7 @@ use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
  * Use doctrine odm as backend
  *
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
 class DocumentModel extends SchemaModel implements ModelInterface
@@ -50,15 +49,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * @var string[]
      */
-    protected $requiredFields = array();
+    protected $requiredFields = [];
     /**
      * @var string[]
      */
-    protected $searchableFields = array();
+    protected $searchableFields = [];
     /**
      * @var string[]
      */
-    protected $textIndexes = array();
+    protected $textIndexes = [];
     /**
      * @var DocumentRepository
      */
@@ -106,7 +105,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param Visitor         $visitor                    rql query visitor
      * @param RestUtils       $restUtils                  Rest utils
      * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
-     * @param CollectionCache $collectionCache            Cache Service
      * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
      * @param integer         $paginationDefaultLimit     amount of data records to be returned when in pagination cnt
      */
@@ -114,7 +112,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         Visitor $visitor,
         RestUtils $restUtils,
         $eventDispatcher,
-        CollectionCache $collectionCache,
         $notModifiableOriginRecords,
         $paginationDefaultLimit
     ) {
@@ -123,7 +120,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->notModifiableOriginRecords = $notModifiableOriginRecords;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
-        $this->cache = $collectionCache;
         $this->restUtils = $restUtils;
     }
 
@@ -258,21 +254,26 @@ class DocumentModel extends SchemaModel implements ModelInterface
     {
         $metadata = $this->repository->getClassMetadata();
         $indexes = $metadata->getIndexes();
-        if (count($indexes) < 1) {
+        if (empty($indexes)) {
             return false;
         }
-        $collectionsName = substr($metadata->getName(), strrpos($metadata->getName(), '\\') + 1);
-        $searchIndexName = $prefix.$collectionsName.'_index';
-        // We reverse as normally the search index is the last.
-        foreach (array_reverse($indexes) as $index) {
-            if (array_key_exists('options', $index) &&
-                array_key_exists('name', $index['options']) &&
-                $searchIndexName == $index['options']['name']
-            ) {
-                return true;
+
+        $text = array_filter(
+            $indexes,
+            function ($index) {
+                if (isset($index['keys'])) {
+                    $hasText = false;
+                    foreach ($index['keys'] as $name => $direction) {
+                        if ($direction == 'text') {
+                            $hasText = true;
+                        }
+                    }
+                    return $hasText;
+                }
             }
-        }
-        return false;
+        );
+
+        return !empty($text);
     }
 
     /**
@@ -322,11 +323,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
      *
      * @param string  $documentId id of entity to find
      * @param Request $request    request
+     * @param bool    $skipLock   if true, we don't check for the lock
      *
      * @throws NotFoundException
      * @return string Serialised object
      */
-    public function getSerialised($documentId, Request $request = null)
+    public function getSerialised($documentId, Request $request = null, $skipLock = false)
     {
         if (($request instanceof Request)  &&
             ($query = $request->attributes->get('rqlQuery')) &&
@@ -340,12 +342,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
                 throw new NotFoundException("Entry with id " . $documentId . " not found!");
             }
             $document = $this->restUtils->serialize($result);
-        } elseif ($cached = $this->cache->getByRepository($this->repository, $documentId)) {
-            $document = $cached;
         } else {
-            $this->cache->updateOperationCheck($this->repository, $documentId);
             $document = $this->restUtils->serialize($this->find($documentId));
-            $this->cache->setByRepository($this->repository, $document, $documentId);
         }
 
         return $document;
@@ -392,10 +390,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function deleteRecord($id)
     {
-        // Check and wait if another update is being processed, avoid double delete
-        $this->cache->updateOperationCheck($this->repository, $id);
-        $this->cache->addUpdateLock($this->repository, $id, 1);
-
         if (is_object($id)) {
             $entity = $id;
         } else {
@@ -414,8 +408,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_DELETE, $return);
             $return = null;
         }
-
-        $this->cache->releaseUpdateLock($this->repository, $id);
 
         return $return;
     }
@@ -600,7 +592,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event->setCollectionName($this->repository->getClassMetadata()->getCollection());
         $event->setCollectionClass($this->repository->getClassName());
         $event->setCollection($collection);
-        
+
         $this->eventDispatcher->dispatch($action, $event);
     }
 }

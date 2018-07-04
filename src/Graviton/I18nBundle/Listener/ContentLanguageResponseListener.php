@@ -11,11 +11,12 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  * FilterResponseListener for adding Content-Lanugage headers
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class ContentLanguageResponseListener
 {
+
     /**
      * add a rel=self Link header to the response
      *
@@ -25,9 +26,9 @@ class ContentLanguageResponseListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $languages = $event->getRequest()->attributes->get('languages', array());
-        $response = $event->getResponse();
-        $response->headers->set('Content-Language', implode(', ', $languages));
-        $event->setResponse($response);
+        $event->getResponse()->headers->set(
+            'Content-Language',
+            implode(', ', $event->getRequest()->attributes->get('languages', []))
+        );
     }
 }

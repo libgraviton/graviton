@@ -5,9 +5,11 @@
 
 namespace Graviton\DocumentBundle\Serializer\Handler;
 
+use Graviton\DocumentBundle\Service\DateConverter;
+use JMS\Serializer\Context;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\Handler\DateHandler as BaseDateHandler;
-use JsonSchema\Rfc3339;
+use JMS\Serializer\VisitorInterface;
 
 /**
  * Date handler for JMS serializer
@@ -17,34 +19,44 @@ use JsonSchema\Rfc3339;
  * Note that the main logic from JMS DateHandler is still used..
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class DateHandler extends BaseDateHandler
 {
 
     /**
-     * @var string
+     * @var DateConverter
      */
-    private $defaultFormat;
-
-    /**
-     * @var string
-     */
-    private $defaultTimezone;
+    private $dateConverter;
 
     /**
      * DateHandler constructor.
      *
-     * @param string $defaultFormat   configured default format
-     * @param string $defaultTimezone default timezone
-     * @param bool   $xmlCData        xml data
+     * @param DateConverter $dateConverter date converter
      */
-    public function __construct($defaultFormat = \DateTime::ISO8601, $defaultTimezone = 'UTC', $xmlCData = true)
+    public function __construct(DateConverter $dateConverter)
     {
-        $this->defaultFormat = $defaultFormat;
-        $this->defaultTimezone = $defaultTimezone;
-        parent::__construct($defaultFormat, $defaultTimezone, $xmlCData);
+        $this->dateConverter = $dateConverter;
+        parent::__construct($dateConverter->getDateFormat(), $dateConverter->getTimezone(), true);
+    }
+
+    /**
+     * make sure serializer uses us by setting a lower priority
+     *
+     * @return array methods
+     */
+    public static function getSubscribingMethods()
+    {
+        $methods = array_map(
+            function ($item) {
+                $item['priority'] = -100;
+                return $item;
+            },
+            parent::getSubscribingMethods()
+        );
+
+        return $methods;
     }
 
     /**
@@ -62,8 +74,25 @@ class DateHandler extends BaseDateHandler
             return null;
         }
 
-        $dt = Rfc3339::createFromString($data);
+        return parent::deserializeDateTimeFromJson(
+            $visitor,
+            $this->dateConverter->getDateTimeStringInFormat($data),
+            $type
+        );
+    }
 
-        return parent::deserializeDateTimeFromJson($visitor, $dt->format($this->defaultFormat), $type);
+    /**
+     * serialize datetime to json
+     *
+     * @param VisitorInterface $visitor visitor
+     * @param \DateTime        $date    data
+     * @param array            $type    type
+     * @param Context          $context context
+     *
+     * @return string serialized date
+     */
+    public function serializeDateTime(VisitorInterface $visitor, \DateTime $date, array $type, Context $context)
+    {
+        return $visitor->visitString($this->dateConverter->formatDateTime($date), $type, $context);
     }
 }

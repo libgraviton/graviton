@@ -11,7 +11,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * Graviton\SchemaBundle\Document\Schema
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class Schema
@@ -142,6 +142,11 @@ class Schema
      * @var string
      */
     protected $documentClass;
+
+    /**
+     * @var array<string>
+     */
+    protected $groups;
 
     /**
      * @var array<string>
@@ -540,6 +545,28 @@ class Schema
     public function setDocumentClass($documentClass)
     {
         $this->documentClass = $documentClass;
+    }
+
+    /**
+     * get Groups
+     *
+     * @return array Groups
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * set Groups
+     *
+     * @param array $groups groups
+     *
+     * @return void
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
     }
 
     /**

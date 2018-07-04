@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Basic functional test for /file
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class FileControllerTest extends RestTestCase
@@ -35,12 +35,10 @@ class FileControllerTest extends RestTestCase
      */
     public function setUp()
     {
-        $this->loadFixtures(
+        $this->loadFixturesLocal(
             array(
                 'GravitonDyn\FileBundle\DataFixtures\MongoDB\LoadFileData'
-            ),
-            null,
-            'doctrine_mongodb'
+            )
         );
     }
 
@@ -52,7 +50,7 @@ class FileControllerTest extends RestTestCase
     public function testFindAllEmptyCollection()
     {
         // reset fixtures since we already have some from setUp
-        $this->loadFixtures(array(), null, 'doctrine_mongodb');
+        $this->loadFixturesLocal([]);
         $client = static::createRestClient();
         $client->request('GET', '/file/');
 
@@ -61,7 +59,7 @@ class FileControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
 
-        $this->assertEquals(array(), $results);
+        $this->assertEquals([], $results);
     }
 
     /**

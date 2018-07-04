@@ -6,6 +6,10 @@
  * @license  http://opensource.org/licenses/GPL GPL
  * @link     http://swisscom.ch
  */
+// @codingStandardsIgnoreStart
+/** @var \Composer\Autoload\ClassLoader $loader */
+$loader = require __DIR__.'/../app/autoload.php';
+// @codingStandardsIgnoreEnd
 
 use Graviton\AppKernel;
 use Graviton\AppCache;
@@ -13,12 +17,6 @@ use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
-
-// @codingStandardsIgnoreStart
-/** @var \Composer\Autoload\ClassLoader $loader */
-$loader = require __DIR__.'/../app/autoload.php';
-include_once __DIR__.'/../app/bootstrap.php.cache';
-// @codingStandardsIgnoreEnd
 
 // check for env
 $env = getenv('SYMFONY_ENV');
@@ -43,12 +41,7 @@ if (!$activateDebug) {
     $kernel = new AppCache($kernel);
 }
 
-// When using the HttpCache, you need to call the method in your front controller
-// instead of relying on the configuration parameter
-// Request::enableHttpMethodParameterOverride();
-
-// don't trust Forwarded header; trust X-Forwarded-*
-Request::setTrustedHeaderName(Request::HEADER_FORWARDED, null);
+Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_X_FORWARDED_ALL);
 
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

@@ -6,16 +6,16 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Tests\Authentication\Strategies\AbstractHttpStrategyProxy;
-use Graviton\TestBundle\Test\WebTestCase;
+use Graviton\TestBundle\Test\RestTestCase;
 
 /**
  * Class AbstractHttpStrategyTest
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AbstractHttpStrategyTest extends WebTestCase
+class AbstractHttpStrategyTest extends RestTestCase
 {
     /**
      * check that arguments are required

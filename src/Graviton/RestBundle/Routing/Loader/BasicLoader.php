@@ -12,7 +12,7 @@ use Symfony\Component\Routing\RouteCollection;
  * Load routes for all rest services
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class BasicLoader extends Loader
@@ -108,7 +108,7 @@ class BasicLoader extends Loader
         $actionHead = ActionUtils::getRouteHead($service, $serviceConfig);
         $this->routes->add($resource . '.head', $actionHead);
 
-        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, array(), true);
+        $actionHead = ActionUtils::getRouteHead($service, $serviceConfig, [], true);
         $this->routes->add($resource . '.idHead', $actionHead);
 
         $actionGet = ActionUtils::getRouteGet($service, $serviceConfig);
@@ -129,7 +129,7 @@ class BasicLoader extends Loader
         $actionOptions = ActionUtils::getCanonicalSchemaRoute($service, $serviceConfig, 'item', true);
         $this->routes->add($resource . '.canonicalIdSchemaOptions', $actionOptions);
 
-        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, array(), true);
+        $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig, [], true);
         $this->routes->add($resource . '.idOptions', $actionOptions);
     }
 

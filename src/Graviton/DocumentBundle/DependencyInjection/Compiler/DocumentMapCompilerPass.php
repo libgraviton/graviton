@@ -16,7 +16,7 @@ use Symfony\Component\Finder\Finder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class DocumentMapCompilerPass implements CompilerPassInterface
@@ -63,15 +63,11 @@ class DocumentMapCompilerPass implements CompilerPassInterface
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/doctrine')
-                ->name('*.mongodb.xml'),
+                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/serializer')
                 ->name('*.xml'),
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config')
-                ->name('validation.xml'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/schema')

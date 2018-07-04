@@ -7,7 +7,7 @@ services:
           - "@graviton.rest.restutils"
           - "@graviton.schema.model.schemamodel"
           - "@graviton.schema.utils"
-          - "@graviton.core.utils"
+          - "%graviton.core.version.data%"
 
     graviton.swagger.filesystem.command:
         class: Symfony\Component\Filesystem\Filesystem
@@ -40,6 +40,7 @@ services:
 
     graviton.swagger.controller.swagger:
         class: Graviton\SwaggerBundle\Controller\SwaggerController
+        public: true
         arguments:
           - "@graviton.swagger.filesystem.finder"
           - "%kernel.root_dir%"

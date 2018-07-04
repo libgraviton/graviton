@@ -9,5 +9,3 @@ if (isset($_ENV['BOOTSTRAP_CLEAR_CACHE_ENV'])) {
         $fs->remove($cacheDir);
     }
 }
-
-require __DIR__.'/bootstrap.php.cache';

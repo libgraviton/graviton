@@ -4,6 +4,9 @@
         <property name="name"
                   type="string"
                   serialized-name="name"/>
+        <property name="groups"
+                  type="array&lt;string&gt;"
+                  serialized-name="groups"/>
         <property name="type"
                   type="string"
                   serialized-name="type"/>

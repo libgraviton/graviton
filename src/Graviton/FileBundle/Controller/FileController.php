@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class FileController extends RestController
@@ -125,18 +125,12 @@ class FileController extends RestController
         /** @var FileModel $model */
         $model = $this->getModel();
 
-        // Check and wait if another update is being processed
-        $this->collectionCache->updateOperationCheck($model->getRepository(), $id);
-        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 1);
-
         $file = new File();
         if ($metadata = $request->get('metadata', false)) {
             $file = $this->restUtils->validateRequest($metadata, $model);
         }
 
-        $this->collectionCache->addUpdateLock($model->getRepository(), $id, 5);
         $file = $this->fileManager->handleSaveRequest($file, $request, $model);
-        $this->collectionCache->releaseUpdateLock($model->getRepository(), $id);
 
         // Set status code and content
         $response = $this->getResponse();
@@ -179,7 +173,6 @@ class FileController extends RestController
         $content = json_decode($request->getContent(), true);
         if ($content) {
             // Checking so update time is correct
-            $this->collectionCache->updateOperationCheck($this->getModel()->getRepository(), $id);
             $now = new \DateTime();
             $patch = [
                 'op' => 'replace',

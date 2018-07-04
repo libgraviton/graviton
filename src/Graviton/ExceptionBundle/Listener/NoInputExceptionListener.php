@@ -13,7 +13,7 @@ use Graviton\ExceptionBundle\Exception\NoInputException;
  * Listener for no input exceptions
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class NoInputExceptionListener extends RestExceptionListener

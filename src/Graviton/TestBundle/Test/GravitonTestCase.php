@@ -5,10 +5,10 @@
 
 namespace Graviton\TestBundle\Test;
 
+use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use lapistano\ProxyObject\ProxyBuilder;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 /**
@@ -17,11 +17,14 @@ use Liip\FunctionalTestBundle\Test\WebTestCase;
  * Override creating a kernel with our custom bundle-bundle routine.
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
- * @license  http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
 class GravitonTestCase extends WebTestCase
 {
+
+    use PrivateClassMethodTrait;
+
     /**
      * return our namespaced AppKernel
      *
@@ -45,23 +48,12 @@ class GravitonTestCase extends WebTestCase
 
         $kernel = new AppKernel($env, $debug);
         $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
+        $kernel->boot();
 
         //set error reporting for phpunit
         ini_set('error_reporting', E_ALL);
 
         return $kernel;
-    }
-
-    /**
-     * Provides a proxy object of the provided class.
-     *
-     * @param string $class Namespaced name of the class to be proxied
-     *
-     * @return ProxyBuilder
-     */
-    public function getProxyBuilder($class)
-    {
-        return new ProxyBuilder($class);
     }
 
     /**
@@ -78,5 +70,22 @@ class GravitonTestCase extends WebTestCase
             ->disableOriginalConstructor()
             ->setMethods($methods)
             ->getMock();
+    }
+
+    /**
+     * small wrapper for fixture loading
+     *
+     * @param array $classNames class names to load
+     *
+     * @return AbstractExecutor|null
+     */
+    public function loadFixturesLocal(array $classNames = [])
+    {
+        return $this->loadFixtures(
+            $classNames,
+            false,
+            null,
+            'doctrine_mongodb'
+        );
     }
 }
