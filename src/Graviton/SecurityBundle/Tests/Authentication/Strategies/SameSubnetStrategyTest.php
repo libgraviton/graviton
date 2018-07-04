@@ -32,34 +32,11 @@ class SameSubnetStrategyTest extends RestTestCase
 
         $this->client = static::createClient();
         $this->propertyKey = $this->client->getKernel()
-            ->getContainer()
-            ->getParameter('graviton.security.authentication.strategy.subnet.key');
+                                          ->getContainer()
+                                          ->getParameter('graviton.security.authentication.strategy.subnet.key');
         $this->strategy = new SameSubnetStrategy(
             $this->propertyKey
         );
-    }
-
-    /**
-     * x header shall be sent in order to gain the roles for the subnet user.
-     *
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     *
-     * @return void
-     */
-    public function testApply()
-    {
-        $this->client->request(
-            'GET', //method
-            '/', //uri
-            [], //parameters
-            [], //files
-            [] //server
-        );
-
-        $this->expectException('\InvalidArgumentException');
-        $this->strategy->apply($this->client->getRequest());
     }
 
     /**
@@ -85,19 +62,12 @@ class SameSubnetStrategyTest extends RestTestCase
      *
      * @return void
      */
-    public function testApplyExpectingInvalidArgumentException()
+    public function testApplyHeaderReturnEmpty()
     {
-        $this->client->request(
-            'GET', //method
-            '/', //uri
-            [], //parameters
-            [], //files
-            [] //server
-        );
+        $options = ['HTTP_X-GRAVITON-AUTHENTICATION' => 'test-user-name', 'REMOTE_ADDR' => '126.0.0.1'];
+        $client = static::createClient([], $options);
+        $client->request('GET', '/');
 
-        $strategy = new SameSubnetStrategy('10.2.0.2');
-
-        $this->expectException('\InvalidArgumentException');
-        $strategy->apply($this->client->getRequest());
+        $this->assertSame('', $this->strategy->apply($client->getRequest()));
     }
 }

@@ -15,6 +15,15 @@ parameters:
     graviton.rest.serializer.override_header_name: x-groups
     graviton.worker.relativeUrl: "https://backendalias:9443/"
 
+    # for testing WhoamiController and security features
+    graviton.security.authentication.provider.model: gravitondyn.securityuser.model.securityuser
+    graviton.security.authentication.provider.model.query_field: username
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.multi
+    graviton.security.authentication.strategy.cookie.key: x-graviton-user
+    graviton.security.authentication.strategy.subnet.key: 127.0.0.0/24
+    graviton.security.authentication.strategy.subnet.header_field: x-graviton-auth
+    graviton.security.authentication.strategy.header.key: x-graviton-user
+
 framework:
     test: ~
     session:
