@@ -30,7 +30,7 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function __construct($subnet, $headerField = 'x-graviton-authentication')
     {
-        $this->subnet= $subnet;
+        $this->subnet = $subnet;
         $this->headerField = $headerField;
     }
 
@@ -53,7 +53,6 @@ class SameSubnetStrategy extends AbstractHttpStrategy
      */
     public function apply(Request $request)
     {
-        $ip = $request->getClientIp();
         if (IpUtils::checkIp($request->getClientIp(), $this->subnet)) {
             $name = $this->extractFieldInfo($request->headers, $this->headerField);
             if (!empty($name)) {
