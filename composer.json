@@ -53,7 +53,7 @@
         "squizlabs/php_codesniffer": "~3",
         "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "^0.37.0",
+        "graviton/test-services-bundle": "^0.40.0",
         "graviton/deploy-scripts": "~0.4",
         "libgraviton/codesniffer": "~2",
 
@@ -134,7 +134,7 @@
                     "graviton.security.authentication.strategy.subnet.header_field": "SECURITY_AUTHENTICATION_STRATEGY_SUBNET_HEADER_FIELD",
                     "graviton.security.authentication.provider.model": "SECURITY_AUTHENTICATION_PROVIDER_MODEL",
                     "graviton.security.authentication.provider.model.query_field": "SECURITY_AUTHENTICATION_MODEL_QUERY_FIELD",
-                    "graviton.security.authentication.strategy.multi.services": "GRAVITON_SECURITY_STRATEGY_MULTI_OPTIONS",
+                    "graviton.security.authentication.strategy.multi.services": "GRAVITON_SECURITY_STRATEGY_MULTI_SERVICES",
                     "graviton.cache.provider.service_id": "CACHE_PROVIDER_SERVICE_ID",
                     "graviton.cache.redis.host": "CACHE_REDIS_HOST",
                     "graviton.cache.redis.port": "CACHE_REDIS_PORT",
