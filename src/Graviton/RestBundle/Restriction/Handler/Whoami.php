@@ -5,6 +5,7 @@
 namespace Graviton\RestBundle\Restriction\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 
 /**
@@ -50,7 +51,13 @@ class Whoami implements HandlerInterface
      */
     public function getValue(DocumentRepository $repository, $fieldPath)
     {
-        var_dump($this->securityUtils->getSecurityUser());
-        return 'anonymous';
+        $user = 'anonymous';
+
+        $securityUser = $this->securityUtils->getSecurityUser();
+        if ($securityUser instanceof SecurityUser) {
+            $user = trim(strtolower($securityUser->getUsername()));
+        }
+
+        return $user;
     }
 }
