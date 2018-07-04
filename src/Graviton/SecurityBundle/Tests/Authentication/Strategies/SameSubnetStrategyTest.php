@@ -32,34 +32,11 @@ class SameSubnetStrategyTest extends RestTestCase
 
         $this->client = static::createClient();
         $this->propertyKey = $this->client->getKernel()
-            ->getContainer()
-            ->getParameter('graviton.security.authentication.strategy.subnet.key');
+                                          ->getContainer()
+                                          ->getParameter('graviton.security.authentication.strategy.subnet.key');
         $this->strategy = new SameSubnetStrategy(
             $this->propertyKey
         );
-    }
-
-    /**
-     * x header shall be sent in order to gain the roles for the subnet user.
-     *
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     *
-     * @return void
-     */
-    public function testApply()
-    {
-        $this->client->request(
-            'GET', //method
-            '/', //uri
-            [], //parameters
-            [], //files
-            [] //server
-        );
-
-        $this->expectException('\InvalidArgumentException');
-        $this->strategy->apply($this->client->getRequest());
     }
 
     /**
@@ -76,29 +53,6 @@ class SameSubnetStrategyTest extends RestTestCase
         $client->request('GET', '/');
 
         $this->assertSame('test-user-name', $this->strategy->apply($client->getRequest()));
-    }
-
-    /**
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy::apply
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::extractFieldInfo
-     * @covers \Graviton\SecurityBundle\Authentication\Strategies\AbstractHttpStrategy::validateField
-     *
-     * @return void
-     */
-    public function testApplyExpectingInvalidArgumentException()
-    {
-        $this->client->request(
-            'GET', //method
-            '/', //uri
-            [], //parameters
-            [], //files
-            [] //server
-        );
-
-        $strategy = new SameSubnetStrategy('10.2.0.2');
-
-        $this->expectException('\InvalidArgumentException');
-        $strategy->apply($this->client->getRequest());
     }
 
     /**
