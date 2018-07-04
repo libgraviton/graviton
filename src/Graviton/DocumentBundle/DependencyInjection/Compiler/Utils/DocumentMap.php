@@ -136,7 +136,7 @@ class DocumentMap
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                    $schemaField['restrictions']
+                    !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
             } else {
                 $fields[] = new Field(
@@ -147,7 +147,7 @@ class DocumentMap
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     $serializerField === null ? false : $serializerField['searchable'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                    $schemaField['restrictions']
+                    !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
             }
         }
@@ -166,7 +166,7 @@ class DocumentMap
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                $schemaField['restrictions']
+                !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
             );
         }
         foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
@@ -184,7 +184,7 @@ class DocumentMap
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
-                $schemaField['restrictions']
+                !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
             );
         }
 
