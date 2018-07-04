@@ -29,17 +29,20 @@ parameters:
     graviton.security.authentication.header_required: false
     graviton.security.authentication.test_username: false
     graviton.security.authentication.allow_anonymous: true
-    graviton.security.authentication.strategy: graviton.security.authentication.strategy.cookie
+    graviton.security.authentication.strategy: graviton.security.authentication.strategy.header
     graviton.security.authentication.strategy.cookie.key: graviton_user
     graviton.security.authentication.strategy.subnet.key: 127.0.0.0/24
     graviton.security.authentication.strategy.subnet.header_field: x-graviton-authentication
     graviton.security.authentication.strategy.header.key: graviton_user
 
+    # If strategy multi then define which strategies to be used. Will be compiled
+    graviton.security.authentication.strategy.multi.services:
+      - graviton.security.authentication.strategy.subnet
+      - graviton.security.authentication.strategy.cookie
+      - graviton.security.authentication.strategy.header
+
     graviton.security.authentication.provider.model: graviton.security.authentication.provider.model.noop
     graviton.security.authentication.provider.model.query_field: false
-
-    graviton.security.query.filter_by_user: false
-    graviton.security.query.filter_by_field: 'consultant.$id'
 
     graviton.security.services.whitelist: {}
     graviton.rest.special_mimetypes: {}
