@@ -19,19 +19,20 @@ use Symfony\Component\Security\Core\Role\Role;
 class MultiStrategy implements StrategyInterface
 {
     /** @var StrategyInterface[]  */
-    private $strategies;
+    private $strategies = [];
 
     /** @var Role[] */
-    private $roles= [];
+    private $roles = [];
 
     /**
-     * MultiStrategy constructor.
+     * MultiStrategy add.
      *
-     * @param StrategyInterface[] $strategies List of strategies to be applied.
+     * @param StrategyInterface $strategy strategy to be applied.
+     * @return void
      */
-    public function __construct(array $strategies)
+    public function addStrategy(StrategyInterface $strategy)
     {
-        $this->strategies = $strategies;
+        $this->strategies[] = $strategy;
     }
 
     /**
@@ -43,18 +44,11 @@ class MultiStrategy implements StrategyInterface
      */
     public function apply(Request $request)
     {
-        $exceptions = [];
-
         foreach ($this->strategies as $strategy) {
-            try {
-                $name = $strategy->apply($request);
+            $name = $strategy->apply($request);
+            if ($strategy->stopPropagation()) {
                 $this->roles = $strategy->getRoles();
-
-                if ($name && $strategy->stopPropagation()) {
-                    return $name;
-                }
-            } catch (\InvalidArgumentException $e) {
-                $exceptions[] = $e;
+                return $name;
             }
         }
 

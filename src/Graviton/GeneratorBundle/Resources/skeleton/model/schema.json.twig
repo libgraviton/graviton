@@ -31,7 +31,7 @@
       {% endif %}
 {% endif %}
 
-{% for field in fields %}
+{% for field in fields if field.hidden == false %}
     "{{ field.fieldName }}": {
         "title": {{ field.title|json_encode() }},
 
@@ -60,6 +60,8 @@
 {% else %}
       "x-groups": [],
 {% endif %}
+
+      "x-restrictions": {{ field.restrictions|json_encode() }},
 
 {% if field.constraints is defined and field.constraints != null %}
       "x-constraints": {{ field.constraints|json_encode() }},

@@ -34,7 +34,6 @@ class RequestManager
         $this->requestStack = $requestStack;
     }
 
-
     /**
      * Simple RAW http request parser.
      * Ideal for PUT requests where PUT is streamed but you still need the data.

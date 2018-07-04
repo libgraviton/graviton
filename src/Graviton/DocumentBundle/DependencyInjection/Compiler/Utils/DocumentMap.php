@@ -135,8 +135,8 @@ class DocumentMap
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
-                    $serializerField === null ? false : $serializerField['searchable'],
-                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
+                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
+                    $schemaField['restrictions']
                 );
             } else {
                 $fields[] = new Field(
@@ -146,7 +146,8 @@ class DocumentMap
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     $serializerField === null ? false : $serializerField['searchable'],
-                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
+                    !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
+                    $schemaField['restrictions']
                 );
             }
         }
@@ -164,8 +165,8 @@ class DocumentMap
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
-                $serializerField === null ? false : $serializerField['searchable'],
-                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
+                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
+                $schemaField['restrictions']
             );
         }
         foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
@@ -182,7 +183,8 @@ class DocumentMap
                 $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
-                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException']
+                !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
+                $schemaField['restrictions']
             );
         }
 
@@ -275,6 +277,11 @@ class DocumentMap
                 foreach ($schema['properties'] as $fieldName => $field) {
                     if (isset($field['recordOriginException']) && $field['recordOriginException'] == true) {
                         $classMap[$schema['x-documentClass']][$fieldName]['recordOriginException'] = true;
+                    }
+                    if (isset($field['x-restrictions'])) {
+                        $classMap[$schema['x-documentClass']][$fieldName]['restrictions'] = $field['x-restrictions'];
+                    } else {
+                        $classMap[$schema['x-documentClass']][$fieldName]['restrictions'] = [];
                     }
                 }
             }
@@ -415,10 +422,11 @@ class DocumentMap
      * If the callback returns true, the field will be included in the output. You will get the field definition
      * passed to your callback.
      *
-     * @param Document $document       The document
-     * @param string   $documentPrefix Document field prefix
-     * @param string   $exposedPrefix  Exposed field prefix
-     * @param callable $callback       An optional callback where you can influence the number of fields returned
+     * @param Document $document        The document
+     * @param string   $documentPrefix  Document field prefix
+     * @param string   $exposedPrefix   Exposed field prefix
+     * @param callable $callback        An optional callback where you can influence the number of fields returned
+     * @param boolean  $returnFullField if true, the function returns the full field object instead of the full path
      *
      * @return array
      */
@@ -426,18 +434,28 @@ class DocumentMap
         Document $document,
         $documentPrefix = '',
         $exposedPrefix = '',
-        callable $callback = null
+        callable $callback = null,
+        $returnFullField = false
     ) {
         $result = [];
         foreach ($document->getFields() as $field) {
             if ($this->getFlatFieldCheckCallback($field, $callback)) {
-                $result[$documentPrefix . $field->getFieldName()] = $exposedPrefix . $field->getExposedName();
+                if ($returnFullField) {
+                    $setValue = $field;
+                } else {
+                    $setValue = $exposedPrefix . $field->getExposedName();
+                }
+                $result[$documentPrefix . $field->getFieldName()] = $setValue;
             }
 
             if ($field instanceof ArrayField) {
                 if ($this->getFlatFieldCheckCallback($field, $callback)) {
-                    $result[$documentPrefix . $field->getFieldName() . '.0'] =
-                        $exposedPrefix . $field->getExposedName() . '.0';
+                    if ($returnFullField) {
+                        $setValue = $field;
+                    } else {
+                        $setValue = $exposedPrefix . $field->getExposedName() . '.0';
+                    }
+                    $result[$documentPrefix . $field->getFieldName() . '.0'] = $setValue;
                 }
             } elseif ($field instanceof EmbedOne) {
                 $result = array_merge(
@@ -446,13 +464,18 @@ class DocumentMap
                         $field->getDocument(),
                         $documentPrefix.$field->getFieldName().'.',
                         $exposedPrefix.$field->getExposedName().'.',
-                        $callback
+                        $callback,
+                        $returnFullField
                     )
                 );
             } elseif ($field instanceof EmbedMany) {
                 if ($this->getFlatFieldCheckCallback($field, $callback)) {
-                    $result[$documentPrefix . $field->getFieldName() . '.0'] =
-                        $exposedPrefix . $field->getExposedName() . '.0';
+                    if ($returnFullField) {
+                        $setValue = $field;
+                    } else {
+                        $setValue = $exposedPrefix . $field->getExposedName() . '.0';
+                    }
+                    $result[$documentPrefix . $field->getFieldName() . '.0'] = $setValue;
                 }
                 $result = array_merge(
                     $result,
@@ -460,7 +483,8 @@ class DocumentMap
                         $field->getDocument(),
                         $documentPrefix.$field->getFieldName().'.0.',
                         $exposedPrefix.$field->getExposedName().'.0.',
-                        $callback
+                        $callback,
+                        $returnFullField
                     )
                 );
             }
