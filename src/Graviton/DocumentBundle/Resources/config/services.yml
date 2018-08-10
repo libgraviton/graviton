@@ -59,6 +59,17 @@ services:
             method: onVisitNode
             priority: 2
 
+    graviton.document.listener.rqlsearch:
+        class: "%graviton.document.listener.rqlsearch.class%"
+        arguments:
+            - "%graviton.document.solr.map%"
+        tags:
+        -
+            name: kernel.event_listener
+            event: rql.visit.node
+            method: onVisitNode
+            priority: 3
+
     graviton.document.listener.fieldnamesearchlistener:
         class: "%graviton.document.listener.fieldnamesearchlistener.class%"
         public: true
