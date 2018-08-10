@@ -46,7 +46,8 @@
         "oneup/flysystem-bundle": "^3",
         "league/flysystem-aws-s3-v3": "^1.0",
 
-        "sentry/sentry-symfony": "^2.0"
+        "sentry/sentry-symfony": "^2.0",
+        "solarium/solarium": "^4.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2.0",
@@ -62,7 +63,8 @@
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
-        "liip/functional-test-bundle": "2.x-dev"
+        "liip/functional-test-bundle": "2.x-dev#4da806fea8de421118a3e70a40a740f7c8dd9f6a",
+        "doctrine/doctrine-fixtures-bundle": "^3.0"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
