@@ -6,6 +6,7 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
+use Graviton\GeneratorBundle\Definition\Schema\Solr;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -156,6 +157,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
+            ->setParameter('solr', $this->json->getSolrFields())
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);
