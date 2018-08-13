@@ -13,6 +13,13 @@ services:
             - "%graviton.document.dateFormat%"
             - "%graviton.document.timezone%"
 
+    graviton.document.service.solrquery:
+        class: "%graviton.document.service.solrquery.class%"
+        public: true
+        arguments:
+            - "%graviton.solr.url%"
+            - "%graviton.document.solr.map%"
+
     graviton.document.serializer.listener.emptyextref:
         class: "%graviton.document.serializer.listener.emptyextref.class%"
         tags:
@@ -62,13 +69,18 @@ services:
     graviton.document.listener.rqlsearch:
         class: "%graviton.document.listener.rqlsearch.class%"
         arguments:
-            - "%graviton.document.solr.map%"
+            - "@graviton.document.service.solrquery"
         tags:
         -
             name: kernel.event_listener
             event: rql.visit.node
             method: onVisitNode
             priority: 3
+        -
+            name: kernel.event_listener
+            event: rql.visit.post
+            method: onVisitPost
+            priority: 10
 
     graviton.document.listener.fieldnamesearchlistener:
         class: "%graviton.document.listener.fieldnamesearchlistener.class%"

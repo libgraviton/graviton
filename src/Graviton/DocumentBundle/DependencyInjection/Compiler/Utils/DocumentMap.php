@@ -293,7 +293,7 @@ class DocumentMap
                 }
             }
 
-            if (is_array($schema['solr']) && !empty($schema['solr'])) {
+            if (isset($schema['solr']) && is_array($schema['solr']) && !empty($schema['solr'])) {
                 $classMap[$schema['x-documentClass']]['_base']['solr'] = $schema['solr'];
             } else {
                 $classMap[$schema['x-documentClass']]['_base']['solr'] = [];

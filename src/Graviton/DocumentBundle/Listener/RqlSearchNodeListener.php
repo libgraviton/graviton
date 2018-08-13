@@ -7,7 +7,9 @@ namespace Graviton\DocumentBundle\Listener;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Event\VisitNodeEvent;
+use Graviton\Rql\Event\VisitPostEvent;
 use Graviton\Rql\Node\SearchNode;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -21,28 +23,43 @@ class RqlSearchNodeListener
     /**
      * @var SearchNode
      */
-    protected $node;
+    private $node;
 
     /**
      * @var Builder
      */
-    protected $builder;
-
+    private $builder;
+    
     /**
-     * @var array
+     * @var SolrQuery
      */
-    protected $solrMap;
+    private $solrQuery;
 
     /**
-     * construct
+     * search mode for current request
      *
-     * @param ExtReferenceConverterInterface $converter Extref converter
-     * @param array                          $fields    map of fields to process
-     * @param RequestStack                   $requests  request
+     * @var string
      */
-    public function __construct(array $solrMap)
+    private $currentSearchMode;
+
+    /**
+     * constant for search mode mongo
+     */
+    const SEARCHMODE_MONGO = 'mongo';
+
+    /**
+     * constant for search mode solr
+     */
+    const SEARCHMODE_SOLR = 'solr';
+
+    /**
+     * constructor
+     *
+     * @param SolrQuery $solrQuery solr query service
+     */
+    public function __construct(SolrQuery $solrQuery)
     {
-        $this->solrMap = $solrMap;
+        $this->solrQuery = $solrQuery;
     }
 
     /**
@@ -52,8 +69,7 @@ class RqlSearchNodeListener
      */
     public function onVisitNode(VisitNodeEvent $event)
     {
-        //return $event;
-
+        // any search?
         if (!$event->getNode() instanceof SearchNode) {
             return $event;
         }
@@ -61,20 +77,40 @@ class RqlSearchNodeListener
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
 
-        $this->handleSearchMongo();
+        // which mode?
+        if ($this->getSearchMode() === self::SEARCHMODE_SOLR) {
+            $this->handleSearchSolr();
+        } else {
+            $this->handleSearchMongo();
+        }
 
         $event->setBuilder($this->builder);
         $event->setNode($this->node);
 
-        /*
-        var_dump($this->solrMap);
-        var_dump($this->getDocumentClassName());
-        var_dump($this->node);
-        echo "fred"; die;
-
-        */
-
         return $event;
+    }
+
+    
+    public function onVisitPost(VisitPostEvent $event)
+    {
+        // only do things here if we're using solr
+        if (self::SEARCHMODE_SOLR !== $this->currentSearchMode) {
+            return;
+        }
+
+        $builder = $event->getBuilder();
+        $query = $event->getQuery();
+
+        var_dump($query); die;
+
+
+        //var_dump($this->node->getSearchTerms());
+
+        $this->solrQuery->query("müller");
+
+
+        echo "solllrrr"; die;
+
     }
 
     private function handleSearchMongo()
@@ -93,7 +129,27 @@ class RqlSearchNodeListener
 
     private function handleSearchSolr()
     {
+        // will be done in visitPost, just memorize that we're using solr
+        $this->currentSearchMode = self::SEARCHMODE_SOLR;
+    }
 
+    private function getSearchMode()
+    {
+        $this->solrQuery->setClassName($this->getDocumentClassName());
+        if ($this->solrQuery->isConfigured()) {
+            return self::SEARCHMODE_SOLR;
+        }
+
+        return self::SEARCHMODE_MONGO;
+    }
+
+    private function getSolrInformation()
+    {
+        $className = $this->getDocumentClassName();
+        if (isset($this->solrMap[$className])) {
+            return $this->solrMap[$className];
+        }
+        return null;
     }
 
     /**
