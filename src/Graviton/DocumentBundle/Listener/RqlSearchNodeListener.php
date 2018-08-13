@@ -29,6 +29,11 @@ class RqlSearchNodeListener
      * @var Builder
      */
     private $builder;
+
+    /**
+     * @var boolean
+     */
+    private $expr = false;
     
     /**
      * @var SolrQuery
@@ -70,12 +75,13 @@ class RqlSearchNodeListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         // any search?
-        if (!$event->getNode() instanceof SearchNode) {
+        if (!$event->getNode() instanceof SearchNode || $event->getNode()->isVisited()) {
             return $event;
         }
 
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
+        $this->expr = $event->isExpr();
 
         // which mode?
         if ($this->getSearchMode() === self::SEARCHMODE_SOLR) {
@@ -95,35 +101,42 @@ class RqlSearchNodeListener
     {
         // only do things here if we're using solr
         if (self::SEARCHMODE_SOLR !== $this->currentSearchMode) {
-            return;
+            return $event;
         }
 
         $builder = $event->getBuilder();
         $query = $event->getQuery();
 
-        var_dump($query); die;
+        $idList = $this->solrQuery->query(
+            $query->getQuery(),
+            $query->getLimit()
+        );
 
+        $this->builder = $event->getBuilder();
 
-        //var_dump($this->node->getSearchTerms());
+        $this->builder->addAnd(
+            $this->builder->expr()->field("_id")->in($idList)
+        );
 
-        $this->solrQuery->query("müller");
+        $this->builder->limit(0)->skip(0);
 
+        $event->setBuilder($this->builder);
 
-        echo "solllrrr"; die;
-
+        return $event;
     }
 
     private function handleSearchMongo()
     {
         $this->node->setVisited(true);
+
         $searchArr = [];
         foreach ($this->node->getSearchTerms() as $string) {
             $searchArr[] = "\"{$string}\"";
         }
-
         $this->builder->sortMeta('score', 'textScore');
 
         $basicTextSearchValue = implode(' ', $searchArr);
+
         $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
     }
 

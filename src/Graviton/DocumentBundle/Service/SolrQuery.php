@@ -5,7 +5,6 @@
 
 namespace Graviton\DocumentBundle\Service;
 
-
 use Graviton\Rql\Node\SearchNode;
 use Solarium\Client;
 use Xiag\Rql\Parser\Node\LimitNode;
@@ -73,19 +72,35 @@ class SolrQuery
         ]);
 
         $query = $client->createQuery($client::QUERY_SELECT);
-        $query->setQuery('müller');
 
-        $query->setStart(2)->setRows(20);
-        $query->setFields(array('id'));
-        //$query->addSort('price', $query::SORT_ASC);
+        // set the weights
+        $query->getDisMax()->setQueryFields($this->solrMap[$this->className]);
 
-        $resultset = $client->select($query);
+        $query->setQuery($this->getSearchTerm($node));
 
-        foreach ($resultset as $document) {
-            var_dump($document);
+        if ($limitNode instanceof LimitNode) {
+            $query->setStart($limitNode->getOffset())->setRows($limitNode->getLimit());
+        } else {
+            $query->setStart(0)->setRows(10);
         }
 
-        echo "juhuu"; die;
+        $query->setFields(['id']);
+
+        $idList = [];
+        foreach ($client->select($query) as $document) {
+            if (isset($document->id)) {
+                $idList[] = (string) $document->id;
+            } elseif (isset($document->_id)) {
+                $idList[] = (string)$document->_id;
+            }
+        }
+
+        return $idList;
+    }
+
+    private function getSearchTerm(SearchNode $node)
+    {
+        return implode(" ", $node->getSearchTerms());
     }
 
     private function getUrlForCore()

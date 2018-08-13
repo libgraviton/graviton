@@ -166,8 +166,10 @@ class QueryService
             }
 
             /*** pagination stuff ***/
-            $this->queryBuilder->skip($this->getPaginationSkip());
-            $this->queryBuilder->limit($this->getPaginationPageSize());
+            if (!array_key_exists('limit', $this->queryBuilder->getQuery()->getQuery())) {
+                $this->queryBuilder->skip($this->getPaginationSkip());
+                $this->queryBuilder->limit($this->getPaginationPageSize());
+            }
         }
     }
 

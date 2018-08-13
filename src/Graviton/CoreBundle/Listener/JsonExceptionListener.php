@@ -81,7 +81,7 @@ class JsonExceptionListener
         }
 
         $response = new JsonResponse($data);
-        $event->setResponse($response);
+        //$event->setResponse($response);
     }
 
     /**
