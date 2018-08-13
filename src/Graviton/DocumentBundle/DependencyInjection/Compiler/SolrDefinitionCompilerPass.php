@@ -51,11 +51,11 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
      */
     private function getSolrWeightString(array $solrFields)
     {
-        $weights = ['*'];
+        $weights = [];
         foreach ($solrFields as $field) {
             $weights[] = $field['name'].'^'.$field['weight'];
         }
 
-        return implode(' ', array_reverse($weights));
+        return implode(' ', $weights);
     }
 }

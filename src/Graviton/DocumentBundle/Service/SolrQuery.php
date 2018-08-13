@@ -74,7 +74,7 @@ class SolrQuery
         $query = $client->createQuery($client::QUERY_SELECT);
 
         // set the weights
-        $query->getDisMax()->setQueryFields($this->solrMap[$this->className]);
+        $query->getEDisMax()->setQueryFields($this->solrMap[$this->className]);
 
         $query->setQuery($this->getSearchTerm($node));
 
@@ -86,8 +86,11 @@ class SolrQuery
 
         $query->setFields(['id']);
 
+        $result = $client->select($query);
+        $totalCount = $result->getNumFound();
+
         $idList = [];
-        foreach ($client->select($query) as $document) {
+        foreach ($result as $document) {
             if (isset($document->id)) {
                 $idList[] = (string) $document->id;
             } elseif (isset($document->_id)) {
@@ -100,7 +103,18 @@ class SolrQuery
 
     private function getSearchTerm(SearchNode $node)
     {
-        return implode(" ", $node->getSearchTerms());
+        $terms = $node->getSearchTerms();
+
+        // make first term fuzzy or wildcard
+        if (isset($terms[0])) {
+            if (strlen($terms[0]) < 4) {
+                $terms[0] .= '*';
+            } else {
+                $terms[0] .= '~';
+            }
+        }
+
+        return implode(" ", $terms);
     }
 
     private function getUrlForCore()
