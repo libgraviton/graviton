@@ -15,24 +15,8 @@ web_profiler:
 monolog:
     handlers:
         main:
-            type:   stream
-            path:   "%graviton.log.path%"
-            level:  debug
-            formatter: "log_formatter"
-        console:
-            type:   console
-            bubble: false
-            verbosity_levels:
-                VERBOSITY_VERBOSE: INFO
-                VERBOSITY_VERY_VERBOSE: DEBUG
-            channels: ["!doctrine"]
-            formatter: "log_formatter"
-        console_very_verbose:
-            type:   console
-            bubble: false
-            verbosity_levels:
-                VERBOSITY_VERBOSE: NOTICE
-                VERBOSITY_VERY_VERBOSE: NOTICE
-                VERBOSITY_DEBUG: DEBUG
-            channels: ["doctrine"]
+            type: "stream"
+            path: "%graviton.log.path%"
+            level: "debug"
+            channels: ["!event"]
             formatter: "log_formatter"
