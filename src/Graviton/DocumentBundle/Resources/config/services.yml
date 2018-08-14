@@ -19,6 +19,8 @@ services:
         arguments:
             - "%graviton.solr.url%"
             - "%graviton.document.solr.map%"
+            - "%graviton.rest.pagination.limit%"
+            - "@request_stack"
 
     graviton.document.serializer.listener.emptyextref:
         class: "%graviton.document.serializer.listener.emptyextref.class%"

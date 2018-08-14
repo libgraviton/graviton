@@ -7,6 +7,8 @@ namespace Graviton\DocumentBundle\Service;
 
 use Graviton\Rql\Node\SearchNode;
 use Solarium\Client;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Xiag\Rql\Parser\Node\LimitNode;
 
 /**
@@ -33,18 +35,30 @@ class SolrQuery
     private $solrMap;
 
     /**
+     * @var int
+     */
+    private $paginationDefaultLimit;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
      * Constructor
      *
      * @param string $dateFormat date format
      * @param string $timezone   timezone
      */
-    public function __construct($solrUrl, array $solrMap)
+    public function __construct($solrUrl, array $solrMap, $paginationDefaultLimit, RequestStack $requestStack)
     {
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
 
         $this->solrMap = $solrMap;
+        $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -81,13 +95,16 @@ class SolrQuery
         if ($limitNode instanceof LimitNode) {
             $query->setStart($limitNode->getOffset())->setRows($limitNode->getLimit());
         } else {
-            $query->setStart(0)->setRows(10);
+            $query->setStart(0)->setRows($this->paginationDefaultLimit);
         }
 
         $query->setFields(['id']);
 
         $result = $client->select($query);
-        $totalCount = $result->getNumFound();
+
+        if ($this->requestStack->getCurrentRequest() instanceof Request) {
+            $this->requestStack->getCurrentRequest()->attributes->set('solr-total-count', $result->getNumFound());
+        }
 
         $idList = [];
         foreach ($result as $document) {
@@ -103,18 +120,27 @@ class SolrQuery
 
     private function getSearchTerm(SearchNode $node)
     {
-        $terms = $node->getSearchTerms();
+        return implode(
+            ' ',
+            array_map([$this, 'getSingleTerm'], $node->getSearchTerms())
+        );
+    }
 
-        // make first term fuzzy or wildcard
-        if (isset($terms[0])) {
-            if (strlen($terms[0]) < 4) {
-                $terms[0] .= '*';
-            } else {
-                $terms[0] .= '~';
-            }
+    private function getSingleTerm($term)
+    {
+        // we don't modify numbers
+        if (ctype_digit($term)) {
+            return $term;
         }
 
-        return implode(" ", $terms);
+        // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
+        if (strlen($term) < 5) {
+            $term .= '*';
+        } else {
+            $term .= '~';
+        }
+
+        return '"'.$term.'"';
     }
 
     private function getUrlForCore()

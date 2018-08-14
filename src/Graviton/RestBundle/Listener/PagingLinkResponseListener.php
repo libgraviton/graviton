@@ -59,12 +59,23 @@ class PagingLinkResponseListener
         $routeType = end($routeParts);
 
         // always set recordcount header
+        $totalCount = null;
+        $searchSource = 'mongo';
         if ($request->attributes->has('recordCount')) {
-            $response->headers->set(
-                'X-Record-Count',
-                (string) $request->attributes->get('recordCount')
-            );
+            $totalCount = $request->attributes->get('recordCount');
+
         }
+        // maybe have one from solr?
+        if ($request->attributes->has('solr-total-count')) {
+            $searchSource = 'solr';
+            $totalCount = $request->attributes->get('solr-total-count');
+        }
+
+        if (!is_null($totalCount)) {
+            $response->headers->set('X-Record-Count', (string) $totalCount);
+        }
+
+        $response->headers->set('X-Search-Source', $searchSource);
 
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
