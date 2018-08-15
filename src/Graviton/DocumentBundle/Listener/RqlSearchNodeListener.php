@@ -1,17 +1,18 @@
 <?php
 /**
  * RqlSearchNodeListener
+ *
+ * on rql search() operations, this listener does the correct stuff at the correct time.
  */
 
 namespace Graviton\DocumentBundle\Listener;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
-use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
+use Doctrine\ODM\MongoDB\Query\Expr;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Event\VisitPostEvent;
 use Graviton\Rql\Node\SearchNode;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -34,6 +35,11 @@ class RqlSearchNodeListener
      * @var boolean
      */
     private $expr = false;
+
+    /**
+     * @var Expr
+     */
+    private $exprNode;
 
     /**
      * @var string
@@ -73,9 +79,11 @@ class RqlSearchNodeListener
     }
 
     /**
+     * gets called during the visit of a normal search node
+     *
      * @param VisitNodeEvent $event node event to visit
      *
-     * @return VisitNodeEvent
+     * @return VisitNodeEvent event object
      */
     public function onVisitNode(VisitNodeEvent $event)
     {
@@ -98,11 +106,20 @@ class RqlSearchNodeListener
 
         $event->setBuilder($this->builder);
         $event->setNode($this->node);
+        $event->setExprNode($this->exprNode);
 
         return $event;
     }
 
-
+    /**
+     * gets called after all the single search nodes have been worked on - like a 'post rql' event.
+     * here we only do things for solr as we want to set the list of record ids after all is done (sd
+     * selects, sort and limit)
+     *
+     * @param VisitPostEvent $event the event
+     *
+     * @return VisitPostEvent event
+     */
     public function onVisitPost(VisitPostEvent $event)
     {
         // only do things here if we're using solr
@@ -128,6 +145,11 @@ class RqlSearchNodeListener
         return $event;
     }
 
+    /**
+     * in case of a search() in mongo (using the text index), this logic here should be executed.
+     *
+     * @return void
+     */
     private function handleSearchMongo()
     {
         $this->node->setVisited(true);
@@ -136,40 +158,35 @@ class RqlSearchNodeListener
         foreach ($this->node->getSearchTerms() as $string) {
             $searchArr[] = "\"{$string}\"";
         }
-        //$this->builder->sortMeta('score', 'textScore');
+        $this->builder->sortMeta('score', 'textScore');
 
         $basicTextSearchValue = implode(' ', $searchArr);
 
-        /*
         if ($this->expr) {
-            $this->builder->expr()->text($basicTextSearchValue);
+            $this->exprNode = $this->builder->expr()->text($basicTextSearchValue);
         } else {
-
+            $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
         }
-        */
-
-        //$this->builder->text($basicTextSearchValue);
-
-        //$this->builder->text($basicTextSearchValue);
-
-        /*
-        if ($this->expr) {
-            $this->builder->text()
-            return $this->builder->expr()->text($basicTextSearchValue);
-        } else {
-            return $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
-        }
-        */
-
-        $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
     }
 
+    /**
+     * in case of configured and active solr search, this is executed.
+     * we don't do anything here, we just remember that we use solr and then do our stuff in the post event
+     * function.
+     *
+     * @return void
+     */
     private function handleSearchSolr()
     {
         // will be done in visitPost, just memorize that we're using solr
         $this->currentSearchMode = self::SEARCHMODE_SOLR;
     }
 
+    /**
+     * returns which search backend to use
+     *
+     * @return string search mode constant
+     */
     private function getSearchMode()
     {
         $this->solrQuery->setClassName($this->className);

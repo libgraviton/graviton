@@ -118,7 +118,9 @@ class I18nRqlParsingListener
     private function isTranslatableFieldNode()
     {
         $isTranslatableField = false;
-        if (isset($this->mapping[$this->className]) && in_array($this->getDocumentFieldName(), $this->mapping[$this->className])) {
+        if (isset($this->mapping[$this->className]) &&
+            in_array($this->getDocumentFieldName(), $this->mapping[$this->className])
+        ) {
             $isTranslatableField = true;
         }
 

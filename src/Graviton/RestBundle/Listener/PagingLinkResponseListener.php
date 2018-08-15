@@ -63,7 +63,6 @@ class PagingLinkResponseListener
         $searchSource = 'mongo';
         if ($request->attributes->has('recordCount')) {
             $totalCount = $request->attributes->get('recordCount');
-
         }
         // maybe have one from solr?
         if ($request->attributes->has('solr-total-count')) {
