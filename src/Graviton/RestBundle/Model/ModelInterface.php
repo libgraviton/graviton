@@ -85,11 +85,4 @@ interface ModelInterface
      * @return string
      */
     public function getEntityClass();
-
-    /**
-     * Get the connection name
-     *
-     * @return string
-     */
-    public function getConnectionName();
 }

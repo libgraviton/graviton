@@ -155,7 +155,7 @@ class QueryService
                 }
             }
 
-            $this->visitor->setBuilder($this->queryBuilder);
+            $this->visitor->setRepository($this->repository);
             $this->queryBuilder = $this->visitor->visit($rqlQuery);
         }
 
