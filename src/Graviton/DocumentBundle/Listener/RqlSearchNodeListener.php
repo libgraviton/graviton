@@ -34,7 +34,12 @@ class RqlSearchNodeListener
      * @var boolean
      */
     private $expr = false;
-    
+
+    /**
+     * @var string
+     */
+    private $className;
+
     /**
      * @var SolrQuery
      */
@@ -82,6 +87,7 @@ class RqlSearchNodeListener
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
         $this->expr = $event->isExpr();
+        $this->className = $event->getClassName();
 
         // which mode?
         if ($this->getSearchMode() === self::SEARCHMODE_SOLR) {
@@ -96,7 +102,7 @@ class RqlSearchNodeListener
         return $event;
     }
 
-    
+
     public function onVisitPost(VisitPostEvent $event)
     {
         // only do things here if we're using solr
@@ -104,12 +110,9 @@ class RqlSearchNodeListener
             return $event;
         }
 
-        $builder = $event->getBuilder();
-        $query = $event->getQuery();
-
         $idList = $this->solrQuery->query(
-            $query->getQuery(),
-            $query->getLimit()
+            $event->getQuery()->getQuery(),
+            $event->getQuery()->getLimit()
         );
 
         $this->builder = $event->getBuilder();
@@ -133,9 +136,30 @@ class RqlSearchNodeListener
         foreach ($this->node->getSearchTerms() as $string) {
             $searchArr[] = "\"{$string}\"";
         }
-        $this->builder->sortMeta('score', 'textScore');
+        //$this->builder->sortMeta('score', 'textScore');
 
         $basicTextSearchValue = implode(' ', $searchArr);
+
+        /*
+        if ($this->expr) {
+            $this->builder->expr()->text($basicTextSearchValue);
+        } else {
+
+        }
+        */
+
+        //$this->builder->text($basicTextSearchValue);
+
+        //$this->builder->text($basicTextSearchValue);
+
+        /*
+        if ($this->expr) {
+            $this->builder->text()
+            return $this->builder->expr()->text($basicTextSearchValue);
+        } else {
+            return $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
+        }
+        */
 
         $this->builder->addAnd($this->builder->expr()->text($basicTextSearchValue));
     }
@@ -148,38 +172,11 @@ class RqlSearchNodeListener
 
     private function getSearchMode()
     {
-        $this->solrQuery->setClassName($this->getDocumentClassName());
+        $this->solrQuery->setClassName($this->className);
         if ($this->solrQuery->isConfigured()) {
             return self::SEARCHMODE_SOLR;
         }
 
         return self::SEARCHMODE_MONGO;
     }
-
-    private function getSolrInformation()
-    {
-        $className = $this->getDocumentClassName();
-        if (isset($this->solrMap[$className])) {
-            return $this->solrMap[$className];
-        }
-        return null;
-    }
-
-    /**
-     * Returns the document class from the query
-     *
-     * @return string class name
-     */
-    private function getDocumentClassName()
-    {
-        // find our class name
-        $documentName = $this->builder->getQuery()->getClass()->getName();
-
-        if (!class_exists($documentName)) {
-            throw new \LogicException('Could not determine class name from RQL query.');
-        }
-
-        return $documentName;
-    }
-
 }
