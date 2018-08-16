@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f0056c28db1b3b8a3049d164c274b29",
+    "content-hash": "0bd322587435cdbcc6c76552cd069b9a",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1289,16 +1289,16 @@
         },
         {
             "name": "graviton/json-schema",
-            "version": "v1.14.0",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/json-schema.git",
-                "reference": "22a248540eea6f30d40f248032336ce25c7263aa"
+                "reference": "287032fb4fd2eb1755077e7b3b4398ce014ea90a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/22a248540eea6f30d40f248032336ce25c7263aa",
-                "reference": "22a248540eea6f30d40f248032336ce25c7263aa",
+                "url": "https://api.github.com/repos/libgraviton/json-schema/zipball/287032fb4fd2eb1755077e7b3b4398ce014ea90a",
+                "reference": "287032fb4fd2eb1755077e7b3b4398ce014ea90a",
                 "shasum": ""
             },
             "require": {
@@ -1332,7 +1332,7 @@
                 }
             ],
             "description": "JSON Schemas describing the Graviton specific JSON formats",
-            "time": "2018-07-03T08:02:02+00:00"
+            "time": "2018-08-16T08:30:38+00:00"
         },
         {
             "name": "graviton/php-proxy",

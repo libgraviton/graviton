@@ -23,7 +23,7 @@
 
         "graviton/php-rql-parser": ">=2.5.0",
         "graviton/rql-parser-bundle": "^1.0.0",
-        "graviton/json-schema": "^1.14.0",
+        "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",
 
         "symfony/symfony": "~3.4.0",
