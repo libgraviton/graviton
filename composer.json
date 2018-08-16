@@ -98,7 +98,7 @@
         ]
     },
     "config": {
-        "platform": {"ext-mongo": "1.6.14"},
+        "platform": {"ext-mongo": "1.6.14", "ext-mongodb": "1.4.4"},
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/graviton"],
