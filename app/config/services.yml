@@ -7,7 +7,7 @@ services:
         class: Monolog\Formatter\LineFormatter
         arguments:
             - "[%%datetime%%] [%%extra.requestId%%] %%channel%%.%%level_name%%: %%message%% %%context%% %%extra%%\n"
-            - "Y-m-d H:i:s,u"
+            - "Y-m-d H:i:s.vP"
     test_consumer:
         class: Graviton\RabbitMqBundle\Consumer\TestConsumer
 

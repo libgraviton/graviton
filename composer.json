@@ -23,7 +23,7 @@
 
         "graviton/php-rql-parser": ">=2.5.0",
         "graviton/rql-parser-bundle": "^1.0.0",
-        "graviton/json-schema": "^1.14.0",
+        "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",
 
         "symfony/symfony": "~3.4.0",
@@ -62,7 +62,7 @@
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
-        "liip/functional-test-bundle": "2.x-dev"
+        "liip/functional-test-bundle": "=2.0-alpha4"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
@@ -98,7 +98,7 @@
         ]
     },
     "config": {
-        "platform": {"ext-mongo": "1.6.14"},
+        "platform": {"ext-mongo": "1.6.14", "ext-mongodb": "1.4.4"},
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/graviton"],

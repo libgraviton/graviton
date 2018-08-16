@@ -28,7 +28,7 @@ class RequestIdProcessor
     public function processRecord(array $record)
     {
         if (is_null($this->requestId)) {
-            $this->requestId = uniqid('', true);
+            $this->requestId = uniqid('');
         }
 
         $record['extra']['requestId'] = $this->requestId;
