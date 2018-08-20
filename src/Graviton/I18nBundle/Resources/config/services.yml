@@ -1,16 +1,19 @@
 services:
     graviton.i18n.document.language:
         class: "%graviton.i18n.document.language.class%"
+        public: true
 
     graviton.i18n.repository.language:
         class: "%graviton.i18n.repository.language.class%"
         factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        public: true
         arguments:
           - "GravitonI18nBundle:Language"
 
     graviton.i18n.model.language:
         class: "%graviton.i18n.model.language.class%"
         parent: "graviton.rest.model"
+        public: true
         arguments:
           - "@graviton.rql.visitor.mongodb"
         calls:
@@ -39,18 +42,21 @@ services:
     graviton.i18n.repository.translatable:
         class: "%graviton.i18n.repository.translatable.class%"
         factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        public: true
         arguments:
           - "GravitonI18nBundle:Translatable"
 
     graviton.i18n.repository.translatablelanguage:
         class: "%graviton.i18n.repository.translatablelanguage.class%"
         factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+        public: true
         arguments:
           - "GravitonI18nBundle:TranslatableLanguage"
 
     graviton.i18n.model.translatable:
         class: "%graviton.i18n.model.translatable.class%"
         parent: "graviton.rest.model"
+        public: true
         arguments:
           - "@graviton.rql.visitor.mongodb"
         calls:
@@ -62,6 +68,7 @@ services:
     graviton.i18n.model.translatablelanguage:
         class: "%graviton.i18n.model.translatablelanguage.class%"
         parent: "graviton.rest.model"
+        public: true
         arguments:
           - "@graviton.rql.visitor.mongodb"
         calls:

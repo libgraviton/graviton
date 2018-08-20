@@ -27,7 +27,7 @@ before_script:
   # install the module
   - pecl channel-update pecl.php.net
   - sleep 5
-  - printf "\n" | pecl install -f mongodb-1.4.3
+  - printf "\n" | pecl install -f mongodb-1.5.2
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
