@@ -16,14 +16,15 @@
     "require": {
         "php": ">=7.1.0",
         "ext-fileinfo": "*",
+        "ext-mongodb": "~1.5.0",
 
         "alcaeus/mongo-php-adapter": "^1.1.5",
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "dev-feature/solr as 2.5.0",
+        "graviton/php-rql-parser": ">=2.5.0",
         "graviton/rql-parser-bundle": "^1.0.0",
-        "graviton/json-schema": "dev-feature/solr as 1.14.0",
+        "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",
 
         "symfony/symfony": "~3.4.0",
@@ -63,8 +64,7 @@
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
-        "liip/functional-test-bundle": "=2.0-alpha4",
-        "doctrine/doctrine-fixtures-bundle": "^3.0"
+        "liip/functional-test-bundle": "=2.0-alpha4"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
