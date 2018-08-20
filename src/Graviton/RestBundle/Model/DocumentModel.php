@@ -190,7 +190,12 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $document = $this->queryService->getWithRequest($request, $this->repository);
         if (empty($document)) {
-            throw new NotFoundException("Entry with id " . $documentId . " not found!");
+            throw new NotFoundException(
+                sprintf(
+                    "Entry with id '%s' not found!",
+                    $documentId
+                )
+            );
         }
 
         return $this->restUtils->serialize($document);
@@ -340,28 +345,6 @@ class DocumentModel extends SchemaModel implements ModelInterface
         }
 
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Currently this is being used to build the route id used for redirecting
-     * to newly made documents. It might benefit from having a different name
-     * for those purposes.
-     *
-     * We might use a convention based mapping here:
-     * Graviton\CoreBundle\Document\App -> mongodb://graviton_core
-     * Graviton\CoreBundle\Entity\Table -> mysql://graviton_core
-     *
-     * @todo implement this in a more convention based manner
-     *
-     * @return string
-     */
-    public function getConnectionName()
-    {
-        $bundle = strtolower(substr(explode('\\', get_class($this))[1], 0, -6));
-
-        return 'graviton.' . $bundle;
     }
 
     /**

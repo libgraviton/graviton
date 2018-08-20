@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7107e4e43b10e54d56825b02149a3f48",
+    "content-hash": "d79d4f1cc7a437fa2870ae475d810b6e",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1382,16 +1382,16 @@
         },
         {
             "name": "graviton/php-rql-parser",
-            "version": "v2.5.1",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/php-rql-parser.git",
-                "reference": "218d9db24e42a56820a757c4eba5e1b2a8307856"
+                "reference": "2140dd4994495ff1e1852c6ebfe25994d7053f81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/218d9db24e42a56820a757c4eba5e1b2a8307856",
-                "reference": "218d9db24e42a56820a757c4eba5e1b2a8307856",
+                "url": "https://api.github.com/repos/libgraviton/php-rql-parser/zipball/2140dd4994495ff1e1852c6ebfe25994d7053f81",
+                "reference": "2140dd4994495ff1e1852c6ebfe25994d7053f81",
                 "shasum": ""
             },
             "require": {
@@ -1435,24 +1435,24 @@
                 "rest",
                 "rql"
             ],
-            "time": "2018-08-07T13:37:32+00:00"
+            "time": "2018-08-20T08:51:58+00:00"
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3"
+                "reference": "fae0c442f110f3982f58fb3cc74a1c4eb4801b32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3",
-                "reference": "2b7d9e9d6fe5c341d771ce123cca7e51f56d0cc3",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/fae0c442f110f3982f58fb3cc74a1c4eb4801b32",
+                "reference": "fae0c442f110f3982f58fb3cc74a1c4eb4801b32",
                 "shasum": ""
             },
             "require": {
-                "graviton/php-rql-parser": "^2.5",
+                "graviton/php-rql-parser": "^2.5 || ^3.0",
                 "symfony/http-kernel": "^3.0 || ^4.0"
             },
             "require-dev": {
@@ -1479,7 +1479,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony",
-            "time": "2018-05-04T12:20:15+00:00"
+            "time": "2018-08-20T09:14:05+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -3407,6 +3407,64 @@
                 "symfony"
             ],
             "time": "2018-06-01T08:59:16+00:00"
+        },
+        {
+            "name": "solarium/solarium",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/solariumphp/solarium.git",
+                "reference": "4dfd71fefb307cac1ec394b672f2f57256752e4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/solariumphp/solarium/zipball/4dfd71fefb307cac1ec394b672f2f57256752e4b",
+                "reference": "4dfd71fefb307cac1ec394b672f2f57256752e4b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "symfony/event-dispatcher": "^2.7 || ^3.0 || ^4.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^3.8 || ^6.2",
+                "php-coveralls/php-coveralls": "^1.0",
+                "phpunit/phpunit": "^6.5",
+                "squizlabs/php_codesniffer": "^1.4",
+                "zendframework/zendframework": "^3.0"
+            },
+            "suggest": {
+                "minimalcode/search": "Query builder compatible with Solarium, allows simplified solr-query handling"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-4.0.x": "4.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Solarium\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "See GitHub contributors",
+                    "homepage": "https://github.com/basdenooijer/solarium/contributors"
+                }
+            ],
+            "description": "PHP Solr client",
+            "homepage": "http://www.solarium-project.org",
+            "keywords": [
+                "php",
+                "search",
+                "solr"
+            ],
+            "time": "2018-08-09T13:01:25+00:00"
         },
         {
             "name": "symfony/monolog-bundle",

@@ -19,5 +19,8 @@
         <property name="target"
                   type="Graviton\GeneratorBundle\Definition\Schema\Target"
                   serialized-name="target"/>
+        <property name="solr"
+                  type="Graviton\GeneratorBundle\Definition\Schema\Solr"
+                  serialized-name="solr"/>
     </class>
 </serializer>

@@ -10,6 +10,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentMapCompilerPass
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RestrictionFieldsCompilerPass;
+use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -105,6 +106,11 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         );
         $container->addCompilerPass(
             new RecordOriginExceptionFieldsCompilerPass(),
+            PassConfig::TYPE_BEFORE_OPTIMIZATION,
+            5
+        );
+        $container->addCompilerPass(
+            new SolrDefinitionCompilerPass(),
             PassConfig::TYPE_BEFORE_OPTIMIZATION,
             5
         );

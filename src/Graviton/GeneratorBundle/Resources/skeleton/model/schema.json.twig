@@ -99,6 +99,8 @@
     }
   },
 
+  "solr": {{ solr|json_encode() }},
+
 {#
 the whole recordOrigin thing is kinda messed up as you need 2 vars to correctly detect what should be done.
 for schema, we condense it so recordOriginModifiable holds the whole truth in one..
