@@ -40,6 +40,11 @@ class SolrQuery
     private $paginationDefaultLimit;
 
     /**
+     * @var Client
+     */
+    private $solrClient;
+
+    /**
      * @var RequestStack
      */
     private $requestStack;
@@ -50,16 +55,23 @@ class SolrQuery
      * @param string       $solrUrl                url to solr
      * @param array        $solrMap                solr class field weight map
      * @param int          $paginationDefaultLimit default pagination limit
+     * @param Client       $solrClient             solr client
      * @param RequestStack $requestStack           request stack
      */
-    public function __construct($solrUrl, array $solrMap, $paginationDefaultLimit, RequestStack $requestStack)
-    {
+    public function __construct(
+        $solrUrl,
+        array $solrMap,
+        $paginationDefaultLimit,
+        Client $solrClient,
+        RequestStack $requestStack
+    ) {
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
 
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
+        $this->solrClient = $solrClient;
         $this->requestStack = $requestStack;
     }
 
@@ -98,13 +110,7 @@ class SolrQuery
      */
     public function query(SearchNode $node, LimitNode $limitNode = null)
     {
-        $client = new Client(
-            [
-                'endpoint' => [
-                    'localhost' => $this->getUrlForCore()
-                ]
-            ]
-        );
+        $client = $this->getClient();
 
         $query = $client->createQuery($client::QUERY_SELECT);
 
@@ -179,25 +185,31 @@ class SolrQuery
     }
 
     /**
-     * returns the full url to the solr core search service, using the current class
+     * returns the client to use for the current query
      *
-     * @return array urlparts for the client
+     * @return Client client
      */
-    private function getUrlForCore()
+    private function getClient()
     {
-        $parts = $this->urlParts;
-        if (!isset($parts['path'])) {
-            $parts['path'] = '/';
+        $endpointConfig = $this->urlParts;
+        if (!isset($endpointConfig['path'])) {
+            $endpointConfig['path'] = '/';
         }
 
-        if (substr($parts['path'], -1) != '/') {
-            $parts['path'] .= '/';
+        if (substr($endpointConfig['path'], -1) != '/') {
+            $endpointConfig['path'] .= '/';
         }
 
-        // append core name - derived from classname
+        // find core name
         $classnameParts = explode('\\', $this->className);
-        $parts['path'] .= array_pop($classnameParts);
+        $endpointConfig['core'] = array_pop($classnameParts);
 
-        return $parts;
+        $endpointConfig['timeout'] = 10000;
+        $endpointConfig['key'] = 'local';
+
+        $this->solrClient->addEndpoint($endpointConfig);
+        $this->solrClient->setDefaultEndpoint($endpointConfig['key']);
+
+        return $this->solrClient;
     }
 }
