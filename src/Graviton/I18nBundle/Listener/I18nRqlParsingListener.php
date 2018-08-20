@@ -43,6 +43,11 @@ class I18nRqlParsingListener
     protected $builder;
 
     /**
+     * @var string
+     */
+    protected $className;
+
+    /**
      * Constructor
      *
      * @param I18nUtils $intUtils int utils
@@ -63,6 +68,7 @@ class I18nRqlParsingListener
     {
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
+        $this->className = $event->getClassName();
 
         if ($this->node instanceof AbstractScalarOperatorNode && $this->isTranslatableFieldNode()) {
             $event->setNode(
@@ -112,9 +118,9 @@ class I18nRqlParsingListener
     private function isTranslatableFieldNode()
     {
         $isTranslatableField = false;
-        $class = $this->getDocumentClassName();
-
-        if (isset($this->mapping[$class]) && in_array($this->getDocumentFieldName(), $this->mapping[$class])) {
+        if (isset($this->mapping[$this->className]) &&
+            in_array($this->getDocumentFieldName(), $this->mapping[$this->className])
+        ) {
             $isTranslatableField = true;
         }
 
@@ -190,22 +196,5 @@ class I18nRqlParsingListener
         }
 
         return array_unique($matchingTranslations);
-    }
-
-    /**
-     * Returns the document class from the query
-     *
-     * @return string class name
-     */
-    private function getDocumentClassName()
-    {
-        // find our class name
-        $documentName = $this->builder->getQuery()->getClass()->getName();
-
-        if (!class_exists($documentName)) {
-            throw new \LogicException('Could not determine class name from RQL query.');
-        }
-
-        return $documentName;
     }
 }

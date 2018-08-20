@@ -65,6 +65,9 @@ parameters:
     graviton.file.s3.credentials.key: null
     graviton.file.s3.credentials.secret: null
 
+    # optional url to a solr instance for improved search
+    graviton.solr.url: null
+
     graviton.router.host: null
     graviton.router.port_http: null
     graviton.router.port_https: null

@@ -3,6 +3,7 @@ namespace Graviton\GeneratorBundle\Definition;
 
 use Graviton\GeneratorBundle\Definition\Schema\Constraint;
 use Graviton\GeneratorBundle\Definition\Schema\Service;
+use Graviton\GeneratorBundle\Definition\Schema\Solr;
 use Graviton\SchemaBundle\Constraint\VersionServiceConstraint;
 
 /**
@@ -442,6 +443,30 @@ class JsonDefinition
         }
 
         return $this->def->getService()->getRoles();
+    }
+
+    /**
+     * gets information about solr
+     *
+     * @return array|Schema\Solr
+     */
+    public function getSolrFields()
+    {
+        $solr = $this->def->getSolr();
+        if (!$solr instanceof Solr) {
+            return [];
+        }
+
+        $fields = [];
+        foreach ($solr->getFields() as $field) {
+            $fields[] = [
+                'name' => $field->getName(),
+                'type' => $field->getType(),
+                'weight' => $field->getWeight()
+            ];
+        }
+
+        return $fields;
     }
 
     /**

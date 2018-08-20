@@ -37,6 +37,10 @@ class Definition
      * @var string
      */
     private $title;
+    /**
+     * @var Solr
+     */
+    private $solr;
 
     /**
      * @return string
@@ -144,5 +148,27 @@ class Definition
     {
         $this->target = $target;
         return $this;
+    }
+
+    /**
+     * get Solr
+     *
+     * @return Solr Solr
+     */
+    public function getSolr()
+    {
+        return $this->solr;
+    }
+
+    /**
+     * set Solr
+     *
+     * @param Solr $solr solr
+     *
+     * @return void
+     */
+    public function setSolr($solr)
+    {
+        $this->solr = $solr;
     }
 }

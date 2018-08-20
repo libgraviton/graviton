@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\Solr">
+        <property name="aggregate"
+                  type="array&lt;stdClass&gt;"
+                  serialized-name="aggregate"/>
+        <property name="fields"
+                  type="array&lt;Graviton\GeneratorBundle\Definition\Schema\SolrField&gt;"
+                  serialized-name="fields"/>
+    </class>
+</serializer>

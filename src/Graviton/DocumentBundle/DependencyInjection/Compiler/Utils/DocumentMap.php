@@ -188,7 +188,14 @@ class DocumentMap
             );
         }
 
-        return new Document($className, $fields);
+        $doc = new Document($className, $fields);
+
+        // stuff that belongs to the whole document
+        if (isset($schemaMapping['_base']['solr'])) {
+            $doc->setSolrFields($schemaMapping['_base']['solr']);
+        }
+
+        return $doc;
     }
 
     /**
@@ -284,6 +291,12 @@ class DocumentMap
                         $classMap[$schema['x-documentClass']][$fieldName]['restrictions'] = [];
                     }
                 }
+            }
+
+            if (isset($schema['solr']) && is_array($schema['solr']) && !empty($schema['solr'])) {
+                $classMap[$schema['x-documentClass']]['_base']['solr'] = $schema['solr'];
+            } else {
+                $classMap[$schema['x-documentClass']]['_base']['solr'] = [];
             }
         }
 

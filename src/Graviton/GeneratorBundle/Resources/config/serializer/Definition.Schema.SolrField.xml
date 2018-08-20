@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Graviton\GeneratorBundle\Definition\Schema\SolrField">
+        <property name="name"
+                  type="string"
+                  serialized-name="name"/>
+        <property name="type"
+                  type="string"
+                  serialized-name="type"/>
+        <property name="weight"
+                  type="double"
+                  serialized-name="weight"/>
+    </class>
+</serializer>

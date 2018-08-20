@@ -22,6 +22,10 @@ class Document
      * @var AbstractField[]
      */
     private $fields = [];
+    /**
+     * @var array
+     */
+    private $solrFields = [];
 
     /**
      * Constructor
@@ -53,5 +57,27 @@ class Document
     public function getFields()
     {
         return $this->fields;
+    }
+
+    /**
+     * get SolrFields
+     *
+     * @return array SolrFields
+     */
+    public function getSolrFields()
+    {
+        return $this->solrFields;
+    }
+
+    /**
+     * set SolrFields
+     *
+     * @param array $solrFields solrFields
+     *
+     * @return void
+     */
+    public function setSolrFields($solrFields)
+    {
+        $this->solrFields = $solrFields;
     }
 }
