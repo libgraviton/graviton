@@ -62,14 +62,31 @@ class ConstraintUtils
      *
      * @param string $documentClass document class
      * @param string $recordId      record id
+     * @param array  $fields        if you only need certain fields, you can specify them here
      *
      * @throws \Doctrine\ODM\MongoDB\LockException
      * @throws \Exception
      *
      * @return object|null entity
      */
-    public function getSerializedEntity($documentClass, $recordId)
+    public function getSerializedEntity($documentClass, $recordId, array $fields = null)
     {
+        if (is_array($fields)) {
+            // only get certain fields! will not be cached in instance
+            $queryBuilder = $this->dm->createQueryBuilder($documentClass);
+            $queryBuilder->field('id')->equals($recordId);
+            $queryBuilder->select($fields);
+
+            $query = $queryBuilder->getQuery();
+            $records = array_values($query->execute()->toArray());
+
+            if (is_array($records) && !empty($records)) {
+                return json_decode($this->restUtils->serializeContent($records[0]));
+            }
+
+            return null;
+        }
+
         if (!isset($this->entities[$documentClass][$recordId])) {
             $current = $this->dm->getRepository($documentClass)->find($recordId);
 
@@ -86,9 +103,11 @@ class ConstraintUtils
     /**
      * Returns the current request entity (as \stdClass) if possible
      *
+     * @param array $fields if you only need certain fields, you can specify them here
+     *
      * @return null|object
      */
-    public function getCurrentEntity()
+    public function getCurrentEntity(array $fields = null)
     {
         $currentRecordId = null;
 
@@ -108,7 +127,7 @@ class ConstraintUtils
             !empty($this->currentSchema->{'x-documentClass'}) &&
             !is_null($currentRecordId)
         ) {
-            return $this->getSerializedEntity($this->currentSchema->{'x-documentClass'}, $currentRecordId);
+            return $this->getSerializedEntity($this->currentSchema->{'x-documentClass'}, $currentRecordId, $fields);
         }
 
         return null;

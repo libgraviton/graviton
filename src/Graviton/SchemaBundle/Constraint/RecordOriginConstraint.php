@@ -66,7 +66,7 @@ class RecordOriginConstraint
      */
     public function checkRecordOrigin(ConstraintEventSchema $event)
     {
-        $currentRecord = $this->utils->getCurrentEntity();
+        $currentRecord = $this->utils->getCurrentEntity([$this->recordOriginField]);
         $data = $event->getElement();
 
         // if no recordorigin set on saved record; we let it through
@@ -124,7 +124,8 @@ class RecordOriginConstraint
                 ->enableMagicCall()
                 ->getPropertyAccessor();
 
-            $storedObject = clone $currentRecord;
+            // now really get the whole object
+            $storedObject = $this->utils->getCurrentEntity();
             $userObject = clone $data;
 
             // convert all datetimes to UTC so we compare eggs with eggs
