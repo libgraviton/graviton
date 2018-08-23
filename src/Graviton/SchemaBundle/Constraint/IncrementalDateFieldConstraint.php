@@ -44,14 +44,14 @@ class IncrementalDateFieldConstraint
         }
 
         // get the current record
-        $currentRecord = $this->utils->getCurrentEntity();
+        $path = $this->utils->getNormalizedPathFromPointer($event->getPath());
+        $currentRecord = $this->utils->getCurrentEntity([$path]);
 
         if (is_null($currentRecord)) {
             return;
         }
 
         $data = $event->getElement();
-        $path = $this->utils->getNormalizedPathFromPointer($event->getPath());
 
         // get the current value in database
         $accessor = PropertyAccess::createPropertyAccessor();
