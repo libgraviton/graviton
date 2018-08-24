@@ -58,7 +58,7 @@ class VersionServiceConstraint
         $data = $event->getElement();
 
         // get the current record
-        if ($currentRecord = $this->utils->getCurrentEntity()) {
+        if ($currentRecord = $this->utils->getCurrentEntity([self::FIELD_NAME])) {
             $userVersion = $this->getUserVersion($data);
             $storedVersion = $this->getVersionFromObject($currentRecord);
             if ($userVersion !== $storedVersion) {

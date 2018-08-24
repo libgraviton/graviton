@@ -93,9 +93,7 @@ class QueryService
         $this->applyRqlQuery();
 
         if (is_null($this->getDocumentId())) {
-            // get all action
             $query = $this->queryBuilder->getQuery();
-
             $records = array_values($query->execute()->toArray());
             $totalCount = $query->count();
             $numPages = (int) ceil($totalCount / $this->getPaginationPageSize());
@@ -114,10 +112,16 @@ class QueryService
             return $records;
         } else {
             $this->queryBuilder->field('id')->equals($this->getDocumentId());
-            $records = $this->queryBuilder->getQuery()->getSingleResult();
-        }
 
-        return $records;
+            $query = $this->queryBuilder->getQuery();
+            $records = array_values($query->execute()->toArray());
+
+            if (is_array($records) && !empty($records) && is_object($records[0])) {
+                return $records[0];
+            }
+
+            return null;
+        }
     }
 
     /**
