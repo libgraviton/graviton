@@ -16,7 +16,7 @@
     "require": {
         "php": ">=7.1.0",
         "ext-fileinfo": "*",
-        "ext-mongodb": "~1.5.0",
+        "ext-mongodb": "^1.4.0",
 
         "alcaeus/mongo-php-adapter": "^1.1.5",
         "jean85/pretty-package-versions": "^1.1",
