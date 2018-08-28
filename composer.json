@@ -22,7 +22,7 @@
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "^3.0",
+        "graviton/php-rql-parser": "^3.2",
         "graviton/rql-parser-bundle": "^1.1.0",
         "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",

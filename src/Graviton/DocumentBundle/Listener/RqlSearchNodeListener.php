@@ -13,6 +13,7 @@ use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Event\VisitPostEvent;
 use Graviton\Rql\Node\SearchNode;
+use Xiag\Rql\Parser\Node\SelectNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -132,15 +133,35 @@ class RqlSearchNodeListener
             $event->getQuery()->getLimit()
         );
 
-        $this->builder = $event->getBuilder();
+        /**
+         * we need an aggregation here as mongo
+         * needs to sort the resulting array based on the $idList array we
+         * received from solr..
+         */
 
-        $this->builder->addAnd(
-            $this->builder->expr()->field("_id")->in($idList)
-        );
+        $aggregation = $event->getRepository()->createAggregationBuilder();
 
-        $this->builder->limit(0)->skip(0);
+        $aggregation
+            ->match()
+            ->field('_id')
+            ->in($idList);
 
-        $event->setBuilder($this->builder);
+        // do we have a select?
+        $select = $event->getQuery()->getSelect();
+        if ($select instanceof SelectNode) {
+            $aggregation
+                ->project()
+                ->includeFields($select->getFields());
+        }
+
+        $aggregation
+            ->addFields()
+            ->field('_theSorter')
+            ->indexOfArray($idList, '$_id');
+
+        $aggregation->sort('_theSorter', 1);
+
+        $event->setAggregationOverride($aggregation);
 
         return $event;
     }
