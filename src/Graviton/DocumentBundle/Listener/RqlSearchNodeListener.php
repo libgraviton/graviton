@@ -53,11 +53,6 @@ class RqlSearchNodeListener
     private $solrQuery;
 
     /**
-     * @var int
-     */
-    private $paginationDefaultLimit;
-
-    /**
      * search mode for current request
      *
      * @var string
