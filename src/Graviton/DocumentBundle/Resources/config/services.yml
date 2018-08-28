@@ -18,6 +18,7 @@ services:
     public: true
     arguments:
     - "%graviton.solr.url%"
+    - "%graviton.solr.fuzzy_bridge%"
     - "%graviton.document.solr.map%"
     - "%graviton.rest.pagination.limit%"
     - "@graviton.document.service.solrquery.client"
