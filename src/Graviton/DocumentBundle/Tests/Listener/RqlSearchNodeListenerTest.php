@@ -115,6 +115,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         // SolrQuery class
         $this->solrQuery = new SolrQuery(
             'http://localhost/solr',
+            5,
             [
                 'MyNiceDocument' => 'fieldName^2 fieldNameTwo^3',
                 'MyOtherNiceDocument' => 'fieldName^20 fieldNameTwo^30'
@@ -180,7 +181,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setQuery')
-            ->with('"fred*" "test*"');
+            ->with('fred* test*');
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setStart')
