@@ -67,6 +67,8 @@ parameters:
 
     # optional url to a solr instance for improved search
     graviton.solr.url: null
+    # how many characters does a search term need to make it fuzzy?
+    graviton.solr.fuzzy_bridge: 5
 
     graviton.router.host: null
     graviton.router.port_http: null
