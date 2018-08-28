@@ -77,13 +77,11 @@ class RqlSearchNodeListener
     /**
      * constructor
      *
-     * @param SolrQuery $solrQuery              solr query service
-     * @param int       $paginationDefaultLimit pagination default limit
+     * @param SolrQuery $solrQuery solr query service
      */
-    public function __construct(SolrQuery $solrQuery, $paginationDefaultLimit)
+    public function __construct(SolrQuery $solrQuery)
     {
         $this->solrQuery = $solrQuery;
-        $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
 
     /**
@@ -140,15 +138,18 @@ class RqlSearchNodeListener
             $event->getQuery()->getLimit()
         );
 
+        /**
+         * we need an aggregation here as mongo
+         * needs to sort the resulting array based on the $idList array we
+         * received from solr..
+         */
+
         $aggregation = $event->getRepository()->createAggregationBuilder();
 
         $aggregation
             ->match()
             ->field('_id')
             ->in($idList);
-
-        $aggregation
-            ->limit($this->paginationDefaultLimit);
 
         // do we have a select?
         $select = $event->getQuery()->getSelect();
