@@ -92,6 +92,19 @@ class QueryService
 
         $this->applyRqlQuery();
 
+        if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
+            /**
+             * this is only the case when queryBuilder was overridden, most likely via a PostEvent
+             * in the rql parsing phase.
+             */
+            $this->queryBuilder->hydrate($repository->getClassName());
+
+            $records = array_values($this->queryBuilder->execute()->toArray());
+            $request->attributes->set('recordCount', count($records));
+
+            return $records;
+        }
+
         if (is_null($this->getDocumentId())) {
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
@@ -163,7 +176,8 @@ class QueryService
             $this->queryBuilder = $this->visitor->visit($rqlQuery);
         }
 
-        if (is_null($this->getDocumentId())) {
+        if (is_null($this->getDocumentId()) && $this->queryBuilder instanceof Builder) {
+
             /*** default sort ***/
             if (!array_key_exists('sort', $this->queryBuilder->getQuery()->getQuery())) {
                 $this->queryBuilder->sort('_id');
