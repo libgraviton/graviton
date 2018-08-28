@@ -61,15 +61,6 @@ class PagingLinkResponseListener
         // always set recordcount header
         $totalCount = null;
         if ($request->attributes->has('recordCount')) {
-            $totalCount = $request->attributes->get('recordCount');
-        }
-        // maybe have one from solr?
-        if ($request->attributes->has('solr-total-count')) {
-            $response->headers->set('X-Search-Source', 'solr');
-            $totalCount = $request->attributes->get('solr-total-count');
-        }
-
-        if (!is_null($totalCount)) {
             $response->headers->set('X-Record-Count', (string) $totalCount);
         }
 
@@ -97,6 +88,15 @@ class PagingLinkResponseListener
             $response->headers->set(
                 'X-Total-Count',
                 (string) $request->attributes->get('totalCount')
+            );
+        }
+
+        // maybe have one from solr?
+        if ($request->attributes->has('solr-total-count')) {
+            $response->headers->set('X-Search-Source', 'solr');
+            $response->headers->set(
+                'X-Total-Count',
+                (string) $request->attributes->get('solr-total-count')
             );
         }
     }
