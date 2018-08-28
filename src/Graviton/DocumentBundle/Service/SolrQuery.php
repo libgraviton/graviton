@@ -30,6 +30,11 @@ class SolrQuery
     private $urlParts = [];
 
     /**
+     * @var int
+     */
+    private $solrFuzzyBridge;
+
+    /**
      * @var array
      */
     private $solrMap;
@@ -53,6 +58,7 @@ class SolrQuery
      * Constructor
      *
      * @param string       $solrUrl                url to solr
+     * @param int          $solrFuzzyBridge        fuzzy bridge
      * @param array        $solrMap                solr class field weight map
      * @param int          $paginationDefaultLimit default pagination limit
      * @param Client       $solrClient             solr client
@@ -60,6 +66,7 @@ class SolrQuery
      */
     public function __construct(
         $solrUrl,
+        $solrFuzzyBridge,
         array $solrMap,
         $paginationDefaultLimit,
         Client $solrClient,
@@ -69,6 +76,7 @@ class SolrQuery
             $this->urlParts = parse_url($solrUrl);
         }
 
+        $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
@@ -174,14 +182,25 @@ class SolrQuery
             return $term;
         }
 
-        // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
-        if (strlen($term) < 5) {
-            $term .= '*';
-        } else {
-            $term .= '~';
+        // formatted number?
+        $formatted = str_replace(
+            [
+                '-',
+                '.'
+            ],
+            '',
+            $term
+        );
+        if (ctype_digit($formatted)) {
+            return $term;
         }
 
-        return '"'.$term.'"';
+        // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
+        if (strlen($term) < $this->solrFuzzyBridge) {
+            return $term . '*';
+        } else {
+            return $term . '~';
+        }
     }
 
     /**
