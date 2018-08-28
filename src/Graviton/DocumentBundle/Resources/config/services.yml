@@ -73,6 +73,7 @@ services:
     class: "%graviton.document.listener.rqlsearch.class%"
     arguments:
     - "@graviton.document.service.solrquery"
+    - "%graviton.rest.pagination.limit%"
     tags:
     - name: kernel.event_listener
       event: rql.visit.node
