@@ -13,6 +13,7 @@ use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Event\VisitPostEvent;
 use Graviton\Rql\Node\SearchNode;
+use Xiag\Rql\Parser\Node\SelectNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -52,6 +53,11 @@ class RqlSearchNodeListener
     private $solrQuery;
 
     /**
+     * @var int
+     */
+    private $paginationDefaultLimit;
+
+    /**
      * search mode for current request
      *
      * @var string
@@ -71,11 +77,13 @@ class RqlSearchNodeListener
     /**
      * constructor
      *
-     * @param SolrQuery $solrQuery solr query service
+     * @param SolrQuery $solrQuery              solr query service
+     * @param int       $paginationDefaultLimit pagination default limit
      */
-    public function __construct(SolrQuery $solrQuery)
+    public function __construct(SolrQuery $solrQuery, $paginationDefaultLimit)
     {
         $this->solrQuery = $solrQuery;
+        $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
     }
 
     /**
@@ -132,15 +140,32 @@ class RqlSearchNodeListener
             $event->getQuery()->getLimit()
         );
 
-        $this->builder = $event->getBuilder();
+        $aggregation = $event->getRepository()->createAggregationBuilder();
 
-        $this->builder->addAnd(
-            $this->builder->expr()->field("_id")->in($idList)
-        );
+        $aggregation
+            ->match()
+            ->field('_id')
+            ->in($idList);
 
-        $this->builder->limit(0)->skip(0);
+        $aggregation
+            ->limit($this->paginationDefaultLimit);
 
-        $event->setBuilder($this->builder);
+        // do we have a select?
+        $select = $event->getQuery()->getSelect();
+        if ($select instanceof SelectNode) {
+            $aggregation
+                ->project()
+                ->includeFields($select->getFields());
+        }
+
+        $aggregation
+            ->addFields()
+            ->field('_theSorter')
+            ->indexOfArray($idList, '$_id');
+
+        $aggregation->sort('_theSorter', 1);
+
+        $event->setAggregationOverride($aggregation);
 
         return $event;
     }
