@@ -86,6 +86,8 @@ class QueryService
      */
     public function getWithRequest(Request &$request, DocumentRepository $repository)
     {
+        $returnValue = null;
+
         $this->request = &$request;
         $this->repository = $repository;
         $this->queryBuilder = $repository->createQueryBuilder();
@@ -102,14 +104,35 @@ class QueryService
             $records = array_values($this->queryBuilder->execute()->toArray());
             $request->attributes->set('recordCount', count($records));
 
-            return $records;
-        }
-
-        if (is_null($this->getDocumentId())) {
+            $returnValue = $records;
+        } elseif (is_null($this->getDocumentId())) {
+            /**
+             * this is or the "all" action -> multiple documents returned
+             */
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
-            $totalCount = $query->count();
-            $numPages = (int) ceil($totalCount / $this->getPaginationPageSize());
+
+            $request->attributes->set('totalCount', $query->count());
+            $request->attributes->set('recordCount', count($records));
+
+            $returnValue = $records;
+        } else {
+            /**
+             * this is the "getAction" -> one document returned
+             */
+            $this->queryBuilder->field('id')->equals($this->getDocumentId());
+
+            $query = $this->queryBuilder->getQuery();
+            $records = array_values($query->execute()->toArray());
+
+            if (is_array($records) && !empty($records) && is_object($records[0])) {
+                $returnValue = $records[0];
+            }
+        }
+
+        // need to set paging information?
+        if (!is_null($returnValue) && $request->attributes->has('totalCount')) {
+            $numPages = (int) ceil($request->attributes->get('totalCount') / $this->getPaginationPageSize());
             $page = (int) ceil($this->getPaginationSkip() / $this->getPaginationPageSize()) + 1;
             if ($numPages > 1) {
                 $request->attributes->set('paging', true);
@@ -118,23 +141,9 @@ class QueryService
                 $request->attributes->set('startAt', $this->getPaginationSkip());
                 $request->attributes->set('perPage', $this->getPaginationPageSize());
             }
-
-            $request->attributes->set('totalCount', $totalCount);
-            $request->attributes->set('recordCount', count($records));
-
-            return $records;
-        } else {
-            $this->queryBuilder->field('id')->equals($this->getDocumentId());
-
-            $query = $this->queryBuilder->getQuery();
-            $records = array_values($query->execute()->toArray());
-
-            if (is_array($records) && !empty($records) && is_object($records[0])) {
-                return $records[0];
-            }
-
-            return null;
         }
+
+        return $returnValue;
     }
 
     /**

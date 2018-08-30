@@ -59,18 +59,19 @@ class PagingLinkResponseListener
         $routeType = end($routeParts);
 
         // always set recordcount header
-        $totalCount = null;
         if ($request->attributes->has('recordCount')) {
-            $totalCount = $request->attributes->get('recordCount');
-        }
-        // maybe have one from solr?
-        if ($request->attributes->has('solr-total-count')) {
-            $response->headers->set('X-Search-Source', 'solr');
-            $totalCount = $request->attributes->get('solr-total-count');
+            $response->headers->set(
+                'X-Record-Count',
+                (string) $request->attributes->get('recordCount')
+            );
         }
 
-        if (!is_null($totalCount)) {
-            $response->headers->set('X-Record-Count', (string) $totalCount);
+        // search source header?
+        if ($request->attributes->has('X-Search-Source')) {
+            $response->headers->set(
+                'X-Search-Source',
+                (string) $request->attributes->get('X-Search-Source')
+            );
         }
 
         // only collections have paging
@@ -159,7 +160,7 @@ class PagingLinkResponseListener
         $url = $this->getRqlUrl(
             $request,
             $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL) .
-                '?' . strtr($rql, [',' => '%2C'])
+            '?' . strtr($rql, [',' => '%2C'])
         );
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
