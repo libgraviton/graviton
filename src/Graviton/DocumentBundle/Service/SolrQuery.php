@@ -138,7 +138,8 @@ class SolrQuery
         $result = $client->select($query);
 
         if ($this->requestStack->getCurrentRequest() instanceof Request) {
-            $this->requestStack->getCurrentRequest()->attributes->set('solr-total-count', $result->getNumFound());
+            $this->requestStack->getCurrentRequest()->attributes->set('totalCount', $result->getNumFound());
+            $this->requestStack->getCurrentRequest()->attributes->set('X-Search-Source', 'solr');
         }
 
         $idList = [];
