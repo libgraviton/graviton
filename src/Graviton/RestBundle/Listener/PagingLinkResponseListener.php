@@ -66,6 +66,14 @@ class PagingLinkResponseListener
             );
         }
 
+        // search source header?
+        if ($request->attributes->has('X-Search-Source')) {
+            $response->headers->set(
+                'X-Search-Source',
+                (string) $request->attributes->get('X-Search-Source')
+            );
+        }
+
         // only collections have paging
         if ($routeType == 'all' && $request->attributes->get('paging')) {
             $rql = '';
@@ -90,15 +98,6 @@ class PagingLinkResponseListener
             $response->headers->set(
                 'X-Total-Count',
                 (string) $request->attributes->get('totalCount')
-            );
-        }
-
-        // maybe have one from solr?
-        if ($request->attributes->has('solr-total-count')) {
-            $response->headers->set('X-Search-Source', 'solr');
-            $response->headers->set(
-                'X-Total-Count',
-                (string) $request->attributes->get('solr-total-count')
             );
         }
     }
@@ -161,7 +160,7 @@ class PagingLinkResponseListener
         $url = $this->getRqlUrl(
             $request,
             $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL) .
-                '?' . strtr($rql, [',' => '%2C'])
+            '?' . strtr($rql, [',' => '%2C'])
         );
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
