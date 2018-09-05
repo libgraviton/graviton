@@ -196,6 +196,13 @@ class SolrQuery
             return $term;
         }
 
+        // everything that is only numbers *and* characters and at least 3 long, we don't fuzzy/wildcard
+        // thanks to https://stackoverflow.com/a/7684859/3762521
+        $pattern = '/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/';
+        if (strlen($term) > 3 && preg_match($pattern, $term, $matches) === 1) {
+            return $term;
+        }
+
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
         if (strlen($term) < $this->solrFuzzyBridge) {
             return $term . '*';
