@@ -22,6 +22,7 @@ class AnalyticModel
      */
     protected $dateConverter;
 
+    protected $database;
     protected $collection;
     protected $route;
     protected $aggregate = [];
@@ -42,6 +43,38 @@ class AnalyticModel
     public function setDateConverter($dateConverter)
     {
         $this->dateConverter = $dateConverter;
+    }
+
+    /**
+     * get Database
+     *
+     * @param string $pipelineName which pipeline you want the database for
+     *
+     * @return string database name name
+     */
+    public function getDatabase($pipelineName = null)
+    {
+        if (!is_object($this->database)) {
+            return $this->database;
+        }
+
+        if (isset($this->database->$pipelineName)) {
+            return $this->database->$pipelineName;
+        }
+
+        return null;
+    }
+
+    /**
+     * set Database
+     *
+     * @param mixed $database database
+     *
+     * @return void
+     */
+    public function setDatabase($database)
+    {
+        $this->database = $database;
     }
 
     /**
