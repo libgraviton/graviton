@@ -75,12 +75,20 @@ class AnalyticsManager
         $data = [];
 
         if (!$model->getMultipipeline()) {
-            $collection = $this->connection->selectCollection($this->databaseName, $model->getCollection());
+            $dbName = $model->getDatabase();
+            if (is_null($dbName)) {
+                $dbName = $this->databaseName;
+            }
+            $collection = $this->connection->selectCollection($dbName, $model->getCollection());
             $data[] = $collection->aggregate($pipeline, ['cursor' => true])->toArray();
         } else {
             foreach ($pipeline as $pipelineName => $definition) {
+                $dbName = $model->getDatabase($pipelineName);
+                if (is_null($dbName)) {
+                    $dbName = $this->databaseName;
+                }
                 $collection = $this->connection->selectCollection(
-                    $this->databaseName,
+                    $dbName,
                     $model->getCollection($pipelineName)
                 );
                 $data[$pipelineName] = $collection->aggregate($definition, ['cursor' => true])->toArray();
