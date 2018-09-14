@@ -19,17 +19,6 @@ services:
             event: kernel.response
             method: onKernelResponse
 
-    graviton.schema.listener.schemacacheinvalidation:
-        class: "%graviton.schema.listener.schemacacheinvalidation.class%"
-        arguments:
-          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
-          - "%graviton.schema.cache.invalidateMapKey%"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.request
-            method: onRestRequest
-
     graviton.schema.model.schemamodel:
         class: "%graviton.schema.model.schemamodel.class%"
         calls:
@@ -137,7 +126,6 @@ services:
           - "%locale%"
           - "@graviton.schema.constraint.builder"
           - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
-          - "%graviton.schema.cache.invalidateMapKey%"
 
     graviton.schema.constraint.incrementaldate:
         class: "%graviton.schema.constraint.incrementaldate.class%"
