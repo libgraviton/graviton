@@ -190,7 +190,8 @@ class Schema
         'decimal',
         'string',
         'date',
-        'extref'
+        'extref',
+        'translatable'
     ];
 
     /**

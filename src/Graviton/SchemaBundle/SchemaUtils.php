@@ -91,11 +91,6 @@ class SchemaUtils
     private $cache;
 
     /**
-     * @var string
-     */
-    private $cacheInvalidationMapKey;
-
-    /**
      * @var ConstraintBuilder
      */
     private $constraintBuilder;
@@ -347,11 +342,7 @@ class SchemaUtils
                     }
                 }
             } elseif ($meta->getTypeOfField($field) == 'translatable') {
-                if (substr($field, -2) == '[]') {
-                    $property = $this->makeArrayTranslatable($property, $languages);
-                } else {
-                    $property = $this->makeTranslatable($property, $languages);
-                }
+                $property = $this->makeTranslatable($property, $languages);
             } elseif ($meta->getTypeOfField($field) === 'extref') {
                 $urls = [];
                 $refCollections = $model->getRefCollectionOfField($field);
@@ -369,22 +360,31 @@ class SchemaUtils
                 $property->setRefCollection($urls);
             } elseif ($meta->getTypeOfField($field) === 'collection') {
                 $itemSchema = new Schema();
-                $property->setType('array');
                 $itemSchema->setType($this->getCollectionItemType($meta->name, $field));
 
+                $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
             } elseif ($meta->getTypeOfField($field) === 'datearray') {
                 $itemSchema = new Schema();
-                $property->setType('array');
                 $itemSchema->setType('string');
                 $itemSchema->setFormat('date-time');
 
+                $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
             } elseif ($meta->getTypeOfField($field) === 'hasharray') {
                 $itemSchema = new Schema();
                 $itemSchema->setType('object');
+
+                $property->setType('array');
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'translatablearray') {
+                $itemSchema = new Schema();
+                $itemSchema->setType('object');
+                $itemSchema->setFormat('translatable');
+                $itemSchema = $this->makeTranslatable($itemSchema, $languages);
 
                 $property->setType('array');
                 $property->setItems($itemSchema);

@@ -38,6 +38,7 @@ class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
         // TODO: implement ExtReferenceArrayType
         Type::registerType('extref', Types\ExtReferenceType::class);
         Type::registerType('translatable', Types\TranslatableType::class);
+        Type::registerType('translatablearray', Types\TranslatableArrayType::class);
         Type::registerType('hash', Types\HashType::class);
         Type::registerType('hasharray', Types\HashArrayType::class);
         Type::registerType('datearray', Types\DateArrayType::class);

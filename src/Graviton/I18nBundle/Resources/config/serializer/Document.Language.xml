@@ -2,7 +2,7 @@
 <serializer>
   <class name="Graviton\I18nBundle\Document\Language" exclusion-policy="ALL">
     <property name="id" type="string" accessor-getter="getId" accessor-setter="setId" expose="true"/>
-    <property name="name" type="string" accessor-getter="getName" accessor-setter="setName" expose="true">
+    <property name="name" accessor-getter="getName" accessor-setter="setName" expose="true">
       <type><![CDATA[Graviton\DocumentBundle\Entity\Translatable]]></type>
     </property>
   </class>

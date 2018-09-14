@@ -46,17 +46,59 @@ class TranslatableHandler
      */
     public function serializeTranslatableToJson(
         JsonSerializationVisitor $visitor,
-        Translatable $translatable,
+        $translatable,
         array $type,
         Context $context
     ) {
+        if (is_array($translatable) && empty($translatable)) {
+            return $translatable;
+        }
+
         if (!$translatable->hasTranslations()) {
+            $original = $translatable->getOriginal();
             $translatable->setTranslations(
-                $this->utils->getTranslatedField($translatable->getOriginal())
+                $this->utils->getTranslatedField($original)
+            );
+        } elseif (count($translatable->getTranslations()) != $this->utils->getLanguages()) {
+            // languages missing
+            $default = $this->utils->getDefaultLanguage();
+            $original = $this->getOriginalString($translatable, $default);
+            if (empty($original)) {
+                return null;
+            }
+            $translated = $this->utils->getTranslatedField($original);
+
+            $translatable->setTranslations(
+                array_merge(
+                    $translated,
+                    $translatable->getTranslations()
+                )
             );
         }
 
         return $translatable;
+    }
+
+    /**
+     * Gets the default string, either 'original' or the default language
+     *
+     * @param Translatable $translatable    translatable
+     * @param string       $defaultLanguage default language
+     *
+     * @return string original string
+     */
+    private function getOriginalString(Translatable $translatable, $defaultLanguage)
+    {
+        $original = null;
+        if ($translatable->getOriginal() != null) {
+            $original = $translatable->getOriginal();
+        } elseif ($translatable->hasTranslations()) {
+            $translations = $translatable->getTranslations();
+            if (isset($translations[$defaultLanguage])) {
+                $original = $translations[$defaultLanguage];
+            }
+        }
+        return $original;
     }
 
     /**

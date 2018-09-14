@@ -107,6 +107,16 @@ class I18nRqlParsingListener
             $newNode->addQuery(new EqNode(1, 2));
         }
 
+        // add the direct node (for new structures)..
+        /*
+        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
+            $defaultValue = new \MongoRegex($this->node->getValue()->toRegex());
+        } else {
+            $defaultValue = $this->node->getValue();
+        }
+        $newNode->addQuery(new EqNode($this->node->getField(), $defaultValue));
+        */
+
         return $newNode;
     }
 

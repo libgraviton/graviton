@@ -79,7 +79,15 @@ class Translatable implements \JsonSerializable
      */
     public function getTranslations()
     {
-        return $this->translations;
+        if (empty($this->translations) && isset($this->original)) {
+            //return ['en' => $this->original];
+        }
+
+        if (!empty($this->translations)) {
+            return $this->translations;
+        }
+
+        return [];
     }
 
     /**
