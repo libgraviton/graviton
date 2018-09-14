@@ -23,3 +23,4 @@ parameters:
     graviton.i18n.cacheutils.class: Graviton\I18nBundle\Service\I18nCacheUtils
     graviton.i18n.command.createtranslationresources.class: Graviton\I18nBundle\Command\CreateTranslationResourcesCommand
     graviton.i18n.translator.factory.class: Graviton\I18nBundle\Translator\TranslatorFactory
+    graviton.i18n.serializer.handler.translatable.class: Graviton\I18nBundle\Serializer\Handler\TranslatableHandler

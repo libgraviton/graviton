@@ -232,6 +232,16 @@ services:
             arguments:
               - "@graviton.18n.utils"
 
+    graviton.i18n.serializer.handler.translatable:
+        class: "%graviton.i18n.serializer.handler.translatable.class%"
+        public: true
+        arguments:
+        - "@graviton.18n.utils"
+        tags:
+        - name: jms_serializer.handler
+          type: Graviton\DocumentBundle\Entity\Translatable
+          format: json
+
     graviton.i18n.listener.postpersisttranslatable:
         class: "%graviton.i18n.listener.postpersisttranslatable.class%"
         arguments:
