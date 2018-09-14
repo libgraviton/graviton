@@ -5,8 +5,6 @@
 
 namespace Graviton\CoreBundle\Document;
 
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-
 /**
  * App
  *
@@ -14,7 +12,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class App implements TranslatableDocumentInterface
+class App
 {
     /**
      * @var string app id
@@ -35,26 +33,6 @@ class App implements TranslatableDocumentInterface
      * @var int sort order
      */
     protected $order;
-
-    /**
-     * make name translatable
-     *
-     * @return string[]
-     */
-    public function getTranslatableFields()
-    {
-        return array('name');
-    }
-
-    /**
-     * return pretranslated fields
-     *
-     * @return string[]
-     */
-    public function getPreTranslatedFields()
-    {
-        return [];
-    }
 
     /**
      * Set id
