@@ -36,7 +36,6 @@ class TranslatableFieldsCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $this->documentMap = $container->get('graviton.document.map');
-
         $map = [];
         foreach ($this->documentMap->getDocuments() as $document) {
             $map[$document->getClass()] = $this->getTranslatableFields($document);
@@ -53,18 +52,10 @@ class TranslatableFieldsCompilerPass implements CompilerPassInterface
      */
     private function getTranslatableFields(Document $document, $prefix = '')
     {
-        $reflection = new \ReflectionClass($document->getClass());
-        if ($reflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
-            $instance = $reflection->newInstanceWithoutConstructor();
-            $translatableFields = $instance->getTranslatableFields();
-        } else {
-            $translatableFields = [];
-        }
-
         $result = [];
         foreach ($document->getFields() as $field) {
             if ($field instanceof Field) {
-                if (in_array($field->getFieldName(), $translatableFields, true)) {
+                if ($field->getType() == 'translatable') {
                     $result[] = $prefix.$field->getExposedName();
                 }
             } elseif ($field instanceof EmbedOne) {
