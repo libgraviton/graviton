@@ -41,6 +41,8 @@ interface DefinitionElementInterface
 
     const TYPE_EXTREF = 'extref';
 
+    const TYPE_TRANSLATABLE = 'translatable';
+
     const REL_TYPE_REF = 'ref';
 
     const REL_TYPE_EMBED = 'embed';
