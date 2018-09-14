@@ -57,6 +57,8 @@ class I18nDeserializationListener
      */
     public function onPreDeserialize(PreDeserializeEvent $event)
     {
+        return $event;
+
         $eventClass = $event->getType()['name'];
 
         if (!class_exists($eventClass)) {

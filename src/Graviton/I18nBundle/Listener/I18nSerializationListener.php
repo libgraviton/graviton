@@ -70,6 +70,8 @@ class I18nSerializationListener
      */
     public function onPreSerialize(PreSerializeEvent $event)
     {
+        return $event;
+
         $object = $event->getObject();
 
         // Doctrine try to map value fields that may not exists.
@@ -137,6 +139,8 @@ class I18nSerializationListener
      */
     public function onPostSerialize(ObjectEvent $event)
     {
+        return;
+
         $object = $event->getObject();
         if (!$object instanceof TranslatableDocumentInterface) {
             return;
