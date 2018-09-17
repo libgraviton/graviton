@@ -64,7 +64,6 @@ class ConstraintUtils
      * @param string $recordId      record id
      * @param array  $fields        if you only need certain fields, you can specify them here
      *
-     * @throws \Doctrine\ODM\MongoDB\LockException
      * @throws \Exception
      *
      * @return object|null entity
@@ -72,32 +71,51 @@ class ConstraintUtils
     public function getSerializedEntity($documentClass, $recordId, array $fields = null)
     {
         if (is_array($fields)) {
-            // only get certain fields! will not be cached in instance
-            $queryBuilder = $this->dm->createQueryBuilder($documentClass);
-            $queryBuilder->field('id')->equals($recordId);
-            $queryBuilder->select($fields);
-
-            $query = $queryBuilder->getQuery();
-            $records = array_values($query->execute()->toArray());
-
-            if (is_array($records) && !empty($records)) {
-                return json_decode($this->restUtils->serializeContent($records[0]));
-            }
-
-            return null;
+            return $this->getSingleEntity($documentClass, $recordId, $fields);
         }
 
         if (!isset($this->entities[$documentClass][$recordId])) {
-            $current = $this->dm->getRepository($documentClass)->find($recordId);
+            $current = $this->getSingleEntity($documentClass, $recordId, $fields);
 
             if (is_null($current)) {
                 $this->entities[$documentClass][$recordId] = null;
             } else {
-                $this->entities[$documentClass][$recordId] = json_decode($this->restUtils->serializeContent($current));
+                $this->entities[$documentClass][$recordId] = $current;
             }
         }
 
         return $this->entities[$documentClass][$recordId];
+    }
+
+    /**
+     * returns an already serialized entity depending on fields, making sure the
+     * query is fresh
+     *
+     * @param string $documentClass document class
+     * @param string $recordId      record id
+     * @param array  $fields        if you only need certain fields, you can specify them here
+     *
+     * @throws \Exception
+     *
+     * @return object|null entity
+     */
+    private function getSingleEntity($documentClass, $recordId, array $fields = null)
+    {
+        // only get certain fields! will not be cached in instance
+        $queryBuilder = $this->dm->createQueryBuilder($documentClass);
+        $queryBuilder->field('id')->equals($recordId);
+        if (is_array($fields)) {
+            $queryBuilder->select($fields);
+        }
+        $query = $queryBuilder->getQuery();
+        $query->setRefresh(true);
+        $records = array_values($query->execute()->toArray());
+
+        if (is_array($records) && !empty($records)) {
+            return json_decode($this->restUtils->serializeContent($records[0]));
+        }
+
+        return null;
     }
 
     /**
