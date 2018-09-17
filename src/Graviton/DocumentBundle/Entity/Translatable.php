@@ -16,14 +16,13 @@ class Translatable implements \JsonSerializable
 {
 
     /**
-     * @var string the original string
-     */
-    private $original;
-
-    /**
      * @var array translated array
      */
     private $translations = [];
+
+    private static $defaultLanguage;
+
+    private static $defaultLanguageFile = __DIR__.'/Translatable.defaultLanguage';
 
     /**
      * creates a translatable from a simple string
@@ -34,7 +33,11 @@ class Translatable implements \JsonSerializable
      */
     public static function createFromOriginalString($original)
     {
-        return (new Translatable())->setOriginal($original);
+        return (new Translatable())->setTranslations(
+            [
+                self::getDefaultLanguage() => $original
+            ]
+        );
     }
 
     /**
@@ -50,26 +53,22 @@ class Translatable implements \JsonSerializable
     }
 
     /**
-     * get Original
+     * returns the default language as statically generated in a file
      *
-     * @return mixed Original
+     * @return string default language
      */
-    public function getOriginal()
+    public static function getDefaultLanguage()
     {
-        return $this->original;
-    }
+        if (!is_null(self::$defaultLanguage)) {
+            return self::$defaultLanguage;
+        }
 
-    /**
-     * set Original
-     *
-     * @param mixed $original original
-     *
-     * @return Translatable
-     */
-    public function setOriginal($original)
-    {
-        $this->original = $original;
-        return $this;
+        if (!file_exists(self::$defaultLanguageFile)) {
+            throw new \LogicException('Default language file '.self::$defaultLanguageFile.' does not exist');
+        }
+
+        self::$defaultLanguage = file_get_contents(self::$defaultLanguageFile);
+        return self::$defaultLanguage;
     }
 
     /**
@@ -79,10 +78,6 @@ class Translatable implements \JsonSerializable
      */
     public function getTranslations()
     {
-        if (empty($this->translations) && isset($this->original)) {
-            //return ['en' => $this->original];
-        }
-
         if (!empty($this->translations)) {
             return $this->translations;
         }

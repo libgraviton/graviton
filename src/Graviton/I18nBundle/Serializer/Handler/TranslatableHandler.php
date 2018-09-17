@@ -54,18 +54,11 @@ class TranslatableHandler
             return $translatable;
         }
 
-        if (!$translatable->hasTranslations()) {
-            $original = $translatable->getOriginal();
-            $translatable->setTranslations(
-                $this->utils->getTranslatedField($original)
-            );
-        } elseif (count($translatable->getTranslations()) != $this->utils->getLanguages()) {
+        $translations = $translatable->getTranslations();
+        $defaultLanguage = $this->utils->getDefaultLanguage();
+        if (isset($translations[$defaultLanguage]) && count($translations) != $this->utils->getLanguages()) {
             // languages missing
-            $default = $this->utils->getDefaultLanguage();
-            $original = $this->getOriginalString($translatable, $default);
-            if (empty($original)) {
-                return null;
-            }
+            $original = $translations[$defaultLanguage];
             $translated = $this->utils->getTranslatedField($original);
 
             $translatable->setTranslations(
@@ -77,28 +70,6 @@ class TranslatableHandler
         }
 
         return $translatable;
-    }
-
-    /**
-     * Gets the default string, either 'original' or the default language
-     *
-     * @param Translatable $translatable    translatable
-     * @param string       $defaultLanguage default language
-     *
-     * @return string original string
-     */
-    private function getOriginalString(Translatable $translatable, $defaultLanguage)
-    {
-        $original = null;
-        if ($translatable->getOriginal() != null) {
-            $original = $translatable->getOriginal();
-        } elseif ($translatable->hasTranslations()) {
-            $translations = $translatable->getTranslations();
-            if (isset($translations[$defaultLanguage])) {
-                $original = $translations[$defaultLanguage];
-            }
-        }
-        return $original;
     }
 
     /**
