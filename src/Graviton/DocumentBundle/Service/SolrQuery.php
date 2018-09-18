@@ -60,6 +60,15 @@ class SolrQuery
     private $requestStack;
 
     /**
+     * if the full search term matches one of these patterns, the whole thing is sent quoted to solr
+     *
+     * @var array
+     */
+    private $fullTermPatterns = [
+        '/^[0-9]+ [0-9\.]{9,}$/i'
+    ];
+
+    /**
      * Constructor
      *
      * @param string       $solrUrl                url to solr
@@ -170,6 +179,15 @@ class SolrQuery
      */
     private function getSearchTerm(SearchNode $node)
     {
+        $fullTerm = implode(' ', $node->getSearchTerms());
+
+        foreach ($this->fullTermPatterns as $pattern) {
+            if (preg_match($pattern, $fullTerm, $matches) === 1) {
+                return '"'.$fullTerm.'"';
+            }
+        }
+
+        // normal single term handling
         return implode(
             ' ',
             array_map([$this, 'getSingleTerm'], $node->getSearchTerms())
@@ -212,14 +230,32 @@ class SolrQuery
 
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
         if (strlen($term) >= $this->solrFuzzyBridge) {
-            return $term . '~';
+            return $this->doAndNotPrefixSingleTerm($term, '~');
         }
 
         if (strlen($term) >= $this->solrWildcardBridge) {
-            return $term . '*';
+            return $this->doAndNotPrefixSingleTerm($term, '*');
         }
 
         return $term;
+    }
+
+    /**
+     * ORify a single term
+     *
+     * @param string $term     search term
+     * @param string $modifier modified
+     *
+     * @return string ORified query
+     */
+    private function doAndNotPrefixSingleTerm($term, $modifier)
+    {
+        return sprintf(
+            '(%s OR %s%s)',
+            $term,
+            $term,
+            $modifier
+        );
     }
 
     /**
