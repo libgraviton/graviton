@@ -35,6 +35,11 @@ class SolrQuery
     private $solrFuzzyBridge;
 
     /**
+     * @var int
+     */
+    private $solrWildcardBridge;
+
+    /**
      * @var array
      */
     private $solrMap;
@@ -59,6 +64,7 @@ class SolrQuery
      *
      * @param string       $solrUrl                url to solr
      * @param int          $solrFuzzyBridge        fuzzy bridge
+     * @param int          $solrWildcardBridge     wildcard bridge
      * @param array        $solrMap                solr class field weight map
      * @param int          $paginationDefaultLimit default pagination limit
      * @param Client       $solrClient             solr client
@@ -67,6 +73,7 @@ class SolrQuery
     public function __construct(
         $solrUrl,
         $solrFuzzyBridge,
+        $solrWildcardBridge,
         array $solrMap,
         $paginationDefaultLimit,
         Client $solrClient,
@@ -75,8 +82,8 @@ class SolrQuery
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
-
         $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
+        $this->solrWildcardBridge = (int) $solrWildcardBridge;
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
@@ -180,7 +187,7 @@ class SolrQuery
     {
         // we don't modify numbers
         if (ctype_digit($term)) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // formatted number?
@@ -193,22 +200,26 @@ class SolrQuery
             $term
         );
         if (ctype_digit($formatted)) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // everything that is only numbers *and* characters and at least 3 long, we don't fuzzy/wildcard
         // thanks to https://stackoverflow.com/a/7684859/3762521
         $pattern = '/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/';
         if (strlen($term) > 3 && preg_match($pattern, $term, $matches) === 1) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
-        if (strlen($term) < $this->solrFuzzyBridge) {
-            return $term . '*';
-        } else {
+        if (strlen($term) >= $this->solrFuzzyBridge) {
             return $term . '~';
         }
+
+        if (strlen($term) >= $this->solrWildcardBridge) {
+            return $term . '*';
+        }
+
+        return $term;
     }
 
     /**
