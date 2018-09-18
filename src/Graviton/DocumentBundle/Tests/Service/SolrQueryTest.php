@@ -122,7 +122,7 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
     {
         $solr = $this->getMock($expectedQuery);
 
-        $searchNode = new SearchNode([$searchTerm]);
+        $searchNode = new SearchNode(explode(' ', $searchTerm));
         $limitNode = new LimitNode(10, 0);
 
         $solr->query($searchNode, $limitNode);
@@ -142,11 +142,15 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             ],
             'simple-search-wildcard' => [
                 'hans',
-                'hans*'
+                '(hans OR hans*)'
             ],
             'simple-search-fuzzy' => [
                 'hanso',
-                'hanso~'
+                '(hanso OR hanso~)'
+            ],
+            'simple-combined' => [
+                'han hans hanso',
+                'han (hans OR hans*) (hanso OR hanso~)'
             ],
             'alphanumeric-iban' => [
                 'CH0000000111111111111',
@@ -159,6 +163,10 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             'only numbers' => [
                 '2131412434142',
                 '"2131412434142"'
+            ],
+            'simple-search-account-syntax' => [
+                '99 1.123.456.78',
+                '"99 1.123.456.78"'
             ]
         ];
     }
