@@ -40,6 +40,11 @@ class SolrQuery
     private $solrWildcardBridge;
 
     /**
+     * @var boolean
+     */
+    private $andifyTerms;
+
+    /**
      * @var array
      */
     private $solrMap;
@@ -74,6 +79,7 @@ class SolrQuery
      * @param string       $solrUrl                url to solr
      * @param int          $solrFuzzyBridge        fuzzy bridge
      * @param int          $solrWildcardBridge     wildcard bridge
+     * @param boolean      $andifyTerms            andify terms or not?
      * @param array        $solrMap                solr class field weight map
      * @param int          $paginationDefaultLimit default pagination limit
      * @param Client       $solrClient             solr client
@@ -83,6 +89,7 @@ class SolrQuery
         $solrUrl,
         $solrFuzzyBridge,
         $solrWildcardBridge,
+        $andifyTerms,
         array $solrMap,
         $paginationDefaultLimit,
         Client $solrClient,
@@ -93,6 +100,7 @@ class SolrQuery
         }
         $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
         $this->solrWildcardBridge = (int) $solrWildcardBridge;
+        $this->andifyTerms = (boolean) $andifyTerms;
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
@@ -187,9 +195,15 @@ class SolrQuery
             }
         }
 
+        if ($this->andifyTerms) {
+            $glue = ' AND ';
+        } else {
+            $glue = ' ';
+        }
+
         // normal single term handling
         return implode(
-            ' ',
+            $glue,
             array_map([$this, 'getSingleTerm'], $node->getSearchTerms())
         );
     }
@@ -250,6 +264,14 @@ class SolrQuery
      */
     private function doAndNotPrefixSingleTerm($term, $modifier)
     {
+        // already modifier there?
+        $last = substr($term, -1);
+        if ($last == '~' || $last == '*') {
+            // clean from term, override modifier from client
+            $modifier = $last;
+            $term = substr($term, 0, -1);
+        }
+
         return sprintf(
             '(%s OR %s%s)',
             $term,

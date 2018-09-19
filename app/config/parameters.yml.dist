@@ -71,6 +71,8 @@ parameters:
     graviton.solr.fuzzy_bridge: 5
     # how many characters does a search term need to make it wildcard?
     graviton.solr.wildcard_bridge: 3
+    # if the terms should ANDed together or not
+    graviton.solr.andify_terms: true
 
     graviton.router.host: null
     graviton.router.port_http: null
