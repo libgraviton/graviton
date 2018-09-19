@@ -35,6 +35,16 @@ class SolrQuery
     private $solrFuzzyBridge;
 
     /**
+     * @var int
+     */
+    private $solrWildcardBridge;
+
+    /**
+     * @var boolean
+     */
+    private $andifyTerms;
+
+    /**
      * @var array
      */
     private $solrMap;
@@ -55,10 +65,21 @@ class SolrQuery
     private $requestStack;
 
     /**
+     * if the full search term matches one of these patterns, the whole thing is sent quoted to solr
+     *
+     * @var array
+     */
+    private $fullTermPatterns = [
+        '/^[0-9]+ [0-9\.]{9,}$/i'
+    ];
+
+    /**
      * Constructor
      *
      * @param string       $solrUrl                url to solr
      * @param int          $solrFuzzyBridge        fuzzy bridge
+     * @param int          $solrWildcardBridge     wildcard bridge
+     * @param boolean      $andifyTerms            andify terms or not?
      * @param array        $solrMap                solr class field weight map
      * @param int          $paginationDefaultLimit default pagination limit
      * @param Client       $solrClient             solr client
@@ -67,6 +88,8 @@ class SolrQuery
     public function __construct(
         $solrUrl,
         $solrFuzzyBridge,
+        $solrWildcardBridge,
+        $andifyTerms,
         array $solrMap,
         $paginationDefaultLimit,
         Client $solrClient,
@@ -75,8 +98,9 @@ class SolrQuery
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
-
         $this->solrFuzzyBridge = (int) $solrFuzzyBridge;
+        $this->solrWildcardBridge = (int) $solrWildcardBridge;
+        $this->andifyTerms = (boolean) $andifyTerms;
         $this->solrMap = $solrMap;
         $this->paginationDefaultLimit = (int) $paginationDefaultLimit;
         $this->solrClient = $solrClient;
@@ -163,8 +187,23 @@ class SolrQuery
      */
     private function getSearchTerm(SearchNode $node)
     {
+        $fullTerm = implode(' ', $node->getSearchTerms());
+
+        foreach ($this->fullTermPatterns as $pattern) {
+            if (preg_match($pattern, $fullTerm, $matches) === 1) {
+                return '"'.$fullTerm.'"';
+            }
+        }
+
+        if ($this->andifyTerms) {
+            $glue = ' AND ';
+        } else {
+            $glue = ' ';
+        }
+
+        // normal single term handling
         return implode(
-            ' ',
+            $glue,
             array_map([$this, 'getSingleTerm'], $node->getSearchTerms())
         );
     }
@@ -180,7 +219,7 @@ class SolrQuery
     {
         // we don't modify numbers
         if (ctype_digit($term)) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // formatted number?
@@ -193,22 +232,52 @@ class SolrQuery
             $term
         );
         if (ctype_digit($formatted)) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // everything that is only numbers *and* characters and at least 3 long, we don't fuzzy/wildcard
         // thanks to https://stackoverflow.com/a/7684859/3762521
         $pattern = '/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/';
         if (strlen($term) > 3 && preg_match($pattern, $term, $matches) === 1) {
-            return $term;
+            return '"'.$term.'"';
         }
 
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
-        if (strlen($term) < $this->solrFuzzyBridge) {
-            return $term . '*';
-        } else {
-            return $term . '~';
+        if (strlen($term) >= $this->solrFuzzyBridge) {
+            return $this->doAndNotPrefixSingleTerm($term, '~');
         }
+
+        if (strlen($term) >= $this->solrWildcardBridge) {
+            return $this->doAndNotPrefixSingleTerm($term, '*');
+        }
+
+        return $term;
+    }
+
+    /**
+     * ORify a single term
+     *
+     * @param string $term     search term
+     * @param string $modifier modified
+     *
+     * @return string ORified query
+     */
+    private function doAndNotPrefixSingleTerm($term, $modifier)
+    {
+        // already modifier there?
+        $last = substr($term, -1);
+        if ($last == '~' || $last == '*') {
+            // clean from term, override modifier from client
+            $modifier = $last;
+            $term = substr($term, 0, -1);
+        }
+
+        return sprintf(
+            '(%s OR %s%s)',
+            $term,
+            $term,
+            $modifier
+        );
     }
 
     /**
