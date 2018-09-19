@@ -20,11 +20,12 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
     /**
      * setup type we want to test
      *
-     * @param string $expectedQuery expected query
+     * @param string  $expectedQuery expected query
+     * @param boolean $andifyTerms   if terms should be ANDified
      *
      * @return SolrQuery sut
      */
-    private function getMock($expectedQuery)
+    private function getMock($expectedQuery, $andifyTerms = false)
     {
         $className = '\Test\Class';
         $classFields = 'fieldA^1 fieldB^2';
@@ -96,6 +97,7 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             'http://solr:3033',
             5,
             4,
+            $andifyTerms,
             [
                 $className => $classFields
             ],
@@ -113,14 +115,15 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
      *
      * @dataProvider solrQueryHandlingDataProvider
      *
-     * @param string $searchTerm    term
-     * @param string $expectedQuery what should be sent to solr
+     * @param string  $searchTerm    term
+     * @param string  $expectedQuery what should be sent to solr
+     * @param boolean $andifyTerms   andify terms?
      *
      * @return void
      */
-    public function testSolrQueryHandling($searchTerm, $expectedQuery)
+    public function testSolrQueryHandling($searchTerm, $expectedQuery, $andifyTerms)
     {
-        $solr = $this->getMock($expectedQuery);
+        $solr = $this->getMock($expectedQuery, $andifyTerms);
 
         $searchNode = new SearchNode(explode(' ', $searchTerm));
         $limitNode = new LimitNode(10, 0);
@@ -138,35 +141,68 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
         return [
             'simple-search' => [
                 'han',
-                'han'
+                'han',
+                true
+            ],
+            'simple-search-andified' => [
+                'han ha2',
+                'han AND ha2',
+                true
             ],
             'simple-search-wildcard' => [
                 'hans',
-                '(hans OR hans*)'
+                '(hans OR hans*)',
+                true
             ],
             'simple-search-fuzzy' => [
                 'hanso',
-                '(hanso OR hanso~)'
+                '(hanso OR hanso~)',
+                true
             ],
-            'simple-combined' => [
+            'forced-wildcard-from-client' => [
+                'hanso*', // this *should* be fuzzy as from config, but client wants wildcard
+                '(hanso OR hanso*)',
+                true
+            ],
+            'forced-fuzzy-from-client' => [
+                'hans~', // this *should* be fuzzy as from config, but client wants wildcard
+                '(hans OR hans~)',
+                true
+            ],
+            'forced-mixed-from-client' => [
+                'hansomat* han~',
+                '(hansomat OR hansomat*) AND (han OR han~)',
+                true
+            ],
+            'simple-combined-no-andify' => [
                 'han hans hanso',
-                'han (hans OR hans*) (hanso OR hanso~)'
+                'han (hans OR hans*) (hanso OR hanso~)',
+                false
+            ],
+            'simple-combined-with-andify' => [
+                'han hans hanso',
+                'han AND (hans OR hans*) AND (hanso OR hanso~)',
+                true
             ],
             'alphanumeric-iban' => [
                 'CH0000000111111111111',
-                '"CH0000000111111111111"'
+                '"CH0000000111111111111"',
+                true
             ],
             'alphanumeric-others' => [
                 'HANS1234',
-                '"HANS1234"'
+                '"HANS1234"',
+                true
             ],
             'only numbers' => [
                 '2131412434142',
-                '"2131412434142"'
+                '"2131412434142"',
+                true
             ],
             'simple-search-account-syntax' => [
                 '99 1.123.456.78',
-                '"99 1.123.456.78"'
+                '"99 1.123.456.78"',
+                true
             ]
         ];
     }
