@@ -116,6 +116,8 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         $this->solrQuery = new SolrQuery(
             'http://localhost/solr',
             5,
+            3,
+            true,
             [
                 'MyNiceDocument' => 'fieldName^2 fieldNameTwo^3',
                 'MyOtherNiceDocument' => 'fieldName^20 fieldNameTwo^30'
@@ -151,14 +153,9 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
     {
         // expectations / setups
         $this->requestStack
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('getCurrentRequest')
             ->willReturn($this->request);
-
-        $this->requestAttrs
-            ->expects($this->once())
-            ->method('set')
-            ->with('solr-total-count', 9999);
 
         $this->eDismax
             ->expects($this->once())
@@ -181,7 +178,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setQuery')
-            ->with('fred* test*');
+            ->with('(fred OR fred*) AND (test OR test*)');
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setStart')
