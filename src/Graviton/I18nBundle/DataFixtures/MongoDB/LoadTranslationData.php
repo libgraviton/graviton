@@ -29,7 +29,7 @@ class LoadTranslationData implements FixtureInterface
             [
                 'language' => 'de',
                 'original' => 'English',
-                'localized' => 'English'
+                'localized' => 'Englisch'
             ],
             [
                 'language' => 'fr',
