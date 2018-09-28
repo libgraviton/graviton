@@ -7,7 +7,6 @@ namespace Graviton\SchemaBundle;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;

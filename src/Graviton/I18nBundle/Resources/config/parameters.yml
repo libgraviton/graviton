@@ -12,7 +12,6 @@ parameters:
     graviton.i18n.document.translatablelanguage.class: Graviton\I18nBundle\Document\TranslatableLanguage
     graviton.i18n.listener.contentlanguageresponse.class: Graviton\I18nBundle\Listener\ContentLanguageResponseListener
     graviton.i18n.listener.acceptlanguagerequest.class: Graviton\I18nBundle\Listener\AcceptLanguageRequestListener
-    graviton.i18n.listener.i18nserializer.class: Graviton\I18nBundle\Listener\I18nSerializationListener
     graviton.i18n.listener.i18ndeserializer.class: Graviton\I18nBundle\Listener\I18nDeserializationListener
     graviton.i18n.listener.i18nrqlparsinglistener.class: Graviton\I18nBundle\Listener\I18nRqlParsingListener
     graviton.i18n.listener.i18ncachinglistener.class: Graviton\I18nBundle\Listener\I18nCachingListener
