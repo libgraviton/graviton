@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Listener;
 
+use Graviton\I18nBundle\Service\I18nUtils;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
@@ -18,6 +19,21 @@ class ContentLanguageResponseListener
 {
 
     /**
+     * @var I18nUtils
+     */
+    private $utils;
+
+    /**
+     * ContentLanguageResponseListener constructor.
+     *
+     * @param I18nUtils $utils utils
+     */
+    public function __construct(I18nUtils $utils)
+    {
+        $this->utils = $utils;
+    }
+
+    /**
      * add a rel=self Link header to the response
      *
      * @param FilterResponseEvent $event response listener event
@@ -28,7 +44,7 @@ class ContentLanguageResponseListener
     {
         $event->getResponse()->headers->set(
             'Content-Language',
-            implode(', ', $event->getRequest()->attributes->get('languages', []))
+            implode(', ', $this->utils->getLanguages())
         );
     }
 }
