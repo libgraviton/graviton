@@ -31,7 +31,7 @@ class LanguageControllerTest extends RestTestCase
         $this->loadFixturesLocal(
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData'
             )
         );
     }
@@ -111,7 +111,7 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertcount(3, $results);
 
-        $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, de, fr', $response->headers->get('Content-Language'));
 
         $this->assertEquals('de', $results[0]->id);
         $this->assertEquals('German', $results[0]->name->en);
@@ -146,7 +146,7 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
         $this->assertEquals('de', $results->id);
-        $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, de', $response->headers->get('Content-Language'));
 
         $client = static::createRestClient();
         $client->request('GET', '/i18n/language/', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
@@ -158,25 +158,6 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertEquals('English', $results->name->en);
         $this->assertEquals('Englisch', $results->name->de);
-
-        /*
-         * CHANGE: ORIGINAL IS NOT PERSISTED ANYMORE
-         *
-        $client = static::createRestClient();
-        $client->request('GET', '/i18n/translatable/?locale=en&domain=i18n&original=German');
-
-        $this->assertCount(1, $client->getResults());
-        $this->assertEquals('i18n', $client->getResults()[0]->domain);
-        $this->assertEquals('en', $client->getResults()[0]->locale);
-        $this->assertEquals('German', $client->getResults()[0]->original);
-        */
-
-        $client = static::createRestClient();
-        $client->request('GET', '/i18n/translatable/?locale=de&domain=i18n&original=German');
-        $this->assertCount(1, $client->getResults());
-        $this->assertEquals('i18n', $client->getResults()[0]->domain);
-        $this->assertEquals('de', $client->getResults()[0]->locale);
-        $this->assertEquals('German', $client->getResults()[0]->original);
     }
 
     /**
@@ -203,7 +184,7 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
         $this->assertEquals('es', $results->id);
-        $this->assertEquals('en', $response->headers->get('Content-Language'));
+        $this->assertEquals('en, es', $response->headers->get('Content-Language'));
 
         // update description for new language
         $putLang = new \stdClass;

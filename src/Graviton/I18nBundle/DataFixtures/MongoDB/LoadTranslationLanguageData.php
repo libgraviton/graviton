@@ -32,6 +32,11 @@ class LoadTranslationLanguageData implements FixtureInterface
                 'localized' => 'Deutsch'
             ],
             [
+                'language' => 'de',
+                'original' => 'English',
+                'localized' => 'Englisch'
+            ],
+            [
                 'language' => 'fr',
                 'original' => 'English',
                 'localized' => 'Anglais'
