@@ -10,8 +10,6 @@ services:
         class: "%graviton.i18n.model.language.class%"
         parent: "graviton.rest.model"
         public: true
-        arguments:
-          - "@graviton.rql.visitor.mongodb"
         calls:
           -
             method: "setRepository"
@@ -29,45 +27,6 @@ services:
             - "@graviton.i18n.model.language"
         tags:
         -
-            name: "graviton.rest"
-
-    graviton.i18n.repository.translatable:
-        class: "%graviton.i18n.repository.translatable.class%"
-        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
-        public: true
-        arguments:
-          - "GravitonI18nBundle:Translatable"
-
-    graviton.i18n.repository.translatablelanguage:
-        class: "%graviton.i18n.repository.translatablelanguage.class%"
-        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
-        public: true
-        arguments:
-          - "GravitonI18nBundle:TranslatableLanguage"
-
-    graviton.i18n.model.translatable:
-        class: "%graviton.i18n.model.translatable.class%"
-        parent: "graviton.rest.model"
-        public: true
-        arguments:
-          - "@graviton.rql.visitor.mongodb"
-        calls:
-          -
-            method: "setRepository"
-            arguments:
-              - "@graviton.i18n.repository.translatable"
-
-    graviton.i18n.controller.translatable:
-        class: "%graviton.i18n.controller.translatable.class%"
-        parent: "graviton.rest.controller"
-        public: true
-        calls:
-          -
-            method: "setModel"
-            arguments:
-              - "@graviton.i18n.model.translatable"
-        tags:
-          -
             name: "graviton.rest"
 
     graviton.i18n.listener.contentlanguageresponse:
@@ -103,20 +62,6 @@ services:
         arguments:
           - "@doctrine_mongodb.odm.default_document_manager"
           - "@graviton.i18n.translator"
-          - "@graviton.i18n.model.translatable"
-
-    # I18nCacheUtils --"
-    graviton.18n.cacheutils:
-        class: "%graviton.i18n.cacheutils.class%"
-        arguments:
-          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
-          - "%kernel.cache_dir%"
-          - "odm"
-        calls:
-          -
-            method: "setUtils"
-            arguments:
-              - "@graviton.18n.utils"
 
     graviton.i18n.serializer.handler.translatable:
         class: "%graviton.i18n.serializer.handler.translatable.class%"
@@ -127,13 +72,3 @@ services:
         - name: "jms_serializer.handler"
           type: "Graviton\\DocumentBundle\\Entity\\Translatable"
           format: "json"
-
-    graviton.i18n.command.createtranslationresources:
-        class: "%graviton.i18n.command.createtranslationresources.class%"
-        arguments:
-          - "@graviton.i18n.repository.language"
-          - "@graviton.i18n.repository.translatable"
-          - "@filesystem"
-        tags:
-          -
-            name: console.command
