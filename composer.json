@@ -55,7 +55,7 @@
         "squizlabs/php_codesniffer": "~3",
         "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "dev-feature/translation",
+        "graviton/test-services-bundle": "~1",
         "graviton/deploy-scripts": "~0.4",
         "libgraviton/codesniffer": "~2",
 
