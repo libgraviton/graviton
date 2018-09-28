@@ -5,13 +5,10 @@
 
 namespace Graviton\I18nBundle\Service;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\DocumentBundle\Entity\ExtReference;
-use Graviton\I18nBundle\Model\Translatable;
-use Graviton\I18nBundle\Document\Translatable as TranslatableDocument;
-use Graviton\I18nBundle\Document\TranslatableLanguage;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Translation\TranslatorInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\DocumentBundle\Entity\Translatable;
+use Graviton\I18nBundle\Document\Translation;
+use Graviton\I18nBundle\Translator\Translator;
 
 /**
  * A service (meaning symfony service) providing some convenience stuff when dealing with our RestController
@@ -25,94 +22,37 @@ class I18nUtils
 {
 
     /**
-     * @var string
+     * @var DocumentManager
      */
-    protected $defaultLanguage;
+    private $manager;
 
     /**
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var Translator
      */
-    protected $translator;
-
-    /**
-     * @var array
-     */
-    protected $languages = [];
-
-    /**
-     * @var \Graviton\I18nBundle\Model\Translatable
-     */
-    protected $translatable;
-
-    /**
-     * @var DocumentRepository
-     */
-    protected $languageRepository;
-
-    /**
-     * @var \Symfony\Component\HttpFoundation\Request
-     */
-    protected $request;
+    private $translator;
 
     /**
      * Constructor
      *
-     * @param string              $defaultLanguage    default language
-     * @param TranslatorInterface $translator         Translator
-     * @param Translatable        $translatable       translatable
-     * @param DocumentRepository  $languageRepository lang repo
-     * @param Request             $request            request
+     * @param DocumentManager $manager    manager
+     * @param Translator      $translator Translator
      */
     public function __construct(
-        $defaultLanguage,
-        TranslatorInterface $translator,
-        Translatable $translatable,
-        DocumentRepository $languageRepository,
-        Request $request = null
+        DocumentManager $manager,
+        Translator $translator
     ) {
-        $this->defaultLanguage = $defaultLanguage;
+        $this->manager = $manager;
         $this->translator = $translator;
-        $this->translatable = $translatable;
-        $this->languageRepository = $languageRepository;
-        $this->request = $request;
     }
 
     /**
-     * Returns whether we are in a Translatable context. That means if we can determine a translation domain.
-     *
-     * @return bool true if yes, false if not
-     */
-    public function isTranslatableContext()
-    {
-        return (!is_null($this->getTranslatableDomain()));
-    }
-
-    /**
-     * Returns the domain to use according to the current request.
-     * If there is no valid request, null will be returned..
-     *
-     * @return string domain
-     */
-    public function getTranslatableDomain()
-    {
-        $ret = null;
-        if ($this->request instanceof Request) {
-            $uriParts = explode('/', substr($this->request->getRequestUri(), 1));
-            if (isset($uriParts[0])) {
-                $ret = $uriParts[0];
-            }
-        }
-        return $ret;
-    }
-
-    /**
-     * Returns the default/original language - is set by DIC param
+     * Returns the default/original language
      *
      * @return string default language
      */
     public function getDefaultLanguage()
     {
-        return $this->defaultLanguage;
+        return $this->translator->getDefaultLanguage();
     }
 
     /**
@@ -122,38 +62,31 @@ class I18nUtils
      */
     public function getLanguages()
     {
-        if (empty($this->languages)) {
-            foreach ($this->languageRepository->findAll() as $lang) {
-                $this->languages[] = $lang->getId();
-            }
-        }
-        return $this->languages;
+        return $this->translator->getLanguages();
     }
 
     /**
      * build a complete translated field
      *
-     * @param string $value     value to translate
-     * @param bool   $forClient if true, we look at languages header, false we render all languages
+     * @param string $value value to translate
      *
      * @return array array with translated strings
      */
-    public function getTranslatedField($value, $forClient = true)
+    public function getTranslatedField($value)
     {
-        $domain = $this->getTranslatableDomain();
+        return $this->translator->translate($value);
+    }
 
-        if ($forClient) {
-            $languages = $this->request->attributes->get('languages');
-        } else {
-            $languages = $this->getLanguages();
-        }
-
-        return array_map(
-            function ($language) use ($value, $domain) {
-                return $this->translator->trans($value, [], $domain, $language);
-            },
-            $languages
-        );
+    /**
+     * persists a translatable entity
+     *
+     * @param Translatable $translatable translatable
+     *
+     * @return void
+     */
+    public function persistTranslatable(Translatable $translatable)
+    {
+        $this->translator->persistTranslatable($translatable);
     }
 
     /**
@@ -169,10 +102,9 @@ class I18nUtils
     public function findMatchingTranslatables($value, $sourceLocale, $useWildCard = false)
     {
         // i need to use a queryBuilder as the repository doesn't let me do regex queries (i guess so..)
-        $builder = $this->translatable->getRepository()->createQueryBuilder();
+        $builder = $this->manager->createQueryBuilder(Translation::class);
         $builder
-            ->field('domain')->equals($this->getTranslatableDomain())
-            ->field('locale')->equals($sourceLocale);
+            ->field('language')->equals($sourceLocale);
 
         if ($useWildCard === true) {
             $value = new \MongoRegex($value);
@@ -186,11 +118,11 @@ class I18nUtils
         $builder->addAnd(
             $builder->expr()
                 ->addOr(
-                    $builder->expr()->field('translated')->equals($value)
+                    $builder->expr()->field('localized')->equals($value)
                 )
                 ->addOr(
                     $builder->expr()
-                        ->field('translated')->equals(null)
+                        ->field('localized')->equals(null)
                         ->field('original')->equals($value)
                 )
         );
@@ -198,65 +130,5 @@ class I18nUtils
         $query = $builder->getQuery();
 
         return $query->execute()->toArray();
-    }
-
-    /**
-     * Flush the translatables if it hasn't been done yet
-     *
-     * @return void
-     */
-    public function flushTranslatables()
-    {
-        $this->translatable->flush();
-    }
-
-    /**
-     * [In|Up]serts a Translatable object using an array with language strings.
-     *
-     * @param array $values  array with language strings; key should be language id
-     * @param bool  $doFlush if we should flush after the insert or not
-     * @throws \Exception
-     *
-     * @return void
-     */
-    public function insertTranslatable(array $values, $doFlush = true)
-    {
-        if (!isset($values[$this->getDefaultLanguage()])) {
-            throw new \Exception(
-                sprintf(
-                    'Creating new Translatable without "%s" key is not support yet.',
-                    $this->getDefaultLanguage()
-                )
-            );
-        }
-
-        $original = $values[$this->getDefaultLanguage()];
-
-        if ($this->isTranslatableContext()) {
-            $languages = $this->getLanguages();
-            \array_walk(
-                $languages,
-                function ($locale) use ($original, $values, $doFlush) {
-                    $isLocalized = false;
-                    $translated = '';
-                    $domain = $this->getTranslatableDomain();
-                    if (array_key_exists($locale, $values)) {
-                        $translated = $values[$locale];
-                        $isLocalized = true;
-                    }
-                    $translatable = new TranslatableDocument();
-                    $translatable->setId($domain . '-' . $locale . '-' . $original);
-                    $translatable->setLocale($locale);
-                    $translatable->setDomain($domain);
-                    $translatable->setOriginal($original);
-                    $translatable->setTranslated($translated);
-                    $translatable->setIsLocalized($isLocalized);
-                    $translatableLang = new TranslatableLanguage();
-                    $translatableLang->setRef(ExtReference::create('Language', $locale));
-                    $translatable->setLanguage($translatableLang);
-                    $this->translatable->insertRecord($translatable, false, $doFlush);
-                }
-            );
-        }
     }
 }

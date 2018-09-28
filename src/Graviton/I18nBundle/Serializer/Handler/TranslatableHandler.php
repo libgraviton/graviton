@@ -89,7 +89,9 @@ class TranslatableHandler
         Context $context
     ) {
         if (!is_null($data)) {
-            return Translatable::createFromTranslations($data);
+            $translatable = Translatable::createFromTranslations($data);
+            $this->utils->persistTranslatable($translatable);
+            return $translatable;
         }
         return null;
     }
