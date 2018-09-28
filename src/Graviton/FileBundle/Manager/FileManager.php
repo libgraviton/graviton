@@ -172,7 +172,7 @@ class FileManager
         }
 
         try {
-            $original = $model->find($requestId);
+            $original = $model->find($requestId, true);
         } catch (NotFoundException $e) {
             $original = false;
         }

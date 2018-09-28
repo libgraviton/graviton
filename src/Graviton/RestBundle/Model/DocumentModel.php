@@ -154,13 +154,19 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param string $documentId id of entity to find
+     * finds a single entity
+     *
+     * @param string  $documentId id of entity to find
+     * @param boolean $forceClear if we should clear the repository prior to fetching
      *
      * @throws NotFoundException
      * @return Object
      */
-    public function find($documentId)
+    public function find($documentId, $forceClear = false)
     {
+        if ($forceClear) {
+            $this->repository->clear();
+        }
         $result = $this->repository->find($documentId);
 
         if (empty($result)) {
@@ -223,6 +229,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
 
         $this->manager->persist($entity);
         $this->manager->flush($entity);
+        $this->manager->detach($entity);
 
         // Fire ModelEvent
         $this->dispatchModelEvent(ModelEvent::MODEL_EVENT_UPDATE, $entity);

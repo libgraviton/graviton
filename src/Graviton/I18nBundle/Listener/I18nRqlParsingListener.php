@@ -86,7 +86,9 @@ class I18nRqlParsingListener
                 $this->getAllPossibleTranslatableStrings()
             );
 
-            $event->setNode($alteredNode);
+            if (!empty($alteredNode->getQueries())) {
+                $event->setNode($alteredNode);
+            }
         }
 
         return $event;
@@ -98,22 +100,33 @@ class I18nRqlParsingListener
      * @param string $fieldName target fieldname
      * @param array  $values    the values to set
      *
-     * @return AbstractNode some node
+     * @return OrNode some node
      */
     private function getAlteredQueryNode($fieldName, array $values)
     {
         $newNode = new OrNode();
-
-        // add user provided value for OR
-        $values[] = $this->getNodeValue();
+        $defaultLanguageFieldName = $fieldName.'.'.$this->intUtils->getDefaultLanguage();
 
         foreach ($values as $singleValue) {
             $newNode->addQuery($this->getEqNode($fieldName, $singleValue));
             // search default language field (as new structure only has 'en' set after creation and no save)
             $newNode->addQuery(
                 $this->getEqNode(
-                    $fieldName.'.'.$this->intUtils->getDefaultLanguage(),
+                    $defaultLanguageFieldName,
                     $singleValue
+                )
+            );
+        }
+
+        // add default match
+        $newNode->addQuery($this->getEqNode($this->node->getField(), $this->getNodeValue()));
+
+        if (!$this->nodeFieldNameHasLanguage()) {
+            // if no language, we add it to the query to default node for default language
+            $newNode->addQuery(
+                $this->getEqNode(
+                    $defaultLanguageFieldName,
+                    $this->getNodeValue()
                 )
             );
         }
@@ -196,16 +209,28 @@ class I18nRqlParsingListener
     private function getDocumentFieldName()
     {
         $parts = explode('.', $this->node->getField());
+        if ($this->nodeFieldNameHasLanguage()) {
+            array_pop($parts);
+        }
+        return implode('.', $parts);
+    }
 
+    /**
+     * if the node field name targets a language or not
+     *
+     * @return bool true if yes, false otherwise
+     */
+    private function nodeFieldNameHasLanguage()
+    {
+        $parts = explode('.', $this->node->getField());
         if (!empty($parts)) {
             $lastPart = $parts[count($parts) - 1];
             // only remove when language
             if (in_array($lastPart, $this->intUtils->getLanguages())) {
-                array_pop($parts);
+                return true;
             }
         }
-
-        return implode('.', $parts);
+        return false;
     }
 
     /**

@@ -55,10 +55,6 @@ class SecurityAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Test all auth methods for Multi Authentication
      *
-     * @covers MultiStrategy::addStrategy()
-     * @covers SecurityAuthenticator::createToken()
-     * @covers SecurityAuthenticator::authenticateToken()
-     *
      * @return void
      */
     public function testMultiAccess()

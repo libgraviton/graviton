@@ -159,6 +159,9 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('English', $results->name->en);
         $this->assertEquals('Englisch', $results->name->de);
 
+        /*
+         * CHANGE: ORIGINAL IS NOT PERSISTED ANYMORE
+         *
         $client = static::createRestClient();
         $client->request('GET', '/i18n/translatable/?locale=en&domain=i18n&original=German');
 
@@ -166,6 +169,7 @@ class LanguageControllerTest extends RestTestCase
         $this->assertEquals('i18n', $client->getResults()[0]->domain);
         $this->assertEquals('en', $client->getResults()[0]->locale);
         $this->assertEquals('German', $client->getResults()[0]->original);
+        */
 
         $client = static::createRestClient();
         $client->request('GET', '/i18n/translatable/?locale=de&domain=i18n&original=German');
