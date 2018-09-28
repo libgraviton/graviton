@@ -56,7 +56,6 @@
         "johnkary/phpunit-speedtrap": "~3",
 
         "graviton/test-services-bundle": "~1",
-        "graviton/deploy-scripts": "~0.4",
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^4.0",
@@ -165,22 +164,6 @@
                     "graviton.solr.fuzzy_bridge": "SOLR_FUZZY_BRIDGE",
                     "graviton.solr.wildcard_bridge": "SOLR_WILDCARD_BRIDGE",
                     "graviton.solr.andify_terms": "SOLR_ANDIFY_TERMS"
-                }
-            },
-            {
-                "parameter-key": "deploy-scripts",
-                "file": "app/config/deploy.yml",
-                "env-map": {
-                    "cf_bin": "CF_BIN",
-                    "cf_process_timeout": "CF_PROCESS_TIMEOUT",
-                    "cf_api_url": "CF_API_URL",
-                    "cf_username": "CF_USERNAME",
-                    "cf_password": "CF_PASSWORD",
-                    "cf_org": "CF_ORG",
-                    "cf_space": "CF_SPACE",
-                    "cf_domain": "CF_DOMAIN",
-                    "cf_services": "CF_SERVICES",
-                    "cf_environment_vars": "CF_ENVIRONMENT_VARS"
                 }
             }
         ]

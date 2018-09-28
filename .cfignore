@@ -1,9 +1,0 @@
-vendor/
-app/cache/
-app/logs/*
-*.phar
-mongodata
-.git
-docker-compose.yml
-Dockerfile
-.docker-config/
