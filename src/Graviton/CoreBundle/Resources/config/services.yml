@@ -97,3 +97,11 @@ services:
             name: "kernel.event_listener"
             event: "kernel.exception"
             method: "onKernelException"
+
+    graviton.core.command.waitfordatabase:
+        class: "Graviton\\CoreBundle\\Command\\WaitForDatabaseCommand"
+        arguments:
+        - "@doctrine_mongodb.odm.default_document_manager"
+        tags:
+        -
+            name: console.command
