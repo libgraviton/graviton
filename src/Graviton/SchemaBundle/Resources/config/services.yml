@@ -125,7 +125,7 @@ services:
           - "%graviton.document.field.names%"
           - "%locale%"
           - "@graviton.schema.constraint.builder"
-          - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+          - "@=service(parameter('graviton.cache.provider.service_id'))"
 
     graviton.schema.constraint.incrementaldate:
         class: "%graviton.schema.constraint.incrementaldate.class%"
