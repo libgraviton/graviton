@@ -4,13 +4,11 @@ imports:
 
 parameters:
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
-    graviton.translator.default.locale: en
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    translator:      { fallback: "%graviton.translator.default.locale%" }
-    secret:          "%secret%"
+    secret: "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
@@ -23,8 +21,8 @@ framework:
     templating:
         engines: ['twig']
         #assets_version: SomeVersionScheme
-    default_locale:  "%locale%"
-    trusted_hosts:   ~
+    default_locale: "%locale%"
+    trusted_hosts: ~
     session:
         name: graviton
         # handler_id set to null will use default session handler from php.ini
