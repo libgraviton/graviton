@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\DependencyInjection\Container;
+use Psr\Container\ContainerInterface;
 use Graviton\RestBundle\Event\RestEvent;
 
 /**
@@ -18,15 +18,15 @@ class SpecialMimetypeRequestListener
     /**
      * Service container
      *
-     * @var \Symfony\Component\DependencyInjection\Container
+     * @var ContainerInterface
      */
     private $container;
 
 
     /**
-     * @param \Symfony\Component\DependencyInjection\Container $container Container
+     * @param ContainerInterface $container Container
      */
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
