@@ -28,3 +28,8 @@ graviton.core.static.version.canonicalSchema.options:
     methods: [OPTIONS]
     defaults: { _controller: graviton.core.controller.version:optionsAction }
 
+graviton.core.static.favicon.get:
+    path: /favicon.ico
+    methods: [GET]
+    defaults: { _controller: graviton.core.controller.favicon:iconAction }
+
