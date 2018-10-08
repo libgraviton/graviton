@@ -85,6 +85,10 @@ services:
             arguments:
               - "@graviton.core.model.version"
 
+    graviton.core.controller.favicon:
+        class: Graviton\CoreBundle\Controller\FaviconController
+        public: true
+
     graviton.core.listener.json_exception:
         class: "%graviton.core.listener.jsonexceptionlistener.class%"
         calls:
