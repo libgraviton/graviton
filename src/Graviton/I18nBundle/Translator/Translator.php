@@ -5,6 +5,7 @@
 
 namespace Graviton\I18nBundle\Translator;
 
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\MongoDB\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Entity\Translatable;
@@ -35,6 +36,16 @@ class Translator
     private $defaultLanguage;
 
     /**
+     * @var CacheProvider
+     */
+    private $cache;
+
+    /**
+     * @var int
+     */
+    private $cacheNameDepth;
+
+    /**
      * @var array language ids
      */
     private $languages = [];
@@ -44,14 +55,18 @@ class Translator
      *
      * @param DocumentManager $manager         manager
      * @param string          $defaultLanguage default language
+     * @param CacheProvider   $cache           cache adapter
+     * @param int             $cacheNameDepth  how many characters of the original is used as cache pool divider
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function __construct(DocumentManager $manager, $defaultLanguage)
+    public function __construct(DocumentManager $manager, $defaultLanguage, CacheProvider $cache, $cacheNameDepth)
     {
         $this->translationCollection = $manager->getDocumentCollection(Translation::class);
         $this->languageCollection = $manager->getDocumentCollection(Language::class);
         $this->defaultLanguage = $defaultLanguage;
+        $this->cache = $cache;
+        $this->cacheNameDepth = (int) $cacheNameDepth;
     }
 
     /**
@@ -63,6 +78,11 @@ class Translator
      */
     public function translate($original)
     {
+        $cached = $this->getFromCache($original);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
         $translations = $this->translationCollection->find(['original' => $original])->toArray();
         $baseArray = [];
 
@@ -81,6 +101,8 @@ class Translator
 
         // ensure existence of default language
         $translation[$this->defaultLanguage] = $original;
+
+        $this->saveToCache($original, $translation);
 
         return $translation;
     }
@@ -125,6 +147,8 @@ class Translator
                 ]
             );
         }
+
+        $this->removeFromCache($original);
     }
 
     /**
@@ -145,8 +169,81 @@ class Translator
             $this->languageCollection->find([], ['_id' => 1])->toArray()
         );
 
+        asort($this->languages);
+
         $this->languages = array_values($this->languages);
 
         return $this->languages;
+    }
+
+    /**
+     * gets entry from cache
+     *
+     * @param string $original original string
+     *
+     * @return array|null entry
+     */
+    private function getFromCache($original)
+    {
+        $cacheContent = $this->cache->fetch($this->getCacheKey($original));
+        if (is_array($cacheContent) && isset($cacheContent[$original])) {
+            return $cacheContent[$original];
+        }
+
+        return null;
+    }
+
+    /**
+     * saves entry to cache
+     *
+     * @param string $original     original string
+     * @param array  $translations translations
+     *
+     * @return void
+     */
+    private function saveToCache($original, $translations)
+    {
+        $cacheKey = $this->getCacheKey($original);
+        $cacheContent = $this->cache->fetch($cacheKey);
+        if (is_array($cacheContent)) {
+            $cacheContent[$original] = $translations;
+        } else {
+            $cacheContent = [$original => $translations];
+        }
+
+        $this->cache->save($cacheKey, $cacheContent);
+    }
+
+    /**
+     * removes entry from cache
+     *
+     * @param string $original original string
+     *
+     * @return void
+     */
+    private function removeFromCache($original)
+    {
+        $cacheKey = $this->getCacheKey($original);
+        $cacheContent = $this->cache->fetch($this->getCacheKey($original));
+        if (is_array($cacheContent) && isset($cacheContent[$original])) {
+            unset($cacheContent[$original]);
+            $this->cache->save($cacheKey, $cacheContent);
+        }
+    }
+
+    /**
+     * returns the caching key
+     *
+     * @param string $original original string
+     *
+     * @return string cache key
+     */
+    private function getCacheKey($original)
+    {
+        return sprintf(
+            'translator_%s_%s',
+            implode('.', $this->getLanguages()),
+            str_pad(strtolower(substr($original, 0, $this->cacheNameDepth)), $this->cacheNameDepth, '.')
+        );
     }
 }

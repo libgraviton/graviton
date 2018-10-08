@@ -111,7 +111,7 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertcount(3, $results);
 
-        $this->assertEquals('en, de, fr', $response->headers->get('Content-Language'));
+        $this->assertEquals('de, en, fr', $response->headers->get('Content-Language'));
 
         $this->assertEquals('de', $results[0]->id);
         $this->assertEquals('German', $results[0]->name->en);
@@ -146,11 +146,11 @@ class LanguageControllerTest extends RestTestCase
 
         $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
         $this->assertEquals('de', $results->id);
-        $this->assertEquals('en, de', $response->headers->get('Content-Language'));
+        $this->assertEquals('de, en', $response->headers->get('Content-Language'));
 
         $client = static::createRestClient();
         $client->request('GET', '/i18n/language/', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
-        $this->assertEquals('en, de', $client->getResponse()->headers->get('Content-Language'));
+        $this->assertEquals('de, en', $client->getResponse()->headers->get('Content-Language'));
 
         $client = static::createRestClient();
         $client->request('GET', '/i18n/language/en', [], [], array('HTTP_ACCEPT_LANGUAGE' => 'en,de'));
