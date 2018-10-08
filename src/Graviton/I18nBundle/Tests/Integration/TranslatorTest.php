@@ -5,12 +5,14 @@
 
 namespace Graviton\I18nBundle\Tests\Integration;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData;
 use Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData;
 use Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationData;
 use Graviton\I18nBundle\Translator\Translator;
 use Graviton\TestBundle\Test\GravitonTestCase;
+use Symfony\Component\Cache\DoctrineProvider;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -46,7 +48,12 @@ class TranslatorTest extends GravitonTestCase
     public function testTranslation()
     {
         $manager = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $translator = new Translator($manager, 'en');
+        $translator = new Translator(
+            $manager,
+            'en',
+            new ArrayCache(),
+            3
+        );
 
         $translation = $translator->translate('English');
 
