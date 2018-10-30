@@ -7,7 +7,6 @@ namespace Graviton\SchemaBundle;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
@@ -91,11 +90,6 @@ class SchemaUtils
     private $cache;
 
     /**
-     * @var string
-     */
-    private $cacheInvalidationMapKey;
-
-    /**
      * @var ConstraintBuilder
      */
     private $constraintBuilder;
@@ -114,7 +108,6 @@ class SchemaUtils
      * @param string                             $defaultLocale             Default Language
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      * @param CacheProvider                      $cache                     Doctrine cache provider
-     * @param string                             $cacheInvalidationMapKey   Cache invalidation map cache key
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -127,8 +120,7 @@ class SchemaUtils
         array $documentFieldNames,
         $defaultLocale,
         ConstraintBuilder $constraintBuilder,
-        CacheProvider $cache,
-        $cacheInvalidationMapKey
+        CacheProvider $cache
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
@@ -141,7 +133,6 @@ class SchemaUtils
         $this->defaultLocale = $defaultLocale;
         $this->constraintBuilder = $constraintBuilder;
         $this->cache = $cache;
-        $this->cacheInvalidationMapKey = $cacheInvalidationMapKey;
     }
 
     /**
@@ -157,9 +148,7 @@ class SchemaUtils
         $collectionSchema = new Schema;
         $collectionSchema->setTitle(sprintf('Array of %s objects', $modelName));
         $collectionSchema->setType('array');
-
         $collectionSchema->setItems($this->getModelSchema($modelName, $model));
-
         return $collectionSchema;
     }
 
@@ -182,25 +171,37 @@ class SchemaUtils
         $serialized = false
     ) {
 
+        $languages = [];
+        if ($online) {
+            $languages = array_map(
+                function (Language $language) {
+                    return $language->getId();
+                },
+                $this->languageRepository->findAll()
+            );
+        }
+        if (empty($languages)) {
+            $languages = [
+                $this->defaultLocale
+            ];
+        }
+
         $cacheKey = sprintf(
-            'schema.%s.%s.%s.%s',
+            'schema.%s.%s.%s.%s.%s',
             $model->getEntityClass(),
             (string) $online,
             (string) $internal,
-            (string) $serialized
+            (string) $serialized,
+            (string) implode('-', $languages)
         );
 
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
         }
 
-        $invalidateCacheMap = [];
-        if ($this->cache->contains($this->cacheInvalidationMapKey)) {
-            $invalidateCacheMap = $this->cache->fetch($this->cacheInvalidationMapKey);
-        }
-
         // build up schema data
         $schema = new Schema;
+        $schemaIsCachable = true;
 
         if (!empty($model->getTitle())) {
             $schema->setTitle($model->getTitle());
@@ -226,46 +227,17 @@ class SchemaUtils
         // Init sub searchable fields
         $subSearchableFields = [];
 
-        // look for translatables in document class
+        // reflection
         $documentReflection = new \ReflectionClass($repo->getClassName());
         $documentClass = $documentReflection->newInstance();
-        if ($documentReflection->implementsInterface('Graviton\I18nBundle\Document\TranslatableDocumentInterface')) {
-            /** @var TranslatableDocumentInterface $documentInstance */
-            $documentInstance = $documentReflection->newInstanceWithoutConstructor();
-            $translatableFields = array_merge(
-                $documentInstance->getTranslatableFields(),
-                $documentInstance->getPreTranslatedFields()
-            );
-        } else {
-            $translatableFields = [];
-        }
-
-        if (!empty($translatableFields)) {
-            $invalidateCacheMap[$this->languageRepository->getClassName()][] = $cacheKey;
-        }
+        $classShortName = $documentReflection->getShortName();
 
         // exposed fields
         $documentFieldNames = isset($this->documentFieldNames[$repo->getClassName()]) ?
             $this->documentFieldNames[$repo->getClassName()] :
             [];
 
-        $languages = [];
-        if ($online) {
-            $languages = array_map(
-                function (Language $language) {
-                    return $language->getId();
-                },
-                $this->languageRepository->findAll()
-            );
-        }
-        if (empty($languages)) {
-            $languages = [
-                $this->defaultLocale
-            ];
-        }
-
         // exposed events..
-        $classShortName = $documentReflection->getShortName();
         if (isset($this->eventMap[$classShortName])) {
             $schema->setEventNames(array_unique($this->eventMap[$classShortName]['events']));
         }
@@ -344,6 +316,9 @@ class SchemaUtils
                                 $this->getModelSchema($field, $propertyModel, $online, $internal)
                             );
                         }
+
+                        // don't cache this schema
+                        $schemaIsCachable = false;
                     } else {
                         // swagger case
                         $property->setAdditionalProperties(
@@ -365,10 +340,8 @@ class SchemaUtils
                         $subSearchableFields[] = $field . '.' . $searchableSubField;
                     }
                 }
-            } elseif (in_array($field, $translatableFields, true)) {
+            } elseif ($meta->getTypeOfField($field) == 'translatable') {
                 $property = $this->makeTranslatable($property, $languages);
-            } elseif (in_array($field.'[]', $translatableFields, true)) {
-                $property = $this->makeArrayTranslatable($property, $languages);
             } elseif ($meta->getTypeOfField($field) === 'extref') {
                 $urls = [];
                 $refCollections = $model->getRefCollectionOfField($field);
@@ -386,22 +359,31 @@ class SchemaUtils
                 $property->setRefCollection($urls);
             } elseif ($meta->getTypeOfField($field) === 'collection') {
                 $itemSchema = new Schema();
-                $property->setType('array');
                 $itemSchema->setType($this->getCollectionItemType($meta->name, $field));
 
+                $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
             } elseif ($meta->getTypeOfField($field) === 'datearray') {
                 $itemSchema = new Schema();
-                $property->setType('array');
                 $itemSchema->setType('string');
                 $itemSchema->setFormat('date-time');
 
+                $property->setType('array');
                 $property->setItems($itemSchema);
                 $property->setFormat(null);
             } elseif ($meta->getTypeOfField($field) === 'hasharray') {
                 $itemSchema = new Schema();
                 $itemSchema->setType('object');
+
+                $property->setType('array');
+                $property->setItems($itemSchema);
+                $property->setFormat(null);
+            } elseif ($meta->getTypeOfField($field) === 'translatablearray') {
+                $itemSchema = new Schema();
+                $itemSchema->setType('object');
+                $itemSchema->setFormat('translatable');
+                $itemSchema = $this->makeTranslatable($itemSchema, $languages);
 
                 $property->setType('array');
                 $property->setItems($itemSchema);
@@ -452,8 +434,9 @@ class SchemaUtils
             $schema = json_decode($this->serializer->serialize($schema, 'json'));
         }
 
-        $this->cache->save($cacheKey, $schema);
-        $this->cache->save($this->cacheInvalidationMapKey, $invalidateCacheMap);
+        if ($schemaIsCachable === true) {
+            $this->cache->save($cacheKey, $schema);
+        }
 
         return $schema;
     }

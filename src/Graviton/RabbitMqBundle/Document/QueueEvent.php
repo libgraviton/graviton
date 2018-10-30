@@ -5,8 +5,6 @@
 
 namespace Graviton\RabbitMqBundle\Document;
 
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
-
 /**
  * Graviton\RabbitMqBundle\Document\QueueEvent
  *
@@ -14,7 +12,7 @@ use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class QueueEvent implements TranslatableDocumentInterface
+class QueueEvent
 {
 
     /**
@@ -138,25 +136,5 @@ class QueueEvent implements TranslatableDocumentInterface
     {
         $this->status->{'$ref'} = $statusUrl;
         return $this;
-    }
-
-    /**
-     * return translatable field names
-     *
-     * @return string[]
-     */
-    public function getTranslatableFields()
-    {
-        return [];
-    }
-
-    /**
-     * return pretranslated field names
-     *
-     * @return string[]
-     */
-    public function getPreTranslatedFields()
-    {
-        return [];
     }
 }

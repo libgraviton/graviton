@@ -7,9 +7,6 @@ namespace Graviton\I18nBundle\Migrations\MongoDB;
 
 use AntiMattr\MongoDB\Migrations\AbstractMigration;
 use Doctrine\MongoDB\Database;
-use Graviton\I18nBundle\Document\Translatable;
-use MongoDB;
-use MongoCollection;
 
 /**
  * Migrate domain_1_locale_1_original_1 index

@@ -8,6 +8,7 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\Rql\Event\VisitNodeEvent;
+use Xiag\Rql\Parser\AbstractNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
@@ -48,6 +49,11 @@ class I18nRqlParsingListener
     protected $className;
 
     /**
+     * @var array
+     */
+    private $createdNodes = [];
+
+    /**
      * Constructor
      *
      * @param I18nUtils $intUtils int utils
@@ -66,17 +72,23 @@ class I18nRqlParsingListener
      */
     public function onVisitNode(VisitNodeEvent $event)
     {
+        if ($this->isOurNode($event->getNode())) {
+            return $event;
+        }
+
         $this->node = $event->getNode();
         $this->builder = $event->getBuilder();
         $this->className = $event->getClassName();
 
         if ($this->node instanceof AbstractScalarOperatorNode && $this->isTranslatableFieldNode()) {
-            $event->setNode(
-                $this->getAlteredQueryNode(
-                    $this->getNewNodeTargetField(),
-                    $this->getAllPossibleTranslatableStrings()
-                )
+            $alteredNode = $this->getAlteredQueryNode(
+                $this->getDocumentFieldName(),
+                $this->getAllPossibleTranslatableStrings()
             );
+
+            if (!empty($alteredNode->getQueries())) {
+                $event->setNode($alteredNode);
+            }
         }
 
         return $event;
@@ -88,26 +100,54 @@ class I18nRqlParsingListener
      * @param string $fieldName target fieldname
      * @param array  $values    the values to set
      *
-     * @return AbstractNode some node
+     * @return OrNode some node
      */
     private function getAlteredQueryNode($fieldName, array $values)
     {
         $newNode = new OrNode();
+        $defaultLanguageFieldName = $fieldName.'.'.$this->intUtils->getDefaultLanguage();
 
-        if (count($values) > 0) {
-            foreach ($values as $singleValue) {
-                $newNode->addQuery(new EqNode($fieldName, $singleValue));
-            }
-        } else {
-            /**
-             * if we received no valid translations (empty array), we need to
-             * set some impossible condition to make sure we have an empty resultset.
-             * otherwise mongo will return all records, that's not desired.
-             */
-            $newNode->addQuery(new EqNode(1, 2));
+        foreach ($values as $singleValue) {
+            $newNode->addQuery($this->getEqNode($fieldName, $singleValue));
+            // search default language field (as new structure only has 'en' set after creation and no save)
+            $newNode->addQuery(
+                $this->getEqNode(
+                    $defaultLanguageFieldName,
+                    $singleValue
+                )
+            );
+        }
+
+        // add default match
+        $newNode->addQuery($this->getEqNode($this->node->getField(), $this->getNodeValue()));
+
+        if (!$this->nodeFieldNameHasLanguage()) {
+            // if no language, we add it to the query to default node for default language
+            $newNode->addQuery(
+                $this->getEqNode(
+                    $defaultLanguageFieldName,
+                    $this->getNodeValue()
+                )
+            );
         }
 
         return $newNode;
+    }
+
+    /**
+     * gets the node value
+     *
+     * @throws \MongoException
+     *
+     * @return \MongoRegex|string value
+     */
+    private function getNodeValue()
+    {
+        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
+            return new \MongoRegex($this->node->getValue()->toRegex());
+        }
+
+        return $this->node->getValue();
     }
 
     /**
@@ -128,6 +168,38 @@ class I18nRqlParsingListener
     }
 
     /**
+     * get EqNode instance and remember that we created it..
+     *
+     * @param string $fieldName  field name
+     * @param string $fieldValue field value
+     *
+     * @return EqNode node
+     */
+    private function getEqNode($fieldName, $fieldValue)
+    {
+        $node = new EqNode($fieldName, $fieldValue);
+        $this->createdNodes[] = $node;
+        return $node;
+    }
+
+    /**
+     * check if we created the node previously
+     *
+     * @param EqNode $node node
+     *
+     * @return bool true if yes, false otherwise
+     */
+    private function isOurNode($node)
+    {
+        foreach ($this->createdNodes as $createdNode) {
+            if ($createdNode == $node) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns the affected field name. We assume whatever depth; it's always .[lang] at the end.
      * So we strip lang and take the one before..
      * If it's only 1 (as in 'id'), this will return null.
@@ -137,8 +209,28 @@ class I18nRqlParsingListener
     private function getDocumentFieldName()
     {
         $parts = explode('.', $this->node->getField());
-        array_pop($parts);
+        if ($this->nodeFieldNameHasLanguage()) {
+            array_pop($parts);
+        }
         return implode('.', $parts);
+    }
+
+    /**
+     * if the node field name targets a language or not
+     *
+     * @return bool true if yes, false otherwise
+     */
+    private function nodeFieldNameHasLanguage()
+    {
+        $parts = explode('.', $this->node->getField());
+        if (!empty($parts)) {
+            $lastPart = $parts[count($parts) - 1];
+            // only remove when language
+            if (in_array($lastPart, $this->intUtils->getLanguages())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -150,18 +242,6 @@ class I18nRqlParsingListener
     {
         $parts = explode('.', $this->node->getField());
         return array_pop($parts);
-    }
-
-    /**
-     * Returns the new node target field (the one without language)
-     *
-     * @return string new field name
-     */
-    private function getNewNodeTargetField()
-    {
-        $parts = explode('.', $this->node->getField());
-        array_pop($parts);
-        return implode('.', $parts);
     }
 
     /**

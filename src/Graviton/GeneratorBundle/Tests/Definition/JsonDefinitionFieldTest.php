@@ -169,7 +169,9 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'isClassType'          => false,
                     'xDynamicKey'          => null,
                     'searchable'           => 0,
-                    'recordOriginException' => false
+                    'recordOriginException' => false,
+                    'hidden'               => false,
+                    'restrictions'         => []
                 ]
             ),
             $field->getDefAsArray()
@@ -206,7 +208,9 @@ class JsonDefinitionFieldTest extends BaseJsonDefinitionFieldTest
                     'isClassType'           => false,
                     'xDynamicKey'           => $key,
                     'searchable'            => 0,
-                    'recordOriginException' => false
+                    'recordOriginException' => false,
+                    'hidden'               => false,
+                    'restrictions'         => []
                 ]
             ),
             $field->getDefAsArray()

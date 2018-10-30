@@ -11,6 +11,7 @@ web/.htaccess
 web/explorer
 mongodata/
 src/GravitonDyn/*
+src/Graviton/DocumentBundle/Entity/*.defaultLanguage
 app/config/parameters.yml
 app/config/parameters_local.xml
 app/files/

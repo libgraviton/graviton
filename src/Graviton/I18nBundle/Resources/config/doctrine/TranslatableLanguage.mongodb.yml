@@ -1,8 +1,0 @@
-Graviton\I18nBundle\Document\TranslatableLanguage:
-  fields:
-    id:
-      id: true
-      type: string
-      strategy: UUID
-    ref:
-      type: extref

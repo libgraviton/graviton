@@ -14,6 +14,3 @@ parameters:
     graviton.schema.serializer.handler.additionalproperties.class: Graviton\SchemaBundle\Serializer\Handler\SchemaAdditionalPropertiesHandler
     graviton.schema.serializer.handler.type.class: Graviton\SchemaBundle\Serializer\Handler\SchemaTypeHandler
     graviton.schema.serializer.handler.enum.class: Graviton\SchemaBundle\Serializer\Handler\SchemaEnumHandler
-
-    # non-class parameters -->
-    graviton.schema.cache.invalidateMapKey: _invMap

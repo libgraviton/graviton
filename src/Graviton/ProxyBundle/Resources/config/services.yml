@@ -60,7 +60,7 @@ services:
           -
             method: setCache
             arguments:
-              - "@=service(parameter('graviton.doctrine.cache.provider.service_id'))"
+              - "@=service(parameter('graviton.cache.provider.service_id'))"
               - ProxyBundle
               - 86400
 

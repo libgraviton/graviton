@@ -98,6 +98,9 @@
         {%- elseif field.type == 'date[]' %}
     {{ field.fieldName }}:
       type: datearray
+        {%- elseif field.type == 'translatable[]' %}
+    {{ field.fieldName }}:
+      type: translatablearray
         {%- elseif '[]' in field.type or field.type == 'array' %}
     {{ field.fieldName }}:
       type: collection

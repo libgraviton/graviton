@@ -7,6 +7,7 @@ namespace Graviton\I18nBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Language;
 
 /**
@@ -29,7 +30,7 @@ class LoadLanguageData implements FixtureInterface
     {
         $enTag = new Language;
         $enTag->setId('en');
-        $enTag->setName('English');
+        $enTag->setName(Translatable::createFromOriginalString('English'));
 
         $manager->persist($enTag);
         $manager->flush();

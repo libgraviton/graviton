@@ -1,25 +1,9 @@
 parameters:
     graviton.i18n.controller.language.class: Graviton\I18nBundle\Controller\LanguageController
-    graviton.i18n.controller.translatable.class: Graviton\I18nBundle\Controller\TranslatableController
     graviton.i18n.model.language.class: Graviton\I18nBundle\Model\Language
-    graviton.i18n.model.translatable.class: Graviton\I18nBundle\Model\Translatable
-    graviton.i18n.model.translatablelanguage.class: Graviton\I18nBundle\Model\TranslatableLanguage
     graviton.i18n.repository.language.class: Doctrine\ODM\MongoDB\DocumentRepository
-    graviton.i18n.repository.translatable.class: Doctrine\ODM\MongoDB\DocumentRepository
-    graviton.i18n.repository.translatablelanguage.class: Doctrine\ODM\MongoDB\DocumentRepository
-    graviton.i18n.document.language.class: Graviton\I18nBundle\Document\Language
-    graviton.i18n.document.translatable.class: Graviton\I18nBundle\Document\Translatable
-    graviton.i18n.document.translatablelanguage.class: Graviton\I18nBundle\Document\TranslatableLanguage
     graviton.i18n.listener.contentlanguageresponse.class: Graviton\I18nBundle\Listener\ContentLanguageResponseListener
-    graviton.i18n.listener.acceptlanguagerequest.class: Graviton\I18nBundle\Listener\AcceptLanguageRequestListener
-    graviton.i18n.listener.i18nserializer.class: Graviton\I18nBundle\Listener\I18nSerializationListener
-    graviton.i18n.listener.i18ndeserializer.class: Graviton\I18nBundle\Listener\I18nDeserializationListener
     graviton.i18n.listener.i18nrqlparsinglistener.class: Graviton\I18nBundle\Listener\I18nRqlParsingListener
-    graviton.i18n.listener.i18ncachinglistener.class: Graviton\I18nBundle\Listener\I18nCachingListener
-    graviton.i18n.loader.doctrineodm.class: Graviton\I18nBundle\Translation\Loader\DoctrineODMLoader
-    graviton.i18n.request.class: Symfony\Component\HttpFoundation\Request
-    graviton.i18n.listener.postpersisttranslatable.class: Graviton\I18nBundle\Listener\PostPersistTranslatableListener
     graviton.i18n.utils.class: Graviton\I18nBundle\Service\I18nUtils
-    graviton.i18n.cacheutils.class: Graviton\I18nBundle\Service\I18nCacheUtils
-    graviton.i18n.command.createtranslationresources.class: Graviton\I18nBundle\Command\CreateTranslationResourcesCommand
-    graviton.i18n.translator.factory.class: Graviton\I18nBundle\Translator\TranslatorFactory
+    graviton.i18n.translator.class: Graviton\I18nBundle\Translator\Translator
+    graviton.i18n.serializer.handler.translatable.class: Graviton\I18nBundle\Serializer\Handler\TranslatableHandler

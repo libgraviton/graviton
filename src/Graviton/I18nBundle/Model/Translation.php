@@ -1,19 +1,17 @@
 <?php
 /**
- * Translatable controller
+ * Model based on Graviton\RestBundle\Model\DocumentModel.
  */
 
-namespace Graviton\I18nBundle\Controller;
+namespace Graviton\I18nBundle\Model;
 
-use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Model\DocumentModel;
 
 /**
- * Translatable controller
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class TranslatableController extends RestController
+class Translation extends DocumentModel
 {
 }

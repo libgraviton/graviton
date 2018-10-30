@@ -3,6 +3,7 @@ namespace Graviton\GeneratorBundle\Definition;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Entity\Hash;
+use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\GeneratorBundle\Definition\Schema\XDynamicKey;
 
 /**
@@ -30,6 +31,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => 'hash',
         self::TYPE_EXTREF => 'extref',
+        self::TYPE_TRANSLATABLE => 'translatable'
     ];
 
     private static $serializerTypeMap = [
@@ -45,6 +47,7 @@ class JsonDefinitionField implements DefinitionElementInterface
         self::TYPE_BOOLEAN => 'boolean',
         self::TYPE_OBJECT => Hash::class,
         self::TYPE_EXTREF => ExtReference::class,
+        self::TYPE_TRANSLATABLE => Translatable::class
     ];
 
     /**
@@ -148,6 +151,9 @@ class JsonDefinitionField implements DefinitionElementInterface
      */
     public function getType()
     {
+        if ($this->definition->getTranslatable()) {
+            return self::TYPE_TRANSLATABLE;
+        }
         return strtolower($this->definition->getType());
     }
 
