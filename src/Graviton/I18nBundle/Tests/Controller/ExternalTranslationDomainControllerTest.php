@@ -35,7 +35,7 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
             array(
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
             )
         );
 

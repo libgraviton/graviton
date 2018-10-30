@@ -51,8 +51,6 @@ script:
   - >
       if [ "$PHPUNIT" = "true" ]; then
           composer run-script post-install-cmd && \
-          touch src/Graviton/I18nBundle/Resources/translations/i18n.de.odm && \
-          touch src/Graviton/I18nBundle/Resources/translations/i18n.es.odm && \
           if [ "$PHPUNIT_SUITE" == "integration" ]; then
               php app/console doctrine:mongodb:schema:update
           fi && \

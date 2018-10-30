@@ -5,4 +5,4 @@ Graviton\I18nBundle\Document\Language:
       id: true
       strategy: UUID
     name:
-      type: string
+      type: translatable

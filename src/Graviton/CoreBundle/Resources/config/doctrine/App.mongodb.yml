@@ -5,7 +5,7 @@ Graviton\CoreBundle\Document\App:
       id: true
       strategy: UUID
     name:
-      type: string
+      type: translatable
     showInMenu:
       type: boolean
     order:

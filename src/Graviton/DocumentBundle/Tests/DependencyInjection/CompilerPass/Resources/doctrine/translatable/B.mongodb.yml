@@ -7,7 +7,7 @@ Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Documen
     key:
       type: string
     title:
-      type: string
+      type: translatable
 
   embedOne:
     bchild:

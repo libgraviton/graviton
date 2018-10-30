@@ -74,9 +74,9 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
             [
                 'name'              => $field->getName(),
                 'exposedName'       => 'testField',
-                'type'              => 'varchar',
-                'doctrineType'      => 'string',
-                'serializerType'    => 'string',
+                'type'              => 'translatable',
+                'doctrineType'      => 'translatable',
+                'serializerType'    => 'Graviton\DocumentBundle\Entity\Translatable',
                 'isClassType'       => false,
                 'relType'           => null,
 
@@ -100,7 +100,7 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
 
         $def = array(
             'name' => 'testField',
-            'type' => 'varchar',
+            'type' => 'translatable',
             'groups' => null,
             'length' => 200,
             'title' => 'A testing title',
@@ -109,15 +109,17 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
             'required' => true,
             'translatable' => true,
             'exposedName' => 'testField',
-            'doctrineType' => 'string',
-            'serializerType' => 'string',
+            'doctrineType' => 'translatable',
+            'serializerType' => 'Graviton\DocumentBundle\Entity\Translatable',
             'relType' => null,
             'isClassType' => false,
             'constraints' => [],
             'collection' => [],
             'xDynamicKey' => null,
             'searchable' => 1,
-            'recordOriginException' => false
+            'recordOriginException' => false,
+            'hidden' => false,
+            'restrictions' => []
         );
 
         $this->assertEquals($def, $field->getDefAsArray());
@@ -229,7 +231,7 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
             $field->getJsonDefinition()->getField('someDate')->getType()
         );
         $this->assertEquals(
-            'varchar',
+            'translatable',
             $field->getJsonDefinition()->getField('text')->getType()
         );
     }

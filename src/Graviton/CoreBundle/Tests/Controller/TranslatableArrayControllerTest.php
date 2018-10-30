@@ -240,13 +240,19 @@ class TranslatableArrayControllerTest extends RestTestCase
                 'id'    => 'testdata',
                 'field' => (object) [
                     'en' => 'EN-1',
+                    'de' => 'EN-1',
+                    'fr' => 'EN-1'
                 ],
                 'array' => [
                     (object) [
                         'en' => 'EN-2',
+                        'de' => 'EN-2',
+                        'fr' => 'EN-2'
                     ],
                     (object) [
                         'en' => 'EN-3',
+                        'de' => 'EN-3',
+                        'fr' => 'EN-3'
                     ],
                 ],
                 'deep'  => (object) [
@@ -254,23 +260,33 @@ class TranslatableArrayControllerTest extends RestTestCase
                         (object) [
                             'field' => (object) [
                                 'en' => 'EN-4',
+                                'de' => 'EN-4',
+                                'fr' => 'EN-4'
                             ],
                             'array' => [
                                 (object) [
                                     'en' => 'EN-5',
+                                    'de' => 'EN-5',
+                                    'fr' => 'EN-5'
                                 ],
                                 (object) [
                                     'en' => 'EN-6',
+                                    'de' => 'EN-6',
+                                    'fr' => 'EN-6'
                                 ],
                             ],
                         ],
                         (object) [
                             'field' => (object) [
                                 'en' => 'EN-7',
+                                'de' => 'EN-7',
+                                'fr' => 'EN-7'
                             ],
                             'array' => [
                                 (object) [
                                     'en' => 'EN-8',
+                                    'de' => 'EN-8',
+                                    'fr' => 'EN-8'
                                 ],
                             ],
                         ],
@@ -331,11 +347,13 @@ class TranslatableArrayControllerTest extends RestTestCase
             'field' => (object) [
                 'en' => 'EN-10',
                 'de' => 'DE-10',
+                'fr' => 'EN-10'
             ],
             'array' => [
                 (object) [
                     'en' => 'EN-20',
                     'de' => 'DE-20',
+                    'fr' => 'EN-20'
                 ],
             ],
             'deep'  => (object) [
@@ -344,19 +362,23 @@ class TranslatableArrayControllerTest extends RestTestCase
                         'field' => (object) [
                             'en' => 'EN-30',
                             'de' => 'DE-30',
+                            'fr' => 'EN-30'
                         ],
                         'array' => [
                             (object) [
                                 'en' => 'EN-40',
                                 'de' => 'DE-40',
+                                'fr' => 'EN-40'
                             ],
                             (object) [
                                 'en' => 'EN-50',
                                 'de' => 'DE-50',
+                                'fr' => 'EN-50'
                             ],
                             (object) [
                                 'en' => 'EN-60',
                                 'de' => 'DE-60',
+                                'fr' => 'EN-60'
                             ],
                         ],
                     ],
@@ -364,6 +386,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                         'field' => (object) [
                             'en' => 'EN-70',
                             'de' => 'DE-70',
+                            'fr' => 'EN-70'
                         ],
                         'array' => [],
                     ],

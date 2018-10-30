@@ -39,8 +39,8 @@ class AppControllerTest extends RestTestCase
                 'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
                 'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatableData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslatablesApp'
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
+                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
             )
         );
     }

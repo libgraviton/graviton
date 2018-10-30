@@ -7,6 +7,7 @@ namespace Graviton\I18nBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Language;
 
 /**
@@ -30,7 +31,7 @@ class LoadMultiLanguageData implements FixtureInterface
         foreach (['de' => 'German', 'fr' => 'French'] as $id => $name) {
             $lang = new Language;
             $lang->setId($id);
-            $lang->setName($name);
+            $lang->setName(Translatable::createFromOriginalString($name));
             $manager->persist($lang);
         }
 

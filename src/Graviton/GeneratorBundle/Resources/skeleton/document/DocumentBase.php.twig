@@ -6,15 +6,10 @@
 namespace {{ base }}Document;
 
 use \Doctrine\Common\Collections\ArrayCollection;
-use Graviton\I18nBundle\Document\TranslatableDocumentInterface;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\DeserializationContext;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
 use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
-
-
-{% set translatableFields = [] %}
-{% set preTranslatedFields = [] %}
 
 /**
  * {{ base }}Document\{{ document }}Base
@@ -23,7 +18,7 @@ use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
 * @license  https://opensource.org/licenses/MIT MIT License
 * @link     http://swisscom.ch
 */
-abstract class {{ document }}Base implements TranslatableDocumentInterface, ExtRefHoldingDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
+abstract class {{ document }}Base implements ExtRefHoldingDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
 
 /**
@@ -128,18 +123,6 @@ return $this->deletedDate;
 
 {% for field in fields %}
 
-    {% if field.translatable is defined and field.translatable == true %}
-        {% set translatableFields = translatableFields|merge([
-            field.fieldName ~ ('[]' in field.type ? '[]' : '')
-        ]) %}
-    {% endif %}
-
-    {% if field.pretranslated is defined and field.pretranslated == true %}
-        {% set preTranslatedFields = preTranslatedFields|merge([
-            field.fieldName ~ ('[]' in field.type ? '[]' : '')
-        ]) %}
-    {% endif %}
-
     /**
     * Get {{ field.fieldName }}
     *
@@ -236,31 +219,4 @@ return $this->deletedDate;
     {% endif %}
 {% endfor %}
 
-/**
-* return translatable field names
-*
-* @return string[]
-*/
-public function getTranslatableFields()
-{
-{% if translatableFields is empty %}
-    return [];
-{% else %}
-    return array('{{ translatableFields|join('\',\'') }}');
-{% endif %}
-}
-
-/**
-* return pretranslated field names
-*
-* @return string[]
-*/
-public function getPreTranslatedFields()
-{
-{% if preTranslatedFields is empty %}
-    return [];
-{% else %}
-    return ['{{ preTranslatedFields|join('\',\'') }}'];
-{% endif %}
-}
 }
