@@ -98,6 +98,10 @@ class BundeBundleUnloadCommand extends Command
         $content = file_get_contents($bundleFilePath);
 
         $contentData = $this->getContentData($content);
+        // if something not found, we do nothing
+        if ($contentData['startStringPos'] === false || $contentData['endStringPos'] === false) {
+            return;
+        }
 
         $bundleList = explode(',', $contentData['bundleList']);
         if (empty($bundleList)) {
