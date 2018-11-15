@@ -127,3 +127,9 @@ services:
         tags:
           -
             name: console.command
+
+    graviton_generator.command.bundlebundleunload:
+        class: "Graviton\\GeneratorBundle\\Command\\BundeBundleUnloadCommand"
+        tags:
+        -
+            name: console.command
