@@ -5,6 +5,8 @@
 namespace Graviton\AnalyticsBundle\Model;
 
 use Graviton\DocumentBundle\Service\DateConverter;
+use GravitonEvojaBasicBundle\Pipeline\CustomerleadsLead;
+use GravitonEvojaBasicBundle\Pipeline\CustomerleadsTask;
 use Rs\Json\Patch;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
@@ -258,6 +260,10 @@ class AnalyticModel
      */
     public function getAggregate($params = [])
     {
+
+    	$pipeline = new CustomerleadsLead();
+    	return $pipeline->get();
+
         $aggregate = $this->getParameterizedAggregate($params);
 
         if (empty($aggregate)) {
