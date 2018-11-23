@@ -40,9 +40,6 @@ class ServiceManager
     /** @var CacheProvider */
     protected $cacheProvider;
 
-    /** @var DateConverter */
-    protected $dateConverter;
-
     /** @var Router */
     protected $router;
 
@@ -74,7 +71,6 @@ class ServiceManager
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
-        DateConverter $dateConverter,
         Router $router,
         $definitionDirectory,
         $cacheTimeMetadata
@@ -82,7 +78,6 @@ class ServiceManager
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
-        $this->dateConverter = $dateConverter;
         $this->router = $router;
         $this->directory = $definitionDirectory;
         $this->cacheTimeMetadata = $cacheTimeMetadata;
@@ -115,8 +110,6 @@ class ServiceManager
             ->path('/\/analytics\//i')
             ->name('*.json')
             ->notName('_*')
-            ->notName('*.pipeline.json')
-            ->notName('*.pipeline.*.json')
             ->sortByName();
 
         foreach ($finder as $file) {
@@ -126,50 +119,6 @@ class ServiceManager
                 throw new InvalidConfigurationException(
                     sprintf('Analytics file: %s could not be loaded due to error: %s', $key, json_last_error_msg())
                 );
-            }
-
-            $data->multiPipeline = false;
-
-            // filename without extension
-            $searchBaseName = substr($file->getFilename(), 0, -5);
-
-            // is/are there a pipeline files?
-            $pipelineFinder = Finder::create()
-                ->files()
-                ->in(dirname($file->getPathname()))
-                ->depth(0)
-                ->name($searchBaseName.'.pipeline.json')
-                ->name($searchBaseName.'.pipeline.*.json');
-
-            $pipelineFiles = iterator_to_array($pipelineFinder);
-
-            if (count($pipelineFiles) == 1) {
-                // only 1 -> standard
-                $data->aggregate = json_decode(reset($pipelineFiles)->getContents());
-            }
-
-            if (count($pipelineFiles) > 1) {
-                // multipipeline!
-                foreach ($pipelineFiles as $singlePipeline) {
-                    // get key name
-                    preg_match(
-                        '/\.pipeline\.([a-z]*)\.json/',
-                        $singlePipeline->getFilename(),
-                        $matches
-                    );
-
-                    if (!isset($matches[1])) {
-                        throw new \LogicException(
-                            'Could not infer pipeline name from filename for '.
-                            $singlePipeline->getPathname()
-                        );
-                    }
-
-                    $pipeName = $matches[1];
-
-                    $data->aggregate[$pipeName] = json_decode($singlePipeline->getContents());
-                    $data->multiPipeline = true;
-                }
             }
 
             $services[$data->route] = $data;
@@ -240,7 +189,6 @@ class ServiceManager
 
         /** @var AnalyticModel $model */
         $model = $mapper->map($services[$name], new AnalyticModel());
-        $model->setDateConverter($this->dateConverter);
 
         return $model;
     }
@@ -364,7 +312,9 @@ class ServiceManager
                 }
             }
 
-            $params[$param->name] = $paramValue;
+            if (!is_null($paramValue)) {
+				$params[$param->name] = $paramValue;
+			}
         }
 
         return $params;

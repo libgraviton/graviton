@@ -71,9 +71,10 @@ class AnalyticsManager
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
+        /*
         $mongoClient = $this->connection->getMongoClient()->getClient();
         $db = $mongoClient->selectDatabase('graviton2');
-        //$db->command('createView', ['MyView', 'Customer', $pipeline]);
+
 
 		$db->command([
 			'create' => 'MyView',
@@ -83,19 +84,12 @@ class AnalyticsManager
 
 
         die;
-
-		$collection = $this->connection->selectCollection($dbName, "Customer");
-		//$collection->c
-
-        var_dump($pipeline); die;
+        */
 
         // all data will be here first..
         $data = [];
 
         if (!$model->getMultipipeline()) {
-
-
-
             $dbName = $model->getDatabase();
             if (is_null($dbName)) {
                 $dbName = $this->databaseName;
