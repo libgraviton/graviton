@@ -71,21 +71,6 @@ class AnalyticsManager
         // Build aggregation pipeline
         $pipeline = $model->getAggregate($params);
 
-        /*
-        $mongoClient = $this->connection->getMongoClient()->getClient();
-        $db = $mongoClient->selectDatabase('graviton2');
-
-
-		$db->command([
-			'create' => 'MyView',
-			'viewOn' => 'Customer',
-			'pipeline' => $pipeline
-		]);
-
-
-        die;
-        */
-
         // all data will be here first..
         $data = [];
 

@@ -1,0 +1,116 @@
+<?php
+/**
+ * creates mongodb views from analytics definition
+ */
+namespace Graviton\AnalyticsBundle\Command;
+
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\AnalyticsBase\Pipeline\PipelineAbstract;
+use MongoDB\Driver\Exception\ConnectionTimeoutException;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ */
+class AnalyticsCreateViewCommand extends Command
+{
+	/**
+	 * @var DocumentManager
+	 */
+	private $manager;
+
+	/**
+	 * @var string
+	 */
+	private $databaseName;
+
+	/**
+	 * @var array
+	 */
+	private $services;
+
+	/**
+	 * @param DocumentManager $manager manager
+	 */
+	public function __construct(
+		DocumentManager $manager,
+		$databaseName,
+		array $services
+	) {
+		$this->manager = $manager;
+		$this->databaseName = $databaseName;
+		$this->services = $services;
+		parent::__construct();
+	}
+	
+	/**
+	 * set up command
+	 *
+	 * @return void
+	 */
+	protected function configure()
+	{
+		$this
+			->setName('graviton:analytics:create-views')
+			->setDescription(
+				'Create views as defined in analytics definitions'
+			);
+	}
+	/**
+	 * run command
+	 *
+	 * @param InputInterface  $input  input interface
+	 * @param OutputInterface $output output interface
+	 *
+	 * @return void
+	 */
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		$mongoClient = $this->manager->getConnection()->getMongoClient()->getClient();
+		$db = $mongoClient->selectDatabase($this->databaseName);
+
+		foreach ($this->services as $service) {
+			if (!isset($service['class'])) {
+				continue;
+			}
+
+			$classes = $service['class'];
+			if (!is_array($classes)) {
+				$classes = [$classes];
+			}
+
+			foreach ($classes as $name => $class) {
+				$inst = new $class();
+				if ($inst instanceof PipelineAbstract) {
+					$inst->setParams(['forView' => 'yes']);
+
+					if (!is_numeric($name)) {
+						if (!isset($service['collection'][$name])) {
+							$output->writeln("ERROR on class ".$class.", could not determine collection for '".$name."'");
+							continue;
+						}
+						$collectionName = $service['collection'][$name];
+					} else{
+						$collectionName = $service['collection'];
+					}
+
+					$classReflect = new \ReflectionClass($class);
+					$viewName = 'AnalyticsView'.$classReflect->getShortName();
+
+					$db->command([
+						'create' => $viewName,
+						'viewOn' => $collectionName,
+						'pipeline' => $inst->get()
+					]);
+
+					$output->writeln('Created MongoDB analytics view "'.$viewName.'" on collection "'.$collectionName.'"');
+
+				}
+			}
+		}
+	}
+}

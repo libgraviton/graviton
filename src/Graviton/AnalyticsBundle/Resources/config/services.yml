@@ -5,6 +5,16 @@ services:
         arguments:
             - "@graviton.analytics.service_manager"
 
+    graviton.analytics.command.analyticscreateview:
+        class: Graviton\AnalyticsBundle\Command\AnalyticsCreateViewCommand
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "%graviton.mongodb.default.server.db%"
+            - "%analytics.services%"
+        tags:
+            -
+                name: console.command
+
     graviton.analytics.analytics_manager:
         class: Graviton\AnalyticsBundle\Manager\AnalyticsManager
         arguments:
