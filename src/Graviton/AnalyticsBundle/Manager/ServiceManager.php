@@ -1,6 +1,6 @@
 <?php
 /**
- * ParamConverter class for entry point to Analytics Bundle
+ * provides accessors to the analytics services
  */
 
 namespace Graviton\AnalyticsBundle\Manager;
@@ -8,6 +8,7 @@ namespace Graviton\AnalyticsBundle\Manager;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\DocumentBundle\Service\DateConverter;
+use Nette\Utils\Json;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Cache\CacheProvider;
@@ -40,6 +41,9 @@ class ServiceManager
     /** @var CacheProvider */
     protected $cacheProvider;
 
+    /** @var DateConverter */
+    protected $dateConverter;
+
     /** @var Router */
     protected $router;
 
@@ -52,10 +56,18 @@ class ServiceManager
     /** @var Filesystem */
     protected $fs;
 
+    /** @var JsonMapper */
+    private $jsonMapper;
+
     /**
      * @var string
      */
     private $skipCacheHeaderName = 'x-analytics-no-cache';
+
+	/**
+	 * @var array
+	 */
+    private $analyticsServices = [];
 
     /**
      * ServiceConverter constructor.
@@ -64,69 +76,26 @@ class ServiceManager
      * @param CacheProvider    $cacheProvider       Cache service
      * @param DateConverter    $dateConverter       date converter
      * @param Router           $router              To manage routing generation
-     * @param string           $definitionDirectory Where definitions are stored
      * @param int              $cacheTimeMetadata   How long to cache metadata
      */
     public function __construct(
         RequestStack $requestStack,
         AnalyticsManager $analyticsManager,
         CacheProvider $cacheProvider,
+        DateConverter $dateConverter,
         Router $router,
-        $definitionDirectory,
-        $cacheTimeMetadata
+        $cacheTimeMetadata,
+		$analyticsServices
     ) {
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
         $this->cacheProvider = $cacheProvider;
+        $this->dateConverter = $dateConverter;
         $this->router = $router;
-        $this->directory = $definitionDirectory;
         $this->cacheTimeMetadata = $cacheTimeMetadata;
         $this->fs = new Filesystem();
-    }
-
-    /**
-     * Scan base root directory for analytic definitions
-     * @return array
-     */
-    private function getDirectoryServices()
-    {
-        $services = $this->cacheProvider->fetch(self::CACHE_KEY_SERVICES);
-
-        if (is_array($services)) {
-            return $services;
-        }
-
-        $services = [];
-        if (strpos($this->directory, 'vendor/graviton/graviton')) {
-            $this->directory = str_replace('vendor/graviton/graviton/', '', $this->directory);
-        }
-        if (!is_dir($this->directory)) {
-            return $services;
-        }
-
-        $finder = Finder::create()
-            ->files()
-            ->in($this->directory)
-            ->path('/\/analytics\//i')
-            ->name('*.json')
-            ->notName('_*')
-            ->sortByName();
-
-        foreach ($finder as $file) {
-            $key = $file->getFilename();
-            $data = json_decode($file->getContents());
-            if (json_last_error()) {
-                throw new InvalidConfigurationException(
-                    sprintf('Analytics file: %s could not be loaded due to error: %s', $key, json_last_error_msg())
-                );
-            }
-
-            $services[$data->route] = $data;
-        }
-
-        $this->cacheProvider->save(self::CACHE_KEY_SERVICES, $services, $this->cacheTimeMetadata);
-
-        return $services;
+        $this->analyticsServices = $analyticsServices;
+        $this->jsonMapper = new JsonMapper();
     }
 
     /**
@@ -142,19 +111,19 @@ class ServiceManager
         }
 
         $services = [];
-        foreach ($this->getDirectoryServices() as $name => $service) {
+        foreach ($this->analyticsServices as $name => $service) {
             $services[] = [
                 '$ref' => $this->router->generate(
                     'graviton_analytics_service',
                     [
-                        'service' => $service->route
+                        'service' => $service['route']
                     ],
                     false
                 ),
                 'profile' => $this->router->generate(
                     'graviton_analytics_service_schema',
                     [
-                        'service' => $service->route
+                        'service' => $service['route']
                     ],
                     true
                 )
@@ -177,20 +146,13 @@ class ServiceManager
      */
     private function getAnalyticModel($name)
     {
-        $services = $this->getDirectoryServices();
-        // Locate the schema definition
-        if (!array_key_exists($name, $services)) {
+        if (!isset($this->analyticsServices[$name])) {
             throw new NotFoundHttpException(
                 sprintf('Analytic definition "%s" was not found', $name)
             );
         }
 
-        $mapper = new JsonMapper();
-
-        /** @var AnalyticModel $model */
-        $model = $mapper->map($services[$name], new AnalyticModel());
-
-        return $model;
+        return $this->jsonMapper->map($this->analyticsServices[$name], new AnalyticModel());
     }
 
     /**
@@ -270,30 +232,30 @@ class ServiceManager
         }
 
         foreach ($model->getParams() as $param) {
-            if (!isset($param->name)) {
+            if (!isset($param['name'])) {
                 throw new \LogicException("Incorrect spec (no name) of param in analytics route " . $model->getRoute());
             }
 
-            $paramValue = $this->requestStack->getCurrentRequest()->query->get($param->name, null);
+            $paramValue = $this->requestStack->getCurrentRequest()->query->get($param['name'], null);
 
             // default set?
-            if (is_null($paramValue) && isset($param->default)) {
-                $paramValue = $param->default;
+            if (is_null($paramValue) && isset($param['default'])) {
+                $paramValue = $param['default'];
             }
 
             // required missing?
-            if (is_null($paramValue) && (isset($param->required) && $param->required === true)) {
+            if (is_null($paramValue) && (isset($param['required']) && $param['required'] === true)) {
                 throw new AnalyticUsageException(
                     sprintf(
                         "Missing parameter '%s' in analytics route '%s'",
-                        $param->name,
+                        $param['name'],
                         $model->getRoute()
                     )
                 );
             }
 
-            if (!is_null($param->type) && !is_null($paramValue)) {
-                switch ($param->type) {
+            if (!is_null($param['type']) && !is_null($paramValue)) {
+                switch ($param['type']) {
                     case "integer":
                         $paramValue = intval($paramValue);
                         break;
@@ -303,6 +265,9 @@ class ServiceManager
                     case "array":
                         $paramValue = explode(',', $paramValue);
                         break;
+					case "date":
+						$paramValue = new \MongoDate(strtotime($paramValue));
+						break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));
                         break;
@@ -313,7 +278,7 @@ class ServiceManager
             }
 
             if (!is_null($paramValue)) {
-				$params[$param->name] = $paramValue;
+				$params[$param['name']] = $paramValue;
 			}
         }
 
