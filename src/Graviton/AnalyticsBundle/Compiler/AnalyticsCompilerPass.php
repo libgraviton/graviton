@@ -3,7 +3,7 @@
 
 namespace Graviton\AnalyticsBundle\Compiler;
 
-use Graviton\AnalyticsBundle\Model\AnalyticModel;
+use Graviton\Graviton;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,14 +20,13 @@ class AnalyticsCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
 		$services = [];
-		$scanDir = __DIR__.'/../../../../../../';
-
 		$finder = Finder::create()
 			->files()
-			->in($scanDir)
+			->in(Graviton::getBundleScanDir())
 			->path('/\/analytics\//i')
 			->name('*.json')
 			->notName('_*')
+            ->notName('*.pipeline.*')
 			->sortByName();
 
 		foreach ($finder as $file) {
