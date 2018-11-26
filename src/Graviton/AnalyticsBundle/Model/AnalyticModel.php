@@ -2,12 +2,11 @@
 /**
  * Schema Class for output data.
  */
+
 namespace Graviton\AnalyticsBundle\Model;
 
 use GravitonEvojaBasicBundle\Pipeline\CustomerleadsLead;
 use GravitonEvojaBasicBundle\Pipeline\CustomerleadsTask;
-use Rs\Json\Patch;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 /**
  * Schema
@@ -62,33 +61,37 @@ class AnalyticModel
         $this->database = $database;
     }
 
-	/**
-	 * get Class
-	 *
-	 * @return mixed Class
-	 */
-	public function getClass($pipelineName = null) {
-		if (!is_array($this->class)) {
-			return $this->class;
-		}
+    /**
+     * get Class
+     *
+     * @param string $pipelineName pipeline name
+     *
+     * @return mixed Class
+     */
+    public function getClass($pipelineName = null)
+    {
+        if (!is_array($this->class)) {
+            return $this->class;
+        }
 
-		if (isset($this->class[$pipelineName])) {
-			return $this->class[$pipelineName];
-		}
+        if (isset($this->class[$pipelineName])) {
+            return $this->class[$pipelineName];
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * set Class
-	 *
-	 * @param mixed $class class
-	 *
-	 * @return void
-	 */
-	public function setClass($class) {
-		$this->class = $class;
-	}
+    /**
+     * set Class
+     *
+     * @param mixed $class class
+     *
+     * @return void
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+    }
 
     /**
      * String collection
@@ -105,14 +108,14 @@ class AnalyticModel
 
         if ($pipelineName == null) {
             throw new \LogicException(
-                'If you specify multiple collections in your analytics definition, '.
+                'If you specify multiple collections in your analytics definition, ' .
                 'you must define multiple pipelines and vice versa and name them the same.'
             );
         }
 
         if (!isset($this->collection[$pipelineName])) {
             throw new \LogicException(
-                'No collection defined for pipeline '.$pipelineName.'. '.
+                'No collection defined for pipeline ' . $pipelineName . '. ' .
                 'If all pipelines share the same collection, define "collection" attribute as string.'
             );
         }
@@ -122,7 +125,9 @@ class AnalyticModel
 
     /**
      * Set value of collection
+     *
      * @param mixed $collection string name
+     *
      * @return void
      */
     public function setCollection($collection)
@@ -164,6 +169,7 @@ class AnalyticModel
 
     /**
      * Route path
+     *
      * @return mixed
      */
     public function getRoute()
@@ -173,7 +179,9 @@ class AnalyticModel
 
     /**
      * Set path
+     *
      * @param mixed $route string route
+     *
      * @return void
      */
     public function setRoute($route)
@@ -183,7 +191,9 @@ class AnalyticModel
 
     /**
      * Set mongodb query
+     *
      * @param mixed $aggregate object type for query data
+     *
      * @return void
      */
     public function setAggregate($aggregate)
@@ -193,18 +203,21 @@ class AnalyticModel
 
     /**
      * Schema for response
+     *
      * @return mixed
      */
     public function getSchema()
     {
         $schema = $this->schema;
-        $schema->{'x-params'} = $this->getParams();
+        $schema['x-params'] = $this->getParams();
         return $schema;
     }
 
     /**
      * Schema data
+     *
      * @param mixed $schema object schema
+     *
      * @return void
      */
     public function setSchema($schema)
@@ -214,6 +227,7 @@ class AnalyticModel
 
     /**
      * Type of response data
+     *
      * @return mixed
      */
     public function getType()
@@ -223,7 +237,9 @@ class AnalyticModel
 
     /**
      * Type (array or object)
+     *
      * @param mixed $type string view
+     *
      * @return void
      */
     public function setType($type)
@@ -233,6 +249,7 @@ class AnalyticModel
 
     /**
      * Time for this route data to be cached
+     *
      * @return mixed
      */
     public function getCacheTime()
@@ -242,7 +259,9 @@ class AnalyticModel
 
     /**
      * Time for this route data to be cached
+     *
      * @param integer $cacheTime seconds to be cached
+     *
      * @return void
      */
     public function setCacheTime($cacheTime)
@@ -259,26 +278,26 @@ class AnalyticModel
      */
     public function getAggregate($params = [])
     {
-    	if ($this->getMultipipeline()) {
-    		$pipelines = [];
-    		foreach ($this->class as $name => $className) {
-    			if (!class_exists($className)) {
-					throw new \LogicException("Analytics class '".$className."' does not exist!");
-				}
-    			$class = new $className();
-    			$class->setParams($params);
-    			$pipelines[$name] = $class->get();
-			}
-    		return $pipelines;
-		} else {
-    		$className = $this->class;
-			if (!class_exists($className)) {
-				throw new \LogicException("Analytics class '".$className."' does not exist!");
-			}
-			$class = new $className();
-			$class->setParams($params);
-			return $class->get();
-		}
+        if ($this->getMultipipeline()) {
+            $pipelines = [];
+            foreach ($this->class as $name => $className) {
+                if (!class_exists($className)) {
+                    throw new \LogicException("Analytics class '" . $className . "' does not exist!");
+                }
+                $class = new $className();
+                $class->setParams($params);
+                $pipelines[$name] = $class->get();
+            }
+            return $pipelines;
+        } else {
+            $className = $this->class;
+            if (!class_exists($className)) {
+                throw new \LogicException("Analytics class '" . $className . "' does not exist!");
+            }
+            $class = new $className();
+            $class->setParams($params);
+            return $class->get();
+        }
     }
 
     /**

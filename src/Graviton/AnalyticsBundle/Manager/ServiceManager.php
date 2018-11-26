@@ -5,18 +5,16 @@
 
 namespace Graviton\AnalyticsBundle\Manager;
 
+use Doctrine\Common\Cache\CacheProvider;
+use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\DocumentBundle\Service\DateConverter;
 use Nette\Utils\Json;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
-use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Routing\Router;
 
 /**
  * Service Request Converter and startup for Analytics
@@ -64,19 +62,21 @@ class ServiceManager
      */
     private $skipCacheHeaderName = 'x-analytics-no-cache';
 
-	/**
-	 * @var array
-	 */
+    /**
+     * @var array
+     */
     private $analyticsServices = [];
 
     /**
      * ServiceConverter constructor.
-     * @param RequestStack     $requestStack        Sf Request information service
-     * @param AnalyticsManager $analyticsManager    Db Manager and query control
-     * @param CacheProvider    $cacheProvider       Cache service
-     * @param DateConverter    $dateConverter       date converter
-     * @param Router           $router              To manage routing generation
-     * @param int              $cacheTimeMetadata   How long to cache metadata
+     *
+     * @param RequestStack     $requestStack      Sf Request information service
+     * @param AnalyticsManager $analyticsManager  Db Manager and query control
+     * @param CacheProvider    $cacheProvider     Cache service
+     * @param DateConverter    $dateConverter     date converter
+     * @param Router           $router            To manage routing generation
+     * @param int              $cacheTimeMetadata How long to cache metadata
+     * @param array            $analyticsServices the services
      */
     public function __construct(
         RequestStack $requestStack,
@@ -85,7 +85,7 @@ class ServiceManager
         DateConverter $dateConverter,
         Router $router,
         $cacheTimeMetadata,
-		$analyticsServices
+        $analyticsServices
     ) {
         $this->requestStack = $requestStack;
         $this->analyticsManager = $analyticsManager;
@@ -141,6 +141,7 @@ class ServiceManager
      * Get service definition
      *
      * @param string $name Route name for service
+     *
      * @throws NotFoundHttpException
      * @return AnalyticModel
      */
@@ -162,7 +163,8 @@ class ServiceManager
      */
     public function getData()
     {
-        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()
+                                           ->get('service');
 
         // Locate the model definition
         $model = $this->getAnalyticModel($serviceRoute);
@@ -197,8 +199,8 @@ class ServiceManager
     private function getCacheKey($schema)
     {
         return self::CACHE_KEY_SERVICES_PREFIX
-            .$schema->getRoute()
-            .sha1(serialize($this->requestStack->getCurrentRequest()->query->all()));
+            . $schema->getRoute()
+            . sha1(serialize($this->requestStack->getCurrentRequest()->query->all()));
     }
 
     /**
@@ -208,7 +210,8 @@ class ServiceManager
      */
     public function getSchema()
     {
-        $serviceRoute = $this->requestStack->getCurrentRequest()->get('service');
+        $serviceRoute = $this->requestStack->getCurrentRequest()
+                                           ->get('service');
 
         // Locate the schema definition
         $model = $this->getAnalyticModel($serviceRoute);
@@ -265,9 +268,12 @@ class ServiceManager
                     case "array":
                         $paramValue = explode(',', $paramValue);
                         break;
-					case "date":
-						$paramValue = new \MongoDate(strtotime($paramValue));
-						break;
+                    case "date":
+                        $paramValue = new \MongoDate(strtotime($paramValue));
+                        break;
+                    case "regex":
+                        $paramValue = new \MongoRegex(sprintf('/%s/i', preg_quote($paramValue)));
+                        break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));
                         break;
@@ -278,8 +284,8 @@ class ServiceManager
             }
 
             if (!is_null($paramValue)) {
-				$params[$param['name']] = $paramValue;
-			}
+                $params[$param['name']] = $paramValue;
+            }
         }
 
         return $params;
