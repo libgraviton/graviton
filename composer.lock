@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d94df27917a4d08c97579f45ddcd6ee",
+    "content-hash": "76725f302788aa1711e5d062ab66d548",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1291,6 +1291,42 @@
                 "rest"
             ],
             "time": "2016-10-17T18:31:11+00:00"
+        },
+        {
+            "name": "graviton/analytics-base",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libgraviton/analytics-base.git",
+                "reference": "d5db6df453439a2c9bb268ef9d3bbd31f861ce3b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libgraviton/analytics-base/zipball/d5db6df453439a2c9bb268ef9d3bbd31f861ce3b",
+                "reference": "d5db6df453439a2c9bb268ef9d3bbd31f861ce3b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Graviton\\AnalyticsBase\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "List of contributors",
+                    "homepage": "https://github.com/libgraviton/analytics-mongoshell-converter/graphs/contributors"
+                }
+            ],
+            "description": "base classes for graviton analytics",
+            "time": "2018-11-26T09:24:40+00:00"
         },
         {
             "name": "graviton/json-schema",
