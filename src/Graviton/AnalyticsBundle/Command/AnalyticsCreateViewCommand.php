@@ -79,7 +79,10 @@ class AnalyticsCreateViewCommand extends Command
         $db = $mongoClient->selectDatabase($this->databaseName);
 
         foreach ($this->services as $service) {
-            if (!isset($service['class'])) {
+            if (!isset($service['class']) ||
+                !isset($service['createView']) &&
+                (isset($service['createView']) && $service['createView'] !== true)
+            ) {
                 continue;
             }
 
@@ -107,6 +110,9 @@ class AnalyticsCreateViewCommand extends Command
 
                     $classReflect = new \ReflectionClass($class);
                     $viewName = 'AnalyticsView' . $classReflect->getShortName();
+
+                    // drop the view..
+                    $db->dropCollection($viewName);
 
                     $db->command(
                         [
