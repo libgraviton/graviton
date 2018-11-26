@@ -10,7 +10,8 @@ use Graviton\AnalyticsBundle\Exception\AnalyticUsageException;
 use Graviton\AnalyticsBundle\Helper\JsonMapper;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\DocumentBundle\Service\DateConverter;
-use Nette\Utils\Json;
+use MongoDB\BSON\Regex;
+use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -269,10 +270,10 @@ class ServiceManager
                         $paramValue = explode(',', $paramValue);
                         break;
                     case "date":
-                        $paramValue = new \MongoDate(strtotime($paramValue));
+                        $paramValue = new UTCDateTime($this->dateConverter->getDateTimeFromString($paramValue));
                         break;
                     case "regex":
-                        $paramValue = new \MongoRegex(sprintf('/%s/i', preg_quote($paramValue)));
+                        $paramValue = new Regex($paramValue, 'i');
                         break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));
