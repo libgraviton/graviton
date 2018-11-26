@@ -39,12 +39,12 @@ class AnalyticModel
      */
     public function getDatabase($pipelineName = null)
     {
-        if (!is_object($this->database)) {
+        if (!is_array($this->database)) {
             return $this->database;
         }
 
-        if (isset($this->database->$pipelineName)) {
-            return $this->database->$pipelineName;
+        if (isset($this->database[$pipelineName])) {
+            return $this->database[$pipelineName];
         }
 
         return null;
@@ -68,12 +68,12 @@ class AnalyticModel
 	 * @return mixed Class
 	 */
 	public function getClass($pipelineName = null) {
-		if (!is_object($this->class)) {
+		if (!is_array($this->class)) {
 			return $this->class;
 		}
 
-		if (isset($this->class->$pipelineName)) {
-			return $this->class->$pipelineName;
+		if (isset($this->class[$pipelineName])) {
+			return $this->class[$pipelineName];
 		}
 
 		return null;
@@ -99,7 +99,7 @@ class AnalyticModel
      */
     public function getCollection($pipelineName = null)
     {
-        if (!is_object($this->collection)) {
+        if (!is_array($this->collection)) {
             return $this->collection;
         }
 
@@ -110,14 +110,14 @@ class AnalyticModel
             );
         }
 
-        if (!property_exists($this->collection, $pipelineName)) {
+        if (!isset($this->collection[$pipelineName])) {
             throw new \LogicException(
                 'No collection defined for pipeline '.$pipelineName.'. '.
                 'If all pipelines share the same collection, define "collection" attribute as string.'
             );
         }
 
-        return $this->collection->$pipelineName;
+        return $this->collection[$pipelineName];
     }
 
     /**
@@ -159,7 +159,7 @@ class AnalyticModel
      */
     public function getMultipipeline()
     {
-        return (is_object($this->collection));
+        return (is_array($this->collection));
     }
 
     /**

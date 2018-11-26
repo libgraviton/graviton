@@ -4,7 +4,6 @@
  */
 namespace Graviton\AnalyticsBundle\Helper;
 
-
 use Psr\Log\InvalidArgumentException;
 
 /**
@@ -26,19 +25,6 @@ class JsonMapper
      */
     public function map($json, $object)
     {
-        if (!is_object($json)) {
-            throw new InvalidArgumentException(
-                'JsonMapper::map() requires first argument to be an object'
-                . ', ' . gettype($json) . ' given.'
-            );
-        }
-        if (!is_object($object)) {
-            throw new InvalidArgumentException(
-                'JsonMapper::map() requires second argument to be an object'
-                . ', ' . gettype($object) . ' given.'
-            );
-        }
-
         foreach ($json as $key => $jvalue) {
             $key = $this->getSafeName($key);
             $setter = 'set' . $this->getCamelCaseName($key);
@@ -81,4 +67,3 @@ class JsonMapper
         return $name;
     }
 }
-?>
