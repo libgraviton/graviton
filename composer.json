@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-0": {"": "src/", "Graviton": "src/"},
-        "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
+        "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
     },
     "require": {
         "php": ">=7.1.0",
