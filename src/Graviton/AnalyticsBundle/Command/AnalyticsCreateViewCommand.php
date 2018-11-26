@@ -80,7 +80,7 @@ class AnalyticsCreateViewCommand extends Command
 
         foreach ($this->services as $service) {
             if (!isset($service['class']) ||
-                !isset($service['createView']) &&
+                !isset($service['createView']) ||
                 (isset($service['createView']) && $service['createView'] !== true)
             ) {
                 continue;
