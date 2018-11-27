@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d8452590bbb90b555300d746ff44098",
+    "content-hash": "e11d35064403bf5d3edff59af5d93e98",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1299,16 +1299,16 @@
         },
         {
             "name": "graviton/analytics-base",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/analytics-base.git",
-                "reference": "d5db6df453439a2c9bb268ef9d3bbd31f861ce3b"
+                "reference": "078f1a49b558f7d0da6d909be7f560610bcb5ea7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/analytics-base/zipball/d5db6df453439a2c9bb268ef9d3bbd31f861ce3b",
-                "reference": "d5db6df453439a2c9bb268ef9d3bbd31f861ce3b",
+                "url": "https://api.github.com/repos/libgraviton/analytics-base/zipball/078f1a49b558f7d0da6d909be7f560610bcb5ea7",
+                "reference": "078f1a49b558f7d0da6d909be7f560610bcb5ea7",
                 "shasum": ""
             },
             "require": {
@@ -1331,7 +1331,7 @@
                 }
             ],
             "description": "base classes for graviton analytics",
-            "time": "2018-11-26T09:24:40+00:00"
+            "time": "2018-11-27T14:02:38+00:00"
         },
         {
             "name": "graviton/json-schema",
