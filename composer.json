@@ -48,7 +48,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
 
         "sentry/sentry-symfony": "^2.0",
-        "solarium/solarium": "^4.1",
+        "solarium/solarium": "^4.2",
         "graviton/analytics-base": "^0.2.0"
     },
     "require-dev": {
