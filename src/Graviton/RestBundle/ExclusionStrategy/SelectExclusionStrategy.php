@@ -106,7 +106,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
      * @param Context       $navigatorContext the context for serialization
      * @return boolean
      */
-    public function shouldSkipClass(ClassMetadata $metadata, Context $navigatorContext)
+    public function shouldSkipClass(ClassMetadata $metadata, Context $navigatorContext) : bool
     {
         return false;
     }
@@ -118,7 +118,7 @@ class SelectExclusionStrategy implements ExclusionStrategyInterface
      * @param Context          $context  the context for serialization
      * @return boolean
      */
-    public function shouldSkipProperty(PropertyMetadata $property, Context $context)
+    public function shouldSkipProperty(PropertyMetadata $property, Context $context) : bool
     {
         // nothing selected, default serialization
         if (! $this->isSelect) {
