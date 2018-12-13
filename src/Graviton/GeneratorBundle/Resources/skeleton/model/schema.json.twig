@@ -8,6 +8,12 @@
   "description": "@todo replace me",
 {% endif %}
 
+{% if json is defined %}
+  "x-variations": {{ json.getVariations()|json_encode() }},
+{% else %}
+  "x-variations": [],
+{% endif %}
+
   "x-versioning": {{ isVersioning|json_encode() }},
 
 {% if noIdField is not defined %}
@@ -65,6 +71,10 @@
 
 {% if field.constraints is defined and field.constraints != null %}
       "x-constraints": {{ field.constraints|json_encode() }},
+{% endif %}
+
+{% if field.onVariation is defined %}
+    "x-onvariation": {{ field.onVariation|json_encode() }},
 {% endif %}
 
 {% if field.description is defined and field.description != '' %}
