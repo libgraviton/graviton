@@ -295,6 +295,31 @@ class SchemaModel implements ContainerAwareInterface
     }
 
     /**
+     * Get defined onVariation on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getOnVariaton($field)
+    {
+        return $this->getSchemaField($field, 'x-onvariation', null);
+    }
+
+    /**
+     * get variations
+     *
+     * @return array variations
+     */
+    public function getVariations()
+    {
+        if (isset($this->schema->{'x-variations'})) {
+            return $this->schema->{'x-variations'};
+        }
+        return [];
+    }
+
+    /**
      * Tells us if in this model, the ID can be given on a POST request or not (in the payload).
      * This basically depends on if the "id" property is given in the JSON definition or not.
      *
