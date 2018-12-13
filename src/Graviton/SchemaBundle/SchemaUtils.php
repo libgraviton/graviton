@@ -219,6 +219,7 @@ class SchemaUtils
         $schema->setRecordOriginModifiable($model->getRecordOriginModifiable());
         $schema->setIsVersioning($model->isVersioning());
         $schema->setType('object');
+        $schema->setVariations($model->getVariations());
 
         // grab schema info from model
         $repo = $model->getRepository();
@@ -278,6 +279,7 @@ class SchemaUtils
             $property->setType($meta->getTypeOfField($field));
             $property->setGroups($model->getGroupsOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
+            $property->setOnVariation($model->getOnVariaton($field));
 
             // we only want to render if it's true
             if ($model->getRecordOriginExceptionOfField($field) === true) {
