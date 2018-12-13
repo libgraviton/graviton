@@ -123,6 +123,7 @@ services:
           - "%graviton.document.type.extref.mapping%"
           - "%graviton.document.eventmap%"
           - "%graviton.document.field.names%"
+          - "%graviton.rest.schema_variation.enable%"
           - "%locale%"
           - "@graviton.schema.constraint.builder"
           - "@=service(parameter('graviton.cache.provider.service_id'))"

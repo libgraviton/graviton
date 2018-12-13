@@ -71,6 +71,11 @@ class SchemaUtils
     private $documentFieldNames;
 
     /**
+     * @var boolean
+     */
+    private $schemaVariationEnabled;
+
+    /**
      * @var string
      */
     private $defaultLocale;
@@ -111,6 +116,7 @@ class SchemaUtils
      * @param array                              $extrefServiceMapping      Extref service mapping
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
+     * @param boolean                            $schemaVariationEnabled    if schema variations should be enabled
      * @param string                             $defaultLocale             Default Language
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      * @param CacheProvider                      $cache                     Doctrine cache provider
@@ -125,6 +131,7 @@ class SchemaUtils
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
+        $schemaVariationEnabled,
         $defaultLocale,
         ConstraintBuilder $constraintBuilder,
         CacheProvider $cache,
@@ -138,6 +145,7 @@ class SchemaUtils
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
+        $this->schemaVariationEnabled = (bool) $schemaVariationEnabled;
         $this->defaultLocale = $defaultLocale;
         $this->constraintBuilder = $constraintBuilder;
         $this->cache = $cache;
@@ -182,7 +190,10 @@ class SchemaUtils
         $userData = null
     ) {
         $variationName = null;
-        if ($userData instanceof \stdClass && !empty($model->getVariations())) {
+        if ($this->schemaVariationEnabled === true &&
+            $userData instanceof \stdClass &&
+            !empty($model->getVariations())
+        ) {
             $variationName = $this->getSchemaVariationName($userData, $model->getVariations());
         }
 
