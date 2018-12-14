@@ -119,7 +119,8 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
             'searchable' => 1,
             'recordOriginException' => false,
             'hidden' => false,
-            'restrictions' => []
+            'restrictions' => [],
+            'onVariation' => null
         );
 
         $this->assertEquals($def, $field->getDefAsArray());

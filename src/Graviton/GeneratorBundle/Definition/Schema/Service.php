@@ -53,6 +53,10 @@ class Service
      * @var string
      */
     private $collectionName;
+    /**
+     * @var array
+     */
+    private $variations = [];
 
     /**
      * @return string
@@ -233,5 +237,27 @@ class Service
     {
         $this->collectionName = $collectionName;
         return $this;
+    }
+
+    /**
+     * get Variations
+     *
+     * @return array Variations
+     */
+    public function getVariations()
+    {
+        return $this->variations;
+    }
+
+    /**
+     * set Variations
+     *
+     * @param array $variations variations
+     *
+     * @return void
+     */
+    public function setVariations($variations)
+    {
+        $this->variations = $variations;
     }
 }

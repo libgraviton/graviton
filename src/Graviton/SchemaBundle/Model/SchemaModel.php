@@ -189,11 +189,43 @@ class SchemaModel implements ContainerAwareInterface
     /**
      * get required fields for this object
      *
+     * @param string $variationName a variation that can alter which fields are required
+     *
      * @return string[]
      */
-    public function getRequiredFields()
+    public function getRequiredFields($variationName = null)
     {
-        return $this->schema->required;
+        if (is_null($variationName)) {
+            return $this->schema->required;
+        }
+
+        /* compose required fields based on variation */
+        $requiredFields = $this->getRequiredFields();
+        foreach ($this->schema->properties as $fieldName => $fieldAttributes) {
+            $onVariation = $this->getOnVariaton($fieldName);
+
+            if (is_object($onVariation) && isset($onVariation->{$variationName}->required)) {
+                $thisRequired = $onVariation->{$variationName}->required;
+
+                if ($thisRequired === true) {
+                    $requiredFields[] = $fieldName;
+                }
+
+                if ($thisRequired === false) {
+                    // see if its set
+                    $fieldIndex = array_search($fieldName, $requiredFields);
+                    if ($fieldName !== false) {
+                        unset($requiredFields[$fieldIndex]);
+                    }
+                }
+            }
+        }
+
+        return array_values(
+            array_unique(
+                $requiredFields
+            )
+        );
     }
 
     /**
@@ -292,6 +324,31 @@ class SchemaModel implements ContainerAwareInterface
     public function getConstraints($field)
     {
         return $this->getSchemaField($field, 'x-constraints', false);
+    }
+
+    /**
+     * Get defined onVariation on this field (if any)
+     *
+     * @param string $field field that we get constraints spec from
+     *
+     * @return object
+     */
+    public function getOnVariaton($field)
+    {
+        return $this->getSchemaField($field, 'x-onvariation', null);
+    }
+
+    /**
+     * get variations
+     *
+     * @return array variations
+     */
+    public function getVariations()
+    {
+        if (isset($this->schema->{'x-variations'})) {
+            return $this->schema->{'x-variations'};
+        }
+        return [];
     }
 
     /**

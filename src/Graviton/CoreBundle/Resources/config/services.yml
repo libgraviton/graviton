@@ -89,6 +89,12 @@ services:
         class: Graviton\CoreBundle\Controller\FaviconController
         public: true
 
+    graviton.core.service.jmespath:
+        class: JmesPath\CompilerRuntime
+        public: true
+        arguments:
+          - "%graviton.jmespath.cache_dir%"
+
     graviton.core.listener.json_exception:
         class: "%graviton.core.listener.jsonexceptionlistener.class%"
         calls:

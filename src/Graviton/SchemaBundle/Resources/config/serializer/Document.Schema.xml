@@ -21,6 +21,12 @@
     <property name="groups" serialized-name="x-groups" accessor-getter="getGroups" accessor-setter="setGroups" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="variations" serialized-name="x-variations" accessor-getter="getVariations" accessor-setter="setVariations" expose="true">
+      <type><![CDATA[array]]></type>
+    </property>
+    <property name="onVariation" serialized-name="x-onVariation" accessor-getter="getOnVariation" accessor-setter="setOnVariation" expose="true">
+      <type><![CDATA[array<string,array>]]></type>
+    </property>
     <property name="constraints" serialized-name="x-constraints" accessor-getter="getConstraints" accessor-setter="setConstraints" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
