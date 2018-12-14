@@ -67,8 +67,6 @@ class ShowcaseControllerTest extends RestTestCase
                 'uri'       => 'protocol:value',
             ],
 
-            'nestedApps'            => [],
-            'unstructuredObject'    => (object) [],
             'choices'               => "<>"
         ];
 
