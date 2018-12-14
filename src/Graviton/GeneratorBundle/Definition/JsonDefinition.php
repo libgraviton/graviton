@@ -446,6 +446,20 @@ class JsonDefinition
     }
 
     /**
+     * Provides the variations attribute from the service section
+     *
+     * @return array
+     */
+    public function getVariations()
+    {
+        if ($this->def->getService() === null) {
+            return [];
+        }
+
+        return $this->def->getService()->getVariations();
+    }
+
+    /**
      * gets information about solr
      *
      * @return array|Schema\Solr

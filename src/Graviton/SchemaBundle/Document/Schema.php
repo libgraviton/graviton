@@ -154,6 +154,16 @@ class Schema
     protected $constraints;
 
     /**
+     * @var array
+     */
+    protected $variations;
+
+    /**
+     * @var array
+     */
+    protected $onVariation;
+
+    /**
      * @var array<string>
      */
     protected $textIndexes;
@@ -931,6 +941,50 @@ class Schema
             return null;
         }
         return $this->searchable;
+    }
+
+    /**
+     * get Variations
+     *
+     * @return array Variations
+     */
+    public function getVariations()
+    {
+        return $this->variations;
+    }
+
+    /**
+     * set Variations
+     *
+     * @param array $variations variations
+     *
+     * @return void
+     */
+    public function setVariations($variations)
+    {
+        $this->variations = $variations;
+    }
+
+    /**
+     * get OnVariation
+     *
+     * @return array OnVariation
+     */
+    public function getOnVariation()
+    {
+        return $this->onVariation;
+    }
+
+    /**
+     * set OnVariation
+     *
+     * @param array $onVariation onVariation
+     *
+     * @return void
+     */
+    public function setOnVariation($onVariation)
+    {
+        $this->onVariation = $onVariation;
     }
 
     /**

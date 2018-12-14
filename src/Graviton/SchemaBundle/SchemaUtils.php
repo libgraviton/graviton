@@ -14,6 +14,7 @@ use Graviton\SchemaBundle\Document\Schema;
 use Graviton\SchemaBundle\Document\SchemaAdditionalProperties;
 use Graviton\SchemaBundle\Document\SchemaType;
 use Graviton\SchemaBundle\Service\RepositoryFactory;
+use JmesPath\CompilerRuntime;
 use JMS\Serializer\Serializer;
 use Metadata\MetadataFactoryInterface as SerializerMetadataFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -70,6 +71,11 @@ class SchemaUtils
     private $documentFieldNames;
 
     /**
+     * @var boolean
+     */
+    private $schemaVariationEnabled;
+
+    /**
      * @var string
      */
     private $defaultLocale;
@@ -95,6 +101,11 @@ class SchemaUtils
     private $constraintBuilder;
 
     /**
+     * @var CompilerRuntime
+     */
+    private $jmesRuntime;
+
+    /**
      * Constructor
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
@@ -105,9 +116,11 @@ class SchemaUtils
      * @param array                              $extrefServiceMapping      Extref service mapping
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
+     * @param boolean                            $schemaVariationEnabled    if schema variations should be enabled
      * @param string                             $defaultLocale             Default Language
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      * @param CacheProvider                      $cache                     Doctrine cache provider
+     * @param CompilerRuntime                    $jmesRuntime               jmespath.php Runtime
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -118,9 +131,11 @@ class SchemaUtils
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
+        $schemaVariationEnabled,
         $defaultLocale,
         ConstraintBuilder $constraintBuilder,
-        CacheProvider $cache
+        CacheProvider $cache,
+        CompilerRuntime $jmesRuntime
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
@@ -130,9 +145,11 @@ class SchemaUtils
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
+        $this->schemaVariationEnabled = (bool) $schemaVariationEnabled;
         $this->defaultLocale = $defaultLocale;
         $this->constraintBuilder = $constraintBuilder;
         $this->cache = $cache;
+        $this->jmesRuntime = $jmesRuntime;
     }
 
     /**
@@ -160,6 +177,7 @@ class SchemaUtils
      * @param boolean       $online     if we are online and have access to mongodb during this build
      * @param boolean       $internal   if true, we generate the schema for internal validation use
      * @param boolean       $serialized if true, it will serialize the Schema object and return a \stdClass instead
+     * @param \stdClass     $userData   if given, the userData will be checked for a variation match
      *
      * @return Schema|\stdClass Either a Schema instance or serialized as \stdClass if $serialized is true
      */
@@ -168,8 +186,16 @@ class SchemaUtils
         DocumentModel $model,
         $online = true,
         $internal = false,
-        $serialized = false
+        $serialized = false,
+        $userData = null
     ) {
+        $variationName = null;
+        if ($this->schemaVariationEnabled === true &&
+            $userData instanceof \stdClass &&
+            !empty($model->getVariations())
+        ) {
+            $variationName = $this->getSchemaVariationName($userData, $model->getVariations());
+        }
 
         $languages = [];
         if ($online) {
@@ -187,11 +213,12 @@ class SchemaUtils
         }
 
         $cacheKey = sprintf(
-            'schema.%s.%s.%s.%s.%s',
+            'schema.%s.%s.%s.%s.%s.%s',
             $model->getEntityClass(),
             (string) $online,
             (string) $internal,
             (string) $serialized,
+            (string) $variationName,
             (string) implode('-', $languages)
         );
 
@@ -219,6 +246,7 @@ class SchemaUtils
         $schema->setRecordOriginModifiable($model->getRecordOriginModifiable());
         $schema->setIsVersioning($model->isVersioning());
         $schema->setType('object');
+        $schema->setVariations($model->getVariations());
 
         // grab schema info from model
         $repo = $model->getRepository();
@@ -243,7 +271,7 @@ class SchemaUtils
         }
 
         // don't describe hidden fields
-        $requiredFields = $model->getRequiredFields();
+        $requiredFields = $model->getRequiredFields($variationName);
         if (empty($requiredFields) || !is_array($requiredFields)) {
             $requiredFields = [];
         }
@@ -278,6 +306,7 @@ class SchemaUtils
             $property->setType($meta->getTypeOfField($field));
             $property->setGroups($model->getGroupsOfField($field));
             $property->setReadOnly($model->getReadOnlyOfField($field));
+            $property->setOnVariation($model->getOnVariaton($field));
 
             // we only want to render if it's true
             if ($model->getRecordOriginExceptionOfField($field) === true) {
@@ -439,6 +468,34 @@ class SchemaUtils
         }
 
         return $schema;
+    }
+
+    /**
+     * gets the name of the variation to apply based on userdata and the service definition
+     *
+     * @param \stdClass $userData   user data
+     * @param \stdClass $variations variations as defined in schema
+     *
+     * @return string|null the variation name or null if none
+     */
+    private function getSchemaVariationName($userData, $variations)
+    {
+        foreach ($variations as $variationName => $expressions) {
+            $results = array_map(
+                function ($expression) use ($userData) {
+                    return $this->jmesRuntime->__invoke($expression, $userData);
+                },
+                $expressions
+            );
+
+            $results = array_unique($results);
+
+            if (count($results) == 1 && $results[0] === true) {
+                return $variationName;
+            }
+        }
+
+        return null;
     }
 
     /**

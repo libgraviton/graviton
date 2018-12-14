@@ -31,5 +31,8 @@
         <property name="collectionName"
                   type="string"
                   serialized-name="collectionName"/>
+        <property name="variations"
+                  type="array&lt;string,array&lt;string&gt;&gt;"
+                  serialized-name="variations"/>
     </class>
 </serializer>

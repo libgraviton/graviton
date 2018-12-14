@@ -13,6 +13,8 @@ parameters:
     graviton.rest.serializer.groups: {  }
     graviton.rest.serializer.allow_group_override_header: true
     graviton.rest.serializer.override_header_name: x-groups
+    graviton.rest.schema_variation.enable: true
+
     graviton.worker.relativeUrl: "https://backendalias:9443/"
     graviton.translator.default.locale: en
 
