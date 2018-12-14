@@ -84,6 +84,11 @@ class Field
     private $xDynamicKey;
 
     /**
+     * @var array
+     */
+    private $onVariation;
+
+    /**
      * @return string
      */
     public function getName()
@@ -404,5 +409,27 @@ class Field
     public function setSearchable($searchable)
     {
         $this->searchable = (int) $searchable;
+    }
+
+    /**
+     * get OnVariation
+     *
+     * @return array OnVariation
+     */
+    public function getOnVariation()
+    {
+        return $this->onVariation;
+    }
+
+    /**
+     * set OnVariation
+     *
+     * @param array $onVariation onVariation
+     *
+     * @return void
+     */
+    public function setOnVariation($onVariation)
+    {
+        $this->onVariation = $onVariation;
     }
 }

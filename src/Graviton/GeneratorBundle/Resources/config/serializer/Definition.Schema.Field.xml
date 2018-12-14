@@ -55,5 +55,8 @@
         <property name="xDynamicKey"
                   type="Graviton\GeneratorBundle\Definition\Schema\XDynamicKey"
                   serialized-name="x-dynamic-key"/>
+        <property name="onVariation"
+                  type="array&lt;string,array&gt;"
+                  serialized-name="onVariation"/>
     </class>
 </serializer>
