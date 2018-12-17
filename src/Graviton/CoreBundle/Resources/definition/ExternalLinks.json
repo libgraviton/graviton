@@ -36,9 +36,9 @@
         ]
       },
       {
-        "name": "urls",
+        "name": "translatedUrl",
         "type": "varchar",
-        "title": "Name",
+        "title": "TranslatedUrl",
         "description": "An object containing the translated links",
         "translatable": true
       },
