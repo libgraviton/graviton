@@ -225,30 +225,30 @@ class SolrQuery
 
         $i = 0;
         $hasPreviousOperator = false;
-        $fullSearch = '';
+        $fullSearchElements = [];
 
         foreach (explode(' ', $node->getSearchQuery()) as $term) {
             $i++;
 
             // is this an operator?
             if (array_search($term, $this->queryOperators) !== false) {
-                $fullSearch .= ' ' . $term . ' ';
+                $fullSearchElements[] = $term;
                 $hasPreviousOperator = true;
                 continue;
             }
 
             $singleTerm = $this->getSingleTerm($term);
 
-            if ($i > 1 && $hasPreviousOperator == false) {
-                $fullSearch .= ' '.$glue.' ';
+            if ($i > 1 && $hasPreviousOperator == false && !empty($glue)) {
+                $fullSearchElements[] = $glue;
             } else {
                 $hasPreviousOperator = false;
             }
 
-            $fullSearch .= $singleTerm;
+            $fullSearchElements[] = $singleTerm;
         }
 
-        return $fullSearch;
+        return implode(' ', $fullSearchElements);
     }
 
     /**
