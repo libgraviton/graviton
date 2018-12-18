@@ -203,6 +203,26 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
                 '99 1.123.456.78',
                 '"99 1.123.456.78"',
                 true
+            ],
+            'own-operator-2-NOT' => [
+                'peter AND year:>40 AND month:<10 NOT segment:15 NOT segment:90',
+                '(peter OR peter~) AND year:[40 TO *] AND month:[* TO 10] NOT segment:"15" NOT segment:"90"',
+                true
+            ],
+            'own-operator-1-NOT' => [
+                'peter NOT segment:15',
+                '(peter OR peter~) NOT segment:"15"',
+                true
+            ],
+            'own-operator-1-NOT-BOOL' => [
+                'peter ! segment:15',
+                '(peter OR peter~) ! segment:"15"',
+                true
+            ],
+            'own-operator-1-OR-BOOL' => [
+                'peter || segment:15',
+                '(peter OR peter~) || segment:"15"',
+                true
             ]
         ];
     }
