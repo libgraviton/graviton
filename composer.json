@@ -16,7 +16,7 @@
     "require": {
         "php": ">=7.1.0",
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.4.0",
+        "ext-mongodb": "^1.5.0",
 
         "alcaeus/mongo-php-adapter": "^1.1.5",
         "jean85/pretty-package-versions": "^1.1",
@@ -31,7 +31,7 @@
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "^1.0.0",
 
-        "jms/serializer-bundle": "^3.0.0",
+        "jms/serializer-bundle": "^3.1.0",
 
         "doctrine/mongodb-odm-bundle": "^3.4.0",
         "doctrine/doctrine-cache-bundle": "^1.3",
