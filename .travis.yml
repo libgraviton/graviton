@@ -18,7 +18,7 @@ before_script:
   # disable xdebug for integration tests
   - >
       if [ "$PHPUNIT_SUITE" != "unit" ]; then
-          #phpenv config-rm xdebug.ini
+          phpenv config-rm xdebug.ini
       fi
   # spin up local mongodb with the version we need
   - >
@@ -33,7 +33,6 @@ before_script:
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
-  - php -i
   # install our deps
   - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
 php:
