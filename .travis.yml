@@ -8,6 +8,8 @@ services:
   - rabbitmq
 before_script:
   - free -m
+  - php -m
+  - php -i
   # disable mongodb connectivity for non integration testing
   - >
       if [ "$PHPUNIT_SUITE" != "integration" ]; then
@@ -27,14 +29,14 @@ before_script:
   # install the module
   - pecl channel-update pecl.php.net
   - sleep 5
-  - printf "\n" | pecl install -f mongodb-1.4.4
+  - printf "\n" | pecl install -f mongodb-1.5.3
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
-  - php -i
   # install our deps
   - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
 php:
+  - 7.3
   - 7.2
   - 7.1
 env:
@@ -47,6 +49,10 @@ matrix:
     # skip composer checks on all others than 7.2
     - php: 7.1
       env: COMPOSER_CHECK=true PHPUNIT=false
+    - php: 7.3
+      env: COMPOSER_CHECK=true PHPUNIT=false
+  allow_failures:
+    - php: 7.3
 script:
   - >
       if [ "$PHPUNIT" = "true" ]; then

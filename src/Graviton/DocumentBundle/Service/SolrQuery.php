@@ -74,6 +74,27 @@ class SolrQuery
     ];
 
     /**
+     * pattern to match a solr field query
+     *
+     * @var string
+     */
+    private $fieldQueryPattern = '/(.{2,}):(.+)/i';
+
+    /**
+     * stuff that does not get andified/quoted/whatever
+     *
+     * @var array
+     */
+    private $queryOperators = [
+        'AND',
+        'NOT',
+        'OR',
+        '&&',
+        '||',
+        '!'
+    ];
+
+    /**
      * Constructor
      *
      * @param string       $solrUrl                url to solr
@@ -187,7 +208,7 @@ class SolrQuery
      */
     private function getSearchTerm(SearchNode $node)
     {
-        $fullTerm = implode(' ', $node->getSearchTerms());
+        $fullTerm = $node->getSearchQuery();
 
         foreach ($this->fullTermPatterns as $pattern) {
             if (preg_match($pattern, $fullTerm, $matches) === 1) {
@@ -196,16 +217,38 @@ class SolrQuery
         }
 
         if ($this->andifyTerms) {
-            $glue = ' AND ';
+            $glue = 'AND';
         } else {
-            $glue = ' ';
+            $glue = '';
         }
 
-        // normal single term handling
-        return implode(
-            $glue,
-            array_map([$this, 'getSingleTerm'], $node->getSearchTerms())
-        );
+
+        $i = 0;
+        $hasPreviousOperator = false;
+        $fullSearchElements = [];
+
+        foreach (explode(' ', $node->getSearchQuery()) as $term) {
+            $i++;
+
+            // is this an operator?
+            if (array_search($term, $this->queryOperators) !== false) {
+                $fullSearchElements[] = $term;
+                $hasPreviousOperator = true;
+                continue;
+            }
+
+            $singleTerm = $this->getSingleTerm($term);
+
+            if ($i > 1 && $hasPreviousOperator == false && !empty($glue)) {
+                $fullSearchElements[] = $glue;
+            } else {
+                $hasPreviousOperator = false;
+            }
+
+            $fullSearchElements[] = $singleTerm;
+        }
+
+        return implode(' ', $fullSearchElements);
     }
 
     /**
@@ -242,6 +285,11 @@ class SolrQuery
             return '"'.$term.'"';
         }
 
+        // is it a solr field query (like id:333)?
+        if (preg_match($this->fieldQueryPattern, $term) === 1) {
+            return $this->parseSolrFieldQuery($term);
+        }
+
         // strings shorter then 5 chars (like hans) we wildcard, all others we make fuzzy
         if (strlen($term) >= $this->solrFuzzyBridge) {
             return $this->doAndNotPrefixSingleTerm($term, '~');
@@ -252,6 +300,32 @@ class SolrQuery
         }
 
         return $term;
+    }
+
+    /**
+     * parses the special solr field syntax fieldName:fieldValue, converts int ranges
+     *
+     * @param string $fieldQuery the query
+     *
+     * @return string solr compatible expression
+     */
+    private function parseSolrFieldQuery($fieldQuery)
+    {
+        $fieldNameParts = explode(':', $fieldQuery);
+        $fieldName = $fieldNameParts[0];
+        unset($fieldNameParts[0]);
+        $fieldValue = implode(':', $fieldNameParts);
+
+        // change > and <
+        if ($fieldValue[0] == '<') {
+            $fieldValue = '[* TO '.substr($fieldValue, 1).']';
+        } elseif ($fieldValue[0] == '>') {
+            $fieldValue = '['.substr($fieldValue, 1).' TO *]';
+        } else {
+            $fieldValue = $this->getSingleTerm($fieldValue);
+        }
+
+        return $fieldName.':'.$fieldValue;
     }
 
     /**
