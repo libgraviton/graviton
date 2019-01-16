@@ -36,6 +36,13 @@
         ]
       },
       {
+        "name": "translatedUrl",
+        "type": "varchar",
+        "title": "TranslatedUrl",
+        "description": "An object containing the translated links",
+        "translatable": true
+      },
+      {
         "name": "order",
         "type": "int",
         "title": "Order",

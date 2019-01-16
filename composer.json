@@ -22,7 +22,7 @@
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "^3.2",
+        "graviton/php-rql-parser": "^3.3.0",
         "graviton/rql-parser-bundle": "^1.1.0",
         "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",
@@ -49,14 +49,15 @@
 
         "sentry/sentry-symfony": "^2.0",
         "solarium/solarium": "^4.2",
-        "graviton/analytics-base": "^0.4.0"
+        "graviton/analytics-base": "^0.4.0",
+        "mtdowling/jmespath.php": "^2.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.2.0",
         "squizlabs/php_codesniffer": "~3",
         "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "~2",
+        "graviton/test-services-bundle": "^2.1.0",
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^4.0",
@@ -158,6 +159,7 @@
                     "graviton.rest.serializer.groups": "SERIALIZER_GROUPS",
                     "graviton.rest.serializer.allow_group_override_header": "SERIALIZER_ALLOW_GROUP_OVERRIDE_HEADER",
                     "graviton.rest.serializer.override_header_name": "SERIALIZER_GROUP_OVERRIDE_HEADER_NAME",
+                    "graviton.rest.schema_variation.enable": "SCHEMA_VARIATION_ENABLED",
                     "graviton.worker.relativeUrl": "WORKER_RELATIVE_URL",
                     "graviton.analytics.cache_time.metadata": "ANALYTICS_CACHE_TIME_METADATA",
                     "graviton.sentry.dsn": "SENTRY_DSN",

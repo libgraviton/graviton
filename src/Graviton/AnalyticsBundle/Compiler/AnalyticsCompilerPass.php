@@ -44,7 +44,12 @@ class AnalyticsCompilerPass implements CompilerPassInterface
                     sprintf('Analytics file: %s could not be loaded due to error: %s', $key, json_last_error_msg())
                 );
             }
-            $services[$data['route']] = $data;
+
+            if (isset($data['route']) && !empty($data['route'])) {
+                $services[$data['route']] = $data;
+            } else {
+                $services[] = $data;
+            }
         }
 
         $container->setParameter('analytics.services', $services);

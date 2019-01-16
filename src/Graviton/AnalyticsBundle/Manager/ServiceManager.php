@@ -113,6 +113,10 @@ class ServiceManager
 
         $services = [];
         foreach ($this->analyticsServices as $name => $service) {
+            if (is_numeric($name)) {
+                continue;
+            }
+
             $services[] = [
                 '$ref' => $this->router->generate(
                     'graviton_analytics_service',

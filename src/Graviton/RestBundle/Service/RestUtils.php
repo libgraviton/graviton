@@ -199,7 +199,7 @@ final class RestUtils implements RestUtilsInterface
 
         return $this->schemaValidator->validate(
             $content,
-            $this->schemaUtils->getModelSchema(null, $model, true, true, true)
+            $this->schemaUtils->getModelSchema(null, $model, true, true, true, $content)
         );
     }
 

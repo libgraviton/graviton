@@ -24,6 +24,9 @@ parameters:
     # if true, then the 'x-groups' header can override the serialized groups
     graviton.rest.serializer.allow_group_override_header: false
     graviton.rest.serializer.override_header_name: x-groups
+    graviton.rest.schema_variation.enable: false
+
+    graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
 
     # Dependency injection in Security Bundle
     graviton.security.authentication.header_required: false
