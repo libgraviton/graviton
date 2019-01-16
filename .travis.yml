@@ -35,6 +35,7 @@ before_script:
   # install our deps
   - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
 php:
+  - 7.3
   - 7.2
   - 7.1
 env:
@@ -46,6 +47,8 @@ matrix:
   exclude:
     # skip composer checks on all others than 7.2
     - php: 7.1
+      env: COMPOSER_CHECK=true PHPUNIT=false
+    - php: 7.3
       env: COMPOSER_CHECK=true PHPUNIT=false
 script:
   - >
