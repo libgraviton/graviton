@@ -17,9 +17,9 @@ use Graviton\TestBundle\Test\RestTestCase;
 class LanguageControllerTest extends RestTestCase
 {
     /**
-     * @const complete content type string expected on a resouce
+     * @const schema url
      */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/i18n/language/';
+    const SCHEMA_URL = 'http://localhost/schema/i18n/language/';
 
     /**
      * load fixtures
@@ -49,7 +49,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'collection', $response);
 
         // we assume that initially all systems will only know of the english lang
         $this->assertcount(1, $results);
@@ -107,7 +107,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'collection', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'collection', $response);
 
         $this->assertcount(3, $results);
 
@@ -144,7 +144,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
         $this->assertEquals('de', $results->id);
         $this->assertEquals('de, en', $response->headers->get('Content-Language'));
 
@@ -182,7 +182,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));
 
@@ -207,7 +207,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Español', $results->name->es);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));
@@ -230,7 +230,7 @@ class LanguageControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::CONTENT_TYPE . 'item', $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL . 'item', $response);
         $this->assertEquals('es', $results->id);
         $this->assertEquals('Espanyol', $results->name->es);
         $this->assertEquals('en, es', $response->headers->get('Content-Language'));
