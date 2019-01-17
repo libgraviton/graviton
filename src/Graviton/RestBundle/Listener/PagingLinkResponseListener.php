@@ -91,15 +91,6 @@ class PagingLinkResponseListener
      */
     private function addCommonHeaders(Request $request, Response $response)
     {
-        $contentType = $response->headers->get('Content-Type', '');
-
-        if (strpos(strtolower($contentType), 'application/json') !== false) {
-            $response->headers->set(
-                'Content-Type',
-                'application/json; charset=UTF-8'
-            );
-        }
-
         // replace content-type if a schema was requested
         if ($request->attributes->get('schemaRequest')) {
             $response->headers->set('Content-Type', 'application/schema+json');
