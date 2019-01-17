@@ -205,17 +205,6 @@ services:
             event: graviton.rest.response
             method: onKernelResponse
 
-    #Self link response listener -->
-    graviton.rest.listener.selflinkresponselistener:
-        class: "%graviton.rest.listener.selflinkresponselistener.class%"
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.response
-            method: onKernelResponse
-
     #Cors listener (move the addHeader calls somewhere else... -->
     graviton.rest.listener.corsresponselistener:
         class: "%graviton.rest.listener.corsresponselistener.class%"
