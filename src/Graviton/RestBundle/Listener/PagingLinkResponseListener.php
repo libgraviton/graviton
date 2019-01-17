@@ -1,11 +1,12 @@
 <?php
 /**
- * FilterResponseListener for adding a rel=self Link header to a response.
+ * add our Link header items
  */
 
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,13 +45,15 @@ class PagingLinkResponseListener
     }
 
     /**
-     * add a rel=self Link header to the response
+     * add our Link header items
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param FilterResponseEvent      $event      response listener event
+     * @param string                   $eventName  event name
+     * @param EventDispatcherInterface $dispatcher dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
@@ -65,11 +68,16 @@ class PagingLinkResponseListener
         // add common headers
         $this->addCommonHeaders($request, $response);
 
+        // add self Link header
+        $selfUrl = $this->addSelfLinkHeader($routeName, $routeType, $request);
+        // dispatch this!
+
         // add paging Link element when applicable
         if ($routeType == 'all' && $request->attributes->get('paging')) {
             $this->generatePagingLinksHeaders($routeName, $request, $response);
         }
 
+        // add schema link header element
         $this->generateSchemaLinkHeader($routeName, $request, $response);
 
         // finally set link header
@@ -79,6 +87,10 @@ class PagingLinkResponseListener
         );
 
         $event->setResponse($response);
+
+        // dispatch the "selfaware" event
+        $event->getRequest()->attributes->set('selfLink', $selfUrl);
+        $dispatcher->dispatch('graviton.rest.response.selfaware', $event);
     }
 
     /**
@@ -111,6 +123,68 @@ class PagingLinkResponseListener
             );
         }
     }
+
+    /**
+     * Add "self" Link header item
+     *
+     * @param string  $routeName route name
+     * @param string  $routeType route type
+     * @param Request $request   request
+     *
+     * @return string the "self" link url
+     */
+    private function addSelfLinkHeader($routeName, $routeType, Request $request)
+    {
+        $routeParams = $request->get('_route_params');
+        if (!is_array($routeParams)) {
+            $routeParams = [];
+        }
+
+        if (($routeType == 'post' || $routeType == 'postNoSlash') || $routeType != 'all') {
+            // handle post request by rewriting self link to newly created resource
+            $routeParams['id'] = $request->get('id');
+        }
+
+        // rewrite post routes to get
+        if ($routeType == 'post' || $routeType == 'postNoSlash') {
+            $parts = explode('.', $routeName);
+            array_pop($parts);
+            $parts[] = 'get';
+            $routeName = implode('.', $parts);
+        }
+
+        $selfLinkUrl = $this->router->generate($routeName, $routeParams, UrlGeneratorInterface::ABSOLUTE_URL);
+        $queryString = $request->server->get('QUERY_STRING', '');
+
+        // if no rql was set, we set our default current limits
+        if ($request->attributes->get('paging') === true && strpos($queryString, 'limit(') === false) {
+            $limit = sprintf(
+                'limit(%s,%s)',
+                $request->attributes->get('perPage'),
+                $request->attributes->get('startAt')
+            );
+
+            if (!empty($queryString)) {
+                $queryString .= '&';
+            }
+
+            $queryString .= $limit;
+        }
+
+        if (!empty($queryString)) {
+            $selfLinkUrl .= '?' . strtr($queryString, [',' => '%2C']);
+        }
+
+        $this->linkHeader->add(
+            new LinkHeaderItem(
+                $selfLinkUrl,
+                ['rel' => 'self']
+            )
+        );
+
+        return $selfLinkUrl;
+    }
+
 
     /**
      * generates the schema rel in the Link header
