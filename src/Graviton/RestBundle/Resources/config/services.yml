@@ -195,19 +195,8 @@ services:
 
     #Graviton rest event listeners -->
     #Paging listener -->
-    graviton.rest.listener.paginglinkresponselistener:
-        class: "%graviton.rest.listener.paginglinkresponselistener.class%"
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: graviton.rest.response
-            method: onKernelResponse
-
-    #Self link response listener -->
-    graviton.rest.listener.selflinkresponselistener:
-        class: "%graviton.rest.listener.selflinkresponselistener.class%"
+    graviton.rest.listener.linkheaderresponselistener:
+        class: "%graviton.rest.listener.linkheaderresponselistener.class%"
         arguments:
           - "@router"
         tags:

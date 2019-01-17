@@ -1,7 +1,5 @@
 parameters:
-    graviton.schema.listener.schematyperesponse.class: Graviton\SchemaBundle\Listener\SchemaContentTypeResponseListener
     graviton.schema.listener.canonicalschemaresponse.class: Graviton\SchemaBundle\Listener\CanonicalSchemaLinkResponseListener
-    graviton.schema.listener.schemacacheinvalidation.class: Graviton\SchemaBundle\Listener\SchemaCacheInvalidationResponseListener
     graviton.schema.model.schemamodel.class: Graviton\SchemaBundle\Model\SchemaModel
     graviton.schema.service.schemautils.class: Graviton\SchemaBundle\SchemaUtils
     graviton.schema.service.repositoryfactory.class: Graviton\SchemaBundle\Service\RepositoryFactory

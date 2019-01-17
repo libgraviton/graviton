@@ -18,15 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class FileControllerTest extends RestTestCase
 {
-    /**
-     * @const complete content type string expected on a resource
-     */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/file/item';
-
-    /**
-     * @const corresponding vendorized schema mime type
-     */
-    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/file/collection';
 
     /**
      * setup client and load fixtures
@@ -57,7 +48,7 @@ class FileControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
+        $this->assertResponseSchemaRel('http://localhost/schema/file/collection', $response);
 
         $this->assertEquals([], $results);
     }
