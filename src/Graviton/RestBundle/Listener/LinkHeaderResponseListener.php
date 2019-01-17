@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class PagingLinkResponseListener
+class LinkHeaderResponseListener
 {
     use GetRqlUrlTrait;
 
