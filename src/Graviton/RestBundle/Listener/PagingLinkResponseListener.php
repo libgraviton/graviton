@@ -5,6 +5,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Graviton\SchemaBundle\SchemaUtils;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -58,7 +60,42 @@ class PagingLinkResponseListener
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
-        // always set recordcount header
+        $this->linkHeader = LinkHeader::fromResponse($response);
+
+        // add common headers
+        $this->addCommonHeaders($request, $response);
+
+        // add paging Link element when applicable
+        if ($routeType == 'all' && $request->attributes->get('paging')) {
+            $this->generatePagingLinksHeaders($routeName, $request, $response);
+        }
+
+        $this->generateSchemaLinkHeader($routeName, $request, $response);
+
+        // finally set link header
+        $response->headers->set(
+            'Link',
+            (string) $this->linkHeader
+        );
+
+        $event->setResponse($response);
+    }
+
+    /**
+     * add common headers
+     *
+     * @param Request  $request  request
+     * @param Response $response response
+     *
+     * @return void
+     */
+    private function addCommonHeaders(Request $request, Response $response)
+    {
+        $response->headers->set(
+            'Content-Type',
+            'application/json; charset=UTF-8'
+        );
+
         if ($request->attributes->has('recordCount')) {
             $response->headers->set(
                 'X-Record-Count',
@@ -73,33 +110,73 @@ class PagingLinkResponseListener
                 (string) $request->attributes->get('X-Search-Source')
             );
         }
+    }
 
-        // only collections have paging
-        if ($routeType == 'all' && $request->attributes->get('paging')) {
-            $rql = '';
-            if ($request->attributes->get('hasRql', false)) {
-                $rql = $request->attributes->get('rawRql', '');
-            }
-
-            $this->linkHeader = LinkHeader::fromResponse($response);
-
-            $this->generateLinks(
-                $routeName,
-                $request->attributes->get('page'),
-                $request->attributes->get('numPages'),
-                $request->attributes->get('perPage'),
-                $request,
-                $rql
-            );
-            $response->headers->set(
-                'Link',
-                (string) $this->linkHeader
-            );
-            $response->headers->set(
-                'X-Total-Count',
-                (string) $request->attributes->get('totalCount')
-            );
+    /**
+     * generates the schema rel in the Link header
+     *
+     * @param string   $routeName route name
+     * @param Request  $request   request
+     * @param Response $response  response
+     *
+     * @return void
+     */
+    private function generateSchemaLinkHeader($routeName, Request $request, Response $response)
+    {
+        $contentType = $response->headers->get('Content-Type', null);
+        if ($contentType !== null && substr(strtolower($contentType), 0, 16) !== 'application/json') {
+            return;
         }
+
+        if ($request->get('_route') != 'graviton.core.static.main.all') {
+            try {
+                $schemaRoute = SchemaUtils::getSchemaRouteName($routeName);
+                $this->linkHeader->add(
+                    new LinkHeaderItem(
+                        $this->router->generate($schemaRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                        ['rel' => 'schema']
+                    )
+                );
+            } catch (\Exception $e) {
+                // nothing to do..
+            }
+        }
+
+        // replace content-type if a schema was requested
+        if ($request->attributes->get('schemaRequest')) {
+            $response->headers->set('Content-Type', 'application/schema+json');
+        }
+    }
+
+    /**
+     * generates the paging Link header items
+     *
+     * @param string   $routeName route name
+     * @param Request  $request   request
+     * @param Response $response  response
+     *
+     * @return void
+     */
+    private function generatePagingLinksHeaders($routeName, Request $request, Response $response)
+    {
+        $rql = '';
+        if ($request->attributes->get('hasRql', false)) {
+            $rql = $request->attributes->get('rawRql', '');
+        }
+
+        $this->generateLinks(
+            $routeName,
+            $request->attributes->get('page'),
+            $request->attributes->get('numPages'),
+            $request->attributes->get('perPage'),
+            $request,
+            $rql
+        );
+
+        $response->headers->set(
+            'X-Total-Count',
+            (string) $request->attributes->get('totalCount')
+        );
     }
 
     /**
