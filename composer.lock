@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88310ce3cff09cf65162355fa3a76381",
+    "content-hash": "115953d93d87d442e1c7bd312179663b",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -3321,28 +3321,32 @@
         },
         {
             "name": "riverline/multipart-parser",
-            "version": "1.2.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Riverline/multipart-parser.git",
-                "reference": "e6dbac2ddfec1b938423d24c6627586f4444ccb8"
+                "reference": "91dd118cdd59986bcc104cce419b13fa48c87ee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/e6dbac2ddfec1b938423d24c6627586f4444ccb8",
-                "reference": "e6dbac2ddfec1b938423d24c6627586f4444ccb8",
+                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/91dd118cdd59986bcc104cce419b13fa48c87ee5",
+                "reference": "91dd118cdd59986bcc104cce419b13fa48c87ee5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3"
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.7 || ^5.2"
+                "phpunit/phpunit": "^4.8.35 || ^5.2 || ^6.0 || ^7.0",
+                "psr/http-message": "^1.0",
+                "symfony/psr-http-message-bridge": "^1.1",
+                "zendframework/zend-diactoros": "^1.0"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Riverline\\MultiPartParser": "src/"
+                "psr-4": {
+                    "Riverline\\MultiPartParser\\": "src/Riverline/MultiPartParser/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3351,12 +3355,12 @@
             ],
             "authors": [
                 {
-                    "name": "Romain Cambien",
-                    "email": "romain@riverline.fr"
-                },
-                {
                     "name": "Riverline",
                     "homepage": "http://www.riverline.fr"
+                },
+                {
+                    "name": "Romain Cambien",
+                    "email": "romain@cambien.net"
                 }
             ],
             "description": "One class library to parse multipart content with encoding and charset support.",
@@ -3365,7 +3369,7 @@
                 "multipart",
                 "parser"
             ],
-            "time": "2018-04-18T12:05:41+00:00"
+            "time": "2018-12-17T13:02:25+00:00"
         },
         {
             "name": "sentry/sentry",
