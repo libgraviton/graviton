@@ -64,7 +64,7 @@
 
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
-        "react/event-loop": "^0.5.2",
+        "react/event-loop": "^1.1.0",
         "liip/functional-test-bundle": "=2.0-alpha4"
     },
     "suggest": {
