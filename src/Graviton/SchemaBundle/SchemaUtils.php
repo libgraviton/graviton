@@ -247,6 +247,7 @@ class SchemaUtils
         $schema->setIsVersioning($model->isVersioning());
         $schema->setType('object');
         $schema->setVariations($model->getVariations());
+        $schema->setSolrInformation($model->getSolrInformation());
 
         // grab schema info from model
         $repo = $model->getRepository();
