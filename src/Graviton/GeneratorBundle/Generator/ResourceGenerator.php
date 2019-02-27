@@ -157,7 +157,8 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('collection', $this->json->getServiceCollection())
             ->setParameter('indexes', $this->json->getIndexes())
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
-            ->setParameter('solr', $this->json->getSolrFields())
+            ->setParameter('solrFields', $this->json->getSolrFields())
+            ->setParameter('solrAggregate', $this->json->getSolrAggregate())
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);
