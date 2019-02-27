@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88310ce3cff09cf65162355fa3a76381",
+    "content-hash": "d3c70ac8353c88a4a9f6f7545d05a0df",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -4510,16 +4510,16 @@
         },
         {
             "name": "graviton/test-services-bundle",
-            "version": "v2.1.0",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonTestServicesBundle.git",
-                "reference": "eac66df32fb4364461f8656639745616e67b3d77"
+                "reference": "6c527546b1627e423858f58dcc0a9ec22112a8e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/eac66df32fb4364461f8656639745616e67b3d77",
-                "reference": "eac66df32fb4364461f8656639745616e67b3d77",
+                "url": "https://api.github.com/repos/libgraviton/GravitonTestServicesBundle/zipball/6c527546b1627e423858f58dcc0a9ec22112a8e7",
+                "reference": "6c527546b1627e423858f58dcc0a9ec22112a8e7",
                 "shasum": ""
             },
             "require-dev": {
@@ -4543,7 +4543,7 @@
                 }
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
-            "time": "2018-12-13T14:34:31+00:00"
+            "time": "2019-02-27T12:23:41+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
