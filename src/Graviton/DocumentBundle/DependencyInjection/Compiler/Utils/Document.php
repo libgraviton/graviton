@@ -86,7 +86,9 @@ class Document
     }
 
     /**
-     * @return array
+     * get solr aggregate
+     *
+     * @return array solr aggregate
      */
     public function getSolrAggregate()
     {
@@ -94,7 +96,11 @@ class Document
     }
 
     /**
-     * @param array $solrAggregate
+     * set solr aggregate
+     *
+     * @param array $solrAggregate solr aggregate
+     *
+     * @return void
      */
     public function setSolrAggregate(array $solrAggregate)
     {

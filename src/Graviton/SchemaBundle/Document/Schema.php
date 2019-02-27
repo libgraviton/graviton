@@ -1013,7 +1013,9 @@ class Schema
     }
 
     /**
-     * @return array
+     * get solr information
+     *
+     * @return array solr information
      */
     public function getSolrInformation(): array
     {
@@ -1021,7 +1023,11 @@ class Schema
     }
 
     /**
-     * @param array $solrInformation
+     * set solr information
+     *
+     * @param array $solrInformation solr information
+     *
+     * @return void
      */
     public function setSolrInformation($solrInformation): void
     {
