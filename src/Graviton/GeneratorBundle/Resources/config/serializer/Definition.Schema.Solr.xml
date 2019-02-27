@@ -2,7 +2,7 @@
 <serializer>
     <class name="Graviton\GeneratorBundle\Definition\Schema\Solr">
         <property name="aggregate"
-                  type="array&lt;stdClass&gt;"
+                  type="array"
                   serialized-name="aggregate"/>
         <property name="fields"
                   type="array&lt;Graviton\GeneratorBundle\Definition\Schema\SolrField&gt;"

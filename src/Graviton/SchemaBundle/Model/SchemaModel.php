@@ -393,4 +393,17 @@ class SchemaModel implements ContainerAwareInterface
     {
         return $this->schema->searchable;
     }
+
+    /**
+     * get solr information array
+     *
+     * @return array
+     */
+    public function getSolrInformation()
+    {
+        if (isset($this->schema->solr)) {
+            return $this->schema->solr;
+        }
+        return [];
+    }
 }

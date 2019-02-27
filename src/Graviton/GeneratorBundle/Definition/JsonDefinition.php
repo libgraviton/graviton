@@ -484,6 +484,20 @@ class JsonDefinition
     }
 
     /**
+     * gets the solr aggregate pipeline
+     *
+     * @return array|\stdClass[]
+     */
+    public function getSolrAggregate()
+    {
+        $solr = $this->def->getSolr();
+        if (!$solr instanceof Solr) {
+            return [];
+        }
+        return $solr->getAggregate();
+    }
+
+    /**
      * Can record origin be modified
      *
      * @return bool
