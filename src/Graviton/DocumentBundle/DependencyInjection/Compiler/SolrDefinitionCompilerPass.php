@@ -39,6 +39,8 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
             }
         }
 
+        var_dump($map);
+
         $container->setParameter('graviton.document.solr.map', $map);
     }
 

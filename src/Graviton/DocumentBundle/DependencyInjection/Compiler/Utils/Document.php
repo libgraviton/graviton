@@ -26,6 +26,10 @@ class Document
      * @var array
      */
     private $solrFields = [];
+    /**
+     * @var array
+     */
+    private $solrAggregate = [];
 
     /**
      * Constructor
@@ -79,5 +83,21 @@ class Document
     public function setSolrFields($solrFields)
     {
         $this->solrFields = $solrFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSolrAggregate()
+    {
+        return $this->solrAggregate;
+    }
+
+    /**
+     * @param array $solrAggregate
+     */
+    public function setSolrAggregate(array $solrAggregate)
+    {
+        $this->solrAggregate = $solrAggregate;
     }
 }
