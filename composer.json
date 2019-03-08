@@ -27,7 +27,7 @@
         "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.0",
 
-        "symfony/symfony": "~3.4.0",
+        "symfony/symfony": "~4.2.4",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "^1.0.0",
 
