@@ -41,6 +41,14 @@ class AnalyticsManager
     private $dateConverter;
 
     /**
+     * @var array
+     */
+    private $aggregateOptions = [
+        'cursor' => true,
+        'allowDiskUse' => true
+    ];
+
+    /**
      * AnalyticsManager constructor.
      * @param DocumentManager $documentManager Db manager and query control
      * @param string          $databaseName    Db string name
@@ -80,7 +88,7 @@ class AnalyticsManager
                 $dbName = $this->databaseName;
             }
             $collection = $this->connection->selectCollection($dbName, $model->getCollection());
-            $data[] = $collection->aggregate($pipeline, ['cursor' => true])->toArray();
+            $data[] = $collection->aggregate($pipeline, $this->aggregateOptions)->toArray();
         } else {
             foreach ($pipeline as $pipelineName => $definition) {
                 $dbName = $model->getDatabase($pipelineName);
@@ -91,7 +99,7 @@ class AnalyticsManager
                     $dbName,
                     $model->getCollection($pipelineName)
                 );
-                $data[$pipelineName] = $collection->aggregate($definition, ['cursor' => true])->toArray();
+                $data[$pipelineName] = $collection->aggregate($definition, $this->aggregateOptions)->toArray();
             }
         }
 
