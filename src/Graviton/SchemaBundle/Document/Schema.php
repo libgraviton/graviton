@@ -169,6 +169,11 @@ class Schema
     protected $textIndexes;
 
     /**
+     * @var array
+     */
+    protected $solrInformation = [];
+
+    /**
      * these are the BSON primitive types.
      * http://json-schema.org/latest/json-schema-core.html#anchor8
      * every type set *not* in this set will be carried over to 'format'
@@ -1005,5 +1010,30 @@ class Schema
     public function setTextIndexes($textIndexes)
     {
         $this->textIndexes = $textIndexes;
+    }
+
+    /**
+     * get solr information
+     *
+     * @return array solr information
+     */
+    public function getSolrInformation(): array
+    {
+        return $this->solrInformation;
+    }
+
+    /**
+     * set solr information
+     *
+     * @param array $solrInformation solr information
+     *
+     * @return void
+     */
+    public function setSolrInformation($solrInformation): void
+    {
+        $this->solrInformation = json_decode(
+            json_encode($solrInformation),
+            true
+        );
     }
 }

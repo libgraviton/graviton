@@ -1,14 +1,4 @@
 services:
-    graviton.schema.listener.schematyperesponse:
-        class: "%graviton.schema.listener.schematyperesponse.class%"
-        arguments:
-          - "@router"
-        tags:
-          -
-            name: kernel.event_listener
-            event: kernel.response
-            method: onKernelResponse
-
     graviton.schema.listener.canonicalschemaresponse:
         class: "%graviton.schema.listener.canonicalschemaresponse.class%"
         arguments:

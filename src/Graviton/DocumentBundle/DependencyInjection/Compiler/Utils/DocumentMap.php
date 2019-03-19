@@ -191,8 +191,11 @@ class DocumentMap
         $doc = new Document($className, $fields);
 
         // stuff that belongs to the whole document
-        if (isset($schemaMapping['_base']['solr'])) {
-            $doc->setSolrFields($schemaMapping['_base']['solr']);
+        if (isset($schemaMapping['_base']['solr']['fields'])) {
+            $doc->setSolrFields($schemaMapping['_base']['solr']['fields']);
+        }
+        if (isset($schemaMapping['_base']['solr']['aggregate'])) {
+            $doc->setSolrAggregate($schemaMapping['_base']['solr']['aggregate']);
         }
 
         return $doc;

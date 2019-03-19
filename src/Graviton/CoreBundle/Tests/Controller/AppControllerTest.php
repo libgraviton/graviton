@@ -20,12 +20,11 @@ class AppControllerTest extends RestTestCase
     /**
      * @const complete content type string expected on a resouce
      */
-    const CONTENT_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/item';
+    const CONTENT_TYPE = 'application/json; charset=UTF-8';
 
-    /**
-     * @const corresponding vendorized schema mime type
-     */
-    const COLLECTION_TYPE = 'application/json; charset=UTF-8; profile=http://localhost/schema/core/app/collection';
+    const SCHEMA_URL_ITEM = 'http://localhost/schema/core/app/item';
+
+    const SCHEMA_URL_COLLECTION = 'http://localhost/schema/core/app/collection';
 
     /**
      * setup client and load fixtures
@@ -57,7 +56,8 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
         $this->assertEquals(2, count($results));
 
         $this->assertEquals('admin', $results[0]->id);
@@ -368,7 +368,8 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
         $results = $client->getResults();
 
-        $this->assertResponseContentType(self::COLLECTION_TYPE, $response);
+        $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_COLLECTION, $response);
 
         $this->assertEquals([], $results);
     }
@@ -386,6 +387,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
 
         $this->assertEquals('admin', $results->id);
         $this->assertEquals('Administration', $results->name->en);
@@ -425,6 +427,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
         $this->assertEquals('new Test App', $results->name->en);
         $this->assertTrue($results->showInMenu);
         $this->assertContains(
@@ -550,6 +553,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
         $this->assertEquals('Tablet', $results->name->en);
         $this->assertFalse($results->showInMenu);
         $this->assertContains(
@@ -599,6 +603,7 @@ class AppControllerTest extends RestTestCase
         $results = $client->getResults();
 
         $this->assertResponseContentType(self::CONTENT_TYPE, $response);
+        $this->assertResponseSchemaRel(self::SCHEMA_URL_ITEM, $response);
         $this->assertEquals('Test App Patched', $results->name->en);
     }
 

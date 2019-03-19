@@ -47,5 +47,8 @@
     <property name="searchable" accessor-getter="getSearchable" accessor-setter="setSearchable" expose="true">
       <type><![CDATA[array<string>]]></type>
     </property>
+    <property name="solrInformation" serialized-name="x-solr" accessor-getter="getSolrInformation" accessor-setter="setSolrInformation" expose="true">
+      <type><![CDATA[array]]></type>
+    </property>
   </class>
 </serializer>

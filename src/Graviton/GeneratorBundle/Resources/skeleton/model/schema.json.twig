@@ -109,7 +109,10 @@
     }
   },
 
-  "solr": {{ solr|json_encode() }},
+  "solr": {
+      "fields": {{ solrFields|json_encode() }},
+      "aggregate": {{ solrAggregate|json_encode() }}
+  },
 
 {#
 the whole recordOrigin thing is kinda messed up as you need 2 vars to correctly detect what should be done.

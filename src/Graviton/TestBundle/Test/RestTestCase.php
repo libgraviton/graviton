@@ -61,6 +61,23 @@ class RestTestCase extends GravitonTestCase
     }
 
     /**
+     * Assert presence of rel=schema in Link header
+     *
+     * @param string   $schemaUrl schema url
+     * @param Response $response  response
+     *
+     * @return void
+     */
+    public function assertResponseSchemaRel($schemaUrl, Response $response)
+    {
+        $this->assertContains(
+            '<'.$schemaUrl.'>; rel="schema"',
+            $response->headers->get('Link', ''),
+            'Schema Link header item missing'
+        );
+    }
+
+    /**
      * assertion for checking cors headers
      *
      * @param string $methods  methods to check for
