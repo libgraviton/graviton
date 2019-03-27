@@ -21,3 +21,7 @@ graviton_proxy_routing:
 graviton_security_routing:
     resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /
+
+graviton_extra:
+    resource: .
+    type: extra
