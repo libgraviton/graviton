@@ -115,3 +115,12 @@ services:
         tags:
         -
             name: console.command
+
+    graviton.core.routing.loader:
+      class: "Graviton\\CoreBundle\\Routing\\RouteLoader"
+      arguments:
+        - "@service_container"
+        - "%graviton.routing.loader.services%"
+      tags:
+        -
+          name: "routing.loader"

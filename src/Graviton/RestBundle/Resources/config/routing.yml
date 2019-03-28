@@ -1,3 +1,0 @@
-graviton.rest.home:
-    resource: "."
-    type:     graviton.rest.routing.loader

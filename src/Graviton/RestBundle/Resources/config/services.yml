@@ -71,7 +71,7 @@ services:
           - "%graviton.rest.services%"
         tags:
           -
-            name: routing.loader
+            name: "graviton.routing.loader"
 
     #Service for validating JSON Patches -->
     graviton.rest.service.jsonpatchvalidator:
