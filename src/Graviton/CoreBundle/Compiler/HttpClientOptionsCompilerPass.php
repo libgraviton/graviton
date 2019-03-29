@@ -32,5 +32,4 @@ class HttpClientOptionsCompilerPass implements CompilerPassInterface
             $baseOptions
         );
     }
-
 }
