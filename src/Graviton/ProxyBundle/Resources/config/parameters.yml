@@ -1,6 +1,5 @@
 parameters:
     graviton.proxy.controller.proxy.class: Graviton\ProxyBundle\Controller\ProxyController
-    graviton.proxy.adapter.guzzle.class: Graviton\ProxyBundle\Adapter\Guzzle\GuzzleAdapter
     graviton.proxy.definition.httploader.class: Graviton\ProxyBundle\Definition\Loader\HttpLoader
     graviton.proxy.definition.loader.factory.class: Graviton\ProxyBundle\Definition\Loader\LoaderFactory
     graviton.proxy.dispersalstrategy.swagger.class: Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy
@@ -8,5 +7,5 @@ parameters:
     graviton.proxy.swagger.document.parser.class: Swagger\Document
     graviton.proxy.proxy.class: Graviton\PhpProxy\Proxy
     graviton.proxy.psrhttpmessage.httpfoundationfactory.class: Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory
-    graviton.proxy.psrhttpmessage.diactorosfactory.class: Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory
+    graviton.proxy.psrhttpmessage.factory.class: Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory
     graviton.proxy.transformationhandler.class: Graviton\ProxyBundle\Service\TransformationHandler
