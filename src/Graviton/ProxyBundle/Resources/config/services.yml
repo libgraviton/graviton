@@ -3,24 +3,17 @@ services:
     graviton.proxy.psrhttpmessage.httpfoundationfactory:
         class: "%graviton.proxy.psrhttpmessage.httpfoundationfactory.class%"
 
-    graviton.proxy.psrhttpmessage.diactorosfactory:
-        class: "%graviton.proxy.psrhttpmessage.diactorosfactory.class%"
+    graviton.proxy.psrhttpmessage.factory:
+        class: "%graviton.proxy.psrhttpmessage.factory.class%"
+        factory: ['Graviton\PhpProxy\Factory', 'createPsrHttpFactory']
 
     graviton.proxy.transformationhandler:
         class: "%graviton.proxy.transformationhandler.class%"
 
-    graviton.proxy.adapter.guzzle:
-        class: "%graviton.proxy.adapter.guzzle.class%"
-        calls:
-          -
-            method: setCurlOptions
-            arguments:
-              - "%graviton.proxy.httploader.curloptions%"
-
     graviton.proxy:
         class: "%graviton.proxy.proxy.class%"
         arguments:
-            - "@graviton.proxy.adapter.guzzle"
+            - "@graviton.core.http.client"
 
     # controller definitions -->
     graviton.proxy.controller.proxy:
@@ -30,7 +23,7 @@ services:
             - "@graviton.proxy"
             - "@templating"
             - "@graviton.proxy.service.apiloader"
-            - "@graviton.proxy.psrhttpmessage.diactorosfactory"
+            - "@graviton.proxy.psrhttpmessage.factory"
             - "@graviton.proxy.psrhttpmessage.httpfoundationfactory"
             - "@graviton.proxy.service.transformationhandler"
             - "%graviton.proxy.sources%"
@@ -54,7 +47,7 @@ services:
         class: "%graviton.proxy.definition.httploader.class%"
         arguments:
           - "@validator"
-          - "@graviton.proxy.adapter.guzzle"
+          - "@graviton.core.http.client"
           - "@logger"
         calls:
           -

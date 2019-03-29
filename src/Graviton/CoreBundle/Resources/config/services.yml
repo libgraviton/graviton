@@ -6,6 +6,15 @@ services:
           - "jms"
           - "@=service(parameter('graviton.cache.provider.service_id'))"
 
+    graviton.core.http.client:
+      class: 'GuzzleHttp\Client'
+      factory: ['Graviton\PhpProxy\Factory', 'createHttpClient']
+      arguments:
+        - "%graviton.core.http.client.options%"
+        - "%graviton.core.httpclient.debugRequests%"
+        - "@logger"
+        - "%graviton.core.httpclient.debugMaxLength%"
+
     graviton.core.controller.main:
       class: "%graviton.core.controller.main.class%"
       public: true
