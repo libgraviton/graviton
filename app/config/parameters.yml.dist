@@ -68,6 +68,9 @@ parameters:
     graviton.file.s3.credentials.key: null
     graviton.file.s3.credentials.secret: null
 
+    graviton.core.httpclient.debugRequests: false
+    graviton.core.httpclient.debugMaxLength: 5000
+
     graviton.translator.default.locale: en
     graviton.translator.cache_name_depth: 3
 

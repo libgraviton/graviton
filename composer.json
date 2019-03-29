@@ -120,6 +120,8 @@
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
                     "graviton.generator.dynamicbundle.dir": "DYNAMICBUNDLE_DIR",
+                    "graviton.core.httpclient.debugRequests": "HTTPCLIENT_DEBUGREQUESTS",
+                    "graviton.core.httpclient.debugMaxLength": "HTTPCLIENT_DEBUGREQUESTS_MAXLENGTH",
                     "graviton.composer.cmd": "COMPOSER_CMD",
                     "graviton.rabbitmq.host": "RABBITMQ_HOST",
                     "graviton.rabbitmq.port": "RABBITMQ_PORT",
