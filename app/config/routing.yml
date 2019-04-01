@@ -2,10 +2,6 @@ graviton_analytics:
     resource: "@GravitonAnalyticsBundle/Resources/config/routing.yml"
     prefix:   /analytics
 
-graviton_rest_routing:
-    resource: "@GravitonRestBundle/Resources/config/routing.yml"
-    prefix: /
-
 graviton_core_routing:
     resource: "@GravitonCoreBundle/Resources/config/routing.yml"
     prefix: /
@@ -21,3 +17,8 @@ graviton_proxy_routing:
 graviton_security_routing:
     resource: "@GravitonSecurityBundle/Resources/config/routing.yml"
     prefix: /
+
+# this goes to our RouteLoader in the CoreBundle, which in turn loads RouteLoaders tagged by the "graviton.routing.loader" service tag
+graviton_core_routeloader_routing:
+    resource: "."
+    type:     graviton.core.route_loader

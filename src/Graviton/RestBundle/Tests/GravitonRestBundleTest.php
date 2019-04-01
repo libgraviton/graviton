@@ -7,7 +7,6 @@ namespace Graviton\RestBundle\Tests;
 
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 
 /**

@@ -13,13 +13,15 @@ use Graviton\PhpProxy\Proxy;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Psr\Http\Message\UriInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Zend\Diactoros\Uri;
 
 /**
  * general controller for all proxy staff
@@ -42,9 +44,9 @@ class ProxyController
     private $templating;
 
     /**
-     * @var DiactorosFactory
+     * @var PsrHttpFactory
      */
-    private $diactorosFactory;
+    private $psrHttpFactory;
 
     /**
      * @var ApiDefinitionLoader
@@ -72,7 +74,7 @@ class ProxyController
      * @param Proxy                 $proxy                    proxy
      * @param EngineInterface       $templating               twig templating engine
      * @param ApiDefinitionLoader   $loader                   definition loader
-     * @param DiactorosFactory      $diactorosFactory         convert HttpFoundation objects to PSR-7
+     * @param PsrHttpFactory        $psrHttpFactory           convert HttpFoundation objects to PSR-7
      * @param HttpFoundationFactory $httpFoundationFactory    convert PSR-7 interfaces to HttpFoundation
      * @param TransformationHandler $transformationHandler    transformation handler
      * @param array                 $proxySourceConfiguration Set of sources to be recognized by the controller.
@@ -81,7 +83,7 @@ class ProxyController
         Proxy $proxy,
         EngineInterface $templating,
         ApiDefinitionLoader $loader,
-        DiactorosFactory $diactorosFactory,
+        PsrHttpFactory $psrHttpFactory,
         HttpFoundationFactory $httpFoundationFactory,
         TransformationHandler $transformationHandler,
         array $proxySourceConfiguration
@@ -89,7 +91,7 @@ class ProxyController
         $this->proxy = $proxy;
         $this->templating = $templating;
         $this->apiLoader = $loader;
-        $this->diactorosFactory = $diactorosFactory;
+        $this->psrHttpFactory = $psrHttpFactory;
         $this->httpFoundationFactory = $httpFoundationFactory;
         $this->proxySourceConfiguration = $proxySourceConfiguration;
         $this->transformationHandler = $transformationHandler;
@@ -108,20 +110,21 @@ class ProxyController
         $this->registerProxySources($api['apiName']);
         $this->apiLoader->addOptions($api);
 
-        $url = $this->apiLoader->getEndpoint($api['endpoint'], true);
-        if (parse_url($url, PHP_URL_SCHEME) === null) {
-            $scheme = $request->getScheme();
-            $url = $scheme.'://'.$url;
+        $url = new Uri($this->apiLoader->getEndpoint($api['endpoint'], true));
+
+        if ($url->getScheme() === null) {
+            $url = $url->withScheme($request->getScheme());
         }
+
         $response = null;
         try {
             $newRequest = Request::create(
-                $url,
+                (string) $url,
                 $request->getMethod(),
-                array (),
-                array (),
-                array (),
-                array (),
+                [],
+                [],
+                [],
+                [],
                 $request->getContent(false)
             );
             $newRequest->headers->add($request->headers->all());
@@ -134,15 +137,16 @@ class ProxyController
                 $newRequest
             );
 
-            $psrRequest = $this->diactorosFactory->createRequest($newRequest);
+            $psrRequest = $this->psrHttpFactory->createRequest($newRequest);
 
             $psrRequestUri = $psrRequest->getUri();
-            $psrRequestUriPort = parse_url($url, PHP_URL_PORT);
+            $psrRequestUriPort = $url->getPort();
             if (is_numeric($psrRequestUriPort) || is_null($psrRequestUriPort)) {
                 $psrRequestUri = $psrRequestUri->withPort($psrRequestUriPort);
             }
 
             $psrRequest = $psrRequest->withUri($psrRequestUri);
+
             $psrResponse = $this->proxy->forward($psrRequest)->to($this->getHostWithScheme($url));
             $response = $this->httpFoundationFactory->createResponse($psrResponse);
             $this->cleanResponseHeaders($response->headers);
@@ -281,14 +285,14 @@ class ProxyController
      *
      * @return string
      */
-    private function getHostWithScheme($url)
+    private function getHostWithScheme(UriInterface $url)
     {
-        $components = parse_url($url);
-        $host = $components['scheme'].'://'.$components['host'];
-        if (!empty($components['port'])) {
-            $host .= ':'.$components['port'];
-        }
+        $target = new Uri();
+        $target = $target
+            ->withScheme($url->getScheme())
+            ->withHost($url->getHost())
+            ->withPort($url->getPort());
 
-        return $host;
+        return (string) $target;
     }
 }

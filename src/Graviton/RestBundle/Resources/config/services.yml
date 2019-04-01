@@ -66,12 +66,13 @@ services:
     #Routing loader -->
     graviton.rest.routing.loader:
         class: "%graviton.rest.routing.loader.class%"
+        public: true
         arguments:
           - "@graviton.rest.routing.collection"
           - "%graviton.rest.services%"
         tags:
           -
-            name: routing.loader
+            name: "graviton.routing.loader"
 
     #Service for validating JSON Patches -->
     graviton.rest.service.jsonpatchvalidator:
