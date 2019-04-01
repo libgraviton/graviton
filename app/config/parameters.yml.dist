@@ -15,6 +15,10 @@ parameters:
         - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
         - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
+    # proxy settings for HttpClient and possibly more
+    graviton.proxy: null
+    graviton.noproxy: null
+
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
     graviton.generator.dynamicbundle.dir: null
