@@ -104,6 +104,11 @@ class HttpClientOptionsCompilerPass implements CompilerPassInterface
      */
     private function setNoProxyList($list)
     {
+        if (is_array($list)) {
+            $this->proxySettings['no'] = array_map('trim', $list);
+            return;
+        }
+
         if (is_string($list) && strpos($list, ',') !== false) {
             $this->proxySettings['no'] = explode(',', $list);
         } elseif (is_string($list) && strpos($list, ' ') !== false) {

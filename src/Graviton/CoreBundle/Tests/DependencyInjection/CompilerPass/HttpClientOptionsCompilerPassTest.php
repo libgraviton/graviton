@@ -139,6 +139,26 @@ class HttpClientOptionsCompilerPassTest extends \PHPUnit\Framework\TestCase
                 ],
                 'http://real-proxy-to-use',
                 'host1,.tld'
+            ],
+            'system-settings-with-params-array' => [
+                [
+                    'HTTP_PROXY' => 'other-proxy',
+                    'HTTPS_PROXY' => 'https-proxy',
+                    'NO_PROXY' => 'test,other-host'
+                ],
+                [
+                    'verify' => false,
+                    'proxy' => [
+                        'http' => 'http://real-proxy-to-use',
+                        'https' => 'http://real-proxy-to-use',
+                        'no' => [
+                            'host1',
+                            '.tld'
+                        ]
+                    ]
+                ],
+                'http://real-proxy-to-use',
+                ['host1 ','.tld ']
             ]
         ];
     }
