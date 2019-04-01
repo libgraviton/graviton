@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Routing\Loader;
 
-use Symfony\Component\Config\Loader\Loader;
+use Graviton\CoreBundle\Routing\RouteLoaderAbstract;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\RouteCollection;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class BasicLoader extends Loader
+class BasicLoader extends RouteLoaderAbstract
 {
     /**
      * @var boolean
@@ -65,6 +65,16 @@ class BasicLoader extends Loader
         $this->loaded = true;
 
         return $this->routes;
+    }
+
+    /**
+     * returns the name of the resource to load
+     *
+     * @return string resource name
+     */
+    public function getResourceName()
+    {
+        return 'rest';
     }
 
     /**

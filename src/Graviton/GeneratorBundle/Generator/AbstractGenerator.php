@@ -6,6 +6,8 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Symfony\Component\Filesystem\Filesystem;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * shared stuff for generators
@@ -18,7 +20,7 @@ abstract class AbstractGenerator
 {
 
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     protected $twig;
 
@@ -33,8 +35,8 @@ abstract class AbstractGenerator
     public function __construct()
     {
         $this->fs = new Filesystem();
-        $this->twig = new \Twig_Environment(
-            new \Twig_Loader_Filesystem(__DIR__ . '/../Resources/skeleton'),
+        $this->twig = new Environment(
+            new FilesystemLoader(__DIR__ . '/../Resources/skeleton'),
             [
                 'debug' => true,
                 'cache' => false,
