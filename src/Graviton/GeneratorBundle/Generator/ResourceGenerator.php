@@ -143,6 +143,15 @@ class ResourceGenerator extends AbstractGenerator
             $this->mapper->buildFields($this->json)
         );
 
+        // check for fields without 'refType' attribute!
+        foreach ($fields as $field) {
+            if (!isset($field['relType']) || (isset($field['relType']) && $field['relType'] == null)) {
+                throw new \LogicException(
+                    'No "relType" defined on field "'.$field['name'].'" in document "'.$bundleNamespace.'/'.$document.'"'
+                );
+            }
+        }
+
         $parameters = $this->parameterBuilder
             ->reset()
             ->setParameter('document', $document)
