@@ -23,7 +23,7 @@ before_script:
   # spin up local mongodb with the version we need
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
-          docker pull mongo:3.6
+          docker pull mongo:$MONGODB_VERSION
           docker run -d -p 127.0.0.1:27017:27017 mongo:3.6 --smallfiles
       fi
   # install the module
@@ -38,17 +38,15 @@ before_script:
 php:
   - 7.3
   - 7.2
-  - 7.1
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 matrix:
   exclude:
     # skip composer checks on all others than 7.2
-    - php: 7.1
-      env: COMPOSER_CHECK=true PHPUNIT=false
     - php: 7.3
       env: COMPOSER_CHECK=true PHPUNIT=false
   allow_failures:
