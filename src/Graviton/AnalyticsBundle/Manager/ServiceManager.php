@@ -279,6 +279,9 @@ class ServiceManager
                     case "regex":
                         $paramValue = new Regex($paramValue, 'i');
                         break;
+                    case "mongoid":
+                        $paramValue = new \MongoId($paramValue);
+                        break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));
                         break;
