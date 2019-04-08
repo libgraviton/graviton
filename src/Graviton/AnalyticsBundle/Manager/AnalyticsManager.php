@@ -161,6 +161,10 @@ class AnalyticsManager
             if ($val instanceof \MongoDate) {
                 $data[$key] = $this->dateConverter->formatDateTime($val->toDateTime());
             }
+            /** convert mongoid */
+            if ($val instanceof \MongoId) {
+                $data[$key] = (string) $val;
+            }
         }
 
         return $data;

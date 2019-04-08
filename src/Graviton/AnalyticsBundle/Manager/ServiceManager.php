@@ -266,6 +266,11 @@ class ServiceManager
                 switch ($param['type']) {
                     case "integer":
                         $paramValue = intval($paramValue);
+
+                        // more than max? limit to max..
+                        if (isset($param['max']) && is_numeric($param['max']) && intval($param['max']) < $paramValue) {
+                            $paramValue = intval($param['max']);
+                        }
                         break;
                     case "boolean":
                         $paramValue = boolval($paramValue);
@@ -278,6 +283,9 @@ class ServiceManager
                         break;
                     case "regex":
                         $paramValue = new Regex($paramValue, 'i');
+                        break;
+                    case "mongoid":
+                        $paramValue = new \MongoId($paramValue);
                         break;
                     case "array<integer>":
                         $paramValue = array_map('intval', explode(',', $paramValue));
