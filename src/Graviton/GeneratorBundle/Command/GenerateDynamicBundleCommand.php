@@ -89,6 +89,22 @@ class GenerateDynamicBundleCommand extends Command
      * @var DynamicBundleBundleGenerator
      */
     private $bundleBundleGenerator;
+    /**
+     * @var bool
+     */
+    private $generateController = true;
+    /**
+     * @var bool
+     */
+    private $generateModel = true;
+    /**
+     * @var bool
+     */
+    private $generateSerializerConfig = true;
+    /**
+     * @var bool
+     */
+    private $generateSchema = true;
 
     /**
      * @param LoaderInterface              $definitionLoader      JSON definition loader
@@ -156,6 +172,34 @@ class GenerateDynamicBundleCommand extends Command
                 'Which BundleBundle to manipulate to add our stuff',
                 'GravitonDynBundleBundle'
             )
+            ->addOption(
+                'generateController',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Should we generate controller?',
+                'true'
+            )
+            ->addOption(
+                'generateModel',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Should we generate models?',
+                'true'
+            )
+            ->addOption(
+                'generateSerializerConfig',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Should we generate serializer config?',
+                'true'
+            )
+            ->addOption(
+                'generateSchema',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Should we generate schema files?',
+                'true'
+            )
             ->setName('graviton:generate:dynamicbundles')
             ->setDescription(
                 'Generates all dynamic bundles in the GravitonDyn namespace. Either give a path '.
@@ -173,6 +217,20 @@ class GenerateDynamicBundleCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // flags from input
+        if ($input->getOption('generateController') == 'false') {
+            $this->generateController = false;
+        }
+        if ($input->getOption('generateModel') == 'false') {
+            $this->generateModel = false;
+        }
+        if ($input->getOption('generateSerializerConfig') == 'false') {
+            $this->generateSerializerConfig = false;
+        }
+        if ($input->getOption('generateSchema') == 'false') {
+            $this->generateSchema = false;
+        }
+
         /**
          * GENERATE THE BUNDLEBUNDLE
          */
@@ -378,36 +436,6 @@ class GenerateDynamicBundleCommand extends Command
     }
 
     /**
-     * Generate Bundle entities
-     *
-     * @param OutputInterface $output          Instance to sent text to be displayed on stout.
-     * @param JsonDefinition  $jsonDef         Configuration to be generated the entity from.
-     * @param string          $bundleName      Name of the bundle the entity shall be generated for.
-     * @param string          $bundleClassName class name
-     *
-     * @return void
-     * @throws \Exception
-     */
-    protected function generateSubResources(
-        OutputInterface $output,
-        JsonDefinition $jsonDef,
-        $bundleName,
-        $bundleClassName
-    ) {
-        foreach ($this->getSubResources($jsonDef) as $subRecource) {
-            $arguments = [
-                'graviton:generate:resource',
-                '--no-debug' => null,
-                '--entity' => $bundleName . ':' . $subRecource->getId(),
-                '--bundleClassName' => $bundleClassName,
-                '--json' => $this->serializer->serialize($subRecource->getDef(), 'json'),
-                '--no-controller' => 'true',
-            ];
-            $this->generateResource($arguments, $output, $jsonDef);
-        }
-    }
-
-    /**
      * generates the resources of a bundle
      *
      * @param JsonDefinition $jsonDef         definition
@@ -426,7 +454,10 @@ class GenerateDynamicBundleCommand extends Command
 
         /** @var ResourceGenerator $generator */
         $generator = $this->resourceGenerator;
+        $generator->setGenerateSerializerConfig($this->generateSerializerConfig);
         $generator->setGenerateController(false);
+        $generator->setGenerateModel($this->generateModel);
+        $generator->setGenerateSchema($this->generateSchema);
 
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));
@@ -440,7 +471,7 @@ class GenerateDynamicBundleCommand extends Command
 
         // main resources
         if (!empty($jsonDef->getFields())) {
-            $generator->setGenerateController(true);
+            $generator->setGenerateController($this->generateController);
 
             $routerBase = $jsonDef->getRouterBase();
             if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
@@ -520,6 +551,7 @@ class GenerateDynamicBundleCommand extends Command
         $bundleName,
         $targetDir
     ) {
+        $this->bundleGenerator->setGenerateSerializerConfig($this->generateSerializerConfig);
         $this->bundleGenerator->generate(
             $namespace,
             $bundleName,
