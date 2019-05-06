@@ -63,6 +63,11 @@ class ResourceGenerator extends AbstractGenerator
     private $mapper;
 
     /**
+     * @var string
+     */
+    private $repositoryFactoryService;
+
+    /**
      * @var boolean
      */
     private $generateController = false;
@@ -113,6 +118,17 @@ class ResourceGenerator extends AbstractGenerator
     public function setJson(JsonDefinition $json)
     {
         $this->json = $json;
+    }
+
+    /**
+     * set RepositoryFactoryService
+     *
+     * @param string $repositoryFactoryService repositoryFactoryService
+     *
+     * @return void
+     */
+    public function setRepositoryFactoryService($repositoryFactoryService) {
+        $this->repositoryFactoryService = $repositoryFactoryService;
     }
 
     /**
@@ -386,7 +402,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document
                 )
             ),
-            'doctrine_mongodb.odm.default_document_manager',
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\DocumentRepository'
         );
@@ -402,7 +418,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                 )
             ),
-            'doctrine_mongodb.odm.default_document_manager',
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\DocumentRepository'
         );

@@ -90,6 +90,10 @@ class GenerateDynamicBundleCommand extends Command
      */
     private $bundleBundleGenerator;
     /**
+     * @var string
+     */
+    private $repositoryFactoryService;
+    /**
      * @var bool
      */
     private $generateController = true;
@@ -166,11 +170,18 @@ class GenerateDynamicBundleCommand extends Command
                 dirname(__FILE__) . '/../../../'
             )
             ->addOption(
-                'bundleBundleName',
+                'repositoryFactoryService',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'Which BundleBundle to manipulate to add our stuff',
-                'GravitonDynBundleBundle'
+                'Factory service for repositories',
+                'doctrine_mongodb.odm.default_document_manager'
+            )
+            ->addOption(
+                'generateController',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'Should we generate controller?',
+                'true'
             )
             ->addOption(
                 'generateController',
@@ -230,6 +241,7 @@ class GenerateDynamicBundleCommand extends Command
         if ($input->getOption('generateSchema') == 'false') {
             $this->generateSchema = false;
         }
+        $this->repositoryFactoryService = $input->getOption('repositoryFactoryService');
 
         /**
          * GENERATE THE BUNDLEBUNDLE
@@ -455,6 +467,7 @@ class GenerateDynamicBundleCommand extends Command
         /** @var ResourceGenerator $generator */
         $generator = $this->resourceGenerator;
         $generator->setGenerateSerializerConfig($this->generateSerializerConfig);
+        $generator->setRepositoryFactoryService($this->repositoryFactoryService);
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
         $generator->setGenerateSchema($this->generateSchema);
