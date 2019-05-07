@@ -15,6 +15,11 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class TypeLoader
 {
 
+    /**
+     * registers our types in doctrine
+     *
+     * @return void
+     */
     public static function load()
     {
         Type::registerType('extref', ExtReferenceType::class);
@@ -24,5 +29,4 @@ class TypeLoader
         Type::registerType('hasharray', HashArrayType::class);
         Type::registerType('datearray', DateArrayType::class);
     }
-
 }

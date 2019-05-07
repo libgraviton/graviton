@@ -34,7 +34,8 @@ class BundleGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setGenerateSerializerConfig($generateSerializerConfig) {
+    public function setGenerateSerializerConfig($generateSerializerConfig)
+    {
         $this->generateSerializerConfig = $generateSerializerConfig;
     }
 

@@ -127,7 +127,8 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setRepositoryFactoryService($repositoryFactoryService) {
+    public function setRepositoryFactoryService($repositoryFactoryService)
+    {
         $this->repositoryFactoryService = $repositoryFactoryService;
     }
 
@@ -148,7 +149,8 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setGenerateModel($generateModel) {
+    public function setGenerateModel($generateModel)
+    {
         $this->generateModel = $generateModel;
     }
 
@@ -159,7 +161,8 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setGenerateSerializerConfig($generateSerializerConfig) {
+    public function setGenerateSerializerConfig($generateSerializerConfig)
+    {
         $this->generateSerializerConfig = $generateSerializerConfig;
     }
 
@@ -170,7 +173,8 @@ class ResourceGenerator extends AbstractGenerator
      *
      * @return void
      */
-    public function setGenerateSchema($generateSchema) {
+    public function setGenerateSchema($generateSchema)
+    {
         $this->generateSchema = $generateSchema;
     }
 
