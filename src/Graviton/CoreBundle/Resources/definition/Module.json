@@ -145,6 +145,14 @@
         "collection": ["App"]
       },
       {
+        "name": "categories.0.ref",
+        "type": "extref",
+        "title": "Categories",
+        "description": "Links to categories",
+        "exposeAs": "$ref",
+        "collection": ["*"]
+      },
+      {
         "name": "name",
         "type": "varchar",
         "title": "Name",
