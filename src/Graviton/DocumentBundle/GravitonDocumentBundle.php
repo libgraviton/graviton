@@ -11,6 +11,7 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\ReadOnlyFieldsCompilerP
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RecordOriginExceptionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\RestrictionFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
+use Graviton\DocumentBundle\Types\TypeLoader;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -30,18 +31,13 @@ use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompi
  */
 class GravitonDocumentBundle extends Bundle implements GravitonBundleInterface
 {
+
     /**
      * initialize bundle
      */
     public function __construct()
     {
-        // TODO: implement ExtReferenceArrayType
-        Type::registerType('extref', Types\ExtReferenceType::class);
-        Type::registerType('translatable', Types\TranslatableType::class);
-        Type::registerType('translatablearray', Types\TranslatableArrayType::class);
-        Type::registerType('hash', Types\HashType::class);
-        Type::registerType('hasharray', Types\HashArrayType::class);
-        Type::registerType('datearray', Types\DateArrayType::class);
+        TypeLoader::load();
     }
 
 
