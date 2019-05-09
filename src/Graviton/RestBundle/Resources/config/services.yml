@@ -110,7 +110,7 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
-
+          - "%graviton.rest.data_restriction.map%"
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:

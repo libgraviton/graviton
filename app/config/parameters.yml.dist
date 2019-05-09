@@ -30,6 +30,9 @@ parameters:
     graviton.rest.serializer.override_header_name: x-groups
     graviton.rest.schema_variation.enable: false
 
+    # a map that can specify optional data restriction from incoming requests to the database
+    graviton.rest.data_restriction.map: null
+
     graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
 
     # Dependency injection in Security Bundle

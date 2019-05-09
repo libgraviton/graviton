@@ -42,6 +42,11 @@ class QueryService
     private $paginationDefaultLimit;
 
     /**
+     * @var array
+     */
+    private $dataRestrictionMap;
+
+    /**
      * @var Request
      */
     private $request;
@@ -60,15 +65,18 @@ class QueryService
      * @param VisitorInterface $visitor                visitor
      * @param Manager          $restrictionManager     restriction manager
      * @param integer          $paginationDefaultLimit default pagination limit
+     * @param array            $dataRestrictionMap     data restriction configuration
      */
     public function __construct(
         VisitorInterface $visitor,
         Manager $restrictionManager,
-        $paginationDefaultLimit
+        $paginationDefaultLimit,
+        array $dataRestrictionMap
     ) {
         $this->visitor = $visitor;
         $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
+        $this->dataRestrictionMap = $dataRestrictionMap;
     }
 
     /**
@@ -109,6 +117,9 @@ class QueryService
             /**
              * this is or the "all" action -> multiple documents returned
              */
+
+            $this->applyDataRestrictions();
+
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
 
@@ -121,6 +132,8 @@ class QueryService
              * this is the "getAction" -> one document returned
              */
             $this->queryBuilder->field('id')->equals($this->getDocumentId());
+
+            $this->applyDataRestrictions();
 
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
@@ -155,6 +168,38 @@ class QueryService
     private function getDocumentId()
     {
         return $this->request->attributes->get('singleDocument', null);
+    }
+
+    /**
+     * apply configured data restrictions on select queries
+     *
+     * @return void
+     */
+    private function applyDataRestrictions()
+    {
+        if (!is_array($this->dataRestrictionMap) || empty($this->dataRestrictionMap)) {
+            return null;
+        }
+
+        foreach ($this->dataRestrictionMap as $headerName => $fieldName) {
+            $headerValue = $this->request->headers->get($headerName, '-1');
+            if (strpos($fieldName, ':') !== false) {
+                $valueParts = explode(':', $fieldName);
+                if (count($valueParts) != 2) {
+                    throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
+                }
+
+                if ($valueParts[0] == 'int') {
+                    $headerValue = (int) $headerValue;
+                }
+
+                $fieldName = $valueParts[1];
+            }
+
+            $this->queryBuilder->addAnd(
+                $this->queryBuilder->expr()->field($fieldName)->in([null, $headerValue])
+            );
+        }
     }
 
     /**
