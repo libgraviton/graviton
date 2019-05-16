@@ -32,6 +32,9 @@ parameters:
     graviton.rest.schema_variation.enable: false
 
     # a map that can specify optional data restriction from incoming requests to the database
+    # example:
+    #graviton.rest.data_restriction.map:
+    #    x-graviton-tenant: "int:tenant"
     graviton.rest.data_restriction.map: []
 
     graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
