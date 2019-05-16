@@ -61,6 +61,10 @@ class GenerateDynamicBundleCommand extends Command
 
     /** @var array|null */
     private $serviceWhitelist = null;
+
+    /** @var string|null */
+    private $ensureIndexes = null;
+
     /**
      * @var CommandRunner
      */
@@ -119,6 +123,7 @@ class GenerateDynamicBundleCommand extends Command
      * @param string|null                  $bundleAdditions       Additional bundles list in JSON format
      * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
      * @param string|null                  $name                  name
+     * @param string|null                  $ensureIndexes         comma separated list of indexes to ensure everywhere
      */
     public function __construct(
         LoaderInterface     $definitionLoader,
@@ -128,7 +133,8 @@ class GenerateDynamicBundleCommand extends Command
         SerializerInterface $serializer,
         $bundleAdditions = null,
         $serviceWhitelist = null,
-        $name = null
+        $name = null,
+        $ensureIndexes = null
     ) {
         parent::__construct($name);
 
@@ -138,6 +144,7 @@ class GenerateDynamicBundleCommand extends Command
         $this->bundleBundleGenerator = $bundleBundleGenerator;
         $this->serializer = $serializer;
         $this->fs = new Filesystem();
+        $this->ensureIndexes = $ensureIndexes;
 
         if ($bundleAdditions !== null && $bundleAdditions !== '') {
             $this->bundleAdditions = $bundleAdditions;
@@ -471,6 +478,7 @@ class GenerateDynamicBundleCommand extends Command
         $generator->setGenerateController(false);
         $generator->setGenerateModel($this->generateModel);
         $generator->setGenerateSchema($this->generateSchema);
+        $generator->setEnsureIndexes($this->ensureIndexes);
 
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));

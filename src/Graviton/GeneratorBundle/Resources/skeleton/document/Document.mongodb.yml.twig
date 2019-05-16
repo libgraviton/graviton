@@ -156,6 +156,18 @@
     {%- endfor %}
 {%- endif %}
 
+{%- if ensureIndexes is defined and ensureIndexes is not empty %}
+    {%- for index in ensureIndexes %}
+
+    {{ index }}:
+      keys:
+        {{ index }}: asc
+      options:
+        name: {{ index }}
+        background: true
+    {%- endfor %}
+{%- endif %}
+
 {% if textIndexes is defined and textIndexes is not empty %}
 
     TextIndex:

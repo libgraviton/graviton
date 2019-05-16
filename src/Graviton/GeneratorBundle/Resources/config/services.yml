@@ -124,6 +124,8 @@ services:
           - "@jms_serializer"
           - "%generator.bundlebundle.additions%"
           - "%generator.dynamicbundles.service.whitelist%"
+          - null
+          - "%graviton.generator.ensure_indexes%"
         tags:
           -
             name: console.command

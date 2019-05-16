@@ -6,7 +6,6 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Schema\Solr;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -86,6 +85,11 @@ class ResourceGenerator extends AbstractGenerator
      * @var boolean
      */
     private $generateSchema = true;
+
+    /**
+     * @var array
+     */
+    private $ensureIndexes = [];
 
     /**
      * @var ParameterBuilder
@@ -179,6 +183,21 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
+     * set EnsureIndexes
+     *
+     * @param array|string $ensureIndexes ensureIndexes
+     *
+     * @return void
+     */
+    public function setEnsureIndexes($ensureIndexes)
+    {
+        if (!is_array($ensureIndexes)) {
+            $ensureIndexes = explode(',', trim($ensureIndexes));
+        }
+        $this->ensureIndexes = $ensureIndexes;
+    }
+
+    /**
      * generate the resource with all its bits and parts
      *
      * @param string $bundleDir       bundle dir
@@ -227,6 +246,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
+            ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);
