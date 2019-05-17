@@ -175,6 +175,11 @@
                     "graviton.solr.wildcard_bridge": "SOLR_WILDCARD_BRIDGE",
                     "graviton.solr.andify_terms": "SOLR_ANDIFY_TERMS"
                 }
+            },
+            {
+                "file": "app/config/parameters_dev.yml",
+                "env-map": {
+                }
             }
         ]
     },
