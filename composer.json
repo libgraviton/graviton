@@ -57,7 +57,7 @@
         "squizlabs/php_codesniffer": "~3",
         "johnkary/phpunit-speedtrap": "~3",
 
-        "graviton/test-services-bundle": "^2.2.0",
+        "graviton/test-services-bundle": "^2.3.0",
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^4.0",
