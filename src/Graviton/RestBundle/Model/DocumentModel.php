@@ -130,14 +130,17 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param object $entity       entity to insert
-     * @param bool   $returnEntity true to return entity
-     * @param bool   $doFlush      if we should flush or not after insert
+     * @param Request $request      request
+     * @param object  $entity       entity to insert
+     * @param bool    $returnEntity true to return entity
+     * @param bool    $doFlush      if we should flush or not after insert
      *
      * @return Object|null
      */
-    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
+    public function insertRecord(Request $request, $entity, $returnEntity = true, $doFlush = true)
     {
+        $entity = $this->queryService->applyDataRestrictionsOnInsert($request, $entity);
+
         $this->manager->persist($entity);
 
         if ($doFlush) {
@@ -210,13 +213,14 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param string $documentId   id of entity to update
-     * @param Object $entity       new entity
-     * @param bool   $returnEntity true to return entity
+     * @param Request $request      request
+     * @param string  $documentId   id of entity to update
+     * @param Object  $entity       new entity
+     * @param bool    $returnEntity true to return entity
      *
      * @return Object|null
      */
-    public function updateRecord($documentId, $entity, $returnEntity = true)
+    public function updateRecord(Request $request, $documentId, $entity, $returnEntity = true)
     {
         if (!is_null($documentId)) {
             $this->deleteById($documentId);

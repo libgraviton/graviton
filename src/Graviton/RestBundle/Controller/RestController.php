@@ -217,7 +217,7 @@ class RestController
         $record = $this->restUtils->validateRequest($request->getContent(), $model);
 
         // Insert the new record
-        $record = $model->insertRecord($record);
+        $record = $model->insertRecord($request, $record);
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
@@ -274,9 +274,9 @@ class RestController
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($record, false);
+            $this->getModel()->insertRecord($request, $record, false);
         } else {
-            $this->getModel()->updateRecord($id, $record, false);
+            $this->getModel()->updateRecord($request, $id, $record, false);
         }
 
         // Set status code
@@ -335,7 +335,7 @@ class RestController
         $record = $this->restUtils->validateRequest($patchedDocument, $model);
 
         // Update object
-        $this->getModel()->updateRecord($id, $record);
+        $this->getModel()->updateRecord($request, $id, $record);
 
         // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
