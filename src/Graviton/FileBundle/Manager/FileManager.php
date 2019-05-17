@@ -213,9 +213,9 @@ class FileManager
         }
 
         if ($isNew) {
-            $model->insertRecord($document);
+            $model->insertRecord($request, $document);
         } else {
-            $model->updateRecord($document->getId(), $document);
+            $model->updateRecord($request, $document->getId(), $document);
         }
 
         // store id of new record so we don't need to re-parse body later when needed
