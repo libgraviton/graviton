@@ -53,7 +53,7 @@
 
 {%- if syntheticFields is defined and syntheticFields is not empty %}
 {%- for field in syntheticFields %}
-    <property name="{{ field.1 }}" type="{{ field.0 }}" exclude="true"/>
+    <property name="{{ field.1 }}" type="{{ field.0 }}" accessor-setter="set{{ field.1|capitalize }}" accessor-getter="get{{ field.1|capitalize }}" />
 {%- endfor %}
 {%- endif %}
 
