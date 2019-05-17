@@ -76,7 +76,38 @@ class QueryService
         $this->visitor = $visitor;
         $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
-        $this->dataRestrictionMap = $dataRestrictionMap;
+        $this->setDataRestrictionMap($dataRestrictionMap);
+    }
+
+    /**
+     * set DataRestrictionMap
+     *
+     * @param array $dataRestrictionMap dataRestrictionMap
+     *
+     * @return void
+     */
+    public function setDataRestrictionMap(?array $dataRestrictionMap)
+    {
+        if (!is_array($dataRestrictionMap)) {
+            return;
+        }
+
+        foreach ($dataRestrictionMap as $headerName => $fieldName) {
+            $valueParts = explode(':', $fieldName);
+            if (count($valueParts) == 1) {
+                $this->dataRestrictionMap[$headerName] = [
+                    'type' => 'string',
+                    'name' => $valueParts[0]
+                ];
+            } elseif (count($valueParts) == 2) {
+                $this->dataRestrictionMap[$headerName] = [
+                    'type' => $valueParts[0],
+                    'name' => $valueParts[1]
+                ];
+            } else {
+                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
+            }
+        }
     }
 
     /**
@@ -181,25 +212,46 @@ class QueryService
             return null;
         }
 
-        foreach ($this->dataRestrictionMap as $headerName => $fieldName) {
-            $headerValue = $this->request->headers->get($headerName, '-1');
-            if (strpos($fieldName, ':') !== false) {
-                $valueParts = explode(':', $fieldName);
-                if (count($valueParts) != 2) {
-                    throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
-                }
+        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
+            $headerValue = $this->request->headers->get($headerName, null);
 
-                if ($valueParts[0] == 'int') {
-                    $headerValue = (int) $headerValue;
-                }
+            if ($headerValue == null) {
+                continue;
+            }
 
-                $fieldName = $valueParts[1];
+            if ($fieldSpec['type'] == 'int') {
+                $headerValue = (int) $headerValue;
             }
 
             $this->queryBuilder->addAnd(
-                $this->queryBuilder->expr()->field($fieldName)->in([null, $headerValue])
+                $this->queryBuilder->expr()->field($fieldSpec['name'])->in([null, $headerValue])
             );
         }
+    }
+
+    /**
+     * @param Request $request request
+     * @param object  $entity  entity
+     *
+     * @return object altered object
+     */
+    public function applyDataRestrictionsOnInsert(Request $request, $entity)
+    {
+        if (!is_array($this->dataRestrictionMap) ||
+            empty($this->dataRestrictionMap) ||
+            !($entity instanceof \ArrayAccess)
+        ) {
+            return $entity;
+        }
+
+        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
+            $headerValue = $request->headers->get($headerName, null);
+            if (!is_null($headerValue)) {
+                $entity[$fieldSpec['name']] = $headerValue;
+            }
+        }
+
+        return $entity;
     }
 
     /**

@@ -198,17 +198,20 @@ class ResourceGenerator extends AbstractGenerator
         if (!is_array($syntheticFields)) {
             $syntheticFields = explode(',', trim($syntheticFields));
         }
-        $syntheticFields = array_map(function ($val) {
-            $parts = explode(':', $val);
-            if (count($parts) == 1) {
-                return [
-                    'string',
-                    $parts[0]
-                ];
-            } else {
-                return $parts;
-            }
-        }, $syntheticFields);
+        $syntheticFields = array_map(
+            function ($val) {
+                $parts = explode(':', $val);
+                if (count($parts) == 1) {
+                    return [
+                        'string',
+                        $parts[0]
+                    ];
+                } else {
+                    return $parts;
+                }
+            },
+            $syntheticFields
+        );
 
         $this->syntheticFields = $syntheticFields;
     }

@@ -22,7 +22,10 @@ parameters:
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
     graviton.generator.dynamicbundle.dir: null
-    graviton.generator.ensure_indexes: tenant,fred22
+    #graviton.generator.synthetic_fields: 'int:tenant'
+    graviton.generator.synthetic_fields: null
+    #graviton.generator.ensure_indexes: hans,test2
+    graviton.generator.ensure_indexes: null
 
     # which serializer groups should be (de)serialized on this instance
     graviton.rest.serializer.groups: null
