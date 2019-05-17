@@ -52,6 +52,13 @@
       type: string
 {% endif %}
 
+{% if syntheticFields is defined and syntheticFields is not empty %}
+{% for synField in syntheticFields %}
+    {{ synField.1 }}:
+      type: {{ synField.0 }}
+{% endfor %}
+{% endif %}
+
 {# RELATION ARRAYS #}
 {% set relations = [] %}
 
@@ -156,14 +163,14 @@
     {%- endfor %}
 {%- endif %}
 
-{%- if ensureIndexes is defined and ensureIndexes is not empty %}
-    {%- for index in ensureIndexes %}
+{%- if syntheticFields is defined and syntheticFields is not empty %}
+    {%- for index in syntheticFields %}
 
-    {{ index }}:
+    {{ index.1 }}:
       keys:
-        {{ index }}: asc
+        {{ index.1 }}: asc
       options:
-        name: {{ index }}
+        name: {{ index.1 }}
         background: true
     {%- endfor %}
 {%- endif %}

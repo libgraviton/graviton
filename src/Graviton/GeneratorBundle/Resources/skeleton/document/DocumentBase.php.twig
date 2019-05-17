@@ -5,12 +5,6 @@
 
 namespace {{ base }}Document;
 
-use \Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\JsonDeserializationVisitor;
-use JMS\Serializer\DeserializationContext;
-use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
-use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
-
 /**
  * {{ base }}Document\{{ document }}Base
  *
@@ -18,8 +12,26 @@ use Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface;
 * @license  https://opensource.org/licenses/MIT MIT License
 * @link     http://swisscom.ch
 */
-abstract class {{ document }}Base implements ExtRefHoldingDocumentInterface{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
+abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface, \ArrayAccess{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
+
+/*** arrayaccess stuff ***/
+
+public function offsetSet($offset, $value) {
+    $this->{$offset} = $value;
+}
+
+public function offsetExists($offset) {
+    return isset($this->{$offset});
+}
+
+public function offsetUnset($offset) {
+    // not supported
+}
+
+public function offsetGet($offset) {
+    return isset($this->{$offset}) ? $this->{$offset} : null;
+}
 
 /**
 * @var int $fieldsAddedCount
@@ -65,6 +77,11 @@ protected $deletedDate;
     {% endif %}
 
 {% endfor %}
+
+{% for syntheticField in syntheticFields %}
+        protected ${{ syntheticField.1 }};
+{% endfor %}
+
 /**
 * constructor
 *
@@ -74,7 +91,7 @@ public function __construct()
 {
 {% for field in fields %}
     {% if '[]' in field.type or field.type == 'array' %}
-        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new ArrayCollection(){% else %}[]{% endif %};
+        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new \Doctrine\Common\Collections\ArrayCollection(){% else %}[]{% endif %};
     {% endif %}
 {% endfor %}
 }
@@ -139,7 +156,7 @@ return $this->deletedDate;
     {% endif %}
     {
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
-        return XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
+        return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
     {% else %}
         return $this->{{ field.fieldName }};
     {% endif %}
@@ -173,7 +190,7 @@ return $this->deletedDate;
     {% endif %}
     {
     {% if '[]' in field.type and 'Graviton' in field.type %}
-        $this->{{ field.fieldName }} = new ArrayCollection(${{ field.fieldName }});
+        $this->{{ field.fieldName }} = new \Doctrine\Common\Collections\ArrayCollection(${{ field.fieldName }});
     {% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
     {% endif %}
@@ -217,6 +234,16 @@ return $this->deletedDate;
         return $this;
         }
     {% endif %}
+{% endfor %}
+
+{% for syntheticField in syntheticFields %}
+        public function set{{ syntheticField.1|capitalize }}(${{ syntheticField.1 }}) {
+            $this->{{ syntheticField.1 }} = ${{ syntheticField.1 }};
+        }
+
+        public function get{{ syntheticField.1|capitalize }}() {
+            return $this->{{ syntheticField.1 }};
+        }
 {% endfor %}
 
 }

@@ -89,7 +89,7 @@ class ResourceGenerator extends AbstractGenerator
     /**
      * @var array
      */
-    private $ensureIndexes = [];
+    private $syntheticFields = [];
 
     /**
      * @var ParameterBuilder
@@ -183,18 +183,34 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
-     * set EnsureIndexes
+     * set SyntheticFields
      *
-     * @param array|string $ensureIndexes ensureIndexes
+     * @param array|string $syntheticFields syntheticFields
      *
      * @return void
      */
-    public function setEnsureIndexes($ensureIndexes)
+    public function setSyntheticFields(?string $syntheticFields)
     {
-        if (!is_array($ensureIndexes)) {
-            $ensureIndexes = explode(',', trim($ensureIndexes));
+        if (is_null($syntheticFields)) {
+            return;
         }
-        $this->ensureIndexes = $ensureIndexes;
+
+        if (!is_array($syntheticFields)) {
+            $syntheticFields = explode(',', trim($syntheticFields));
+        }
+        $syntheticFields = array_map(function ($val) {
+            $parts = explode(':', $val);
+            if (count($parts) == 1) {
+                return [
+                    'string',
+                    $parts[0]
+                ];
+            } else {
+                return $parts;
+            }
+        }, $syntheticFields);
+
+        $this->syntheticFields = $syntheticFields;
     }
 
     /**
@@ -246,7 +262,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
-            ->setParameter('ensureIndexes', $this->ensureIndexes)
+            ->setParameter('syntheticFields', $this->syntheticFields)
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);

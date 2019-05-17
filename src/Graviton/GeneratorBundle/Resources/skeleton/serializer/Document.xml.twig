@@ -50,5 +50,12 @@
       <type><![CDATA[{{ field.serializerType }}]]></type>
     </property>
 {% endfor %}
+
+{%- if syntheticFields is defined and syntheticFields is not empty %}
+{%- for field in syntheticFields %}
+    <property name="{{ field.1 }}" type="{{ field.0 }}" exclude="true"/>
+{%- endfor %}
+{%- endif %}
+
   </class>
 </serializer>
