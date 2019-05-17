@@ -65,6 +65,9 @@ class GenerateDynamicBundleCommand extends Command
     /** @var string|null */
     private $syntheticFields = null;
 
+    /** @var string|null */
+    private $ensureIndexes = null;
+
     /**
      * @var CommandRunner
      */
@@ -124,6 +127,7 @@ class GenerateDynamicBundleCommand extends Command
      * @param string|null                  $serviceWhitelist      Service whitelist in JSON format
      * @param string|null                  $name                  name
      * @param string|null                  $syntheticFields       comma separated list of synthetic fields to create
+     * @param string|null                  $ensureIndexes         comma separated list of indexes to ensure
      */
     public function __construct(
         LoaderInterface     $definitionLoader,
@@ -134,7 +138,8 @@ class GenerateDynamicBundleCommand extends Command
         $bundleAdditions = null,
         $serviceWhitelist = null,
         $name = null,
-        $syntheticFields = null
+        $syntheticFields = null,
+        $ensureIndexes = null
     ) {
         parent::__construct($name);
 
@@ -145,6 +150,7 @@ class GenerateDynamicBundleCommand extends Command
         $this->serializer = $serializer;
         $this->fs = new Filesystem();
         $this->syntheticFields = $syntheticFields;
+        $this->ensureIndexes = $ensureIndexes;
 
         if ($bundleAdditions !== null && $bundleAdditions !== '') {
             $this->bundleAdditions = $bundleAdditions;
@@ -479,6 +485,7 @@ class GenerateDynamicBundleCommand extends Command
         $generator->setGenerateModel($this->generateModel);
         $generator->setGenerateSchema($this->generateSchema);
         $generator->setSyntheticFields($this->syntheticFields);
+        $generator->setEnsureIndexes($this->ensureIndexes);
 
         foreach ($this->getSubResources($jsonDef) as $subRecource) {
             $generator->setJson(new JsonDefinition($subRecource->getDef()->setIsSubDocument(true)));

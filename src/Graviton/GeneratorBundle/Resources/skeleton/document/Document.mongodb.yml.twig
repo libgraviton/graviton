@@ -163,14 +163,14 @@
     {%- endfor %}
 {%- endif %}
 
-{%- if syntheticFields is defined and syntheticFields is not empty %}
-    {%- for index in syntheticFields %}
+{%- if ensureIndexes is defined and ensureIndexes is not empty %}
+    {%- for index in ensureIndexes %}
 
-    {{ index.1 }}:
+    {{ index }}:
       keys:
-        {{ index.1 }}: asc
+        {{ index }}: asc
       options:
-        name: {{ index.1 }}
+        name: {{ index }}
         background: true
     {%- endfor %}
 {%- endif %}

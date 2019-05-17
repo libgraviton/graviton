@@ -92,6 +92,11 @@ class ResourceGenerator extends AbstractGenerator
     private $syntheticFields = [];
 
     /**
+     * @var array
+     */
+    private $ensureIndexes = [];
+
+    /**
      * @var ParameterBuilder
      */
     private $parameterBuilder;
@@ -217,6 +222,26 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
+     * setEnsureIndexes
+     *
+     * @param array|string $ensureIndexes ensureIndexes
+     *
+     * @return void
+     */
+    public function setEnsureIndexes(?string $ensureIndexes)
+    {
+        if (is_null($ensureIndexes)) {
+            return;
+        }
+
+        if (!is_array($ensureIndexes)) {
+            $ensureIndexes = explode(',', trim($ensureIndexes));
+        }
+
+        $this->ensureIndexes = $ensureIndexes;
+    }
+
+    /**
      * generate the resource with all its bits and parts
      *
      * @param string $bundleDir       bundle dir
@@ -266,6 +291,7 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
             ->setParameter('syntheticFields', $this->syntheticFields)
+            ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);

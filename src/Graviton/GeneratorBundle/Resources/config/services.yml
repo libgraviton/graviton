@@ -125,6 +125,7 @@ services:
           - "%generator.bundlebundle.additions%"
           - "%generator.dynamicbundles.service.whitelist%"
           - null
+          - "%graviton.generator.synthetic_fields%"
           - "%graviton.generator.ensure_indexes%"
         tags:
           -
