@@ -19,8 +19,18 @@ use JMS\Serializer\Metadata\PropertyMetadata;
 class SyntheticFields implements ExclusionStrategyInterface
 {
 
+    /**
+     * @var array
+     */
     private $syntheticFields = [];
 
+    /**
+     * SyntheticFields constructor.
+     *
+     * @param string $syntheticFields synthetic fields
+     *
+     * @return void
+     */
     public function __construct($syntheticFields)
     {
         $this->syntheticFields = CoreUtils::parseStringFieldList($syntheticFields);
@@ -29,7 +39,8 @@ class SyntheticFields implements ExclusionStrategyInterface
     /**
      * Whether the class should be skipped.
      *
-     * @param ClassMetadata $metadata
+     * @param ClassMetadata $metadata metadata
+     * @param Context       $context  context
      *
      * @return boolean
      */
@@ -41,7 +52,8 @@ class SyntheticFields implements ExclusionStrategyInterface
     /**
      * Whether the property should be skipped.
      *
-     * @param PropertyMetadata $property
+     * @param PropertyMetadata $property property
+     * @param Context          $context  context
      *
      * @return boolean
      */
