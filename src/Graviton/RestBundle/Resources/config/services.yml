@@ -1,23 +1,5 @@
 services:
     #Serializer / Serializer context
-    graviton.rest.serializer.serializercontext:
-        class: "%graviton.rest.serializer.serializercontext.class%"
-        calls:
-          -
-            method: setSerializeNull
-            arguments:
-              - false
-          -
-            method: addExclusionStrategy
-            arguments:
-              - "@graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy"
-
-    graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy:
-        class: "%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%"
-        public: true
-        arguments:
-          - "@request_stack"
-
     graviton.rest.serializer.exclusionstrategy.syntheticfields:
       class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
       public: true
