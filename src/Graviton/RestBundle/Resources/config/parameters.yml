@@ -4,6 +4,7 @@ parameters:
     graviton.rest.serializer.serializercontext.class: JMS\Serializer\SerializationContext
     graviton.rest.serializer.deserializercontext.class: JMS\Serializer\DeserializationContext
     graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class: Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy
+    graviton.rest.serializer.exclusionstrategy.syntheticfields.class: Graviton\RestBundle\ExclusionStrategy\SyntheticFields
     graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
     graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
     graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener

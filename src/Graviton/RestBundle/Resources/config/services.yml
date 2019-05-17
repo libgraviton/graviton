@@ -18,6 +18,12 @@ services:
         arguments:
           - "@request_stack"
 
+    graviton.rest.serializer.exclusionstrategy.syntheticfields:
+      class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
+      public: true
+      arguments:
+        - "%graviton.generator.synthetic_fields%"
+
     graviton.rest.serializer:
         parent: "jms_serializer"
         public: true
@@ -54,6 +60,10 @@ services:
             method: setOverrideHeaderAllowed
             arguments:
               - "%graviton.rest.serializer.allow_group_override_header%"
+          -
+            method: addExclusionStrategy
+            arguments:
+              - "@graviton.rest.serializer.exclusionstrategy.syntheticfields"
 
     graviton.rest.router:
         alias: router
