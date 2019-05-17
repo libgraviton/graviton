@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
@@ -196,29 +197,7 @@ class ResourceGenerator extends AbstractGenerator
      */
     public function setSyntheticFields(?string $syntheticFields)
     {
-        if (is_null($syntheticFields)) {
-            return;
-        }
-
-        if (!is_array($syntheticFields)) {
-            $syntheticFields = explode(',', trim($syntheticFields));
-        }
-        $syntheticFields = array_map(
-            function ($val) {
-                $parts = explode(':', $val);
-                if (count($parts) == 1) {
-                    return [
-                        'string',
-                        $parts[0]
-                    ];
-                } else {
-                    return $parts;
-                }
-            },
-            $syntheticFields
-        );
-
-        $this->syntheticFields = $syntheticFields;
+        $this->syntheticFields = CoreUtils::parseStringFieldList($syntheticFields);
     }
 
     /**

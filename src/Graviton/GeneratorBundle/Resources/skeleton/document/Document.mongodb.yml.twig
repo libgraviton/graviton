@@ -52,12 +52,10 @@
       type: string
 {% endif %}
 
-{% if syntheticFields is defined and syntheticFields is not empty %}
 {% for synField in syntheticFields %}
-    {{ synField.1 }}:
-      type: {{ synField.0 }}
+    {{ synField.name }}:
+      type: {{ synField.type }}
 {% endfor %}
-{% endif %}
 
 {# RELATION ARRAYS #}
 {% set relations = [] %}

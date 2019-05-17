@@ -6,6 +6,7 @@ namespace Graviton\RestBundle\Service;
 
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
@@ -93,20 +94,12 @@ class QueryService
         }
 
         foreach ($dataRestrictionMap as $headerName => $fieldName) {
-            $valueParts = explode(':', $fieldName);
-            if (count($valueParts) == 1) {
-                $this->dataRestrictionMap[$headerName] = [
-                    'type' => 'string',
-                    'name' => $valueParts[0]
-                ];
-            } elseif (count($valueParts) == 2) {
-                $this->dataRestrictionMap[$headerName] = [
-                    'type' => $valueParts[0],
-                    'name' => $valueParts[1]
-                ];
-            } else {
+            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
+            if (count($fieldSpec) != 1) {
                 throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
             }
+
+            $this->dataRestrictionMap[$headerName] = array_pop($fieldSpec);
         }
     }
 

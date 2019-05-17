@@ -79,7 +79,7 @@ protected $deletedDate;
 {% endfor %}
 
 {% for syntheticField in syntheticFields %}
-        protected ${{ syntheticField.1 }};
+        protected ${{ syntheticField.name }};
 {% endfor %}
 
 /**
@@ -237,12 +237,12 @@ return $this->deletedDate;
 {% endfor %}
 
 {% for syntheticField in syntheticFields %}
-        public function set{{ syntheticField.1|capitalize }}(${{ syntheticField.1 }}) {
-            $this->{{ syntheticField.1 }} = ${{ syntheticField.1 }};
+        public function set{{ syntheticField.name|capitalize }}(${{ syntheticField.name }}) {
+            $this->{{ syntheticField.name }} = ${{ syntheticField.name }};
         }
 
-        public function get{{ syntheticField.1|capitalize }}() {
-            return $this->{{ syntheticField.1 }};
+        public function get{{ syntheticField.name|capitalize }}() {
+            return $this->{{ syntheticField.name }};
         }
 {% endfor %}
 
