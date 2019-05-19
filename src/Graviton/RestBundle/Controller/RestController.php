@@ -217,7 +217,7 @@ class RestController
         $record = $this->restUtils->validateRequest($request->getContent(), $model);
 
         // Insert the new record
-        $record = $model->insertRecord($request, $record);
+        $record = $model->insertRecord($record);
 
         // store id of new record so we dont need to reparse body later when needed
         $request->attributes->set('id', $record->getId());
@@ -274,7 +274,7 @@ class RestController
 
         // And update the record, if everything is ok
         if (!$this->getModel()->recordExists($id)) {
-            $this->getModel()->insertRecord($request, $record, false);
+            $this->getModel()->insertRecord($record, false);
         } else {
             $this->getModel()->updateRecord($request, $id, $record, false);
         }

@@ -54,14 +54,13 @@ interface ModelInterface
     /**
      * Insert a new Record
      *
-     * @param Request $request      request
-     * @param object  $entity       entity to insert
-     * @param bool    $returnEntity true to return entity
-     * @param bool    $doFlush      if we should flush or not after insert
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
      * @return Object
      */
-    public function insertRecord(Request $request, $entity, $returnEntity = true, $doFlush = true);
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true);
 
     /**
      * Update an existing entity

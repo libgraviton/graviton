@@ -15,6 +15,7 @@ parameters:
     graviton.rest.serializer.serializercontext.factory.class: Graviton\RestBundle\Serializer\SerializationContextFactory
     graviton.rest.restriction.manager.class: Graviton\RestBundle\Restriction\Manager
     graviton.rest.restriction.handler.whoami.class: Graviton\RestBundle\Restriction\Handler\Whoami
+    graviton.rest.restriction.handler.global.httpheader.class: Graviton\RestBundle\Restriction\Handler\HttpHeader
     graviton.rest.services: []
     graviton.rest.listener.rqlqueryrequestlistener.allowedroutes: []
     graviton.rest.not_modifiable.origin.records:

@@ -130,16 +130,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param Request $request      request
-     * @param object  $entity       entity to insert
-     * @param bool    $returnEntity true to return entity
-     * @param bool    $doFlush      if we should flush or not after insert
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
      * @return Object|null
      */
-    public function insertRecord(Request $request, $entity, $returnEntity = true, $doFlush = true)
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
-        $entity = $this->queryService->applyDataRestrictionsOnInsert($request, $entity);
+        $entity = $this->queryService->applyDataRestrictionsOnInsert($entity);
 
         $this->manager->persist($entity);
 

@@ -66,41 +66,15 @@ class QueryService
      * @param VisitorInterface $visitor                visitor
      * @param Manager          $restrictionManager     restriction manager
      * @param integer          $paginationDefaultLimit default pagination limit
-     * @param array            $dataRestrictionMap     data restriction configuration
      */
     public function __construct(
         VisitorInterface $visitor,
         Manager $restrictionManager,
-        $paginationDefaultLimit,
-        array $dataRestrictionMap
+        $paginationDefaultLimit
     ) {
         $this->visitor = $visitor;
         $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
-        $this->setDataRestrictionMap($dataRestrictionMap);
-    }
-
-    /**
-     * set DataRestrictionMap
-     *
-     * @param array $dataRestrictionMap dataRestrictionMap
-     *
-     * @return void
-     */
-    public function setDataRestrictionMap(?array $dataRestrictionMap)
-    {
-        if (!is_array($dataRestrictionMap)) {
-            return;
-        }
-
-        foreach ($dataRestrictionMap as $headerName => $fieldName) {
-            $fieldSpec = CoreUtils::parseStringFieldList($fieldName);
-            if (count($fieldSpec) != 1) {
-                throw new \LogicException("Wrong data restriction value as '${headerName}' '${fieldName}'");
-            }
-
-            $this->dataRestrictionMap[$headerName] = array_pop($fieldSpec);
-        }
     }
 
     /**
@@ -141,9 +115,6 @@ class QueryService
             /**
              * this is or the "all" action -> multiple documents returned
              */
-
-            $this->applyDataRestrictions();
-
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
 
@@ -156,8 +127,6 @@ class QueryService
              * this is the "getAction" -> one document returned
              */
             $this->queryBuilder->field('id')->equals($this->getDocumentId());
-
-            $this->applyDataRestrictions();
 
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
@@ -195,56 +164,19 @@ class QueryService
     }
 
     /**
-     * apply configured data restrictions on select queries
+     * apply restrictions on insert
      *
-     * @return void
-     */
-    private function applyDataRestrictions()
-    {
-        if (!is_array($this->dataRestrictionMap) || empty($this->dataRestrictionMap)) {
-            return null;
-        }
-
-        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
-            $headerValue = $this->request->headers->get($headerName, null);
-
-            if ($headerValue == null) {
-                continue;
-            }
-
-            if ($fieldSpec['type'] == 'int') {
-                $headerValue = (int) $headerValue;
-            }
-
-            $this->queryBuilder->addAnd(
-                $this->queryBuilder->expr()->field($fieldSpec['name'])->in([null, $headerValue])
-            );
-        }
-    }
-
-    /**
-     * @param Request $request request
-     * @param object  $entity  entity
+     * @param object $entity entity
      *
      * @return object altered object
      */
-    public function applyDataRestrictionsOnInsert(Request $request, $entity)
+    public function applyDataRestrictionsOnInsert($entity)
     {
-        if (!is_array($this->dataRestrictionMap) ||
-            empty($this->dataRestrictionMap) ||
-            !($entity instanceof \ArrayAccess)
-        ) {
+        if (!$entity instanceof \ArrayAccess) {
             return $entity;
         }
 
-        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
-            $headerValue = $request->headers->get($headerName, null);
-            if (!is_null($headerValue)) {
-                $entity[$fieldSpec['name']] = $headerValue;
-            }
-        }
-
-        return $entity;
+        return $this->restrictionManager->restrictInsert($entity);
     }
 
     /**

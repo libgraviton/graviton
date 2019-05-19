@@ -102,7 +102,6 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
-          - "%graviton.rest.data_restriction.map%"
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
@@ -341,8 +340,18 @@ services:
             method: registerHandler
             arguments:
               - "@graviton.rest.restriction.handler.whoami"
+          -
+            method: registerGlobalHandler
+            arguments:
+              - "@graviton.rest.restriction.handler.global.httpheader"
 
     graviton.rest.restriction.handler.whoami:
         class: "%graviton.rest.restriction.handler.whoami.class%"
         arguments:
           - "@graviton.security.service.utils"
+
+    graviton.rest.restriction.handler.global.httpheader:
+      class: "%graviton.rest.restriction.handler.global.httpheader.class%"
+      arguments:
+        - "%graviton.rest.data_restriction.map%"
+        - "@request_stack"
