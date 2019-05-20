@@ -5,13 +5,12 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Doctrine\Common\Collections\Criteria;
 use Graviton\CoreBundle\Util\CoreUtils;
+use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
-use Graviton\RestBundle\Event\RestEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -89,7 +88,7 @@ class RestrictionListener
             }
 
             if ($fieldSpec['type'] == 'int') {
-                $headerValue = (int)$headerValue;
+                $headerValue = (int) $headerValue;
             }
 
             $builder->addAnd(
@@ -103,11 +102,11 @@ class RestrictionListener
     /**
      * gets called before we persist an entity
      *
-     * @param EntityPrePersistEvent $event
+     * @param EntityPrePersistEvent $event event
      *
      * @return EntityPrePersistEvent event
      */
-    public function onEntityPrePersist(EntityPrePersistEvent $event)
+    public function onEntityPrePersistOrDelete(EntityPrePersistEvent $event)
     {
         if (!is_array($this->dataRestrictionMap) ||
             empty($this->dataRestrictionMap) ||
@@ -117,15 +116,55 @@ class RestrictionListener
         }
 
         $entity = $event->getEntity();
+        $entityId = $entity['id'];
+
         foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
             $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
-            if (!is_null($headerValue)) {
-                $entity[$fieldSpec['name']] = $headerValue;
+
+            if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
+                $headerValue = (int) $headerValue;
             }
+
+            // skip the id collision check if no id..
+            if (!is_null($entityId)) {
+                $this->checkIdCollision($event, $entityId, $fieldSpec['name'], $headerValue);
+            }
+
+            if (is_null($headerValue)) {
+                continue;
+            }
+
+            $entity[$fieldSpec['name']] = $headerValue;
         }
 
         $event->setEntity($entity);
 
         return $event;
+    }
+
+    /**
+     * checks for an id collision. that is, if we try to insert/delete a record that
+     * already exist with ANOTHER $checkField value of $checkValue that we currently trying
+     * to insert/delete. basically this is the case if one tenant group tries to modify or delete
+     * the record of another one
+     *
+     * @param EntityPrePersistEvent $event      event
+     * @param mixed                 $entityId   entity id
+     * @param string                $checkField field to check
+     * @param mixed                 $checkValue value to check for on the field
+     *
+     * @throws RestrictedIdCollisionException
+     *
+     * @return void
+     */
+    private function checkIdCollision(EntityPrePersistEvent $event, $entityId, $checkField, $checkValue)
+    {
+        $criteria = new Criteria();
+        $criteria->where(Criteria::expr()->eq('id', $entityId));
+        $criteria->andWhere(Criteria::expr()->neq($checkField, $checkValue));
+
+        if (!$event->getRepository()->matching($criteria)->isEmpty()) {
+            throw new RestrictedIdCollisionException();
+        }
     }
 }

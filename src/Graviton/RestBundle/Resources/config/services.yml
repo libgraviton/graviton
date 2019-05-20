@@ -349,7 +349,10 @@ services:
           method: onModelQuery
         - name: kernel.event_listener
           event: document.model.event.entity.pre_persist
-          method: onEntityPrePersist
+          method: onEntityPrePersistOrDelete
+        - name: kernel.event_listener
+          event: document.model.event.entity.pre_delete
+          method: onEntityPrePersistOrDelete
 
     graviton.rest.restriction.manager:
         class: "%graviton.rest.restriction.manager.class%"
