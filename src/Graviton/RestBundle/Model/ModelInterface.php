@@ -65,14 +65,13 @@ interface ModelInterface
     /**
      * Update an existing entity
      *
-     * @param Request $request      request
-     * @param string  $documentId   id of entity to update
-     * @param Object  $entity       new entity
-     * @param bool    $returnEntity true to return entity
+     * @param string $documentId   id of entity to update
+     * @param Object $entity       new entity
+     * @param bool   $returnEntity true to return entity
      *
      * @return Object
      */
-    public function updateRecord(Request $request, $documentId, $entity, $returnEntity = true);
+    public function updateRecord($documentId, $entity, $returnEntity = true);
 
     /**
      * Delete a record by id

@@ -75,17 +75,18 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $restUtils;
 
     /**
-     * @param QueryService    $queryService               query service
-     * @param RestUtils       $restUtils                  Rest utils
-     * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
-     * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param QueryService $queryService query service
+     * @param RestUtils $restUtils Rest utils
+     * @param EventDispatcher $eventDispatcher Kernel event dispatcher
+     * @param array $notModifiableOriginRecords strings with not modifiable recordOrigin values
      */
     public function __construct(
         QueryService $queryService,
         RestUtils $restUtils,
         $eventDispatcher,
         $notModifiableOriginRecords
-    ) {
+    )
+    {
         parent::__construct();
         $this->queryService = $queryService;
         $this->eventDispatcher = $eventDispatcher;
@@ -130,9 +131,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
     /**
-     * @param object $entity       entity to insert
-     * @param bool   $returnEntity true to return entity
-     * @param bool   $doFlush      if we should flush or not after insert
+     * @param object $entity entity to insert
+     * @param bool $returnEntity true to return entity
+     * @param bool $doFlush if we should flush or not after insert
      *
      * @return Object|null
      */
@@ -158,11 +159,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * finds a single entity
      *
-     * @param string  $documentId id of entity to find
+     * @param string $documentId id of entity to find
      * @param boolean $forceClear if we should clear the repository prior to fetching
      *
-     * @throws NotFoundException
      * @return Object
+     * @throws NotFoundException
      */
     public function find($documentId, $forceClear = false)
     {
@@ -182,11 +183,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * Will attempt to find Document by ID.
      * If config cache is enabled for document it will save it.
      *
-     * @param string  $documentId id of entity to find
-     * @param Request $request    request
+     * @param string $documentId id of entity to find
+     * @param Request $request request
      *
-     * @throws NotFoundException
      * @return string Serialised object
+     * @throws NotFoundException
      */
     public function getSerialised($documentId, Request $request = null)
     {
@@ -212,14 +213,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * {@inheritDoc}
      *
-     * @param Request $request      request
-     * @param string  $documentId   id of entity to update
-     * @param Object  $entity       new entity
-     * @param bool    $returnEntity true to return entity
+     * @param string $documentId id of entity to update
+     * @param Object $entity new entity
+     * @param bool $returnEntity true to return entity
      *
      * @return Object|null
      */
-    public function updateRecord(Request $request, $documentId, $entity, $returnEntity = true)
+    public function updateRecord($documentId, $entity, $returnEntity = true)
     {
         if (!is_null($documentId)) {
             $this->deleteById($documentId);
@@ -322,9 +322,9 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * If the record is not present, you will receive null. If you don't need an hydrated
      * instance, make sure to pass false there.
      *
-     * @param mixed $id      record id
-     * @param array $fields  list of fields you need.
-     * @param bool  $hydrate whether to hydrate object or not
+     * @param mixed $id record id
+     * @param array $fields list of fields you need.
+     * @param bool $hydrate whether to hydrate object or not
      *
      * @return array|null|object
      */
@@ -381,11 +381,10 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
 
-
     /**
      * Will fire a ModelEvent
      *
-     * @param string $action     insert or update
+     * @param string $action insert or update
      * @param Object $collection the changed Document
      *
      * @return void

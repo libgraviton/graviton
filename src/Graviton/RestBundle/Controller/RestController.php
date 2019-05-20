@@ -276,7 +276,7 @@ class RestController
         if (!$this->getModel()->recordExists($id)) {
             $this->getModel()->insertRecord($record, false);
         } else {
-            $this->getModel()->updateRecord($request, $id, $record, false);
+            $this->getModel()->updateRecord($id, $record, false);
         }
 
         // Set status code
@@ -335,7 +335,7 @@ class RestController
         $record = $this->restUtils->validateRequest($patchedDocument, $model);
 
         // Update object
-        $this->getModel()->updateRecord($request, $id, $record);
+        $this->getModel()->updateRecord($id, $record);
 
         // Set status response code
         $response->setStatusCode(Response::HTTP_OK);
