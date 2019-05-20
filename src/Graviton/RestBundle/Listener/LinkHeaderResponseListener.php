@@ -153,6 +153,10 @@ class LinkHeaderResponseListener
             $routeName = implode('.', $parts);
         }
 
+        if (is_null($routeName)) {
+            return;
+        }
+
         $selfLinkUrl = $this->router->generate($routeName, $routeParams, UrlGeneratorInterface::ABSOLUTE_URL);
         $queryString = $request->server->get('QUERY_STRING', '');
 
