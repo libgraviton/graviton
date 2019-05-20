@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Doctrine\Common\Collections\Criteria;
+use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
 use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
@@ -118,28 +119,84 @@ class RestrictionListener
         $entity = $event->getEntity();
         $entityId = $entity['id'];
 
-        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
-            $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
-
-            if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
-                $headerValue = (int) $headerValue;
-            }
-
+        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
             // skip the id collision check if no id..
             if (!is_null($entityId)) {
-                $this->checkIdCollision($event, $entityId, $fieldSpec['name'], $headerValue);
+                $this->checkIdCollision($event, $entityId, $fieldName, $fieldValue);
             }
 
-            if (is_null($headerValue)) {
+            if (is_null($fieldValue)) {
                 continue;
             }
 
-            $entity[$fieldSpec['name']] = $headerValue;
+            $entity[$fieldName] = $fieldValue;
         }
 
         $event->setEntity($entity);
 
         return $event;
+    }
+
+    /**
+     * gets called before an aggregate pipeline is executed
+     *
+     * @param PreAggregateEvent $event event
+     *
+     * @return PreAggregateEvent event
+     */
+    public function onPreAggregate(PreAggregateEvent $event)
+    {
+        if (!is_array($this->dataRestrictionMap) ||
+            empty($this->dataRestrictionMap)
+        ) {
+            return;
+        }
+
+        $matchStage = [];
+        $projectStage = [];
+
+        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
+            $projectStage[$fieldName] = 0;
+            if (is_null($fieldValue)) {
+                continue;
+            }
+            $matchStage[$fieldName] = ['$in' => [$fieldValue, null]];
+        }
+
+        $newPipeline = [];
+        if (!empty($matchStage)) {
+            $newPipeline[] = ['$match' => $matchStage];
+        }
+        if (!empty($projectStage)) {
+            $newPipeline[] = ['$project' => $projectStage];
+        }
+
+        $newPipeline = array_merge(
+            $newPipeline,
+            $event->getPipeline()
+        );
+
+        $event->setPipeline($newPipeline);
+
+        return $event;
+    }
+
+    /**
+     * gets the restrictions in an finalized array structure
+     *
+     * @return array restrictions
+     */
+    private function getRestrictions()
+    {
+        $restrictions = [];
+        foreach ($this->dataRestrictionMap as $headerName => $fieldSpec) {
+            $headerValue = $this->requestStack->getCurrentRequest()->headers->get($headerName, null);
+            if (!is_null($headerValue) && $fieldSpec['type'] == 'int') {
+                $headerValue = (int) $headerValue;
+            }
+            $restrictions[$fieldSpec['name']] = $headerValue;
+        }
+        return $restrictions;
     }
 
     /**

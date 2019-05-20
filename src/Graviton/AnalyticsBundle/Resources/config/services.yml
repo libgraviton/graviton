@@ -21,6 +21,7 @@ services:
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%graviton.mongodb.default.server.db%"
             - "@graviton.document.service.dateconverter"
+            - "@event_dispatcher"
 
     graviton.analytics.service_manager:
         class: Graviton\AnalyticsBundle\Manager\ServiceManager

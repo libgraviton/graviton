@@ -353,6 +353,9 @@ services:
         - name: kernel.event_listener
           event: document.model.event.entity.pre_delete
           method: onEntityPrePersistOrDelete
+        - name: kernel.event_listener
+          event: analytics.event.pre_aggregate
+          method: onPreAggregate
 
     graviton.rest.restriction.manager:
         class: "%graviton.rest.restriction.manager.class%"

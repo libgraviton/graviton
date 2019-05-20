@@ -72,6 +72,39 @@ class RestrictionMultiTenantTest extends RestTestCase
     }
 
     /**
+     * test the multi tenant handling while fetching data via analytics
+     *
+     * @dataProvider fetchDataProvider
+     *
+     * @param array $serverParameters server params
+     * @param int   $expectedCount    exp count
+     *
+     * @return void
+     */
+    public function testTenantFetchDataAnalytics($serverParameters, $expectedCount)
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/analytics/restriction-multitenant?value=1', [], [], $serverParameters);
+        $results = $client->getResults();
+        $this->assertEquals($expectedCount, count($results));
+
+        // make sure our clientId field is not rendered!
+        foreach ($results as $result) {
+            $this->assertObjectNotHasAttribute('clientId', $result);
+        }
+
+        // same but for multipipeline doing the same twice
+        $client->request('GET', '/analytics/restriction-multitenant-multipipeline?value=1', [], [], $serverParameters);
+        $results = $client->getResults();
+        $this->assertEquals($expectedCount, count($results->first));
+        $this->assertEquals($expectedCount, count($results->second));
+
+        foreach (array_merge($results->first, $results->second) as $result) {
+            $this->assertObjectNotHasAttribute('clientId', $result);
+        }
+    }
+
+    /**
      * data provider for data fetching tests..
      *
      * @return array data
