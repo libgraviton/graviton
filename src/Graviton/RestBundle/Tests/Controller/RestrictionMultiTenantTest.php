@@ -55,7 +55,7 @@ class RestrictionMultiTenantTest extends RestTestCase
     public function testTenantFetchData($serverParameters, $expectedCount)
     {
         $client = static::createRestClient();
-        $client->request('GET', '/testcase/multitenant/?sort(+value)&select(id,clientId)', [], [], $serverParameters);
+        $client->request('GET', '/testcase/multitenant/?sort(+value)', [], [], $serverParameters);
         $results = $client->getResults();
         $this->assertEquals($expectedCount, count($results));
 
@@ -63,6 +63,12 @@ class RestrictionMultiTenantTest extends RestTestCase
         foreach ($results as $result) {
             $this->assertObjectNotHasAttribute('clientId', $result);
         }
+
+        // with select()
+        $client = static::createRestClient();
+        $client->request('GET', '/testcase/multitenant/?sort(+value)&select(id)', [], [], $serverParameters);
+        $results = $client->getResults();
+        $this->assertEquals($expectedCount, count($results));
     }
 
     /**
@@ -84,6 +90,10 @@ class RestrictionMultiTenantTest extends RestTestCase
             'client10' => [
                 ['HTTP_X-GRAVITON-CLIENT' => '10'],
                 4
+            ],
+            'client999' => [
+                ['HTTP_X-GRAVITON-CLIENT' => '999'],
+                2
             ]
         ];
     }
