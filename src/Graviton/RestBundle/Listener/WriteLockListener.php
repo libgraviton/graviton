@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -167,7 +168,31 @@ class WriteLockListener
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $lockName = $event->getRequest()->attributes->get('writeLockOn', null);
+        $this->releaseLock($event->getRequest());
+    }
+
+    /**
+     * release the lock on exceptions
+     *
+     * @param GetResponseForExceptionEvent $event event
+     *
+     * @return void
+     */
+    public function onKernelException(GetResponseForExceptionEvent $event)
+    {
+        $this->releaseLock($event->getRequest());
+    }
+
+    /**
+     * releases the lock if needed
+     *
+     * @param Request $request request
+     *
+     * @return void
+     */
+    private function releaseLock(Request $request)
+    {
+        $lockName = $request->attributes->get('writeLockOn', null);
         if (!is_null($lockName)) {
             $this->cache->delete($lockName);
             $this->logger->info("LOCK REMOVED = ".$lockName);

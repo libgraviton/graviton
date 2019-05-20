@@ -127,6 +127,11 @@ services:
             event: kernel.response
             priority: 9999
             method: onKernelResponse
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            priority: 9999
+            method: onKernelException
 
     #Json Request listener -->
     graviton.rest.listener.jsonrequestlistener:
