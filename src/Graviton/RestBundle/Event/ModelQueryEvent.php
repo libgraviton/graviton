@@ -35,7 +35,9 @@ class ModelQueryEvent extends Event
     }
 
     /**
-     * @param Builder $queryBuilder
+     * @param Builder $queryBuilder query builder
+     *
+     * @return void
      */
     public function setQueryBuilder(Builder $queryBuilder): void
     {

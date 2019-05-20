@@ -5,6 +5,7 @@
 
 namespace Graviton\RestBundle\Event;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -26,6 +27,11 @@ class EntityPrePersistEvent extends Event
     private $entity;
 
     /**
+     * @var DocumentRepository
+     */
+    private $repository;
+
+    /**
      * gets entity
      *
      * @return object
@@ -38,12 +44,30 @@ class EntityPrePersistEvent extends Event
     /**
      * set entity
      *
-     * @param object $entity
+     * @param object $entity entity
      *
      * @return void
      */
     public function setEntity(object $entity): void
     {
         $this->entity = $entity;
+    }
+
+    /**
+     * @return DocumentRepository repository
+     */
+    public function getRepository(): DocumentRepository
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @param DocumentRepository $repository repository
+     *
+     * @return void
+     */
+    public function setRepository(DocumentRepository $repository): void
+    {
+        $this->repository = $repository;
     }
 }
