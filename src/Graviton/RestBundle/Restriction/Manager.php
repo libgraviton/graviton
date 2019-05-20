@@ -5,7 +5,6 @@
 namespace Graviton\RestBundle\Restriction;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\RestBundle\Restriction\Handler\GlobalHandlerAbstract;
 use Graviton\RestBundle\Restriction\Handler\HandlerInterface;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
@@ -19,18 +18,10 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 class Manager
 {
 
-    public const EVENT_READ = 'read';
-    public const EVENT_INSERT = 'insert';
-
     /**
      * @var HandlerInterface[]
      */
     private static $handlers = [];
-
-    /**
-     * @var HandlerInterface[]
-     */
-    private static $globalHandlers = [];
 
     /**
      * @var array
@@ -60,18 +51,6 @@ class Manager
     }
 
     /**
-     * register a global handler - one that is always called
-     *
-     * @param HandlerInterface $handler restriction handler
-     *
-     * @return void
-     */
-    public static function registerGlobalHandler(HandlerInterface $handler)
-    {
-        self::$globalHandlers[$handler->getHandlerName()] = $handler;
-    }
-
-    /**
      * handle the request for a given entity
      *
      * @param DocumentRepository $repository repository
@@ -81,47 +60,17 @@ class Manager
     public function handle(DocumentRepository $repository)
     {
         $className = $repository->getClassName();
-
-        $nodes = [];
         if (isset($this->restrictedFieldMap[$className]) && !empty($this->restrictedFieldMap[$className])) {
+            $nodes = [];
             foreach ($this->restrictedFieldMap[$className] as $fieldPath => $handlers) {
                 $nodes = array_merge(
                     $nodes,
                     $this->getHandlerValue($repository, $fieldPath, $handlers)
                 );
             }
-        }
-
-        // global handlers
-        foreach (self::$globalHandlers as $handler) {
-            $handlerNode = $handler->getValue($repository, '');
-            if ($handlerNode instanceof AbstractQueryNode) {
-                $nodes[] = $handlerNode;
-            }
-        }
-
-        if (!empty($nodes)) {
             return new AndNode($nodes);
         }
-
         return false;
-    }
-
-    /**
-     * modifies stuff on insert
-     *
-     * @param \ArrayAccess $entity entity
-     *
-     * @return \ArrayAccess entity
-     */
-    public function restrictInsert(\ArrayAccess $entity)
-    {
-        foreach (self::$globalHandlers as $handler) {
-            if ($handler instanceof GlobalHandlerAbstract) {
-                $entity = $handler->restrictInsert($entity);
-            }
-        }
-        return $entity;
     }
 
     /**

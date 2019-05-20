@@ -6,10 +6,11 @@ namespace Graviton\RestBundle\Service;
 
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\CoreBundle\Util\CoreUtils;
+use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
 use Xiag\Rql\Parser\Node\LimitNode;
@@ -43,11 +44,6 @@ class QueryService
     private $paginationDefaultLimit;
 
     /**
-     * @var array
-     */
-    private $dataRestrictionMap;
-
-    /**
      * @var Request
      */
     private $request;
@@ -63,18 +59,26 @@ class QueryService
     private $repository;
 
     /**
-     * @param VisitorInterface $visitor                visitor
-     * @param Manager          $restrictionManager     restriction manager
-     * @param integer          $paginationDefaultLimit default pagination limit
+     * @var EventDispatcher
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @param VisitorInterface         $visitor                visitor
+     * @param Manager                  $restrictionManager     restriction manager
+     * @param integer                  $paginationDefaultLimit default pagination limit
+     * @param EventDispatcherInterface $eventDispatcher        event dispatcher
      */
     public function __construct(
         VisitorInterface $visitor,
         Manager $restrictionManager,
-        $paginationDefaultLimit
+        $paginationDefaultLimit,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->visitor = $visitor;
         $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -99,6 +103,9 @@ class QueryService
         $this->queryBuilder = $repository->createQueryBuilder();
 
         $this->applyRqlQuery();
+
+        // dispatch our event
+        $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
 
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
@@ -153,6 +160,21 @@ class QueryService
     }
 
     /**
+     * passes the query builder to any listeners that are subscribed to the ModelQueryEvent
+     *
+     * @param Builder $builder builder
+     *
+     * @return Builder builder
+     */
+    public function executeQueryEvent(Builder $builder)
+    {
+        $event = new ModelQueryEvent();
+        $event->setQueryBuilder($builder);
+        $event = $this->eventDispatcher->dispatch(ModelQueryEvent::NAME, $event);
+        return $event->getQueryBuilder();
+    }
+
+    /**
      * if a single document has been requested, this returns the document id. if it returns null,
      * then we return multiple documents
      *
@@ -161,22 +183,6 @@ class QueryService
     private function getDocumentId()
     {
         return $this->request->attributes->get('singleDocument', null);
-    }
-
-    /**
-     * apply restrictions on insert
-     *
-     * @param object $entity entity
-     *
-     * @return object altered object
-     */
-    public function applyDataRestrictionsOnInsert($entity)
-    {
-        if (!$entity instanceof \ArrayAccess) {
-            return $entity;
-        }
-
-        return $this->restrictionManager->restrictInsert($entity);
     }
 
     /**

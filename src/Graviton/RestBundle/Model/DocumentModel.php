@@ -7,12 +7,13 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\RestBundle\Service\QueryService;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
@@ -66,7 +67,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $manager;
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
     /**
@@ -77,13 +78,13 @@ class DocumentModel extends SchemaModel implements ModelInterface
     /**
      * @param QueryService $queryService query service
      * @param RestUtils $restUtils Rest utils
-     * @param EventDispatcher $eventDispatcher Kernel event dispatcher
+     * @param EventDispatcherInterface $eventDispatcher Kernel event dispatcher
      * @param array $notModifiableOriginRecords strings with not modifiable recordOrigin values
      */
     public function __construct(
         QueryService $queryService,
         RestUtils $restUtils,
-        $eventDispatcher,
+        EventDispatcherInterface $eventDispatcher,
         $notModifiableOriginRecords
     )
     {
@@ -139,9 +140,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
-        $entity = $this->queryService->applyDataRestrictionsOnInsert($entity);
-
-        $this->manager->persist($entity);
+        $this->manager->persist($this->dispatchPrePersistEvent($entity));
 
         if ($doFlush) {
             $this->manager->flush($entity);
@@ -221,6 +220,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
+        $entity = $this->dispatchPrePersistEvent($entity);
         if (!is_null($documentId)) {
             $this->deleteById($documentId);
             // detach so odm knows it's gone
@@ -406,5 +406,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event->setCollection($collection);
 
         $this->eventDispatcher->dispatch($action, $event);
+    }
+
+    /**
+     * dispatches our pre-persist event
+     *
+     * @param object $entity entity
+     *
+     * @return object entity
+     */
+    private function dispatchPrePersistEvent(object $entity)
+    {
+        $event = new EntityPrePersistEvent();
+        $event->setEntity($entity);
+        $event = $this->eventDispatcher->dispatch(EntityPrePersistEvent::NAME, $event);
+        return $event->getEntity();
     }
 }
