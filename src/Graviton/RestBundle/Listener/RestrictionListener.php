@@ -11,6 +11,7 @@ use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
+use Graviton\Rql\Event\VisitNodeEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -179,6 +180,11 @@ class RestrictionListener
         $event->setPipeline($newPipeline);
 
         return $event;
+    }
+
+    public function onSolrSearch(VisitNodeEvent $event)
+    {
+        var_dump($event); die;
     }
 
     /**
