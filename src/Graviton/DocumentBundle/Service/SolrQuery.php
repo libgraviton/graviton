@@ -91,7 +91,8 @@ class SolrQuery
         'OR',
         '&&',
         '||',
-        '!'
+        '!',
+        '-'
     ];
 
     /**
@@ -217,7 +218,7 @@ class SolrQuery
         }
 
         if ($this->andifyTerms) {
-            $glue = 'AND';
+            $glue = '&&';
         } else {
             $glue = '';
         }
@@ -347,7 +348,7 @@ class SolrQuery
         }
 
         return sprintf(
-            '(%s OR %s%s)',
+            '(%s || %s%s)',
             $term,
             $term,
             $modifier
