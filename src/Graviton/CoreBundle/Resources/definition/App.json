@@ -1,0 +1,47 @@
+{
+    "id": "App",
+    "description": "Simple objects that represent an app",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/app/",
+        "fixtures": []
+    },
+    "target": {
+        "indexes": [
+          "key",
+          "default",
+          "value"
+        ],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "title": "ID",
+                "description": "Unique identifier.",
+                "required": true
+            },
+            {
+                "name": "name",
+                "type": "varchar",
+                "title": "Name",
+                "description": "Name of the app",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "showInMenu",
+                "type": "boolean",
+                "title": "Show in menu",
+                "description": "If this app should be shown in the menu or not",
+                "required": true
+            },
+            {
+                "name": "order",
+                "type": "int",
+                "title": "Order",
+                "description": "Order sorting field"
+            }
+        ]
+    }
+}

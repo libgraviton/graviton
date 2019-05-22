@@ -64,11 +64,11 @@ services:
 
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel
-        calls:
-          -
-            method: setRepository
-            arguments:
-              - "@graviton.core.repository.app"
+#        calls:
+#          -
+#            method: setRepository
+#            arguments:
+#              - "@gravitondyn.app.repository.app"
 
     #
     #    Commands
@@ -96,13 +96,13 @@ services:
     graviton.security.model.whoami:
         class: Graviton\SecurityBundle\Model\WhoAmI
         parent: graviton.rest.model
-        arguments:
-          - "@graviton.rql.visitor.mongodb"
-        calls:
-          -
-            method: setRepository
-            arguments:
-              - "@graviton.core.repository.app"
+#        arguments:
+#          - "@graviton.rql.visitor.mongodb"
+#        calls:
+#          -
+#            method: setRepository
+#            arguments:
+#              - "@gravitondyn.app.repository.app"
 
     graviton.security.controller.whoami:
         class: Graviton\SecurityBundle\Controller\WhoAmIController

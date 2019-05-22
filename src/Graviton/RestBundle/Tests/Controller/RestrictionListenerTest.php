@@ -1,6 +1,6 @@
 <?php
 /**
- * test class for the "group" serialization feature
+ * test for all the events the RestrictionListener has
  */
 
 namespace Graviton\RestBundle\Tests\Controller;
@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseMultiTenantBundle\DataFixtures\MongoDB\LoadTestCaseMultiTenantData;
 use GravitonDyn\TestCaseMultiTenantBundle\Document\TestCaseMultiTenant;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestrictionMultiTenantTest extends RestTestCase
+class RestrictionListenerTest extends RestTestCase
 {
 
     /**
@@ -358,6 +359,11 @@ class RestrictionMultiTenantTest extends RestTestCase
 
         $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
         $this->assertsRecordNotExists(5, '/testcase/multitenant/100');
+    }
+
+    public function testRqlSearchHandling()
+    {
+        $request = new Request();
     }
 
     /**
