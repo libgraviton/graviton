@@ -178,7 +178,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setQuery')
-            ->with('(fred OR fred*) AND (test OR test*)');
+            ->with('(fred || fred*) && (test || test*)');
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setStart')
