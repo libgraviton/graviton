@@ -1,6 +1,6 @@
 {
     "id": "App",
-    "description": "Simple objects that represent an app",
+    "description": "A graviton based app.",
     "service": {
         "readOnly": false,
         "routerBase": "/core/app/",
@@ -18,22 +18,22 @@
                 "name": "id",
                 "type": "varchar",
                 "title": "ID",
-                "description": "Unique identifier.",
+                "description": "Unique identifier",
                 "required": true
             },
             {
                 "name": "name",
                 "type": "varchar",
                 "title": "Name",
-                "description": "Name of the app",
+                "description": "Display name for an app.",
                 "required": true,
                 "translatable": true
             },
             {
                 "name": "showInMenu",
                 "type": "boolean",
-                "title": "Show in menu",
-                "description": "If this app should be shown in the menu or not",
+                "title": "Show in Menu",
+                "description": "Define if an app should be exposed on the top level menu.",
                 "required": true
             },
             {

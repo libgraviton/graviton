@@ -1,19 +1,17 @@
 <?php
 /**
- * controller for product entities
+ * dummy model
  */
 
-namespace Graviton\CoreBundle\Controller;
+namespace Graviton\CoreBundle\Model;
 
-use Graviton\RestBundle\Controller\RestController;
+use Graviton\RestBundle\Model\DocumentModel;
 
 /**
- * ProductController
- *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ProductController extends RestController
+class Dummy extends DocumentModel
 {
 }

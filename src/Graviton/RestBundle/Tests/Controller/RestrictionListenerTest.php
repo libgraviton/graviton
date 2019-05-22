@@ -361,11 +361,6 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertsRecordNotExists(5, '/testcase/multitenant/100');
     }
 
-    public function testRqlSearchHandling()
-    {
-        $request = new Request();
-    }
-
     /**
      * assert that a record exists
      *

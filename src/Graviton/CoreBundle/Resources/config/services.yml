@@ -99,3 +99,24 @@ services:
       tags:
         -
           name: "routing.loader"
+
+    graviton.core.repository.dummy:
+      class: Doctrine\ODM\MongoDB\DocumentRepository
+      factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+      arguments:
+        - 'GravitonCoreBundle:Dummy'
+
+    graviton.core.model.dummy:
+      class: Graviton\CoreBundle\Model\Dummy
+      parent: "graviton.rest.model"
+      public: true
+      arguments:
+        - "@graviton.rql.visitor.mongodb"
+      calls:
+        -
+          method: setRepository
+          arguments:
+            - "@graviton.core.repository.dummy"
+
+    graviton.core.document.dummy:
+      class: Graviton\CoreBundle\Document\Dummy
