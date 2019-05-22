@@ -182,9 +182,31 @@ class RestrictionListener
         return $event;
     }
 
-    public function onSolrSearch(VisitNodeEvent $event)
+    /**
+     * gets called when a rql search is done..
+     *
+     * @param VisitNodeEvent $event event
+     *
+     * @return VisitNodeEvent event
+     */
+    public function onRqlSearch(VisitNodeEvent $event)
     {
-        var_dump($event); die;
+        if (!$event->getNode() instanceof SearchNode) {
+            return $event;
+        }
+
+        /** @var $node SearchNode */
+        $node = $event->getNode();
+
+        foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
+            if (is_null($fieldValue)) {
+                continue;
+            }
+            $node->addSearchTerm($fieldName.':'.$fieldValue);
+            $node->setVisited(false);
+        }
+
+        $event->setNode($node);
     }
 
     /**

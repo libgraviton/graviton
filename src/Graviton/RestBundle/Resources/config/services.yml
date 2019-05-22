@@ -358,7 +358,7 @@ services:
           method: onPreAggregate
         - name: kernel.event_listener
           event: rql.visit.node
-          method: onSolrSearch
+          method: onRqlSearch
           priority: -100
 
     graviton.rest.restriction.manager:
