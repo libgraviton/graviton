@@ -104,8 +104,10 @@ class QueryService
 
         $this->applyRqlQuery();
 
-        // dispatch our event
-        $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
+        // dispatch our event if normal builder
+        if ($this->queryBuilder instanceof Builder) {
+            $this->queryBuilder = $this->executeQueryEvent($this->queryBuilder);
+        }
 
         if ($this->queryBuilder instanceof \Doctrine\ODM\MongoDB\Aggregation\Builder) {
             /**
