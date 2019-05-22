@@ -53,7 +53,9 @@ class SolrDefinitionCompilerPass implements CompilerPassInterface
     {
         $weights = [];
         foreach ($solrFields as $field) {
-            $weights[] = $field['name'].'^'.$field['weight'];
+            if (is_numeric($field['weight']) && $field['weight'] != 0) {
+                $weights[] = $field['name'].'^'.$field['weight'];
+            }
         }
 
         return implode(' ', $weights);
