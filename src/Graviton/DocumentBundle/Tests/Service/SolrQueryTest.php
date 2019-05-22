@@ -146,42 +146,42 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             ],
             'simple-search-andified' => [
                 'han ha2',
-                'han AND ha2',
+                'han && ha2',
                 true
             ],
             'simple-search-wildcard' => [
                 'hans',
-                '(hans OR hans*)',
+                '(hans || hans*)',
                 true
             ],
             'simple-search-fuzzy' => [
                 'hanso',
-                '(hanso OR hanso~)',
+                '(hanso || hanso~)',
                 true
             ],
             'forced-wildcard-from-client' => [
                 'hanso*', // this *should* be fuzzy as from config, but client wants wildcard
-                '(hanso OR hanso*)',
+                '(hanso || hanso*)',
                 true
             ],
             'forced-fuzzy-from-client' => [
                 'hans~', // this *should* be fuzzy as from config, but client wants wildcard
-                '(hans OR hans~)',
+                '(hans || hans~)',
                 true
             ],
             'forced-mixed-from-client' => [
                 'hansomat* han~',
-                '(hansomat OR hansomat*) AND (han OR han~)',
+                '(hansomat || hansomat*) && (han || han~)',
                 true
             ],
             'simple-combined-no-andify' => [
                 'han hans hanso',
-                'han (hans OR hans*) (hanso OR hanso~)',
+                'han (hans || hans*) (hanso || hanso~)',
                 false
             ],
             'simple-combined-with-andify' => [
                 'han hans hanso',
-                'han AND (hans OR hans*) AND (hanso OR hanso~)',
+                'han && (hans || hans*) && (hanso || hanso~)',
                 true
             ],
             'alphanumeric-iban' => [
@@ -205,23 +205,33 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
                 true
             ],
             'own-operator-2-NOT' => [
-                'peter AND year:>40 AND month:<10 NOT segment:15 NOT segment:90',
-                '(peter OR peter~) AND year:[40 TO *] AND month:[* TO 10] NOT segment:"15" NOT segment:"90"',
+                'peter && year:>40 && month:<10 -segment:15 -segment:90',
+                '(peter || peter~) && year:[40 TO *] && month:[* TO 10] && -segment:"15" && -segment:"90"',
                 true
             ],
             'own-operator-1-NOT' => [
                 'peter NOT segment:15',
-                '(peter OR peter~) NOT segment:"15"',
+                '(peter || peter~) NOT segment:"15"',
                 true
             ],
             'own-operator-1-NOT-BOOL' => [
                 'peter ! segment:15',
-                '(peter OR peter~) ! segment:"15"',
+                '(peter || peter~) ! segment:"15"',
                 true
             ],
-            'own-operator-1-OR-BOOL' => [
+            'own-operator-1-NOT-OP' => [
+                'peter -segment:15',
+                '(peter || peter~) && -segment:"15"',
+                true
+            ],
+            'own-operator-1-||-BOOL' => [
                 'peter || segment:15',
-                '(peter OR peter~) || segment:"15"',
+                '(peter || peter~) || segment:"15"',
+                true
+            ],
+            'own-operator-1-||-BOOL-OP' => [
+                'peter || segment:15 -segment:16',
+                '(peter || peter~) || segment:"15" && -segment:"16"',
                 true
             ]
         ];
