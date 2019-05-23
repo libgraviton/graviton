@@ -185,7 +185,7 @@ class MainControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'If-None-Match',
             $response->headers->get('Access-Control-Allow-Headers')
         );

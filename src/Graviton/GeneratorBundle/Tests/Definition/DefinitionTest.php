@@ -13,13 +13,15 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
 use Graviton\GeneratorBundle\Definition\Schema;
 use Graviton\GeneratorBundle\Tests\Utils;
+use JMS\Serializer\Exception\RuntimeException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefinitionTest extends \PHPUnit\Framework\TestCase
+class DefinitionTest extends TestCase
 {
     private $fullDefPath;
     private $minimalPath;
@@ -37,7 +39,7 @@ class DefinitionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->fullDefPath = __DIR__.'/resources/test-full.json';
         $this->minimalPath = __DIR__.'/resources/test-minimal.json';
@@ -54,24 +56,22 @@ class DefinitionTest extends \PHPUnit\Framework\TestCase
     /**
      * invalid handling
      *
-     * @expectedException \JMS\Serializer\Exception\RuntimeException
-     *
      * @return void
      */
     public function testInvalidHandling()
     {
+        $this->expectException(RuntimeException::class);
         Utils::getJsonDefinition($this->invalidPath);
     }
 
     /**
      * no id
      *
-     * @expectedException \RuntimeException
-     *
      * @return void
      */
     public function testNoId()
     {
+        $this->expectException(\RuntimeException::class);
         Utils::getJsonDefinition($this->noIdPath)->getId();
     }
 
@@ -653,7 +653,7 @@ class DefinitionTest extends \PHPUnit\Framework\TestCase
     public function testIndexes()
     {
         $jsonDef = Utils::getJsonDefinition($this->fullDefPath);
-        $this->assertInternalType('array', $jsonDef->getIndexes());
+        $this->assertIsArray($jsonDef->getIndexes());
     }
 
     /**
@@ -664,7 +664,7 @@ class DefinitionTest extends \PHPUnit\Framework\TestCase
     public function testTextIndexes()
     {
         $jsonDef = Utils::getJsonDefinition($this->fullDefPath);
-        $this->assertInternalType('array', $jsonDef->getTextIndexes());
+        $this->assertIsArray($jsonDef->getTextIndexes());
     }
 
     /**

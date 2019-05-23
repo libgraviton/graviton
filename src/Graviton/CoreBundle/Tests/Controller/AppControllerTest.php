@@ -31,7 +31,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->loadFixturesLocal(
             array(
@@ -70,7 +70,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(true, $results[1]->showInMenu);
         $this->assertEquals(1, $results[1]->order);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/>; rel="self"',
             $response->headers->get('Link')
         );
@@ -97,17 +97,17 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(10%2C0)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(10%2C10)>; rel="next"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(10%2C10)>; rel="last"',
             $response->headers->get('Link')
         );
@@ -126,17 +126,17 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(1, count($client->getResults()));
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
@@ -156,17 +156,17 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
             $response->headers->get('Link')
         );
@@ -181,18 +181,18 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C1)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C0)>; rel="prev"',
             $response->headers->get('Link')
         );
 
         // we're on the 'last' page - so 'last' should not be in in Link header
-        $this->assertNotContains(
+        $this->assertStringNotContainsString(
             'rel="last"',
             $response->headers->get('Link')
         );
@@ -207,22 +207,22 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'http://localhost/core/app/?limit(1)&select(id)&sort(-order)>; rel="self"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="next"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="last"',
             $response->headers->get('Link')
         );
 
-        $this->assertNotContains(
+        $this->assertStringNotContainsString(
             'rel="prev"',
             $response->headers->get('Link')
         );
@@ -245,7 +245,7 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', sprintf('/core/app/?limit(%s)', $limit));
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertContains('invalid limit in rql', $client->getResults()->message);
+        $this->assertStringContainsString('invalid limit in rql', $client->getResults()->message);
     }
 
     /**
@@ -277,12 +277,12 @@ class AppControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?invalidrqlquery');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertContains('syntax error in rql', $client->getResults()->message);
+        $this->assertStringContainsString('syntax error in rql', $client->getResults()->message);
 
         $client = static::createRestClient();
         $client->request('GET', '/core/app/admin?invalidrqlquery');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertContains('syntax error in rql', $client->getResults()->message);
+        $this->assertStringContainsString('syntax error in rql', $client->getResults()->message);
 
         $client = static::createRestClient();
         $client->request('OPTIONS', '/core/app/?invalidrqlquery');
@@ -393,7 +393,7 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals('Administration', $results->name->en);
         $this->assertEquals(true, $results->showInMenu);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/app/admin>; rel="self"',
             $response->headers->get('Link')
         );
@@ -419,7 +419,7 @@ class AppControllerTest extends RestTestCase
 
         // we sent a location header so we don't want a body
         $this->assertNull($results);
-        $this->assertContains('/core/app/', $response->headers->get('Location'));
+        $this->assertStringContainsString('/core/app/', $response->headers->get('Location'));
 
         $client = static::createRestClient();
         $client->request('GET', $response->headers->get('Location'));
@@ -450,7 +450,7 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'No input data',
             $response->getContent()
         );
@@ -469,7 +469,7 @@ class AppControllerTest extends RestTestCase
         $client->post('/core/app/', "non-object value");
 
         $response = $client->getResponse();
-        $this->assertContains('JSON request body must be an object', $response->getContent());
+        $this->assertStringContainsString('JSON request body must be an object', $response->getContent());
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -500,7 +500,7 @@ class AppControllerTest extends RestTestCase
         $lastJsonError = function_exists('json_last_error_msg')
             ? json_last_error_msg()
             : 'Unable to decode JSON string';
-        $this->assertContains(
+        $this->assertStringContainsString(
             $lastJsonError,
             $client->getResults()->message
         );
@@ -636,7 +636,7 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Invalid JSON patch request',
             $response->getContent()
         );
@@ -660,7 +660,7 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Record ID in your payload must be the same',
             $response->getContent()
         );
@@ -761,7 +761,7 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
 
-        $this->assertContains('showInMenu', $results[0]->propertyPath);
+        $this->assertStringContainsString('showInMenu', $results[0]->propertyPath);
         $this->assertEquals('String value found, but a boolean is required', $results[0]->message);
     }
 
@@ -941,8 +941,8 @@ class AppControllerTest extends RestTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
 
-        $this->assertContains('syntax error in rql: ', $results->message);
-        $this->assertContains('Unexpected token', $results->message);
+        $this->assertStringContainsString('syntax error in rql: ', $results->message);
+        $this->assertStringContainsString('Unexpected token', $results->message);
     }
 
     /**

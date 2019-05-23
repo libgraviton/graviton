@@ -554,7 +554,7 @@ class ResourceGenerator extends AbstractGenerator
                 'name' => $tag
             ];
 
-            if ($this->json instanceof JsonDefinition) {
+            if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
                 $thisTag['collection'] = $this->json->getId();
 
                 // is this read only?
@@ -773,6 +773,19 @@ class ResourceGenerator extends AbstractGenerator
             'fixtures/LoadFixtures.php.twig',
             $dir . '/DataFixtures/MongoDB/Load' . $document . 'Data.php',
             $parameters
+        );
+
+        $className = $parameters['base'].'DataFixtures\MongoDB\Load'.$parameters['document'].'Data';
+
+        $this->addService(
+            $className,
+            null,
+            [],
+            'doctrine.fixture.orm',
+            [],
+            null,
+            null,
+            $className
         );
     }
 }

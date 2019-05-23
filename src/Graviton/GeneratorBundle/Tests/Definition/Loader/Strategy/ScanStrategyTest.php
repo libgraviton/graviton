@@ -6,13 +6,14 @@
 namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\ScanStrategy;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ScanStrategyTest extends \PHPUnit\Framework\TestCase
+class ScanStrategyTest extends TestCase
 {
     /**
      * check loading with null input

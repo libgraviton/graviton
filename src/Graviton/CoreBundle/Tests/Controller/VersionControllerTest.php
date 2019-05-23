@@ -28,8 +28,8 @@ class VersionControllerTest extends RestTestCase
         $client->request('GET', '/core/version');
         $response = $client->getResponse();
 
-        $this->assertContains('"self":', $response->getContent());
-        $this->assertInternalType('string', $response->getContent());
+        $this->assertStringContainsString('"self":', $response->getContent());
+        $this->assertIsString($response->getContent());
 
         $tagRegExp = '^([v]?[0-9]+\.[0-9]+\.[0-9]+)(-[0-9a-zA-Z.]+)?(\+[0-9a-zA-Z.]+)?$';
         $branchRegExp = '^((dev\-){1}[0-9a-zA-Z\.\/\-\_]+)';
@@ -59,6 +59,6 @@ class VersionControllerTest extends RestTestCase
             '"additionalProperties":{"title":"Version Number","description":"The actual version","type":"string"}}}}',
             $response->getContent()
         );
-        $this->assertInternalType('string', $response->getContent());
+        $this->assertIsString($response->getContent());
     }
 }

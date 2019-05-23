@@ -24,7 +24,7 @@ class WhoAmIControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             [
@@ -155,6 +155,6 @@ class WhoAmIControllerTest extends RestTestCase
             '"description":"your username","type":"string"},"additionalProperties":true}',
             $response->getContent()
         );
-        $this->assertInternalType('string', $response->getContent());
+        $this->assertIsString($response->getContent());
     }
 }

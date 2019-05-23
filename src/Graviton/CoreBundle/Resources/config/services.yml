@@ -120,3 +120,14 @@ services:
 
     graviton.core.document.dummy:
       class: Graviton\CoreBundle\Document\Dummy
+
+    # fixtures
+    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
+      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData
+      tags:
+          - { name: 'doctrine.fixture.orm' }
+
+    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
+      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit
+      tags:
+        - { name: 'doctrine.fixture.orm' }

@@ -10,6 +10,7 @@ use Graviton\DocumentBundle\Listener\ExtReferenceSearchListener;
 use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,7 +22,7 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceSearchListenerTest extends \PHPUnit\Framework\TestCase
+class ExtReferenceSearchListenerTest extends TestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -46,7 +47,7 @@ class ExtReferenceSearchListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
@@ -114,10 +115,11 @@ class ExtReferenceSearchListenerTest extends \PHPUnit\Framework\TestCase
      * Test ExtReferenceSearchListener::onVisitNode() with not mapped route
      *
      * @return void
-     * @expectedException \LogicException
      */
     public function testOnVisitNodeWithNotMappedRoute()
     {
+        $this->expectException(\LogicException::class);
+
         $extrefMapping = [];
 
         $this->requestAttrs->expects($this->once())

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f456f600d1192e6b3b06b728ffd8efc6",
+    "content-hash": "85aecbcee2701ca929f595172b43c36e",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.93.4",
+            "version": "3.94.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ae3f4eb786b1560d07bc4f01536f48835bebf3d1"
+                "reference": "96fd506d4000cc8f3909154e2dd1e4180835941e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ae3f4eb786b1560d07bc4f01536f48835bebf3d1",
-                "reference": "ae3f4eb786b1560d07bc4f01536f48835bebf3d1",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/96fd506d4000cc8f3909154e2dd1e4180835941e",
+                "reference": "96fd506d4000cc8f3909154e2dd1e4180835941e",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-05-06T18:08:54+00:00"
+            "time": "2019-05-22T18:11:35+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -870,16 +870,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.2.8",
+            "version": "1.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "4acb36955163b20e1ac3241c5fe354ea24337691"
+                "reference": "bb503652c819d09420184d05718db1e572e278f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/4acb36955163b20e1ac3241c5fe354ea24337691",
-                "reference": "4acb36955163b20e1ac3241c5fe354ea24337691",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/bb503652c819d09420184d05718db1e572e278f8",
+                "reference": "bb503652c819d09420184d05718db1e572e278f8",
                 "shasum": ""
             },
             "require": {
@@ -950,7 +950,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2019-03-14T06:32:02+00:00"
+            "time": "2019-05-03T18:37:17+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -2134,16 +2134,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.51",
+            "version": "1.0.52",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "755ba7bf3fb9031e6581d091db84d78275874396"
+                "reference": "c5a5097156387970e6f0ccfcdf03f752856f3391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/755ba7bf3fb9031e6581d091db84d78275874396",
-                "reference": "755ba7bf3fb9031e6581d091db84d78275874396",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/c5a5097156387970e6f0ccfcdf03f752856f3391",
+                "reference": "c5a5097156387970e6f0ccfcdf03f752856f3391",
                 "shasum": ""
             },
             "require": {
@@ -2214,7 +2214,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-03-30T13:22:34+00:00"
+            "time": "2019-05-20T20:21:14+00:00"
         },
         {
             "name": "league/flysystem-aws-s3-v3",
@@ -4341,16 +4341,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.9.0",
+            "version": "v2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "82a1c055c8ed4c4705023bfd0405f3c74db6e3ae"
+                "reference": "5240e21982885b76629552d83b4ebb6d41ccde6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/82a1c055c8ed4c4705023bfd0405f3c74db6e3ae",
-                "reference": "82a1c055c8ed4c4705023bfd0405f3c74db6e3ae",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/5240e21982885b76629552d83b4ebb6d41ccde6b",
+                "reference": "5240e21982885b76629552d83b4ebb6d41ccde6b",
                 "shasum": ""
             },
             "require": {
@@ -4366,7 +4366,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9-dev"
+                    "dev-master": "2.10-dev"
                 }
             },
             "autoload": {
@@ -4404,7 +4404,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-04-28T06:57:38+00:00"
+            "time": "2019-05-14T12:03:52+00:00"
         },
         {
             "name": "xiag/rql-parser",
@@ -4518,6 +4518,47 @@
     ],
     "packages-dev": [
         {
+            "name": "dms/phpunit-arraysubset-asserts",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rdohms/phpunit-arraysubset-asserts.git",
+                "reference": "d618ece5d53e05be87eba835b079377eaafbd7c8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rdohms/phpunit-arraysubset-asserts/zipball/d618ece5d53e05be87eba835b079377eaafbd7c8",
+                "reference": "d618ece5d53e05be87eba835b079377eaafbd7c8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2",
+                "phpunit/phpunit": "^8.0"
+            },
+            "require-dev": {
+                "dms/coding-standard": "^1.0",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DMS\\PHPUnitExtensions\\ArraySubset\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rafael Dohms",
+                    "email": "rdohms@gmail.com"
+                }
+            ],
+            "description": "This package provides Array Subset and related asserts once depracated in PHPunit 8",
+            "time": "2019-02-17T14:29:58+00:00"
+        },
+        {
             "name": "doctrine/data-fixtures",
             "version": "v1.3.1",
             "source": {
@@ -4578,6 +4619,240 @@
             "time": "2018-03-20T09:06:36+00:00"
         },
         {
+            "name": "doctrine/dbal",
+            "version": "v2.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/dbal.git",
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/cache": "^1.0",
+                "doctrine/event-manager": "^1.0",
+                "ext-pdo": "*",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^5.0",
+                "jetbrains/phpstorm-stubs": "^2018.1.2",
+                "phpstan/phpstan": "^0.10.1",
+                "phpunit/phpunit": "^7.4",
+                "symfony/console": "^2.0.5|^3.0|^4.0",
+                "symfony/phpunit-bridge": "^3.4.5|^4.0.5"
+            },
+            "suggest": {
+                "symfony/console": "For helpful console commands such as SQL execution and import of files."
+            },
+            "bin": [
+                "bin/doctrine-dbal"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.9.x-dev",
+                    "dev-develop": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                }
+            ],
+            "description": "Powerful PHP database abstraction layer (DBAL) with many features for database schema introspection and management.",
+            "homepage": "https://www.doctrine-project.org/projects/dbal.html",
+            "keywords": [
+                "abstraction",
+                "database",
+                "dbal",
+                "mysql",
+                "persistence",
+                "pgsql",
+                "php",
+                "queryobject"
+            ],
+            "time": "2018-12-31T03:27:51+00:00"
+        },
+        {
+            "name": "doctrine/doctrine-bundle",
+            "version": "1.11.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/DoctrineBundle.git",
+                "reference": "09a38417339dc93849d051b914aae3947eb231a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/09a38417339dc93849d051b914aae3947eb231a7",
+                "reference": "09a38417339dc93849d051b914aae3947eb231a7",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2.5.12",
+                "doctrine/doctrine-cache-bundle": "~1.2",
+                "jdorn/sql-formatter": "^1.2.16",
+                "php": "^7.1",
+                "symfony/config": "^3.4|^4.1",
+                "symfony/console": "^3.4|^4.1",
+                "symfony/dependency-injection": "^3.4|^4.1",
+                "symfony/doctrine-bridge": "^3.4|^4.1",
+                "symfony/framework-bundle": "^3.4|^4.1"
+            },
+            "conflict": {
+                "doctrine/orm": "<2.6",
+                "twig/twig": "<1.34|>=2.0,<2.4"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^6.0",
+                "doctrine/orm": "^2.6",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "7.0",
+                "symfony/cache": "^3.4|^4.1",
+                "symfony/phpunit-bridge": "^4.2",
+                "symfony/property-info": "^3.4|^4.1",
+                "symfony/validator": "^3.4|^4.1",
+                "symfony/web-profiler-bundle": "^3.4|^4.1",
+                "symfony/yaml": "^3.4|^4.1",
+                "twig/twig": "^1.34|^2.4"
+            },
+            "suggest": {
+                "doctrine/orm": "The Doctrine ORM integration is optional in the bundle.",
+                "symfony/web-profiler-bundle": "To use the data collector."
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.11.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Bundle\\DoctrineBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Doctrine Project",
+                    "homepage": "http://www.doctrine-project.org/"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony DoctrineBundle",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "database",
+                "dbal",
+                "orm",
+                "persistence"
+            ],
+            "time": "2019-05-13T14:30:38+00:00"
+        },
+        {
+            "name": "doctrine/doctrine-fixtures-bundle",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/DoctrineFixturesBundle.git",
+                "reference": "f016565b251c2dfa32a8d6da44d1650dc9ec1498"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/f016565b251c2dfa32a8d6da44d1650dc9ec1498",
+                "reference": "f016565b251c2dfa32a8d6da44d1650dc9ec1498",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/data-fixtures": "^1.3",
+                "doctrine/doctrine-bundle": "^1.6",
+                "php": "^7.1",
+                "symfony/doctrine-bridge": "~3.4|^4.1",
+                "symfony/framework-bundle": "^3.4|^4.1"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^5.0",
+                "phpunit/phpunit": "^7.4",
+                "symfony/phpunit-bridge": "^4.1"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Bundle\\FixturesBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Doctrine Project",
+                    "homepage": "http://www.doctrine-project.org"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony DoctrineFixturesBundle",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "Fixture",
+                "persistence"
+            ],
+            "time": "2018-12-21T10:10:51+00:00"
+        },
+        {
             "name": "graviton/test-services-bundle",
             "version": "v2.4.1",
             "source": {
@@ -4613,6 +4888,56 @@
             ],
             "description": "Graviton service bundle containing some service definitions useful for testing.",
             "time": "2019-05-22T15:31:45+00:00"
+        },
+        {
+            "name": "jdorn/sql-formatter",
+            "version": "v1.2.17",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jdorn/sql-formatter.git",
+                "reference": "64990d96e0959dff8e059dfcdc1af130728d92bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/64990d96e0959dff8e059dfcdc1af130728d92bc",
+                "reference": "64990d96e0959dff8e059dfcdc1af130728d92bc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "lib"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Dorn",
+                    "email": "jeremy@jeremydorn.com",
+                    "homepage": "http://jeremydorn.com/"
+                }
+            ],
+            "description": "a PHP SQL highlighting library",
+            "homepage": "https://github.com/jdorn/sql-formatter/",
+            "keywords": [
+                "highlight",
+                "sql"
+            ],
+            "time": "2014-01-12T16:20:24+00:00"
         },
         {
             "name": "johnkary/phpunit-speedtrap",
@@ -4693,56 +5018,53 @@
             "time": "2018-01-10T13:47:51+00:00"
         },
         {
-            "name": "liip/functional-test-bundle",
-            "version": "2.0.0-alpha4",
+            "name": "liip/test-fixtures-bundle",
+            "version": "0.1.0-alpha1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/liip/LiipFunctionalTestBundle.git",
-                "reference": "321db8392c1ec151959d166208e6df3b22461b43"
+                "url": "https://github.com/liip/LiipTestFixturesBundle.git",
+                "reference": "986d24a5cbc10861beda4f4ff53a8895169b4cab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipFunctionalTestBundle/zipball/321db8392c1ec151959d166208e6df3b22461b43",
-                "reference": "321db8392c1ec151959d166208e6df3b22461b43",
+                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/986d24a5cbc10861beda4f4ff53a8895169b4cab",
+                "reference": "986d24a5cbc10861beda4f4ff53a8895169b4cab",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "^2.0",
                 "php": "^7.1",
-                "symfony/browser-kit": "^3.4 || ^4.0",
-                "symfony/framework-bundle": "^3.4 || ^4.0"
+                "symfony/browser-kit": "^3.4 || ^4.1",
+                "symfony/framework-bundle": "^3.4 || ^4.1"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "^1.3",
                 "doctrine/doctrine-bundle": "^1.8",
-                "doctrine/doctrine-fixtures-bundle": "^3.0",
-                "doctrine/orm": "^2.5",
+                "doctrine/doctrine-fixtures-bundle": "^3.0.2",
+                "doctrine/orm": "^2.6",
                 "jackalope/jackalope-doctrine-dbal": "^1.3",
-                "phpunit/phpunit": "^6.1|^7.0",
+                "phpunit/phpunit": "^6.1 || ^7.0",
                 "symfony/monolog-bundle": "^3.1",
-                "symfony/phpunit-bridge": "^3.4 || ^4.0",
-                "symfony/symfony": "^3.4 || ^4.0",
-                "theofidry/alice-data-fixtures": "^1.0.1",
-                "twig/twig": "^2.0"
+                "symfony/phpunit-bridge": "^3.4 || ^4.1",
+                "symfony/symfony": "^3.4 || ^4.1",
+                "theofidry/alice-data-fixtures": "^1.0.1"
             },
             "suggest": {
-                "brianium/paratest": "Required when using paratest to parallelize tests",
                 "doctrine/dbal": "Required when using the fixture loading functionality with an ORM and SQLite",
                 "doctrine/doctrine-fixtures-bundle": "Required when using the fixture loading functionality",
                 "doctrine/orm": "Required when using the fixture loading functionality with an ORM and SQLite",
                 "hautelook/alice-bundle": "Required when using loadFixtureFiles functionality with custom providers",
-                "nelmio/alice": "Required when using loadFixtureFiles functionality",
-                "symfony/framework-bundle": "To use assertStatusCode and assertValidationErrors ~2.5"
+                "theofidry/alice-data-fixtures": "Required when using loadFixtureFiles functionality"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Liip\\FunctionalTestBundle\\": "src/"
+                    "Liip\\TestFixturesBundle\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4756,14 +5078,16 @@
                 },
                 {
                     "name": "Community contributions",
-                    "homepage": "https://github.com/liip/LiipFunctionalTestBundle/contributors"
+                    "homepage": "https://github.com/liip/LiipTestFixturesBundle/contributors"
                 }
             ],
-            "description": "This bundles provides additional functional test-cases for Symfony2 applications",
+            "description": "This bundles enables efficient loading of Doctrine fixtures in functional test-cases for Symfony applications",
             "keywords": [
-                "Symfony2"
+                "fixtures",
+                "symfony",
+                "testing"
             ],
-            "time": "2018-03-06T22:11:23+00:00"
+            "time": "2019-03-20T07:30:42+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -5132,40 +5456,40 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.1.4",
+            "version": "7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "807e6013b00af69b6c5d9ceb4282d0393dbb9d8d"
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/807e6013b00af69b6c5d9ceb4282d0393dbb9d8d",
-                "reference": "807e6013b00af69b6c5d9ceb4282d0393dbb9d8d",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0317a769a81845c390e19684d9ba25d7f6aa4707",
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-xmlwriter": "*",
-                "php": "^7.1",
-                "phpunit/php-file-iterator": "^2.0",
+                "php": "^7.2",
+                "phpunit/php-file-iterator": "^2.0.2",
                 "phpunit/php-text-template": "^1.2.1",
-                "phpunit/php-token-stream": "^3.0",
+                "phpunit/php-token-stream": "^3.0.1",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
-                "sebastian/environment": "^3.1 || ^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/version": "^2.0.1",
                 "theseer/tokenizer": "^1.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0"
+                "phpunit/phpunit": "^8.0"
             },
             "suggest": {
-                "ext-xdebug": "^2.6.0"
+                "ext-xdebug": "^2.6.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.1-dev"
+                    "dev-master": "7.0-dev"
                 }
             },
             "autoload": {
@@ -5191,7 +5515,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-31T16:06:48+00:00"
+            "time": "2019-02-26T07:38:26+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -5384,16 +5708,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.9",
+            "version": "8.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "134669cf0eeac3f79bc7f0c793efbc158bffc160"
+                "reference": "01392d4b5878aa617e8d9bc7a529e5febc8fe956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/134669cf0eeac3f79bc7f0c793efbc158bffc160",
-                "reference": "134669cf0eeac3f79bc7f0c793efbc158bffc160",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/01392d4b5878aa617e8d9bc7a529e5febc8fe956",
+                "reference": "01392d4b5878aa617e8d9bc7a529e5febc8fe956",
                 "shasum": ""
             },
             "require": {
@@ -5403,26 +5727,24 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "ext-xml": "*",
+                "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.7",
                 "phar-io/manifest": "^1.0.2",
                 "phar-io/version": "^2.0",
-                "php": "^7.1",
+                "php": "^7.2",
                 "phpspec/prophecy": "^1.7",
-                "phpunit/php-code-coverage": "^6.0.7",
+                "phpunit/php-code-coverage": "^7.0",
                 "phpunit/php-file-iterator": "^2.0.1",
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.1",
                 "sebastian/comparator": "^3.0",
                 "sebastian/diff": "^3.0",
-                "sebastian/environment": "^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/exporter": "^3.1",
-                "sebastian/global-state": "^2.0",
+                "sebastian/global-state": "^3.0",
                 "sebastian/object-enumerator": "^3.0.3",
                 "sebastian/resource-operations": "^2.0",
                 "sebastian/version": "^2.0.1"
-            },
-            "conflict": {
-                "phpunit/phpunit-mock-objects": "*"
             },
             "require-dev": {
                 "ext-pdo": "*"
@@ -5438,7 +5760,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.5-dev"
+                    "dev-master": "8.1-dev"
                 }
             },
             "autoload": {
@@ -5464,7 +5786,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-04-19T15:50:46+00:00"
+            "time": "2019-05-14T04:57:31+00:00"
         },
         {
             "name": "react/event-loop",
@@ -5840,23 +6162,26 @@
         },
         {
             "name": "sebastian/global-state",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4"
+                "reference": "edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4",
-                "reference": "e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4",
+                "reference": "edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.2",
+                "sebastian/object-reflector": "^1.1.1",
+                "sebastian/recursion-context": "^3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.0"
+                "ext-dom": "*",
+                "phpunit/phpunit": "^8.0"
             },
             "suggest": {
                 "ext-uopz": "*"
@@ -5864,7 +6189,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -5887,7 +6212,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2017-04-27T15:39:26+00:00"
+            "time": "2019-02-01T05:30:01+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -6329,7 +6654,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "liip/test-fixtures-bundle": 15
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

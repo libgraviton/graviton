@@ -5,13 +5,14 @@
 namespace Graviton\SecurityBundle\Tests\Listener;
 
 use Graviton\SecurityBundle\Listener\AuthenticationLogger;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AuthenticationLoggerTest extends \PHPUnit\Framework\TestCase
+class AuthenticationLoggerTest extends TestCase
 {
     /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
     private $logger;
@@ -19,7 +20,7 @@ class AuthenticationLoggerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')

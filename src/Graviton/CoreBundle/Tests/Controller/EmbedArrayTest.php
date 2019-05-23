@@ -172,7 +172,7 @@ class EmbedArrayTest extends RestTestCase
         $this->assertEquals(count($client->getResults()), count($errors));
 
         foreach ($errors as $error) {
-            $this->assertContains($error, $client->getResults(), '', false, false);
+            $this->assertContainsEquals($error, $client->getResults());
         }
     }
 

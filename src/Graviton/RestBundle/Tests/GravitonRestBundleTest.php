@@ -42,7 +42,7 @@ class GravitonRestBundleTest extends \PHPUnit\Framework\TestCase
 
         $result = $sut->getBundles();
 
-        $this->assertContains(new JMSSerializerBundle(), $result, '', false, false);
+        $this->assertContainsEquals(new JMSSerializerBundle(), $result);
     }
 
     /**

@@ -25,7 +25,7 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(LoadTestCasePrimitiveArrayData::class)) {
             $this->markTestSkipped('TestCasePrimitiveArray definition is not loaded');

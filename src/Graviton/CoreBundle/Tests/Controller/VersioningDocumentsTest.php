@@ -22,7 +22,7 @@ class VersioningDocumentsTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
 
         if (!class_exists(LoadTestCaseVersioningEntityData::class)) {
