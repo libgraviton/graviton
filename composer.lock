@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f456f600d1192e6b3b06b728ffd8efc6",
+    "content-hash": "c989db8e9f51fd5e5d86847b23080624",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -4693,56 +4693,53 @@
             "time": "2018-01-10T13:47:51+00:00"
         },
         {
-            "name": "liip/functional-test-bundle",
-            "version": "2.0.0-alpha4",
+            "name": "liip/test-fixtures-bundle",
+            "version": "0.1.0-alpha1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/liip/LiipFunctionalTestBundle.git",
-                "reference": "321db8392c1ec151959d166208e6df3b22461b43"
+                "url": "https://github.com/liip/LiipTestFixturesBundle.git",
+                "reference": "986d24a5cbc10861beda4f4ff53a8895169b4cab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipFunctionalTestBundle/zipball/321db8392c1ec151959d166208e6df3b22461b43",
-                "reference": "321db8392c1ec151959d166208e6df3b22461b43",
+                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/986d24a5cbc10861beda4f4ff53a8895169b4cab",
+                "reference": "986d24a5cbc10861beda4f4ff53a8895169b4cab",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "^2.0",
                 "php": "^7.1",
-                "symfony/browser-kit": "^3.4 || ^4.0",
-                "symfony/framework-bundle": "^3.4 || ^4.0"
+                "symfony/browser-kit": "^3.4 || ^4.1",
+                "symfony/framework-bundle": "^3.4 || ^4.1"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "^1.3",
                 "doctrine/doctrine-bundle": "^1.8",
-                "doctrine/doctrine-fixtures-bundle": "^3.0",
-                "doctrine/orm": "^2.5",
+                "doctrine/doctrine-fixtures-bundle": "^3.0.2",
+                "doctrine/orm": "^2.6",
                 "jackalope/jackalope-doctrine-dbal": "^1.3",
-                "phpunit/phpunit": "^6.1|^7.0",
+                "phpunit/phpunit": "^6.1 || ^7.0",
                 "symfony/monolog-bundle": "^3.1",
-                "symfony/phpunit-bridge": "^3.4 || ^4.0",
-                "symfony/symfony": "^3.4 || ^4.0",
-                "theofidry/alice-data-fixtures": "^1.0.1",
-                "twig/twig": "^2.0"
+                "symfony/phpunit-bridge": "^3.4 || ^4.1",
+                "symfony/symfony": "^3.4 || ^4.1",
+                "theofidry/alice-data-fixtures": "^1.0.1"
             },
             "suggest": {
-                "brianium/paratest": "Required when using paratest to parallelize tests",
                 "doctrine/dbal": "Required when using the fixture loading functionality with an ORM and SQLite",
                 "doctrine/doctrine-fixtures-bundle": "Required when using the fixture loading functionality",
                 "doctrine/orm": "Required when using the fixture loading functionality with an ORM and SQLite",
                 "hautelook/alice-bundle": "Required when using loadFixtureFiles functionality with custom providers",
-                "nelmio/alice": "Required when using loadFixtureFiles functionality",
-                "symfony/framework-bundle": "To use assertStatusCode and assertValidationErrors ~2.5"
+                "theofidry/alice-data-fixtures": "Required when using loadFixtureFiles functionality"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Liip\\FunctionalTestBundle\\": "src/"
+                    "Liip\\TestFixturesBundle\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4756,14 +4753,16 @@
                 },
                 {
                     "name": "Community contributions",
-                    "homepage": "https://github.com/liip/LiipFunctionalTestBundle/contributors"
+                    "homepage": "https://github.com/liip/LiipTestFixturesBundle/contributors"
                 }
             ],
-            "description": "This bundles provides additional functional test-cases for Symfony2 applications",
+            "description": "This bundles enables efficient loading of Doctrine fixtures in functional test-cases for Symfony applications",
             "keywords": [
-                "Symfony2"
+                "fixtures",
+                "symfony",
+                "testing"
             ],
-            "time": "2018-03-06T22:11:23+00:00"
+            "time": "2019-03-20T07:30:42+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -5132,40 +5131,40 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.1.4",
+            "version": "7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "807e6013b00af69b6c5d9ceb4282d0393dbb9d8d"
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/807e6013b00af69b6c5d9ceb4282d0393dbb9d8d",
-                "reference": "807e6013b00af69b6c5d9ceb4282d0393dbb9d8d",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0317a769a81845c390e19684d9ba25d7f6aa4707",
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-xmlwriter": "*",
-                "php": "^7.1",
-                "phpunit/php-file-iterator": "^2.0",
+                "php": "^7.2",
+                "phpunit/php-file-iterator": "^2.0.2",
                 "phpunit/php-text-template": "^1.2.1",
-                "phpunit/php-token-stream": "^3.0",
+                "phpunit/php-token-stream": "^3.0.1",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
-                "sebastian/environment": "^3.1 || ^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/version": "^2.0.1",
                 "theseer/tokenizer": "^1.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0"
+                "phpunit/phpunit": "^8.0"
             },
             "suggest": {
-                "ext-xdebug": "^2.6.0"
+                "ext-xdebug": "^2.6.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.1-dev"
+                    "dev-master": "7.0-dev"
                 }
             },
             "autoload": {
@@ -5191,7 +5190,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-31T16:06:48+00:00"
+            "time": "2019-02-26T07:38:26+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -5384,16 +5383,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.11",
+            "version": "8.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "64cb33f5b520da490a7b13149d39b43cf3c890c6"
+                "reference": "01392d4b5878aa617e8d9bc7a529e5febc8fe956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/64cb33f5b520da490a7b13149d39b43cf3c890c6",
-                "reference": "64cb33f5b520da490a7b13149d39b43cf3c890c6",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/01392d4b5878aa617e8d9bc7a529e5febc8fe956",
+                "reference": "01392d4b5878aa617e8d9bc7a529e5febc8fe956",
                 "shasum": ""
             },
             "require": {
@@ -5403,26 +5402,24 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "ext-xml": "*",
+                "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.7",
                 "phar-io/manifest": "^1.0.2",
                 "phar-io/version": "^2.0",
-                "php": "^7.1",
+                "php": "^7.2",
                 "phpspec/prophecy": "^1.7",
-                "phpunit/php-code-coverage": "^6.0.7",
+                "phpunit/php-code-coverage": "^7.0",
                 "phpunit/php-file-iterator": "^2.0.1",
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.1",
                 "sebastian/comparator": "^3.0",
                 "sebastian/diff": "^3.0",
-                "sebastian/environment": "^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/exporter": "^3.1",
-                "sebastian/global-state": "^2.0",
+                "sebastian/global-state": "^3.0",
                 "sebastian/object-enumerator": "^3.0.3",
                 "sebastian/resource-operations": "^2.0",
                 "sebastian/version": "^2.0.1"
-            },
-            "conflict": {
-                "phpunit/phpunit-mock-objects": "*"
             },
             "require-dev": {
                 "ext-pdo": "*"
@@ -5438,7 +5435,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.5-dev"
+                    "dev-master": "8.1-dev"
                 }
             },
             "autoload": {
@@ -5464,7 +5461,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-05-14T04:53:02+00:00"
+            "time": "2019-05-14T04:57:31+00:00"
         },
         {
             "name": "react/event-loop",
@@ -5840,23 +5837,26 @@
         },
         {
             "name": "sebastian/global-state",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4"
+                "reference": "edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4",
-                "reference": "e8ba02eed7bbbb9e59e43dedd3dddeff4a56b0c4",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4",
+                "reference": "edf8a461cf1d4005f19fb0b6b8b95a9f7fa0adc4",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.2",
+                "sebastian/object-reflector": "^1.1.1",
+                "sebastian/recursion-context": "^3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.0"
+                "ext-dom": "*",
+                "phpunit/phpunit": "^8.0"
             },
             "suggest": {
                 "ext-uopz": "*"
@@ -5864,7 +5864,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -5887,7 +5887,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2017-04-27T15:39:26+00:00"
+            "time": "2019-02-01T05:30:01+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -6329,7 +6329,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "liip/test-fixtures-bundle": 15
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
