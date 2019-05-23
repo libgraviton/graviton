@@ -74,3 +74,29 @@ services:
         - name: "jms_serializer.handler"
           type: "Graviton\\DocumentBundle\\Entity\\Translatable"
           format: "json"
+
+    # fixtures
+    Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData:
+      class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
+
+    Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData:
+      class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
+
+    Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData:
+      class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
+
+    Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationData:
+      class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
+
+    Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData:
+      class: Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
