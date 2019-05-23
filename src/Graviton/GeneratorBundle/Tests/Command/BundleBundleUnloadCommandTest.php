@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class BundleBundleUnloadCommandTest extends \PHPUnit\Framework\TestCase
+class BundleBundleUnloadCommandTest extends TestCase
 {
 
     private $goodBundle;
@@ -27,7 +28,7 @@ class BundleBundleUnloadCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->goodBundle  = __DIR__.'/resources/bundlebundle/good/GravitonDynBundleBundle.php';
         $this->goodBundleContents = file_get_contents($this->goodBundle);
@@ -41,7 +42,7 @@ class BundleBundleUnloadCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function tearDown()
+    protected function tearDown() : void
     {
         // restore files
         file_put_contents($this->goodBundle, $this->goodBundleContents);

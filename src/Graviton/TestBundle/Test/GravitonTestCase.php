@@ -9,7 +9,8 @@ use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Graviton test case
@@ -24,6 +25,8 @@ class GravitonTestCase extends WebTestCase
 {
 
     use PrivateClassMethodTrait;
+
+    use FixturesTrait;
 
     /**
      * return our namespaced AppKernel

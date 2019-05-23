@@ -74,15 +74,11 @@ class AppKernel extends Kernel
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
         );
 
-        if (in_array($this->getEnvironment(), ['dev', 'test', 'oauth_dev'])) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'])) {
             $bundles[] = new \Symfony\Bundle\WebServerBundle\WebServerBundle();
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
-        }
-
-        if ('test' === $this->getEnvironment()) {
-            $bundles[] = new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
         }
 
         if ('prod' === $this->getEnvironment()) {

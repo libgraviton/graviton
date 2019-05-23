@@ -31,7 +31,7 @@ class AppControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->loadFixturesLocal(
             array(

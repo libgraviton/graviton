@@ -29,7 +29,7 @@ use \Psr\Log\LoggerInterface as Logger;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SecurityAuthenticatorTest extends \PHPUnit\Framework\TestCase
+class SecurityAuthenticatorTest extends TestCase
 {
     /** @var Logger logger */
     private $logger;
@@ -42,7 +42,7 @@ class SecurityAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')

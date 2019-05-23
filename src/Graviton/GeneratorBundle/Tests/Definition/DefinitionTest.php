@@ -13,13 +13,14 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
 use Graviton\GeneratorBundle\Definition\Schema;
 use Graviton\GeneratorBundle\Tests\Utils;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefinitionTest extends \PHPUnit\Framework\TestCase
+class DefinitionTest extends TestCase
 {
     private $fullDefPath;
     private $minimalPath;
@@ -37,7 +38,7 @@ class DefinitionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->fullDefPath = __DIR__.'/resources/test-full.json';
         $this->minimalPath = __DIR__.'/resources/test-minimal.json';

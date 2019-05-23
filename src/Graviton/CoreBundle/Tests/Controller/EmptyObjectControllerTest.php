@@ -20,7 +20,7 @@ class EmptyObjectControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists('GravitonDyn\TestCaseEmptyObjectBundle\DataFixtures\MongoDB\LoadTestCaseEmptyObjectData')) {
             $this->markTestSkipped('TestCaseEmptyObject definition is not loaded');

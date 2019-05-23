@@ -29,7 +29,7 @@ class FileManagerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!$this->fileManager) {
             $this->fileManager = $this->getContainer()->get('graviton.file.file_manager');

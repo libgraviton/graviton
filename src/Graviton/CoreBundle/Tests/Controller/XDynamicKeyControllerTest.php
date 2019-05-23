@@ -19,7 +19,7 @@ class XDynamicKeyControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists('GravitonDyn\TestCaseXDynamicKeyBundle\DataFixtures\MongoDB\LoadTestCaseXDynamicKeyData')) {
             $this->markTestSkipped('LoadTestCaseXDynamicKeyData definition is not loaded');

@@ -26,7 +26,7 @@ class EmbeddingDocumentsTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(LoadEmbedTestEntityData::class) ||
             !class_exists(LoadEmbedTestDocumentAsEmbeddedData::class) ||

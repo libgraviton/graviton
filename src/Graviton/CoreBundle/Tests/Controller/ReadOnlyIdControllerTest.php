@@ -22,7 +22,7 @@ class ReadOnlyIdControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $object = new TestCaseIdReadOnly();
         $object = new TestCaseIdReadOnlyObjectEmbedded();
