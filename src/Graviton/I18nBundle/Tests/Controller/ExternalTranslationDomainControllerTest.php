@@ -48,7 +48,7 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->cleanFiles();
     }
