@@ -29,7 +29,7 @@ class FileManagerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!$this->fileManager) {
             $this->fileManager = $this->getContainer()->get('graviton.file.file_manager');
@@ -76,7 +76,7 @@ class FileManagerTest extends RestTestCase
         $location = $response->headers->get('location');
 
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        $this->assertContains('/file/', $location);
+        $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
         $client = $this->createClient();
@@ -173,7 +173,7 @@ class FileManagerTest extends RestTestCase
         $location = $response->headers->get('location');
 
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        $this->assertContains('/file/', $location);
+        $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
         $client = $this->createClient();

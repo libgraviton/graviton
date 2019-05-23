@@ -1,0 +1,47 @@
+{
+    "id": "App",
+    "description": "A graviton based app.",
+    "service": {
+        "readOnly": false,
+        "routerBase": "/core/app/",
+        "fixtures": []
+    },
+    "target": {
+        "indexes": [
+          "key",
+          "default",
+          "value"
+        ],
+        "relations": [],
+        "fields": [
+            {
+                "name": "id",
+                "type": "varchar",
+                "title": "ID",
+                "description": "Unique identifier",
+                "required": true
+            },
+            {
+                "name": "name",
+                "type": "varchar",
+                "title": "Name",
+                "description": "Display name for an app.",
+                "required": true,
+                "translatable": true
+            },
+            {
+                "name": "showInMenu",
+                "type": "boolean",
+                "title": "Show in Menu",
+                "description": "Define if an app should be exposed on the top level menu.",
+                "required": true
+            },
+            {
+                "name": "order",
+                "type": "int",
+                "title": "Order",
+                "description": "Order sorting field"
+            }
+        ]
+    }
+}

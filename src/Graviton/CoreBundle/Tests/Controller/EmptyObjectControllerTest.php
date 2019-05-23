@@ -20,7 +20,7 @@ class EmptyObjectControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists('GravitonDyn\TestCaseEmptyObjectBundle\DataFixtures\MongoDB\LoadTestCaseEmptyObjectData')) {
             $this->markTestSkipped('TestCaseEmptyObject definition is not loaded');
@@ -43,7 +43,7 @@ class EmptyObjectControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/emptyobject/?id='.$id);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertInternalType('array', $client->getResults());
+        $this->assertIsArray($client->getResults());
         $this->assertCount(1, $client->getResults());
     }
 
@@ -80,7 +80,7 @@ class EmptyObjectControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/emptyobject/');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertInternalType('array', $client->getResults());
+        $this->assertIsArray($client->getResults());
         $this->assertCount(4, $client->getResults());
     }
 }

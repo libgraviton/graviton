@@ -27,7 +27,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         Type::registerType('datearray', DateArrayType::class);
         $this->type = Type::getType('datearray');

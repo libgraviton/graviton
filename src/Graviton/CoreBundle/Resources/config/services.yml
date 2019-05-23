@@ -28,40 +28,6 @@ services:
         - "%graviton.core.main.path.whitelist%"
         - "%graviton.proxy.sources%"
 
-    graviton.core.controller.app:
-        class: "%graviton.core.controller.app.class%"
-        public: true
-        parent: "graviton.rest.controller"
-        calls:
-          -
-            method: setModel
-            arguments:
-              - "@graviton.core.model.app"
-        tags:
-          -
-            name: "graviton.rest"
-
-    graviton.core.repository.app:
-        class: "%graviton.core.repository.app.class%"
-        factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
-        arguments:
-          - 'GravitonCoreBundle:App'
-
-    graviton.core.model.app:
-        class: "%graviton.core.model.app.class%"
-        parent: "graviton.rest.model"
-        public: true
-        arguments:
-          - "@graviton.rql.visitor.mongodb"
-        calls:
-          -
-            method: setRepository
-            arguments:
-              - "@graviton.core.repository.app"
-
-    graviton.core.document.app:
-        class: "%graviton.core.document.app.class%"
-
     graviton.core.model.version:
         class: "%graviton.core.model.version.class%"
         parent: "graviton.rest.model"
@@ -133,3 +99,35 @@ services:
       tags:
         -
           name: "routing.loader"
+
+    graviton.core.repository.dummy:
+      class: Doctrine\ODM\MongoDB\DocumentRepository
+      factory: 'doctrine_mongodb.odm.default_document_manager:getRepository'
+      arguments:
+        - 'GravitonCoreBundle:Dummy'
+
+    graviton.core.model.dummy:
+      class: Graviton\CoreBundle\Model\Dummy
+      parent: "graviton.rest.model"
+      public: true
+      arguments:
+        - "@graviton.rql.visitor.mongodb"
+      calls:
+        -
+          method: setRepository
+          arguments:
+            - "@graviton.core.repository.dummy"
+
+    graviton.core.document.dummy:
+      class: Graviton\CoreBundle\Document\Dummy
+
+    # fixtures
+    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData:
+      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData
+      tags:
+          - { name: 'doctrine.fixture.orm' }
+
+    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit:
+      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit
+      tags:
+        - { name: 'doctrine.fixture.orm' }

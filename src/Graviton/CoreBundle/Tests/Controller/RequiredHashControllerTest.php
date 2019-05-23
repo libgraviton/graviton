@@ -20,7 +20,7 @@ class RequiredHashControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists('GravitonDyn\TestCaseRequiredHashBundle\DataFixtures\MongoDB\LoadTestCaseRequiredHashData')) {
             $this->markTestSkipped('TestCaseRequiredHashData definition is not loaded');
@@ -317,6 +317,6 @@ class RequiredHashControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertNotContains('realId', $response->getContent());
+        $this->assertStringNotContainsString('realId', $response->getContent());
     }
 }

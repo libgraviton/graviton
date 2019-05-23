@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\Tests\Service;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\Routing\RouterInterface;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceConverterTest extends \PHPUnit\Framework\TestCase
+class ExtReferenceConverterTest extends TestCase
 {
     /**
      * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -38,7 +39,7 @@ class ExtReferenceConverterTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->router = $this->getMockBuilder('\Symfony\Bundle\FrameworkBundle\Routing\Router')
             ->disableOriginalConstructor()

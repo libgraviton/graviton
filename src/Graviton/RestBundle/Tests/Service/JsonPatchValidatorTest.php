@@ -13,10 +13,10 @@ class JsonPatchValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider invalidJsonPatchesProvider
-     * @expectedException \Exception
      */
     public function testInvalidJsonPatches($targetDocument, $jsonPatch)
     {
+        $this->expectException(\Exception::class);
         $validator = self::validator();
         $validator->validate($targetDocument, $jsonPatch);
     }

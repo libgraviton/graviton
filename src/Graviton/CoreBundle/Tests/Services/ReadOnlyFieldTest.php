@@ -22,7 +22,7 @@ class ReadOnlyFieldTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(

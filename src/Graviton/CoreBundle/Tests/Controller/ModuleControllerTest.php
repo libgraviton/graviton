@@ -31,7 +31,7 @@ class ModuleControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(
@@ -41,8 +41,7 @@ class ModuleControllerTest extends RestTestCase
         );
 
         SearchNode::getInstance()->resetSearchTerms();
-        $this->setVerbosityLevel(1);
-        $this->isDecorated(true);
+
         $this->runCommand('doctrine:mongodb:schema:update', [], true);
     }
 
@@ -114,12 +113,12 @@ class ModuleControllerTest extends RestTestCase
             explode(',', $response->headers->get('Link'))
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/module/?limit(1%2C1)>; rel="next"',
             $response->headers->get('Link')
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/core/module/?limit(1%2C5)>; rel="last"',
             $response->headers->get('Link')
         );
@@ -594,7 +593,7 @@ class ModuleControllerTest extends RestTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
 
-        $this->assertContains('order', $results[0]->propertyPath);
+        $this->assertStringContainsString('order', $results[0]->propertyPath);
         $this->assertEquals('String value found, but an integer is required', $results[0]->message);
     }
 

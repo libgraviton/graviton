@@ -24,7 +24,7 @@ class FileControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(
@@ -260,7 +260,7 @@ class FileControllerTest extends RestTestCase
         $linkHeader = $response->headers->get('Link');
 
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertContains('file/testPutNewFile>; rel="self"', $linkHeader);
+        $this->assertStringContainsString('file/testPutNewFile>; rel="self"', $linkHeader);
     }
 
     /**
@@ -434,7 +434,7 @@ class FileControllerTest extends RestTestCase
         $response = $client->getInternalResponse();
 
         // still the good one?
-        $this->assertContains($contentType, $response->getHeader('content-type'));
+        $this->assertStringContainsString($contentType, $response->getHeader('content-type'));
 
         $client = static::createRestClient();
         $client->request('DELETE', '/file/mimefile');

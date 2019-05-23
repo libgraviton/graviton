@@ -64,7 +64,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals("status[0].status", $results[0]->propertyPath);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "Does not have a value in the enumeration [\"opened\",\"working\",\"ignored\",\"done\",\"failed\"]",
             $results[0]->message
         );
@@ -116,7 +116,7 @@ class EventStatusControllerTest extends RestTestCase
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals("information[0].type", $results[0]->propertyPath);
-        $this->assertContains(
+        $this->assertStringContainsString(
             "Does not have a value in the enumeration [\"debug\",\"info\",\"warning\",\"error\"]",
             $results[0]->message
         );
@@ -191,10 +191,10 @@ class EventStatusControllerTest extends RestTestCase
         $worker->id = 'test-worker-listener';
         $worker->subscription = [];
         $event = new \stdClass();
-        $event->event = 'document.core.app.create';
+        $event->event = 'document.app.app.create';
         $worker->subscription[] = $event;
         $event = new \stdClass();
-        $event->event = 'document.core.app.update';
+        $event->event = 'document.app.app.update';
         $worker->subscription[] = $event;
 
         $client = static::createRestClient();
@@ -217,8 +217,8 @@ class EventStatusControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode(), $response->getContent());
         // the worker relative our cannot be in the Link header
-        $this->assertNotContains('backendalias:9443', $response->headers->get('link'));
-        $this->assertContains('eventStatus', $response->headers->get('link'));
+        $this->assertStringNotContainsString('backendalias:9443', $response->headers->get('link'));
+        $this->assertStringContainsString('eventStatus', $response->headers->get('link'));
 
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
@@ -226,10 +226,10 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertCount(1, $events);
         $data = json_decode($events[0], true);
 
-        $this->assertEquals('document.core.app.update', $data['event']);
+        $this->assertEquals('document.app.app.update', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
         $this->assertEquals('https://backendalias:9443/core/app/test-event-app', $data['document']['$ref']);
-        $this->assertContains('https://backendalias:9443/event/status/', $data['status']['$ref']);
+        $this->assertStringContainsString('https://backendalias:9443/event/status/', $data['status']['$ref']);
 
         // A failing event should not be published
         // using patch

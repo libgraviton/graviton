@@ -28,7 +28,7 @@ class HashArrayTypeTest extends BaseDoctrineTypeTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         Type::registerType('hasharray', HashArrayType::class);
         $this->type = Type::getType('hasharray');

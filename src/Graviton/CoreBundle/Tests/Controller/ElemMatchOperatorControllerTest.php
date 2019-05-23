@@ -23,7 +23,7 @@ class ElemMatchOperatorControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(LoadTestCaseElemMatchOperatorData::class)) {
             $this->markTestSkipped('TestCaseElemMatchOperator definition is not loaded');

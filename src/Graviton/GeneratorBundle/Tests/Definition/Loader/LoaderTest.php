@@ -8,6 +8,7 @@ namespace Graviton\GeneratorBundle\Tests\Definition;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\Loader\Loader;
 use Graviton\GeneratorBundle\Definition\Schema\Definition;
+use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Graviton\JsonSchemaBundle\Exception\ValidationExceptionError;
 use Graviton\JsonSchemaBundle\Validator\InvalidJsonException;
 
@@ -66,10 +67,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * check if JSON is invalid
      *
      * @return void
-     * @expectedException \Graviton\JsonSchemaBundle\Validator\InvalidJsonException
      */
     public function testLoadInvalidJson()
     {
+        $this->expectException(InvalidJsonException::class);
         $json = __METHOD__;
 
         $validator = $this->getMockBuilder('Graviton\JsonSchemaBundle\Validator\ValidatorInterface')
@@ -108,10 +109,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      * check if schema is invalid
      *
      * @return void
-     * @expectedException \Graviton\JsonSchemaBundle\Exception\ValidationException
      */
     public function testLoadInvalidDefinition()
     {
+        $this->expectException(ValidationException::class);
         $json = __METHOD__;
 
         $errors = [new ValidationExceptionError(['message' => 'wrong', "property" => '.'])];

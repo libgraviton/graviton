@@ -26,7 +26,7 @@ class ExtReferenceTypeTest extends BaseDoctrineTypeTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         Type::registerType('extref', ExtReferenceType::class);
         $this->type = Type::getType('extref');

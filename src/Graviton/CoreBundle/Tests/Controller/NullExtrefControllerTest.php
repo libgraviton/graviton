@@ -20,7 +20,7 @@ class NullExtrefControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists('GravitonDyn\TestCaseNullExtrefBundle\DataFixtures\MongoDB\LoadTestCaseNullExtrefData')) {
             $this->markTestSkipped('TestCaseNullExtref definition is not loaded');

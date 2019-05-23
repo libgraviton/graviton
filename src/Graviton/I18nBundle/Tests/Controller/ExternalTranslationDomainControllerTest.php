@@ -29,7 +29,7 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(
@@ -48,7 +48,7 @@ class ExternalTranslationDomainControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->cleanFiles();
     }

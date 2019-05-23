@@ -26,7 +26,7 @@ class SameSubnetStrategyTest extends RestTestCase
      * UnitTest Starts this on reach test
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

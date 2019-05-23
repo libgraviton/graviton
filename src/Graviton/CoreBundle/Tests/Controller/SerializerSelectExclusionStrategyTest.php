@@ -25,7 +25,7 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(LoadTestCasePrimitiveArrayData::class)) {
             $this->markTestSkipped('TestCasePrimitiveArray definition is not loaded');
@@ -110,36 +110,5 @@ class SerializerSelectExclusionStrategyTest extends RestTestCase
         );
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($expectedResult, $client->getResults());
-    }
-
-    /**
-     * Test the private select function
-     *
-     * @return void
-     */
-    public function testSelectExclusionStrategyPrivateCreateArrayByPath()
-    {
-        /** @var SelectExclusionStrategy $class */
-        $class = $this->getContainer()->get('graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy');
-        $method = $this->getPrivateClassMethod(get_class($class), 'createArrayByPath');
-
-        $mainResult = [];
-
-        $path = 'level.levela.levela1';
-        $arr = $method->invokeArgs($class, [$path]);
-        $mainResult = array_merge_recursive($mainResult, $arr);
-
-        $path = 'level.levelb.levelb1';
-        $arr = $method->invokeArgs($class, [$path]);
-        $mainResult = array_merge_recursive($mainResult, $arr);
-
-        $expectedResult = [
-            'level' => [
-                'levela' => ['levela1' => true],
-                'levelb' => ['levelb1' => true]
-            ]
-        ];
-
-        $this->assertEquals($expectedResult, $mainResult);
     }
 }

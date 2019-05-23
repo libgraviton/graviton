@@ -27,7 +27,7 @@ class HashTypeTest extends BaseDoctrineTypeTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         Type::registerType('hash', 'Graviton\DocumentBundle\Types\HashType');
         $this->type = Type::getType('hash');

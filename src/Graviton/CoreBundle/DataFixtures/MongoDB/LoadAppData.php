@@ -7,8 +7,8 @@ namespace Graviton\CoreBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Graviton\CoreBundle\Document\App;
 use Graviton\DocumentBundle\Entity\Translatable;
+use GravitonDyn\AppBundle\Document\App;
 
 /**
  * Load App data fixtures into mongodb
@@ -28,7 +28,7 @@ class LoadAppData implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $tabletApp = new App;
+        $tabletApp = new App();
         $tabletApp->setId('tablet');
         $tabletApp->setName(Translatable::createFromOriginalString('Tablet'));
         $tabletApp->setShowInMenu(true);
@@ -36,7 +36,7 @@ class LoadAppData implements FixtureInterface
 
         $manager->persist($tabletApp);
 
-        $adminApp = new App;
+        $adminApp = new App();
         $adminApp->setId('admin');
         $adminApp->setName(Translatable::createFromOriginalString('Administration'));
         $adminApp->setShowInMenu(true);
