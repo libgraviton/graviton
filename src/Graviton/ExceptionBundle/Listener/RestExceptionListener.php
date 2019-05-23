@@ -5,7 +5,6 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
@@ -38,22 +37,13 @@ abstract class RestExceptionListener
     private $serializer;
 
     /**
-     * SerializationContext
-     *
-     * @var SerializationContext
-     */
-    private $serializationContext;
-
-    /**
      * Constructor for the RestExceptionlistener
      *
-     * @param SerializerInterface  $serializer           Serializer
-     * @param SerializationContext $serializationContext Serialization context
+     * @param SerializerInterface $serializer Serializer
      */
-    public function __construct(SerializerInterface $serializer, SerializationContext $serializationContext)
+    public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
-        $this->serializationContext = $serializationContext;
     }
 
     /**
@@ -74,12 +64,9 @@ abstract class RestExceptionListener
      */
     public function getSerializedContent($content)
     {
-        $serializationContext = clone $this->serializationContext;
-
         return $this->serializer->serialize(
             $content,
-            'json',
-            $serializationContext
+            'json'
         );
     }
 }

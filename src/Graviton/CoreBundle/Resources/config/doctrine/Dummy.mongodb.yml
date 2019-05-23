@@ -1,0 +1,6 @@
+Graviton\CoreBundle\Document\Dummy:
+  fields:
+    id:
+      type: string
+      id: true
+      strategy: UUID

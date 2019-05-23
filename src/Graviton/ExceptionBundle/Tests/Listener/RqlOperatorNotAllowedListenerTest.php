@@ -96,7 +96,7 @@ class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(['message' => $exception->getMessage()], 'json', $this->context)
+            ->with(['message' => $exception->getMessage()], 'json')
             ->willReturn($serializedContent);
 
         $this->event->expects($this->once())
@@ -105,7 +105,7 @@ class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
         $this->event->expects($this->once())
             ->method('setResponse');
 
-        $listener = new RqlOperatorNotAllowedListener($this->serializer, $this->context);
+        $listener = new RqlOperatorNotAllowedListener($this->serializer);
         $listener->onKernelException($this->event);
     }
 }

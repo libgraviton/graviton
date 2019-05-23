@@ -191,10 +191,10 @@ class EventStatusControllerTest extends RestTestCase
         $worker->id = 'test-worker-listener';
         $worker->subscription = [];
         $event = new \stdClass();
-        $event->event = 'document.core.app.create';
+        $event->event = 'document.app.app.create';
         $worker->subscription[] = $event;
         $event = new \stdClass();
-        $event->event = 'document.core.app.update';
+        $event->event = 'document.app.app.update';
         $worker->subscription[] = $event;
 
         $client = static::createRestClient();
@@ -226,7 +226,7 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertCount(1, $events);
         $data = json_decode($events[0], true);
 
-        $this->assertEquals('document.core.app.update', $data['event']);
+        $this->assertEquals('document.app.app.update', $data['event']);
         $this->assertEquals('anonymous', $data['coreUserId']);
         $this->assertEquals('https://backendalias:9443/core/app/test-event-app', $data['document']['$ref']);
         $this->assertContains('https://backendalias:9443/event/status/', $data['status']['$ref']);

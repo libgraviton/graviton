@@ -54,7 +54,7 @@ matrix:
 script:
   - >
       if [ "$PHPUNIT" = "true" ]; then
-          composer run-script post-install-cmd && \
+          bash prepare-for-tests.sh && \
           if [ "$PHPUNIT_SUITE" == "integration" ]; then
               php app/console doctrine:mongodb:schema:update
           fi && \

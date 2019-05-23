@@ -1,9 +1,7 @@
 parameters:
     graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
     graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
-    graviton.rest.serializer.serializercontext.class: JMS\Serializer\SerializationContext
-    graviton.rest.serializer.deserializercontext.class: JMS\Serializer\DeserializationContext
-    graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class: Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy
+    graviton.rest.serializer.exclusionstrategy.syntheticfields.class: Graviton\RestBundle\ExclusionStrategy\SyntheticFields
     graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
     graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
     graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener
@@ -11,6 +9,7 @@ parameters:
     graviton.rest.listener.xversionresponselistener.class: Graviton\RestBundle\Listener\XVersionResponseListener
     graviton.rest.listener.rqlqueryrequestlistener.class: Graviton\RestBundle\Listener\RqlQueryRequestListener
     graviton.rest.listener.rqlallowedoperatorrequestlistener.class: Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener
+    graviton.rest.listener.restriction.class: Graviton\RestBundle\Listener\RestrictionListener
     graviton.rest.event.subscriber.class: Graviton\RestBundle\Subscriber\RestEventSubscriber
     graviton.rest.model.documentmodel.class: Graviton\RestBundle\Model\DocumentModel
     graviton.rest.serializer.context.abstract.class: Graviton\RestBundle\Serializer\ContextFactoryAbstract

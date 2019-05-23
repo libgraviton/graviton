@@ -57,24 +57,6 @@ class MainControllerTest extends RestTestCase
     }
 
     /**
-     * check for app link in header
-     *
-     * @return void
-     */
-    public function testAppsLink()
-    {
-        $client = static::createRestClient();
-        $client->request('GET', '/');
-
-        $response = $client->getResponse();
-
-        $this->assertContains(
-            '<http://localhost/core/app/>; rel="apps"; type="application/json"',
-            $response->headers->get('Link')
-        );
-    }
-
-    /**
      * check for response contents.
      *
      * @return void
@@ -86,7 +68,7 @@ class MainControllerTest extends RestTestCase
 
         $results = $client->getResults();
 
-        $this->assertInternalType('array', $results->services);
+        $this->assertIsArray($results->services);
 
         $refName = '$ref';
         $serviceRefs = array_map(
@@ -104,60 +86,6 @@ class MainControllerTest extends RestTestCase
             $results->services
         );
         $this->assertContains('http://localhost/schema/core/app/collection', $profiles);
-    }
-
-    /**
-     * Verifies the correct behavior of prepareLinkHeader()
-     *
-     * @return void
-     */
-    public function testPrepareLinkHeader()
-    {
-        $routerDouble = $this->getMockBuilder('\Symfony\Component\Routing\Router')
-            ->disableOriginalConstructor()
-            ->setMethods(array('generate'))
-            ->getMock();
-        $routerDouble
-            ->expects($this->once())
-            ->method('generate')
-            ->with(
-                $this->equalTo('graviton.core.rest.app.all'),
-                $this->isType('array'),
-                $this->isType('int')
-            )
-            ->will($this->returnValue("http://localhost/core/app"));
-
-        $responseDouble = $this->createMock('Symfony\Component\HttpFoundation\Response');
-        $restUtilsDouble = $this->createMock('Graviton\RestBundle\Service\RestUtilsInterface');
-        $dispatcherDouble = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-        $dispatcherDouble->method('dispatch')->will($this->returnValue(new HomepageRenderEvent()));
-        $apiLoaderDouble = $this->createMock('Graviton\ProxyBundle\Service\ApiDefinitionLoader');
-        $configuration = [
-            'petstore' => [
-                'prefix' => 'petstore',
-                'uri' => 'http://petstore.swagger.io/v2/swagger.json'
-            ]
-        ];
-
-        $controller = $this->getMockBuilder('\Graviton\CoreBundle\Controller\MainController')
-            ->setConstructorArgs(
-                [
-                    $routerDouble,
-                    $responseDouble,
-                    $restUtilsDouble,
-                    $dispatcherDouble,
-                    $apiLoaderDouble,
-                    $configuration
-                ]
-            )
-            ->getMock();
-
-        $prepareLinkHeader = $this->getPrivateClassMethod($controller, 'prepareLinkHeader');
-
-        $this->assertEquals(
-            '<http://localhost/core/app>; rel="apps"; type="application/json"',
-            $prepareLinkHeader->invokeArgs($controller, [])
-        );
     }
 
     /**
