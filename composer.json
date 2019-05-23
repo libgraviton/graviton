@@ -65,7 +65,8 @@
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
-        "liip/test-fixtures-bundle": "^0.1.0@alpha"
+        "liip/test-fixtures-bundle": "^0.1.0@alpha",
+        "doctrine/doctrine-fixtures-bundle": "^3.1"
     },
     "suggest": {
         "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
