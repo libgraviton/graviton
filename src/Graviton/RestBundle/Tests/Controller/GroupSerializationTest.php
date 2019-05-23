@@ -79,7 +79,7 @@ class GroupSerializationTest extends RestTestCase
         $this->assertCount(2, $results);
 
         foreach ($data as $singleResult) {
-            $this->assertContains($singleResult, $results, '', false, false);
+            $this->assertContainsEquals($singleResult, $results);
         }
     }
 

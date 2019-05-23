@@ -76,7 +76,7 @@ class FileManagerTest extends RestTestCase
         $location = $response->headers->get('location');
 
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        $this->assertContains('/file/', $location);
+        $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
         $client = $this->createClient();
@@ -173,7 +173,7 @@ class FileManagerTest extends RestTestCase
         $location = $response->headers->get('location');
 
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
-        $this->assertContains('/file/', $location);
+        $this->assertStringContainsString('/file/', $location);
 
         // receive generated file information
         $client = $this->createClient();

@@ -35,7 +35,7 @@ class SchemaVariationsTest extends RestTestCase
 
         if (is_array($responseChecks) && !empty($responseChecks)) {
             foreach ($responseChecks as $responseCheck) {
-                $this->assertContains($responseCheck, $response);
+                $this->assertStringContainsString($responseCheck, $response);
             }
         } else {
             $this->assertEmpty($response);

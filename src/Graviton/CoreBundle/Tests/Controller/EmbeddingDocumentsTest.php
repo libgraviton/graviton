@@ -58,7 +58,7 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-entity/'.$id);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertInternalType('object', $client->getResults());
+        $this->assertIsObject($client->getResults());
 
         $this->assertEquals($id, $client->getResults()->id);
         $this->assertEquals($data, $client->getResults()->data);

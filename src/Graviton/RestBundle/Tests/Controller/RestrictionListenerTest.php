@@ -201,7 +201,7 @@ class RestrictionListenerTest extends RestTestCase
 
         // we sent a location header so we don't want a body
         $this->assertNull($client->getResults());
-        $this->assertContains('/testcase/multitenant/', $location);
+        $this->assertStringContainsString('/testcase/multitenant/', $location);
 
         // check it isn't visible to other tenants..
         $this->assertsRecordNotExists(6, $location);

@@ -317,6 +317,6 @@ class RequiredHashControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertNotContains('realId', $response->getContent());
+        $this->assertStringNotContainsString('realId', $response->getContent());
     }
 }

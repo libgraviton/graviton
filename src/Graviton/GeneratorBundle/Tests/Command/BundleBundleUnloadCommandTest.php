@@ -69,9 +69,9 @@ class BundleBundleUnloadCommandTest extends TestCase
         $commandTester->execute(['baseDir' => dirname($this->goodBundle)]);
         $contents = file_get_contents($this->goodBundle);
 
-        $this->assertContains('FranzBundle', $contents);
-        $this->assertNotContains('Dude', $contents);
-        $this->assertNotContains('Kaiser', $contents);
+        $this->assertStringContainsString('FranzBundle', $contents);
+        $this->assertStringNotContainsString('Dude', $contents);
+        $this->assertStringNotContainsString('Kaiser', $contents);
     }
 
     /**

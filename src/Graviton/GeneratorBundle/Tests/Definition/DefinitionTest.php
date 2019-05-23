@@ -13,6 +13,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
 use Graviton\GeneratorBundle\Definition\Schema;
 use Graviton\GeneratorBundle\Tests\Utils;
+use JMS\Serializer\Exception\RuntimeException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -55,24 +56,22 @@ class DefinitionTest extends TestCase
     /**
      * invalid handling
      *
-     * @expectedException \JMS\Serializer\Exception\RuntimeException
-     *
      * @return void
      */
     public function testInvalidHandling()
     {
+        $this->expectException(RuntimeException::class);
         Utils::getJsonDefinition($this->invalidPath);
     }
 
     /**
      * no id
      *
-     * @expectedException \RuntimeException
-     *
      * @return void
      */
     public function testNoId()
     {
+        $this->expectException(\RuntimeException::class);
         Utils::getJsonDefinition($this->noIdPath)->getId();
     }
 
@@ -654,7 +653,7 @@ class DefinitionTest extends TestCase
     public function testIndexes()
     {
         $jsonDef = Utils::getJsonDefinition($this->fullDefPath);
-        $this->assertInternalType('array', $jsonDef->getIndexes());
+        $this->assertIsArray($jsonDef->getIndexes());
     }
 
     /**
@@ -665,7 +664,7 @@ class DefinitionTest extends TestCase
     public function testTextIndexes()
     {
         $jsonDef = Utils::getJsonDefinition($this->fullDefPath);
-        $this->assertInternalType('array', $jsonDef->getTextIndexes());
+        $this->assertIsArray($jsonDef->getTextIndexes());
     }
 
     /**

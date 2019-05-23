@@ -38,7 +38,7 @@ class SecurityUserTest extends RestTestCase
     {
         $entity = new SecurityUser($this->getUserMock());
 
-        $this->assertInternalType('array', $entity->getRoles());
+        $this->assertIsArray($entity->getRoles());
     }
 
     /**

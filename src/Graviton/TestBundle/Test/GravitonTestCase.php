@@ -5,12 +5,17 @@
 
 namespace Graviton\TestBundle\Test;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Graviton test case
@@ -25,8 +30,8 @@ class GravitonTestCase extends WebTestCase
 {
 
     use PrivateClassMethodTrait;
-
     use FixturesTrait;
+    use ArraySubsetAsserts;
 
     /**
      * return our namespaced AppKernel
@@ -90,5 +95,50 @@ class GravitonTestCase extends WebTestCase
             null,
             'doctrine_mongodb'
         );
+    }
+
+    /**
+     * Builds up the environment to run the given command.
+     *
+     * @param string $name        name
+     * @param array  $params      params
+     * @param bool   $reuseKernel reuse kernel
+     *
+     * @return string command contents
+     */
+    protected function runCommand($name, array $params = [], $reuseKernel = false)
+    {
+        array_unshift($params, $name);
+        if (!$reuseKernel) {
+            if (null !== static::$kernel) {
+                static::$kernel->shutdown();
+            }
+            $kernel = static::$kernel = $this->createKernel(['environment' => $this->environment]);
+            $kernel->boot();
+        } else {
+            $kernel = $this->getContainer()->get('kernel');
+        }
+        $application = $this->createApplication($kernel);
+        $input = new ArrayInput($params);
+        $input->setInteractive(false);
+        $fp = fopen('php://temp/maxmemory:'.$this->maxMemory, 'r+');
+        $output = new StreamOutput($fp);
+        $application->run($input, $output);
+        rewind($fp);
+        return stream_get_contents($fp);
+    }
+
+    /**
+     * creates an application
+     *
+     * @param KernelInterface $kernel kernel
+     *
+     * @return Application
+     */
+    protected function createApplication(KernelInterface $kernel)
+    {
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+        return $application;
     }
 }

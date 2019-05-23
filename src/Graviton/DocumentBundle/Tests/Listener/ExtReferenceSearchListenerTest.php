@@ -115,10 +115,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      * Test ExtReferenceSearchListener::onVisitNode() with not mapped route
      *
      * @return void
-     * @expectedException \LogicException
      */
     public function testOnVisitNodeWithNotMappedRoute()
     {
+        $this->expectException(\LogicException::class);
+
         $extrefMapping = [];
 
         $this->requestAttrs->expects($this->once())

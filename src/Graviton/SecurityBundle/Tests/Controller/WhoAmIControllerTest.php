@@ -155,6 +155,6 @@ class WhoAmIControllerTest extends RestTestCase
             '"description":"your username","type":"string"},"additionalProperties":true}',
             $response->getContent()
         );
-        $this->assertInternalType('string', $response->getContent());
+        $this->assertIsString($response->getContent());
     }
 }

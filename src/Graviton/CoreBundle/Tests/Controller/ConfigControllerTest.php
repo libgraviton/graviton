@@ -51,7 +51,7 @@ class ConfigControllerTest extends RestTestCase
         unset($_SERVER['QUERY_STRING']);
         $response = $client->getResponse();
 
-        $this->assertContains($encodedExpression, $response->headers->get('Link'));
+        $this->assertStringContainsString($encodedExpression, $response->headers->get('Link'));
         $this->assertEquals($resultCount, count($client->getResults()));
     }
 

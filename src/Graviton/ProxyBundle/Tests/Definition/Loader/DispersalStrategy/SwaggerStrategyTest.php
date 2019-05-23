@@ -70,13 +70,12 @@ class SwaggerStrategyTest extends TestCase
     /**
      * test missing fallback data
      *
-     * @expectedException        RuntimeException
-     * @expectedExceptionMessage Missing mandatory key (host) in fallback data set.
-     *
      * @return void
      */
     public function testMissingFallbackData()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Missing mandatory key (host) in fallback data set.');
         $this->sut->process('{}', array());
     }
 

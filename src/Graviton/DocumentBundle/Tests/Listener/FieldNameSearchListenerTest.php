@@ -107,11 +107,11 @@ class FieldNameSearchListenerTest extends TestCase
      * Test FieldNameSearchListener::onVisitNode() with not mapped route
      *
      * @return void
-     * @expectedException \LogicException
      */
     public function testOnVisitNodeWithNotMappedRoute()
     {
         $fieldMapping = [];
+        $this->expectException(\LogicException::class);
 
         $this->requestAttrs->expects($this->once())
             ->method('get')

@@ -10,6 +10,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
+use Graviton\TestBundle\Test\GravitonTestCase;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefinitionElementTest extends TestCase
+class DefinitionElementTest extends GravitonTestCase
 {
 
     private $fullDefPath;
