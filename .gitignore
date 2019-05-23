@@ -19,3 +19,4 @@ app/files/
 app/config/deploy.yml
 versions.yml
 .idea
+*.cache
