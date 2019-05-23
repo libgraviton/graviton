@@ -81,6 +81,11 @@ class AppKernel extends Kernel
             $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
         }
 
+        if ('test' === $this->getEnvironment()) {
+            $bundles[] = new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+            $bundles[] = new \Liip\TestFixturesBundle\LiipTestFixturesBundle();
+        }
+
         if ('prod' === $this->getEnvironment()) {
             $bundles[] = new \Sentry\SentryBundle\SentryBundle();
         }
