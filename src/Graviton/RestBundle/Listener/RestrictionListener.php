@@ -12,6 +12,7 @@ use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
 use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\Rql\Event\VisitNodeEvent;
+use Graviton\Rql\Node\SearchNode;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
