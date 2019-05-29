@@ -273,16 +273,17 @@ class RestrictionListenerTest extends RestTestCase
 
         // ok.. what happens if we try to update the record with no tenant?
         $client = static::createRestClient();
+        $record->value = 3334;
         $client->put('/testcase/multitenant/103', $record);
 
-        // make sure we got a 400 error
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        // make sure we got an OK -> admin could write it..
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
-        // make sure nothing changed in db!
-        $this->assertsRecordExists(5, '/testcase/multitenant/103', 103);
+        // tenant still should be 5 but with updated value!
+        $this->assertsRecordExists(5, '/testcase/multitenant/103', 3334);
 
         // admin can see the record!
-        $this->assertsRecordExists(null, '/testcase/multitenant/103', 103);
+        $this->assertsRecordExists(null, '/testcase/multitenant/103', 3334);
     }
 
     /**
@@ -306,7 +307,10 @@ class RestrictionListenerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('PATCH', '/testcase/multitenant/100', [], [], [], $patchJson);
 
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+
+        // should be under same tenant
+        $this->assertsRecordExists(5, '/testcase/multitenant/100', 300);
 
         // wrong tenant to other tenant
         $client = static::createRestClient();
@@ -321,11 +325,21 @@ class RestrictionListenerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
 
         // owner
+        $patchJson = json_encode(
+            [
+                [
+                    'op' => 'replace',
+                    'path' => '/value',
+                    'value' => 400
+                ]
+            ]
+        );
+
         $client = static::createRestClient();
         $client->request('PATCH', '/testcase/multitenant/100', [], [], ['HTTP_X-GRAVITON-CLIENT' => '5'], $patchJson);
 
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertsRecordExists(5, '/testcase/multitenant/100', 300);
+        $this->assertsRecordExists(5, '/testcase/multitenant/100', 400);
     }
 
     /**
@@ -335,11 +349,15 @@ class RestrictionListenerTest extends RestTestCase
      */
     public function testTenantDeleteData()
     {
-        // admin wants to DELETE a tenant record..
+        // admin wants to DELETE a tenant record -> he can do that!
         $client = static::createRestClient();
         $client->request('DELETE', '/testcase/multitenant/100');
 
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
+        $this->assertsRecordNotExists(5, '/testcase/multitenant/100');
+
+        // load data again
+        $this->setUp();
 
         // tenant wants to delete other tenant record -> 404 as he doesn't see it..
         $client = static::createRestClient();
