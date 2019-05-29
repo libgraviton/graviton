@@ -122,16 +122,26 @@ class RestrictionListener
         $entityId = $entity['id'];
 
         foreach ($this->getRestrictions() as $fieldName => $fieldValue) {
-            // skip the id collision check if no id..
+            $currentTenant = $fieldValue;
             if (!is_null($entityId)) {
-                $this->checkIdCollision($event, $entityId, $fieldName, $fieldValue);
+                $currentTenant = $this->getCurrentTenant($event, $entityId, $fieldName, $fieldValue);
             }
+
+            /**
+             * if our restriction is null -> user is admin -> can see and modify all
+             * if restriction has value -> collision exception if unequal to stored value
+             */
+
+            if ($fieldValue !== null && $fieldValue != $currentTenant) {
+                throw new RestrictedIdCollisionException();
+            }
+
+            // persist tenant again!
+            $entity[$fieldName] = $currentTenant;
 
             if (is_null($fieldValue)) {
                 continue;
             }
-
-            $entity[$fieldName] = $fieldValue;
         }
 
         $event->setEntity($entity);
@@ -229,28 +239,39 @@ class RestrictionListener
     }
 
     /**
-     * checks for an id collision. that is, if we try to insert/delete a record that
-     * already exist with ANOTHER $checkField value of $checkValue that we currently trying
-     * to insert/delete. basically this is the case if one tenant group tries to modify or delete
-     * the record of another one
+     * gets the current tentant that is saved on the entity. if it doesn't exist, return $checkValue
      *
      * @param EntityPrePersistEvent $event      event
      * @param mixed                 $entityId   entity id
      * @param string                $checkField field to check
      * @param mixed                 $checkValue value to check for on the field
      *
-     * @throws RestrictedIdCollisionException
+     * @throws \LogicException
      *
      * @return void
      */
-    private function checkIdCollision(EntityPrePersistEvent $event, $entityId, $checkField, $checkValue)
+    private function getCurrentTenant(EntityPrePersistEvent $event, $entityId, $checkField, $checkValue)
     {
-        $criteria = new Criteria();
-        $criteria->where(Criteria::expr()->eq('id', $entityId));
-        $criteria->andWhere(Criteria::expr()->neq($checkField, $checkValue));
+        $queryBuilder = $event
+            ->getRepository()
+            ->createQueryBuilder()
+            ->field('id')->equals($entityId)
+            ->select([$checkField])
+            ->limit(1)
+            ->hydrate(false);
 
-        if (!$event->getRepository()->matching($criteria)->isEmpty()) {
-            throw new RestrictedIdCollisionException();
+        $result = $queryBuilder->getQuery()->getSingleResult();
+
+        // record doesn't exist -> return $checkValue to persist
+        if ($result === null) {
+            return $checkValue;
         }
+
+        // field doesn't exist -> assume global admin record!
+        if (!isset($result[$checkField])) {
+            return null;
+        }
+
+        return $result[$checkField];
     }
 }
