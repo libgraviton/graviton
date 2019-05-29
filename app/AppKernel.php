@@ -74,7 +74,7 @@ class AppKernel extends Kernel
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
         );
 
-        if (in_array($this->getEnvironment(), ['dev', 'test', 'oauth_dev'])) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'])) {
             $bundles[] = new \Symfony\Bundle\WebServerBundle\WebServerBundle();
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
@@ -82,7 +82,8 @@ class AppKernel extends Kernel
         }
 
         if ('test' === $this->getEnvironment()) {
-            $bundles[] = new \Liip\FunctionalTestBundle\LiipFunctionalTestBundle();
+            $bundles[] = new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+            $bundles[] = new \Liip\TestFixturesBundle\LiipTestFixturesBundle();
         }
 
         if ('prod' === $this->getEnvironment()) {

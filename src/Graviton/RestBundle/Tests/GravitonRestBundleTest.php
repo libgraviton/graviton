@@ -7,7 +7,6 @@ namespace Graviton\RestBundle\Tests;
 
 use Graviton\RestBundle\GravitonRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 
 /**
@@ -43,7 +42,7 @@ class GravitonRestBundleTest extends \PHPUnit\Framework\TestCase
 
         $result = $sut->getBundles();
 
-        $this->assertContains(new JMSSerializerBundle(), $result, '', false, false);
+        $this->assertContainsEquals(new JMSSerializerBundle(), $result);
     }
 
     /**

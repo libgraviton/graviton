@@ -1,22 +1,10 @@
 services:
     #Serializer / Serializer context
-    graviton.rest.serializer.serializercontext:
-        class: "%graviton.rest.serializer.serializercontext.class%"
-        calls:
-          -
-            method: setSerializeNull
-            arguments:
-              - false
-          -
-            method: addExclusionStrategy
-            arguments:
-              - "@graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy"
-
-    graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy:
-        class: "%graviton.rest.serializer.exclusionstrategy.selectexclusionstrategy.class%"
-        public: true
-        arguments:
-          - "@request_stack"
+    graviton.rest.serializer.exclusionstrategy.syntheticfields:
+      class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
+      public: true
+      arguments:
+        - "%graviton.generator.synthetic_fields%"
 
     graviton.rest.serializer:
         parent: "jms_serializer"
@@ -51,6 +39,10 @@ services:
             method: setOverrideHeaderAllowed
             arguments:
               - "%graviton.rest.serializer.allow_group_override_header%"
+          -
+            method: addExclusionStrategy
+            arguments:
+              - "@graviton.rest.serializer.exclusionstrategy.syntheticfields"
 
     graviton.rest.router:
         alias: router
@@ -63,12 +55,13 @@ services:
     #Routing loader -->
     graviton.rest.routing.loader:
         class: "%graviton.rest.routing.loader.class%"
+        public: true
         arguments:
           - "@graviton.rest.routing.collection"
           - "%graviton.rest.services%"
         tags:
           -
-            name: routing.loader
+            name: "graviton.routing.loader"
 
     #Service for validating JSON Patches -->
     graviton.rest.service.jsonpatchvalidator:
@@ -106,7 +99,7 @@ services:
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
-
+          - "@event_dispatcher"
 
     #Response object wrapper with scope request (get a new one for each request) -->
     graviton.rest.response:
@@ -131,6 +124,11 @@ services:
             event: kernel.response
             priority: 9999
             method: onKernelResponse
+          -
+            name: kernel.event_listener
+            event: kernel.exception
+            priority: 9999
+            method: onKernelException
 
     #Json Request listener -->
     graviton.rest.listener.jsonrequestlistener:
@@ -335,6 +333,30 @@ services:
         arguments:
           - "@graviton.rest.listener.rqlqueryrequestlistener.inner"
           - "%graviton.rest.listener.rqlqueryrequestlistener.allowedroutes%"
+
+    # listener that restricts the data given to the user by manipulating the querybuilder before executing
+    graviton.rest.listener.restriction:
+      class: "%graviton.rest.listener.restriction.class%"
+      arguments:
+        - "%graviton.rest.data_restriction.map%"
+        - "@request_stack"
+      tags:
+        - name: kernel.event_listener
+          event: document.model.event.query
+          method: onModelQuery
+        - name: kernel.event_listener
+          event: document.model.event.entity.pre_persist
+          method: onEntityPrePersistOrDelete
+        - name: kernel.event_listener
+          event: document.model.event.entity.pre_delete
+          method: onEntityPrePersistOrDelete
+        - name: kernel.event_listener
+          event: analytics.event.pre_aggregate
+          method: onPreAggregate
+        - name: kernel.event_listener
+          event: rql.visit.node
+          method: onRqlSearch
+          priority: -100
 
     graviton.rest.restriction.manager:
         class: "%graviton.rest.restriction.manager.class%"

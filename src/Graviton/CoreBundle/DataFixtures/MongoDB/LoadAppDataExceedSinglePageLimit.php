@@ -7,7 +7,7 @@ namespace Graviton\CoreBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Graviton\CoreBundle\Document\App;
+use GravitonDyn\AppBundle\Document\App;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

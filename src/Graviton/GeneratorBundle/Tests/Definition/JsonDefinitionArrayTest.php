@@ -7,6 +7,7 @@ namespace Graviton\GeneratorBundle\Tests\Definition;
 
 use Graviton\GeneratorBundle\Definition\DefinitionElementInterface;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
+use PHPUnit\Framework\TestCase;
 
 /**
  * JsonDefinitionArray test
@@ -15,7 +16,7 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class JsonDefinitionArrayTest extends \PHPUnit\Framework\TestCase
+class JsonDefinitionArrayTest extends TestCase
 {
     /**
      * @var DefinitionElementInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -27,7 +28,7 @@ class JsonDefinitionArrayTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->element = $this->getMockBuilder('Graviton\GeneratorBundle\Definition\DefinitionElementInterface')
             ->setMethods(

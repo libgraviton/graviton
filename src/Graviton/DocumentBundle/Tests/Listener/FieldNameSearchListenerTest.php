@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\DocumentBundle\Listener\FieldNameSearchListener;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,7 +22,7 @@ use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class FieldNameSearchListenerTest extends \PHPUnit\Framework\TestCase
+class FieldNameSearchListenerTest extends TestCase
 {
     /**
      * @var Request
@@ -42,7 +43,7 @@ class FieldNameSearchListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->requestAttrs = $this->getMockBuilder(ParameterBag::class)
             ->disableOriginalConstructor()
@@ -106,11 +107,11 @@ class FieldNameSearchListenerTest extends \PHPUnit\Framework\TestCase
      * Test FieldNameSearchListener::onVisitNode() with not mapped route
      *
      * @return void
-     * @expectedException \LogicException
      */
     public function testOnVisitNodeWithNotMappedRoute()
     {
         $fieldMapping = [];
+        $this->expectException(\LogicException::class);
 
         $this->requestAttrs->expects($this->once())
             ->method('get')

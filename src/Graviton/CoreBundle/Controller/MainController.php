@@ -113,10 +113,7 @@ class MainController
 
         $response->setContent(json_encode($mainPage));
         $response->setStatusCode(Response::HTTP_OK);
-        $response->headers->set('Link', $this->prepareLinkHeader());
 
-        // todo: make sure, that the correct content type is set.
-        // todo: this should be covered by a kernel.response event listener?
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
@@ -198,24 +195,6 @@ class MainController
         }
 
         return $additionalRoutes;
-    }
-
-    /**
-     * Prepares the header field containing information about pagination.
-     *
-     * @return string
-     */
-    protected function prepareLinkHeader()
-    {
-        $links = new LinkHeader(array());
-        $links->add(
-            new LinkHeaderItem(
-                $this->router->generate('graviton.core.rest.app.all', array (), UrlGeneratorInterface::ABSOLUTE_URL),
-                array ('rel' => 'apps', 'type' => 'application/json')
-            )
-        );
-
-        return (string) $links;
     }
 
     /**

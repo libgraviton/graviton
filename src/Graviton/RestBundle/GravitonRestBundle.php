@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
 use JMS\SerializerBundle\JMSSerializerBundle;
-use Misd\GuzzleBundle\MisdGuzzleBundle;
 use Graviton\RestBundle\DependencyInjection\Compiler\RestServicesCompilerPass;
 use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryDecoratorCompilerPass;
 use Graviton\RestBundle\DependencyInjection\Compiler\RqlQueryRoutesCompilerPass;

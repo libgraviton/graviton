@@ -25,7 +25,7 @@ class SecurityUtilsTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->securityUtils = $this->getContainer()->get('graviton.security.service.utils');
     }
@@ -46,7 +46,7 @@ class SecurityUtilsTest extends RestTestCase
 
         $resultC = $method->invokeArgs($this->securityUtils, []);
         $this->assertRegExp('/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/', $resultC);
-        
+
         $this->assertNotEquals($resultA, $resultB);
         $this->assertNotEquals($resultA, $resultC);
         $this->assertNotEquals($resultB, $resultC);

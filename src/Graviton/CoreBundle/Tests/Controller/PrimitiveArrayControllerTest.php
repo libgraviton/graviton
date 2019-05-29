@@ -23,7 +23,7 @@ class PrimitiveArrayControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(LoadTestCasePrimitiveArrayData::class)) {
             $this->markTestSkipped('TestCasePrimitiveArray definition is not loaded');
@@ -365,30 +365,30 @@ class PrimitiveArrayControllerTest extends RestTestCase
                      $data->hash,
                      $data->arrayhash[0],
                  ] as $data) {
-            $this->assertInternalType('array', $data->intarray);
+            $this->assertIsArray($data->intarray);
             foreach ($data->intarray as $value) {
-                $this->assertInternalType('integer', $value);
+                $this->assertIsInt($value);
             }
 
-            $this->assertInternalType('array', $data->strarray);
+            $this->assertIsArray($data->strarray);
             foreach ($data->strarray as $value) {
-                $this->assertInternalType('string', $value);
+                $this->assertIsString($value);
             }
 
-            $this->assertInternalType('array', $data->boolarray);
+            $this->assertIsArray($data->boolarray);
             foreach ($data->boolarray as $value) {
-                $this->assertInternalType('boolean', $value);
+                $this->assertIsBool($value);
             }
 
-            $this->assertInternalType('array', $data->datearray);
+            $this->assertIsArray($data->datearray);
             foreach ($data->datearray as $value) {
-                $this->assertInternalType('string', $value);
+                $this->assertIsString($value);
                 $this->assertInstanceOf(\DateTime::class, \DateTime::createFromFormat(self::DATE_FORMAT, $value));
             }
 
-            $this->assertInternalType('array', $data->hasharray);
+            $this->assertIsArray($data->hasharray);
             foreach ($data->hasharray as $value) {
-                $this->assertInternalType('object', $value);
+                $this->assertIsObject($value);
             }
         }
     }

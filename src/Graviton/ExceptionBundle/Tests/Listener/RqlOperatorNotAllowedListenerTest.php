@@ -9,6 +9,7 @@ use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\ExceptionBundle\Listener\RqlOperatorNotAllowedListener;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
+class RqlOperatorNotAllowedListenerTest extends TestCase
 {
     /**
      * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject
@@ -38,7 +39,7 @@ class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->event = $this->getMockBuilder(GetResponseForExceptionEvent::class)
             ->disableOriginalConstructor()
@@ -96,7 +97,7 @@ class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
 
         $this->serializer->expects($this->once())
             ->method('serialize')
-            ->with(['message' => $exception->getMessage()], 'json', $this->context)
+            ->with(['message' => $exception->getMessage()], 'json')
             ->willReturn($serializedContent);
 
         $this->event->expects($this->once())
@@ -105,7 +106,7 @@ class RqlOperatorNotAllowedListenerTest extends \PHPUnit\Framework\TestCase
         $this->event->expects($this->once())
             ->method('setResponse');
 
-        $listener = new RqlOperatorNotAllowedListener($this->serializer, $this->context);
+        $listener = new RqlOperatorNotAllowedListener($this->serializer);
         $listener->onKernelException($this->event);
     }
 }

@@ -72,11 +72,13 @@ class NullModel implements ModelInterface
     /**
      * Insert a new Record
      *
-     * @param Object $entity Entity
+     * @param object $entity       entity to insert
+     * @param bool   $returnEntity true to return entity
+     * @param bool   $doFlush      if we should flush or not after insert
      *
      * @return Object
      */
-    public function insertRecord($entity)
+    public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
         return $this->find($entity->getId());
     }
@@ -84,12 +86,13 @@ class NullModel implements ModelInterface
     /**
      * Update an existing entity
      *
-     * @param string $id     id of entity to update
-     * @param Object $entity entity with new data
+     * @param string $documentId   id of entity to update
+     * @param Object $entity       new entity
+     * @param bool   $returnEntity true to return entity
      *
      * @return Object
      */
-    public function updateRecord($id, $entity)
+    public function updateRecord($documentId, $entity, $returnEntity = true)
     {
         return;
     }

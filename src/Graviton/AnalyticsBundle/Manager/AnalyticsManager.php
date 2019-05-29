@@ -7,9 +7,11 @@ namespace Graviton\AnalyticsBundle\Manager;
 
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
 use Graviton\AnalyticsBundle\Model\AnalyticModel;
 use Graviton\AnalyticsBundle\ProcessorInterface;
 use Graviton\DocumentBundle\Service\DateConverter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manager for data layer single responsibility
@@ -41,6 +43,11 @@ class AnalyticsManager
     private $dateConverter;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @var array
      */
     private $aggregateOptions = [
@@ -50,19 +57,22 @@ class AnalyticsManager
 
     /**
      * AnalyticsManager constructor.
-     * @param DocumentManager $documentManager Db manager and query control
-     * @param string          $databaseName    Db string name
-     * @param DateConverter   $dateConverter   date converter
+     * @param DocumentManager          $documentManager Db manager and query control
+     * @param string                   $databaseName    Db string name
+     * @param DateConverter            $dateConverter   date converter
+     * @param EventDispatcherInterface $eventDispatcher event dispatcher
      */
     public function __construct(
         DocumentManager $documentManager,
         $databaseName,
-        DateConverter $dateConverter
+        DateConverter $dateConverter,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->documentManager = $documentManager;
         $this->connection = $documentManager->getConnection();
         $this->databaseName = $databaseName;
         $this->dateConverter = $dateConverter;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -88,6 +98,7 @@ class AnalyticsManager
                 $dbName = $this->databaseName;
             }
             $collection = $this->connection->selectCollection($dbName, $model->getCollection());
+            $pipeline = $this->executePreAggregateEvent($pipeline);
             $data[] = $collection->aggregate($pipeline, $this->aggregateOptions)->toArray();
         } else {
             foreach ($pipeline as $pipelineName => $definition) {
@@ -99,6 +110,7 @@ class AnalyticsManager
                     $dbName,
                     $model->getCollection($pipelineName)
                 );
+                $definition = $this->executePreAggregateEvent($definition);
                 $data[$pipelineName] = $collection->aggregate($definition, $this->aggregateOptions)->toArray();
             }
         }
@@ -136,6 +148,21 @@ class AnalyticsManager
     }
 
     /**
+     * dispatches our pre aggregate array
+     *
+     * @param array $pipeline pipeline
+     *
+     * @return array pipeline
+     */
+    private function executePreAggregateEvent(array $pipeline)
+    {
+        $event = new PreAggregateEvent();
+        $event->setPipeline($pipeline);
+        $event = $this->eventDispatcher->dispatch(PreAggregateEvent::NAME, $event);
+        return $event->getPipeline();
+    }
+
+    /**
      * convert various things in the data that should be rendered differently
      *
      * @param array $data data
@@ -160,6 +187,10 @@ class AnalyticsManager
             /** convert mongodate to text dates **/
             if ($val instanceof \MongoDate) {
                 $data[$key] = $this->dateConverter->formatDateTime($val->toDateTime());
+            }
+            /** convert mongoid */
+            if ($val instanceof \MongoId) {
+                $data[$key] = (string) $val;
             }
         }
 

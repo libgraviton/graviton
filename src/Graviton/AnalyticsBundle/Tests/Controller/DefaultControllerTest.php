@@ -20,7 +20,7 @@ class DefaultControllerTest extends RestTestCase
      * Initial setup
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(

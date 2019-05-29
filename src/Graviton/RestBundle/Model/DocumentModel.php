@@ -7,12 +7,13 @@ namespace Graviton\RestBundle\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelEvent;
 use Graviton\RestBundle\Service\QueryService;
 use Graviton\SchemaBundle\Model\SchemaModel;
 use Graviton\RestBundle\Service\RestUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher as EventDispatcher;
 use Graviton\ExceptionBundle\Exception\NotFoundException;
 use Graviton\ExceptionBundle\Exception\RecordOriginModifiedException;
 
@@ -66,7 +67,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     protected $manager;
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
     /**
@@ -75,15 +76,15 @@ class DocumentModel extends SchemaModel implements ModelInterface
     private $restUtils;
 
     /**
-     * @param QueryService    $queryService               query service
-     * @param RestUtils       $restUtils                  Rest utils
-     * @param EventDispatcher $eventDispatcher            Kernel event dispatcher
-     * @param array           $notModifiableOriginRecords strings with not modifiable recordOrigin values
+     * @param QueryService             $queryService               query service
+     * @param RestUtils                $restUtils                  Rest utils
+     * @param EventDispatcherInterface $eventDispatcher            Kernel event dispatcher
+     * @param array                    $notModifiableOriginRecords strings with not modifiable recordOrigin values
      */
     public function __construct(
         QueryService $queryService,
         RestUtils $restUtils,
-        $eventDispatcher,
+        EventDispatcherInterface $eventDispatcher,
         $notModifiableOriginRecords
     ) {
         parent::__construct();
@@ -134,11 +135,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param bool   $returnEntity true to return entity
      * @param bool   $doFlush      if we should flush or not after insert
      *
-     * @return Object|null
+     * @return Object|null entity or null
      */
     public function insertRecord($entity, $returnEntity = true, $doFlush = true)
     {
-        $this->manager->persist($entity);
+        $this->manager->persist($this->dispatchPrePersistEvent($entity));
 
         if ($doFlush) {
             $this->manager->flush($entity);
@@ -159,15 +160,22 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param string  $documentId id of entity to find
      * @param boolean $forceClear if we should clear the repository prior to fetching
      *
-     * @throws NotFoundException
      * @return Object
+     * @throws NotFoundException
      */
     public function find($documentId, $forceClear = false)
     {
         if ($forceClear) {
             $this->repository->clear();
         }
-        $result = $this->repository->find($documentId);
+
+        $builder = $this->repository->createQueryBuilder()
+            ->field('id')
+            ->equals($documentId);
+
+        $builder = $this->queryService->executeQueryEvent($builder);
+
+        $result = $builder->getQuery()->getSingleResult();
 
         if (empty($result)) {
             throw new NotFoundException("Entry with id " . $documentId . " not found!");
@@ -183,8 +191,8 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param string  $documentId id of entity to find
      * @param Request $request    request
      *
-     * @throws NotFoundException
      * @return string Serialised object
+     * @throws NotFoundException
      */
     public function getSerialised($documentId, Request $request = null)
     {
@@ -218,6 +226,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
      */
     public function updateRecord($documentId, $entity, $returnEntity = true)
     {
+        $entity = $this->dispatchPrePersistEvent($entity);
         if (!is_null($documentId)) {
             $this->deleteById($documentId);
             // detach so odm knows it's gone
@@ -255,7 +264,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
             $entity = $this->find($id);
         }
 
+        // dispatch our event
+        $this->dispatchPrePersistEvent($entity);
+
         $this->checkIfOriginRecord($entity);
+
         $return = $entity;
 
         if (is_callable([$entity, 'getId']) && $entity->getId() != null) {
@@ -323,16 +336,20 @@ class DocumentModel extends SchemaModel implements ModelInterface
      * @param array $fields  list of fields you need.
      * @param bool  $hydrate whether to hydrate object or not
      *
-     * @return array|null|object
+     * @return array|null|object record
      */
     public function selectSingleFields($id, array $fields, $hydrate = true)
     {
         $builder = $this->repository->createQueryBuilder();
         $idField = $this->repository->getClassMetadata()->getIdentifier()[0];
 
-        $record = $builder
+        $queryBuilder = $builder
             ->field($idField)->equals($id)
-            ->select($fields)
+            ->select($fields);
+
+        $queryBuilder = $this->queryService->executeQueryEvent($queryBuilder);
+
+        $record = $queryBuilder
             ->hydrate($hydrate)
             ->getQuery()
             ->getSingleResult();
@@ -378,12 +395,11 @@ class DocumentModel extends SchemaModel implements ModelInterface
     }
 
 
-
     /**
      * Will fire a ModelEvent
      *
      * @param string $action     insert or update
-     * @param Object $collection the changed Document
+     * @param object $collection the changed Document
      *
      * @return void
      */
@@ -404,5 +420,21 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event->setCollection($collection);
 
         $this->eventDispatcher->dispatch($action, $event);
+    }
+
+    /**
+     * dispatches our pre-persist event
+     *
+     * @param object $entity entity
+     *
+     * @return object entity
+     */
+    private function dispatchPrePersistEvent(object $entity)
+    {
+        $event = new EntityPrePersistEvent();
+        $event->setEntity($entity);
+        $event->setRepository($this->repository);
+        $event = $this->eventDispatcher->dispatch(EntityPrePersistEvent::NAME, $event);
+        return $event->getEntity();
     }
 }

@@ -68,7 +68,7 @@ services:
           -
             method: setRepository
             arguments:
-              - "@graviton.core.repository.app"
+              - "@graviton.core.repository.dummy"
 
     #
     #    Commands
@@ -102,7 +102,7 @@ services:
           -
             method: setRepository
             arguments:
-              - "@graviton.core.repository.app"
+              - "@graviton.core.repository.dummy"
 
     graviton.security.controller.whoami:
         class: Graviton\SecurityBundle\Controller\WhoAmIController

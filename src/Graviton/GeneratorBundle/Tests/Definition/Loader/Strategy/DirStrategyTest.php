@@ -6,13 +6,14 @@
 namespace Graviton\GeneratorBundle\Tests\Definition\Strategy;
 
 use Graviton\GeneratorBundle\Definition\Loader\Strategy\DirStrategy;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DirStrategyTest extends \PHPUnit\Framework\TestCase
+class DirStrategyTest extends TestCase
 {
     /**
      * test loading multiple files from dir

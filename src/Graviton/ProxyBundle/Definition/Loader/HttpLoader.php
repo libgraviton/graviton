@@ -15,6 +15,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Zend\Diactoros\Uri;
 
 /**
  * load a file over http and process the data
@@ -168,12 +169,14 @@ class HttpLoader implements LoaderInterface
             // scheme nor sub-paths. It MAY include a port. If the host is not included, the host serving the
             // documentation is to be used (including the port)
             $fallbackHost = [];
-            $fallbackHost['host'] = sprintf(
-                '%s://%s:%d',
-                $request->getUri()->getScheme(),
-                $request->getUri()->getHost(),
-                $request->getUri()->getPort()
-            );
+
+            // compose base url host
+            $uri = new Uri();
+            $uri = $uri->withHost($request->getUri()->getHost())
+                ->withScheme($request->getUri()->getScheme())
+                ->withPort($request->getUri()->getPort());
+
+            $fallbackHost['host'] = (string) $uri;
 
             if ($this->strategy->supports($content)) {
                 $retVal = $this->strategy->process($content, $fallbackHost);

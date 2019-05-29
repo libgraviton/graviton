@@ -5,8 +5,8 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\Schema\Solr;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\FieldMapper;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\ParameterBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -63,9 +63,39 @@ class ResourceGenerator extends AbstractGenerator
     private $mapper;
 
     /**
+     * @var string
+     */
+    private $repositoryFactoryService;
+
+    /**
      * @var boolean
      */
     private $generateController = false;
+
+    /**
+     * @var boolean
+     */
+    private $generateModel = true;
+
+    /**
+     * @var boolean
+     */
+    private $generateSerializerConfig = true;
+
+    /**
+     * @var boolean
+     */
+    private $generateSchema = true;
+
+    /**
+     * @var array
+     */
+    private $syntheticFields = [];
+
+    /**
+     * @var array
+     */
+    private $ensureIndexes = [];
 
     /**
      * @var ParameterBuilder
@@ -101,6 +131,18 @@ class ResourceGenerator extends AbstractGenerator
     }
 
     /**
+     * set RepositoryFactoryService
+     *
+     * @param string $repositoryFactoryService repositoryFactoryService
+     *
+     * @return void
+     */
+    public function setRepositoryFactoryService($repositoryFactoryService)
+    {
+        $this->repositoryFactoryService = $repositoryFactoryService;
+    }
+
+    /**
      * @param boolean $generateController should the controller be generated or not
      *
      * @return void
@@ -108,6 +150,74 @@ class ResourceGenerator extends AbstractGenerator
     public function setGenerateController($generateController)
     {
         $this->generateController = $generateController;
+    }
+
+    /**
+     * set GenerateModel
+     *
+     * @param bool $generateModel generateModel
+     *
+     * @return void
+     */
+    public function setGenerateModel($generateModel)
+    {
+        $this->generateModel = $generateModel;
+    }
+
+    /**
+     * set GenerateSerializerConfig
+     *
+     * @param bool $generateSerializerConfig generateSerializerConfig
+     *
+     * @return void
+     */
+    public function setGenerateSerializerConfig($generateSerializerConfig)
+    {
+        $this->generateSerializerConfig = $generateSerializerConfig;
+    }
+
+    /**
+     * set GenerateSchema
+     *
+     * @param bool $generateSchema generateSchema
+     *
+     * @return void
+     */
+    public function setGenerateSchema($generateSchema)
+    {
+        $this->generateSchema = $generateSchema;
+    }
+
+    /**
+     * set SyntheticFields
+     *
+     * @param array|string $syntheticFields syntheticFields
+     *
+     * @return void
+     */
+    public function setSyntheticFields(?string $syntheticFields)
+    {
+        $this->syntheticFields = CoreUtils::parseStringFieldList($syntheticFields);
+    }
+
+    /**
+     * setEnsureIndexes
+     *
+     * @param array|string $ensureIndexes ensureIndexes
+     *
+     * @return void
+     */
+    public function setEnsureIndexes(?string $ensureIndexes)
+    {
+        if (is_null($ensureIndexes)) {
+            return;
+        }
+
+        if (!is_array($ensureIndexes)) {
+            $ensureIndexes = explode(',', trim($ensureIndexes));
+        }
+
+        $this->ensureIndexes = $ensureIndexes;
     }
 
     /**
@@ -159,11 +269,19 @@ class ResourceGenerator extends AbstractGenerator
             ->setParameter('textIndexes', $this->json->getAllTextIndexes())
             ->setParameter('solrFields', $this->json->getSolrFields())
             ->setParameter('solrAggregate', $this->json->getSolrAggregate())
+            ->setParameter('syntheticFields', $this->syntheticFields)
+            ->setParameter('ensureIndexes', $this->ensureIndexes)
             ->getParameters();
 
         $this->generateDocument($parameters, $bundleDir, $document);
-        $this->generateSerializer($parameters, $bundleDir, $document);
-        $this->generateModel($parameters, $bundleDir, $document);
+
+        if ($this->generateSerializerConfig) {
+            $this->generateSerializer($parameters, $bundleDir, $document);
+        }
+
+        if ($this->generateModel) {
+            $this->generateModel($parameters, $bundleDir, $document);
+        }
 
         if ($this->json instanceof JsonDefinition && $this->json->hasFixtures() === true) {
             $this->generateFixtures($parameters, $bundleDir, $document);
@@ -332,7 +450,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document
                 )
             ),
-            'doctrine_mongodb.odm.default_document_manager',
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\DocumentRepository'
         );
@@ -348,7 +466,7 @@ class ResourceGenerator extends AbstractGenerator
                     'value' => $parameters['bundle'] . ':' . $document . 'Embedded'
                 )
             ),
-            'doctrine_mongodb.odm.default_document_manager',
+            $this->repositoryFactoryService,
             'getRepository',
             'Doctrine\ODM\MongoDB\DocumentRepository'
         );
@@ -436,7 +554,7 @@ class ResourceGenerator extends AbstractGenerator
                 'name' => $tag
             ];
 
-            if ($this->json instanceof JsonDefinition) {
+            if ($tag == 'graviton.rest' && $this->json instanceof JsonDefinition) {
                 $thisTag['collection'] = $this->json->getId();
 
                 // is this read only?
@@ -534,23 +652,25 @@ class ResourceGenerator extends AbstractGenerator
             $dir . '/Model/' . $document . '.php',
             $parameters
         );
-        $this->renderFile(
-            'model/schema.json.twig',
-            $dir . '/Resources/config/schema/' . $document . '.json',
-            $parameters
-        );
 
-        // embedded versions
         $this->renderFile(
             'model/Model.php.twig',
             $dir . '/Model/' . $document . 'Embedded.php',
             array_merge($parameters, ['document' => $document.'Embedded'])
         );
-        $this->renderFile(
-            'model/schema.json.twig',
-            $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
-            array_merge($parameters, ['document' => $document.'Embedded'])
-        );
+
+        if ($this->generateSchema) {
+            $this->renderFile(
+                'model/schema.json.twig',
+                $dir . '/Resources/config/schema/' . $document . '.json',
+                $parameters
+            );
+            $this->renderFile(
+                'model/schema.json.twig',
+                $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
+                array_merge($parameters, ['document' => $document.'Embedded'])
+            );
+        }
 
         $bundleParts = explode('\\', $parameters['base']);
         $shortName = strtolower($bundleParts[0]);
@@ -653,6 +773,19 @@ class ResourceGenerator extends AbstractGenerator
             'fixtures/LoadFixtures.php.twig',
             $dir . '/DataFixtures/MongoDB/Load' . $document . 'Data.php',
             $parameters
+        );
+
+        $className = $parameters['base'].'DataFixtures\MongoDB\Load'.$parameters['document'].'Data';
+
+        $this->addService(
+            $className,
+            null,
+            [],
+            'doctrine.fixture.orm',
+            [],
+            null,
+            null,
+            $className
         );
     }
 }

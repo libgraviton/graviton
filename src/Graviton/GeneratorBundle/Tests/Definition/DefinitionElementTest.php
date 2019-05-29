@@ -10,14 +10,16 @@ use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionRel;
+use Graviton\TestBundle\Test\GravitonTestCase;
 use JMS\Serializer\SerializerBuilder;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class DefinitionElementTest extends \PHPUnit\Framework\TestCase
+class DefinitionElementTest extends GravitonTestCase
 {
 
     private $fullDefPath;
@@ -27,7 +29,7 @@ class DefinitionElementTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->fullDefPath = __DIR__.'/resources/test-full.json';
     }

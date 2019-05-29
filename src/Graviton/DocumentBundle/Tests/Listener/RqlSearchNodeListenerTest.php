@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\Tests\Listener;
 
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Node\SearchNode;
+use PHPUnit\Framework\TestCase;
 use Solarium\Client;
 use Solarium\Component\EdisMax;
 use Solarium\QueryType\Select\Query\Query;
@@ -22,7 +23,7 @@ use Xiag\Rql\Parser\Node\LimitNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
+class RqlSearchNodeListenerTest extends TestCase
 {
     /**
      * @var Request
@@ -63,7 +64,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         // request stack
         $this->requestAttrs = $this->getMockBuilder(ParameterBag::class)
@@ -178,7 +179,7 @@ class RqlSearchNodeListenerTest extends \PHPUnit\Framework\TestCase
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setQuery')
-            ->with('(fred OR fred*) AND (test OR test*)');
+            ->with('(fred || fred*) && (test || test*)');
         $this->solrClientQuery
             ->expects($this->once())
             ->method('setStart')

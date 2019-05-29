@@ -15,9 +15,17 @@ parameters:
         - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
         - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
+    # proxy settings for HttpClient and possibly more
+    graviton.proxy: null
+    graviton.noproxy: null
+
     # if set to a path, documentbundle will search this also for generated bundles
     # important: this should best be a path relative to the graviton root dir! (./app/../)
     graviton.generator.dynamicbundle.dir: null
+    #graviton.generator.synthetic_fields: 'int:tenant'
+    graviton.generator.synthetic_fields: null
+    #graviton.generator.ensure_indexes: hans,test2
+    graviton.generator.ensure_indexes: null
 
     # which serializer groups should be (de)serialized on this instance
     graviton.rest.serializer.groups: null
@@ -25,6 +33,12 @@ parameters:
     graviton.rest.serializer.allow_group_override_header: false
     graviton.rest.serializer.override_header_name: x-groups
     graviton.rest.schema_variation.enable: false
+
+    # a map that can specify optional data restriction from incoming requests to the database
+    # example:
+    #graviton.rest.data_restriction.map:
+    #    x-graviton-tenant: "int:tenant"
+    graviton.rest.data_restriction.map: []
 
     graviton.jmespath.cache_dir: "%kernel.cache_dir%/jmespath"
 
@@ -67,6 +81,9 @@ parameters:
     graviton.file.s3.bucket: graviton
     graviton.file.s3.credentials.key: null
     graviton.file.s3.credentials.secret: null
+
+    graviton.core.httpclient.debugRequests: false
+    graviton.core.httpclient.debugMaxLength: 5000
 
     graviton.translator.default.locale: en
     graviton.translator.cache_name_depth: 3

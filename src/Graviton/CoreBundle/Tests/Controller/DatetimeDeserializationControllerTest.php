@@ -21,7 +21,7 @@ class DatetimeDeserializationControllerTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         if (!class_exists(TestCaseDatetimeDeserialization::class)) {
             $this->markTestSkipped(sprintf('%s definition is not loaded', TestCaseDatetimeDeserialization::class));

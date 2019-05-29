@@ -6,6 +6,7 @@
 namespace Graviton\ProxyBundle\Tests\Definition\Loader;
 
 use Graviton\ProxyBundle\Definition\Loader\HttpLoader;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -15,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class HttpLoaderTest extends \PHPUnit\Framework\TestCase
+class HttpLoaderTest extends TestCase
 {
     /**
      * @var HttpLoader
@@ -32,7 +33,7 @@ class HttpLoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setup()
+    public function setup() : void
     {
         $response = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->getMock();

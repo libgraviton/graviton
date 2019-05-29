@@ -7,6 +7,7 @@ namespace Graviton\ProxyBundle\Tests\Definition\Loader\DispersalStrategy;
 
 use Graviton\ProxyBundle\Definition\ApiDefinition;
 use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy;
+use PHPUnit\Framework\TestCase;
 
 /**
  * tests for the SwaggerStrategy class
@@ -15,7 +16,7 @@ use Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy;
  * @license https://opensource.org/licenses/MIT MIT License
  * @link    http://swisscom.ch
  */
-class SwaggerStrategyTest extends \PHPUnit\Framework\TestCase
+class SwaggerStrategyTest extends TestCase
 {
     /**
      * @var SwaggerStrategy
@@ -27,7 +28,7 @@ class SwaggerStrategyTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $swaggerParserMock = $this->getMockBuilder('\Swagger\Document')
             ->disableOriginalConstructor()
@@ -69,13 +70,12 @@ class SwaggerStrategyTest extends \PHPUnit\Framework\TestCase
     /**
      * test missing fallback data
      *
-     * @expectedException        RuntimeException
-     * @expectedExceptionMessage Missing mandatory key (host) in fallback data set.
-     *
      * @return void
      */
     public function testMissingFallbackData()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Missing mandatory key (host) in fallback data set.');
         $this->sut->process('{}', array());
     }
 

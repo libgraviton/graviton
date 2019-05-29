@@ -5,6 +5,7 @@
 
 namespace Graviton\SecurityBundle\Command;
 
+use Graviton\TestBundle\Test\GravitonTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class AuthenticationKeyFinderCommandTest extends \PHPUnit\Framework\TestCase
+class AuthenticationKeyFinderCommandTest extends GravitonTestCase
 {
 
     /**
@@ -35,7 +36,7 @@ class AuthenticationKeyFinderCommandTest extends \PHPUnit\Framework\TestCase
             )
         );
 
-        $this->assertContains('some Testservice', $commandTester->getDisplay());
+        $this->assertStringContainsString('some Testservice', $commandTester->getDisplay());
     }
 
     /**
@@ -55,11 +56,12 @@ class AuthenticationKeyFinderCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array());
 
-        $this->assertContains('some Testservice', $commandTester->getDisplay());
-        $this->assertContains('some other Testservice', $commandTester->getDisplay());
+        $this->assertStringContainsString('some Testservice', $commandTester->getDisplay());
+        $this->assertStringContainsString('some other Testservice', $commandTester->getDisplay());
 
-        $this->assertAttributeEquals(array('some Testservice', 'some other Testservice'), 'strategies', $command);
-        $this->assertAttributeCount(2, 'strategies', $command);
+        $strategies = $this->getPrivateClassProperty($command, 'strategies')->getValue($command);
+
+        $this->assertEquals(['some Testservice', 'some other Testservice'], $strategies);
     }
 
     /**

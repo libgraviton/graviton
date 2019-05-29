@@ -23,6 +23,23 @@ class BundleGenerator extends AbstractGenerator
 {
 
     /**
+     * @var bool
+     */
+    private $generateSerializerConfig = true;
+
+    /**
+     * set GenerateSerializerConfig
+     *
+     * @param bool $generateSerializerConfig generateSerializerConfig
+     *
+     * @return void
+     */
+    public function setGenerateSerializerConfig($generateSerializerConfig)
+    {
+        $this->generateSerializerConfig = $generateSerializerConfig;
+    }
+
+    /**
      * generate bundle code
      *
      * @param string $namespace namspace name
@@ -48,6 +65,7 @@ class BundleGenerator extends AbstractGenerator
             'format' => $format,
             'bundle_basename' => $basename,
             'extension_alias' => Container::underscore($basename),
+            'generateSerializerConfig' => $this->generateSerializerConfig
         );
 
         $this->renderFile('bundle/Bundle.php.twig', $dir . '/' . $bundle . '.php', $parameters);

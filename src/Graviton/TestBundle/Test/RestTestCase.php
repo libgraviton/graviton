@@ -70,7 +70,7 @@ class RestTestCase extends GravitonTestCase
      */
     public function assertResponseSchemaRel($schemaUrl, Response $response)
     {
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<'.$schemaUrl.'>; rel="schema"',
             $response->headers->get('Link', ''),
             'Schema Link header item missing'

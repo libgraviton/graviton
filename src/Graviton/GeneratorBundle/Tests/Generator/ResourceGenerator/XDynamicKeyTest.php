@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Tests\Generator\ResourceGenerator;
 
+use Graviton\ExceptionBundle\Exception\XDynamicKeyException;
 use Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey;
 
 /**
@@ -78,11 +79,11 @@ class XDynamicKeyTest extends \PHPUnit\Framework\TestCase
     /**
      * test if it behaves correctly if the methods don't exist
      *
-     * @expectedException Graviton\ExceptionBundle\Exception\XDynamicKeyException
      * @return void
      */
     public function testResolveRefNotExistingFields()
     {
+        $this->expectException(XDynamicKeyException::class);
         $c = $this->getMockBuilder('ClassC')
             ->setMethods(array('getId'))
             ->getMock();

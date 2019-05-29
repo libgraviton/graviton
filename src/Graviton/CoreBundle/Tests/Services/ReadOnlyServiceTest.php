@@ -22,7 +22,7 @@ class ReadOnlyServiceTest extends RestTestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->loadFixturesLocal(
             array(
@@ -65,7 +65,10 @@ class ReadOnlyServiceTest extends RestTestCase
         $client->request($method, $url, [], [], [], $entry);
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
         $content = $client->getResults();
-        $this->assertContains('No route found for "'.$method.' '.$url .'": Method Not Allowed', $content->message);
+        $this->assertStringContainsString(
+            'No route found for "'.$method.' '.$url .'": Method Not Allowed',
+            $content->message
+        );
     }
 
     /**

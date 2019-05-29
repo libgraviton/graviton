@@ -12,6 +12,7 @@ use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\SerializationContext;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test ExtReferenceHandler
@@ -20,7 +21,7 @@ use JMS\Serializer\SerializationContext;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ExtReferenceHandlerTest extends \PHPUnit\Framework\TestCase
+class ExtReferenceHandlerTest extends TestCase
 {
     /**
      * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -40,7 +41,7 @@ class ExtReferenceHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp() : void
     {
         $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
