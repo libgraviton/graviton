@@ -44,7 +44,7 @@ class SyntheticFields implements ExclusionStrategyInterface
      *
      * @return boolean
      */
-    public function shouldSkipClass(ClassMetadata $metadata, Context $context)
+    public function shouldSkipClass(ClassMetadata $metadata, Context $context) : bool
     {
         return false;
     }
@@ -57,7 +57,7 @@ class SyntheticFields implements ExclusionStrategyInterface
      *
      * @return boolean
      */
-    public function shouldSkipProperty(PropertyMetadata $property, Context $context)
+    public function shouldSkipProperty(PropertyMetadata $property, Context $context) : bool
     {
         if (isset($this->syntheticFields[$property->name])) {
             return true;
