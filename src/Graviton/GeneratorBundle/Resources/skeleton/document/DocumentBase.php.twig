@@ -70,7 +70,7 @@ protected $deletedDate;
         * @var {{ field.type }} ${{ field.fieldName }}
     {% endif %}
     */
-    {% if field.type == 'array' %}
+    {% if '[]' in field.type or field.type == 'array' %}
         protected ${{ field.fieldName }} = [];
     {% else %}
         protected ${{ field.fieldName }};
@@ -81,20 +81,6 @@ protected $deletedDate;
 {% for syntheticField in syntheticFields %}
         protected ${{ syntheticField.name }};
 {% endfor %}
-
-/**
-* constructor
-*
-* @return self
-*/
-public function __construct()
-{
-{% for field in fields %}
-    {% if '[]' in field.type or field.type == 'array' %}
-        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new \Doctrine\Common\Collections\ArrayCollection(){% else %}[]{% endif %};
-    {% endif %}
-{% endfor %}
-}
 
 public function getDeleteddate()
 {
@@ -156,7 +142,7 @@ return $this->deletedDate;
     {% endif %}
     {
     {% if '[]' in field.type or field.type == 'array' %}
-        if ($this->{{ field.fieldName }} instanceof Collection) {
+        if ($this->{{ field.fieldName }} instanceof \Doctrine\Common\Collections\Collection) {
           return $this->{{ field.fieldName }}->toArray();
         }
     {% endif %}
@@ -181,7 +167,7 @@ return $this->deletedDate;
     */
     {% if 'Graviton' in field.type %}
         {% if '[]' in field.type %}
-            public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+            public function set{{ field.fieldName|capitalize }}(array ${{ field.fieldName }})
         {% else %}
             {% if field.relType is defined %}
                 {% set relType = {"embed": "Embedded", "ref": ""}[field.relType] %}
@@ -195,11 +181,7 @@ return $this->deletedDate;
         public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
     {% endif %}
     {
-    {% if '[]' in field.type and 'Graviton' in field.type %}
-        $this->{{ field.fieldName }} = new \Doctrine\Common\Collections\ArrayCollection(${{ field.fieldName }});
-    {% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
-    {% endif %}
 
     return $this;
     }

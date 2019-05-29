@@ -57,8 +57,13 @@ class ExtReferenceHandler
         array $type,
         Context $context
     ) {
+        if (null === $extReference) {
+            return null;
+        }
+
         try {
-            return $visitor->visitString($this->converter->getUrl($extReference), $type, $context);
+            //return $visitor->visitString($this->converter->getUrl($extReference), $type, $context);
+            return $this->converter->getUrl($extReference);
         } catch (\InvalidArgumentException $e) {
             return $visitor->visitNull(null, $type, $context);
         }
@@ -79,6 +84,10 @@ class ExtReferenceHandler
         array $type,
         Context $context
     ) {
+        if (null === $url) {
+            return null;
+        }
+
         try {
             return $this->converter->getExtReference(
                 $visitor->visitString($url, $type, $context)
