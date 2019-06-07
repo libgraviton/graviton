@@ -53,7 +53,7 @@ services:
           -
             method: setCache
             arguments:
-              - "@=service(parameter('graviton.cache.provider.service_id'))"
+              - "@=service(parameter('graviton.cache.provider.service_id_local'))"
               - ProxyBundle
               - 86400
 

@@ -4,7 +4,7 @@ services:
         class: "%graviton.core.jms.cache.provider.class%"
         arguments:
           - "jms"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
 
     graviton.core.http.client:
       class: 'GuzzleHttp\Client'
