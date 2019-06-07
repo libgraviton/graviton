@@ -173,7 +173,7 @@ services:
           - "@logger"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
