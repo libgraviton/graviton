@@ -7,7 +7,7 @@
     "fixtures": []
   },
   "target": {
-    "indexes": [],
+    "indexes": ["group"],
     "relations": [],
     "fields": [
       {
