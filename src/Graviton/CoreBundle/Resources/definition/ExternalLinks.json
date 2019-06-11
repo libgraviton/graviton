@@ -53,6 +53,14 @@
         "type": "varchar",
         "title": "Group",
         "description": "A field to build groups of links."
+      },
+      {
+        "name": "categories.0.ref",
+        "type": "extref",
+        "title": "Categories",
+        "description": "Links to categories",
+        "exposeAs": "$ref",
+        "collection": ["*"]
       }
     ]
   }
