@@ -40,6 +40,9 @@ doctrine_cache:
         local:
             php_file:
                 directory: "%kernel.cache_dir%/doctrinecache_local"
+        file:
+            file_system:
+                directory: "%kernel.cache_dir%/doctrinecache_files"
         array:
             array:
         redis:
@@ -128,9 +131,9 @@ graviton_proxy:
         redirect: "%graviton.proxy.redirect.sources%"
 
 graviton_core:
-      service_name:
+    service_name:
         - graviton.core.static.version.get
         - graviton.security.static.whoami.get
-      uri_whitelist:
+    uri_whitelist:
         - /core/version
         - /person/whoami
