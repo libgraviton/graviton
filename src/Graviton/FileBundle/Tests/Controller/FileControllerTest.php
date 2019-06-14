@@ -511,7 +511,7 @@ class FileControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put(
             '/file/myPersonalFile',
-            [],
+            null,
             [
                 'metadata' => $jsonData,
             ],
@@ -583,7 +583,7 @@ class FileControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put(
             '/file/myPersonalFile2',
-            [],
+            null,
             [
                 'metadata' => $jsonData,
             ],
