@@ -21,6 +21,9 @@ services:
     graviton.cache.provider.local:
         alias: doctrine_cache.providers.local
         public: true
+    graviton.cache.provider.file:
+        alias: doctrine_cache.providers.file
+        public: true
     graviton.cache.provider.array:
         alias: doctrine_cache.providers.array
         public: true
