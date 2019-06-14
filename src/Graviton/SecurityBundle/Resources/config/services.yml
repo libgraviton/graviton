@@ -6,20 +6,16 @@ services:
           - "%graviton.security.authentication.test_username%"
           - "%graviton.security.authentication.allow_anonymous%"
           - "@graviton_security_user_provider"
-          # This service id is an alias defined in the parameters.yml -->
-          - "@graviton.security.authentication.strategy"
+          - "@=service(parameter('graviton.security.authentication.strategy'))"
           - "@logger"
 
-    #
-    #    Strategies used by AuthenticationKeyAuthenticator
-    #    Value set in Dpc Injection
-    #    graviton.security.authentication.strategy.*
-    #
     graviton.security.authentication.strategy.multi:
         class: Graviton\SecurityBundle\Authentication\Strategies\MultiStrategy
+        public: true
 
     graviton.security.authentication.strategy.subnet:
         class: Graviton\SecurityBundle\Authentication\Strategies\SameSubnetStrategy
+        public: true
         arguments:
           - "%graviton.security.authentication.strategy.subnet.key%"
           - "%graviton.security.authentication.strategy.subnet.header_field%"
@@ -29,6 +25,7 @@ services:
 
     graviton.security.authentication.strategy.header:
         class: Graviton\SecurityBundle\Authentication\Strategies\HeaderFieldStrategy
+        public: true
         arguments:
           - "%graviton.security.authentication.strategy.header.key%"
         tags:
@@ -37,19 +34,18 @@ services:
 
     graviton.security.authentication.strategy.cookie:
       class: Graviton\SecurityBundle\Authentication\Strategies\CookieFieldStrategy
+      public: true
       arguments:
         - "%graviton.security.authentication.strategy.cookie.key%"
       tags:
         -
           name: graviton.security.authenticationkey.finder
 
-    #
-    #    Services related to the AuthenticationUserProvider
-    #
+    # provider
     graviton_security_user_provider:
         class: Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider
         arguments:
-          - "@graviton.security.authentication.dynamic.model"
+          - "@=service(parameter('graviton.security.authentication.provider.model'))"
           - "%graviton.security.authentication.provider.model.query_field%"
 
     graviton.security.authentication.provider.model.factory:
@@ -57,13 +53,9 @@ services:
         arguments:
           - "@service_container"
 
-    # this doesn't seem to be used & the factory referenced does not exist! can it be completely removed?
-    #graviton.security.authentication.provider:
-    #    class: Graviton\RestBundle\Model\ModelInterface
-    #    factory: 'graviton.security.authentication.factory:create'
-
     graviton.security.authentication.provider.model.noop:
         class: Graviton\SecurityBundle\User\Model\NullModel
+        public: true
         calls:
           -
             method: setRepository

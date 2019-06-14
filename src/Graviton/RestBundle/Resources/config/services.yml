@@ -78,7 +78,6 @@ services:
           - "@graviton.rest.response"
           - "@graviton.rest.restutils"
           - "@graviton.rest.router"
-          - "@templating"
           - "@service_container"
           - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
