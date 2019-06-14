@@ -23,6 +23,11 @@ class AppKernel extends Kernel
      */
     protected $bundleLoader;
 
+    /**
+     * project dir
+     *
+     * @var string
+     */
     protected $projectDir = __DIR__.'/../';
 
     /**
