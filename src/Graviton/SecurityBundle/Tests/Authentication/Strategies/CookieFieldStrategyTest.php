@@ -57,7 +57,7 @@ class CookieFieldStrategyTest extends RestTestCase
             $fieldValue,
             time() + 3600 * 24 * 7,
             '/',
-            null,
+            '',
             false,
             false
         );
@@ -109,7 +109,7 @@ class CookieFieldStrategyTest extends RestTestCase
             $fieldValue,
             time() + 3600 * 24 * 7,
             '/',
-            null,
+            '',
             false,
             false
         );

@@ -5,6 +5,7 @@
 
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Role\Role;
 
@@ -25,14 +26,20 @@ class MultiStrategy implements StrategyInterface
     private $roles = [];
 
     /**
-     * MultiStrategy add.
+     * set strategies
      *
-     * @param StrategyInterface $strategy strategy to be applied.
+     * @param ContainerInterface $container  container
+     * @param array              $strategies array of strategy service names to use.
+     *
      * @return void
      */
-    public function addStrategy(StrategyInterface $strategy)
+    public function setStrategies(ContainerInterface $container, array $strategies)
     {
-        $this->strategies[] = $strategy;
+        foreach ($strategies as $strategy) {
+            if (($strategyService = $container->get($strategy)) instanceof StrategyInterface) {
+                $this->strategies[] = $strategyService;
+            }
+        }
     }
 
     /**

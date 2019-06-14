@@ -10,10 +10,9 @@ use Graviton\SecurityBundle\Authentication\Provider\AuthenticationProvider;
 use Graviton\SecurityBundle\Entities\AnonymousUser;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Entities\SubnetUser;
-use Psr\Log\LoggerInterface as Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,12 +26,6 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
  */
 final class SecurityAuthenticator extends AbstractGuardAuthenticator
 {
-
-    /**
-     * Authentication can be required to use any service
-     * @var bool,
-     */
-    protected $securityRequired;
 
     /**
      * Authentication can use a test user if no user found
@@ -57,45 +50,29 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     protected $extractionStrategy;
 
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * @param boolean                $securityRequired     user provider to use
      * @param string                 $securityTestUsername user for testing
      * @param boolean                $allowAnonymous       user provider to use
      * @param AuthenticationProvider $userProvider         user provider to use
      * @param StrategyInterface      $extractionStrategy   auth strategy to use
-     * @param Logger                 $logger               logger to user for logging errors
+     * @param LoggerInterface        $logger               logger to user for logging errors
      */
     public function __construct(
-        $securityRequired,
         $securityTestUsername,
         $allowAnonymous,
         AuthenticationProvider $userProvider,
         StrategyInterface $extractionStrategy,
-        Logger $logger
+        LoggerInterface $logger
     ) {
-
-        $this->securityRequired   = $securityRequired;
         $this->testUsername       = $securityTestUsername;
         $this->allowAnonymous     = $allowAnonymous;
         $this->userProvider       = $userProvider;
         $this->extractionStrategy = $extractionStrategy;
-
         $this->logger = $logger;
-    }
-
-    /**
-     * @param TokenInterface $token       token to check
-     * @param string         $providerKey provider to check against
-     *
-     * @return bool
-     */
-    public function supportsToken(TokenInterface $token, $providerKey)
-    {
-        return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
     }
 
     /**
@@ -106,7 +83,7 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
      * @param Request                 $request   original request
      * @param AuthenticationException $exception exception from auth attempt
      *
-     * @return Response|null
+     * @return Response|null response
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
@@ -134,9 +111,9 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
      *
      * If this returns false, the authenticator will be skipped.
      *
-     * @param Request $request
+     * @param Request $request request
      *
-     * @return bool
+     * @return bool always true
      */
     public function supports(Request $request)
     {
@@ -147,20 +124,7 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
      * Get the authentication credentials from the request and return them
      * as any type (e.g. an associate array).
      *
-     * Whatever value you return here will be passed to getUser() and checkCredentials()
-     *
-     * For example, for a form login, you might:
-     *
-     *      return [
-     *          'username' => $request->request->get('_username'),
-     *          'password' => $request->request->get('_password'),
-     *      ];
-     *
-     * Or for an API token that's on a header, you might use:
-     *
-     *      return ['api_key' => $request->headers->get('X-API-TOKEN')];
-     *
-     * @param Request $request
+     * @param Request $request request
      *
      * @return mixed Any non-null value
      *
@@ -182,8 +146,8 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
      * You may throw an AuthenticationException if you wish. If you return
      * null, then a UsernameNotFoundException is thrown for you.
      *
-     * @param mixed                 $credentials
-     * @param UserProviderInterface $userProvider
+     * @param mixed                 $credentials  credentials
+     * @param UserProviderInterface $userProvider user provider
      *
      * @return UserInterface|null
      * @throws AuthenticationException
@@ -245,8 +209,8 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     /**
      * Returns true if the credentials are valid.
      *
-     * @param mixed         $credentials
-     * @param UserInterface $user
+     * @param mixed         $credentials credentials
+     * @param UserInterface $user        user
      *
      * @return bool if it all checks out..
      *
@@ -277,8 +241,8 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     /**
      * Called when authentication executed and was successful!
      *
-     * @param Request        $request
-     * @param TokenInterface $token
+     * @param Request        $request     request
+     * @param TokenInterface $token       token
      * @param string         $providerKey The provider (i.e. firewall) key
      *
      * @return Response|null response
@@ -291,7 +255,7 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
     /**
      * supports cookie based cookie auth?
      *
-     * @return bool
+     * @return bool always false
      */
     public function supportsRememberMe()
     {

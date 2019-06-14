@@ -6,9 +6,6 @@
 namespace Graviton\SecurityBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\SecurityBundle\DependencyInjection\AuthenticationPass;
-use Graviton\SecurityBundle\DependencyInjection\Compiler\AuthenticationKeyFinderPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -28,19 +25,5 @@ class GravitonSecurityBundle extends Bundle implements GravitonBundleInterface
     public function getBundles()
     {
         return [];
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param ContainerBuilder $container container to add compiler-pass to
-     *
-     * @return void
-     */
-    public function build(ContainerBuilder $container)
-    {
-        parent::build($container);
-
-        $container->addCompilerPass(new AuthenticationKeyFinderPass());
     }
 }
