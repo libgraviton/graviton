@@ -1,9 +1,5 @@
-app/logs
-app/cache
-app/bootstrap.php.cache
-app/check.php
-app/SymfonyRequirements.php
-web/bundles
+var/log
+var/cache
 web/swagger.json
 src/Graviton/I18nBundle/Resources/translations/*.odm
 vendor/

@@ -14,9 +14,9 @@
         "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
     },
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.3.0",
         "ext-fileinfo": "*",
-        "ext-mongodb": "^1.4.0",
+        "ext-mongodb": "^1.5.0",
 
         "alcaeus/mongo-php-adapter": "^1.1.5",
         "jean85/pretty-package-versions": "^1.1",
@@ -27,7 +27,7 @@
         "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.2.0",
 
-        "symfony/symfony": "~3.4.0",
+        "symfony/symfony": "~4.3.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "^1.0.0",
 
@@ -65,8 +65,8 @@
         "doctrine/data-fixtures": "^1.2",
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
-        "liip/test-fixtures-bundle": "^0.1.0@alpha",
-        "doctrine/doctrine-fixtures-bundle": "^3.1",
+        "liip/test-fixtures-bundle": "^1",
+        "doctrine/doctrine-fixtures-bundle": "~3.1.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0"
     },
     "suggest": {
