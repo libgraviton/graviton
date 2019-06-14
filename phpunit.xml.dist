@@ -57,7 +57,7 @@
     <ini name="xdebug.max_nesting_level" value="200"/>
     <ini name="memory_limit" value="-1"/>
     <env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>
-    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[total]=999999"/>
   </php>
   <listeners>
     <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
