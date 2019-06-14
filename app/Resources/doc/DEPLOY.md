@@ -44,10 +44,10 @@ cf env graviton
 cf sc connect 8001 <args from env output as needed>
 ``
 
-Load the fixtures using app/console.
+Load the fixtures using bin/console.
 
 ``bash
-php app/console doctrine:mongodb:fixtures:load
+php bin/console doctrine:mongodb:fixtures:load
 ``
 
 You can also connect to your mongodb with other clients for maintenance

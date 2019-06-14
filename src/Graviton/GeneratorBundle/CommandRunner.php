@@ -34,7 +34,7 @@ class CommandRunner
 
 
     /**
-     * Executes a app/console command
+     * Executes a bin/console command
      *
      * @param array           $args    Arguments
      * @param OutputInterface $output  Output
@@ -61,6 +61,9 @@ class CommandRunner
                 $cmd
             )
         );
+
+
+        var_dump($args);
 
         $this->process->setCommandLine($cmd);
         $this->process->run(
@@ -98,7 +101,7 @@ class CommandRunner
     private function getCmd(array $args)
     {
         // get path to console from kernel..
-        $consolePath = $this->kernel->getRootDir() . '/console';
+        $consolePath = $this->kernel->getProjectDir() . '/bin/console';
 
         // this code was copied from Symfony\Component\Process\PhpProcess and deserves a cleanup
         $executableFinder = new PhpExecutableFinder();

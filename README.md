@@ -19,7 +19,7 @@ composer install
 and
 
 ```bash
-app/console
+php bin/console
 ```
 
 ## Documentation

@@ -56,7 +56,7 @@ script:
       if [ "$PHPUNIT" = "true" ]; then
           bash prepare-for-tests.sh && \
           if [ "$PHPUNIT_SUITE" == "integration" ]; then
-              php app/console doctrine:mongodb:schema:update
+              php bin/console doctrine:mongodb:schema:update
           fi && \
           if [ "$PHPUNIT_SUITE" == "unit" ]; then
             COVERAGE=" --coverage-clover=coverage.clover "

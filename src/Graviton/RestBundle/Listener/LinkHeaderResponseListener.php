@@ -90,7 +90,7 @@ class LinkHeaderResponseListener
 
         // dispatch the "selfaware" event
         $event->getRequest()->attributes->set('selfLink', $selfUrl);
-        $dispatcher->dispatch('graviton.rest.response.selfaware', $event);
+        $dispatcher->dispatch($event, 'graviton.rest.response.selfaware');
     }
 
     /**

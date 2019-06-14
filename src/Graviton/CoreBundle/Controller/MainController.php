@@ -179,7 +179,7 @@ class MainController
     {
         $additionalRoutes = [];
         $event = new HomepageRenderEvent();
-        $routes = $this->eventDispatcher->dispatch(HomepageRenderEvent::EVENT_NAME, $event)->getRoutes();
+        $routes = $this->eventDispatcher->dispatch($event, HomepageRenderEvent::EVENT_NAME)->getRoutes();
 
         if (!empty($routes)) {
             $baseRoute = $this->router->match("/");
