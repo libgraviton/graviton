@@ -110,6 +110,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
+        "branch-alias": {
+            "dev-3.0-dev": "3.0-dev"
+        },
         "symfony-app-dir": "./bin",
         "symfony-web-dir": "./public",
         "incenteev-parameters": [
