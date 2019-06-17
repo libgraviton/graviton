@@ -114,8 +114,7 @@ class RequestManager
         return new UploadedFile(
             $file->getRealPath(),
             $fileName,
-            $file->getMimeType(),
-            $file->getSize()
+            $file->getMimeType()
         );
     }
 }
