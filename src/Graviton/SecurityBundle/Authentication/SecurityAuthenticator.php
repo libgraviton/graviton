@@ -183,13 +183,13 @@ final class SecurityAuthenticator extends AbstractGuardAuthenticator
             }
         }
 
-        if ($user === false && $this->testUsername === false) {
+        if ($user === false && empty($this->testUsername)) {
             // anonymous case
             $this->logger->info('Authentication, loading anonymous user.');
 
             $user = new AnonymousUser();
             $roles[] = SecurityUser::ROLE_ANONYMOUS;
-        } elseif ($user === false && $this->testUsername !== false) {
+        } elseif ($user === false && !empty($this->testUsername)) {
             // test username case
             $this->logger->info('Authentication, loading test user.');
 
