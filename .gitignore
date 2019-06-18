@@ -1,6 +1,6 @@
 var/log
 var/cache
-web/swagger.json
+var/*.jso*
 src/Graviton/I18nBundle/Resources/translations/*.odm
 vendor/
 web/.htaccess

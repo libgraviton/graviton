@@ -1,3 +1,6 @@
+parameters:
+  graviton.swagger.generation_dir: "%kernel.cache_dir%/../../"
+
 services:
 
     # swagger service - a service that generates swagger spec -->
@@ -25,7 +28,7 @@ services:
           -
             method: setRootDir
             arguments:
-              - "%kernel.root_dir%"
+              - "%graviton.swagger.generation_dir%"
           -
             method: setFilesystem
             arguments:
@@ -43,4 +46,4 @@ services:
         public: true
         arguments:
           - "@graviton.swagger.filesystem.finder"
-          - "%kernel.root_dir%"
+          - "%graviton.swagger.generation_dir%"

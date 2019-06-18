@@ -120,9 +120,8 @@ class SwaggerGenerateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $baseDir = $this->rootDir . '/../app/cache/';
-        $swaggerFile = $baseDir . 'swagger.json';
-        $swaggerHashFile = $baseDir . 'swagger.json.hash';
+        $swaggerFile = $this->rootDir . 'swagger.json';
+        $swaggerHashFile = $this->rootDir . 'swagger.json.hash';
 
         $hash = $this->container->getParameter('graviton.generator.hash.all');
         $doGenerate = !($this->filesystem->exists($swaggerFile) && $this->filesystem->exists($swaggerHashFile));

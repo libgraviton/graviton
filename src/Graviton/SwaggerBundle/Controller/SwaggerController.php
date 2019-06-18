@@ -6,7 +6,6 @@
 namespace Graviton\SwaggerBundle\Controller;
 
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpKernel\Exception\FatalErrorException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SwaggerController
 {
-    /*
+    /**
      * @var Finder
      */
     private $finder;
@@ -45,10 +44,10 @@ class SwaggerController
      */
     public function swaggerAction()
     {
-        $this->finder->files()->in($this->rootDir . '/cache')->name('swagger.json');
+        $this->finder->files()->in($this->rootDir)->depth(0)->name('swagger.json');
 
         if ($this->finder->count() != 1) {
-            throw new FatalErrorException('Failed to find a generated swagger file');
+            throw new \LogicException('Failed to find a generated swagger file');
         }
 
         foreach ($this->finder as $file) {
