@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\RestBundle\Controller\RestController;
 use Symfony\Component\HttpFoundation\Request;

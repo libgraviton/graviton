@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\Event;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
