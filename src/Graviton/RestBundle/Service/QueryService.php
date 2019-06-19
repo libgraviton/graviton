@@ -10,6 +10,7 @@ use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\RestBundle\Restriction\Manager;
 use Graviton\Rql\Node\SearchNode;
 use Graviton\Rql\Visitor\VisitorInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Xiag\Rql\Parser\Exception\SyntaxErrorException;
@@ -27,6 +28,11 @@ use Xiag\Rql\Parser\Query;
  */
 class QueryService
 {
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var VisitorInterface
@@ -64,17 +70,20 @@ class QueryService
     protected $eventDispatcher;
 
     /**
+     * @param LoggerInterface          $logger                 logger
      * @param VisitorInterface         $visitor                visitor
      * @param Manager                  $restrictionManager     restriction manager
      * @param integer                  $paginationDefaultLimit default pagination limit
      * @param EventDispatcherInterface $eventDispatcher        event dispatcher
      */
     public function __construct(
+        LoggerInterface $logger,
         VisitorInterface $visitor,
         Manager $restrictionManager,
         $paginationDefaultLimit,
         EventDispatcherInterface $eventDispatcher
     ) {
+        $this->logger = $logger;
         $this->visitor = $visitor;
         $this->restrictionManager = $restrictionManager;
         $this->paginationDefaultLimit = intval($paginationDefaultLimit);
@@ -116,6 +125,11 @@ class QueryService
              */
             $this->queryBuilder->hydrate($repository->getClassName());
 
+            $this->logger->info(
+                'QueryService: Aggregate query',
+                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+            );
+
             $records = array_values($this->queryBuilder->execute()->toArray());
             $request->attributes->set('recordCount', count($records));
 
@@ -124,6 +138,12 @@ class QueryService
             /**
              * this is or the "all" action -> multiple documents returned
              */
+
+            $this->logger->info(
+                'QueryService: allAction query',
+                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+            );
+
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
 
@@ -136,6 +156,11 @@ class QueryService
              * this is the "getAction" -> one document returned
              */
             $this->queryBuilder->field('id')->equals($this->getDocumentId());
+
+            $this->logger->info(
+                'QueryService: getAction query',
+                ['q' => $this->queryBuilder->getQuery()->getQuery()]
+            );
 
             $query = $this->queryBuilder->getQuery();
             $records = array_values($query->execute()->toArray());
