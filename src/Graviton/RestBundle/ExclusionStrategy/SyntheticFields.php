@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\ExclusionStrategy;
 
-use Graviton\CoreBundle\Util\CoreUtils;
 use JMS\Serializer\Context;
 use JMS\Serializer\Exclusion\ExclusionStrategyInterface;
 use JMS\Serializer\Metadata\ClassMetadata;
@@ -33,7 +32,7 @@ class SyntheticFields implements ExclusionStrategyInterface
      */
     public function __construct($syntheticFields)
     {
-        $this->syntheticFields = CoreUtils::parseStringFieldList($syntheticFields);
+        $this->syntheticFields = $syntheticFields;
     }
 
     /**
