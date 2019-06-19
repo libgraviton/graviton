@@ -1,10 +1,4 @@
 services:
-    #Serializer / Serializer context
-    graviton.rest.serializer.exclusionstrategy.syntheticfields:
-      class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
-      public: true
-      arguments:
-        - "%graviton.rest.synthetic_fields%"
 
     graviton.rest.serializer:
         parent: "jms_serializer"
@@ -42,10 +36,6 @@ services:
             method: setOverrideHeaderAllowed
             arguments:
               - "%graviton.rest.serializer.allow_group_override_header%"
-          -
-            method: addExclusionStrategy
-            arguments:
-              - "@graviton.rest.serializer.exclusionstrategy.syntheticfields"
 
     graviton.rest.router:
         alias: router
@@ -381,3 +371,9 @@ services:
         class: "%graviton.rest.restriction.handler.whoami.class%"
         arguments:
           - "@graviton.security.service.utils"
+
+  # fixtures
+    Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
+      class: Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
