@@ -371,3 +371,9 @@ services:
         class: "%graviton.rest.restriction.handler.whoami.class%"
         arguments:
           - "@graviton.security.service.utils"
+
+  # fixtures
+    Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
+      class: Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData
+      tags:
+        - { name: 'doctrine.fixture.orm' }
