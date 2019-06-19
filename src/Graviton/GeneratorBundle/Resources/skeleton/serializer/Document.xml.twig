@@ -52,7 +52,7 @@
 {% endfor %}
 
 {%- for field in syntheticFields %}
-    <property name="{{ field.name }}" type="{{ field.type }}" accessor-setter="set{{ field.name|capitalize }}" accessor-getter="get{{ field.name|capitalize }}" />
+    <property name="{{ field.name }}" type="{{ field.type }}" accessor-setter="set{{ field.name|capitalize }}" accessor-getter="get{{ field.name|capitalize }}" exclude="true"/>
 {%- endfor %}
 
   </class>

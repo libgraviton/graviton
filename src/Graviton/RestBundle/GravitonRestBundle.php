@@ -6,7 +6,6 @@
 namespace Graviton\RestBundle;
 
 use Graviton\RestBundle\DependencyInjection\Compiler\RestrictionListenerCompilerPass;
-use Graviton\RestBundle\DependencyInjection\Compiler\SyntheticFieldsCompilerPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Graviton\BundleBundle\GravitonBundleInterface;
@@ -51,6 +50,5 @@ class GravitonRestBundle extends Bundle implements GravitonBundleInterface
         $container->addCompilerPass(new RestServicesCompilerPass);
         $container->addCompilerPass(new RqlQueryRoutesCompilerPass());
         $container->addCompilerPass(new RestrictionListenerCompilerPass());
-        $container->addCompilerPass(new SyntheticFieldsCompilerPass());
     }
 }
