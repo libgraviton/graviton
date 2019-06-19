@@ -4,7 +4,7 @@ services:
       class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
       public: true
       arguments:
-        - "%graviton.generator.synthetic_fields%"
+        - "%graviton.rest.synthetic_fields%"
 
     graviton.rest.serializer:
         parent: "jms_serializer"
@@ -83,6 +83,11 @@ services:
           - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
+        calls:
+          -
+            method: setLogger
+            arguments:
+              - "@logger"
 
     #Model -->
     graviton.rest.model:
@@ -99,6 +104,7 @@ services:
     graviton.rest.service.query:
         class: Graviton\RestBundle\Service\QueryService
         arguments:
+          - "@logger"
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
