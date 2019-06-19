@@ -7,7 +7,7 @@ namespace Graviton\RestBundle\Restriction;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Restriction\Handler\HandlerInterface;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
+use Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 
 /**

@@ -139,7 +139,6 @@ class ModuleControllerTest extends RestTestCase
         $response = $client->getResponse();
         $this->assertEquals(200, (integer) $response->getStatusCode());
 
-
         $client = static::createRestClient();
         $client->request('GET', '/core/module/?search(123)');
         $response = $client->getResponse();

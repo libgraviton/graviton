@@ -9,8 +9,9 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Xiag\Rql\Parser\AbstractNode;
+use Xiag\Rql\Parser\Glob;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
+use Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 
 /**
@@ -143,8 +144,8 @@ class I18nRqlParsingListener
      */
     private function getNodeValue()
     {
-        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
-            return new \MongoRegex($this->node->getValue()->toRegex());
+        if ($this->node->getValue() instanceof Glob) {
+            return new \MongoRegex('/'.$this->node->getValue()->toRegex().'/');
         }
 
         return $this->node->getValue();
@@ -254,7 +255,7 @@ class I18nRqlParsingListener
         $matchingTranslations = [];
 
         // is it a glob?
-        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
+        if ($this->node->getValue() instanceof Glob) {
             $userValue = $this->node->getValue()->toRegex();
             $useWildcard = true;
         } else {
