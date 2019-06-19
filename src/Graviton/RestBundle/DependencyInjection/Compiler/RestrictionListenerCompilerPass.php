@@ -25,10 +25,6 @@ class RestrictionListenerCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $param = $container->getParameter('graviton.rest.data_restriction.map');
-
-
-
-
         if (!is_array($param) || empty($param)) {
             // remove listener
             $container->removeDefinition('graviton.rest.listener.restriction');

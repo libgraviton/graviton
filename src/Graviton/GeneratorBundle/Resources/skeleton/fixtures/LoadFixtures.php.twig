@@ -8,8 +8,6 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-use {{ base }}Document\{{ document }};
-
 /**
  * Load a example consultant and loads of fake data
  *
@@ -23,6 +21,9 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
      */
     private $container;
 
+    protected $restUtils;
+    protected $fixtures;
+
     /**
      * {@inheritDoc}
      *
@@ -33,6 +34,8 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
+        $this->restUtils = $this->container->get('graviton.rest.restutils');
+        $this->fixtures = json_decode('{{ fixtures_json }}');
     }
 
     /**
@@ -44,19 +47,13 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
      */
     public function load(ObjectManager $manager)
     {
-        $fixtures = json_decode('{{ fixtures_json }}');
         $refName = '$ref';
         $idName = '$id';
 
-        $restUtils = $this->container->get('graviton.rest.restutils');
+        if (count($this->fixtures) > 0) {
+            foreach ($this->fixtures as $record) {
 
-        if (count($fixtures) > 0) {
-            foreach ($fixtures as $record) {
-
-                $thisRecord = $restUtils->deserializeContent(
-                    json_encode($record),
-                    '{{ base }}Document\{{ document }}'
-                );
+                $thisRecord = $this->getObjectFromRecord($record);
 
                 // obvious refs..
                 foreach ($record as $key => $val) {
@@ -88,6 +85,14 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
         }
 
         $manager->flush();
+    }
+
+    public function getObjectFromRecord($record)
+    {
+        return $this->restUtils->deserializeContent(
+            json_encode($record),
+            '{{ base }}Document\{{ document }}'
+        );
     }
 
     public function getOrder()
