@@ -18,6 +18,10 @@ parameters:
     graviton.worker.relativeUrl: "https://backendalias:9443/"
     graviton.translator.default.locale: en
 
+    graviton.generator.synthetic_fields: 'int:clientId'
+    graviton.rest.data_restriction.map:
+        x-graviton-client: "int:clientId"
+
     # for testing WhoamiController and security features
     graviton.security.authentication.provider.model: gravitondyn.securityuser.model.securityuser
     graviton.security.authentication.provider.model.query_field: username
