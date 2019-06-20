@@ -13,9 +13,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\AbstractNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\AbstractNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

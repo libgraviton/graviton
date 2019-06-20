@@ -12,7 +12,7 @@ parameters:
     graviton.sentry.dontReport:
         - "Symfony\\Component\\HttpKernel\\Exception\\HttpExceptionInterface"
         - "Graviton\\JsonSchemaBundle\\Exception\\ValidationException"
-        - "Xiag\\Rql\\Parser\\Exception\\SyntaxErrorException"
+        - "Graviton\\RqlParser\\Exception\\SyntaxErrorException"
         - "Graviton\\AnalyticsBundle\\Exception\\AnalyticUsageException"
 
     # proxy settings for HttpClient and possibly more

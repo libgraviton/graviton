@@ -8,11 +8,11 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Xiag\Rql\Parser\AbstractNode;
-use Xiag\Rql\Parser\Glob;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
-use Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\AbstractNode;
+use Graviton\RqlParser\Glob;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\Node\Query\LogicalOperator\OrNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * tries to alter rql queries in a way the user can search translatables in all languages
