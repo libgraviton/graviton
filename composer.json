@@ -22,7 +22,7 @@
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "xiag/rql-parser": "dev-develop as 2.0.1",
+        "graviton/rql-parser": "dev-develop as 3.0.0",
         "graviton/php-rql-parser": "dev-support/sf3 as 3.3.0",
         "graviton/rql-parser-bundle": "dev-feature/update-rql2",
 
@@ -68,7 +68,7 @@
         "react/promise": "^2.5",
         "react/event-loop": "^0.5.2",
         "liip/test-fixtures-bundle": "^0.1.0@alpha",
-        "doctrine/doctrine-fixtures-bundle": "^3.1",
+        "doctrine/doctrine-fixtures-bundle": "~3.1.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0"
     },
     "suggest": {
