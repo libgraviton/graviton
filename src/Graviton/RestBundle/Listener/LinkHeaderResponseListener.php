@@ -5,6 +5,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Graviton\RqlParser\Node\LimitNode;
+use Graviton\RqlParser\Query;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,8 +26,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class LinkHeaderResponseListener
 {
-    use GetRqlUrlTrait;
-
     /**
      * @var Router
      */
@@ -158,25 +158,10 @@ class LinkHeaderResponseListener
         }
 
         $selfLinkUrl = $this->router->generate($routeName, $routeParams, UrlGeneratorInterface::ABSOLUTE_URL);
-        $queryString = $request->server->get('QUERY_STRING', '');
-
-        // if no rql was set, we set our default current limits
-        if ($request->attributes->get('paging') === true && strpos($queryString, 'limit(') === false) {
-            $limit = sprintf(
-                'limit(%s,%s)',
-                $request->attributes->get('perPage'),
-                $request->attributes->get('startAt')
-            );
-
-            if (!empty($queryString)) {
-                $queryString .= '&';
-            }
-
-            $queryString .= $limit;
-        }
+        $queryString = $this->getQueryString($request);
 
         if (!empty($queryString)) {
-            $selfLinkUrl .= '?' . strtr($queryString, [',' => '%2C']);
+            $selfLinkUrl .= '?' . $queryString;
         }
 
         $this->linkHeader->add(
@@ -287,27 +272,35 @@ class LinkHeaderResponseListener
      *
      * @return string
      */
-    private function generateLink($routeName, $page, $perPage, $type, Request $request, $rql)
+    private function generateLink(string $routeName, int $page, int $perPage, string $type, Request $request, $rql)
     {
-        $limit = '';
-        if ($perPage) {
-            $page = ($page - 1) * $perPage;
-            $limit = sprintf('limit(%s,%s)', $perPage, $page);
-        }
-        if (strpos($rql, 'limit') !== false) {
-            $rql = preg_replace('/limit\(.*\)/U', $limit, $rql);
-        } elseif (empty($rql)) {
-            $rql .= $limit;
-        } else {
-            $rql .= '&'.$limit;
-        }
+        $url = $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $url = $this->getRqlUrl(
-            $request,
-            $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL) .
-            '?' . strtr($rql, [',' => '%2C'])
-        );
+        $limit = $perPage;
+        $offset = ($page - 1) * $perPage;
+        $queryString = $this->getQueryString($request, $limit, $offset);
+
+        if (!empty($queryString)) {
+            $url .= '?'.$queryString;
+        }
 
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
+    }
+
+    private function getQueryString(Request $request, $limit = 0, $offset = 0)
+    {
+        /**
+         * @var $query Query
+         */
+        $query = $request->attributes->get('rqlQuery', new Query());
+
+        if ($limit < 1 && $limit < 1) {
+            return rawurlencode($query->toRql());
+        }
+
+        // apply custom limit
+        $query->setLimit(new LimitNode($limit, $offset));
+
+        return rawurlencode($query->toRql());
     }
 }
