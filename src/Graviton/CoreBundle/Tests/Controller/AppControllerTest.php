@@ -114,6 +114,37 @@ class AppControllerTest extends RestTestCase
     }
 
     /**
+     * make sure that "-" can be unencoded in common rql strings as this is the expected behavior
+     *
+     * @return void
+     */
+    public function testLiteralDashInRql()
+    {
+        $this->loadFixturesLocal(
+            [
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit'
+            ]
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?like(id,app-*)');
+
+        $this->assertEquals(10, count($client->getResults()));
+        $this->assertEquals("15", $client->getResponse()->headers->get('x-total-count'));
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(id,app-2)');
+
+        $this->assertEquals(1, count($client->getResults()));
+
+        // and encoded?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(id,app%2D2)');
+
+        $this->assertEquals(1, count($client->getResults()));
+    }
+
+    /**
      * test if we can get list of apps, paged and with filters..
      *
      * @return void

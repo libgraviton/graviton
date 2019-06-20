@@ -30,7 +30,7 @@ class LoadAppDataExceedSinglePageLimit implements FixtureInterface
 
         while ($createdCount < $howManyApps) {
             $app = new App;
-            $app->setId('app'.$createdCount);
+            $app->setId('app-'.$createdCount);
             $app->setName('App'.$createdCount);
             $app->setShowInMenu(true);
             $app->setOrder($createdCount);
