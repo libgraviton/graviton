@@ -34,7 +34,8 @@ before_script:
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
   # install our deps
-  - composer install --no-interaction  --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
+  - export GENERATOR_SYNTHETIC_FIELDS="int:clientId"
+  - composer install --no-interaction --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
 php:
   - 7.3
 env:

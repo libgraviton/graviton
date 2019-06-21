@@ -13,6 +13,7 @@ use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +35,12 @@ use Graviton\RestBundle\Service\JsonPatchValidator;
  */
 class RestController extends AbstractController
 {
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     /**
      * @var DocumentModel
      */
@@ -102,6 +109,28 @@ class RestController extends AbstractController
     }
 
     /**
+     * get Logger
+     *
+     * @return LoggerInterface Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * set Logger
+     *
+     * @param LoggerInterface $logger logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Get the container object
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
@@ -123,6 +152,8 @@ class RestController extends AbstractController
      */
     public function getAction(Request $request, $id)
     {
+        $this->logger->info('REST: getAction');
+
         $document = $this->getModel()->getSerialised($id, $request);
 
         $response = $this->getResponse()
@@ -181,9 +212,17 @@ class RestController extends AbstractController
      */
     public function allAction(Request $request)
     {
+        $this->logger->info('REST: allAction');
+
         $model = $this->getModel();
 
-        $content = $this->restUtils->serialize($model->findAll($request));
+        $this->logger->info('REST: allAction -> got model, starting findAll() on QueryService');
+        $data = $model->findAll($request);
+
+        $this->logger->info('REST: allAction -> got data, starting to serialize()');
+        $content = $this->restUtils->serialize($data);
+
+        $this->logger->info('REST: allAction -> sending response');
 
         $response = $this->getResponse()
             ->setStatusCode(Response::HTTP_OK)
@@ -201,6 +240,8 @@ class RestController extends AbstractController
      */
     public function postAction(Request $request)
     {
+        $this->logger->info('REST: postAction');
+
         // Get the response object from container
         $response = $this->getResponse();
         $model = $this->getModel();
@@ -248,6 +289,8 @@ class RestController extends AbstractController
      */
     public function putAction($id, Request $request)
     {
+        $this->logger->info('REST: putAction');
+
         $response = $this->getResponse();
         $model = $this->getModel();
 
@@ -293,6 +336,8 @@ class RestController extends AbstractController
      */
     public function patchAction($id, Request $request)
     {
+        $this->logger->info('REST: patchAction');
+
         $response = $this->getResponse();
         $model = $this->getModel();
 
@@ -349,6 +394,8 @@ class RestController extends AbstractController
      */
     public function deleteAction($id)
     {
+        $this->logger->info('REST: deleteAction');
+
         $response = $this->getResponse();
         $this->model->deleteRecord($id);
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
@@ -398,6 +445,8 @@ class RestController extends AbstractController
      */
     public function schemaAction(Request $request, $id = null)
     {
+        $this->logger->info('REST: schemaAction');
+
         $request->attributes->set('schemaRequest', true);
 
         list($app, $module, , $modelName, $schemaType) = explode('.', $request->attributes->get('_route'));

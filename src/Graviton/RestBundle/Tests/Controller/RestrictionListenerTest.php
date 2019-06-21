@@ -6,10 +6,9 @@
 namespace Graviton\RestBundle\Tests\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData;
 use Graviton\TestBundle\Test\RestTestCase;
-use GravitonDyn\TestCaseMultiTenantBundle\DataFixtures\MongoDB\LoadTestCaseMultiTenantData;
 use GravitonDyn\TestCaseMultiTenantBundle\Document\TestCaseMultiTenant;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -34,7 +33,7 @@ class RestrictionListenerTest extends RestTestCase
     {
         $this->loadFixturesLocal(
             [
-                LoadTestCaseMultiTenantData::class
+                LoadRestrictionListenerTestData::class
             ]
         );
 
