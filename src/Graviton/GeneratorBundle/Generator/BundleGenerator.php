@@ -6,7 +6,6 @@
 namespace Graviton\GeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\Container;
-use Sensio\Bundle\GeneratorBundle\Model\Bundle;
 
 /**
  * bundle containing various code generators

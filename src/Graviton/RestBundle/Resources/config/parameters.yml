@@ -1,7 +1,6 @@
 parameters:
     graviton.rest.routing.loader.class: Graviton\RestBundle\Routing\Loader\BasicLoader
     graviton.rest.routing.collection.class: Symfony\Component\Routing\RouteCollection
-    graviton.rest.serializer.exclusionstrategy.syntheticfields.class: Graviton\RestBundle\ExclusionStrategy\SyntheticFields
     graviton.rest.listener.linkheaderresponselistener.class: Graviton\RestBundle\Listener\LinkHeaderResponseListener
     graviton.rest.response.class: Graviton\RestBundle\HttpFoundation\Response
     graviton.rest.listener.corsresponselistener.class: Graviton\RestBundle\Listener\CorsResponseListener

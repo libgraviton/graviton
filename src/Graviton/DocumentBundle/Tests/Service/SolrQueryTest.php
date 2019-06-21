@@ -7,7 +7,7 @@ namespace Graviton\DocumentBundle\Tests\Service;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Node\SearchNode;
 use Symfony\Component\HttpFoundation\Request;
-use Xiag\Rql\Parser\Node\LimitNode;
+use Graviton\RqlParser\Node\LimitNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

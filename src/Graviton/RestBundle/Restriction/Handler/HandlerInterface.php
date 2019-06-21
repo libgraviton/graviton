@@ -5,6 +5,7 @@
 namespace Graviton\RestBundle\Restriction\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RqlParser\Node\AbstractQueryNode;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

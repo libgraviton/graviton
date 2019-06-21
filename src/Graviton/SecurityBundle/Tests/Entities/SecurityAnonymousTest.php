@@ -19,7 +19,7 @@ class SecurityAnonymousTest extends RestTestCase
     /**
      * @param string[] $methods methods to mock
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Graviton\SecurityBundle\Entities\AnonymousUser
+     * @return \Graviton\SecurityBundle\Entities\AnonymousUser
      */
     protected function getUserMock(array $methods = array())
     {

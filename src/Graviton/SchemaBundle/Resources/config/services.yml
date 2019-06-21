@@ -116,7 +116,7 @@ services:
           - "%graviton.rest.schema_variation.enable%"
           - "%locale%"
           - "@graviton.schema.constraint.builder"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@graviton.cache.provider.file"
           - "@graviton.core.service.jmespath"
 
     graviton.schema.constraint.incrementaldate:

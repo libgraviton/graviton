@@ -14,8 +14,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\Node\Query\ArrayOperator\InNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\Node\Query\ArrayOperator\InNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -25,7 +25,7 @@ use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 class ExtReferenceSearchListenerTest extends TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceConverterInterface
      */
     private $converter;
     /**
@@ -33,11 +33,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     private $request;
     /**
-     * @var ParameterBag|\PHPUnit_Framework_MockObject_MockObject
+     * @var ParameterBag
      */
     private $requestAttrs;
     /**
-     * @var RequestStack|\PHPUnit_Framework_MockObject_MockObject
+     * @var RequestStack
      */
     private $requestStack;
 
@@ -96,7 +96,7 @@ class ExtReferenceSearchListenerTest extends TestCase
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
-        $node = $this->getMockBuilder('Xiag\Rql\Parser\AbstractNode')
+        $node = $this->getMockBuilder('Graviton\RqlParser\AbstractNode')
             ->disableOriginalConstructor()
             ->getMock();
         $builder = $this->getMockBuilder('Doctrine\ODM\MongoDB\Query\Builder')
@@ -129,7 +129,7 @@ class ExtReferenceSearchListenerTest extends TestCase
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
-        $node = $this->getMockBuilder('Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode')
+        $node = $this->getMockBuilder('Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode')
             ->disableOriginalConstructor()
             ->getMock();
         $node->expects($this->once())
@@ -163,7 +163,7 @@ class ExtReferenceSearchListenerTest extends TestCase
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
-        $node = $this->getMockBuilder('Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode')
+        $node = $this->getMockBuilder('Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode')
             ->disableOriginalConstructor()
             ->getMock();
         $node->expects($this->once())

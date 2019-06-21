@@ -19,7 +19,7 @@ class SecurityUserTest extends RestTestCase
     /**
      * @param string[] $methods methods to mock
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Graviton\SecurityBundle\Entities\SecurityUser
+     * @return \Graviton\SecurityBundle\Entities\SecurityUser
      */
     protected function getUserMock(array $methods = array())
     {

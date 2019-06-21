@@ -7,7 +7,7 @@ namespace Graviton\RestBundle\Listener;
 
 use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Event\RestEvent;
-use Xiag\Rql\Parser\AbstractNode;
+use Graviton\RqlParser\AbstractNode;
 
 /**
  * RQL allowed operators listener

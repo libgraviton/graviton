@@ -16,8 +16,8 @@ use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

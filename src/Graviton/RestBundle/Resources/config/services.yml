@@ -1,10 +1,4 @@
 services:
-    #Serializer / Serializer context
-    graviton.rest.serializer.exclusionstrategy.syntheticfields:
-      class: "%graviton.rest.serializer.exclusionstrategy.syntheticfields.class%"
-      public: true
-      arguments:
-        - "%graviton.generator.synthetic_fields%"
 
     graviton.rest.serializer:
         parent: "jms_serializer"
@@ -39,10 +33,6 @@ services:
             method: setOverrideHeaderAllowed
             arguments:
               - "%graviton.rest.serializer.allow_group_override_header%"
-          -
-            method: addExclusionStrategy
-            arguments:
-              - "@graviton.rest.serializer.exclusionstrategy.syntheticfields"
 
     graviton.rest.router:
         alias: router
@@ -80,6 +70,11 @@ services:
           - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
           - "@graviton.security.service.utils"
+        calls:
+          -
+            method: setLogger
+            arguments:
+              - "@logger"
 
     #Model -->
     graviton.rest.model:
@@ -96,6 +91,7 @@ services:
     graviton.rest.service.query:
         class: Graviton\RestBundle\Service\QueryService
         arguments:
+          - "@logger"
           - "@graviton.rql.visitor.mongodb"
           - "@graviton.rest.restriction.manager"
           - "%graviton.rest.pagination.limit%"
@@ -170,7 +166,7 @@ services:
           - "@logger"
           - "@graviton.schema.utils"
           - "@graviton.jsonschema.validator"
-          - "@=service(parameter('graviton.cache.provider.service_id'))"
+          - "@=service(parameter('graviton.cache.provider.service_id_local'))"
 
     #Graviton rest event stuff -->
     #Rest event with scope prototype (get e new event object, every time you get it from the container) -->
@@ -372,3 +368,9 @@ services:
         class: "%graviton.rest.restriction.handler.whoami.class%"
         arguments:
           - "@graviton.security.service.utils"
+
+  # fixtures
+    Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData:
+      class: Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData
+      tags:
+        - { name: 'doctrine.fixture.orm' }

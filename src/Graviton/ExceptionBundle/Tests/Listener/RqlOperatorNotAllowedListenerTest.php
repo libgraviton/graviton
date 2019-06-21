@@ -22,15 +22,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class RqlOperatorNotAllowedListenerTest extends TestCase
 {
     /**
-     * @var GetResponseForExceptionEvent|\PHPUnit_Framework_MockObject_MockObject
+     * @var GetResponseForExceptionEvent
      */
     private $event;
     /**
-     * @var SerializerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SerializerInterface
      */
     private $serializer;
     /**
-     * @var SerializationContext|\PHPUnit_Framework_MockObject_MockObject
+     * @var SerializationContext
      */
     private $context;
 

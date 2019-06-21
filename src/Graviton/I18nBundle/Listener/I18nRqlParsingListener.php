@@ -8,10 +8,11 @@ namespace Graviton\I18nBundle\Listener;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\Rql\Event\VisitNodeEvent;
-use Xiag\Rql\Parser\AbstractNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\AbstractNode;
+use Graviton\RqlParser\Glob;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\Node\Query\LogicalOperator\OrNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * tries to alter rql queries in a way the user can search translatables in all languages
@@ -143,8 +144,8 @@ class I18nRqlParsingListener
      */
     private function getNodeValue()
     {
-        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
-            return new \MongoRegex($this->node->getValue()->toRegex());
+        if ($this->node->getValue() instanceof Glob) {
+            return new \MongoRegex('/'.$this->node->getValue()->toRegex().'/');
         }
 
         return $this->node->getValue();
@@ -254,7 +255,7 @@ class I18nRqlParsingListener
         $matchingTranslations = [];
 
         // is it a glob?
-        if ($this->node->getValue() instanceof \Xiag\Rql\Parser\DataType\Glob) {
+        if ($this->node->getValue() instanceof Glob) {
             $userValue = $this->node->getValue()->toRegex();
             $useWildcard = true;
         } else {
