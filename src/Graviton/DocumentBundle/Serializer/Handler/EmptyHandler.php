@@ -34,7 +34,7 @@ class EmptyHandler
         array $type,
         Context $context
     ) {
-        return null;
+        return $visitor->visitNull(null, $type, $context);
     }
 
     /**
@@ -44,7 +44,8 @@ class EmptyHandler
      * @param array                      $data    Data
      * @param array                      $type    Type
      * @param Context                    $context Context
-     * @return Hash
+     *
+     * @return Hash|null
      */
     public function deserializeEmptyFromJson(
         JsonDeserializationVisitor $visitor,
@@ -52,6 +53,6 @@ class EmptyHandler
         array $type,
         Context $context
     ) {
-        return null;
+        return $visitor->visitNull(null, $type, $context);
     }
 }

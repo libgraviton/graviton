@@ -58,7 +58,7 @@ class ExtReferenceHandler
         Context $context
     ) {
         if (null === $extReference) {
-            return null;
+            return $visitor->visitNull(null, $type, $context);
         }
 
         try {
