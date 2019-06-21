@@ -5,7 +5,6 @@
 
 namespace Graviton\I18nBundle;
 
-use Graviton\I18nBundle\DependencyInjection\Compiler\ReplaceTranslatorCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\BundleBundle\GravitonBundleInterface;

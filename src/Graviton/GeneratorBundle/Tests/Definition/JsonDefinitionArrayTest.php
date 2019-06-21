@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 class JsonDefinitionArrayTest extends TestCase
 {
     /**
-     * @var DefinitionElementInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DefinitionElementInterface
      */
     private $element;
 

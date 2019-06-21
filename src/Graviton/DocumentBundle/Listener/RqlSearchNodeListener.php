@@ -13,7 +13,7 @@ use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Event\VisitPostEvent;
 use Graviton\Rql\Node\SearchNode;
-use Xiag\Rql\Parser\Node\SelectNode;
+use Graviton\RqlParser\Node\SelectNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

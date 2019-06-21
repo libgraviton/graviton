@@ -5,11 +5,11 @@
 
 namespace Graviton\SchemaBundle\Listener;
 
+use Graviton\LinkHeaderParser\LinkHeader;
+use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Graviton\RestBundle\HttpFoundation\LinkHeader;
-use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\SchemaBundle\SchemaUtils;
 
 /**
@@ -46,13 +46,13 @@ class CanonicalSchemaLinkResponseListener
         $request = $event->getRequest();
         if ($request->attributes->get('schemaRequest', false)) {
             $response = $event->getResponse();
-            $linkHeader = LinkHeader::fromResponse($response);
+            $linkHeader = LinkHeader::fromString($response->headers->get('Link', null));
 
             $routeName = SchemaUtils::getSchemaRouteName($request->get('_route'));
             $url = $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
             // append rel=canonical link to link headers
-            $linkHeader->add(new LinkHeaderItem($url, array('rel' => 'canonical')));
+            $linkHeader->add(new LinkHeaderItem($url, 'canonical'));
 
             // overwrite link headers with new headers
             $response->headers->set('Link', (string) $linkHeader);

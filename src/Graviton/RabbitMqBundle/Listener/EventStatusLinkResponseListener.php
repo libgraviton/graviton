@@ -8,9 +8,9 @@ namespace Graviton\RabbitMqBundle\Listener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
+use Graviton\LinkHeaderParser\LinkHeader;
+use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
-use Graviton\RestBundle\HttpFoundation\LinkHeader;
-use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -174,11 +174,11 @@ class EventStatusLinkResponseListener
         $queueEvent = $this->createQueueEventObject();
 
         if (!empty($queueEvent->getStatusurl()) && !empty($queueEvent->getEvent())) {
-            $linkHeader = LinkHeader::fromResponse($response);
+            $linkHeader = LinkHeader::fromString($response->headers->get('Link', null));
             $linkHeader->add(
                 new LinkHeaderItem(
                     $queueEvent->getStatusurl(),
-                    array('rel' => 'eventStatus')
+                    'eventStatus'
                 )
             );
 

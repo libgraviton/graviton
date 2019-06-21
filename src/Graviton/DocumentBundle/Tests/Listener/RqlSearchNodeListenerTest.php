@@ -16,7 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\Node\LimitNode;
+use Graviton\RqlParser\Node\LimitNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -30,27 +30,27 @@ class RqlSearchNodeListenerTest extends TestCase
      */
     private $request;
     /**
-     * @var ParameterBag|\PHPUnit_Framework_MockObject_MockObject
+     * @var ParameterBag
      */
     private $requestAttrs;
     /**
-     * @var RequestStack|\PHPUnit_Framework_MockObject_MockObject
+     * @var RequestStack
      */
     private $requestStack;
     /**
-     * @var Client|\PHPUnit_Framework_MockObject_MockObject
+     * @var Client
      */
     private $solrClient;
     /**
-     * @var \Solarium\Core\Query\AbstractQuery|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Solarium\Core\Query\AbstractQuery
      */
     private $solrClientQuery;
     /**
-     * @var \Solarium\QueryType\Select\Result\Result|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Solarium\QueryType\Select\Result\Result
      */
     private $solrClientResult;
     /**
-     * @var \Solarium\Component\EdisMax|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Solarium\Component\EdisMax
      */
     private $eDismax;
     /**

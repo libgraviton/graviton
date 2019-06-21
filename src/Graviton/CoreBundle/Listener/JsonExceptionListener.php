@@ -12,7 +12,7 @@ use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Xiag\Rql\Parser\Exception\SyntaxErrorException;
+use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
