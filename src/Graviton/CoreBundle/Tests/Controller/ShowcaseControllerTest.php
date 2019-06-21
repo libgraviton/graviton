@@ -191,6 +191,27 @@ class ShowcaseControllerTest extends RestTestCase
     }
 
     /**
+     * check that hiddenField is not rendered as it's marked as hidden.. it's filled via fixtures
+     *
+     * @return void
+     */
+    public function testDeselect()
+    {
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/500?deselect(contact,someOtherField,contacts)');
+        $this->assertObjectNotHasAttribute('contact', $client->getResults());
+        $this->assertObjectNotHasAttribute('someOtherField', $client->getResults());
+        $this->assertEquals([], $client->getResults()->contacts);
+
+        $client = static::createRestClient();
+        $client->request('GET', '/hans/showcase/?eq(id,string:500)&deselect(contact,someOtherField,contacts)');
+        $this->assertTrue(($client->getResults()[0] instanceof \stdClass));
+        $this->assertObjectNotHasAttribute('contact', $client->getResults()[0]);
+        $this->assertObjectNotHasAttribute('someOtherField', $client->getResults()[0]);
+        $this->assertEquals([], $client->getResults()[0]->contacts);
+    }
+
+    /**
      * see how our empty fields are explained to us
      *
      * @return void

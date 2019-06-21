@@ -5,6 +5,7 @@
 namespace Graviton\RestBundle\Restriction\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Graviton\RqlParser\Node\AbstractQueryNode;
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Graviton\SecurityBundle\Service\SecurityUtils;
 

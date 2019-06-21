@@ -7,8 +7,6 @@ namespace Graviton\CoreBundle\Controller;
 
 use Graviton\CoreBundle\Event\HomepageRenderEvent;
 use Graviton\ProxyBundle\Service\ApiDefinitionLoader;
-use Graviton\RestBundle\HttpFoundation\LinkHeader;
-use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Graviton\RestBundle\Service\RestUtilsInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;

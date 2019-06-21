@@ -38,7 +38,7 @@ class SwaggerController
     }
 
     /**
-     * @throws FatalErrorException
+     * @throws \LogicException
      *
      * @return Response Response with result or error
      */

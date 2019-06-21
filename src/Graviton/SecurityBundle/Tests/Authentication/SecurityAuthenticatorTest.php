@@ -39,7 +39,7 @@ class SecurityAuthenticatorTest extends GravitonTestCase
      */
     protected function setUp() : void
     {
-        /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
+        /** @var \Psr\Log\LoggerInterface logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
                              ->setMethods(array('warning', 'info'))
                              ->getMockForAbstractClass();

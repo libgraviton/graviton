@@ -22,10 +22,12 @@
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "^3.4.0",
-        "graviton/rql-parser-bundle": "^1.1.0",
+        "graviton/php-rql-parser": "~4",
+        "graviton/rql-parser-bundle": "~2",
         "graviton/json-schema": "^1.16.0",
         "graviton/php-proxy": "^1.2.0",
+        "graviton/link-header-rel-parser": "~1",
+        "graviton/analytics-base": "^0.4.0",
 
         "symfony/symfony": "~4.3.0",
         "symfony/monolog-bundle": "~3.0",
@@ -49,7 +51,6 @@
 
         "sentry/sentry-symfony": "^2.0",
         "solarium/solarium": "^4.2",
-        "graviton/analytics-base": "^0.4.0",
         "mtdowling/jmespath.php": "^2.4"
     },
     "require-dev": {

@@ -5,6 +5,7 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
+use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -70,10 +71,9 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(true, $results[1]->showInMenu);
         $this->assertEquals(1, $results[1]->order);
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/>; rel="self"',
-            $response->headers->get('Link')
-        );
+        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
+        $this->assertEquals('http://localhost/core/app/', $linkHeader->getRel('self')->getUri());
+
         $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
         $this->assertEquals('DENY', $response->headers->get('X-Frame-Options'));
     }
@@ -96,21 +96,53 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', '/core/app/');
 
         $response = $client->getResponse();
+        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(10%2C0)>; rel="self"',
-            $response->headers->get('Link')
+        $this->assertEquals(
+            'http://localhost/core/app/',
+            $linkHeader->getRel('self')->getUri()
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(10%2C10)>; rel="next"',
-            $response->headers->get('Link')
+        $this->assertEquals(
+            'http://localhost/core/app/?limit(10,10)',
+            $linkHeader->getRel('next')->getUri()
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(10%2C10)>; rel="last"',
-            $response->headers->get('Link')
+        $this->assertEquals(
+            'http://localhost/core/app/?limit(10,10)',
+            $linkHeader->getRel('last')->getUri()
         );
+    }
+
+    /**
+     * make sure that "-" can be unencoded in common rql strings as this is the expected behavior
+     *
+     * @return void
+     */
+    public function testLiteralDashInRql()
+    {
+        $this->loadFixturesLocal(
+            [
+                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit'
+            ]
+        );
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?like(id,app-*)');
+
+        $this->assertEquals(10, count($client->getResults()));
+        $this->assertEquals("15", $client->getResponse()->headers->get('x-total-count'));
+
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(id,app-2)');
+
+        $this->assertEquals(1, count($client->getResults()));
+
+        // and encoded?
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(id,app%2D2)');
+
+        $this->assertEquals(1, count($client->getResults()));
     }
 
     /**
@@ -127,17 +159,17 @@ class AppControllerTest extends RestTestCase
         $this->assertEquals(1, count($client->getResults()));
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1)>; rel="self"',
+            '<http://localhost/core/app/?eq(showInMenu,true())&limit(1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?eq(showInMenu%2Ctrue)&limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="last"',
             $response->headers->get('Link')
         );
     }
@@ -162,12 +194,12 @@ class AppControllerTest extends RestTestCase
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/app/?limit(1,1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C1)>; rel="last"',
+            '<http://localhost/core/app/?limit(1,1)>; rel="last"',
             $response->headers->get('Link')
         );
 
@@ -182,12 +214,12 @@ class AppControllerTest extends RestTestCase
         $response = $client->getResponse();
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C1)>; rel="self"',
+            '<http://localhost/core/app/?limit(1,1)>; rel="self"',
             $response->headers->get('Link')
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C0)>; rel="prev"',
+            '<http://localhost/core/app/?limit(1)>; rel="prev"',
             $response->headers->get('Link')
         );
 
@@ -207,19 +239,21 @@ class AppControllerTest extends RestTestCase
 
         $response = $client->getResponse();
 
-        $this->assertStringContainsString(
-            'http://localhost/core/app/?limit(1)&select(id)&sort(-order)>; rel="self"',
-            $response->headers->get('Link')
+        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
+
+        $this->assertEquals(
+            'http://localhost/core/app/?select(id)&sort(-order)&limit(1)',
+            $linkHeader->getRel('self')->getUri()
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="next"',
-            $response->headers->get('Link')
+        $this->assertEquals(
+            'http://localhost/core/app/?select(id)&sort(-order)&limit(1,1)',
+            $linkHeader->getRel('next')->getUri()
         );
 
-        $this->assertStringContainsString(
-            '<http://localhost/core/app/?limit(1%2C1)&select(id)&sort(-order)>; rel="last"',
-            $response->headers->get('Link')
+        $this->assertEquals(
+            'http://localhost/core/app/?select(id)&sort(-order)&limit(1,1)',
+            $linkHeader->getRel('last')->getUri()
         );
 
         $this->assertStringNotContainsString(
@@ -843,9 +877,9 @@ class AppControllerTest extends RestTestCase
             explode(',', $response->headers->get('Access-Control-Expose-Headers'))
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '<http://localhost/schema/core/app/collection>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+            $response->headers->get('Link')
         );
     }
 
