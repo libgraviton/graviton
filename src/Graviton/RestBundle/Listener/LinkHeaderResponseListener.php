@@ -5,6 +5,8 @@
 
 namespace Graviton\RestBundle\Listener;
 
+use Graviton\LinkHeaderParser\LinkHeader;
+use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RqlParser\Node\LimitNode;
 use Graviton\RqlParser\Query;
 use Graviton\SchemaBundle\SchemaUtils;
@@ -13,8 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Graviton\RestBundle\HttpFoundation\LinkHeader;
-use Graviton\RestBundle\HttpFoundation\LinkHeaderItem;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -32,7 +32,7 @@ class LinkHeaderResponseListener
     private $router;
 
     /**
-     * @var \Graviton\RestBundle\HttpFoundation\LinkHeader
+     * @var LinkHeader
      */
     private $linkHeader;
 
@@ -63,7 +63,7 @@ class LinkHeaderResponseListener
         $routeParts = explode('.', $routeName);
         $routeType = end($routeParts);
 
-        $this->linkHeader = LinkHeader::fromResponse($response);
+        $this->linkHeader = LinkHeader::fromString($response->headers->get('link', null));
 
         // add common headers
         $this->addCommonHeaders($request, $response);
@@ -146,7 +146,7 @@ class LinkHeaderResponseListener
         }
 
         // rewrite post routes to get
-        if ($routeType == 'post' || $routeType == 'postNoSlash') {
+        if ($routeType == 'post' || $routeType == 'postNoSlash' && !empty($routeParams['id'])) {
             $parts = explode('.', $routeName);
             array_pop($parts);
             $parts[] = 'get';
@@ -212,18 +212,12 @@ class LinkHeaderResponseListener
      */
     private function generatePagingLinksHeaders($routeName, Request $request, Response $response)
     {
-        $rql = '';
-        if ($request->attributes->get('hasRql', false)) {
-            $rql = $request->attributes->get('rawRql', '');
-        }
-
         $this->generateLinks(
             $routeName,
             $request->attributes->get('page'),
             $request->attributes->get('numPages'),
             $request->attributes->get('perPage'),
-            $request,
-            $rql
+            $request
         );
 
         $response->headers->set(
@@ -240,23 +234,22 @@ class LinkHeaderResponseListener
      * @param integer $numPages number of all pages
      * @param integer $perPage  number of records per page
      * @param Request $request  request to get rawRql from
-     * @param string  $rql      rql query string
      *
      * @return void
      */
-    private function generateLinks($route, $page, $numPages, $perPage, Request $request, $rql)
+    private function generateLinks($route, $page, $numPages, $perPage, Request $request)
     {
         if ($page > 2) {
-            $this->generateLink($route, 1, $perPage, 'first', $request, $rql);
+            $this->generateLink($route, 1, $perPage, 'first', $request);
         }
         if ($page > 1) {
-            $this->generateLink($route, $page - 1, $perPage, 'prev', $request, $rql);
+            $this->generateLink($route, $page - 1, $perPage, 'prev', $request);
         }
         if ($page < $numPages) {
-            $this->generateLink($route, $page + 1, $perPage, 'next', $request, $rql);
+            $this->generateLink($route, $page + 1, $perPage, 'next', $request);
         }
         if ($page != $numPages) {
-            $this->generateLink($route, $numPages, $perPage, 'last', $request, $rql);
+            $this->generateLink($route, $numPages, $perPage, 'last', $request);
         }
     }
 
@@ -268,11 +261,10 @@ class LinkHeaderResponseListener
      * @param integer $perPage   number of items per page
      * @param string  $type      rel type of link to generate
      * @param Request $request   request to get rawRql from
-     * @param string  $rql       rql query string
      *
      * @return string
      */
-    private function generateLink(string $routeName, int $page, int $perPage, string $type, Request $request, $rql)
+    private function generateLink(string $routeName, int $page, int $perPage, string $type, Request $request)
     {
         $url = $this->router->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -287,6 +279,15 @@ class LinkHeaderResponseListener
         $this->linkHeader->add(new LinkHeaderItem($url, array('rel' => $type)));
     }
 
+    /**
+     * returns the rql query string based on the current request
+     *
+     * @param Request $request request
+     * @param int     $limit   limit
+     * @param int     $offset  offset
+     *
+     * @return string rql query string
+     */
     private function getQueryString(Request $request, $limit = 0, $offset = 0)
     {
         /**
@@ -295,12 +296,12 @@ class LinkHeaderResponseListener
         $query = $request->attributes->get('rqlQuery', new Query());
 
         if ($limit < 1 && $limit < 1) {
-            return rawurlencode($query->toRql());
+            return $query->toRql();
         }
 
         // apply custom limit
         $query->setLimit(new LimitNode($limit, $offset));
 
-        return rawurlencode($query->toRql());
+        return $query->toRql();
     }
 }

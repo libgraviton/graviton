@@ -114,12 +114,12 @@ class ModuleControllerTest extends RestTestCase
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/module/?limit(1%2C1)>; rel="next"',
+            '<http://localhost/core/module/?limit(1,1)>; rel="next"',
             $response->headers->get('Link')
         );
 
         $this->assertStringContainsString(
-            '<http://localhost/core/module/?limit(1%2C5)>; rel="last"',
+            '<http://localhost/core/module/?limit(1,5)>; rel="last"',
             $response->headers->get('Link')
         );
 
