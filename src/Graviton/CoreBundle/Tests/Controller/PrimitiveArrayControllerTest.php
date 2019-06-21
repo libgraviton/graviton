@@ -358,7 +358,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
      *
      * @param object $data Fixture data
      * @return void
-     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     private function assertFixtureData($data)
     {
@@ -400,7 +399,6 @@ class PrimitiveArrayControllerTest extends RestTestCase
      *
      * @param object $schema Item schema
      * @return void
-     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     private function assertItemSchema($schema)
     {

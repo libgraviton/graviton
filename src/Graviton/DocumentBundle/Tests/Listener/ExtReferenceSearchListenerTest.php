@@ -25,7 +25,7 @@ use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 class ExtReferenceSearchListenerTest extends TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceConverterInterface
      */
     private $converter;
     /**
@@ -33,11 +33,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     private $request;
     /**
-     * @var ParameterBag|\PHPUnit_Framework_MockObject_MockObject
+     * @var ParameterBag
      */
     private $requestAttrs;
     /**
-     * @var RequestStack|\PHPUnit_Framework_MockObject_MockObject
+     * @var RequestStack
      */
     private $requestStack;
 

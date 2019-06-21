@@ -65,7 +65,7 @@ class QueryService
     private $repository;
 
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 

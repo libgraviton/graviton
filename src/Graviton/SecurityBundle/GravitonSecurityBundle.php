@@ -6,7 +6,6 @@
 namespace Graviton\SecurityBundle;
 
 use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\SecurityBundle\DependencyInjection\AuthenticationPass;
 use Graviton\SecurityBundle\DependencyInjection\Compiler\AuthenticationKeyFinderPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;

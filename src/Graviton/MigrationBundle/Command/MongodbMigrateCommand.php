@@ -7,6 +7,7 @@ namespace Graviton\MigrationBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -155,7 +156,7 @@ class MongodbMigrateCommand extends Command
      * @param string $filepath path to configuration file
      * @param Output $output   ouput interface need by config parser to do stuff
      *
-     * @return AntiMattr\MongoDB\Migrations\Configuration\Configuration
+     * @return AntiMattr\MongoDB\Migrations\Configuration
      */
     private function getConfiguration($filepath, $output)
     {

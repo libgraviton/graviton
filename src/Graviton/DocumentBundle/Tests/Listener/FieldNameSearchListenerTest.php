@@ -29,11 +29,11 @@ class FieldNameSearchListenerTest extends TestCase
      */
     private $request;
     /**
-     * @var ParameterBag|\PHPUnit_Framework_MockObject_MockObject
+     * @var ParameterBag
      */
     private $requestAttrs;
     /**
-     * @var RequestStack|\PHPUnit_Framework_MockObject_MockObject
+     * @var RequestStack
      */
     private $requestStack;
 

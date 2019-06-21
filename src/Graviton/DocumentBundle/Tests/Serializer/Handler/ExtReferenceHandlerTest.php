@@ -12,6 +12,7 @@ use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\SerializationContext;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,15 +25,15 @@ use PHPUnit\Framework\TestCase;
 class ExtReferenceHandlerTest extends TestCase
 {
     /**
-     * @var ExtReferenceConverterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExtReferenceConverterInterface|MockObject
      */
     private $converter;
     /**
-     * @var JsonSerializationVisitor|\PHPUnit_Framework_MockObject_MockObject
+     * @var JsonSerializationVisitor|MockObject
      */
     private $serializationVisitor;
     /**
-     * @var JsonDeserializationVisitor|\PHPUnit_Framework_MockObject_MockObject
+     * @var JsonDeserializationVisitor|MockObject
      */
     private $deserializationVisitor;
 
