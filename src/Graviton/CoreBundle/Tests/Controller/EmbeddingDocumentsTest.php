@@ -51,7 +51,6 @@ class EmbeddingDocumentsTest extends RestTestCase
      * @param string $id   ID
      * @param mixed  $data Data
      * @return void
-     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     private function assertEntityExists($id, $data)
     {
@@ -67,7 +66,6 @@ class EmbeddingDocumentsTest extends RestTestCase
     /**
      * @param string $id ID
      * @return void
-     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     private function assertEntityNotExists($id)
     {

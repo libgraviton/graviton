@@ -107,7 +107,7 @@ class I18nUtils
             ->field('language')->equals($sourceLocale);
 
         if ($useWildCard === true) {
-            $value = new \MongoRegex($value);
+            $value = new \MongoRegex('/'.$value.'/');
         }
 
         /*

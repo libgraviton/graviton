@@ -5,6 +5,7 @@
 
 namespace Graviton\FileBundle\Tests\Controller;
 
+use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\TestBundle\Test\RestTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
@@ -467,9 +468,11 @@ class FileControllerTest extends RestTestCase
             explode(',', $response->headers->get('Access-Control-Expose-Headers'))
         );
 
-        $this->assertContains(
-            '<http://localhost/schema/file/collection>; rel="self"',
-            explode(',', $response->headers->get('Link'))
+        $linkHeader = LinkHeader::fromString($response->headers->get('Link'));
+
+        $this->assertEquals(
+            'http://localhost/schema/file/collection',
+            $linkHeader->getRel('self')->getUri()
         );
     }
 

@@ -13,10 +13,10 @@ use Graviton\Rql\Visitor\VisitorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Xiag\Rql\Parser\Exception\SyntaxErrorException;
-use Xiag\Rql\Parser\Node\LimitNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Query;
+use Graviton\RqlParser\Exception\SyntaxErrorException;
+use Graviton\RqlParser\Node\LimitNode;
+use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;
+use Graviton\RqlParser\Query;
 
 /**
  * class that deals with the Request and applies it to the query builder
@@ -65,7 +65,7 @@ class QueryService
     private $repository;
 
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 

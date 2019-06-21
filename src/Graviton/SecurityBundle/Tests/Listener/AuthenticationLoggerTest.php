@@ -5,6 +5,7 @@
 namespace Graviton\SecurityBundle\Tests\Listener;
 
 use Graviton\SecurityBundle\Listener\AuthenticationLogger;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class AuthenticationLoggerTest extends TestCase
 {
-    /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
+    /** @var \Psr\Log\LoggerInterface|MockObject logger */
     private $logger;
 
     /**
@@ -22,7 +23,7 @@ class AuthenticationLoggerTest extends TestCase
      */
     protected function setUp(): void
     {
-        /** @var \Psr\Log\LoggerInterface|\PHPUnit_Framework_MockObject_MockObject logger */
+        /** @var \Psr\Log\LoggerInterface|MockObject logger */
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
             ->setMethods(array('warning', 'info'))
             ->getMockForAbstractClass();
