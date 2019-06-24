@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\Tests\Service;
 
 use Graviton\DocumentBundle\Entity\ExtReference;
 use Graviton\DocumentBundle\Service\ExtReferenceConverter;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -22,11 +23,11 @@ use Symfony\Component\Routing\RouterInterface;
 class ExtReferenceConverterTest extends TestCase
 {
     /**
-     * @var RouterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RouterInterface|MockObject
      */
     private $router;
     /**
-     * @var RouteCollection|\PHPUnit_Framework_MockObject_MockObject
+     * @var RouteCollection|MockObject
      */
     private $collection;
     /**

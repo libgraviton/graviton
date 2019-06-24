@@ -5,7 +5,6 @@
 
 namespace Graviton\CoreBundle\Tests\Controller;
 
-use Graviton\RestBundle\ExclusionStrategy\SelectExclusionStrategy;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseDeepEqualNamingBundle\DataFixtures\MongoDB\LoadTestCaseDeepEqualNamingData;
 use Symfony\Component\HttpFoundation\Response;

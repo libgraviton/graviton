@@ -9,7 +9,7 @@ use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Xiag\Rql\Parser\Node\Query\AbstractComparisonOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractComparisonOperatorNode;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

@@ -5,9 +5,6 @@
 
 namespace Graviton\AnalyticsBundle\Model;
 
-use GravitonEvojaBasicBundle\Pipeline\CustomerleadsLead;
-use GravitonEvojaBasicBundle\Pipeline\CustomerleadsTask;
-
 /**
  * Schema
  *

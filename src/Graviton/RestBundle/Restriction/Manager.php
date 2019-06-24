@@ -6,9 +6,9 @@ namespace Graviton\RestBundle\Restriction;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Graviton\RestBundle\Restriction\Handler\HandlerInterface;
-use Xiag\Rql\Parser\Node\AbstractQueryNode;
-use Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\Node\AbstractQueryNode;
+use Graviton\RqlParser\Node\Query\LogicalOperator\AndNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
 
 /**
  * @author  List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

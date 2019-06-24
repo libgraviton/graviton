@@ -9,11 +9,11 @@ use Graviton\ExceptionBundle\Exception\RqlOperatorNotAllowedException;
 use Graviton\RestBundle\Event\RestEvent;
 use Graviton\RestBundle\Listener\RqlAllowedOperatorRequestListener;
 use Symfony\Component\HttpFoundation\Request;
-use Xiag\Rql\Parser\Node\LimitNode;
-use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
-use Xiag\Rql\Parser\Node\SortNode;
-use Xiag\Rql\Parser\Query;
-use Xiag\Rql\Parser\QueryBuilder;
+use Graviton\RqlParser\Node\LimitNode;
+use Graviton\RqlParser\Node\Query\ScalarOperator\EqNode;
+use Graviton\RqlParser\Node\SortNode;
+use Graviton\RqlParser\Query;
+use Graviton\RqlParser\QueryBuilder;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>

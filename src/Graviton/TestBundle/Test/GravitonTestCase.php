@@ -11,6 +11,7 @@ use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -70,7 +71,7 @@ class GravitonTestCase extends WebTestCase
      * @param string $class   Full namespace of the class to be doubled
      * @param array  $methods List of methods to be doubled
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return MockObject
      */
     public function getSimpleTestDouble($class, array $methods = array())
     {
