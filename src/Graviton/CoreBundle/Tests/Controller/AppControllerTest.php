@@ -28,21 +28,24 @@ class AppControllerTest extends RestTestCase
     const SCHEMA_URL_COLLECTION = 'http://localhost/schema/core/app/collection';
 
     /**
+     * @var array fixtures
+     */
+    protected $standardFixtures = [
+        'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
+    ];
+
+    /**
      * setup client and load fixtures
      *
      * @return void
      */
     protected function setUp(): void
     {
-        $this->loadFixturesLocal(
-            array(
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
-            )
-        );
+        $this->loadFixturesLocal($this->standardFixtures);
     }
     /**
      * check if all fixtures are returned on GET
@@ -152,6 +155,13 @@ class AppControllerTest extends RestTestCase
      */
     public function testGetAppWithFilteringAndPaging()
     {
+        $this->loadFixturesLocal(
+            array_merge(
+                $this->standardFixtures,
+                ['Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu']
+            )
+        );
+
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?eq(showInMenu,true)&limit(1)');
         $response = $client->getResponse();
@@ -170,6 +180,17 @@ class AppControllerTest extends RestTestCase
 
         $this->assertStringContainsString(
             '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="last"',
+            $response->headers->get('Link')
+        );
+
+        // check for false
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(showInMenu,false)');
+        $response = $client->getResponse();
+
+        $this->assertEquals(2, count($client->getResults()));
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?eq(showInMenu,false())>; rel="self"',
             $response->headers->get('Link')
         );
     }
