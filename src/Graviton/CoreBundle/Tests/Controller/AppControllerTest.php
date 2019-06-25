@@ -300,7 +300,7 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', sprintf('/core/app/?limit(%s)', $limit));
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('invalid limit in rql', $client->getResults()->message);
+        $this->assertStringContainsString('syntax error in rql', $client->getResults()->message);
     }
 
     /**
