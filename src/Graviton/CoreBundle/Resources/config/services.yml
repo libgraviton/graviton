@@ -131,3 +131,8 @@ services:
       class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataExceedSinglePageLimit
       tags:
         - { name: 'doctrine.fixture.orm' }
+
+    Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu:
+      class: Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu
+      tags:
+        - { name: 'doctrine.fixture.orm' }
