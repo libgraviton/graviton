@@ -901,7 +901,25 @@ class AppControllerTest extends RestTestCase
             '/core/app/?'.$expr,
             [],
             [],
-            array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
+            [
+                'HTTP_ACCEPT_LANGUAGE' => 'en, de'
+            ]
+        );
+
+        $result = $client->getResults();
+        $this->assertCount($expCount, $result);
+
+        // try the same via header!
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app/',
+            [],
+            [],
+            [
+                'HTTP_ACCEPT_LANGUAGE' => 'en, de',
+                'HTTP_X-RQL-QUERY' => $expr
+            ]
         );
 
         $result = $client->getResults();
