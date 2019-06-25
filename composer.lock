@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e7aef86cf7c702caabd5640936c8a1f",
+    "content-hash": "f5e5d9a882c2e3cfb1e03664abcd7a51",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1618,16 +1618,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v2.0.1",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "c32a51af4138f62f3816a1d4ce28a8f209190deb"
+                "reference": "e4f2001f83d648c894e7737ed21eb8dc4392f2a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/c32a51af4138f62f3816a1d4ce28a8f209190deb",
-                "reference": "c32a51af4138f62f3816a1d4ce28a8f209190deb",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/e4f2001f83d648c894e7737ed21eb8dc4392f2a5",
+                "reference": "e4f2001f83d648c894e7737ed21eb8dc4392f2a5",
                 "shasum": ""
             },
             "require": {
@@ -1658,7 +1658,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony",
-            "time": "2019-06-20T15:19:20+00:00"
+            "time": "2019-06-25T07:03:52+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -4630,7 +4630,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",

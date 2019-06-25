@@ -23,7 +23,7 @@
         "incenteev/composer-parameter-handler": "^2.1.0",
 
         "graviton/php-rql-parser": "^3.5.0",
-        "graviton/rql-parser-bundle": "^2.0.1",
+        "graviton/rql-parser-bundle": "^2.1.0",
         "graviton/json-schema": "^1.15.0",
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
