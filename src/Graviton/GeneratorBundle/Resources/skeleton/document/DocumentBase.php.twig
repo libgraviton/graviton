@@ -70,16 +70,12 @@ protected $deletedDate;
         * @var {{ field.type }} ${{ field.fieldName }}
     {% endif %}
     */
-    {% if '[]' in field.type or field.type == 'array' %}
-        protected ${{ field.fieldName }} = [];
-    {% else %}
-        protected ${{ field.fieldName }};
-    {% endif %}
+    protected ${{ field.fieldName }};
 
 {% endfor %}
 
 {% for syntheticField in syntheticFields %}
-        protected ${{ syntheticField.name }};
+    protected ${{ syntheticField.name }};
 {% endfor %}
 
 public function getDeleteddate()
@@ -201,6 +197,9 @@ return $this->deletedDate;
         */
         public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
         {
+        if (!is_array($this->{{ field.fieldName }})) {
+            $this->{{ field.fieldName }} = [];
+        }
         $this->{{ field.fieldName }}[] = ${{ field.singularName }};
         }
 

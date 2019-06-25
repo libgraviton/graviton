@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\Serializer\Handler;
 
 use JMS\Serializer\Context;
+use JMS\Serializer\Exception\NotAcceptableException;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 use Graviton\DocumentBundle\Entity\Hash;
@@ -34,7 +35,11 @@ class EmptyHandler
         array $type,
         Context $context
     ) {
-        return $visitor->visitNull(null, $type, $context);
+        if (!$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        return $visitor->visitNull(null, $type);
     }
 
     /**
@@ -53,6 +58,10 @@ class EmptyHandler
         array $type,
         Context $context
     ) {
-        return $visitor->visitNull(null, $type, $context);
+        if (!$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        return $visitor->visitNull(null, $type);
     }
 }

@@ -227,11 +227,7 @@ class NullExtrefControllerTest extends RestTestCase
                     'optionalExtrefDeep'  => [
                         [
                             'deep' => [
-                                [
-                                    'deep' => [
-                                        'deep' => [],
-                                    ],
-                                ],
+                                [],
                             ],
                         ],
                     ],
