@@ -5,7 +5,6 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Doctrine\Common\Collections\Criteria;
 use Graviton\AnalyticsBundle\Event\PreAggregateEvent;
 use Graviton\CoreBundle\Util\CoreUtils;
 use Graviton\ExceptionBundle\Exception\RestrictedIdCollisionException;
@@ -13,6 +12,7 @@ use Graviton\RestBundle\Event\EntityPrePersistEvent;
 use Graviton\RestBundle\Event\ModelQueryEvent;
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\SearchNode;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class RestrictionListener
 {
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var array
@@ -36,11 +41,13 @@ class RestrictionListener
     /**
      * HttpHeader constructor.
      *
-     * @param array        $dataRestrictionMap data restriction configuration
-     * @param RequestStack $requestStack       request stack
+     * @param LoggerInterface $logger             logger
+     * @param array           $dataRestrictionMap data restriction configuration
+     * @param RequestStack    $requestStack       request stack
      */
-    public function __construct(?array $dataRestrictionMap, RequestStack $requestStack)
+    public function __construct(LoggerInterface $logger, ?array $dataRestrictionMap, RequestStack $requestStack)
     {
+        $this->logger = $logger;
         $this->setDataRestrictionMap($dataRestrictionMap);
         $this->requestStack = $requestStack;
     }
@@ -94,8 +101,13 @@ class RestrictionListener
                 $headerValue = (int) $headerValue;
             }
 
+            $fieldName = $fieldSpec['name'];
+            $fieldValue = [null, $headerValue];
+
+            $this->logger->info('RESTRICTION onModelQuery', ['field' => $fieldName, 'value' => $fieldValue]);
+
             $builder->addAnd(
-                $builder->expr()->field($fieldSpec['name'])->in([null, $headerValue])
+                $builder->expr()->field($fieldName)->in($fieldValue)
             );
         }
 
@@ -135,6 +147,8 @@ class RestrictionListener
             if ($fieldValue !== null && $fieldValue != $currentTenant) {
                 throw new RestrictedIdCollisionException();
             }
+
+            $this->logger->info('RESTRICTION onPrePersist', ['field' => $fieldName, 'value' => $currentTenant]);
 
             // persist tenant again!
             $entity[$fieldName] = $currentTenant;
@@ -188,6 +202,8 @@ class RestrictionListener
             $event->getPipeline()
         );
 
+        $this->logger->info('RESTRICTION onPreAggregate', ['pipeline' => $newPipeline]);
+
         $event->setPipeline($newPipeline);
 
         return $event;
@@ -213,6 +229,9 @@ class RestrictionListener
             if (is_null($fieldValue)) {
                 continue;
             }
+
+            $this->logger->info('RESTRICTION onRqlSearch', ['field' => $fieldName, 'value' => $fieldValue]);
+
             $node->addSearchTerm($fieldName.':'.$fieldValue);
             $node->setVisited(false);
         }
