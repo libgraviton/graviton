@@ -5,8 +5,8 @@ imports:
 # sentry is active on prod
 sentry:
     dsn: "%graviton.sentry.dsn%"
-    skip_capture: "%graviton.sentry.dontReport%"
     options:
+        excluded_exceptions: "%graviton.sentry.dontReport%"
         environment: "%kernel.environment%"
         tags:
             application: graviton

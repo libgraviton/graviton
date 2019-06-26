@@ -23,7 +23,7 @@
         "incenteev/composer-parameter-handler": "^2.1.0",
 
         "graviton/php-rql-parser": "~4",
-        "graviton/rql-parser-bundle": "~2",
+        "graviton/rql-parser-bundle": "^2.1.0",
         "graviton/json-schema": "^1.16.0",
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
@@ -49,7 +49,11 @@
         "oneup/flysystem-bundle": "^3",
         "league/flysystem-aws-s3-v3": "^1.0",
 
-        "sentry/sentry-symfony": "^2.0",
+        "sentry/sentry-symfony": "^3.0",
+        "sentry/sentry": "^2.0",
+        "php-http/guzzle6-adapter": "*",
+        "guzzlehttp/psr7": "*",
+
         "solarium/solarium": "^4.2",
         "mtdowling/jmespath.php": "^2.4"
     },

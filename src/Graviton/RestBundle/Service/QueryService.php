@@ -125,10 +125,7 @@ class QueryService
              */
             $this->queryBuilder->hydrate($repository->getClassName());
 
-            $this->logger->info(
-                'QueryService: Aggregate query',
-                ['q' => $this->queryBuilder->getQuery()->getQuery()]
-            );
+            $this->logger->info('QueryService: Aggregate query');
 
             $records = array_values($this->queryBuilder->execute()->toArray());
             $request->attributes->set('recordCount', count($records));
