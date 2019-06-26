@@ -6,6 +6,8 @@ namespace Graviton\DocumentBundle\Tests\Service;
 
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Node\SearchNode;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Graviton\RqlParser\Node\LimitNode;
 
@@ -14,7 +16,7 @@ use Graviton\RqlParser\Node\LimitNode;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class SolrQueryTest extends \PHPUnit\Framework\TestCase
+class SolrQueryTest extends TestCase
 {
 
     /**
@@ -48,8 +50,7 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
         $edisMax
             ->expects($this->once())
             ->method('setQueryFields')
-            ->with($classFields)
-            ->willReturn(true);
+            ->with($classFields);
 
         $solrQueryClass = $this->getMockBuilder('\Solarium\QueryType\Select\Query\Query')
             ->disableOriginalConstructor()
@@ -66,7 +67,7 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getNumFound', 'getIterator'])
             ->getMock();
         $searchResult
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('getNumFound')
             ->willReturn(5);
         $searchResult
@@ -88,12 +89,15 @@ class SolrQueryTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $solrClient->method('createQuery')->willReturn($solrQueryClass);
         $solrClient->method('getQuery')->willReturn($solrQueryClass);
-        $solrClient->method('addEndpoint')->willReturn(true);
-        $solrClient->method('setDefaultEndpoint')->willReturn(true);
+        $solrClient->method('addEndpoint');
+        $solrClient->method('setDefaultEndpoint');
         // return results here
         $solrClient->method('select')->willReturn($searchResult);
 
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
         $solr = new SolrQuery(
+            $logger,
             'http://solr:3033',
             5,
             4,
