@@ -8,6 +8,7 @@ namespace Graviton\DocumentBundle\Tests\Listener;
 use Graviton\DocumentBundle\Service\SolrQuery;
 use Graviton\Rql\Node\SearchNode;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Solarium\Client;
 use Solarium\Component\EdisMax;
 use Solarium\QueryType\Select\Query\Query;
@@ -115,6 +116,7 @@ class RqlSearchNodeListenerTest extends TestCase
 
         // SolrQuery class
         $this->solrQuery = new SolrQuery(
+            $this->getMockBuilder(LoggerInterface::class)->getMock(),
             'http://localhost/solr',
             5,
             3,
@@ -161,8 +163,7 @@ class RqlSearchNodeListenerTest extends TestCase
         $this->eDismax
             ->expects($this->once())
             ->method('setQueryFields')
-            ->with('fieldName^20 fieldNameTwo^30')
-            ->willReturn(true);
+            ->with('fieldName^20 fieldNameTwo^30');
 
         $this->solrClient
             ->expects($this->once())
@@ -195,7 +196,7 @@ class RqlSearchNodeListenerTest extends TestCase
             ->with(['id']);
 
         $this->solrClientResult
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('getNumFound')
             ->willReturn(9999);
 
@@ -207,7 +208,7 @@ class RqlSearchNodeListenerTest extends TestCase
         $resultB->id = 'KALMANS';
         $resultC = new \stdClass();
         $resultC->id = 'KALMANZ';
-        $resultList = new \ArrayObject(
+        $resultList = new \ArrayIterator(
             [
                 $resultA,
                 $resultB,
