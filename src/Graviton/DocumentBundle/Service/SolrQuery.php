@@ -6,6 +6,7 @@
 namespace Graviton\DocumentBundle\Service;
 
 use Graviton\Rql\Node\SearchNode;
+use Psr\Log\LoggerInterface;
 use Solarium\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -18,6 +19,11 @@ use Graviton\RqlParser\Node\LimitNode;
  */
 class SolrQuery
 {
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var string
@@ -98,16 +104,18 @@ class SolrQuery
     /**
      * Constructor
      *
-     * @param string       $solrUrl                url to solr
-     * @param int          $solrFuzzyBridge        fuzzy bridge
-     * @param int          $solrWildcardBridge     wildcard bridge
-     * @param boolean      $andifyTerms            andify terms or not?
-     * @param array        $solrMap                solr class field weight map
-     * @param int          $paginationDefaultLimit default pagination limit
-     * @param Client       $solrClient             solr client
-     * @param RequestStack $requestStack           request stack
+     * @param LoggerInterface $logger                 logger
+     * @param string          $solrUrl                url to solr
+     * @param int             $solrFuzzyBridge        fuzzy bridge
+     * @param int             $solrWildcardBridge     wildcard bridge
+     * @param boolean         $andifyTerms            andify terms or not?
+     * @param array           $solrMap                solr class field weight map
+     * @param int             $paginationDefaultLimit default pagination limit
+     * @param Client          $solrClient             solr client
+     * @param RequestStack    $requestStack           request stack
      */
     public function __construct(
+        LoggerInterface $logger,
         $solrUrl,
         $solrFuzzyBridge,
         $solrWildcardBridge,
@@ -117,6 +125,7 @@ class SolrQuery
         Client $solrClient,
         RequestStack $requestStack
     ) {
+        $this->logger = $logger;
         if (!is_null($solrUrl)) {
             $this->urlParts = parse_url($solrUrl);
         }
@@ -169,15 +178,27 @@ class SolrQuery
         $query = $client->createQuery($client::QUERY_SELECT);
 
         // set the weights
-        $query->getEDisMax()->setQueryFields($this->solrMap[$this->className]);
+        $queryFields = $this->solrMap[$this->className];
+        $query->getEDisMax()->setQueryFields($queryFields);
 
-        $query->setQuery($this->getSearchTerm($node));
+        $searchTerm = $this->getSearchTerm($node);
+        $query->setQuery($searchTerm);
 
         if ($limitNode instanceof LimitNode) {
             $query->setStart($limitNode->getOffset())->setRows($limitNode->getLimit());
         } else {
             $query->setStart(0)->setRows($this->paginationDefaultLimit);
         }
+
+        $this->logger->info(
+            'Executing solr search',
+            [
+                'fields' => $queryFields,
+                'query' => $searchTerm,
+                'start' => $query->getStart(),
+                'rows' => $query->getRows()
+            ]
+        );
 
         $query->setFields(['id']);
 
@@ -187,6 +208,13 @@ class SolrQuery
             $this->requestStack->getCurrentRequest()->attributes->set('totalCount', $result->getNumFound());
             $this->requestStack->getCurrentRequest()->attributes->set('X-Search-Source', 'solr');
         }
+
+        $this->logger->info(
+            'Finished solr search',
+            [
+                'resultCount' => $result->getNumFound()
+            ]
+        );
 
         $idList = [];
         foreach ($result as $document) {
@@ -371,6 +399,17 @@ class SolrQuery
             $endpointConfig['path'] .= '/';
         }
 
+        // for solarium >5 -> strip "solr/" from path if it exists
+        $stripPath = 'solr/';
+        if (strlen($endpointConfig['path']) > strlen($stripPath) &&
+            substr($endpointConfig['path'], strlen($stripPath) * -1) == $stripPath
+        ) {
+            $endpointConfig['path'] = substr(
+                $endpointConfig['path'],
+                0,
+                strlen($endpointConfig['path']) - strlen($stripPath)
+            );
+        }
         // find core name
         $classnameParts = explode('\\', $this->className);
         $endpointConfig['core'] = array_pop($classnameParts);

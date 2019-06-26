@@ -17,6 +17,7 @@ services:
     class: "%graviton.document.service.solrquery.class%"
     public: true
     arguments:
+    - "@logger"
     - "%graviton.solr.url%"
     - "%graviton.solr.fuzzy_bridge%"
     - "%graviton.solr.wildcard_bridge%"
