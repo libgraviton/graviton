@@ -1,6 +1,8 @@
 var/log
 var/cache
 var/*.jso*
+app/logs
+app/cache
 src/Graviton/I18nBundle/Resources/translations/*.odm
 vendor/
 web/.htaccess
