@@ -54,7 +54,7 @@
         "php-http/guzzle6-adapter": "*",
         "guzzlehttp/psr7": "*",
 
-        "solarium/solarium": "^4.2",
+        "solarium/solarium": "~5",
         "mtdowling/jmespath.php": "^2.4"
     },
     "require-dev": {

@@ -336,6 +336,7 @@ services:
     graviton.rest.listener.restriction:
       class: "%graviton.rest.listener.restriction.class%"
       arguments:
+        - "@logger"
         - "%graviton.rest.data_restriction.map%"
         - "@request_stack"
       tags:
