@@ -155,8 +155,13 @@ class HttpLoader implements LoaderInterface
             return $retVal;
         }
 
+        $cacheKeyDef = $this->options['storeKey'].'-def';
+        if ($this->cache instanceof CacheProvider && $this->cache->contains($cacheKeyDef)) {
+            return $this->cache->fetch($cacheKeyDef);
+        }
+
         if (isset($this->strategy)) {
-            if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
+            if ($this->cache instanceof CacheProvider && $this->cache->contains($this->options['storeKey'])) {
                 $content = $this->cache->fetch($this->options['storeKey']);
             }
 
@@ -181,6 +186,10 @@ class HttpLoader implements LoaderInterface
             if ($this->strategy->supports($content)) {
                 $retVal = $this->strategy->process($content, $fallbackHost);
             }
+
+            if ($this->cache instanceof CacheProvider) {
+                $this->cache->save($cacheKeyDef, $retVal, $this->cacheLifetime);
+            }
         }
 
         return $retVal;
@@ -199,7 +208,7 @@ class HttpLoader implements LoaderInterface
         try {
             $response = $this->client->send($request);
             $content = (string) $response->getBody();
-            if (isset($this->cache)) {
+            if (!empty($content) && $this->cache instanceof CacheProvider) {
                 $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
             }
         } catch (RequestException $e) {

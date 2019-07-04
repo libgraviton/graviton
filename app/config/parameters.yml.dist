@@ -83,6 +83,7 @@ parameters:
 
     graviton.core.httpclient.debugRequests: false
     graviton.core.httpclient.debugMaxLength: 5000
+    graviton.core.httpclient.verifyPeer: false
 
     graviton.translator.default.locale: en
     graviton.translator.cache_name_depth: 3
@@ -132,8 +133,6 @@ parameters:
 
     # how to call git on this machine
     graviton.git.cmd: git
-
-    graviton.proxy.httploader.curloptions: []
 
     graviton.proxy.swagger.sources: {}
     graviton.proxy.custom.sources: {}

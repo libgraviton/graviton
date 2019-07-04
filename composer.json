@@ -132,6 +132,7 @@
                     "graviton.generator.ensure_indexes": "GENERATOR_ENSURE_INDEXES",
                     "graviton.core.httpclient.debugRequests": "HTTPCLIENT_DEBUGREQUESTS",
                     "graviton.core.httpclient.debugMaxLength": "HTTPCLIENT_DEBUGREQUESTS_MAXLENGTH",
+                    "graviton.core.httpclient.verifyPeer": "HTTPCLIENT_VERIFY_PEER",
                     "graviton.proxy": "PROXY",
                     "graviton.noproxy": "NOPROXY",
                     "graviton.composer.cmd": "COMPOSER_CMD",

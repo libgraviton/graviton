@@ -246,17 +246,14 @@ class MainController
     {
         $services = [];
 
-        // getenv()... it's a workaround for run all tests on travis! will be removed!
-        if (getenv('USER') !== 'travis' && getenv('HAS_JOSH_K_SEAL_OF_APPROVAL') !== true) {
-            foreach (array_keys($this->proxySourceConfiguration) as $source) {
-                foreach ($this->proxySourceConfiguration[$source] as $thirdparty => $option) {
-                    $this->apiLoader->resetDefinitionLoader();
-                    $this->apiLoader->setOption($option);
-                    $this->apiLoader->addOptions($this->decideApiAndEndpoint($option));
-                    $services[$thirdparty] = $this->determineThirdPartyServices(
-                        $this->apiLoader->getAllEndpoints(false, true)
-                    );
-                }
+        foreach (array_keys($this->proxySourceConfiguration) as $source) {
+            foreach ($this->proxySourceConfiguration[$source] as $thirdparty => $option) {
+                $this->apiLoader->resetDefinitionLoader();
+                $this->apiLoader->setOption($option);
+                $this->apiLoader->addOptions($this->decideApiAndEndpoint($option));
+                $services[$thirdparty] = $this->determineThirdPartyServices(
+                    $this->apiLoader->getAllEndpoints(false, true)
+                );
             }
         }
 
