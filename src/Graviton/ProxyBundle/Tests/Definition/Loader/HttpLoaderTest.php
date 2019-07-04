@@ -143,6 +143,7 @@ class HttpLoaderTest extends TestCase
     public function testLoadWithCache()
     {
         $storeKey = 'testSwagger';
+        $storeKeyDef = 'testSwagger-def';
         $cachedContent = '{"swagger": "2.0"}';
         $apiDefinition = $this->createMock('Graviton\ProxyBundle\Definition\ApiDefinition');
 
@@ -150,7 +151,7 @@ class HttpLoaderTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['supports', 'process'])
             ->getMock();
-        $mock ->expects($this->once())
+        $mock->expects($this->once())
             ->method("supports")
             ->willReturn(true);
         $mock->expects($this->once())
@@ -163,14 +164,33 @@ class HttpLoaderTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['contains', 'fetch'])
             ->getMock();
-        $cacheMock->expects($this->once())
+        $cacheMock->expects($this->exactly(2))
             ->method('contains')
-            ->with($this->equalTo($storeKey))
+            ->with(
+                $this->logicalOr(
+                    $this->equalTo($storeKey),
+                    $this->equalTo($storeKeyDef)
+                )
+            )
             ->will($this->returnValue(true));
-        $cacheMock->expects($this->once())
+        $cacheMock->expects($this->exactly(2))
             ->method('fetch')
-            ->with($this->equalTo($storeKey))
-            ->willReturn($cachedContent);
+            ->with(
+                $this->logicalOr(
+                    $this->equalTo($storeKey),
+                    $this->equalTo($storeKeyDef)
+                )
+            )
+            ->will(
+                $this->returnCallback(
+                    function ($paramName) use ($apiDefinition, $cachedContent, $storeKey) {
+                        if ($paramName == $storeKey) {
+                            return $cachedContent;
+                        }
+                        return $apiDefinition;
+                    }
+                )
+            );
         $this->sut->setCache($cacheMock, 'ProxyBundle', 1234);
         $this->sut->setOptions(['prefix' => $storeKey]);
 
