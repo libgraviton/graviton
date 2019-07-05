@@ -66,12 +66,18 @@ class Translator
      * @param DocumentManager $manager         manager
      * @param string          $defaultLanguage default language
      * @param CacheProvider   $cache           cache adapter
+     * @param CacheProvider   $cacheRewrite    cache adapter for rewrites
      * @param int             $cacheNameDepth  how many characters of the original is used as cache pool divider
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function __construct(DocumentManager $manager, $defaultLanguage, CacheProvider $cache, CacheProvider $cacheRewrite, $cacheNameDepth)
-    {
+    public function __construct(
+        DocumentManager $manager,
+        $defaultLanguage,
+        CacheProvider $cache,
+        CacheProvider $cacheRewrite,
+        $cacheNameDepth
+    ) {
         $this->translationCollection = $manager->getDocumentCollection(Translation::class);
         $this->languageCollection = $manager->getDocumentCollection(Language::class);
         $this->defaultLanguage = $defaultLanguage;
@@ -193,6 +199,11 @@ class Translator
         return $this->languages;
     }
 
+    /**
+     * removes the cached languages
+     *
+     * @return void
+     */
     public function removeCachedLanguages()
     {
         $this->languages = [];
