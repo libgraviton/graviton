@@ -107,7 +107,6 @@ services:
         arguments:
           - "@graviton.schema.service.repositoryfactory"
           - "@jms_serializer.metadata_factory"
-          - "@graviton.i18n.repository.language"
           - "@router"
           - "@jms_serializer"
           - "%graviton.document.type.extref.mapping%"
