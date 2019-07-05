@@ -1,9 +1,0 @@
-parameters:
-    graviton.i18n.controller.language.class: Graviton\I18nBundle\Controller\LanguageController
-    graviton.i18n.model.language.class: Graviton\I18nBundle\Model\Language
-    graviton.i18n.repository.language.class: Doctrine\ODM\MongoDB\DocumentRepository
-    graviton.i18n.listener.contentlanguageresponse.class: Graviton\I18nBundle\Listener\ContentLanguageResponseListener
-    graviton.i18n.listener.i18nrqlparsinglistener.class: Graviton\I18nBundle\Listener\I18nRqlParsingListener
-    graviton.i18n.utils.class: Graviton\I18nBundle\Service\I18nUtils
-    graviton.i18n.translator.class: Graviton\I18nBundle\Translator\Translator
-    graviton.i18n.serializer.handler.translatable.class: Graviton\I18nBundle\Serializer\Handler\TranslatableHandler
