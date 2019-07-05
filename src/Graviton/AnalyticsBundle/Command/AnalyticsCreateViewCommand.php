@@ -7,6 +7,7 @@ namespace Graviton\AnalyticsBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\AnalyticsBase\Pipeline\PipelineAbstract;
+use MongoDB\Database;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -125,8 +126,37 @@ class AnalyticsCreateViewCommand extends Command
                     $output->writeln(
                         'Created MongoDB analytics view "' . $viewName . '" on collection "' . $collectionName . '"'
                     );
+
+                    // field spec?
+                    if (isset($service['exportFields']) && is_array($service['exportFields'])) {
+                        $this->createFieldSpecCollection($viewName, $service['exportFields'], $db);
+                        $output->writeln(
+                            'Saved field spec for "' . $viewName . '"'
+                        );
+                    }
                 }
             }
+        }
+    }
+
+    /**
+     * creates the field spec in a separate collection
+     *
+     * @param string   $viewName  view name
+     * @param array    $fieldSpec field spec
+     * @param Database $db        db
+     *
+     * @return void
+     */
+    private function createFieldSpecCollection($viewName, $fieldSpec, Database $db)
+    {
+        $collectionName = $viewName.'FieldSpec';
+        $collection = $db->selectCollection($collectionName);
+
+        $collection->deleteMany([]);
+
+        foreach ($fieldSpec as $field) {
+            $collection->insertOne($field);
         }
     }
 }

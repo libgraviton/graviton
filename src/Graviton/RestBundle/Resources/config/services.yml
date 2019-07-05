@@ -65,7 +65,6 @@ services:
           - "@graviton.rest.response"
           - "@graviton.rest.restutils"
           - "@graviton.rest.router"
-          - "@templating"
           - "@service_container"
           - "@graviton.schema.utils"
           - "@graviton.rest.service.jsonpatchvalidator"
@@ -334,6 +333,7 @@ services:
     graviton.rest.listener.restriction:
       class: "%graviton.rest.listener.restriction.class%"
       arguments:
+        - "@logger"
         - "%graviton.rest.data_restriction.map%"
         - "@request_stack"
       tags:

@@ -28,21 +28,24 @@ class AppControllerTest extends RestTestCase
     const SCHEMA_URL_COLLECTION = 'http://localhost/schema/core/app/collection';
 
     /**
+     * @var array fixtures
+     */
+    protected $standardFixtures = [
+        'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
+        'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
+    ];
+
+    /**
      * setup client and load fixtures
      *
      * @return void
      */
     protected function setUp(): void
     {
-        $this->loadFixturesLocal(
-            array(
-                'Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadMultiLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationLanguageData',
-                'Graviton\I18nBundle\DataFixtures\MongoDB\LoadTranslationAppData'
-            )
-        );
+        $this->loadFixturesLocal($this->standardFixtures);
     }
     /**
      * check if all fixtures are returned on GET
@@ -152,6 +155,13 @@ class AppControllerTest extends RestTestCase
      */
     public function testGetAppWithFilteringAndPaging()
     {
+        $this->loadFixturesLocal(
+            array_merge(
+                $this->standardFixtures,
+                ['Graviton\CoreBundle\DataFixtures\MongoDB\LoadAppDataNoShowMenu']
+            )
+        );
+
         $client = static::createRestClient();
         $client->request('GET', '/core/app/?eq(showInMenu,true)&limit(1)');
         $response = $client->getResponse();
@@ -170,6 +180,17 @@ class AppControllerTest extends RestTestCase
 
         $this->assertStringContainsString(
             '<http://localhost/core/app/?eq(showInMenu,true())&limit(1,1)>; rel="last"',
+            $response->headers->get('Link')
+        );
+
+        // check for false
+        $client = static::createRestClient();
+        $client->request('GET', '/core/app/?eq(showInMenu,false)');
+        $response = $client->getResponse();
+
+        $this->assertEquals(2, count($client->getResults()));
+        $this->assertStringContainsString(
+            '<http://localhost/core/app/?eq(showInMenu,false())>; rel="self"',
             $response->headers->get('Link')
         );
     }
@@ -279,7 +300,7 @@ class AppControllerTest extends RestTestCase
         $client->request('GET', sprintf('/core/app/?limit(%s)', $limit));
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('invalid limit in rql', $client->getResults()->message);
+        $this->assertStringContainsString('syntax error in rql', $client->getResults()->message);
     }
 
     /**
@@ -901,7 +922,25 @@ class AppControllerTest extends RestTestCase
             '/core/app/?'.$expr,
             [],
             [],
-            array('HTTP_ACCEPT_LANGUAGE' => 'en, de')
+            [
+                'HTTP_ACCEPT_LANGUAGE' => 'en, de'
+            ]
+        );
+
+        $result = $client->getResults();
+        $this->assertCount($expCount, $result);
+
+        // try the same via header!
+        $client = static::createRestClient();
+        $client->request(
+            'GET',
+            '/core/app/',
+            [],
+            [],
+            [
+                'HTTP_ACCEPT_LANGUAGE' => 'en, de',
+                'HTTP_X-RQL-QUERY' => $expr
+            ]
         );
 
         $result = $client->getResults();

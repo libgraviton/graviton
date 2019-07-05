@@ -485,7 +485,7 @@ class FileControllerTest extends RestTestCase
     {
         copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
         $file = sys_get_temp_dir() . '/test.txt';
-        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain');
 
         $jsonData = '{
           "id": "myPersonalFile",
@@ -514,7 +514,7 @@ class FileControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put(
             '/file/myPersonalFile',
-            [],
+            null,
             [
                 'metadata' => $jsonData,
             ],
@@ -566,7 +566,7 @@ class FileControllerTest extends RestTestCase
     {
         copy(__DIR__ . '/fixtures/test.txt', sys_get_temp_dir() . '/test.txt');
         $file = sys_get_temp_dir() . '/test.txt';
-        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain', 15);
+        $uploadedFile = new UploadedFile($file, 'test.txt', 'text/plain');
 
         $fixtureData = file_get_contents(__DIR__.'/fixtures/test.txt');
         $correctHash = hash('sha256', $fixtureData);
@@ -586,7 +586,7 @@ class FileControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->put(
             '/file/myPersonalFile2',
-            [],
+            null,
             [
                 'metadata' => $jsonData,
             ],

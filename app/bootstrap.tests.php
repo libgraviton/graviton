@@ -4,7 +4,7 @@
  */
 if (isset($_ENV['BOOTSTRAP_CLEAR_CACHE_ENV'])) {
     $fs = new \Symfony\Component\Filesystem\Filesystem();
-    $cacheDir = __DIR__.'/cache/'.$_ENV['BOOTSTRAP_CLEAR_CACHE_ENV'];
+    $cacheDir = __DIR__.'/../var/cache/'.$_ENV['BOOTSTRAP_CLEAR_CACHE_ENV'];
     if ($fs->exists($cacheDir)) {
         $fs->remove($cacheDir);
     }

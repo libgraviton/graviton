@@ -14,7 +14,7 @@
         "classmap": [ "app/AppKernel.php", "app/AppCache.php", "app/Graviton.php" ]
     },
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.3.0",
         "ext-fileinfo": "*",
         "ext-mongodb": "^1.5.0",
 
@@ -22,14 +22,14 @@
         "jean85/pretty-package-versions": "^1.1",
         "incenteev/composer-parameter-handler": "^2.1.0",
 
-        "graviton/php-rql-parser": "^3.5.0",
-        "graviton/rql-parser-bundle": "^2.0.1",
-        "graviton/json-schema": "^1.15.0",
+        "graviton/php-rql-parser": "~4",
+        "graviton/rql-parser-bundle": "^2.1.0",
+        "graviton/json-schema": "^1.16.0",
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
 
-        "symfony/symfony": "~3.4.0",
+        "symfony/symfony": "~4.3.0",
         "symfony/monolog-bundle": "~3.0",
         "symfony/psr-http-message-bridge": "^1.0.0",
 
@@ -54,7 +54,7 @@
         "php-http/guzzle6-adapter": "*",
         "guzzlehttp/psr7": "*",
 
-        "solarium/solarium": "^4.2",
+        "solarium/solarium": "~5",
         "mtdowling/jmespath.php": "^2.4"
     },
     "require-dev": {
@@ -68,9 +68,7 @@
         "symfony/phpunit-bridge": "^4.0",
 
         "doctrine/data-fixtures": "^1.2",
-        "react/promise": "^2.5",
-        "react/event-loop": "^0.5.2",
-        "liip/test-fixtures-bundle": "^0.1.0@alpha",
+        "liip/test-fixtures-bundle": "^1",
         "doctrine/doctrine-fixtures-bundle": "~3.1.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0"
     },
@@ -102,21 +100,24 @@
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
         ],
         "check": [
-            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,app/cache,app/check.php,app/SymfonyRequirements.php,web/check.php,web/config.php,app/AppCache.php,*.css,*.js' src/ app/ web/",
-            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,app/cache,app/check.php,app/SymfonyRequirements.php,web/check.php,web/config.php,app/AppCache.php,*.css,*.js' src/ app/ web/",
-            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,app/cache,app/check.php,app/SymfonyRequirements.php,web/check.php,web/config.php,app/AppCache.php,*.css,*.js' src/ app/ web/"
+            "./vendor/bin/phpcs -p --standard=PSR1 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=PSR2 --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/",
+            "./vendor/bin/phpcs -p --standard=./vendor/libgraviton/codesniffer --ignore='src/GravitonDyn/*,var/cache,*.css,*.js' src/ app/ public/"
         ]
     },
     "config": {
         "platform": {"ext-mongo": "1.6.14"},
         "bin-dir": "vendor/bin"
     },
-    "bin": ["bin/graviton"],
+    "bin": ["bin/console"],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
-        "symfony-app-dir": "./app",
-        "symfony-web-dir": "./web",
+        "branch-alias": {
+            "dev-3.0-dev": "3.0-dev"
+        },
+        "symfony-app-dir": "./bin",
+        "symfony-web-dir": "./public",
         "incenteev-parameters": [
             {
                 "file": "app/config/parameters.yml",
@@ -131,6 +132,7 @@
                     "graviton.generator.ensure_indexes": "GENERATOR_ENSURE_INDEXES",
                     "graviton.core.httpclient.debugRequests": "HTTPCLIENT_DEBUGREQUESTS",
                     "graviton.core.httpclient.debugMaxLength": "HTTPCLIENT_DEBUGREQUESTS_MAXLENGTH",
+                    "graviton.core.httpclient.verifyPeer": "HTTPCLIENT_VERIFY_PEER",
                     "graviton.proxy": "PROXY",
                     "graviton.noproxy": "NOPROXY",
                     "graviton.composer.cmd": "COMPOSER_CMD",
@@ -140,9 +142,8 @@
                     "graviton.rabbitmq.password": "RABBITMQ_PASSWORD",
                     "graviton.rabbitmq.vhost": "RABBITMQ_VHOST",
                     "graviton.proxy.swagger.sources": "PROXY_SWAGGER_SOURCES",
-                    "graviton.security.authentication.header_required": "SECURITY_AUTHENTICATION_HEADER_REQUIRED",
-                    "graviton.security.authentication.test_username": "SECURITY_AUTHENTICATION_TEST_USERNAME",
                     "graviton.security.authentication.allow_anonymous": "SECURITY_AUTHENTICATION_ALLOW_ANONYMOUS",
+                    "graviton.security.authentication.test_username": "SECURITY_AUTHENTICATION_TEST_USERNAME",
                     "graviton.security.authentication.strategy": "SECURITY_AUTHENTICATION_STRATEGY",
                     "graviton.security.authentication.strategy.header.key": "SECURITY_AUTHENTICATION_STRATEGY_HEADER_KEY",
                     "graviton.security.authentication.strategy.cookie.key": "SECURITY_AUTHENTICATION_STRATEGY_COOKIE_KEY",

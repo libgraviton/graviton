@@ -32,7 +32,7 @@ class HttpClientOptionsCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $baseOptions = [
-            'verify' => false
+            'verify' => $container->getParameter('graviton.core.httpclient.verifyPeer')
         ];
 
         // system settings envs

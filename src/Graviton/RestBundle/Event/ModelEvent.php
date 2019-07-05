@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\Event;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event that is passed to graviton.rest.event listeners

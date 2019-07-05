@@ -419,7 +419,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event->setCollectionClass($this->repository->getClassName());
         $event->setCollection($collection);
 
-        $this->eventDispatcher->dispatch($action, $event);
+        $this->eventDispatcher->dispatch($event, $action);
     }
 
     /**
@@ -434,7 +434,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $event = new EntityPrePersistEvent();
         $event->setEntity($entity);
         $event->setRepository($this->repository);
-        $event = $this->eventDispatcher->dispatch(EntityPrePersistEvent::NAME, $event);
+        $event = $this->eventDispatcher->dispatch($event, EntityPrePersistEvent::NAME);
         return $event->getEntity();
     }
 }

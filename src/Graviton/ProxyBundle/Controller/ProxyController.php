@@ -18,6 +18,7 @@ use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,11 +38,6 @@ class ProxyController
      * @var Proxy
      */
     private $proxy;
-
-    /**
-     * @var EngineInterface
-     */
-    private $templating;
 
     /**
      * @var PsrHttpFactory
@@ -72,7 +68,6 @@ class ProxyController
      * Constructor
      *
      * @param Proxy                 $proxy                    proxy
-     * @param EngineInterface       $templating               twig templating engine
      * @param ApiDefinitionLoader   $loader                   definition loader
      * @param PsrHttpFactory        $psrHttpFactory           convert HttpFoundation objects to PSR-7
      * @param HttpFoundationFactory $httpFoundationFactory    convert PSR-7 interfaces to HttpFoundation
@@ -81,7 +76,6 @@ class ProxyController
      */
     public function __construct(
         Proxy $proxy,
-        EngineInterface $templating,
         ApiDefinitionLoader $loader,
         PsrHttpFactory $psrHttpFactory,
         HttpFoundationFactory $httpFoundationFactory,
@@ -89,7 +83,6 @@ class ProxyController
         array $proxySourceConfiguration
     ) {
         $this->proxy = $proxy;
-        $this->templating = $templating;
         $this->apiLoader = $loader;
         $this->psrHttpFactory = $psrHttpFactory;
         $this->httpFoundationFactory = $httpFoundationFactory;
@@ -217,14 +210,8 @@ class ProxyController
             $schema,
             clone $schema
         );
-        $response = new Response(json_encode($schema), 200);
-        $response->headers->set('Content-Type', 'application/json');
 
-        return $this->templating->renderResponse(
-            'GravitonCoreBundle:Main:index.json.twig',
-            array ('response' => $response->getContent()),
-            $response
-        );
+        return new JsonResponse($schema, 200);
     }
 
     /**

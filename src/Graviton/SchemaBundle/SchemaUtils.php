@@ -6,8 +6,7 @@
 namespace Graviton\SchemaBundle;
 
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Graviton\I18nBundle\Document\Language;
+use Graviton\I18nBundle\Service\I18nUtils;
 use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\SchemaBundle\Constraint\ConstraintBuilder;
 use Graviton\SchemaBundle\Document\Schema;
@@ -29,13 +28,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class SchemaUtils
 {
-
-    /**
-     * language repository
-     *
-     * @var DocumentRepository repository
-     */
-    private $languageRepository;
 
     /**
      * router
@@ -76,11 +68,6 @@ class SchemaUtils
     private $schemaVariationEnabled;
 
     /**
-     * @var string
-     */
-    private $defaultLocale;
-
-    /**
      * @var RepositoryFactory
      */
     private $repositoryFactory;
@@ -106,50 +93,52 @@ class SchemaUtils
     private $jmesRuntime;
 
     /**
+     * @var I18nUtils
+     */
+    private $intUtils;
+
+    /**
      * Constructor
      *
      * @param RepositoryFactory                  $repositoryFactory         Create repos from model class names
      * @param SerializerMetadataFactoryInterface $serializerMetadataFactory Serializer metadata factory
-     * @param DocumentRepository                 $languageRepository        repository
      * @param RouterInterface                    $router                    router
      * @param Serializer                         $serializer                serializer
      * @param array                              $extrefServiceMapping      Extref service mapping
      * @param array                              $eventMap                  eventmap
      * @param array                              $documentFieldNames        Document field names
      * @param boolean                            $schemaVariationEnabled    if schema variations should be enabled
-     * @param string                             $defaultLocale             Default Language
      * @param ConstraintBuilder                  $constraintBuilder         Constraint builder
      * @param CacheProvider                      $cache                     Doctrine cache provider
      * @param CompilerRuntime                    $jmesRuntime               jmespath.php Runtime
+     * @param I18nUtils                          $intUtils                  i18n utils
      */
     public function __construct(
         RepositoryFactory $repositoryFactory,
         SerializerMetadataFactoryInterface $serializerMetadataFactory,
-        DocumentRepository $languageRepository,
         RouterInterface $router,
         Serializer $serializer,
         array $extrefServiceMapping,
         array $eventMap,
         array $documentFieldNames,
         $schemaVariationEnabled,
-        $defaultLocale,
         ConstraintBuilder $constraintBuilder,
         CacheProvider $cache,
-        CompilerRuntime $jmesRuntime
+        CompilerRuntime $jmesRuntime,
+        I18nUtils $intUtils
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->serializerMetadataFactory = $serializerMetadataFactory;
-        $this->languageRepository = $languageRepository;
         $this->router = $router;
         $this->serializer = $serializer;
         $this->extrefServiceMapping = $extrefServiceMapping;
         $this->eventMap = $eventMap;
         $this->documentFieldNames = $documentFieldNames;
         $this->schemaVariationEnabled = (bool) $schemaVariationEnabled;
-        $this->defaultLocale = $defaultLocale;
         $this->constraintBuilder = $constraintBuilder;
         $this->cache = $cache;
         $this->jmesRuntime = $jmesRuntime;
+        $this->intUtils = $intUtils;
     }
 
     /**
@@ -199,16 +188,11 @@ class SchemaUtils
 
         $languages = [];
         if ($online) {
-            $languages = array_map(
-                function (Language $language) {
-                    return $language->getId();
-                },
-                $this->languageRepository->findAll()
-            );
+            $languages = $this->intUtils->getLanguages();
         }
         if (empty($languages)) {
             $languages = [
-                $this->defaultLocale
+                $this->intUtils->getDefaultLanguage()
             ];
         }
 

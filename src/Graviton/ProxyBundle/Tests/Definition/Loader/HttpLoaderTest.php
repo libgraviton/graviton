@@ -143,34 +143,31 @@ class HttpLoaderTest extends TestCase
     public function testLoadWithCache()
     {
         $storeKey = 'testSwagger';
-        $cachedContent = '{"swagger": "2.0"}';
+        $storeKeyDef = 'testSwagger-def';
         $apiDefinition = $this->createMock('Graviton\ProxyBundle\Definition\ApiDefinition');
 
         $mock = $this->getMockBuilder('Graviton\ProxyBundle\Definition\Loader\DispersalStrategy\SwaggerStrategy')
             ->disableOriginalConstructor()
             ->setMethods(['supports', 'process'])
             ->getMock();
-        $mock ->expects($this->once())
-            ->method("supports")
-            ->willReturn(true);
-        $mock->expects($this->once())
-            ->method("process")
-            ->with($this->equalTo($cachedContent))
-            ->willReturn($apiDefinition);
+        $mock->expects($this->never())
+            ->method("supports");
+        $mock->expects($this->never())
+            ->method("process");
         $this->sut->setDispersalStrategy($mock);
 
         $cacheMock = $this->getMockBuilder('Doctrine\Common\Cache\FilesystemCache')
             ->disableOriginalConstructor()
             ->setMethods(['contains', 'fetch'])
             ->getMock();
-        $cacheMock->expects($this->once())
+        $cacheMock->expects($this->exactly(1))
             ->method('contains')
-            ->with($this->equalTo($storeKey))
-            ->will($this->returnValue(true));
-        $cacheMock->expects($this->once())
+            ->with($storeKeyDef)
+            ->willReturn(1);
+        $cacheMock->expects($this->exactly(1))
             ->method('fetch')
-            ->with($this->equalTo($storeKey))
-            ->willReturn($cachedContent);
+            ->with($storeKeyDef)
+            ->willReturn($apiDefinition);
         $this->sut->setCache($cacheMock, 'ProxyBundle', 1234);
         $this->sut->setOptions(['prefix' => $storeKey]);
 
