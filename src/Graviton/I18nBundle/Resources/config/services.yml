@@ -45,6 +45,7 @@ services:
             - "@doctrine_mongodb.odm.default_document_manager"
             - "%graviton.translator.default.locale%"
             - "@=service(parameter('graviton.cache.provider.service_id'))"
+            - "@graviton.cache.provider.file"
             - "%graviton.translator.cache_name_depth%"
 
     graviton.i18n.listener.i18nrqlparsinglistener:
