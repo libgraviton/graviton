@@ -1,5 +1,19 @@
+parameters:
+    graviton.log.monolog.processor.requestId.class: Graviton\LogBundle\Monolog\Processor\RequestIdProcessor
+    graviton.log.listener.requestId.class: Graviton\LogBundle\Listener\RequestIdListener
+
 services:
+    graviton.log.listener.requestId:
+        class: "%graviton.log.listener.requestId.class%"
+        tags:
+            - name: "kernel.event_listener"
+              event: "kernel.request"
+              method: "onKernelRequest"
+              priority: 900
+
     graviton.log.monolog.processor.requestId:
         class: "%graviton.log.monolog.processor.requestId.class%"
+        arguments:
+            - "@request_stack"
         tags:
             - { name: monolog.processor, method: processRecord }
