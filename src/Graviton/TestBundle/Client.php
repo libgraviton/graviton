@@ -5,7 +5,7 @@
 
 namespace Graviton\TestBundle;
 
-use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 /**
  * Client containing some helper methods to be RESTful.
@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Client as FrameworkClient;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class Client extends FrameworkClient
+class Client extends KernelBrowser
 {
     /**
      * @var mixed

@@ -35,10 +35,6 @@ class AuthenticationProviderDummy extends AuthenticationProvider
      */
     public function loadUserByUsername($username)
     {
-        if ($username !== 'testUsername') {
-            return false;
-        }
-
         /** @var UserInterface $user */
         $user = new \stdClass();
         $user->id = 123;

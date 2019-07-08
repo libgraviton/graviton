@@ -21,6 +21,11 @@ class Translator
 {
 
     /**
+     * @var string
+     */
+    const CACHE_KEY_LANGUAGES = 'translator_languages';
+
+    /**
      * @var Collection
      */
     private $translationCollection;
@@ -41,6 +46,11 @@ class Translator
     private $cache;
 
     /**
+     * @var CacheProvider
+     */
+    private $cacheRewrite;
+
+    /**
      * @var int
      */
     private $cacheNameDepth;
@@ -56,16 +66,23 @@ class Translator
      * @param DocumentManager $manager         manager
      * @param string          $defaultLanguage default language
      * @param CacheProvider   $cache           cache adapter
+     * @param CacheProvider   $cacheRewrite    cache adapter for rewrites
      * @param int             $cacheNameDepth  how many characters of the original is used as cache pool divider
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function __construct(DocumentManager $manager, $defaultLanguage, CacheProvider $cache, $cacheNameDepth)
-    {
+    public function __construct(
+        DocumentManager $manager,
+        $defaultLanguage,
+        CacheProvider $cache,
+        CacheProvider $cacheRewrite,
+        $cacheNameDepth
+    ) {
         $this->translationCollection = $manager->getDocumentCollection(Translation::class);
         $this->languageCollection = $manager->getDocumentCollection(Language::class);
         $this->defaultLanguage = $defaultLanguage;
         $this->cache = $cache;
+        $this->cacheRewrite = $cacheRewrite;
         $this->cacheNameDepth = (int) $cacheNameDepth;
     }
 
@@ -162,18 +179,35 @@ class Translator
             return $this->languages;
         }
 
-        $this->languages = array_map(
-            function ($record) {
-                return $record['_id'];
-            },
-            $this->languageCollection->find([], ['_id' => 1])->toArray()
-        );
+        $this->languages = $this->cacheRewrite->fetch(self::CACHE_KEY_LANGUAGES);
 
-        asort($this->languages);
+        if ($this->languages === false) {
+            $this->languages = array_map(
+                function ($record) {
+                    return $record['_id'];
+                },
+                $this->languageCollection->find([], ['_id' => 1])->toArray()
+            );
 
-        $this->languages = array_values($this->languages);
+            asort($this->languages);
+
+            $this->languages = array_values($this->languages);
+
+            $this->cacheRewrite->save(self::CACHE_KEY_LANGUAGES, $this->languages);
+        }
 
         return $this->languages;
+    }
+
+    /**
+     * removes the cached languages
+     *
+     * @return void
+     */
+    public function removeCachedLanguages()
+    {
+        $this->languages = [];
+        $this->cacheRewrite->delete(self::CACHE_KEY_LANGUAGES);
     }
 
     /**

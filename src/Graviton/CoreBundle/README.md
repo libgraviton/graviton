@@ -36,7 +36,7 @@ This is just an example. The default values are plain "composer" and "git", assu
 
 * run
 ```
-php app/console graviton:core:generateversions
+php bin/console graviton:core:generateversions
 ```
 
 ### adding additional endpoints to the main page

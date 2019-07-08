@@ -11,7 +11,7 @@ composer install
 You can now start a development server.
 
 ````bash
-php app/console server:run
+php bin/console server:run
 ````
 
 Please run ``./vendor/bin/phpunit`` and ``composer check`` before
@@ -24,7 +24,7 @@ Some bundles (as `SecurityBundle`) support custom environments (please refer to 
 To support other environments then the standard ones, Graviton provides an `ENV` aware router you can use like this:
 
 ```bash
-SYMFONY_ENV=<customEnv> php app/console --router=src/Graviton/CoreBundle/Resources/config/router_env.php server:run
+SYMFONY_ENV=<customEnv> php bin/console --router=src/Graviton/CoreBundle/Resources/config/router_env.php server:run
 ```
 
 Graviton also respects the `SYMFONY_ENV` environment variable when invocated by `app.php` (i.e. in a webserver context).

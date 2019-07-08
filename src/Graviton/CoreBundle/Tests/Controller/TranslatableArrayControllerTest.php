@@ -48,7 +48,7 @@ class TranslatableArrayControllerTest extends RestTestCase
     public function testItemSchema()
     {
         $client = static::createRestClient();
-        $this->getRequest($client, '/schema/testcase/translatable-array/item');
+        $this->getWebRequest($client, '/schema/testcase/translatable-array/item');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $schema = $client->getResults();
@@ -64,7 +64,7 @@ class TranslatableArrayControllerTest extends RestTestCase
     public function testCollectionSchema()
     {
         $client = static::createRestClient();
-        $this->getRequest($client, '/schema/testcase/translatable-array/collection');
+        $this->getWebRequest($client, '/schema/testcase/translatable-array/collection');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $schema = $client->getResults();
@@ -81,7 +81,7 @@ class TranslatableArrayControllerTest extends RestTestCase
     public function testCheckGetOne()
     {
         $client = static::createRestClient();
-        $this->getRequest($client, '/testcase/translatable-array/testdata');
+        $this->getWebRequest($client, '/testcase/translatable-array/testdata');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResults());
 
@@ -96,7 +96,7 @@ class TranslatableArrayControllerTest extends RestTestCase
     public function testCheckGetAll()
     {
         $client = static::createRestClient();
-        $this->getRequest($client, '/testcase/translatable-array/');
+        $this->getWebRequest($client, '/testcase/translatable-array/');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertCount(1, $client->getResults());
 
@@ -120,7 +120,7 @@ class TranslatableArrayControllerTest extends RestTestCase
         $location = $client->getResponse()->headers->get('Location');
 
         $client = static::createRestClient();
-        $this->getRequest($client, $location, ['en', 'de']);
+        $this->getWebRequest($client, $location, ['en', 'de']);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $result = $client->getResults();
@@ -144,7 +144,7 @@ class TranslatableArrayControllerTest extends RestTestCase
         $this->assertEmpty($client->getResults());
 
         $client = static::createRestClient();
-        $this->getRequest($client, '/testcase/translatable-array/testdata', ['en', 'de']);
+        $this->getWebRequest($client, '/testcase/translatable-array/testdata', ['en', 'de']);
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $result = $client->getResults();
@@ -331,7 +331,7 @@ class TranslatableArrayControllerTest extends RestTestCase
      * @param array  $languages Languages
      * @return void
      */
-    private function getRequest(Client $client, $url, array $languages = ['en'])
+    private function getWebRequest(Client $client, $url, array $languages = ['en'])
     {
         $client->request('GET', $url, [], [], ['HTTP_ACCEPT_LANGUAGE' => implode(',', $languages)]);
     }

@@ -8,7 +8,7 @@ before_commands:
 application:
     dependencies:
         before:
-            - php app/console cache:warmup
+            - php bin/console cache:warmup
 tools:
     external_code_coverage: true
     php_mess_detector: true

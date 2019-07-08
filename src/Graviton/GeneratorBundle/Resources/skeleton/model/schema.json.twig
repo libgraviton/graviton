@@ -37,7 +37,7 @@
       {% endif %}
 {% endif %}
 
-{% for field in fields if field.hidden == false %}
+{% for field in fields | filter(v => v.hidden == false) %}
     "{{ field.fieldName }}": {
         "title": {{ field.title|json_encode() }},
 

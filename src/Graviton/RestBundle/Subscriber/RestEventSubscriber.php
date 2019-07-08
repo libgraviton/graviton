@@ -6,12 +6,12 @@ namespace Graviton\RestBundle\Subscriber;
 
 use Graviton\RestBundle\Event\RestEvent;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * Subscriber for kernel.request and kernel.response events.
@@ -73,28 +73,28 @@ final class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.request events
      *
-     * @param GetResponseEvent         $event      Event
+     * @param RequestEvent             $event      Event
      * @param string                   $name       Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
      */
-    public function onKernelRequest(GetResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
+    public function onKernelRequest(RequestEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
         $restEvent = $this->getEventObject($event);
         if ($restEvent instanceof RestEvent) {
-            $dispatcher->dispatch("graviton.rest.request", $restEvent);
+            $dispatcher->dispatch($restEvent, "graviton.rest.request");
         }
     }
 
     /**
      * Get a RestEvent object -> put this in a factory
      *
-     * @param Event $event Original event (kernel.request / kernel.response)
+     * @param KernelEvent $event Original event (kernel.request / kernel.response)
      *
      * @return RestEvent $restEvent
      */
-    private function getEventObject(Event $event)
+    private function getEventObject(KernelEvent $event)
     {
         // get the service name
         list ($serviceName) = explode(":", $event->getRequest()->get('_controller'));
@@ -118,14 +118,14 @@ final class RestEventSubscriber implements EventSubscriberInterface
     /**
      * Handler for kernel.response events
      *
-     * @param FilterResponseEvent      $event      Event
+     * @param ResponseEvent            $event      Event
      * @param string                   $name       Event name
      * @param EventDispatcherInterface $dispatcher Event dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
+    public function onKernelResponse(ResponseEvent $event, $name, EventDispatcherInterface $dispatcher)
     {
-        $dispatcher->dispatch("graviton.rest.response", $event);
+        $dispatcher->dispatch($event, "graviton.rest.response");
     }
 }

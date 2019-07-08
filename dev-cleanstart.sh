@@ -1,5 +1,5 @@
-rm -Rf app/cache app/logs app/bootstrap.php.cache
+rm -Rf var/cache/* var/log/*
 composer install
-php app/console doctrine:mongodb:fixtures:load
-php app/console doctrine:mongodb:schema:update
-php app/console server:run
+php bin/console doctrine:mongodb:fixtures:load
+php bin/console doctrine:mongodb:schema:update
+php bin/console server:run

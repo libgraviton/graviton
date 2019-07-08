@@ -7,6 +7,11 @@ services:
 
     graviton.rabbitmq.command.produce:
         class: "%graviton.rabbitmq.command.produce.class%"
+        calls:
+          -
+            method: setContainer
+            arguments:
+              - "@service_container"
         tags:
           -
             name: console.command

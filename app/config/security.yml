@@ -13,11 +13,10 @@ security:
         secured_area:
             pattern: ^/
             anonymous: ~
-        # graviton access restriction
-            #  no pattern means matches all routes
             stateless: true
-            simple_preauth:
-                authenticator: graviton_security_authenticator
+            guard:
+                authenticators:
+                    - graviton_security_authenticator
 
 #      access_decision_manager:
 #          # strategy can be: affirmative, unanimous or consensus

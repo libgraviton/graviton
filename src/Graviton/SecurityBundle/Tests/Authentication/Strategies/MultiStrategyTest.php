@@ -31,18 +31,18 @@ class MultiStrategyTest extends RestTestCase
 
         /** @var \Symfony\Bundle\FrameworkBundle\Client client */
         $this->client = static::createClient();
-        $propertyKey = $this->client->getKernel()
-            ->getContainer()
-            ->getParameter('graviton.security.authentication.strategy.subnet.key');
-        $sameSubnetStrategy = new SameSubnetStrategy($propertyKey);
-        $this->propertyKey = $this->client->getKernel()
+        $this->propertyKey = $this
             ->getContainer()
             ->getParameter('graviton.security.authentication.strategy.cookie.key');
-        $cookieFieldStrategy = new CookieFieldStrategy($this->propertyKey);
 
         $this->strategy = new MultiStrategy();
-        $this->strategy->addStrategy($sameSubnetStrategy);
-        $this->strategy->addStrategy($cookieFieldStrategy);
+        $this->strategy->setStrategies(
+            $this->getContainer(),
+            [
+                'graviton.security.authentication.strategy.subnet',
+                'graviton.security.authentication.strategy.cookie'
+            ]
+        );
     }
 
     /**
@@ -61,7 +61,7 @@ class MultiStrategyTest extends RestTestCase
             $fieldValue,
             time() + 3600 * 24 * 7,
             '/',
-            null,
+            '',
             false,
             false
         );

@@ -6,7 +6,9 @@
 
 namespace Graviton\RabbitMqBundle\Command;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,8 +20,25 @@ use Symfony\Component\Console\Input\InputArgument;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class ProduceCommand extends ContainerAwareCommand
+class ProduceCommand extends Command
 {
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * set container
+     *
+     * @param ContainerInterface $container container
+     *
+     * @return void
+     */
+    public function setContainer(ContainerInterface $container): void
+    {
+        $this->container = $container;
+    }
 
     /**
      * Configures command
@@ -54,7 +73,7 @@ class ProduceCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $producer = $this->getContainer()->get('graviton.message.jobproducer');
+        $producer = $this->container->get('graviton.message.jobproducer');
         $producer->setContentType('application/json');
         $producer->publish(
             $input->getArgument('data'),

@@ -1,2 +1,0 @@
-parameters:
-    graviton.log.monolog.processor.requestId.class: Graviton\LogBundle\Monolog\Processor\RequestIdProcessor

@@ -155,14 +155,17 @@ class HttpLoader implements LoaderInterface
             return $retVal;
         }
 
-        if (isset($this->strategy)) {
-            if (isset($this->cache) && $this->cache->contains($this->options['storeKey'])) {
-                $content = $this->cache->fetch($this->options['storeKey']);
-            }
+        $cacheKeyDef = $this->options['storeKey'].'-def';
+        if ($this->cache instanceof CacheProvider && $this->cache->contains($cacheKeyDef)) {
+            return $this->cache->fetch($cacheKeyDef);
+        }
 
+        if (isset($this->strategy)) {
             $request = new Request('GET', $input);
+            $content = $this->fetchFile($request);
+
             if (empty($content)) {
-                $content = $this->fetchFile($request);
+                return $retVal;
             }
 
             // store current host (name or ip) serving the API. This MUST be the host only and does not include the
@@ -173,13 +176,17 @@ class HttpLoader implements LoaderInterface
             // compose base url host
             $uri = new Uri();
             $uri = $uri->withHost($request->getUri()->getHost())
-                ->withScheme($request->getUri()->getScheme())
-                ->withPort($request->getUri()->getPort());
+                       ->withScheme($request->getUri()->getScheme())
+                       ->withPort($request->getUri()->getPort());
 
             $fallbackHost['host'] = (string) $uri;
 
             if ($this->strategy->supports($content)) {
                 $retVal = $this->strategy->process($content, $fallbackHost);
+            }
+
+            if ($this->cache instanceof CacheProvider) {
+                $this->cache->save($cacheKeyDef, $retVal, $this->cacheLifetime);
             }
         }
 
@@ -195,13 +202,10 @@ class HttpLoader implements LoaderInterface
      */
     private function fetchFile(RequestInterface $request)
     {
-        $content = "{}";
+        $content = "";
         try {
             $response = $this->client->send($request);
             $content = (string) $response->getBody();
-            if (isset($this->cache)) {
-                $this->cache->save($this->options['storeKey'], $content, $this->cacheLifetime);
-            }
         } catch (RequestException $e) {
             $this->logger->info(
                 "Unable to fetch File!",

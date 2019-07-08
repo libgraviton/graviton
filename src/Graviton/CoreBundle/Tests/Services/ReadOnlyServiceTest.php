@@ -62,7 +62,7 @@ class ReadOnlyServiceTest extends RestTestCase
     public function testNotAllowedMethod($method, $url, $entry)
     {
         $client = static::createRestClient();
-        $client->request($method, $url, [], [], [], $entry);
+        $client->request($method, $url, [], [], [], json_encode($entry));
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
         $content = $client->getResults();
         $this->assertStringContainsString(
