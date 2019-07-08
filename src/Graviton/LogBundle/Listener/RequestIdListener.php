@@ -31,7 +31,7 @@ class RequestIdListener
     public function onKernelRequest(RequestEvent $event)
     {
         if ($event->getRequest() instanceof Request) {
-            $event->getRequest()->attributes->set(self::ATTRIBUTE_NAME, bin2hex(random_bytes(5)));
+            $event->getRequest()->attributes->set(self::ATTRIBUTE_NAME, bin2hex(random_bytes(7)));
         }
     }
 }
