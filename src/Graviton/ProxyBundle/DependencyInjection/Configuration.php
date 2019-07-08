@@ -38,10 +38,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('graviton_proxy');
+        $tree = new TreeBuilder('graviton_proxy');
 
-        $rootNode
+        $tree
+            ->getRootNode()
             ->children()
                 ->arrayNode('sources')
                     ->useAttributeAsKey('name')
@@ -61,6 +61,6 @@ class Configuration implements ConfigurationInterface
                 ->end() // swagger_proxy
             ->end();
 
-        return $treeBuilder;
+        return $tree;
     }
 }

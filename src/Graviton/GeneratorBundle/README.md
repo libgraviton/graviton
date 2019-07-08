@@ -8,7 +8,7 @@ features that where only added to the xml templates.
 ### Generate new Bundle
 
 ```bash
-php app/console graviton:generate:bundle --namespace=Graviton/FooBundle --dir=src --bundle-name=GravitonFooBundle
+php bin/console graviton:generate:bundle --namespace=Graviton/FooBundle --dir=src --bundle-name=GravitonFooBundle
 ```
 
 The generated bundle assumes thaet you will be adding resources to it. If you do not plan on doing so
@@ -17,8 +17,8 @@ you will need to fix this by removing the doctrine and serializer config in ``Re
 ### Generate a new Resource
 
 ```bash
-php app/console graviton:generate:resource --entity=GravitonFooBundle:Bar --format=xml --fields="name:string"
-php app/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant"
+php bin/console graviton:generate:resource --entity=GravitonFooBundle:Bar --format=xml --fields="name:string"
+php bin/console graviton:generate:resource --entity=GravitonFooBundle:Baz --format=xml --fields="name:string isTrue:boolean consultant:Graviton\\PersonBundle\\Document\\Consultant"
 ```
 You will need to clean up the models Resource/schema/<name>.json file after generation. You may replace titles and you must
 add descriptions in the fields marked @todo.
@@ -26,7 +26,7 @@ add descriptions in the fields marked @todo.
 ### Generate a Dynamic Bundle
 
 ```bash
-php app/console graviton:generate:dynamicbundle --json
+php bin/console graviton:generate:dynamicbundle --json
 ```
 The workflow is as follows:
 
@@ -57,4 +57,4 @@ The following changes lead to a regeneration of the bundle:
 
 **Please note:** If you're developing on the Generator itself (the PHP side, not the templates), you'll need to manually 
 clean the content of the dynamic bundles. You can either execute `rm -Rf src/GravitonDyn` or call the command 
-`php app/console graviton:clean:dynamicbundles` - to simplify things, you can put those in `dev-cleanstart.sh` during your work.
+`php bin/console graviton:clean:dynamicbundles` - to simplify things, you can put those in `dev-cleanstart.sh` during your work.

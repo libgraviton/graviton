@@ -35,10 +35,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('graviton_core');
+        $tree = new TreeBuilder('graviton_core');
 
-        $rootNode
+        $tree
+            ->getRootNode()
             ->children()
                 ->arrayNode('service_name')
                     ->prototype('scalar')->end()
@@ -48,6 +48,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
-        return $treeBuilder;
+        return $tree;
     }
 }

@@ -12,6 +12,7 @@ use Graviton\RestBundle\Model\DocumentModel;
 use Graviton\RestBundle\Service\RestUtils;
 use Graviton\SchemaBundle\SchemaUtils;
 use Graviton\SecurityBundle\Service\SecurityUtils;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,7 +33,7 @@ use Graviton\RestBundle\Service\JsonPatchValidator;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class RestController
+class RestController extends AbstractController
 {
 
     /**
@@ -48,7 +49,7 @@ class RestController
     /**
      * @var ContainerInterface service_container
      */
-    private $container;
+    protected $container;
 
     /**
      * @var Response
@@ -71,11 +72,6 @@ class RestController
     private $router;
 
     /**
-     * @var EngineInterface
-     */
-    private $templating;
-
-    /**
      * @var JsonPatchValidator
      */
     private $jsonPatchValidator;
@@ -89,7 +85,6 @@ class RestController
      * @param Response           $response    Response
      * @param RestUtils          $restUtils   Rest Utils
      * @param Router             $router      Router
-     * @param EngineInterface    $templating  Templating
      * @param ContainerInterface $container   Container
      * @param SchemaUtils        $schemaUtils Schema utils
      * @param JsonPatchValidator $jsonPatch   Service for validation json patch
@@ -99,7 +94,6 @@ class RestController
         Response $response,
         RestUtils $restUtils,
         Router $router,
-        EngineInterface $templating,
         ContainerInterface $container,
         SchemaUtils $schemaUtils,
         JsonPatchValidator $jsonPatch,
@@ -108,7 +102,6 @@ class RestController
         $this->response = $response;
         $this->restUtils = $restUtils;
         $this->router = $router;
-        $this->templating = $templating;
         $this->container = $container;
         $this->schemaUtils = $schemaUtils;
         $this->jsonPatchValidator = $jsonPatch;
@@ -485,21 +478,6 @@ class RestController
 
         return $response;
     }
-
-    /**
-     * Renders a view.
-     *
-     * @param string   $view       The view name
-     * @param array    $parameters An array of parameters to pass to the view
-     * @param Response $response   A response instance
-     *
-     * @return Response A Response instance
-     */
-    public function render($view, array $parameters = [], Response $response = null)
-    {
-        return $this->templating->renderResponse($view, $parameters, $response);
-    }
-
 
     /**
      * Security needs to be enabled to get Object.

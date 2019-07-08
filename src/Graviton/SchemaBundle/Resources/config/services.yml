@@ -107,17 +107,16 @@ services:
         arguments:
           - "@graviton.schema.service.repositoryfactory"
           - "@jms_serializer.metadata_factory"
-          - "@graviton.i18n.repository.language"
           - "@router"
           - "@jms_serializer"
           - "%graviton.document.type.extref.mapping%"
           - "%graviton.document.eventmap%"
           - "%graviton.document.field.names%"
           - "%graviton.rest.schema_variation.enable%"
-          - "%locale%"
           - "@graviton.schema.constraint.builder"
           - "@graviton.cache.provider.file"
           - "@graviton.core.service.jmespath"
+          - "@graviton.18n.utils"
 
     graviton.schema.constraint.incrementaldate:
         class: "%graviton.schema.constraint.incrementaldate.class%"

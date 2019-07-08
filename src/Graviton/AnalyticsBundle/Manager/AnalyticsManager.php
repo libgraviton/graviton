@@ -158,7 +158,7 @@ class AnalyticsManager
     {
         $event = new PreAggregateEvent();
         $event->setPipeline($pipeline);
-        $event = $this->eventDispatcher->dispatch(PreAggregateEvent::NAME, $event);
+        $event = $this->eventDispatcher->dispatch($event, PreAggregateEvent::NAME);
         return $event->getPipeline();
     }
 

@@ -36,12 +36,13 @@ class HttpClientOptionsCompilerPassTest extends \PHPUnit\Framework\TestCase
                                 ->getMock();
 
         $containerDouble
-            ->expects($this->atLeast(2))
+            ->expects($this->atLeast(3))
             ->method('getParameter')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('graviton.proxy'),
-                    $this->equalTo('graviton.noproxy')
+                    $this->equalTo('graviton.noproxy'),
+                    $this->equalTo('graviton.core.httpclient.verifyPeer')
                 )
             )
             ->will(
@@ -49,6 +50,9 @@ class HttpClientOptionsCompilerPassTest extends \PHPUnit\Framework\TestCase
                     function ($paramName) use ($containerProxySetting, $containerNoProxy) {
                         if ($paramName == 'graviton.proxy') {
                             return $containerProxySetting;
+                        }
+                        if ($paramName == 'graviton.core.httpclient.verifyPeer') {
+                            return false;
                         }
                         return $containerNoProxy;
                     }

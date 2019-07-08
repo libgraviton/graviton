@@ -68,6 +68,12 @@ class Translatable implements \JsonSerializable
         }
 
         self::$defaultLanguage = file_get_contents(self::$defaultLanguageFile);
+
+        if (empty(self::$defaultLanguage)) {
+            unlink(self::$defaultLanguageFile);
+            throw new \LogicException('Default language file is empty!');
+        }
+
         return self::$defaultLanguage;
     }
 

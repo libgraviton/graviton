@@ -5,7 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Command;
 
-use Graviton\GeneratorBundle\CommandRunner;
 use Graviton\GeneratorBundle\Definition\JsonDefinition;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionArray;
 use Graviton\GeneratorBundle\Definition\JsonDefinitionHash;
@@ -68,10 +67,6 @@ class GenerateDynamicBundleCommand extends Command
     /** @var string|null */
     private $ensureIndexes = null;
 
-    /**
-     * @var CommandRunner
-     */
-    private $runner;
     /**
      * @var LoaderInterface
      */
@@ -540,27 +535,6 @@ class GenerateDynamicBundleCommand extends Command
         }
 
         return $resources;
-    }
-
-    /**
-     * Gathers data for the command to run.
-     *
-     * @param array           $arguments Set of cli arguments passed to the command
-     * @param OutputInterface $output    Output channel to send messages to.
-     * @param JsonDefinition  $jsonDef   Configuration of the service
-     *
-     * @return void
-     * @throws \LogicException
-     */
-    private function generateResource(array $arguments, OutputInterface $output, JsonDefinition $jsonDef)
-    {
-        // controller?
-        $routerBase = $jsonDef->getRouterBase();
-        if ($routerBase === false || $this->isNotWhitelistedController($routerBase)) {
-            $arguments['--no-controller'] = 'true';
-        }
-
-        $this->runner->executeCommand($arguments, $output, 'Create resource call failed, see above. Exiting.');
     }
 
     /**

@@ -194,7 +194,7 @@ class QueryService
     {
         $event = new ModelQueryEvent();
         $event->setQueryBuilder($builder);
-        $event = $this->eventDispatcher->dispatch(ModelQueryEvent::NAME, $event);
+        $event = $this->eventDispatcher->dispatch($event, ModelQueryEvent::NAME);
         return $event->getQueryBuilder();
     }
 

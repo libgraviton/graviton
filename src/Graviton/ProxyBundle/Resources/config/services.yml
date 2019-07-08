@@ -21,7 +21,6 @@ services:
         public: true
         arguments:
             - "@graviton.proxy"
-            - "@templating"
             - "@graviton.proxy.service.apiloader"
             - "@graviton.proxy.psrhttpmessage.factory"
             - "@graviton.proxy.psrhttpmessage.httpfoundationfactory"

@@ -19,15 +19,19 @@ use Graviton\SecurityBundle\Entities\SecurityUser;
  */
 class SecurityUtils
 {
-    /** @var SecurityUser */
+    /**
+     * @var SecurityUser
+     */
     private $securityUser;
-    
-    /** @var string  */
-    private $requestId;
+
+    /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
 
     /**
      * StoreManager constructor.
-     * @param TokenStorage $tokenStorage Sf Auth token storage
+     * @param TokenStorage $tokenStorage Auth token storage
      */
     public function __construct(
         TokenStorage $tokenStorage
@@ -45,7 +49,7 @@ class SecurityUtils
         if ($this->securityUser) {
             return true;
         }
-        
+
         /** @var PreAuthenticatedToken $token */
         if (($token = $this->tokenStorage->getToken())
             && ($user = $token->getUser()) instanceof UserInterface ) {
@@ -54,7 +58,7 @@ class SecurityUtils
         }
         return false;
     }
-    
+
     /**
      * Find current user
      *
@@ -96,39 +100,5 @@ class SecurityUtils
             return (bool) $this->securityUser->hasRole($role);
         }
         throw new UsernameNotFoundException('No security user');
-    }
-
-    /**
-     * Get current unique request ID
-     *
-     * @return string
-     */
-    public function getRequestId()
-    {
-        if ($this->requestId) {
-            return $this->requestId;
-        }
-        return $this->requestId = $this->generateUuid();
-    }
-
-    /**
-     * Generate a unique UUID.
-     *
-     * @return string
-     */
-    private function generateUuid()
-    {
-        if (!function_exists('openssl_random_pseudo_bytes')) {
-            $this->requestId = uniqid('unq', true);
-        } else {
-            $data = openssl_random_pseudo_bytes(16);
-            // set version to 0100
-            $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-            // set bits 6-7 to 10
-            $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-            $this->requestId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-        }
-
-        return $this->requestId;
     }
 }
