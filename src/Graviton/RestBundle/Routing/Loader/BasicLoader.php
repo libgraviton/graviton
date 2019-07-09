@@ -58,6 +58,24 @@ class BasicLoader extends RouteLoaderAbstract
             throw new \RuntimeException('Do not add the "graviton.rest.routing.loader" loader twice');
         }
 
+        // sort by path length (so longer ones are first in case of overlap)
+        uasort(
+            $this->services,
+            function ($a, $b) {
+                if (!isset($a[0]['router-base']) || !isset($b[0]['router-base'])) {
+                    return 1;
+                }
+
+                $aLength = strlen($a[0]['router-base']);
+                $bLength = strlen($b[0]['router-base']);
+
+                if ($aLength == $bLength) {
+                    return 0;
+                }
+                return ($aLength < $bLength) ? 1 : -1;
+            }
+        );
+
         foreach ($this->services as $service => $serviceConfig) {
             $this->loadService($service, $serviceConfig);
         }
@@ -107,7 +125,6 @@ class BasicLoader extends RouteLoaderAbstract
      */
     public function loadReadOnlyRoutes($service, $resource, $serviceConfig)
     {
-
         $actionOptions = ActionUtils::getRouteOptions($service, $serviceConfig);
         $this->routes->add($resource . '.options', $actionOptions);
 
