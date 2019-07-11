@@ -284,6 +284,9 @@ class ServiceManager
                     case "regex":
                         $paramValue = new Regex($paramValue, 'i');
                         break;
+                    case "regexstring":
+                        $paramValue = '^'.str_replace('*', '(.*)', $paramValue);
+                        break;
                     case "mongoid":
                         $paramValue = new \MongoId($paramValue);
                         break;
