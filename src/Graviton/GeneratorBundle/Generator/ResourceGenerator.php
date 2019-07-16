@@ -586,7 +586,8 @@ class ResourceGenerator extends AbstractGenerator
      */
     protected function generateSerializer(array $parameters, $dir, $document)
     {
-        // @TODO in Embedded and document just render the differences..
+        $parameters['isEmbedded'] = false;
+
         $this->renderFile(
             'serializer/Document.xml.twig',
             $dir . '/Resources/config/serializer/Document.' . $document . 'Embedded.xml',
@@ -595,7 +596,8 @@ class ResourceGenerator extends AbstractGenerator
                 [
                     'document' => $document.'Embedded',
                     'noIdField' => true,
-                    'realIdField' => true
+                    'realIdField' => true,
+                    'isEmbedded' => true
                 ]
             )
         );
