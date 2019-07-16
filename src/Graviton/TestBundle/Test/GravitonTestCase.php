@@ -122,7 +122,7 @@ class GravitonTestCase extends WebTestCase
         $application = $this->createApplication($kernel);
         $input = new ArrayInput($params);
         $input->setInteractive(false);
-        $fp = fopen('php://temp/maxmemory:'.$this->maxMemory, 'r+');
+        $fp = fopen('php://temp', 'r+');
         $output = new StreamOutput($fp);
         $application->run($input, $output);
         rewind($fp);

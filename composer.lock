@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f8ddc61934982a8f6f67b3b94181bdc",
+    "content-hash": "6602ae56d3236915d0514e06976e8588",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -4610,7 +4610,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -5822,16 +5822,16 @@
         },
         {
             "name": "liip/test-fixtures-bundle",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipTestFixturesBundle.git",
-                "reference": "dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a"
+                "reference": "3fd247f2784bf57a7081e96fce3e535943fa5247"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a",
-                "reference": "dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a",
+                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/3fd247f2784bf57a7081e96fce3e535943fa5247",
+                "reference": "3fd247f2784bf57a7081e96fce3e535943fa5247",
                 "shasum": ""
             },
             "require": {
@@ -5890,7 +5890,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2019-07-04T16:14:50+00:00"
+            "time": "2019-07-15T20:59:11+00:00"
         },
         {
             "name": "myclabs/deep-copy",

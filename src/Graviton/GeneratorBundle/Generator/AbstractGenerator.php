@@ -5,6 +5,7 @@
 
 namespace Graviton\GeneratorBundle\Generator;
 
+use Graviton\GeneratorBundle\Twig\Extension;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -30,6 +31,11 @@ abstract class AbstractGenerator
     protected $fs;
 
     /**
+     * @var array
+     */
+    private $exposeSyntheticMap = [];
+
+    /**
      * AbstractGenerator constructor.
      */
     public function __construct()
@@ -47,7 +53,27 @@ abstract class AbstractGenerator
     }
 
     /**
-     * Check for the occurence of "Bundle" in the given name and remove it
+     * set ExposeSyntheticMap
+     *
+     * @param array $exposeSyntheticMap exposeSyntheticMap
+     *
+     * @return void
+     */
+    public function setExposeSyntheticMap($exposeSyntheticMap)
+    {
+        if (is_null($exposeSyntheticMap) && empty($exposeSyntheticMap)) {
+            $exposeSyntheticMap = [];
+        } elseif (is_string($exposeSyntheticMap)) {
+            $exposeSyntheticMap = array_map('trim', explode(',', $exposeSyntheticMap));
+        }
+
+        $this->exposeSyntheticMap = $exposeSyntheticMap;
+
+        $this->twig->addExtension(new Extension($exposeSyntheticMap));
+    }
+
+    /**
+     * Check for the occurrence of "Bundle" in the given name and remove it
      *
      * @param String $name Bundle name
      *
