@@ -53,15 +53,24 @@ class GenerateDynamicBundleTest extends GravitonTestCase
         $fieldMapper->addMapper(new ResourceGenerator\FieldTitleMapper());
         $fieldMapper->addMapper(new ResourceGenerator\FieldHiddenRestrictionMapper());
 
+        $bundleGenerator = new BundleGenerator();
+        $bundleGenerator->setExposeSyntheticMap(null);
+
+        $resourceGenerator = new ResourceGenerator(
+            new Filesystem(),
+            $fieldMapper,
+            new ResourceGenerator\ParameterBuilder()
+        );
+        $resourceGenerator->setExposeSyntheticMap(null);
+
+        $dynamicBundleGenerator = new DynamicBundleBundleGenerator();
+        $dynamicBundleGenerator->setExposeSyntheticMap(null);
+
         $command = new GenerateDynamicBundleCommand(
             $loaderDouble,
-            new BundleGenerator(),
-            new ResourceGenerator(
-                new Filesystem(),
-                $fieldMapper,
-                new ResourceGenerator\ParameterBuilder()
-            ),
-            new DynamicBundleBundleGenerator(),
+            $bundleGenerator,
+            $resourceGenerator,
+            $dynamicBundleGenerator,
             Utils::getSerializerInstance()
         );
 
