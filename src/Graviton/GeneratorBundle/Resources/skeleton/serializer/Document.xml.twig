@@ -51,9 +51,13 @@
     </property>
 {% endfor %}
 
+{%-  set excludeSynthetic = (not (exposeSyntheticFields(json) and not isEmbedded)) | json_encode -%}
+
+    <!-- synthetic fields start -->
 {%- for field in syntheticFields %}
-    <property name="{{ field.name }}" type="{{ field.type }}" accessor-setter="set{{ field.name|capitalize }}" accessor-getter="get{{ field.name|capitalize }}" exclude="true"/>
+    <property name="{{ field.name }}" type="{{ field.type }}" accessor-setter="set{{ field.name|capitalize }}" accessor-getter="get{{ field.name|capitalize }}" exclude="{{ excludeSynthetic }}"/>
 {%- endfor %}
+    <!-- synthetic fields end -->
 
   </class>
 </serializer>

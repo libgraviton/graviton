@@ -50,6 +50,10 @@ class JsonExceptionListener
     {
         $exception = $event->getException();
 
+        if ($this->logger instanceof Logger) {
+            $this->logger->critical($exception);
+        }
+
         // Should return a error 400 bad request
         if ($exception instanceof ValidationException
          || $exception instanceof SyntaxErrorException) {
@@ -74,10 +78,6 @@ class JsonExceptionListener
             if ($exception->getPrevious() instanceof \Exception) {
                 $data['innerMessage'] = $exception->getPrevious()->getMessage();
             }
-        }
-
-        if ($this->logger instanceof Logger) {
-            $this->logger->critical($exception);
         }
 
         $response = new JsonResponse($data);

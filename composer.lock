@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f8ddc61934982a8f6f67b3b94181bdc",
+    "content-hash": "6602ae56d3236915d0514e06976e8588",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
-            "version": "1.1.7",
+            "version": "1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcaeus/mongo-php-adapter.git",
-                "reference": "b4c2f0d30dbddd624d3bc2a27175e6eb602241d4"
+                "reference": "b230e1fabd7e4c5e284619029c667fdfb53b3e3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/b4c2f0d30dbddd624d3bc2a27175e6eb602241d4",
-                "reference": "b4c2f0d30dbddd624d3bc2a27175e6eb602241d4",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/b230e1fabd7e4c5e284619029c667fdfb53b3e3d",
+                "reference": "b230e1fabd7e4c5e284619029c667fdfb53b3e3d",
                 "shasum": ""
             },
             "require": {
@@ -70,20 +70,20 @@
                 "database",
                 "mongodb"
             ],
-            "time": "2019-04-06T08:08:09+00:00"
+            "time": "2019-07-14T21:02:07+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.105.0",
+            "version": "3.107.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3a1159eeb14f707780817bebf73dd3eeeeb710cc"
+                "reference": "ccd3d13ae49a45bdf6a394d701f207c276dbf05a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3a1159eeb14f707780817bebf73dd3eeeeb710cc",
-                "reference": "3a1159eeb14f707780817bebf73dd3eeeeb710cc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ccd3d13ae49a45bdf6a394d701f207c276dbf05a",
+                "reference": "ccd3d13ae49a45bdf6a394d701f207c276dbf05a",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-07-08T18:16:57+00:00"
+            "time": "2019-07-12T18:07:41+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -851,16 +851,16 @@
         },
         {
             "name": "doctrine/mongodb",
-            "version": "1.6.3",
+            "version": "1.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb.git",
-                "reference": "859dad965f50cea9de012b878cf20932f458a311"
+                "reference": "46b6316ae42df121df1b870b2cd4342ce7eeac80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/859dad965f50cea9de012b878cf20932f458a311",
-                "reference": "859dad965f50cea9de012b878cf20932f458a311",
+                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/46b6316ae42df121df1b870b2cd4342ce7eeac80",
+                "reference": "46b6316ae42df121df1b870b2cd4342ce7eeac80",
                 "shasum": ""
             },
             "require": {
@@ -924,7 +924,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2018-07-20T05:09:17+00:00"
+            "time": "2019-07-11T05:36:15+00:00"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1577,16 +1577,16 @@
         },
         {
             "name": "graviton/rql-parser",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/rql-parser.git",
-                "reference": "dd711944005294acf7f4546eff0e34be9f703486"
+                "reference": "8790c3acb2df118f7fc03c8b34b481c246f41407"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/rql-parser/zipball/dd711944005294acf7f4546eff0e34be9f703486",
-                "reference": "dd711944005294acf7f4546eff0e34be9f703486",
+                "url": "https://api.github.com/repos/libgraviton/rql-parser/zipball/8790c3acb2df118f7fc03c8b34b481c246f41407",
+                "reference": "8790c3acb2df118f7fc03c8b34b481c246f41407",
                 "shasum": ""
             },
             "require": {
@@ -1614,7 +1614,7 @@
                 "rest",
                 "rql"
             ],
-            "time": "2019-06-20T12:55:38+00:00"
+            "time": "2019-07-15T06:41:19+00:00"
         },
         {
             "name": "graviton/rql-parser-bundle",
@@ -5254,16 +5254,16 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "37bf68b428850ee26ed7c3be6c26236dd95a95f1"
+                "reference": "279723778c40164bcf984a2df12ff2c6ec5e61c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/37bf68b428850ee26ed7c3be6c26236dd95a95f1",
-                "reference": "37bf68b428850ee26ed7c3be6c26236dd95a95f1",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/279723778c40164bcf984a2df12ff2c6ec5e61c1",
+                "reference": "279723778c40164bcf984a2df12ff2c6ec5e61c1",
                 "shasum": ""
             },
             "require": {
@@ -5316,7 +5316,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2019-04-29T21:11:00+00:00"
+            "time": "2019-07-10T16:13:25+00:00"
         }
     ],
     "packages-dev": [
@@ -5363,16 +5363,16 @@
         },
         {
             "name": "doctrine/data-fixtures",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/data-fixtures.git",
-                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a"
+                "reference": "09b16943b27f3d80d63988d100ff256148c2f78b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
-                "reference": "3a1e2c3c600e615a2dffe56d4ca0875cc5233e0a",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/09b16943b27f3d80d63988d100ff256148c2f78b",
+                "reference": "09b16943b27f3d80d63988d100ff256148c2f78b",
                 "shasum": ""
             },
             "require": {
@@ -5419,7 +5419,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2018-03-20T09:06:36+00:00"
+            "time": "2019-07-10T18:30:35+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -5822,16 +5822,16 @@
         },
         {
             "name": "liip/test-fixtures-bundle",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipTestFixturesBundle.git",
-                "reference": "dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a"
+                "reference": "3fd247f2784bf57a7081e96fce3e535943fa5247"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a",
-                "reference": "dcbe5d79d37b5c18ab2bc6febf9251ed3ddecd1a",
+                "url": "https://api.github.com/repos/liip/LiipTestFixturesBundle/zipball/3fd247f2784bf57a7081e96fce3e535943fa5247",
+                "reference": "3fd247f2784bf57a7081e96fce3e535943fa5247",
                 "shasum": ""
             },
             "require": {
@@ -5890,7 +5890,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2019-07-04T16:14:50+00:00"
+            "time": "2019-07-15T20:59:11+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6511,16 +6511,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.2.4",
+            "version": "8.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "25fe0b5031b24722f66a75ad479a074cccc1bb37"
+                "reference": "c1b8534b3730f20f58600124129197bf1183dc92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/25fe0b5031b24722f66a75ad479a074cccc1bb37",
-                "reference": "25fe0b5031b24722f66a75ad479a074cccc1bb37",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c1b8534b3730f20f58600124129197bf1183dc92",
+                "reference": "c1b8534b3730f20f58600124129197bf1183dc92",
                 "shasum": ""
             },
             "require": {
@@ -6590,7 +6590,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-07-03T08:30:33+00:00"
+            "time": "2019-07-15T06:26:24+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

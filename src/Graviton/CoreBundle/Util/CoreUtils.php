@@ -52,4 +52,33 @@ class CoreUtils
 
         return $list;
     }
+
+    /**
+     * A general function that takes a comma separated string of wildcards,
+     * splits them up, creates regexes from it and checks if a given subjects matches *one*
+     * of those wildcard regexes
+     *
+     * @param array  $wildcards wildcards
+     * @param string $subject   subjects
+     *
+     * @return true if matches, false otherwise
+     */
+    public static function subjectMatchesStringWildcards($wildcards, $subject)
+    {
+        $matches = false;
+
+        if (!is_array($wildcards)) {
+            $wildcards = array_map('trim', explode(",", $wildcards));
+        }
+
+        foreach ($wildcards as $wildcard) {
+            $regex = '@^'.str_replace('*', '(.+)', $wildcard).'$@i';
+            if (preg_match($regex, $subject) === 1) {
+                $matches = true;
+                break;
+            }
+        }
+
+        return $matches;
+    }
 }

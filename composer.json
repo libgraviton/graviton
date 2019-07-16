@@ -129,6 +129,7 @@
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",
                     "graviton.generator.dynamicbundle.dir": "DYNAMICBUNDLE_DIR",
                     "graviton.generator.synthetic_fields": "GENERATOR_SYNTHETIC_FIELDS",
+                    "graviton.generator.synthetic_fields_expose_on": "GENERATOR_SYNTHETIC_FIELDS_EXPOSE_ON",
                     "graviton.generator.ensure_indexes": "GENERATOR_ENSURE_INDEXES",
                     "graviton.core.httpclient.debugRequests": "HTTPCLIENT_DEBUGREQUESTS",
                     "graviton.core.httpclient.debugMaxLength": "HTTPCLIENT_DEBUGREQUESTS_MAXLENGTH",

@@ -24,6 +24,7 @@ parameters:
     graviton.generator.dynamicbundle.dir: null
     #graviton.generator.synthetic_fields: 'int:tenant'
     graviton.generator.synthetic_fields: null
+    graviton.generator.synthetic_fields_expose_on: null
     #graviton.generator.ensure_indexes: hans,test2
     graviton.generator.ensure_indexes: null
 
