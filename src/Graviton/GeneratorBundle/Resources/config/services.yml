@@ -99,10 +99,21 @@ services:
 
     # generators
 
+    ## abstract
+    graviton_generator.generator.abstract:
+        abstract: true
+        calls:
+          -
+            method: setExposeSyntheticMap
+            arguments:
+              - "%graviton.generator.synthetic_fields_expose_on%"
+
     graviton_generator.generator.bundle:
+        parent: graviton_generator.generator.abstract
         class: "%graviton_generator.generator.bundle.class%"
 
     graviton_generator.generator.resource:
+        parent: graviton_generator.generator.abstract
         class: "%graviton_generator.generator.resource.class%"
         arguments:
           - "@filesystem"
@@ -110,6 +121,7 @@ services:
           - "@graviton_generator.resourcegenerator.parameter_builder"
 
     graviton_generator.generator.dynamicbundlebundle:
+        parent: graviton_generator.generator.abstract
         class: "%graviton_generator.generator.dynamicbundlebundle.class%"
 
     # commands
