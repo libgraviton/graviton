@@ -489,4 +489,22 @@ class RestController extends AbstractController
     {
         return $this->securityUtils->getSecurityUser();
     }
+
+    /**
+     * validates user input and if successful returns the request input
+     *
+     * @param Request $request request
+     *
+     * @return object deserialized model
+     */
+    protected function validateAndGetRequestModel(Request $request)
+    {
+        // Get the response object from container
+        $response = $this->getResponse();
+        $model = $this->getModel();
+
+        $this->restUtils->checkJsonRequest($request, $response, $this->getModel());
+
+        return $this->restUtils->validateRequest($request->getContent(), $model);
+    }
 }
