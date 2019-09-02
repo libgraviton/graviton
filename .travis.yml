@@ -40,8 +40,8 @@ php:
   - 7.3
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 script:
