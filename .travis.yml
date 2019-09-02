@@ -1,5 +1,6 @@
 language: php
 sudo: required
+dist: bionic
 cache:
   directories:
     - $HOME/.composer
