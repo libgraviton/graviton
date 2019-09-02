@@ -210,7 +210,7 @@ class VersioningDocumentsTest extends RestTestCase
                 [
                     'op' => 'replace',
                     'path' => '/version',
-                    'value' => $response->headers->get(VersionServiceConstraint::HEADER_NAME)
+                    'value' => (integer) $response->headers->get(VersionServiceConstraint::HEADER_NAME)
                 ]
             ]
         );
