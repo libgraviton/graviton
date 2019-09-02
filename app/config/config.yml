@@ -62,6 +62,7 @@ doctrine_mongodb:
         default:
             retry_connect: 10
             retry_query: 1
+            auto_mapping: true
             mappings:
                 GravitonCoreBundle: ~
                 GravitonRabbitMqBundle: ~
