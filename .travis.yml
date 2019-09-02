@@ -25,8 +25,8 @@ before_script:
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
           docker pull mongo:$MONGODB_VERSION && \
-          (docker run -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION --smallfiles &) && \
-          sleep 10 && \
+          docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION && \
+          sleep 2 && \
           docker ps;
       fi
   # install the module
