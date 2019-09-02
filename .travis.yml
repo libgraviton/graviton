@@ -25,7 +25,7 @@ before_script:
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
           docker pull mongo:$MONGODB_VERSION && \
-          docker run -d --net=host mongo:$MONGODB_VERSION --smallfiles;
+          docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION --smallfiles;
       fi
   # install the module
   - pecl channel-update pecl.php.net
@@ -57,7 +57,7 @@ script:
           fi && \
           vendor/bin/phpunit $COVERAGE --testsuite=$PHPUNIT_SUITE && \
           if [ $COVERAGE ]; then
-            wget https://scrutinizer-ci.com/ocular.phar
+            wget https://scrutinizer-ci.com/ocular.phar && \
             php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
           fi
       fi
