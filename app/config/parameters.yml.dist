@@ -1,5 +1,7 @@
 # This file is a "template" of what your parameters.yml file should look like
 parameters:
+    graviton.core.checkPackageName: 'graviton/graviton'
+
     graviton.mongodb.default.server.db: db
     graviton.mongodb.default.server.uri: ~
 

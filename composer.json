@@ -28,6 +28,7 @@
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
+        "graviton/deployment-service-bundle": "dev-master as 1.0.0",
 
         "symfony/symfony": "~4.3.0",
         "symfony/monolog-bundle": "~3.0",
@@ -124,6 +125,7 @@
                 "env-map": {
                     "graviton.log.path": "LOG_PATH",
                     "graviton.log.level": "LOG_LEVEL",
+                    "graviton.core.checkPackageName": "CHECK_PACKAGE_NAME",
                     "graviton.mongodb.default.server.db": "MONGODB_DB",
                     "graviton.mongodb.default.server.uri": "MONGODB_URI",
                     "graviton.rest.pagination.limit": "PAGINATION_LIMIT",

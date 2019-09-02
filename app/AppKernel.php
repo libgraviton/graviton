@@ -79,6 +79,7 @@ class AppKernel extends Kernel
             new \Graviton\JsonSchemaBundle\GravitonJsonSchemaBundle(),
             new \OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new \Graviton\AnalyticsBundle\GravitonAnalyticsBundle(),
+            new \Graviton\DeploymentServiceBundle\GravitonDeploymentServiceBundle()
         );
 
         if (in_array($this->getEnvironment(), ['dev', 'test'])) {
