@@ -24,8 +24,8 @@ before_script:
   # spin up local mongodb with the version we need
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
-          docker pull mongo:$MONGODB_VERSION
-          docker run -d --net=host mongo:$MONGODB_VERSION --smallfiles
+          docker pull mongo:$MONGODB_VERSION && \
+          docker run -d --net=host mongo:$MONGODB_VERSION --smallfiles;
       fi
   # install the module
   - pecl channel-update pecl.php.net
