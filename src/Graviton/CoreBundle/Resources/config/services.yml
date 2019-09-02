@@ -91,6 +91,14 @@ services:
         -
             name: console.command
 
+    graviton.core.command.checkdeployment:
+        class: Graviton\DeploymentServiceBundle\Command\CheckForNeededDeploymentCommand
+        tags:
+            - { name: console.command }
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '%graviton.core.checkPackageName%'
+
     graviton.core.routing.loader:
       class: "Graviton\\CoreBundle\\Routing\\RouteLoader"
       arguments:

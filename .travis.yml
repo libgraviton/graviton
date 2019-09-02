@@ -1,5 +1,6 @@
 language: php
 sudo: required
+dist: bionic
 cache:
   directories:
     - $HOME/.composer
@@ -23,25 +24,27 @@ before_script:
   # spin up local mongodb with the version we need
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
-          docker pull mongo:$MONGODB_VERSION
-          docker run -d -p 127.0.0.1:27017:27017 mongo:3.6 --smallfiles
+          docker pull mongo:$MONGODB_VERSION && \
+          docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION && \
+          sleep 2 && \
+          docker ps;
       fi
   # install the module
   - pecl channel-update pecl.php.net
   - sleep 5
-  - printf "\n" | pecl install -f mongodb-1.5.3
+  - printf "\n" | pecl install -f mongodb-1.5.5
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
   # install our deps
   - export GENERATOR_SYNTHETIC_FIELDS="int:clientId"
-  - composer install --no-interaction --ignore-platform-reqs --no-scripts --profile --apcu-autoloader
+  - composer install --no-interaction --ignore-platform-reqs --profile
 php:
   - 7.3
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 script:
@@ -56,7 +59,7 @@ script:
           fi && \
           vendor/bin/phpunit $COVERAGE --testsuite=$PHPUNIT_SUITE && \
           if [ $COVERAGE ]; then
-            wget https://scrutinizer-ci.com/ocular.phar
+            wget https://scrutinizer-ci.com/ocular.phar && \
             php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
           fi
       fi
