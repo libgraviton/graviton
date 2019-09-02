@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25205d244cc2ae2d859a0059f01ccec7",
+    "content-hash": "08ce36a038552baa6d00fb3b752d3684",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1401,7 +1401,7 @@
         },
         {
             "name": "graviton/deployment-service-bundle",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/DeploymentServiceBundle.git",
@@ -7448,18 +7448,9 @@
             "time": "2019-08-24T08:43:50+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "1.0.0",
-            "alias_normalized": "1.0.0.0",
-            "version": "9999999-dev",
-            "package": "graviton/deployment-service-bundle"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "graviton/deployment-service-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -28,7 +28,7 @@
         "graviton/php-proxy": "^1.2.0",
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
-        "graviton/deployment-service-bundle": "dev-master as 1.0.0",
+        "graviton/deployment-service-bundle": "~0",
 
         "symfony/symfony": "~4.3.0",
         "symfony/monolog-bundle": "~3.0",
