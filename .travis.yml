@@ -24,7 +24,7 @@ before_script:
   - >
       if [ "$PHPUNIT_SUITE" = "integration" ]; then
           docker pull mongo:$MONGODB_VERSION
-          docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION --smallfiles
+          docker run -d --net=host mongo:$MONGODB_VERSION --smallfiles
       fi
   # install the module
   - pecl channel-update pecl.php.net
