@@ -57,11 +57,9 @@ doctrine_mongodb:
     connections:
         default:
             server: "%mongodb.default.server.uri%"
-            options: { connect: true }
+            options: {}
     document_managers:
         default:
-            retry_connect: 10
-            retry_query: 1
             auto_mapping: true
             mappings:
                 GravitonCoreBundle: ~
