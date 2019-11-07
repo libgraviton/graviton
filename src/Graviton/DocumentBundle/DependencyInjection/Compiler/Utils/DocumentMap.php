@@ -209,6 +209,8 @@ class DocumentMap
      */
     private function loadDoctrineClassMap(Finder $finder)
     {
+
+
         $classMap = [];
         foreach ($finder as $file) {
             $classMap = array_merge(
@@ -224,6 +226,8 @@ class DocumentMap
                 return (!isset($classEntry['type']) || $classEntry['type'] != 'mappedSuperclass');
             }
         );
+
+        var_dump($classMap); die;
 
         return $classMap;
     }

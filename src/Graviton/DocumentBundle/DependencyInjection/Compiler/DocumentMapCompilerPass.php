@@ -9,6 +9,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -58,6 +59,16 @@ class DocumentMapCompilerPass implements CompilerPassInterface
                 $dynamicBundleDir = null;
             }
         }
+
+        $registry = $container->get('doctrine_mongodb');;
+        foreach ($registry->getManagers() as $dm) {
+            /** @var DocumentManager $dm */
+            $classes = $dm->getMetadataFactory()->getAllMetadata();
+            var_dump($classes); die;
+            $dm->getHydratorFactory()->generateHydratorClasses($classes);
+        }
+
+        var_dump($registry); die;
 
         $documentMap = new DocumentMap(
             (new Finder())

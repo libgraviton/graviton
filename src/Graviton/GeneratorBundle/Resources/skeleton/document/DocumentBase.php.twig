@@ -9,9 +9,9 @@ namespace {{ base }}Document;
  * {{ base }}Document\{{ document }}Base
  *
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
-* @license  https://opensource.org/licenses/MIT MIT License
-* @link     http://swisscom.ch
-*/
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ */
 abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface, \ArrayAccess{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
 
@@ -64,17 +64,17 @@ protected $deletedDate;
 
 {% for field in fields %}
     /**
-    {% if 'Graviton' in field.type %}
+    {%- if 'Graviton' in field.type %}
         * @var \{{ field.type }} ${{ field.fieldName }}
-    {% else %}
+    {%- else %}
         * @var {{ field.type }} ${{ field.fieldName }}
-    {% endif %}
+    {%- endif %}
     */
-    {% if field.type == 'array' %}
+    {%- if field.type == 'array' %}
         protected ${{ field.fieldName }} = [];
-    {% else %}
+    {%- else %}
         protected ${{ field.fieldName }};
-    {% endif %}
+    {%- endif %}
 
 {% endfor %}
 
