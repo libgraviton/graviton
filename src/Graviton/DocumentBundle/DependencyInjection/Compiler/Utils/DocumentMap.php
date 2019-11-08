@@ -29,23 +29,19 @@ class DocumentMap
     /**
      * Constructor
      *
-     * @param Finder $doctrineFinder   Doctrine mapping finder
      * @param Finder $serializerFinder Serializer mapping finder
      * @param Finder $schemaFinder     Schema finder
      */
     public function __construct(
-        Finder $doctrineFinder,
         Finder $serializerFinder,
         Finder $schemaFinder
     ) {
-        $doctrineMap = $this->loadDoctrineClassMap($doctrineFinder);
         $serializerMap = $this->loadSerializerClassMap($serializerFinder);
         $schemaMap = $this->loadSchemaClassMap($schemaFinder);
 
-        foreach ($doctrineMap as $className => $doctrineMapping) {
+        foreach ($serializerMap as $className => $mapping) {
             $this->mappings[$className] = [
-                'doctrine' => $doctrineMap[$className],
-                'serializer' => isset($serializerMap[$className]) ? $serializerMap[$className] : null,
+                'serializer' => $mapping,
                 'schema' => isset($schemaMap[$className]) ? $schemaMap[$className] : null,
             ];
         }
@@ -68,7 +64,6 @@ class DocumentMap
 
         return $this->documents[$className] = $this->processDocument(
             $className,
-            $this->mappings[$className]['doctrine'],
             $this->mappings[$className]['serializer'],
             $this->mappings[$className]['schema']
         );
@@ -96,22 +91,9 @@ class DocumentMap
      */
     private function processDocument(
         $className,
-        array $doctrineMapping,
         \DOMElement $serializerMapping = null,
         array $schemaMapping = null
     ) {
-        if ($serializerMapping === null) {
-            $serializerFields = [];
-        } else {
-            $serializerFields = array_reduce(
-                $this->getSerializerFields($serializerMapping),
-                function (array $fields, array $field) {
-                    $fields[$field['fieldName']] = $field;
-                    return $fields;
-                },
-                []
-            );
-        }
 
         if ($schemaMapping === null) {
             $schemaFields = [];
@@ -120,19 +102,16 @@ class DocumentMap
         }
 
         $fields = [];
-        foreach ($this->getDoctrineFields($doctrineMapping) as $doctrineField) {
-            $serializerField = isset($serializerFields[$doctrineField['name']]) ?
-                $serializerFields[$doctrineField['name']] :
-                null;
-            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
-                $schemaFields[$doctrineField['name']] :
+        foreach ($this->getSerializerFields($serializerMapping) as $field) {
+            $schemaField = isset($schemaFields[$field['name']]) ?
+                $schemaFields[$field['name']] :
                 null;
 
-            if ($doctrineField['type'] === 'collection') {
+            if ($field['isCollection']) {
                 $fields[] = new ArrayField(
-                    $serializerField === null ? 'array<string>' : $serializerField['fieldType'],
-                    $doctrineField['name'],
-                    $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                    empty($field['type']) ? 'array<string>' : $field['type'],
+                    $field['name'],
+                    empty($field['exposedName']) ? $field['name'] : $field['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
@@ -140,53 +119,58 @@ class DocumentMap
                 );
             } else {
                 $fields[] = new Field(
-                    $doctrineField['type'],
-                    $doctrineField['name'],
-                    $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                    $field['type'],
+                    $field['name'],
+                    empty($field['exposedName']) ? $field['name'] : $field['exposedName'],
                     !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                     ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
-                    $serializerField === null ? false : $serializerField['searchable'],
+                    empty($field['searchable']) ? false : $field['searchable'],
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
                     !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
             }
         }
-        foreach ($this->getDoctrineEmbedOneFields($doctrineMapping) as $doctrineField) {
-            $serializerField = isset($serializerFields[$doctrineField['name']]) ?
-                $serializerFields[$doctrineField['name']] :
+
+        /*
+        foreach ($this->getDoctrineEmbedOneFields($doctrineMapping) as $field) {
+            $field = isset($serializerFields[$field['name']]) ?
+                $serializerFields[$field['name']] :
                 null;
-            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
-                $schemaFields[$doctrineField['name']] :
+            $schemaField = isset($schemaFields[$field['name']]) ?
+                $schemaFields[$field['name']] :
                 null;
 
             $fields[] = new EmbedOne(
-                $this->getDocument($doctrineField['type']),
-                $doctrineField['name'],
-                $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                $this->getDocument($field['type']),
+                $field['name'],
+                $field === null ? $field['name'] : $field['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
                 !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
             );
         }
-        foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $doctrineField) {
-            $serializerField = isset($serializerFields[$doctrineField['name']]) ?
-                $serializerFields[$doctrineField['name']] :
+        */
+        /*
+        foreach ($this->getDoctrineEmbedManyFields($doctrineMapping) as $field) {
+            $field = isset($serializerFields[$field['name']]) ?
+                $serializerFields[$field['name']] :
                 null;
-            $schemaField = isset($schemaFields[$doctrineField['name']]) ?
-                $schemaFields[$doctrineField['name']] :
+            $schemaField = isset($schemaFields[$field['name']]) ?
+                $schemaFields[$field['name']] :
                 null;
 
             $fields[] = new EmbedMany(
-                $this->getDocument($doctrineField['type']),
-                $doctrineField['name'],
-                $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
+                $this->getDocument($field['type']),
+                $field['name'],
+                $field === null ? $field['name'] : $field['exposedName'],
                 !isset($schemaField['readOnly']) ? false : $schemaField['readOnly'],
                 ($schemaField === null || !isset($schemaField['required'])) ? false : $schemaField['required'],
                 !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
                 !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
             );
         }
+        */
 
         $doc = new Document($className, $fields);
 
@@ -199,37 +183,6 @@ class DocumentMap
         }
 
         return $doc;
-    }
-
-    /**
-     * Load doctrine class map
-     *
-     * @param Finder $finder Mapping finder
-     * @return array
-     */
-    private function loadDoctrineClassMap(Finder $finder)
-    {
-
-
-        $classMap = [];
-        foreach ($finder as $file) {
-            $classMap = array_merge(
-                $classMap,
-                Yaml::parseFile($file)
-            );
-        }
-
-        // filter out superclasses
-        $classMap = array_filter(
-            $classMap,
-            function ($classEntry) {
-                return (!isset($classEntry['type']) || $classEntry['type'] != 'mappedSuperclass');
-            }
-        );
-
-        var_dump($classMap); die;
-
-        return $classMap;
     }
 
     /**
@@ -323,8 +276,9 @@ class DocumentMap
         return array_map(
             function (\DOMElement $element) {
                 return [
-                    'fieldName'   => $element->getAttribute('name'),
-                    'fieldType'   => $this->getSerializerFieldType($element),
+                    'name'   => $element->getAttribute('name'),
+                    'type'   => $this->getSerializerFieldType($element),
+                    'isCollection'=> $this->getSerializerFieldIsCollection($element),
                     'exposedName' => $element->getAttribute('serialized-name') ?: $element->getAttribute('name'),
                     'readOnly'    => $element->getAttribute('read-only') === 'true',
                     'searchable'  => (int) $element->getAttribute('searchable')
@@ -350,6 +304,13 @@ class DocumentMap
 
         $type = $xpath->query('type', $field)->item(0);
         return $type === null ? null : $type->nodeValue;
+    }
+
+    private function getSerializerFieldIsCollection(\DOMElement $field)
+    {
+        $type = $this->getSerializerFieldType($field);
+
+        return false;
     }
 
     /**

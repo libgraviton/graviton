@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Event;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

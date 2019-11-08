@@ -60,21 +60,7 @@ class DocumentMapCompilerPass implements CompilerPassInterface
             }
         }
 
-        $registry = $container->get('doctrine_mongodb');;
-        foreach ($registry->getManagers() as $dm) {
-            /** @var DocumentManager $dm */
-            $classes = $dm->getMetadataFactory()->getAllMetadata();
-            var_dump($classes); die;
-            $dm->getHydratorFactory()->generateHydratorClasses($classes);
-        }
-
-        var_dump($registry); die;
-
         $documentMap = new DocumentMap(
-            (new Finder())
-                ->in($dirs)
-                ->path('Resources/config/doctrine')
-                ->name('*.mongodb.yml'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/serializer')

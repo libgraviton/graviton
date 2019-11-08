@@ -6,11 +6,10 @@
 namespace Graviton\TestBundle\Test;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Graviton\AppKernel;
 use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Graviton\MongoDB\Fixtures\FixturesTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

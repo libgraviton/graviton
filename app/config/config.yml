@@ -61,10 +61,10 @@ doctrine_mongodb:
     document_managers:
         default:
             auto_mapping: true
-            mappings:
-                GravitonCoreBundle: ~
-                GravitonRabbitMqBundle: ~
-                GravitonI18nBundle: ~
+            #mappings:
+                #    GravitonCoreBundle: ~
+                #GravitonRabbitMqBundle: ~
+            #GravitonI18nBundle: ~
             metadata_cache_driver:
                 type: "service"
                 id: "%graviton.cache.provider.service_id_local%"
