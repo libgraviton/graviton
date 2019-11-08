@@ -452,7 +452,7 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
 
         $this->addService(
@@ -468,7 +468,7 @@ class ResourceGenerator extends AbstractGenerator
             ),
             $this->repositoryFactoryService,
             'getRepository',
-            'Doctrine\ODM\MongoDB\DocumentRepository'
+            'Doctrine\ODM\MongoDB\Repository\DocumentRepository'
         );
     }
 
