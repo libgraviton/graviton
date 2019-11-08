@@ -61,6 +61,10 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         }
 
         $documentMap = new DocumentMap(
+            Finder::create()
+                  ->directories()
+                  ->in($dirs)
+                  ->name('Document'),
             (new Finder())
                 ->in($dirs)
                 ->path('Resources/config/serializer')
