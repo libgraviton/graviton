@@ -92,8 +92,7 @@ class GravitonTestCase extends WebTestCase
         return $this->loadFixtures(
             $classNames,
             false,
-            null,
-            'doctrine_mongodb'
+            'doctrine_mongodb.odm.default_document_manager'
         );
     }
 

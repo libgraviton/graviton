@@ -63,7 +63,7 @@
         "johnkary/phpunit-speedtrap": "~3",
 
         "graviton/test-services-bundle": "^2.4.1",
-        "graviton/mongodb-fixtures-bundle": "~1",
+        "graviton/mongodb-fixtures-bundle": "dev-develop",
         "libgraviton/codesniffer": "~2",
 
         "symfony/phpunit-bridge": "^4.0",
