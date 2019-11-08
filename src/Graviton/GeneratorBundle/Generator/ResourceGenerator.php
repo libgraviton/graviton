@@ -345,6 +345,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateDocument($parameters, $dir, $document)
     {
         // doctrine mapping normal class
+        /*
         $this->renderFile(
             'document/Document.mongodb.yml.twig',
             $dir . '/Resources/config/doctrine/' . $document . '.mongodb.yml',
@@ -363,6 +364,7 @@ class ResourceGenerator extends AbstractGenerator
                 ]
             )
         );
+        */
 
         $this->renderFile(
             'document/Document.php.twig',
