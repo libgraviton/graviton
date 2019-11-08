@@ -69,7 +69,7 @@ class AnalyticsManager
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->documentManager = $documentManager;
-        $this->connection = $documentManager->getConnection();
+        $this->connection = $documentManager->getClient();
         $this->databaseName = $databaseName;
         $this->dateConverter = $dateConverter;
         $this->eventDispatcher = $eventDispatcher;
