@@ -140,7 +140,7 @@ class GeneratorExtension implements ExtensionInterface
         );
     }
 
-    public function getDoctrineIndexesAnnotation($indexes, $ensureIndexes = null, $textIndexes = null)
+    public function getDoctrineIndexesAnnotation($collectionName, $indexes, $ensureIndexes = null, $textIndexes = null)
     {
         if (!is_array($indexes)) {
             $indexes = [];
@@ -154,6 +154,10 @@ class GeneratorExtension implements ExtensionInterface
             array_merge($indexes, $ensureIndexes)
         );
 
+        // text index?
+        if (!empty($textIndexes)) {
+            $indexes[] = $this->getDoctrineTextIndexAnnotation($collectionName, $textIndexes);
+        }
         return '@ODM\Indexes({'.implode(', ', $indexes).'})';
     }
 
@@ -162,6 +166,31 @@ class GeneratorExtension implements ExtensionInterface
             ' @ODM\Index(keys={"%s"="asc"}, name="%s", background=true)',
             $index,
             $index
+        );
+    }
+
+    private function getDoctrineTextIndexAnnotation($collectionName, $textIndexes) {
+        $options = [
+            'default_language' => 'de',
+            'language_override' => 'none',
+            'weights' => $textIndexes
+        ];
+
+        $keys = array_map(
+            function ($fieldName) {
+                return sprintf(
+                    '"%s"="text"',
+                    $fieldName
+                );
+            },
+            array_keys($textIndexes)
+        );
+
+        return sprintf(
+            ' @ODM\Index(keys={%s}, name="%s", background=true, options=%s)',
+            implode(', ', $keys),
+            $collectionName.'Text',
+            json_encode($options)
         );
     }
 

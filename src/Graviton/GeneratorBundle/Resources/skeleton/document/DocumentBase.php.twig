@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @link     http://swisscom.ch
  *
  * @ODM\MappedSuperclass
- * {{ doctrineIndexesAnnotation(indexes, ensureIndexes, textIndexes) }}
  */
 abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\ExtRefHoldingDocumentInterface, \ArrayAccess{% if isrecordOriginFlagSet %}, \Graviton\RestBundle\Model\RecordOriginInterface{% endif %}
 {
