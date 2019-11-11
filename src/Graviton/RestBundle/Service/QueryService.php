@@ -143,7 +143,7 @@ class QueryService
 
             // count queryBuilder
             $countQueryBuilder = clone $this->queryBuilder;
-            $countQueryBuilder->count();
+            $countQueryBuilder->count()->limit(0)->skip(0);
             $totalCount = $countQueryBuilder->getQuery()->execute();
 
             $records = array_values($this->queryBuilder->getQuery()->execute()->toArray());
