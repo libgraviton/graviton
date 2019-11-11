@@ -12,9 +12,9 @@ use Graviton\RqlParser\Query;
 use Graviton\SchemaBundle\SchemaUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -47,13 +47,13 @@ class LinkHeaderResponseListener
     /**
      * add our Link header items
      *
-     * @param FilterResponseEvent      $event      response listener event
+     * @param ResponseEvent            $event      response listener event
      * @param string                   $eventName  event name
      * @param EventDispatcherInterface $dispatcher dispatcher
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event, $eventName, EventDispatcherInterface $dispatcher)
+    public function onKernelResponse(ResponseEvent $event, $eventName, EventDispatcherInterface $dispatcher)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
