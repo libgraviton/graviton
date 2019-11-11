@@ -43,7 +43,7 @@ class ExtReferenceType extends Type
     public static function convertToDb($value)
     {
         return $value instanceof ExtReference ?
-            \MongoDBRef::create($value->getRef(), $value->getId()) :
+            ['$ref' => $value->getRef(), '$id' => $value->getId()] :
             null;
     }
 
