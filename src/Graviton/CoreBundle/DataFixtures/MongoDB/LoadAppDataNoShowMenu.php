@@ -26,6 +26,8 @@ class LoadAppDataNoShowMenu implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
+        $manager->clear();
+
         $tabletApp = new App();
         $tabletApp->setId('otherapp');
         $tabletApp->setName(Translatable::createFromOriginalString('otherApp'));
