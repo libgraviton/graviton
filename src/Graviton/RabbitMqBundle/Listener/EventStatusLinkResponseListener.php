@@ -11,6 +11,7 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverter;
 use Graviton\LinkHeaderParser\LinkHeader;
 use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
+use MongoDB\BSON\Regex;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -328,7 +329,6 @@ class EventStatusLinkResponseListener
         // results in = /((\*|document)+)\.((\*|dude)+)\.((\*|config)+)\.((\*|update)+)/
         $routingArgs = explode('.', $queueEvent->getEvent());
         $regex =
-            '/'.
             implode(
                 '\.',
                 array_map(
@@ -337,15 +337,14 @@ class EventStatusLinkResponseListener
                     },
                     $routingArgs
                 )
-            ).
-            '/';
+            );
 
         // look up workers by class name
         $qb = $this->documentManager->createQueryBuilder($this->eventWorkerClassname);
         $data = $qb
             ->select('id')
             ->field('subscription.event')
-            ->equals(new \MongoRegex($regex))
+            ->equals(new Regex($regex))
             ->getQuery()
             ->execute()
             ->toArray();
