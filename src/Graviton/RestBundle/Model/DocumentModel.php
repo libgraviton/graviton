@@ -142,7 +142,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $this->manager->persist($this->dispatchPrePersistEvent($entity));
 
         if ($doFlush) {
-            $this->manager->flush($entity);
+            $this->manager->flush([$entity]);
         }
 
         // Fire ModelEvent
@@ -237,7 +237,7 @@ class DocumentModel extends SchemaModel implements ModelInterface
         $entity = $this->manager->merge($entity);
 
         $this->manager->persist($entity);
-        $this->manager->flush($entity);
+        $this->manager->flush([$entity]);
         $this->manager->detach($entity);
 
         // Fire ModelEvent
