@@ -63,6 +63,7 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
                     }
 
                     // cheap attempt for arrays..
+                    /*
                     if (is_array($val) && isset($val[0]->$refName) && isset($val[0]->$idName)) {
                         $relRecs = [];
                         foreach ($val as $subval) {
@@ -72,13 +73,14 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
                         $setterFunction = 'set'.ucfirst($key);
                         $thisRecord->$setterFunction($relRecs);
                     }
+                    */
                 }
 
                 $manager->persist($thisRecord);
                 $manager->flush();
 
                 if (isset($record->id) && strlen($record->id) > 0) {
-                    $this->addReference('{{ document }}-'.$record->id, $thisRecord);
+                    //$this->addReference('{{ document }}-'.$record->id, $thisRecord);
                 }
 
             }
