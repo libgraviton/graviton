@@ -173,7 +173,7 @@ class DocumentMap
                 'name' => $propertyName
             ];
 
-            if ($classProperty instanceof ODM\Field) {
+            if ($classProperty instanceof ODM\Field || $classProperty instanceof ODM\Id) {
                 $doctrineField['type'] = $classProperty->type;
 
                 $serializerField = isset($serializerFields[$doctrineField['name']]) ?

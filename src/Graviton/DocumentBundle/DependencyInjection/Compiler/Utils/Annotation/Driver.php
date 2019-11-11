@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 
@@ -45,6 +46,7 @@ class Driver extends AnnotationDriver
         $map = [];
 
         foreach ($refClass->getProperties() as $property) {
+            $idField = $this->reader->getPropertyAnnotation($property, Id::class);
             $field = $this->reader->getPropertyAnnotation($property, Field::class);
             $embedOne = $this->reader->getPropertyAnnotation($property, EmbedOne::class);
             $embedMany = $this->reader->getPropertyAnnotation($property, EmbedMany::class);
@@ -53,6 +55,8 @@ class Driver extends AnnotationDriver
 
             if (!is_null($field)) {
                 $map[$property->getName()] = $field;
+            } else if (!is_null($idField)) {
+                $map[$property->getName()] = $idField;
             } else if (!is_null($embedOne)) {
                 $map[$property->getName()] = $embedOne;
             } else if (!is_null($embedMany)) {
