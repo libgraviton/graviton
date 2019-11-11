@@ -18,8 +18,6 @@ framework:
     validation:
         enabled:              true
         enable_annotations:   false
-    templating:
-        enabled: false
     default_locale: "%locale%"
     trusted_hosts: ~
     session:
