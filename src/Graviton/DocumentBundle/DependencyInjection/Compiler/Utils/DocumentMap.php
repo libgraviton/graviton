@@ -6,14 +6,8 @@
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Annotation\Driver;
-use Graviton\DocumentBundle\Entity\Translatable;
-use Graviton\DocumentBundle\Types\TypeLoader;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Yaml;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -37,6 +31,7 @@ class DocumentMap
 
     private $relevantAnnotations = [
         ODM\Document::class,
+        ODM\InheritanceType::class,
         ODM\Id::class,
         ODM\Field::class,
         ODM\Indexes::class,
@@ -87,7 +82,6 @@ class DocumentMap
             iterator_to_array($classFinder)
         );
 
-        //$annotationReader = new SimpleAnnotationReader();
         $annotationReader = new AnnotationReader();
         $annotationDriver = new Driver($annotationReader, $directories);
 
@@ -235,7 +229,7 @@ class DocumentMap
                     $schemaFields[$doctrineField['name']] :
                     null;
 
-                $fields[] = new EmbedOne(
+                $fields[] = new EmbedMany(
                     $this->getDocument($doctrineField['type']),
                     $doctrineField['name'],
                     $serializerField === null ? $doctrineField['name'] : $serializerField['exposedName'],
