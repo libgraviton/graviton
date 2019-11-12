@@ -5432,12 +5432,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/mongodb-fixtures-bundle.git",
-                "reference": "03898d0f79ee7c462efd0ac2f281ff1384205cfd"
+                "reference": "21179f4caa260c5ecd0244f06b3c1e9acd953fdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/03898d0f79ee7c462efd0ac2f281ff1384205cfd",
-                "reference": "03898d0f79ee7c462efd0ac2f281ff1384205cfd",
+                "url": "https://api.github.com/repos/libgraviton/mongodb-fixtures-bundle/zipball/21179f4caa260c5ecd0244f06b3c1e9acd953fdd",
+                "reference": "21179f4caa260c5ecd0244f06b3c1e9acd953fdd",
                 "shasum": ""
             },
             "require": {
@@ -5455,7 +5455,7 @@
             ],
             "description": "A drop-in replacement for liip/test-fixtures-bundle that is dependency free and only focuses on MongoDB ODM fixtures",
             "homepage": "https://github.com/libgraviton/mongodb-fixtures-bundle",
-            "time": "2019-11-07T10:42:20+00:00"
+            "time": "2019-11-12T09:00:24+00:00"
         },
         {
             "name": "graviton/test-services-bundle",
