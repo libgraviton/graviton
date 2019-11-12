@@ -771,7 +771,6 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateFixtures(array $parameters, $dir, $document)
     {
         $parameters['fixtures_json'] = addcslashes(json_encode($this->json->getFixtures()), "'");
-        $parameters['fixtureOrder'] = $this->json->getFixtureOrder();
 
         $this->renderFile(
             'fixtures/LoadFixtures.php.twig',

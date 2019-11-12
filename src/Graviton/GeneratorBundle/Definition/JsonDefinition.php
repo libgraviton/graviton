@@ -192,22 +192,6 @@ class JsonDefinition
     }
 
     /**
-     * Returns the order number at which order this fixture should be loaded.
-     * this is needed if we have relations/references between the fixtures..
-     *
-     * @return int order
-     */
-    public function getFixtureOrder()
-    {
-        if ($this->def->getService() === null ||
-            $this->def->getService()->getFixtureOrder() === null) {
-            return 100;
-        }
-
-        return $this->def->getService()->getFixtureOrder();
-    }
-
-    /**
      * Returns a router base path. false if default should be used.
      *
      * @return string router base, i.e. /bundle/name/
