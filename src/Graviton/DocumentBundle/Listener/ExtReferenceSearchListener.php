@@ -104,7 +104,8 @@ class ExtReferenceSearchListener
      * Get DbRef from extref URL
      *
      * @param string $url Extref URL representation
-     * @return object
+     *
+     * @return array extref as array
      */
     private function getDbRefValue($url)
     {
@@ -114,10 +115,10 @@ class ExtReferenceSearchListener
 
         try {
             $extref = $this->converter->getExtReference($url);
-            return \MongoDBRef::create($extref->getRef(), $extref->getId());
+            return ['$ref' => $extref->getRef(), '$id' => $extref->getId()];
         } catch (\InvalidArgumentException $e) {
             //make up some invalid refs to ensure we find nothing if an invalid url was given
-            return \MongoDBRef::create(false, false);
+            return [];
         }
     }
 
