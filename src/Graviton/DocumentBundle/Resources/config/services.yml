@@ -128,3 +128,10 @@ services:
     - "@graviton.document.service.dateconverter"
     tags:
     - name: jms_serializer.subscribing_handler
+
+  graviton.document.serializer.subscriber.doctrineproxy:
+    class: "%graviton.document.serializer.subscriber.doctrineproxy.class%"
+    tags:
+      - name: jms_serializer.event_subscriber
+        type: Graviton\DocumentBundle\Entity\ExtReference
+        format: json
