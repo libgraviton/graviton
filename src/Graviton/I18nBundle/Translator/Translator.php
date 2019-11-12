@@ -6,11 +6,11 @@
 namespace Graviton\I18nBundle\Translator;
 
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\MongoDB\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DocumentBundle\Entity\Translatable;
 use Graviton\I18nBundle\Document\Language;
 use Graviton\I18nBundle\Document\Translation;
+use MongoDB\Collection;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -152,15 +152,20 @@ class Translator
         unset($translations[$this->defaultLanguage]);
 
         foreach ($translations as $language => $translation) {
-            $this->translationCollection->upsert(
+            $this->translationCollection->updateOne(
                 [
                     'original' => $original,
                     'language' => $language
                 ],
                 [
-                    'original' => $original,
-                    'language' => $language,
-                    'localized' => $translation
+                    '$set' => [
+                        'original' => $original,
+                        'language' => $language,
+                        'localized' => $translation
+                    ]
+                ],
+                [
+                    'upsert' => true
                 ]
             );
         }
