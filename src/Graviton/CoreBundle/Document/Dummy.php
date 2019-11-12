@@ -22,7 +22,7 @@ class Dummy
     /**
      * @var string
      *
-     * @ODM\Id(strategy="UUID")
+     * @ODM\Id(strategy="UUID", type="id")
      */
     private $id;
 

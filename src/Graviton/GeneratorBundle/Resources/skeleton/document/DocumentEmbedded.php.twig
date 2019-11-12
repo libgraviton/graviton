@@ -27,10 +27,9 @@ class {{ document }}Embedded extends {{ document }}Base
     /**
     * @var ObjectId $id
     *
-    * @ODM\Id(strategy="AUTO", type="string")
+    * @ODM\Id(type="id")
     */
     protected $realId;
-
 
     /**
     * Get id
@@ -63,5 +62,4 @@ class {{ document }}Embedded extends {{ document }}Base
     {
         return $this->realId;
     }
-
 }

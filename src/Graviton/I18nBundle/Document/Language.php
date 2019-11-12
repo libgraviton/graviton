@@ -22,7 +22,7 @@ class Language
     /**
      * @var string $id
      *
-     * @ODM\Id(strategy="UUID", type="string")
+     * @ODM\Id(strategy="UUID", type="id")
      */
     protected $id;
 

@@ -20,7 +20,7 @@ class Translation
     /**
      * @var string $id
      *
-     * @ODM\Id(strategy="AUTO", type="string")
+     * @ODM\Id(strategy="AUTO", type="id")
      */
     private $id;
 

@@ -23,7 +23,7 @@ class {{ document }} extends {{ document }}Base
     /**
     * @var mixed $id
     *
-    * @ODM\Id(strategy="UUID", type="string")
+    * @ODM\Id(type="id")
     */
     protected $id;
 
@@ -48,5 +48,4 @@ class {{ document }} extends {{ document }}Base
     {
         $this->id = $id;
     }
-
 }
