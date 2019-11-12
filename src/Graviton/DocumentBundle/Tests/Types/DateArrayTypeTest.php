@@ -7,6 +7,7 @@ namespace Graviton\DocumentBundle\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
 use Graviton\DocumentBundle\Types\DateArrayType;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * DateArrayType test
@@ -57,7 +58,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
             $this->type->convertToDatabaseValue([(object) []])
         );
         $this->assertEquals(
-            [new \MongoDate(strtotime('2015-10-02T15:04:00+06:00'))],
+            [new UTCDateTime(strtotime('2015-10-02T15:04:00+06:00'))],
             $this->type->convertToDatabaseValue(['2015-10-02T15:04:00+06:00'])
         );
     }
@@ -90,7 +91,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            [new \MongoDate(strtotime('2015-10-02T15:04:00+06:00'))],
+            [new UTCDateTime(strtotime('2015-10-02T15:04:00+06:00'))],
             ['2015-10-02T15:04:00+06:00'],
             $this->type->closureToMongo()
         );
