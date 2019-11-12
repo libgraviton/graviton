@@ -5,7 +5,6 @@ namespace {{ base }}DataFixtures\MongoDB;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Graviton\MongoDB\Fixtures\FixtureInterface;
-//use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -50,6 +49,8 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
         $refName = '$ref';
         $idName = '$id';
 
+        $manager->clear();
+
         if (count($this->fixtures) > 0) {
             foreach ($this->fixtures as $record) {
 
@@ -61,32 +62,12 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
                         $setterFunction = 'set'.ucfirst($key);
                         $thisRecord->$setterFunction($this->getReference($val->$refName.'-'.$val->$idName));
                     }
-
-                    // cheap attempt for arrays..
-                    /*
-                    if (is_array($val) && isset($val[0]->$refName) && isset($val[0]->$idName)) {
-                        $relRecs = [];
-                        foreach ($val as $subval) {
-                            $relRecs[] = $this->getReference($subval->$refName.'-'.$subval->$idName);
-                        }
-
-                        $setterFunction = 'set'.ucfirst($key);
-                        $thisRecord->$setterFunction($relRecs);
-                    }
-                    */
                 }
 
                 $manager->persist($thisRecord);
                 $manager->flush();
-
-                if (isset($record->id) && strlen($record->id) > 0) {
-                    //$this->addReference('{{ document }}-'.$record->id, $thisRecord);
-                }
-
             }
         }
-
-        $manager->flush();
     }
 
     public function getObjectFromRecord($record)
@@ -96,10 +77,4 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
             '{{ base }}Document\{{ document }}'
         );
     }
-
-    public function getOrder()
-    {
-        return {{ fixtureOrder }};
-    }
-
 }
