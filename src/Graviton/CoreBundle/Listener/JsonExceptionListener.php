@@ -11,7 +11,7 @@ namespace Graviton\CoreBundle\Listener;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 
@@ -42,11 +42,11 @@ class JsonExceptionListener
     /**
      * Should not handle Validation Exceptions and only service exceptions
      *
-     * @param GetResponseForExceptionEvent $event Sf Event
+     * @param ExceptionEvent $event Sf Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         $exception = $event->getException();
 
