@@ -32,7 +32,7 @@ before_script:
   # install the module
   - pecl channel-update pecl.php.net
   - sleep 5
-  - printf "\n" | pecl install -f mongodb-1.5.5
+  - printf "\n" | pecl install -f mongodb-$EXTMONGODB_VERSION
   # memory_limit
   - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
   - php -i | grep -A 4 mongo
@@ -43,8 +43,9 @@ php:
   - 7.3
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial EXTMONGODB_VERSION=1.5.5
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.5.5
+    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.0
     - COMPOSER_CHECK=true PHPUNIT=false
     - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
 script:
