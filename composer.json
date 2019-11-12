@@ -103,16 +103,12 @@
         ]
     },
     "config": {
-        "platform": {"ext-mongo": "1.6.14"},
         "bin-dir": "vendor/bin"
     },
     "bin": ["bin/console"],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
-        "branch-alias": {
-            "dev-3.0-dev": "3.0-dev"
-        },
         "symfony-app-dir": "./bin",
         "symfony-web-dir": "./public",
         "incenteev-parameters": [
