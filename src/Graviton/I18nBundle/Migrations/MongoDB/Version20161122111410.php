@@ -6,7 +6,7 @@
 namespace Graviton\I18nBundle\Migrations\MongoDB;
 
 use AntiMattr\MongoDB\Migrations\AbstractMigration;
-use Doctrine\MongoDB\Database;
+use MongoDB\Database;
 
 /**
  * Migrate domain_1_locale_1_original_1 index
@@ -39,10 +39,10 @@ class Version20161122111410 extends AbstractMigration
      */
     public function up(Database $db)
     {
-        $collection = $db->createCollection($this->collection);
+        $collection = $db->selectCollection($this->collection);
 
         // Remove index
-        $collection->deleteIndex(['domain_1_locale_1_original_1']);
+        $collection->dropIndex('domain_1_locale_1_original_1');
 
         /** @var array $translatable */
         foreach ($collection->find() as $translatable) {
@@ -50,11 +50,11 @@ class Version20161122111410 extends AbstractMigration
             if (!ctype_xdigit($id)) {
                 $newId = sha1($id);
                 if ($collection->findOne(['_id' => $newId], ['id'])) {
-                    $collection->remove(['_id' => $id]);
+                    $collection->deleteOne(['_id' => $id]);
                 } else {
                     $translatable['_id'] = $newId;
-                    $collection->insert($translatable);
-                    $collection->remove(['_id' => $id]);
+                    $collection->insertOne($translatable);
+                    $collection->deleteOne(['_id' => $id]);
                 }
             }
         }

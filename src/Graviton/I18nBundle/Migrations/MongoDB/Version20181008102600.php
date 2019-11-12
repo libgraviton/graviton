@@ -6,7 +6,7 @@
 namespace Graviton\I18nBundle\Migrations\MongoDB;
 
 use AntiMattr\MongoDB\Migrations\AbstractMigration;
-use Doctrine\MongoDB\Database;
+use MongoDB\Database;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -69,7 +69,7 @@ class Version20181008102600 extends AbstractMigration
             ];
 
             try {
-                $targetCollection->insert($rec);
+                $targetCollection->insertOne($rec);
             } catch (\Exception $e) {
                 echo "Skipping already existing translation of original '${original}'".PHP_EOL;
             }
