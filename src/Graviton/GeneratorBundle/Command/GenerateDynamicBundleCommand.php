@@ -314,11 +314,11 @@ class GenerateDynamicBundleCommand extends Command
                         $bundleNamespace
                     );
 
-                    $output->write(
+                    $output->writeln(
                         sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
                     );
                 } else {
-                    $output->write(
+                    $output->writeln(
                         sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
                     );
                 }
