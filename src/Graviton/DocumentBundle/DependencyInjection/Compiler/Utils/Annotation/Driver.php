@@ -64,7 +64,7 @@ class Driver extends AnnotationDriver
             } else if (!is_null($referenceOne)) {
                 $map[$property->getName()] = $referenceOne;
             } else if (!is_null($referenceMany)) {
-                $map[$property->getName()] = $field;
+                $map[$property->getName()] = $referenceMany;
             }
         }
 
