@@ -46,25 +46,10 @@ class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterfac
      */
     public function load(ObjectManager $manager)
     {
-        $refName = '$ref';
-        $idName = '$id';
-
-        $manager->clear();
-
         if (count($this->fixtures) > 0) {
+            $manager->clear();
             foreach ($this->fixtures as $record) {
-
-                $thisRecord = $this->getObjectFromRecord($record);
-
-                // obvious refs..
-                foreach ($record as $key => $val) {
-                    if ($val instanceof \stdClass && isset($val->$refName) && isset($val->$idName)) {
-                        $setterFunction = 'set'.ucfirst($key);
-                        $thisRecord->$setterFunction($this->getReference($val->$refName.'-'.$val->$idName));
-                    }
-                }
-
-                $manager->persist($thisRecord);
+                $manager->persist($this->getObjectFromRecord($record));
                 $manager->flush();
             }
         }
