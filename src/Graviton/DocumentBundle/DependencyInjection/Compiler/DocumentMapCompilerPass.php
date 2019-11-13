@@ -9,8 +9,9 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
+use Graviton\Graviton;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\Finder;
@@ -30,19 +31,9 @@ class DocumentMapCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        // If it's inside vendor library or running as graviton base.
-        $rootDir = $container->getParameter('kernel.root_dir');
-
-        if (strpos($rootDir, 'vendor/graviton')) {
-            $dirs = [
-                $rootDir.'/../..'
-            ];
-        } else {
-            $dirs = [
-                __DIR__ . '/../../../..',
-                $rootDir.'/../vendor/graviton'
-            ];
-        }
+        $dirs = [
+            Graviton::getBundleScanDir()
+        ];
 
         $dynamicBundleDir = $container->getParameter('graviton.generator.dynamicbundle.dir');
         if (!empty($dynamicBundleDir)) {
@@ -61,17 +52,14 @@ class DocumentMapCompilerPass implements CompilerPassInterface
         }
 
         $documentMap = new DocumentMap(
-            Finder::create()
-                  ->directories()
-                  ->in($dirs)
-                  ->name('Document'),
+            ClassScanner::getDocumentAnnotationDriver(),
             (new Finder())
                 ->in($dirs)
-                ->path('Resources/config/serializer')
+                ->path('Resources/config/serializer/')
                 ->name('*.xml'),
             (new Finder())
                 ->in($dirs)
-                ->path('Resources/config/schema')
+                ->path('Resources/config/schema/')
                 ->name('*.json')
         );
 

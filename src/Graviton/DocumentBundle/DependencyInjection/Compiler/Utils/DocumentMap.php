@@ -5,8 +5,7 @@
 
 namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Annotation\Driver;
+use Graviton\DocumentBundle\Annotation\Driver\DocumentDriver;
 use Symfony\Component\Finder\Finder;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -29,35 +28,19 @@ class DocumentMap
      */
     private $documents = [];
 
-    private $relevantAnnotations = [
-        ODM\Document::class,
-        ODM\InheritanceType::class,
-        ODM\Id::class,
-        ODM\Field::class,
-        ODM\Indexes::class,
-        ODM\Index::class,
-        ODM\EmbedOne::class,
-        ODM\EmbedMany::class,
-        ODM\ReferenceOne::class,
-        ODM\ReferenceMany::class,
-        ODM\MappedSuperclass::class,
-        ODM\EmbeddedDocument::class
-    ];
-
     /**
      * Constructor
      *
-     * @param Finder $classFinder      class mapping finder
-     * @param Finder $serializerFinder Serializer mapping finder
-     * @param Finder $schemaFinder     Schema finder
+     * @param DocumentDriver $documentDriver   document driver for annotations
+     * @param Finder         $serializerFinder Serializer mapping finder
+     * @param Finder         $schemaFinder     Schema finder
      */
     public function __construct(
-        Finder $classFinder,
+        DocumentDriver $documentDriver,
         Finder $serializerFinder,
         Finder $schemaFinder
     ) {
-
-        $classMap = $this->loadClasses($classFinder);
+        $classMap = $this->loadClasses($documentDriver);
         $serializerMap = $this->loadSerializerClassMap($serializerFinder);
         $schemaMap = $this->loadSchemaClassMap($schemaFinder);
 
@@ -73,29 +56,15 @@ class DocumentMap
     /**
      * collect all classes that need to be scanned and loads their annotations
      *
-     * @param Finder $classFinder class finder
+     * @param DocumentDriver $documentDriver document annotation driver
      *
      * @return array mapping
      */
-    public function loadClasses(Finder $classFinder)
+    public function loadClasses(DocumentDriver $documentDriver)
     {
-        foreach ($this->relevantAnnotations as $className) {
-            class_exists($className);
-        }
-
-        $directories = array_map(
-            function (\SplFileInfo $file) {
-                return $file->getPathname();
-            },
-            iterator_to_array($classFinder)
-        );
-
-        $annotationReader = new AnnotationReader();
-        $annotationDriver = new Driver($annotationReader, $directories);
-
         $mapping = [];
-        foreach ($annotationDriver->getAllClassNames() as $className) {
-            $mapping[$className] = $annotationDriver->getFields($className);
+        foreach ($documentDriver->getAllClassNames() as $className) {
+            $mapping[$className] = $documentDriver->getFields($className);
         }
 
         return $mapping;

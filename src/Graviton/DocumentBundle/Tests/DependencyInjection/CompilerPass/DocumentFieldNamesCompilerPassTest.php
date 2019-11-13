@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\DocumentFieldNamesCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
@@ -24,9 +25,7 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit\Framework\TestCase
         $baseNamespace = 'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document';
 
         $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/form')
-                ->name('*.mongodb.yml'),
+            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document']),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/form')
                 ->name('*.xml'),

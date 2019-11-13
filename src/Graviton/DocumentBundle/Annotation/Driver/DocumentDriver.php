@@ -3,7 +3,7 @@
  * our own annotation driver
  */
 
-namespace Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\Annotation;
+namespace Graviton\DocumentBundle\Annotation\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver;
@@ -21,7 +21,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class Driver extends AnnotationDriver
+class DocumentDriver extends AnnotationDriver
 {
     /**
      * only return those that have the MongoDB Document annotation

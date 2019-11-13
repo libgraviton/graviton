@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: taachja1
- * Date: 13/04/16
- * Time: 10:16
+ * json exception listener
  */
 
 namespace Graviton\CoreBundle\Listener;
@@ -16,8 +13,9 @@ use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
- * Class JsonExceptionListener
- * @package Graviton\CoreBundle\Listener
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
  */
 class JsonExceptionListener
 {
