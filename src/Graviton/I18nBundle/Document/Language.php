@@ -22,7 +22,7 @@ class Language
     /**
      * @var string $id
      *
-     * @ODM\Id(strategy="UUID", type="id")
+     * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
      */
     protected $id;
 

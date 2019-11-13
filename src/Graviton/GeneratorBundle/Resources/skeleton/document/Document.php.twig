@@ -23,7 +23,7 @@ class {{ document }} extends {{ document }}Base
     /**
     * @var mixed $id
     *
-    * @ODM\Id(type="id")
+    * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
     */
     protected $id;
 

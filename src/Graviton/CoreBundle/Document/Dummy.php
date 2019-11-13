@@ -22,7 +22,7 @@ class Dummy
     /**
      * @var string
      *
-     * @ODM\Id(strategy="UUID", type="id")
+     * @ODM\Id(type="id", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
      */
     private $id;
 
