@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\ExtRefFieldsCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
@@ -21,21 +22,8 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
      */
     public function testProcess()
     {
-        $serviceDouble = $this
-            ->getMockBuilder('Symfony\\Component\\DependencyInjection\\Definition')
-            ->disableOriginalConstructor()
-            ->setMethods(['getTag'])
-            ->getMock();
-        $serviceDouble
-            ->expects($this->once())
-            ->method('getTag')
-            ->with('graviton.rest')
-            ->willReturn([]);
-
         $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/extref')
-                ->name('*.mongodb.yml'),
+            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Extref']),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/extref')
                 ->name('*.xml'),
@@ -55,21 +43,11 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
             ->willReturn($documentMap);
         $containerDouble
             ->expects($this->once())
-            ->method('findTaggedServiceIds')
-            ->with('graviton.rest')
-            ->willReturn(['gravitonTest.document.controller.A' => []]);
-        $containerDouble
-            ->expects($this->once())
-            ->method('getDefinition')
-            ->with('gravitonTest.document.controller.A')
-            ->willReturn($serviceDouble);
-        $containerDouble
-            ->expects($this->once())
             ->method('setParameter')
             ->with(
                 $this->equalTo('graviton.document.extref.fields'),
                 [
-                    'gravitontest.document.rest.a.get' => [
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\A' => [
                         '$exposedRefA',
 
                         'achild.$exposedRefB',
@@ -80,17 +58,15 @@ class ExtRefFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
                         'achildren.0.bchild.$exposedRefC',
                         'achildren.0.bchildren.0.$exposedRefC',
                     ],
-                    'gravitontest.document.rest.a.all' => [
-                        '$exposedRefA',
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\B' => [
+                        '$exposedRefB',
 
-                        'achild.$exposedRefB',
-                        'achild.bchild.$exposedRefC',
-                        'achild.bchildren.0.$exposedRefC',
-
-                        'achildren.0.$exposedRefB',
-                        'achildren.0.bchild.$exposedRefC',
-                        'achildren.0.bchildren.0.$exposedRefC',
+                        'bchild.$exposedRefC',
+                        'bchildren.0.$exposedRefC'
                     ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\C' => [
+                        '$exposedRefC'
+                    ]
                 ]
             );
 

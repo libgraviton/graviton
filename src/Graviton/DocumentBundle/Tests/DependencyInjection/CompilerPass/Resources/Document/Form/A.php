@@ -3,7 +3,7 @@
  * test dummy document
  */
 
-namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document;
+namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -58,12 +58,12 @@ class A
     protected $unstruct;
 
     /**
-     * @ODM\EmbedOne(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B")
+     * @ODM\EmbedOne(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form\B")
      */
     protected $achild;
 
     /**
-     * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\B", strategy="setArray")
+     * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form\B", strategy="setArray")
      */
     protected $achildren;
 

@@ -65,7 +65,6 @@ services:
     arguments:
     - "@graviton.document.service.extrefconverter"
     - "%graviton.document.extref.fields%"
-    - "@request_stack"
     tags:
     - name: kernel.event_listener
       event: rql.visit.node

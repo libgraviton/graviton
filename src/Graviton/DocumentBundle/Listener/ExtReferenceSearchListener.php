@@ -37,22 +37,16 @@ class ExtReferenceSearchListener
     private $fields;
 
     /**
-     * @var Request
-     */
-    private $request;
-
-    /**
      * construct
      *
      * @param ExtReferenceConverterInterface $converter Extref converter
      * @param array                          $fields    map of fields to process
      * @param RequestStack                   $requests  request
      */
-    public function __construct(ExtReferenceConverterInterface $converter, array $fields, RequestStack $requests)
+    public function __construct(ExtReferenceConverterInterface $converter, array $fields)
     {
         $this->converter = $converter;
         $this->fields = $fields;
-        $this->request = $requests->getCurrentRequest();
     }
 
     /**
@@ -63,11 +57,12 @@ class ExtReferenceSearchListener
     public function onVisitNode(VisitNodeEvent $event)
     {
         $node = $event->getNode();
+        $documentClassName = $event->getClassName();
         if ($node instanceof AbstractScalarOperatorNode &&
-            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $this->isExtrefField($documentClassName, $node->getField(), $event->getContext())) {
             $event->setNode($this->processScalarNode($node));
         } elseif ($node instanceof AbstractArrayOperatorNode &&
-            $this->isExtrefField($node->getField(), $event->getContext())) {
+            $this->isExtrefField($documentClassName, $node->getField(), $event->getContext())) {
             $event->setNode($this->processArrayNode($node));
         }
 
@@ -115,7 +110,7 @@ class ExtReferenceSearchListener
 
         try {
             $extref = $this->converter->getExtReference($url);
-            return ['$ref' => $extref->getRef(), '$id' => $extref->getId()];
+            return $extref->jsonSerialize();
         } catch (\InvalidArgumentException $e) {
             //make up some invalid refs to ensure we find nothing if an invalid url was given
             return [];
@@ -125,15 +120,15 @@ class ExtReferenceSearchListener
     /**
      * Get document field name by query name
      *
-     * @param string    $searchName  Exposed field name from RQL query
-     * @param \SplStack $nodeContext Current node context
+     * @param string    $documentClassName document class name
+     * @param string    $searchName        Exposed field name from RQL query
+     * @param \SplStack $nodeContext       Current node context
      * @return bool
      */
-    private function isExtrefField($searchName, \SplStack $nodeContext)
+    private function isExtrefField(string $documentClassName, string $searchName, \SplStack $nodeContext)
     {
-        $route = $this->request->attributes->get('_route');
-        if (!isset($this->fields[$route])) {
-            throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $route));
+        if (!isset($this->fields[$documentClassName])) {
+            throw new \LogicException(sprintf('Missing "%s" from extref fields map.', $documentClassName));
         }
 
         $fieldName = $searchName;
@@ -145,7 +140,7 @@ class ExtReferenceSearchListener
 
         return in_array(
             strtr($fieldName, ['..' => '.0.']),
-            $this->fields[$route],
+            $this->fields[$documentClassName],
             true
         );
     }

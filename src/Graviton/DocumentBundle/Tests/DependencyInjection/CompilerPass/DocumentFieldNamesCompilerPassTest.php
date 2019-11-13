@@ -22,10 +22,10 @@ class DocumentFieldNamesCompilerPassTest extends \PHPUnit\Framework\TestCase
      */
     public function testProcess()
     {
-        $baseNamespace = 'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document';
+        $baseNamespace = 'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form';
 
         $documentMap = new DocumentMap(
-            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document']),
+            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Form']),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/form')
                 ->name('*.xml'),

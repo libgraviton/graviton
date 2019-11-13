@@ -3,7 +3,7 @@
  * test dummy document
  */
 
-namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document;
+namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *
  * @ODM\Document
  */
-class C
+class B
 {
     /**
      * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
@@ -25,4 +25,15 @@ class C
      * @ODM\Field(type="string")
      */
     protected $field;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form\C")
+     */
+    protected $bchild;
+
+    /**
+     * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form\C", strategy="setArray")
+     */
+    protected $bchildren;
+
 }

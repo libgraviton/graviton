@@ -28,19 +28,6 @@ class ExtReferenceSearchListenerTest extends TestCase
      * @var ExtReferenceConverterInterface
      */
     private $converter;
-    /**
-     * @var Request
-     */
-    private $request;
-    /**
-     * @var ParameterBag
-     */
-    private $requestAttrs;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
 
     /**
      * setup type we want to test
@@ -52,23 +39,6 @@ class ExtReferenceSearchListenerTest extends TestCase
         $this->converter = $this->getMockBuilder('\Graviton\DocumentBundle\Service\ExtReferenceConverterInterface')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->requestAttrs = $this->getMockBuilder('\Symfony\Component\HttpFoundation\ParameterBag')
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
-        $this->request = new Request();
-        $this->request->attributes = $this->requestAttrs;
-
-        $this->requestStack = $this->getMockBuilder('\Symfony\Component\HttpFoundation\RequestStack')
-            ->disableOriginalConstructor()
-            ->setMethods(['getCurrentRequest'])
-            ->getMock();
-        $this->requestStack
-            ->expects($this->once())
-            ->method('getCurrentRequest')
-            ->willReturn($this->request);
     }
 
     /**
@@ -79,7 +49,7 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     private function createListener(array $fields)
     {
-        return new ExtReferenceSearchListener($this->converter, $fields, $this->requestStack);
+        return new ExtReferenceSearchListener($this->converter, $fields);
     }
 
     /**
@@ -91,8 +61,6 @@ class ExtReferenceSearchListenerTest extends TestCase
     {
         $extrefMapping = [];
 
-        $this->requestAttrs->expects($this->never())
-            ->method('get');
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
@@ -103,7 +71,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -122,10 +90,6 @@ class ExtReferenceSearchListenerTest extends TestCase
 
         $extrefMapping = [];
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
@@ -142,7 +106,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
     }
@@ -154,12 +118,8 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithNotMappedField()
     {
-        $extrefMapping = ['route.id' => []];
+        $extrefMapping = ['Hans\Document\Class' => []];
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->never())
             ->method('getExtReference');
 
@@ -176,7 +136,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -191,15 +151,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithMappedScalarField()
     {
-        $extrefMapping = ['route.id' => ['field']];
+        $extrefMapping = ['Hans\Document\Class' => ['field']];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
-        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
+        $dbRefValue = $extrefValue->jsonSerialize();
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->once())
             ->method('getExtReference')
             ->with($extrefUrl)
@@ -211,7 +167,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -231,15 +187,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithMappedArrayField()
     {
-        $extrefMapping = ['route.id' => ['field.0.$ref']];
+        $extrefMapping = ['Hans\Document\Class' => ['field.0.$ref']];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
-        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
+        $dbRefValue = $extrefValue->jsonSerialize();
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->exactly(2))
             ->method('getExtReference')
             ->with($extrefUrl)
@@ -251,7 +203,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -271,14 +223,9 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithInvalidExtref()
     {
-        $extrefMapping = ['route.id' => ['field']];
+        $extrefMapping = ['Hans\Document\Class' => ['field']];
         $extrefUrl = 'extref.url';
-        $dbRefValue = \MongoDBRef::create(false, false);
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->once())
             ->method('getExtReference')
             ->with($extrefUrl)
@@ -290,7 +237,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 
@@ -298,7 +245,7 @@ class ExtReferenceSearchListenerTest extends TestCase
         $this->assertSame($builder, $event->getBuilder());
 
         $this->assertEquals(
-            new EqNode('field', $dbRefValue),
+            new EqNode('field', []),
             $event->getNode()
         );
     }
@@ -311,15 +258,11 @@ class ExtReferenceSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithContext()
     {
-        $extrefMapping = ['route.id' => ['array.0.field.$ref']];
+        $extrefMapping = ['Hans\Document\Class' => ['array.0.field.$ref']];
         $extrefUrl = 'extref.url';
         $extrefValue = ExtReference::create('Ref', 'id');
-        $dbRefValue = \MongoDBRef::create($extrefValue->getRef(), $extrefValue->getId());
+        $dbRefValue = $extrefValue->jsonSerialize();
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
         $this->converter->expects($this->once())
             ->method('getExtReference')
             ->with($extrefUrl)
@@ -334,7 +277,7 @@ class ExtReferenceSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, $context);
+        $event = new VisitNodeEvent($node, $builder, $context, false, 'Hans\Document\Class');
         $listener = $this->createListener($extrefMapping);
         $listener->onVisitNode($event);
 

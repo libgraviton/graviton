@@ -59,7 +59,7 @@ class RqlFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
         $serviceDouble = $this
             ->getMockBuilder('Symfony\\Component\\DependencyInjection\\Definition')
             ->disableOriginalConstructor()
-            ->setMethods(['getTag'])
+            ->onlyMethods(['getTag'])
             ->getMock();
         $serviceDouble
             ->expects($this->once())
