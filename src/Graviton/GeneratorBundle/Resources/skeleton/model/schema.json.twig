@@ -31,7 +31,7 @@
 {% set searchableFields = [] %}
 {% set readOnlyFields = [] %}
 
-{% if not isEmbedded %}
+{% if (not isEmbedded) or idFieldRequired %}
     {% set requiredFields = requiredFields|merge(['id']) %}
 {% endif %}
 
