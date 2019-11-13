@@ -369,12 +369,22 @@ class ResourceGenerator extends AbstractGenerator
         $this->renderFile(
             'document/Document.php.twig',
             $dir . '/Document/' . $document . '.php',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'isEmbedded' => false
+                ]
+            )
         );
         $this->renderFile(
             'document/DocumentEmbedded.php.twig',
             $dir . '/Document/' . $document . 'Embedded.php',
-            $parameters
+            array_merge(
+                $parameters,
+                [
+                    'isEmbedded' => true
+                ]
+            )
         );
         $this->renderFile(
             'document/DocumentBase.php.twig',
@@ -597,7 +607,7 @@ class ResourceGenerator extends AbstractGenerator
                 $parameters,
                 [
                     'document' => $document.'Embedded',
-                    'noIdField' => true,
+                    //'noIdField' => true,
                     'realIdField' => true,
                     'isEmbedded' => true
                 ]
@@ -667,12 +677,12 @@ class ResourceGenerator extends AbstractGenerator
             $this->renderFile(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . '.json',
-                $parameters
+                array_merge($parameters, ['isEmbedded' => false])
             );
             $this->renderFile(
                 'model/schema.json.twig',
                 $dir . '/Resources/config/schema/' . $document . 'Embedded.json',
-                array_merge($parameters, ['document' => $document.'Embedded'])
+                array_merge($parameters, ['document' => $document.'Embedded', 'isEmbedded' => true])
             );
         }
 
