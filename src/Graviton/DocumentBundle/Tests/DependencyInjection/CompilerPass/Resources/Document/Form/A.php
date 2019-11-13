@@ -66,5 +66,4 @@ class A
      * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Form\B", strategy="setArray")
      */
     protected $achildren;
-
 }

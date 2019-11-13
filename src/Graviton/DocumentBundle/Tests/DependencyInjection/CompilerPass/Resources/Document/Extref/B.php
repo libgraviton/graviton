@@ -40,5 +40,4 @@ class B
      * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\C", strategy="setArray")
      */
     protected $bchildren;
-
 }

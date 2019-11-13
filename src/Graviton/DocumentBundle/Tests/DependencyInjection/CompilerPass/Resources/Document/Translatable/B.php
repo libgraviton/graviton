@@ -3,7 +3,7 @@
  * test dummy document
  */
 
-namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref;
+namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -14,9 +14,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *
  * @ODM\Document
  */
-class A
+class B
 {
-
     /**
      * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
      */
@@ -28,17 +27,17 @@ class A
     protected $key;
 
     /**
-     * @ODM\Field(type="extref")
+     * @ODM\Field(type="translatable")
      */
-    protected $ref;
+    protected $title;
 
     /**
-     * @ODM\EmbedOne(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\B")
+     * @ODM\EmbedOne(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\C")
      */
-    protected $achild;
+    protected $bchild;
 
     /**
-     * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\B", strategy="setArray")
+     * @ODM\EmbedMany(targetDocument="Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\C", strategy="setArray")
      */
-    protected $achildren;
+    protected $bchildren;
 }

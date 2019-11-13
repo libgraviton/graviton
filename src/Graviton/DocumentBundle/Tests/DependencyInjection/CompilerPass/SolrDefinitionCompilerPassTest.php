@@ -5,6 +5,7 @@
 
 namespace Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass;
 
+use Graviton\DocumentBundle\Annotation\ClassScanner;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\SolrDefinitionCompilerPass;
 use Graviton\DocumentBundle\DependencyInjection\Compiler\Utils\DocumentMap;
 use Symfony\Component\Finder\Finder;
@@ -24,13 +25,12 @@ class SolrDefinitionCompilerPassTest extends \PHPUnit\Framework\TestCase
     public function testProcess()
     {
         $expectedResult = [
-            'GravitonTest\DocumentBundle\Document\A' => 'fieldA^1 fieldB^15 fieldD^0.3'
+            'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Extref\A' =>
+                'fieldA^1 fieldB^15 fieldD^0.3'
         ];
 
         $documentMap = new DocumentMap(
-            (new Finder())
-                ->in(__DIR__.'/Resources/doctrine/extref')
-                ->name('*.mongodb.yml'),
+            ClassScanner::getDocumentAnnotationDriver([__DIR__.'/Resources/Document/Extref']),
             (new Finder())
                 ->in(__DIR__.'/Resources/serializer/extref')
                 ->name('*.xml'),

@@ -41,7 +41,6 @@ class ExtReferenceSearchListener
      *
      * @param ExtReferenceConverterInterface $converter Extref converter
      * @param array                          $fields    map of fields to process
-     * @param RequestStack                   $requests  request
      */
     public function __construct(ExtReferenceConverterInterface $converter, array $fields)
     {
