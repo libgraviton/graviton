@@ -47,6 +47,7 @@ class DocumentMap
     /**
      * Constructor
      *
+     * @param Finder $classFinder      class mapping finder
      * @param Finder $serializerFinder Serializer mapping finder
      * @param Finder $schemaFinder     Schema finder
      */
@@ -69,6 +70,13 @@ class DocumentMap
         }
     }
 
+    /**
+     * collect all classes that need to be scanned and loads their annotations
+     *
+     * @param Finder $classFinder class finder
+     *
+     * @return array mapping
+     */
     public function loadClasses(Finder $classFinder)
     {
         foreach ($this->relevantAnnotations as $className) {
@@ -130,7 +138,7 @@ class DocumentMap
      * Process document
      *
      * @param string      $className         Class name
-     * @param array       $doctrineMapping   Doctrine mapping
+     * @param array       $classMapping      class mapping
      * @param \DOMElement $serializerMapping Serializer XML mapping
      * @param array       $schemaMapping     Schema mapping
      *
@@ -204,7 +212,7 @@ class DocumentMap
                         !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                     );
                 }
-            } else if ($classProperty instanceof ODM\ReferenceOne || $classProperty instanceof ODM\EmbedOne) {
+            } elseif ($classProperty instanceof ODM\ReferenceOne || $classProperty instanceof ODM\EmbedOne) {
                 $doctrineField['type'] = $classProperty->targetDocument;
 
                 $serializerField = isset($serializerFields[$doctrineField['name']]) ?
@@ -223,8 +231,7 @@ class DocumentMap
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
                     !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
-
-            } else if ($classProperty instanceof ODM\ReferenceMany || $classProperty instanceof ODM\EmbedMany) {
+            } elseif ($classProperty instanceof ODM\ReferenceMany || $classProperty instanceof ODM\EmbedMany) {
                 $doctrineField['type'] = $classProperty->targetDocument;
 
                 $serializerField = isset($serializerFields[$doctrineField['name']]) ?
@@ -243,7 +250,6 @@ class DocumentMap
                     !isset($schemaField['recordOriginException']) ? false : $schemaField['recordOriginException'],
                     !isset($schemaField['restrictions']) ? [] : $schemaField['restrictions']
                 );
-
             }
         }
 

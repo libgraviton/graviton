@@ -36,7 +36,10 @@ class ParameterBuilder
             $idField = $value->getField('id');
             if (!is_null($idField)) {
                 $this->parameters['idField'] = $idField->getDefAsArray();
-                $this->parameters['idFieldRequired'] = (isset($this->parameters['idField']['required']) && $this->parameters['idField']['required'] === true);
+                $this->parameters['idFieldRequired'] = (
+                    isset($this->parameters['idField']['required']) &&
+                    $this->parameters['idField']['required'] === true
+                );
             } else {
                 // if there is a json file and no id defined - so we don't do one here..
                 // we leave it in the document though but we don't wanna output it..

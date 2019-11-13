@@ -1,4 +1,8 @@
 <?php
+/**
+ * doctrine proxy subscriber
+ * solves the problem how we serialize proxy-manager proxy objects using doctrine odm.
+ */
 
 namespace Graviton\DocumentBundle\Serializer\Subscriber;
 
@@ -7,6 +11,11 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use ProxyManager\Proxy\ProxyInterface;
 
+/**
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ */
 class DoctrineProxySubscriber implements EventSubscriberInterface
 {
     /**
@@ -19,15 +28,17 @@ class DoctrineProxySubscriber implements EventSubscriberInterface
      */
     private $initializeExcluded = false;
 
-
+    /**
+     * pre serialize event
+     *
+     * @param PreSerializeEvent $event event
+     *
+     * @return void
+     */
     public function onPreSerialize(PreSerializeEvent $event)
     {
         $object = $event->getObject();
         $type = $event->getType();
-
-        // If the set type name is not an actual class, but a faked type for which a custom handler exists, we do not
-        // modify it with this subscriber. Also, we forgo autoloading here as an instance of this type is already created,
-        // so it must be loaded if its a real class.
         $virtualType = !class_exists($type['name'], false);
 
         if (($this->skipVirtualTypeInit && $virtualType) ||
@@ -40,7 +51,12 @@ class DoctrineProxySubscriber implements EventSubscriberInterface
         if ($this->initializeExcluded === false && !$virtualType) {
             $context = $event->getContext();
             $exclusionStrategy = $context->getExclusionStrategy();
-            if ($exclusionStrategy !== null && $exclusionStrategy->shouldSkipClass($context->getMetadataFactory()->getMetadataForClass(get_parent_class($object)), $context)) {
+            if ($exclusionStrategy !== null &&
+                $exclusionStrategy->shouldSkipClass(
+                    $context->getMetadataFactory()->getMetadataForClass(get_parent_class($object)),
+                    $context
+                )
+            ) {
                 return;
             }
         }
@@ -50,8 +66,24 @@ class DoctrineProxySubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onPreSerializeTypedProxy(PreSerializeEvent $event, $eventName, $class, $format, EventDispatcherInterface $dispatcher)
-    {
+    /**
+     * serialized proxy type
+     *
+     * @param PreSerializeEvent        $event      event
+     * @param string                   $eventName  event name
+     * @param string                   $class      class
+     * @param string                   $format     format
+     * @param EventDispatcherInterface $dispatcher dispatcher
+     *
+     * @return void
+     */
+    public function onPreSerializeTypedProxy(
+        PreSerializeEvent $event,
+        $eventName,
+        $class,
+        $format,
+        EventDispatcherInterface $dispatcher
+    ) {
         $type = $event->getType();
         // is a virtual type? then there is no need to change the event name
         if (!class_exists($type['name'], false)) {
@@ -65,7 +97,11 @@ class DoctrineProxySubscriber implements EventSubscriberInterface
             // check if this is already a re-dispatch
             if (strtolower($class) !== strtolower($parentClassName)) {
                 $event->stopPropagation();
-                $newEvent = new PreSerializeEvent($event->getContext(), $object, ['name' => $parentClassName, 'params' => $type['params']]);
+                $newEvent = new PreSerializeEvent(
+                    $event->getContext(),
+                    $object,
+                    ['name' => $parentClassName, 'params' => $type['params']]
+                );
                 $dispatcher->dispatch($eventName, $parentClassName, $format, $newEvent);
 
                 // update the type in case some listener changed it
@@ -75,6 +111,11 @@ class DoctrineProxySubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * gets subscribed events
+     *
+     * @return array events
+     */
     public static function getSubscribedEvents()
     {
         return [

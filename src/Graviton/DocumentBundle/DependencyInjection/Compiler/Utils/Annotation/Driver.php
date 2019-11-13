@@ -40,6 +40,14 @@ class Driver extends AnnotationDriver
         );
     }
 
+    /**
+     * gets a field
+     *
+     * @param string $className class name
+     *
+     * @return array field annotation
+     * @throws \ReflectionException
+     */
     public function getFields($className)
     {
         $refClass = new \ReflectionClass($className);
@@ -55,15 +63,15 @@ class Driver extends AnnotationDriver
 
             if (!is_null($field)) {
                 $map[$property->getName()] = $field;
-            } else if (!is_null($idField)) {
+            } elseif (!is_null($idField)) {
                 $map[$property->getName()] = $idField;
-            } else if (!is_null($embedOne)) {
+            } elseif (!is_null($embedOne)) {
                 $map[$property->getName()] = $embedOne;
-            } else if (!is_null($embedMany)) {
+            } elseif (!is_null($embedMany)) {
                 $map[$property->getName()] = $embedMany;
-            } else if (!is_null($referenceOne)) {
+            } elseif (!is_null($referenceOne)) {
                 $map[$property->getName()] = $referenceOne;
-            } else if (!is_null($referenceMany)) {
+            } elseif (!is_null($referenceMany)) {
                 $map[$property->getName()] = $referenceMany;
             }
         }
@@ -71,6 +79,14 @@ class Driver extends AnnotationDriver
         return $map;
     }
 
+    /**
+     * load class metadata - not used here!
+     *
+     * @param string        $className class name
+     * @param ClassMetadata $metadata  metadata
+     *
+     * @return void
+     */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         throw new \LogicException('Not implemented');

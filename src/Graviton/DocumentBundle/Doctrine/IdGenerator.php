@@ -20,13 +20,13 @@ class IdGenerator extends AbstractIdGenerator
     /**
      * Generates an identifier for a document.
      *
-     * @return mixed
+     * @param DocumentManager $dm       dm
+     * @param object          $document doc
+     *
+     * @return string id
      */
     public function generate(DocumentManager $dm, object $document)
     {
         return (string) new ObjectId();
-
-        // TODO: Implement generate() method.
     }
 }
-

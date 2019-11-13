@@ -5,9 +5,6 @@
 
 namespace Graviton\GeneratorBundle\Twig;
 
-use Graviton\CoreBundle\Util\CoreUtils;
-use Graviton\GeneratorBundle\Definition\JsonDefinition;
-use Graviton\GeneratorBundle\Definition\JsonDefinitionField;
 use Twig\Extension\ExtensionInterface;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\TokenParserInterface;
@@ -23,6 +20,9 @@ use Twig\TwigTest;
 class GeneratorExtension implements ExtensionInterface
 {
 
+    /**
+     * @var array map from our type to the doctrine annotation type
+     */
     private $doctrineOwnFieldMapping = [
         'hash[]' => 'hasharray',
         'date[]' => 'datearray',
@@ -92,6 +92,13 @@ class GeneratorExtension implements ExtensionInterface
         ];
     }
 
+    /**
+     * generates the valid doctrine annotation for a field
+     *
+     * @param array $field field information
+     *
+     * @return string annotation
+     */
     public function getDoctrineFieldAnnotation($field)
     {
         if (strpos($field['type'], 'Graviton') !== false) {
@@ -140,6 +147,16 @@ class GeneratorExtension implements ExtensionInterface
         );
     }
 
+    /**
+     * generates the valid doctrine annotation for the document indexes
+     *
+     * @param string   $collectionName collection name
+     * @param array    $indexes        index fields
+     * @param string[] $ensureIndexes  indexes to ensure
+     * @param string[] $textIndexes    text indexes
+     *
+     * @return string
+     */
     public function getDoctrineIndexesAnnotation($collectionName, $indexes, $ensureIndexes = null, $textIndexes = null)
     {
         if (!is_array($indexes)) {
@@ -161,7 +178,15 @@ class GeneratorExtension implements ExtensionInterface
         return '@ODM\Indexes({'.implode(', ', $indexes).'})';
     }
 
-    private function getSingleDoctrineIndexAnnotation($index) {
+    /**
+     * generates a single index to be used within Indexes
+     *
+     * @param string $index field name
+     *
+     * @return string index annotation
+     */
+    private function getSingleDoctrineIndexAnnotation($index)
+    {
         return sprintf(
             ' @ODM\Index(keys={"%s"="asc"}, name="%s", background=true)',
             $index,
@@ -169,7 +194,16 @@ class GeneratorExtension implements ExtensionInterface
         );
     }
 
-    private function getDoctrineTextIndexAnnotation($collectionName, $textIndexes) {
+    /**
+     * generates the annotation for a text index
+     *
+     * @param string   $collectionName collection name
+     * @param string[] $textIndexes    indexes
+     *
+     * @return string annotation
+     */
+    private function getDoctrineTextIndexAnnotation($collectionName, $textIndexes)
+    {
         $options = [
             'default_language' => 'de',
             'language_override' => 'none',
@@ -193,5 +227,4 @@ class GeneratorExtension implements ExtensionInterface
             json_encode($options)
         );
     }
-
 }
