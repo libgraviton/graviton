@@ -170,6 +170,11 @@ class DocumentMap
             if ($classProperty instanceof ODM\Field || $classProperty instanceof ODM\Id) {
                 $doctrineField['type'] = $classProperty->type;
 
+                // internally, we refer to id fields with type='id'
+                if ($classProperty instanceof ODM\Id) {
+                    $doctrineField['type'] = 'id';
+                }
+
                 $serializerField = isset($serializerFields[$doctrineField['name']]) ?
                     $serializerFields[$doctrineField['name']] :
                     null;
