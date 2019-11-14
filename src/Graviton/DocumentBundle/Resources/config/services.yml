@@ -90,7 +90,6 @@ services:
     public: true
     arguments:
     - "%graviton.document.rql.fields%"
-    - "@request_stack"
     tags:
     - name: kernel.event_listener
       event: rql.visit.node
