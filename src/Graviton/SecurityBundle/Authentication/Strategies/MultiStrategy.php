@@ -7,7 +7,6 @@ namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * Class MultiStrategy
@@ -75,7 +74,7 @@ class MultiStrategy implements StrategyInterface
     /**
      * Provides the list of registered roles.
      *
-     * @return Role[]
+     * @return string[] roles
      */
     public function getRoles()
     {

@@ -7,7 +7,6 @@ namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\SecurityBundle\Entities\SecurityUser;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * Class CookieFieldStrategy
@@ -62,7 +61,7 @@ class CookieFieldStrategy extends AbstractHttpStrategy
     /**
      * Provides the list of registered roles.
      *
-     * @return Role[]
+     * @return string[] roles
      */
     public function getRoles()
     {

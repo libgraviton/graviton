@@ -6,7 +6,7 @@
 namespace Graviton\I18nBundle\Listener;
 
 use Graviton\I18nBundle\Service\I18nUtils;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * FilterResponseListener for adding Content-Lanugage headers
@@ -36,11 +36,11 @@ class ContentLanguageResponseListener
     /**
      * add a rel=self Link header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $event->getResponse()->headers->set(
             'Content-Language',

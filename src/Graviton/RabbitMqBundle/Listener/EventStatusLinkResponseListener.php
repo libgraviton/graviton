@@ -13,10 +13,10 @@ use Graviton\LinkHeaderParser\LinkHeaderItem;
 use Graviton\RabbitMqBundle\Document\QueueEvent;
 use MongoDB\BSON\Regex;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Graviton\SecurityBundle\Service\SecurityUtils;
@@ -154,11 +154,11 @@ class EventStatusLinkResponseListener
     /**
      * add a rel=eventStatus Link header to the response if necessary
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         /**
          * @var Response $response

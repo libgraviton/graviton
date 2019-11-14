@@ -5,7 +5,6 @@
 
 namespace Graviton\SecurityBundle\Entities;
 
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -29,16 +28,15 @@ class SecurityUser implements UserInterface
     private $user;
 
     /**
-     * @var Role[]
+     * @var string[]
      */
     private $roles;
-
 
     /**
      * Constructor of the class.
      *
-     * @param object $user  the user
-     * @param Role[] $roles roles for the contract
+     * @param object   $user  the user
+     * @param string[] $roles roles for the contract
      */
     public function __construct($user, array $roles = array())
     {
@@ -49,7 +47,7 @@ class SecurityUser implements UserInterface
     /**
      * Returns the roles granted to the user.
      *
-     * @return Role[] The user roles
+     * @return string[] The user roles
      */
     public function getRoles()
     {

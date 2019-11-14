@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * @category GravitonRestBundle
@@ -33,11 +33,11 @@ class XVersionResponseListener
     /**
      * Adds a X-Version header to the response.
      *
-     * @param FilterResponseEvent $event Current emitted event.
+     * @param ResponseEvent $event Current emitted event.
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
             // don't do anything if it's not the master request

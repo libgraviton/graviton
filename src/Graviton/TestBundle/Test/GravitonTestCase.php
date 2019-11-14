@@ -85,7 +85,7 @@ class GravitonTestCase extends WebTestCase
      *
      * @param array $classNames class names to load
      *
-     * @return AbstractExecutor|null
+     * @return void
      */
     public function loadFixturesLocal(array $classNames = [])
     {

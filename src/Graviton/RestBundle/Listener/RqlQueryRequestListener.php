@@ -6,7 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Graviton\RqlParserBundle\Listener\RequestListenerInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * RQL query listener
@@ -41,10 +41,10 @@ class RqlQueryRequestListener implements RequestListenerInterface
     /**
      * Process RQL query if it is allowed for current route
      *
-     * @param GetResponseEvent $event Event
+     * @param ResponseEvent $event Event
      * @return void
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(ResponseEvent $event)
     {
         if (!in_array($event->getRequest()->attributes->get('_route'), $this->allowedRoutes, true)) {
             return;
