@@ -1504,16 +1504,16 @@
         },
         {
             "name": "graviton/rql-parser-bundle",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libgraviton/GravitonRqlParserBundle.git",
-                "reference": "0ff25eb54fdd7979d3f7bbf3e35d9d8c09743776"
+                "reference": "6908a7e5b565a0f899d36b301d1d854410e3de96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/0ff25eb54fdd7979d3f7bbf3e35d9d8c09743776",
-                "reference": "0ff25eb54fdd7979d3f7bbf3e35d9d8c09743776",
+                "url": "https://api.github.com/repos/libgraviton/GravitonRqlParserBundle/zipball/6908a7e5b565a0f899d36b301d1d854410e3de96",
+                "reference": "6908a7e5b565a0f899d36b301d1d854410e3de96",
                 "shasum": ""
             },
             "require": {
@@ -1544,7 +1544,7 @@
                 }
             ],
             "description": "Port of the php-rql-parser into the world of Symfony",
-            "time": "2019-11-14T15:40:18+00:00"
+            "time": "2019-11-14T16:27:51+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
