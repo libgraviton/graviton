@@ -48,23 +48,26 @@ class TranslatableFieldsCompilerPassTest extends \PHPUnit\Framework\TestCase
             ->with(
                 'graviton.document.type.translatable.fields',
                 [
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\A' => [
-                        'exposedTitleA',
-                        'achild.exposedTitleB',
-                        'achild.bchild.exposedTitleC',
-                        'achild.bchildren.0.exposedTitleC',
-                        'achildren.0.exposedTitleB',
-                        'achildren.0.bchild.exposedTitleC',
-                        'achildren.0.bchildren.0.exposedTitleC'
-                    ],
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\B' => [
-                        'exposedTitleB',
-                        'bchild.exposedTitleC',
-                        'bchildren.0.exposedTitleC'
-                    ],
-                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\C' => [
-                        'exposedTitleC'
-                    ]
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\A'
+                        => [
+                            'exposedTitleA',
+                            'achild.exposedTitleB',
+                            'achild.bchild.exposedTitleC',
+                            'achild.bchildren.0.exposedTitleC',
+                            'achildren.0.exposedTitleB',
+                            'achildren.0.bchild.exposedTitleC',
+                            'achildren.0.bchildren.0.exposedTitleC'
+                        ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\B'
+                        => [
+                            'exposedTitleB',
+                            'bchild.exposedTitleC',
+                            'bchildren.0.exposedTitleC'
+                        ],
+                    'Graviton\DocumentBundle\Tests\DependencyInjection\CompilerPass\Resources\Document\Translatable\C'
+                        => [
+                            'exposedTitleC'
+                        ]
                 ]
             );
 
