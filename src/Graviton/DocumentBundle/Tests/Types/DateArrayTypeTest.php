@@ -58,7 +58,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
             $this->type->convertToDatabaseValue([(object) []])
         );
         $this->assertEquals(
-            [new UTCDateTime(strtotime('2015-10-02T15:04:00+06:00'))],
+            [new UTCDateTime(\DateTime::createFromFormat(\DateTimeInterface::ISO8601, '2015-10-02T15:04:00+06:00'))],
             $this->type->convertToDatabaseValue(['2015-10-02T15:04:00+06:00'])
         );
     }
@@ -91,7 +91,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
             $this->type->closureToMongo()
         );
         $this->assertEqualsClosure(
-            [new UTCDateTime(strtotime('2015-10-02T15:04:00+06:00'))],
+            [new UTCDateTime(\DateTime::createFromFormat(\DateTimeInterface::ISO8601, '2015-10-02T15:04:00+06:00'))],
             ['2015-10-02T15:04:00+06:00'],
             $this->type->closureToMongo()
         );
@@ -125,7 +125,7 @@ class DateArrayTypeTest extends BaseDoctrineTypeTestCase
             $this->type->convertToPHPValue([(object) []])
         );
         $this->assertEquals(
-            [new \DateTime('2015-10-02T15:04:00+06:00')],
+            [\DateTime::createFromFormat(\DateTimeInterface::ISO8601, '2015-10-02T15:04:00+06:00')],
             $this->type->convertToPHPValue(['2015-10-02T15:04:00+06:00'])
         );
     }
