@@ -6,7 +6,6 @@ cache:
     - $HOME/.composer
 services:
   - docker
-  - rabbitmq
 before_script:
   - free -m
   - php -m
@@ -21,40 +20,37 @@ before_script:
       if [ "$PHPUNIT_SUITE" != "unit" ]; then
           phpenv config-rm xdebug.ini
       fi
-  # spin up local mongodb with the version we need
+  # spin up local mongodb with the version we need (only for integration testing)
   - >
-      if [ "$PHPUNIT_SUITE" = "integration" ]; then
+      if [ "$COMPOSER_CHECK" = "false" ]; then
           docker pull mongo:$MONGODB_VERSION && \
           docker run -d -p 127.0.0.1:27017:27017 mongo:$MONGODB_VERSION && \
           sleep 2 && \
-          docker ps;
+          docker ps && \
+          pecl channel-update pecl.php.net && \
+          sleep 5 && \
+          printf "\n" | pecl install -f mongodb-$EXTMONGODB_VERSION && \
+          echo "memory_limit=3G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini && \
+          php -i | grep -A 4 mongo && \
+          composer update --no-interaction --no-scripts mongodb/mongodb;
       fi
-  # install the module
-  - pecl channel-update pecl.php.net
-  - sleep 5
-  - printf "\n" | pecl install -f mongodb-$EXTMONGODB_VERSION
-  # memory_limit
-  - echo "memory_limit=3G"  >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini;
-  - php -i | grep -A 4 mongo
-  # install our deps
-  - export GENERATOR_SYNTHETIC_FIELDS="int:clientId"
-  - composer install --no-interaction --ignore-platform-reqs --profile
+  - >
+      if [ "$COMPOSER_CHECK" = "true" ]; then
+          composer install --ignore-platform-reqs --no-interaction --no-scripts;
+      fi
 php:
   - 7.3
 env:
   matrix:
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial EXTMONGODB_VERSION=1.5.5
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.5.5
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.0
-    - COMPOSER_CHECK=true PHPUNIT=false
-    - COMPOSER_CHECK=false PHPUNIT=true PHPUNIT_SUITE=unit
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=3.6-xenial EXTMONGODB_VERSION=1.5.5
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.5.5
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=integration MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.6.0
+    - COMPOSER_CHECK=true
+    - COMPOSER_CHECK=false PHPUNIT_SUITE=unit MONGODB_VERSION=4-bionic EXTMONGODB_VERSION=1.5.5
 script:
   - >
-      if [ "$PHPUNIT" = "true" ]; then
+      if [ "$COMPOSER_CHECK" = "false" ]; then
           bash prepare-for-tests.sh && \
-          if [ "$PHPUNIT_SUITE" == "integration" ]; then
-              php bin/console doctrine:mongodb:schema:update
-          fi && \
           if [ "$PHPUNIT_SUITE" == "unit" ]; then
             COVERAGE=" --coverage-clover=coverage.clover "
           fi && \
