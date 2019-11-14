@@ -31,7 +31,7 @@ class RqlQueryRequestListenerTest extends \PHPUnit\Framework\TestCase
         $innerListener->expects($isAllowed ? $this->once() : $this->never())
             ->method('onKernelRequest');
 
-        $event = $this->getMockBuilder('Symfony\Component\HttpKernel\Event\GetResponseEvent')
+        $event = $this->getMockBuilder('Symfony\Component\HttpKernel\Event\RequestEvent')
             ->disableOriginalConstructor()
             ->getMock();
         $event->expects($this->once())
