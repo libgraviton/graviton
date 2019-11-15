@@ -6,6 +6,7 @@
 namespace Graviton\RestBundle\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * @category GravitonCoreBundle
@@ -25,9 +26,9 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
     {
         $response = new Response();
 
-        $eventDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\FilterResponseEvent')
+        $eventDouble = $this->getMockBuilder(ResponseEvent::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('getResponse', 'isMasterRequest'))
+            ->onlyMethods(['getResponse', 'isMasterRequest'])
             ->getMock();
         $eventDouble
             ->expects($this->once())
@@ -53,9 +54,9 @@ class XVersionResponseListenerTest extends \PHPUnit\Framework\TestCase
     {
         $response = new Response();
 
-        $eventDouble = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\FilterResponseEvent')
+        $eventDouble = $this->getMockBuilder(ResponseEvent::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('isMasterRequest'))
+            ->onlyMethods(['isMasterRequest'])
             ->getMock();
         $eventDouble
             ->expects($this->once())
