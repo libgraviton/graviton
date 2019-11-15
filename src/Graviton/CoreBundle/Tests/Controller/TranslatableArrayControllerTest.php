@@ -214,12 +214,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                 (object) [
                     'propertyPath' => 'deep.deep[0].array',
                     'message'      => 'String value found, but an array is required',
-                ],
-
-                (object) [
-                    'propertyPath' => 'deep.deep[1].array[0].en',
-                    'message'      => 'The property en is required',
-                ],
+                ]
             ],
             $client->getResults()
         );
