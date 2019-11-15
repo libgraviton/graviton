@@ -10,6 +10,7 @@ use Graviton\DocumentBundle\Service\ExtReferenceConverterInterface;
 use Graviton\JsonSchemaBundle\Validator\Constraint\Event\ConstraintEventFormat;
 use Graviton\RestBundle\Routing\Loader\ActionUtils;
 use JMS\Serializer\Context;
+use JMS\Serializer\Exception\NotAcceptableException;
 use JMS\Serializer\JsonDeserializationVisitor;
 use JMS\Serializer\JsonSerializationVisitor;
 
@@ -57,10 +58,18 @@ class ExtReferenceHandler
         array $type,
         Context $context
     ) {
+        if (null === $extReference && !$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        if (null === $extReference) {
+            return $visitor->visitNull(null, $type);
+        }
+
         try {
-            return $visitor->visitString($this->converter->getUrl($extReference), $type, $context);
+            return $this->converter->getUrl($extReference);
         } catch (\InvalidArgumentException $e) {
-            return $visitor->visitNull(null, $type, $context);
+            return $visitor->visitNull(null, $type);
         }
     }
 
@@ -79,6 +88,14 @@ class ExtReferenceHandler
         array $type,
         Context $context
     ) {
+        if (null === $url && !$context->shouldSerializeNull()) {
+            throw new NotAcceptableException();
+        }
+
+        if (null === $url) {
+            return $visitor->visitNull(null, $type);
+        }
+
         try {
             return $this->converter->getExtReference(
                 $visitor->visitString($url, $type, $context)

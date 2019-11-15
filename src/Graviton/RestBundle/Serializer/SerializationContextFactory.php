@@ -21,7 +21,7 @@ class SerializationContextFactory extends ContextFactoryAbstract implements Seri
      *
      * @return SerializationContext
      */
-    public function createSerializationContext()
+    public function createSerializationContext(): SerializationContext
     {
         return $this->workOnInstance(SerializationContext::create());
     }

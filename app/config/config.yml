@@ -3,7 +3,6 @@ imports:
     - { resource: services.yml }
 
 parameters:
-    jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
 
 # Synfony Framework Configuation
 # see http://symfony.com/doc/current/reference/configuration/framework.html
@@ -69,6 +68,12 @@ jms_serializer:
     handlers:
         datetime:
             default_format: Y-m-d\TH:i:sO
+    property_naming:
+        id: 'jms_serializer.identical_property_naming_strategy'
+        separator: ''
+    default_context:
+        serialization:
+            serialize_null: false
     metadata:
         cache: graviton.core.jms.cache.provider
         debug: "%kernel.debug%"

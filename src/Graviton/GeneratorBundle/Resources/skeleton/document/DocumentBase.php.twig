@@ -94,20 +94,6 @@ abstract class {{ document }}Base implements \Graviton\DocumentBundle\Document\E
     protected ${{ syntheticField.name }};
 {% endfor %}
 
-/**
-* constructor
-*
-* @return self
-*/
-public function __construct()
-{
-{% for field in fields %}
-    {% if '[]' in field.type or field.type == 'array' %}
-        $this->{{ field.fieldName }} = {% if 'Graviton' in field.type %}new \Doctrine\Common\Collections\ArrayCollection(){% else %}[]{% endif %};
-    {% endif %}
-{% endfor %}
-}
-
 public function getDeleteddate()
 {
 return $this->deletedDate;
@@ -167,6 +153,12 @@ return $this->deletedDate;
         public function get{{ field.fieldName|capitalize }}()
     {% endif %}
     {
+    {% if '[]' in field.type or field.type == 'array' %}
+        if ($this->{{ field.fieldName }} instanceof \Doctrine\Common\Collections\Collection) {
+          return $this->{{ field.fieldName }}->toArray();
+        }
+    {% endif %}
+
     {% if field.xDynamicKey is defined and field.xDynamicKey != null %}
         return \Graviton\GeneratorBundle\Generator\ResourceGenerator\XDynamicKey::resolveRef($this->{{ field.fieldName }}, '{{ field.xDynamicKey.refField }}');
     {% else %}
@@ -187,7 +179,7 @@ return $this->deletedDate;
     */
     {% if 'Graviton' in field.type %}
         {% if '[]' in field.type %}
-            public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
+            public function set{{ field.fieldName|capitalize }}(array ${{ field.fieldName }})
         {% else %}
             {% if field.relType is defined %}
                 {% set relType = {"embed": "Embedded", "ref": ""}[field.relType] %}
@@ -201,11 +193,7 @@ return $this->deletedDate;
         public function set{{ field.fieldName|capitalize }}(${{ field.fieldName }})
     {% endif %}
     {
-    {% if '[]' in field.type and 'Graviton' in field.type %}
-        $this->{{ field.fieldName }} = new \Doctrine\Common\Collections\ArrayCollection(${{ field.fieldName }});
-    {% else %}
         $this->{{ field.fieldName }} = ${{ field.fieldName }};
-    {% endif %}
 
     return $this;
     }
@@ -225,6 +213,9 @@ return $this->deletedDate;
         */
         public function add{{ field.singularName|capitalize }}({{ itemTypeHint }} ${{field.singularName}})
         {
+        if (!is_array($this->{{ field.fieldName }})) {
+            $this->{{ field.fieldName }} = [];
+        }
         $this->{{ field.fieldName }}[] = ${{ field.singularName }};
         }
 

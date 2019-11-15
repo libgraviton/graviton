@@ -46,7 +46,7 @@ class SchemaAdditionalPropertiesHandler
 
         // case for schema inside additionalProperties, swagger exclusive
         if ($properties instanceof Schema) {
-            return $visitor->getNavigator()->accept(
+            return $context->getNavigator()->accept(
                 $properties,
                 ['name' => 'Graviton\SchemaBundle\Document\Schema'],
                 $context

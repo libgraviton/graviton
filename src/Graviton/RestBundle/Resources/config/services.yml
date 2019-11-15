@@ -3,11 +3,8 @@ services:
     graviton.rest.serializer:
         parent: "jms_serializer"
         public: true
-        calls:
-          -
-            method: setSerializationContextFactory
-            arguments:
-              - "@graviton.rest.serializer.serializercontext.factory"
+        arguments:
+            index_4: "@graviton.rest.serializer.serializercontext.factory"
 
     graviton.rest.serializer.serializercontext.factory:
         parent: "graviton.rest.serializer.context.abstract"

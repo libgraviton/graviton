@@ -67,8 +67,6 @@ class ShowcaseControllerTest extends RestTestCase
                 'uri'       => 'protocol:value',
             ],
 
-            'nestedApps'            => [],
-            'unstructuredObject'    => (object) [],
             'choices'               => "<>"
         ];
 
@@ -85,8 +83,8 @@ class ShowcaseControllerTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
 
         $created = $client->getResults();
-        $this->assertEquals($showCase->nestedApps, $created->nestedApps);
-        $this->assertEquals($showCase->unstructuredObject, $created->unstructuredObject);
+        $this->assertObjectNotHasAttribute('nestedApps', $created);
+        $this->assertObjectNotHasAttribute('unstructuredObject', $created);
     }
 
     /**

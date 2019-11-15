@@ -180,7 +180,6 @@ class TranslatableArrayControllerTest extends RestTestCase
                             'en' => 'Valid value',
                         ],
                         'array' => [
-                            (object) [],
                             (object) [
                                 'en' => 'Valid value',
                             ],
@@ -387,8 +386,7 @@ class TranslatableArrayControllerTest extends RestTestCase
                             'en' => 'EN-70',
                             'de' => 'DE-70',
                             'fr' => 'EN-70'
-                        ],
-                        'array' => [],
+                        ]
                     ],
                 ]
             ]
