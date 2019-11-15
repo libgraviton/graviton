@@ -481,17 +481,6 @@ class ShowcaseControllerTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/hans/showcase/?'.$rqlSelect);
 
-        /* expect empty arrays */
-        $filtred = array_map(
-            function ($entry) {
-                $entry->contacts = [];
-                $entry->nestedArray = [];
-                $entry->nestedApps = [];
-                return $entry;
-            },
-            $filtred
-        );
-
         $this->assertEquals($filtred, $client->getResults());
 
         foreach ([
