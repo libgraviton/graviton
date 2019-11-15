@@ -78,14 +78,8 @@ graviton_proxy:
 doctrine_mongodb:
     connections:
         faulty:
-            server: failServer
-            options: { connect: true }
+            server: 'mongodb://fail-server'
+            options: {}
     document_managers:
         faulty:
             connection: faulty
-            retry_connect: 3
-            retry_query: 1
-            mappings:
-                GravitonCoreBundle: ~
-                GravitonRabbitMqBundle: ~
-                GravitonI18nBundle: ~

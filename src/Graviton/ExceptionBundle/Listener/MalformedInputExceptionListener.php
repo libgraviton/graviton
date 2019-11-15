@@ -5,7 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Graviton\ExceptionBundle\Exception\MalformedInputException;
 
@@ -21,11 +21,11 @@ class MalformedInputExceptionListener extends RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         if (($exception = $event->getException()) instanceof MalformedInputException) {
             $msg = array("message" => "Bad Request - " . $exception->getMessage());

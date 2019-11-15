@@ -18,8 +18,6 @@ framework:
     validation:
         enabled:              true
         enable_annotations:   false
-    templating:
-        enabled: false
     default_locale: "%locale%"
     trusted_hosts: ~
     session:
@@ -57,16 +55,10 @@ doctrine_mongodb:
     connections:
         default:
             server: "%mongodb.default.server.uri%"
-            options: { connect: true }
+            options: {}
     document_managers:
         default:
-            retry_connect: 10
-            retry_query: 1
             auto_mapping: true
-            mappings:
-                GravitonCoreBundle: ~
-                GravitonRabbitMqBundle: ~
-                GravitonI18nBundle: ~
             metadata_cache_driver:
                 type: "service"
                 id: "%graviton.cache.provider.service_id_local%"

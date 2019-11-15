@@ -6,7 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Strategies;
 
 use Graviton\TestBundle\Test\RestTestCase;
-use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 /**
  * Class SameSubnetStrategyTest
@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 class SameSubnetStrategyTest extends RestTestCase
 {
     protected $strategy;
-    /** @var Client */
+    /** @var KernelBrowser */
     protected $client;
     protected $propertyKey;
 

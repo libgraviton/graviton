@@ -314,16 +314,12 @@ class GenerateDynamicBundleCommand extends Command
                         $bundleNamespace
                     );
 
-                    $output->write(
-                        PHP_EOL.
-                        sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId()).
-                        PHP_EOL
+                    $output->writeln(
+                        sprintf('<info>Generated "%s" from definition %s</info>', $bundleName, $jsonDef->getId())
                     );
                 } else {
-                    $output->write(
-                        PHP_EOL.
-                        sprintf('<info>Using pre-existing "%s"</info>', $bundleName).
-                        PHP_EOL
+                    $output->writeln(
+                        sprintf('<info>Using pre-existing "%s"</info>', $bundleName)
                     );
                 }
             } catch (\Exception $e) {

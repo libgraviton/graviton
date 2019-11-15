@@ -5,7 +5,7 @@
 
 namespace Graviton\ExceptionBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\ExceptionBundle\Exception\DeserializationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,11 +21,11 @@ class DeserializationExceptionListener extends RestExceptionListener
     /**
      * Handle the exception and send the right response
      *
-     * @param GetResponseForExceptionEvent $event Event
+     * @param ExceptionEvent $event Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         // var_dump does not work here... use
         //    \Doctrine\Common\Util\Debug::dump($e);die;

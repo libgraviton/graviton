@@ -24,46 +24,6 @@ use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
  */
 class FieldNameSearchListenerTest extends TestCase
 {
-    /**
-     * @var Request
-     */
-    private $request;
-    /**
-     * @var ParameterBag
-     */
-    private $requestAttrs;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-
-    /**
-     * Setup the test
-     *
-     * @return void
-     */
-    protected function setUp() : void
-    {
-        $this->requestAttrs = $this->getMockBuilder(ParameterBag::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
-        $this->request = new Request();
-        $this->request->attributes = $this->requestAttrs;
-
-        $this->requestStack = $this->getMockBuilder(RequestStack::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getCurrentRequest'])
-            ->getMock();
-        $this->requestStack
-            ->expects($this->once())
-            ->method('getCurrentRequest')
-            ->willReturn($this->request);
-
-        parent::setUp();
-    }
 
     /**
      * Create listener
@@ -73,7 +33,7 @@ class FieldNameSearchListenerTest extends TestCase
      */
     private function createListener(array $fields)
     {
-        return new FieldNameSearchListener($fields, $this->requestStack);
+        return new FieldNameSearchListener($fields);
     }
 
     /**
@@ -84,9 +44,6 @@ class FieldNameSearchListenerTest extends TestCase
     public function testOnVisitNodeWithNotQueryNode()
     {
         $fieldMapping = [];
-
-        $this->requestAttrs->expects($this->never())
-            ->method('get');
 
         $node = $this->getMockBuilder(AbstractNode::class)
             ->disableOriginalConstructor()
@@ -113,11 +70,6 @@ class FieldNameSearchListenerTest extends TestCase
         $fieldMapping = [];
         $this->expectException(\LogicException::class);
 
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
-
         $node = $this->getMockBuilder(AbstractScalarOperatorNode::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -143,12 +95,7 @@ class FieldNameSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithNotMappedField()
     {
-        $fieldMapping = ['route.id' => []];
-
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
+        $mapping = ['Hans\Class' => []];
 
         $node = $this->getMockBuilder(AbstractScalarOperatorNode::class)
             ->disableOriginalConstructor()
@@ -163,8 +110,8 @@ class FieldNameSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
-        $listener = $this->createListener($fieldMapping);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Class');
+        $listener = $this->createListener($mapping);
         $listener->onVisitNode($event);
 
         $this->assertSame($node, $event->getNode());
@@ -178,13 +125,8 @@ class FieldNameSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeSimple()
     {
-        $fieldMapping = ['route.id' => ['field' => '$field']];
+        $mapping = ['Hans\Class' => ['field' => '$field']];
         $fieldValue = 'field-value';
-
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
 
         $node = new EqNode('$field', $fieldValue);
 
@@ -192,8 +134,8 @@ class FieldNameSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, new \SplStack());
-        $listener = $this->createListener($fieldMapping);
+        $event = new VisitNodeEvent($node, $builder, new \SplStack(), false, 'Hans\Class');
+        $listener = $this->createListener($mapping);
         $listener->onVisitNode($event);
 
         $this->assertNotSame($node, $event->getNode());
@@ -212,8 +154,8 @@ class FieldNameSearchListenerTest extends TestCase
      */
     public function testOnVisitNodeWithContext()
     {
-        $fieldMapping = [
-            'route.id' => [
+        $mapping = [
+            'Hans\Class' => [
                 'array'             => '$array',
                 'array.0'           => '$array.0',
                 'array.0.field'     => '$array.0.$field',
@@ -221,11 +163,6 @@ class FieldNameSearchListenerTest extends TestCase
             ],
         ];
         $fieldValue = 'field-value';
-
-        $this->requestAttrs->expects($this->once())
-            ->method('get')
-            ->with('_route')
-            ->willReturn('route.id');
 
         $node = new EqNode('$field.$ref', $fieldValue);
         $context = new \SplStack();
@@ -236,8 +173,8 @@ class FieldNameSearchListenerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $event = new VisitNodeEvent($node, $builder, $context);
-        $listener = $this->createListener($fieldMapping);
+        $event = new VisitNodeEvent($node, $builder, $context, false, 'Hans\Class');
+        $listener = $this->createListener($mapping);
         $listener->onVisitNode($event);
 
         $this->assertNotSame($node, $event->getNode());

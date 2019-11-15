@@ -276,7 +276,7 @@ class SchemaUtils
             // hide realId field (I was aiming at a cleaner solution than the matching realId string initially)
             // hide embedded ID field unless it's required or for internal validation need, back-compatibility.
             // TODO remove !$internal once no clients use it for embedded objects as these id are done automatically
-            if (($meta->getTypeOfField($field) == 'id' && $field == 'realId') ||
+            if ((in_array($field, $meta->getIdentifier()) && $field == 'realId') ||
                 (
                     $field == 'id' &&
                     !$internal && $meta->isEmbeddedDocument && !in_array('id', $requiredFields) && $isEmptyExtref

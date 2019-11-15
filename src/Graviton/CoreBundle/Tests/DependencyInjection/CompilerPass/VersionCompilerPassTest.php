@@ -37,7 +37,8 @@ class VersionCompilerPassTest extends \PHPUnit\Framework\TestCase
                 'graviton.core.version.data',
                 [
                     'self' => 'v20.7.0',
-                    'symfony/symfony' => 'v1.0.1'
+                    'symfony/symfony' => 'v1.0.1',
+                    'php' => PHP_VERSION
                 ]
             );
         $containerDouble

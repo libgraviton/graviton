@@ -5,8 +5,7 @@
 
 namespace Graviton\RestBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Graviton\RestBundle\Event\RestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /**
  * FilterResponseListener for setting up CORS headers.
@@ -72,11 +71,11 @@ class CorsResponseListener
     /**
      * add a rel=self Link header to the response
      *
-     * @param FilterResponseEvent $event response listener event
+     * @param ResponseEvent $event response listener event
      *
      * @return void
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();

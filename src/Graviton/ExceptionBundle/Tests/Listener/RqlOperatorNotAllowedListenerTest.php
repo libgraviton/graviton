@@ -11,7 +11,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -41,7 +41,7 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->event = $this->getMockBuilder(GetResponseForExceptionEvent::class)
+        $this->event = $this->getMockBuilder(ExceptionEvent::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->serializer = $this->getMockBuilder(SerializerInterface::class)

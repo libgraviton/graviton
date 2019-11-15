@@ -5,39 +5,47 @@
 
 namespace {{ base }}Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
-* @license  https://opensource.org/licenses/MIT MIT License
-* @link     http://swisscom.ch
-*/
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
+ *
+ * @ODM\Document(collection="{{ collection }}")
+ * @ODM\InheritanceType("COLLECTION_PER_CLASS")
+ *
+ * {{ doctrineIndexesAnnotation(collection, indexes, ensureIndexes, textIndexes) }}
+ */
 class {{ document }} extends {{ document }}Base
 {
 
-/**
-* @var mixed $id
-*/
-protected $id;
+    /**
+    * @var mixed $id
+    *
+    * @ODM\Id(type="string", strategy="CUSTOM", options={"class"="Graviton\DocumentBundle\Doctrine\IdGenerator"})
+    */
+    protected $id;
 
-/**
-* Get id
-*
-* @return string $id
-*/
-public function getId()
-{
-return $this->id;
-}
+    /**
+    * Get id
+    *
+    * @return string $id
+    */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-/**
-* Set id
-*
-* @param mixed $id id
-*
-* @return void
-*/
-public function setId($id)
-{
-$this->id = $id;
-}
-
+    /**
+    * Set id
+    *
+    * @param mixed $id id
+    *
+    * @return void
+    */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 }

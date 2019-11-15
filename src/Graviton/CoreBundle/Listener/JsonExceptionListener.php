@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: taachja1
- * Date: 13/04/16
- * Time: 10:16
+ * json exception listener
  */
 
 namespace Graviton\CoreBundle\Listener;
@@ -11,13 +8,14 @@ namespace Graviton\CoreBundle\Listener;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Graviton\JsonSchemaBundle\Exception\ValidationException;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Graviton\RqlParser\Exception\SyntaxErrorException;
 use Graviton\ExceptionBundle\Exception\SerializationException;
 
 /**
- * Class JsonExceptionListener
- * @package Graviton\CoreBundle\Listener
+ * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://swisscom.ch
  */
 class JsonExceptionListener
 {
@@ -42,11 +40,11 @@ class JsonExceptionListener
     /**
      * Should not handle Validation Exceptions and only service exceptions
      *
-     * @param GetResponseForExceptionEvent $event Sf Event
+     * @param ExceptionEvent $event Sf Event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         $exception = $event->getException();
 

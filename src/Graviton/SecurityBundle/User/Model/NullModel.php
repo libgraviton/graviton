@@ -5,7 +5,7 @@
 
 namespace Graviton\SecurityBundle\User\Model;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\Model\ModelInterface;
 use Symfony\Component\HttpFoundation\Request;
 

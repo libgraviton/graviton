@@ -105,7 +105,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals(0, count($jsonDef->getRelations()));
         $this->assertEquals(16, count($jsonDef->getFields()));
         $this->assertEquals('/hans/showcase', $jsonDef->getRouterBase());
-        $this->assertEquals(5, $jsonDef->getFixtureOrder());
         $this->assertFalse($jsonDef->isSubDocument());
 
         $this->assertEquals(
@@ -137,7 +136,6 @@ class DefinitionTest extends TestCase
         // test default behavior if nothing is specified..
         $this->assertEquals(0, count($jsonDef->getRelations()));
         $this->assertEquals(0, count($jsonDef->getFields()));
-        $this->assertEquals(100, $jsonDef->getFixtureOrder());
         $this->assertEquals('RestController', $jsonDef->getBaseController());
         $this->assertNull($jsonDef->getField('test'));
         $this->assertNull($jsonDef->getNamespace());

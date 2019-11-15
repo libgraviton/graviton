@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Tests\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Graviton\RestBundle\DataFixtures\MongoDB\LoadRestrictionListenerTestData;
 use Graviton\TestBundle\Test\RestTestCase;
 use GravitonDyn\TestCaseMultiTenantBundle\Document\TestCaseMultiTenant;

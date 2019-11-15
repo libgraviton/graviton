@@ -7,8 +7,6 @@ namespace Graviton\DocumentBundle\Listener;
 
 use Graviton\Rql\Event\VisitNodeEvent;
 use Graviton\Rql\Node\ElemMatchNode;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Graviton\RqlParser\Node\Query\AbstractComparisonOperatorNode;
 
 /**
@@ -22,21 +20,15 @@ class FieldNameSearchListener
      * @var array
      */
     private $fields;
-    /**
-     * @var Request
-     */
-    private $request;
 
     /**
      * Constructor
      *
-     * @param array        $fieldsMapping Fields mapping
-     * @param RequestStack $requestStack  Request stack
+     * @param array $fieldsMapping Fields mapping
      */
-    public function __construct(array $fieldsMapping, RequestStack $requestStack)
+    public function __construct(array $fieldsMapping)
     {
         $this->fields = $fieldsMapping;
-        $this->request = $requestStack->getCurrentRequest();
     }
 
     /**
@@ -51,7 +43,7 @@ class FieldNameSearchListener
             return $event;
         }
 
-        $fieldName = $this->getDocumentFieldName($node->getField(), $event->getContext());
+        $fieldName = $this->getDocumentFieldName($event->getClassName(), $node->getField(), $event->getContext());
         if ($fieldName === false) {
             return $event;
         }
@@ -65,15 +57,16 @@ class FieldNameSearchListener
     /**
      * Get document field name by query name
      *
+     * @param string    $className   class name
      * @param string    $searchName  Exposed field name from RQL query
      * @param \SplStack $nodeContext Current node context
+     *
      * @return string|bool Field name or FALSE
      */
-    private function getDocumentFieldName($searchName, \SplStack $nodeContext)
+    private function getDocumentFieldName($className, $searchName, \SplStack $nodeContext)
     {
-        $route = $this->request->attributes->get('_route');
-        if (!isset($this->fields[$route])) {
-            throw new \LogicException(sprintf('No field mapping found for route "%s"', $route));
+        if (!isset($this->fields[$className])) {
+            throw new \LogicException(sprintf('No field mapping found for class "%s"', $className));
         }
 
         $fieldName = $searchName;
@@ -87,7 +80,7 @@ class FieldNameSearchListener
         $fieldName = strtr($fieldName, ['..' => '.0.']);
         $fieldPrefix = strtr($fieldPrefix, ['..' => '.0.']);
 
-        $documentField = array_search($fieldName, $this->fields[$route], true);
+        $documentField = array_search($fieldName, $this->fields[$className], true);
         if ($documentField === false) {
             return false;
         }
@@ -95,7 +88,7 @@ class FieldNameSearchListener
             return $documentField;
         }
 
-        $documentPrefix = array_search(rtrim($fieldPrefix, '.'), $this->fields[$route], true);
+        $documentPrefix = array_search(rtrim($fieldPrefix, '.'), $this->fields[$className], true);
         if ($documentPrefix === false) {
             return false;
         }

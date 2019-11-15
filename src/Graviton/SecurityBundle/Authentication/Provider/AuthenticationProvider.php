@@ -6,6 +6,7 @@
 namespace Graviton\SecurityBundle\Authentication\Provider;
 
 use \Graviton\RestBundle\Model\ModelInterface;
+use MongoDB\BSON\Regex;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -57,7 +58,7 @@ class AuthenticationProvider implements UserProviderInterface
 
         $user = $this->documentModel->getRepository()->findOneBy(
             [
-                $this->queryField => new \MongoRegex('/^'.preg_quote($username).'$/i')
+                $this->queryField => new Regex('^'.preg_quote($username).'$', 'i')
             ]
         );
 

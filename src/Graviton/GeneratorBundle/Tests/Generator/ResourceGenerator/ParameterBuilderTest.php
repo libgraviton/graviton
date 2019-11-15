@@ -77,12 +77,13 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider buildJsonParamsIdFieldDefData
      *
-     * @param array|null $idFieldDef field definition or null if not a json def
-     * @param string     $parent     parent service name
+     * @param array|null $idFieldDef      field definition or null if not a json def
+     * @param string     $parent          parent service name
+     * @param bool       $idFieldRequired if id field is required
      *
      * @return void
      */
-    public function testBuildJsonParamsIdFieldDef($idFieldDef, $parent = null)
+    public function testBuildJsonParamsIdFieldDef($idFieldDef, $parent = null, $idFieldRequired = false)
     {
         $sut = new ParameterBuilder;
 
@@ -121,7 +122,7 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
         if (is_null($idFieldDef)) {
             $idFieldDef = [];
         }
-        $expected = ['json' => $jsonDefDouble, 'parent' => $parent];
+        $expected = ['json' => $jsonDefDouble, 'parent' => $parent, 'idFieldRequired' => $idFieldRequired];
         if ($idFieldDef === []) {
             $expected['noIdField'] = true;
         } else {
@@ -139,6 +140,7 @@ class ParameterBuilderTest extends \PHPUnit\Framework\TestCase
             [null],
             [['type' => 'string']],
             [['type' => 'int'], 'parent.service'],
+            [['type' => 'string', 'name' => 'id', 'required' => true], null, true],
         ];
     }
 }

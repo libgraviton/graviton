@@ -5,7 +5,7 @@
 
 namespace Graviton\RestBundle\Event;
 
-use Doctrine\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

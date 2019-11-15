@@ -74,9 +74,7 @@ class AnalyticsCreateViewCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $mongoClient = $this->manager->getConnection()
-                                     ->getMongoClient()
-                                     ->getClient();
+        $mongoClient = $this->manager->getClient();
         $db = $mongoClient->selectDatabase($this->databaseName);
 
         foreach ($this->services as $service) {

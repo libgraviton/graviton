@@ -43,7 +43,7 @@ class ExtReferenceType extends Type
     public static function convertToDb($value)
     {
         return $value instanceof ExtReference ?
-            \MongoDBRef::create($value->getRef(), $value->getId()) :
+            ['$ref' => $value->getRef(), '$id' => $value->getId()] :
             null;
     }
 
@@ -63,7 +63,7 @@ class ExtReferenceType extends Type
      *
      * @return string
      */
-    public function closureToPHP()
+    public function closureToPHP() : string
     {
         return '$return = \\'.static::class.'::convertToPhp($value);';
     }
@@ -84,7 +84,7 @@ class ExtReferenceType extends Type
      *
      * @return string
      */
-    public function closureToMongo()
+    public function closureToMongo() : string
     {
         return '$return = \\'.static::class.'::convertToDb($value);';
     }

@@ -4,8 +4,7 @@ namespace {{ base }}DataFixtures\MongoDB;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Graviton\MongoDB\Fixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -14,7 +13,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class Load{{ document }}Data implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @private ContainerInterface
@@ -47,44 +46,13 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
      */
     public function load(ObjectManager $manager)
     {
-        $refName = '$ref';
-        $idName = '$id';
-
         if (count($this->fixtures) > 0) {
+            $manager->clear();
             foreach ($this->fixtures as $record) {
-
-                $thisRecord = $this->getObjectFromRecord($record);
-
-                // obvious refs..
-                foreach ($record as $key => $val) {
-                    if ($val instanceof \stdClass && isset($val->$refName) && isset($val->$idName)) {
-                        $setterFunction = 'set'.ucfirst($key);
-                        $thisRecord->$setterFunction($this->getReference($val->$refName.'-'.$val->$idName));
-                    }
-
-                    // cheap attempt for arrays..
-                    if (is_array($val) && isset($val[0]->$refName) && isset($val[0]->$idName)) {
-                        $relRecs = [];
-                        foreach ($val as $subval) {
-                            $relRecs[] = $this->getReference($subval->$refName.'-'.$subval->$idName);
-                        }
-
-                        $setterFunction = 'set'.ucfirst($key);
-                        $thisRecord->$setterFunction($relRecs);
-                    }
-                }
-
-                $manager->persist($thisRecord);
+                $manager->persist($this->getObjectFromRecord($record));
                 $manager->flush();
-
-                if (isset($record->id) && strlen($record->id) > 0) {
-                    $this->addReference('{{ document }}-'.$record->id, $thisRecord);
-                }
-
             }
         }
-
-        $manager->flush();
     }
 
     public function getObjectFromRecord($record)
@@ -94,10 +62,4 @@ class Load{{ document }}Data extends AbstractFixture implements OrderedFixtureIn
             '{{ base }}Document\{{ document }}'
         );
     }
-
-    public function getOrder()
-    {
-        return {{ fixtureOrder }};
-    }
-
 }
