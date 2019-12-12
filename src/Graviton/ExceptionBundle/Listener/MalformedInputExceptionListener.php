@@ -27,7 +27,7 @@ class MalformedInputExceptionListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof MalformedInputException) {
+        if (($exception = $event->getThrowable()) instanceof MalformedInputException) {
             $msg = array("message" => "Bad Request - " . $exception->getMessage());
 
             $response = $exception->getResponse()

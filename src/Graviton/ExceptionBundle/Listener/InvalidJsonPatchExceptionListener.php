@@ -27,7 +27,7 @@ class InvalidJsonPatchExceptionListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof InvalidJsonPatchException) {
+        if (($exception = $event->getThrowable()) instanceof InvalidJsonPatchException) {
 
             // Set status code and content
             $response = new Response();

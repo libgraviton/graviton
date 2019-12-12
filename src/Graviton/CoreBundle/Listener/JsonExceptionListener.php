@@ -46,7 +46,7 @@ class JsonExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if ($this->logger instanceof Logger) {
             $this->logger->critical($exception);

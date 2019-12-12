@@ -62,7 +62,7 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
     public function testOnKernelExceptionWithUnsupportedException()
     {
         $this->event->expects($this->once())
-            ->method('getException')
+            ->method('getThrowable')
             ->willReturn(new HttpException(400));
         $this->event->expects($this->never())
             ->method('setResponse');
@@ -101,7 +101,7 @@ class RqlOperatorNotAllowedListenerTest extends TestCase
             ->willReturn($serializedContent);
 
         $this->event->expects($this->once())
-            ->method('getException')
+            ->method('getThrowable')
             ->willReturn($exception);
         $this->event->expects($this->once())
             ->method('setResponse');
