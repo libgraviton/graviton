@@ -5,7 +5,23 @@
 
 namespace Graviton;
 
+use Graviton\BundleBundle\GravitonBundleBundle;
 use Graviton\BundleBundle\Loader\BundleLoader;
+use Graviton\CacheBundle\GravitonCacheBundle;
+use Graviton\CoreBundle\GravitonCoreBundle;
+use Graviton\DocumentBundle\GravitonDocumentBundle;
+use Graviton\ExceptionBundle\GravitonExceptionBundle;
+use Graviton\FileBundle\GravitonFileBundle;
+use Graviton\GeneratorBundle\GravitonGeneratorBundle;
+use Graviton\I18nBundle\GravitonI18nBundle;
+use Graviton\LogBundle\GravitonLogBundle;
+use Graviton\MigrationBundle\GravitonMigrationBundle;
+use Graviton\ProxyBundle\GravitonProxyBundle;
+use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
+use Graviton\RestBundle\GravitonRestBundle;
+use Graviton\SchemaBundle\GravitonSchemaBundle;
+use Graviton\SecurityBundle\GravitonSecurityBundle;
+use Graviton\SwaggerBundle\GravitonSwaggerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -16,12 +32,6 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 class AppKernel extends Kernel
 {
-    /**
-     * bundle loader
-     *
-     * @var \Graviton\BundleBundle\Loader\BundleLoader
-     */
-    protected $bundleLoader;
 
     /**
      * project dir
@@ -48,18 +58,6 @@ class AppKernel extends Kernel
     }
 
     /**
-     * set bundle loader
-     *
-     * @param \Graviton\BundleBundle\Loader\BundleLoader $bundleLoader bundle loader
-     *
-     * @return void
-     */
-    public function setBundleLoader(BundleLoader $bundleLoader)
-    {
-        $this->bundleLoader = $bundleLoader;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @return Array
@@ -83,22 +81,38 @@ class AppKernel extends Kernel
         );
 
         if (in_array($this->getEnvironment(), ['dev', 'test'])) {
-            $bundles[] = new \Symfony\Bundle\WebServerBundle\WebServerBundle();
             $bundles[] = new \Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-            $bundles[] = new \Graviton\TestBundle\GravitonTestBundle();
         }
 
         if ('prod' === $this->getEnvironment()) {
             $bundles[] = new \Sentry\SentryBundle\SentryBundle();
         }
 
-        // autoload of Graviton specific bundles.
-        if ($this->bundleLoader) {
-            $bundles = $this->bundleLoader->load($bundles);
-        }
+        // our own bundles!
+        $bundles = array_merge(
+            $bundles,
+            [
+                new GravitonCoreBundle(),
+                new GravitonExceptionBundle(),
+                new GravitonDocumentBundle(),
+                new GravitonSchemaBundle(),
+                new GravitonRestBundle(),
+                new GravitonI18nBundle(),
+                new GravitonGeneratorBundle(),
+                new GravitonCacheBundle(),
+                new GravitonLogBundle(),
+                new GravitonSecurityBundle(),
+                new GravitonSwaggerBundle(),
+                new GravitonFileBundle(),
+                new GravitonRabbitMqBundle(),
+                new GravitonMigrationBundle(),
+                new GravitonProxyBundle(),
+            ]
+        );
 
-        return $bundles;
+        $bundleLoader = new BundleLoader(new GravitonBundleBundle());
+        return $bundleLoader->load($bundles);
     }
 
     /**
@@ -111,41 +125,5 @@ class AppKernel extends Kernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
-    }
-
-    /**
-     * dont rebuild container with debug over and over again during tests
-     *
-     * This is very much what is described in http://kriswallsmith.net/post/27979797907
-     *
-     * @return void
-     */
-    protected function initializeContainer()
-    {
-        static $first = true;
-
-        if ('test' !== $this->getEnvironment()) {
-            parent::initializeContainer();
-            return;
-        }
-
-        $debug = $this->debug;
-
-        if (!$first) {
-            // disable debug mode on all but the first initialization
-            $this->debug = false;
-        }
-
-        // will not work with --process-isolation
-        $first = false;
-
-        try {
-            parent::initializeContainer();
-        } catch (\Exception $e) {
-            $this->debug = $debug;
-            throw $e;
-        }
-
-        $this->debug = $debug;
     }
 }

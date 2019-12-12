@@ -95,7 +95,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals(204, $response->getStatusCode());
 
         $client = static::createRestClient();
-        $client->request('GET', $fileLocation);
+        $client->request('GET', $fileLocation, [], [], ['HTTP_ACCEPT' => 'application/json']);
         $data = $client->getResults();
 
         // check for valid format
@@ -114,18 +114,18 @@ class FileControllerTest extends RestTestCase
         $data->metadata->hash = $fileHashCustom;
 
         $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $data->id), $data);
+        $client->put(sprintf('/file/%s', $data->id), $data, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $results = $client->getResults();
 
         $this->assertEquals($link->{'$ref'}, $results->links[0]->{'$ref'});
         $this->assertEquals($filename, $results->metadata->filename);
         $this->assertEquals($fileHashCustom, $data->metadata->hash);
 
-        $client = static::createClient();
+        $client = static::createRestClient();
         $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'text/plain']);
 
         $results = $client->getResponse()->getContent();
@@ -147,11 +147,11 @@ class FileControllerTest extends RestTestCase
         $data->metadata->additionalInformation = 'someInfo';
 
         $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $data->id), $data);
+        $client->put(sprintf('/file/%s', $data->id), $data, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
@@ -170,10 +170,10 @@ class FileControllerTest extends RestTestCase
         unset($data->links[1]);
 
         $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $data->id), $data);
+        $client->put(sprintf('/file/%s', $data->id), $data, [], [], ['CONTENT_TYPE' => 'application/json']);
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $results = $client->getResults();
 
         $this->assertEquals($data->links[0]->{'$ref'}, $results->links[0]->{'$ref'});
@@ -182,11 +182,11 @@ class FileControllerTest extends RestTestCase
         // remove last link
         $data->links = [];
         $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $data->id), $data);
+        $client->put(sprintf('/file/%s', $data->id), $data, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $results = $client->getResults();
 
@@ -201,10 +201,10 @@ class FileControllerTest extends RestTestCase
         $data->links = [];
         $data->links[] = $link;
         $client = static::createRestClient();
-        $client->put(sprintf('/file/%s', $id), $data);
+        $client->put(sprintf('/file/%s', $id), $data, [], [], ['CONTENT_TYPE' => 'application/json']);
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $data->id));
+        $client->request('GET', sprintf('/file/%s', $data->id), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $data = $client->getResults();
         // check metadata for kept file info
         $this->assertEquals(18, $data->metadata->size);
@@ -286,7 +286,7 @@ class FileControllerTest extends RestTestCase
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $response->headers->get('Location'), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $data = $client->getResults();
 
         $client = static::createRestClient();
@@ -326,7 +326,7 @@ class FileControllerTest extends RestTestCase
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $response->headers->get('Location'), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $retData = $client->getResults();
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -364,14 +364,13 @@ class FileControllerTest extends RestTestCase
 
         // re-fetch
         $client = static::createRestClient();
-        $client->request('GET', $response->headers->get('Location'));
+        $client->request('GET', $response->headers->get('Location'), [], [], ['HTTP_ACCEPT' => 'application/json']);
         $retData = $client->getResults();
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($contentType, $retData->metadata->mime);
 
-        /** we use the standard client as we don't want to have json forced */
-        $client = static::createClient();
+        $client = static::createRestClient();
         $client->request(
             'GET',
             $response->headers->get('Location'),
@@ -412,7 +411,7 @@ class FileControllerTest extends RestTestCase
 
         // GET the metadata
         $client = static::createRestClient();
-        $client->request('GET', '/file/mimefile');
+        $client->request('GET', '/file/mimefile', [], [], ['HTTP_ACCEPT' => 'application/json']);
         $retData = $client->getResults();
 
         $this->assertEquals($retData->metadata->mime, $contentType);
@@ -421,9 +420,9 @@ class FileControllerTest extends RestTestCase
         $retData->metadata->mime = 'something/other';
 
         $client = static::createRestClient();
-        $client->put('/file/mimefile', $retData);
+        $client->put('/file/mimefile', $retData, [], [], ['CONTENT_TYPE' => 'application/json']);
 
-        $client = static::createClient();
+        $client = static::createRestClient();
         $client->request(
             'GET',
             '/file/mimefile',
@@ -449,7 +448,6 @@ class FileControllerTest extends RestTestCase
     public function testGetFileCollectionSchemaInformation()
     {
         $client = static::createRestClient();
-
         $client->request('GET', '/schema/file/collection');
 
         $response = $client->getResponse();
@@ -550,7 +548,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals('fix-Not-allowEd------2-a-here-demo-test-hash', $returnData['metadata']['hash']);
 
         // clean up
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'DELETE',
             '/file/myPersonalFile'
@@ -615,7 +613,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals($correctHash, $returnData['metadata']['hash']);
 
         // clean up
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'DELETE',
             '/file/myPersonalFile2'
@@ -647,7 +645,7 @@ class FileControllerTest extends RestTestCase
 
         $this->updateFileContent($fileId, $newContent);
 
-        $client = $this->createClient([], ['CONTENT_TYPE' => 'text/plain']);
+        $client = $this->createRestClient([], ['CONTENT_TYPE' => 'text/plain']);
         $client->request('GET', sprintf('/file/%s', $fileId));
 
         $retData = $client->getResponse()->getContent();
@@ -655,7 +653,7 @@ class FileControllerTest extends RestTestCase
         $this->assertEquals($retData, $newContent);
 
         // clean up
-        $client = $this->createClient();
+        $client = $this->createRestClient();
         $client->request(
             'DELETE',
             '/file/'.$fileId
@@ -826,7 +824,7 @@ class FileControllerTest extends RestTestCase
         );
 
         $client = static::createRestClient();
-        $client->request('GET', sprintf('/file/%s', $fileId));
+        $client->request('GET', sprintf('/file/%s', $fileId), [], [], ['HTTP_ACCEPT' => 'application/json']);
 
         $retData = $client->getResults();
         $response = $client->getResponse();

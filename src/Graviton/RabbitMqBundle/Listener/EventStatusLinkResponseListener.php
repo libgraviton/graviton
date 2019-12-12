@@ -329,6 +329,7 @@ class EventStatusLinkResponseListener
         // results in = /((\*|document)+)\.((\*|dude)+)\.((\*|config)+)\.((\*|update)+)/
         $routingArgs = explode('.', $queueEvent->getEvent());
         $regex =
+            '^'.
             implode(
                 '\.',
                 array_map(
@@ -337,19 +338,25 @@ class EventStatusLinkResponseListener
                     },
                     $routingArgs
                 )
-            );
+            )
+            .'$';
 
         // look up workers by class name
         $qb = $this->documentManager->createQueryBuilder($this->eventWorkerClassname);
-        $data = $qb
+        $query = $qb
             ->select('id')
             ->field('subscription.event')
             ->equals(new Regex($regex))
-            ->getQuery()
-            ->execute()
-            ->toArray();
+            ->getQuery();
 
-        return array_keys($data);
+        $query->setHydrate(false);
+
+        return array_map(
+            function ($record) {
+                return $record['_id'];
+            },
+            $query->execute()->toArray()
+        );
     }
 
     /**
