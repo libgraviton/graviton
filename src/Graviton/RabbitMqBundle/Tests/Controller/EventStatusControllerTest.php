@@ -220,6 +220,9 @@ class EventStatusControllerTest extends RestTestCase
         $this->assertStringNotContainsString('backendalias:9443', $response->headers->get('link'));
         $this->assertStringContainsString('eventStatus', $response->headers->get('link'));
 
+        // get again
+        $dbProducer = $client->getContainer()->get('graviton.rabbitmq.jobproducer');
+
         /** @var Dummy $dbProducer */
         $events = $dbProducer->getEventList();
 
