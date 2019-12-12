@@ -8,8 +8,10 @@ namespace Graviton\TestBundle\Test;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Graviton\AppKernel;
 use Graviton\MongoDB\Fixtures\FixturesTrait;
+use Graviton\TestBundle\Client;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -32,6 +34,11 @@ class GravitonTestCase extends WebTestCase
     use ArraySubsetAsserts;
 
     /**
+     * @var KernelBrowser
+     */
+    private static $testClient;
+
+    /**
      * gets the kernel class name
      *
      * @return string kernel class name
@@ -39,6 +46,29 @@ class GravitonTestCase extends WebTestCase
     public static function getKernelClass()
     {
         return AppKernel::class;
+    }
+
+    /**
+     * Create a Web Client.
+     *
+     * Creates a regular client first so we can profit from the bootstrapping code
+     * in parent::createRestClient and is otherwise API compatible with said method.
+     *
+     * @param array $options An array of options to pass to the createKernel class
+     * @param array $server  An array of server parameters
+     *
+     * @return Client A Client instance
+     */
+    protected static function createClient(array $options = [], array $server = array())
+    {
+        if (is_null(self::$testClient)) {
+            self::$testClient = parent::createClient($options, $server);
+        }
+
+        self::$testClient->getKernel()->boot();
+        self::$testClient->restart();
+
+        return new Client(self::$testClient);
     }
 
     /**
