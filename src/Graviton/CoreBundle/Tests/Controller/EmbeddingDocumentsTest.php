@@ -288,7 +288,8 @@ class EmbeddingDocumentsTest extends RestTestCase
         $client = static::createRestClient();
         $client->request('GET', '/testcase/embedtest-document-as-deep-reference/test');
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertEquals($data, $client->getResults());
+        $updatedResults = $client->getResults();
+        $this->assertEquals($data, $updatedResults);
 
         // check entities again
         // record "one" was *not* removed.
@@ -297,7 +298,7 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEntityExists('three', 'three');
 
         // change to two again
-        $data = $client->getResults();
+        $data = $updatedResults;
         $data->deep->document = (object) [
             'id'    => 'two',
             'data'  => 'two',
@@ -362,13 +363,13 @@ class EmbeddingDocumentsTest extends RestTestCase
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
         $this->assertEquals($data, $client->getResults());
 
-        // check entities again
-        $this->assertEntityExists('one', 'one');
-        $this->assertEntityExists('two', 'two');
-
         // update document with empty embed-many
         $data = $client->getResults();
         $data->document = (object) ['id' => 'two', 'data' => 'two'];
+
+        // check entities again
+        $this->assertEntityExists('one', 'one');
+        $this->assertEntityExists('two', 'two');
 
         $client = static::createRestClient();
         $client->put('/testcase/embedtest-hash-as-embedded/test', $data);

@@ -5,24 +5,9 @@
 
 namespace Graviton\CoreBundle;
 
-use Graviton\BundleBundle\GravitonBundleInterface;
-use Graviton\CacheBundle\GravitonCacheBundle;
 use Graviton\CoreBundle\Compiler\EnvParametersCompilerPass;
 use Graviton\CoreBundle\Compiler\HttpClientOptionsCompilerPass;
 use Graviton\CoreBundle\Compiler\RouteLoaderCompilerPass;
-use Graviton\DocumentBundle\GravitonDocumentBundle;
-use Graviton\ExceptionBundle\GravitonExceptionBundle;
-use Graviton\GeneratorBundle\GravitonGeneratorBundle;
-use Graviton\I18nBundle\GravitonI18nBundle;
-use Graviton\LogBundle\GravitonLogBundle;
-use Graviton\RabbitMqBundle\GravitonRabbitMqBundle;
-use Graviton\ProxyBundle\GravitonProxyBundle;
-use Graviton\RestBundle\GravitonRestBundle;
-use Graviton\SchemaBundle\GravitonSchemaBundle;
-use Graviton\SecurityBundle\GravitonSecurityBundle;
-use Graviton\SwaggerBundle\GravitonSwaggerBundle;
-use Graviton\FileBundle\GravitonFileBundle;
-use Graviton\MigrationBundle\GravitonMigrationBundle;
 use Jean85\PrettyVersions;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Graviton\CoreBundle\Compiler\VersionCompilerPass;
@@ -35,34 +20,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class GravitonCoreBundle extends Bundle implements GravitonBundleInterface
+class GravitonCoreBundle extends Bundle
 {
-    /**
-     * {@inheritDoc}
-     *
-     * set up graviton symfony bundles
-     *
-     * @return \Symfony\Component\HttpKernel\Bundle\Bundle[]
-     */
-    public function getBundles()
-    {
-        return array(
-            new GravitonExceptionBundle(),
-            new GravitonDocumentBundle(),
-            new GravitonSchemaBundle(),
-            new GravitonRestBundle(),
-            new GravitonI18nBundle(),
-            new GravitonGeneratorBundle(),
-            new GravitonCacheBundle(),
-            new GravitonLogBundle(),
-            new GravitonSecurityBundle(),
-            new GravitonSwaggerBundle(),
-            new GravitonFileBundle(),
-            new GravitonRabbitMqBundle(),
-            new GravitonMigrationBundle(),
-            new GravitonProxyBundle(),
-        );
-    }
 
     /**
      * load version compiler pass

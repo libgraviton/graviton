@@ -34,11 +34,11 @@ class JsonExceptionListenerTest extends KernelTestCase
 
         $exceptionEvent = $this->getMockBuilder(ExceptionEvent::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getException'])
+            ->onlyMethods(['getThrowable'])
             ->getMock();
 
         $exception = new \Exception('This is the exception message', 501);
-        $exceptionEvent->method('getException')->willReturn($exception);
+        $exceptionEvent->method('getThrowable')->willReturn($exception);
 
         $sut->onKernelException($exceptionEvent);
 

@@ -27,7 +27,7 @@ class RqlSyntaxErrorListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof SyntaxErrorException) {
+        if (($exception = $event->getThrowable()) instanceof SyntaxErrorException) {
             // Set status code and content
             $response = new Response();
             $response

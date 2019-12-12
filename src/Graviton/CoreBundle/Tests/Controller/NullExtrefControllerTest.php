@@ -119,7 +119,7 @@ class NullExtrefControllerTest extends RestTestCase
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($this->removeNullRefs($compareData)),
-            json_encode($client->getResults())
+            json_encode($result)
         );
     }
 

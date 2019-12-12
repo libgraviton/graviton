@@ -27,7 +27,7 @@ class NoInputExceptionListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof NoInputException) {
+        if (($exception = $event->getThrowable()) instanceof NoInputException) {
             $msg = array("message" => "No input data");
 
             $response = $exception->getResponse()

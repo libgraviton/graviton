@@ -48,7 +48,7 @@ class ValidationExceptionListener extends RestExceptionListener
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        if (($exception = $event->getException()) instanceof ValidationException) {
+        if (($exception = $event->getThrowable()) instanceof ValidationException) {
             $content = $this->getErrorMessages($exception->getErrors());
             // Set status code and content
             $response = new Response();
