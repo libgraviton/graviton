@@ -6,7 +6,6 @@
 namespace Graviton\BundleBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Graviton\CoreBundle\GravitonCoreBundle;
 
 /**
  * @author   List of contributors <https://github.com/libgraviton/graviton/graphs/contributors>
@@ -27,11 +26,9 @@ class GravitonBundleBundle extends Bundle implements GravitonBundleInterface
      */
     public function getBundles()
     {
-        $bundles = array(
-            new GravitonCoreBundle()
-        );
+        $bundles = [];
 
-        /*** LOOK AFTER DYNAMIC BUNDLEBUNDLE ***/
+        /*** CHECK FOR DYNAMIC BUNDLEBUNDLE ***/
 
         // @todo it seems we have no container at this point - how to make this configurable?
         $dynamicBundleBundle = '\GravitonDyn\BundleBundle\GravitonDynBundleBundle';

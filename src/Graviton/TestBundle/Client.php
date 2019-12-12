@@ -16,17 +16,28 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://swisscom.ch
  */
-class Client extends KernelBrowser
+class Client
 {
+
     /**
-     * @var mixed
+     * @var KernelBrowser
      */
-    private $results;
+    private $client;
 
     /**
      * @var boolean
      */
     private $jsonRequest = true;
+
+    /**
+     * Client constructor.
+     *
+     * @param KernelBrowser $client client
+     */
+    public function __construct(KernelBrowser $client)
+    {
+        $this->client = $client;
+    }
 
     /**
      * return decoded results from a request
@@ -35,7 +46,7 @@ class Client extends KernelBrowser
      */
     public function getResults()
     {
-        return $this->results;
+        return json_decode($this->client->getResponse()->getContent());
     }
 
     /**
@@ -66,7 +77,7 @@ class Client extends KernelBrowser
             $content = json_encode($content);
         }
 
-        return $this->request(
+        return $this->client->request(
             'POST',
             $uri,
             $parameters,
@@ -104,7 +115,7 @@ class Client extends KernelBrowser
             $content = json_encode($content);
         }
 
-        return $this->request(
+        return $this->client->request(
             'PUT',
             $uri,
             $parameters,
@@ -115,37 +126,15 @@ class Client extends KernelBrowser
     }
 
     /**
-     * prepare a deserialized copy of a json response
+     * magic function for KernelBrowser functions
      *
-     * @param object $response Response containing our return value as raw json
+     * @param string $name      function name
+     * @param array  $arguments params
      *
-     * @return \Symfony\Component\BrowserKit\Response response
-     *
-     * @todo use JMSSerializer for additional JSON validation
+     * @return mixed return
      */
-    protected function filterResponse($response)
+    public function __call(string $name, array $arguments)
     {
-        $this->results = json_decode($response->getContent());
-
-        return parent::filterResponse($response);
-    }
-
-    /**
-     * force all requests to be json like.
-     *
-     * Do JSON/RESTful requests using this client if the caller has not specified something else.
-     *
-     * @param object $request Request object
-     *
-     * @return \Symfony\Component\HttpFoundation\Response request
-     */
-    protected function doRequest($request)
-    {
-        if ($this->jsonRequest) {
-            $request->headers->set('Content-Type', 'application/json; charset=UTF-8');
-        }
-        $request->headers->set('Accept', 'application/json');
-
-        return parent::doRequest($request);
+        return call_user_func_array([$this->client, $name], $arguments);
     }
 }

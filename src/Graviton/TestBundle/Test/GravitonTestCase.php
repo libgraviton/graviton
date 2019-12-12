@@ -7,8 +7,6 @@ namespace Graviton\TestBundle\Test;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Graviton\AppKernel;
-use Graviton\BundleBundle\GravitonBundleBundle;
-use Graviton\BundleBundle\Loader\BundleLoader;
 use Graviton\MongoDB\Fixtures\FixturesTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -34,6 +32,16 @@ class GravitonTestCase extends WebTestCase
     use ArraySubsetAsserts;
 
     /**
+     * gets the kernel class name
+     *
+     * @return string kernel class name
+     */
+    public static function getKernelClass()
+    {
+        return AppKernel::class;
+    }
+
+    /**
      * return our namespaced AppKernel
      *
      * Most symfony projects keep their AppKernel class in phps
@@ -49,19 +57,12 @@ class GravitonTestCase extends WebTestCase
      */
     public static function createKernel(array $options = array())
     {
-        include_once __DIR__ . '/../../../../app/AppKernel.php';
-
-        $env = 'test';
-        $debug = false;
-
-        $kernel = new AppKernel($env, $debug);
-        $kernel->setBundleLoader(new BundleLoader(new GravitonBundleBundle()));
-        $kernel->boot();
-
-        //set error reporting for phpunit
-        ini_set('error_reporting', E_ALL);
-
-        return $kernel;
+        return parent::createKernel(
+            [
+                'environment' => 'test',
+                'debug' => false
+            ]
+        );
     }
 
     /**

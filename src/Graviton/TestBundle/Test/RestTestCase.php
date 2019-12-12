@@ -8,6 +8,7 @@
 namespace Graviton\TestBundle\Test;
 
 use Graviton\TestBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,6 +22,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RestTestCase extends GravitonTestCase
 {
+
+    /**
+     * @var KernelBrowser
+     */
+    private static $testClient;
 
     /**
      * resets languages
@@ -44,16 +50,17 @@ class RestTestCase extends GravitonTestCase
      * @param array $options An array of options to pass to the createKernel class
      * @param array $server  An array of server parameters
      *
-     * @return \Graviton\TestBundle\Client A Client instance
+     * @return Client A Client instance
      */
     protected static function createRestClient(array $options = [], array $server = array())
     {
-        parent::createClient($options, $server);
+        if (is_null(self::$testClient)) {
+            self::$testClient = parent::createClient($options, $server);
+        }
 
-        $client = static::$kernel->getContainer()->get('graviton.test.rest.client');
-        $client->setServerParameters($server);
+        self::$testClient->getKernel()->boot();
 
-        return $client;
+        return new Client(self::$testClient);
     }
 
     /**
