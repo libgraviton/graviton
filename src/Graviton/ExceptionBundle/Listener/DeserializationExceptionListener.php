@@ -29,7 +29,7 @@ class DeserializationExceptionListener extends RestExceptionListener
     {
         // var_dump does not work here... use
         //    \Doctrine\Common\Util\Debug::dump($e);die;
-        if (($exception = $event->getException()) instanceof DeserializationException) {
+        if (($exception = $event->getThrowable()) instanceof DeserializationException) {
             // hnmm.. no way to find out which property (name) failed??
             $msg = array('message' => $exception->getPrevious()->getMessage());
 
