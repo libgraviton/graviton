@@ -59,6 +59,7 @@ class RestTestCase extends GravitonTestCase
         }
 
         self::$testClient->getKernel()->boot();
+        self::$testClient->restart();
 
         return new Client(self::$testClient);
     }
