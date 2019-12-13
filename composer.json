@@ -27,7 +27,7 @@
         "graviton/link-header-rel-parser": "~1",
         "graviton/analytics-base": "^0.4.0",
         "graviton/deployment-service-bundle": "~0",
-        "graviton/mongodb-migrations-bundle": "dev-feature/update",
+        "graviton/mongodb-migrations-bundle": "~2",
 
         "symfony/symfony": "~4.4.0",
         "symfony/monolog-bundle": "~3.0",
